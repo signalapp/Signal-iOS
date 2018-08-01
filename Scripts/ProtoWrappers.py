@@ -296,7 +296,6 @@ import Foundation
         writer.extend(('''
 public enum %s: Error {
     case invalidProtobuf(description: String)
-    case invalidProtoAccess(description: String)
 }
 ''' % writer.invalid_protobuf_error_name).strip())
         writer.newline()        
