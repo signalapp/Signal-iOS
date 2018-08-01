@@ -253,11 +253,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (BOOL)deleteFileIfExists:(nullable NSString *)filePath
++ (BOOL)deleteFileIfExists:(NSString *)filePath
 {
-    if (!filePath) {
-        return YES;
-    }
     if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         return YES;
     }

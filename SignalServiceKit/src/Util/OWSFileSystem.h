@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)deleteFile:(NSString *)filePath;
 
-+ (BOOL)deleteFileIfExists:(nullable NSString *)filePath;
++ (BOOL)deleteFileIfExists:(NSString *)filePath;
 
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error;
 

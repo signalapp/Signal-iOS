@@ -8,6 +8,7 @@
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -37,6 +38,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 @implementation OWSUserProfile
 
 @synthesize avatarUrlPath = _avatarUrlPath;
+@synthesize avatarFileName = _avatarFileName;
 @synthesize profileName = _profileName;
 
 + (NSString *)collection
@@ -113,8 +115,35 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         if (didChange) {
             // If the avatarURL changed, the avatarFileName can't be valid.
             // Clear it.
+
             self.avatarFileName = nil;
         }
+    }
+}
+
+- (nullable NSString *)avatarFileName
+{
+    @synchronized(self) {
+        return _avatarFileName;
+    }
+}
+
+- (void)setAvatarFileName:(nullable NSString *)avatarFileName
+{
+    @synchronized(self) {
+        BOOL didChange = ![NSObject isNullableObject:_avatarFileName equalTo:avatarFileName];
+        if (!didChange) {
+            return;
+        }
+
+        if (_avatarFileName) {
+            NSString *oldAvatarFilePath = [OWSUserProfile profileAvatarFilepathWithFilename:_avatarFileName];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+            });
+        }
+
+        _avatarFileName = avatarFileName;
     }
 }
 
@@ -353,6 +382,58 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     @synchronized(self)
     {
         _profileName = profileName.filterStringForDisplay;
+    }
+}
+
+#pragma mark - Profile Avatars Directory
+
++ (NSString *)profileAvatarFilepathWithFilename:(NSString *)filename
+{
+    OWSAssert(filename.length > 0);
+
+    return [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+}
+
++ (NSString *)legacyProfileAvatarsDirPath
+{
+    return [[OWSFileSystem appDocumentDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
+}
+
++ (NSString *)sharedDataProfileAvatarsDirPath
+{
+    return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
+}
+
++ (nullable NSError *)migrateToSharedData
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
+                       sharedDataFilePath:self.sharedDataProfileAvatarsDirPath];
+}
+
++ (NSString *)profileAvatarsDirPath
+{
+    static NSString *profileAvatarsDirPath = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        profileAvatarsDirPath = self.sharedDataProfileAvatarsDirPath;
+
+        [OWSFileSystem ensureDirectoryExists:profileAvatarsDirPath];
+    });
+    return profileAvatarsDirPath;
+}
+
+// TODO: We may want to clean up this directory in the "orphan cleanup" logic.
+
++ (void)resetProfileStorage
+{
+    OWSAssertIsOnMainThread();
+
+    NSError *error;
+    [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
+    if (error) {
+        DDLogError(@"Failed to delete database: %@", error.description);
     }
 }
 
