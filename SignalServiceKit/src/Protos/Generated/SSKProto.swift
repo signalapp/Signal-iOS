@@ -8,6 +8,7 @@ import Foundation
 
 public enum SSKProtoError: Error {
     case invalidProtobuf(description: String)
+    case invalidProtoAccess(description: String)
 }
 
 // MARK: - SSKProtoEnvelope
@@ -58,32 +59,32 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setType(_ value: SSKProtoEnvelopeType) {
-            type = value
+        @objc public func setType(_ _value: SSKProtoEnvelopeType) {
+            type = _value
         }
 
-        @objc public func setSource(_ value: String) {
-            source = value
+        @objc public func setSource(_ _value: String) {
+            source = _value
         }
 
-        @objc public func setSourceDevice(_ value: UInt32) {
-            sourceDevice = value
+        @objc public func setSourceDevice(_ _value: UInt32) {
+            sourceDevice = _value
         }
 
-        @objc public func setRelay(_ value: String) {
-            relay = value
+        @objc public func setRelay(_ _value: String) {
+            relay = _value
         }
 
-        @objc public func setTimestamp(_ value: UInt64) {
-            timestamp = value
+        @objc public func setTimestamp(_ _value: UInt64) {
+            timestamp = _value
         }
 
-        @objc public func setLegacyMessage(_ value: Data) {
-            legacyMessage = value
+        @objc public func setLegacyMessage(_ _value: Data) {
+            legacyMessage = _value
         }
 
-        @objc public func setContent(_ value: Data) {
-            content = value
+        @objc public func setContent(_ _value: Data) {
+            content = _value
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
@@ -91,21 +92,27 @@ public enum SSKProtoError: Error {
                 if let type = self.type {
                     builder.type = SSKProtoEnvelopeTypeUnwrap(type)
                 }
+
                 if let source = self.source {
                     builder.source = source
                 }
+
                 if let sourceDevice = self.sourceDevice {
                     builder.sourceDevice = sourceDevice
                 }
+
                 if let relay = self.relay {
                     builder.relay = relay
                 }
+
                 if let timestamp = self.timestamp {
                     builder.timestamp = timestamp
                 }
+
                 if let legacyMessage = self.legacyMessage {
                     builder.legacyMessage = legacyMessage
                 }
+
                 if let content = self.content {
                     builder.content = content
                 }
@@ -116,33 +123,49 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let type: SSKProtoEnvelopeType
-    @objc public let source: String?
-    @objc public let sourceDevice: UInt32
-    @objc public let relay: String?
-    @objc public let timestamp: UInt64
-    @objc public let legacyMessage: Data?
-    @objc public let content: Data?
+    fileprivate let proto: SignalServiceProtos_Envelope
 
-    @objc public init(type: SSKProtoEnvelopeType,
-                      source: String?,
-                      sourceDevice: UInt32,
-                      relay: String?,
-                      timestamp: UInt64,
-                      legacyMessage: Data?,
-                      content: Data?) {
+    @objc public let type: SSKProtoEnvelopeType
+    @objc public let source: String
+    @objc public let sourceDevice: UInt32
+    @objc public let timestamp: UInt64
+
+    @objc public var relay: String {
+        return proto.relay
+    }
+    @objc public var hasRelay: Bool {
+        return proto.hasRelay
+    }
+
+    @objc public var legacyMessage: Data {
+        return proto.legacyMessage
+    }
+    @objc public var hasLegacyMessage: Bool {
+        return proto.hasLegacyMessage
+    }
+
+    @objc public var content: Data {
+        return proto.content
+    }
+    @objc public var hasContent: Bool {
+        return proto.hasContent
+    }
+
+    private init(proto: SignalServiceProtos_Envelope,
+                 type: SSKProtoEnvelopeType,
+                 source: String,
+                 sourceDevice: UInt32,
+                 timestamp: UInt64) {
+        self.proto = proto
         self.type = type
         self.source = source
         self.sourceDevice = sourceDevice
-        self.relay = relay
         self.timestamp = timestamp
-        self.legacyMessage = legacyMessage
-        self.content = content
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoEnvelope {
@@ -166,79 +189,21 @@ public enum SSKProtoError: Error {
         }
         let sourceDevice = proto.sourceDevice
 
-        var relay: String? = nil
-        if proto.hasRelay {
-            relay = proto.relay
-        }
-
         guard proto.hasTimestamp else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
 
-        var legacyMessage: Data? = nil
-        if proto.hasLegacyMessage {
-            legacyMessage = proto.legacyMessage
-        }
-
-        var content: Data? = nil
-        if proto.hasContent {
-            content = proto.content
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoEnvelope -
-
-        guard proto.hasSource else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: source")
-        }
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
-        }
-        guard proto.hasSourceDevice else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sourceDevice")
-        }
 
         // MARK: - End Validation Logic for SSKProtoEnvelope -
 
-        let result = SSKProtoEnvelope(type: type,
+        let result = SSKProtoEnvelope(proto: proto,
+                                      type: type,
                                       source: source,
                                       sourceDevice: sourceDevice,
-                                      relay: relay,
-                                      timestamp: timestamp,
-                                      legacyMessage: legacyMessage,
-                                      content: content)
+                                      timestamp: timestamp)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_Envelope {
-        let proto = SignalServiceProtos_Envelope.with { (builder) in
-            builder.type = SSKProtoEnvelope.SSKProtoEnvelopeTypeUnwrap(self.type)
-
-            if let source = self.source {
-                builder.source = source
-            }
-
-            builder.sourceDevice = self.sourceDevice
-
-            if let relay = self.relay {
-                builder.relay = relay
-            }
-
-            builder.timestamp = self.timestamp
-
-            if let legacyMessage = self.legacyMessage {
-                builder.legacyMessage = legacyMessage
-            }
-
-            if let content = self.content {
-                builder.content = content
-            }
-        }
-
-        return proto
     }
 }
 
@@ -258,42 +223,46 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setDataMessage(_ value: SSKProtoDataMessage) {
-            dataMessage = value
+        @objc public func setDataMessage(_ _value: SSKProtoDataMessage) {
+            dataMessage = _value
         }
 
-        @objc public func setSyncMessage(_ value: SSKProtoSyncMessage) {
-            syncMessage = value
+        @objc public func setSyncMessage(_ _value: SSKProtoSyncMessage) {
+            syncMessage = _value
         }
 
-        @objc public func setCallMessage(_ value: SSKProtoCallMessage) {
-            callMessage = value
+        @objc public func setCallMessage(_ _value: SSKProtoCallMessage) {
+            callMessage = _value
         }
 
-        @objc public func setNullMessage(_ value: SSKProtoNullMessage) {
-            nullMessage = value
+        @objc public func setNullMessage(_ _value: SSKProtoNullMessage) {
+            nullMessage = _value
         }
 
-        @objc public func setReceiptMessage(_ value: SSKProtoReceiptMessage) {
-            receiptMessage = value
+        @objc public func setReceiptMessage(_ _value: SSKProtoReceiptMessage) {
+            receiptMessage = _value
         }
 
         @objc public func build() throws -> SSKProtoContent {
             let proto = SignalServiceProtos_Content.with { (builder) in
                 if let dataMessage = self.dataMessage {
-                    builder.dataMessage = dataMessage.asProtobuf
+                    builder.dataMessage = dataMessage.proto
                 }
+
                 if let syncMessage = self.syncMessage {
-                    builder.syncMessage = syncMessage.asProtobuf
+                    builder.syncMessage = syncMessage.proto
                 }
+
                 if let callMessage = self.callMessage {
-                    builder.callMessage = callMessage.asProtobuf
+                    builder.callMessage = callMessage.proto
                 }
+
                 if let nullMessage = self.nullMessage {
-                    builder.nullMessage = nullMessage.asProtobuf
+                    builder.nullMessage = nullMessage.proto
                 }
+
                 if let receiptMessage = self.receiptMessage {
-                    builder.receiptMessage = receiptMessage.asProtobuf
+                    builder.receiptMessage = receiptMessage.proto
                 }
             }
 
@@ -302,17 +271,21 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_Content
+
     @objc public let dataMessage: SSKProtoDataMessage?
     @objc public let syncMessage: SSKProtoSyncMessage?
     @objc public let callMessage: SSKProtoCallMessage?
     @objc public let nullMessage: SSKProtoNullMessage?
     @objc public let receiptMessage: SSKProtoReceiptMessage?
 
-    @objc public init(dataMessage: SSKProtoDataMessage?,
-                      syncMessage: SSKProtoSyncMessage?,
-                      callMessage: SSKProtoCallMessage?,
-                      nullMessage: SSKProtoNullMessage?,
-                      receiptMessage: SSKProtoReceiptMessage?) {
+    private init(proto: SignalServiceProtos_Content,
+                 dataMessage: SSKProtoDataMessage?,
+                 syncMessage: SSKProtoSyncMessage?,
+                 callMessage: SSKProtoCallMessage?,
+                 nullMessage: SSKProtoNullMessage?,
+                 receiptMessage: SSKProtoReceiptMessage?) {
+        self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
         self.callMessage = callMessage
@@ -322,7 +295,7 @@ public enum SSKProtoError: Error {
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoContent {
@@ -360,38 +333,13 @@ public enum SSKProtoError: Error {
 
         // MARK: - End Validation Logic for SSKProtoContent -
 
-        let result = SSKProtoContent(dataMessage: dataMessage,
+        let result = SSKProtoContent(proto: proto,
+                                     dataMessage: dataMessage,
                                      syncMessage: syncMessage,
                                      callMessage: callMessage,
                                      nullMessage: nullMessage,
                                      receiptMessage: receiptMessage)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_Content {
-        let proto = SignalServiceProtos_Content.with { (builder) in
-            if let dataMessage = self.dataMessage {
-                builder.dataMessage = dataMessage.asProtobuf
-            }
-
-            if let syncMessage = self.syncMessage {
-                builder.syncMessage = syncMessage.asProtobuf
-            }
-
-            if let callMessage = self.callMessage {
-                builder.callMessage = callMessage.asProtobuf
-            }
-
-            if let nullMessage = self.nullMessage {
-                builder.nullMessage = nullMessage.asProtobuf
-            }
-
-            if let receiptMessage = self.receiptMessage {
-                builder.receiptMessage = receiptMessage.asProtobuf
-            }
-        }
-
-        return proto
     }
 }
 
@@ -408,12 +356,12 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
+        @objc public func setId(_ _value: UInt64) {
+            id = _value
         }
 
-        @objc public func setSessionDescription(_ value: String) {
-            sessionDescription = value
+        @objc public func setSessionDescription(_ _value: String) {
+            sessionDescription = _value
         }
 
         @objc public func build() throws -> SSKProtoCallMessageOffer {
@@ -421,6 +369,7 @@ public enum SSKProtoError: Error {
                 if let id = self.id {
                     builder.id = id
                 }
+
                 if let sessionDescription = self.sessionDescription {
                     builder.sessionDescription = sessionDescription
                 }
@@ -431,18 +380,26 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let id: UInt64
-    @objc public let sessionDescription: String?
+    fileprivate let proto: SignalServiceProtos_CallMessage.Offer
 
-    @objc public init(id: UInt64,
-                      sessionDescription: String?) {
+    @objc public let id: UInt64
+
+    @objc public var sessionDescription: String {
+        return proto.sessionDescription
+    }
+    @objc public var hasSessionDescription: Bool {
+        return proto.hasSessionDescription
+    }
+
+    private init(proto: SignalServiceProtos_CallMessage.Offer,
+                 id: UInt64) {
+        self.proto = proto
         self.id = id
-        self.sessionDescription = sessionDescription
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoCallMessageOffer {
@@ -456,30 +413,13 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
-        var sessionDescription: String? = nil
-        if proto.hasSessionDescription {
-            sessionDescription = proto.sessionDescription
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessageOffer -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageOffer -
 
-        let result = SSKProtoCallMessageOffer(id: id,
-                                              sessionDescription: sessionDescription)
+        let result = SSKProtoCallMessageOffer(proto: proto,
+                                              id: id)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Offer {
-        let proto = SignalServiceProtos_CallMessage.Offer.with { (builder) in
-            builder.id = self.id
-
-            if let sessionDescription = self.sessionDescription {
-                builder.sessionDescription = sessionDescription
-            }
-        }
-
-        return proto
     }
 }
 
@@ -496,12 +436,12 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
+        @objc public func setId(_ _value: UInt64) {
+            id = _value
         }
 
-        @objc public func setSessionDescription(_ value: String) {
-            sessionDescription = value
+        @objc public func setSessionDescription(_ _value: String) {
+            sessionDescription = _value
         }
 
         @objc public func build() throws -> SSKProtoCallMessageAnswer {
@@ -509,6 +449,7 @@ public enum SSKProtoError: Error {
                 if let id = self.id {
                     builder.id = id
                 }
+
                 if let sessionDescription = self.sessionDescription {
                     builder.sessionDescription = sessionDescription
                 }
@@ -519,18 +460,26 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let id: UInt64
-    @objc public let sessionDescription: String?
+    fileprivate let proto: SignalServiceProtos_CallMessage.Answer
 
-    @objc public init(id: UInt64,
-                      sessionDescription: String?) {
+    @objc public let id: UInt64
+
+    @objc public var sessionDescription: String {
+        return proto.sessionDescription
+    }
+    @objc public var hasSessionDescription: Bool {
+        return proto.hasSessionDescription
+    }
+
+    private init(proto: SignalServiceProtos_CallMessage.Answer,
+                 id: UInt64) {
+        self.proto = proto
         self.id = id
-        self.sessionDescription = sessionDescription
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoCallMessageAnswer {
@@ -544,30 +493,13 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
-        var sessionDescription: String? = nil
-        if proto.hasSessionDescription {
-            sessionDescription = proto.sessionDescription
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessageAnswer -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageAnswer -
 
-        let result = SSKProtoCallMessageAnswer(id: id,
-                                               sessionDescription: sessionDescription)
+        let result = SSKProtoCallMessageAnswer(proto: proto,
+                                               id: id)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Answer {
-        let proto = SignalServiceProtos_CallMessage.Answer.with { (builder) in
-            builder.id = self.id
-
-            if let sessionDescription = self.sessionDescription {
-                builder.sessionDescription = sessionDescription
-            }
-        }
-
-        return proto
     }
 }
 
@@ -586,20 +518,20 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
+        @objc public func setId(_ _value: UInt64) {
+            id = _value
         }
 
-        @objc public func setSdpMid(_ value: String) {
-            sdpMid = value
+        @objc public func setSdpMid(_ _value: String) {
+            sdpMid = _value
         }
 
-        @objc public func setSdpMlineIndex(_ value: UInt32) {
-            sdpMlineIndex = value
+        @objc public func setSdpMlineIndex(_ _value: UInt32) {
+            sdpMlineIndex = _value
         }
 
-        @objc public func setSdp(_ value: String) {
-            sdp = value
+        @objc public func setSdp(_ _value: String) {
+            sdp = _value
         }
 
         @objc public func build() throws -> SSKProtoCallMessageIceUpdate {
@@ -607,12 +539,15 @@ public enum SSKProtoError: Error {
                 if let id = self.id {
                     builder.id = id
                 }
+
                 if let sdpMid = self.sdpMid {
                     builder.sdpMid = sdpMid
                 }
+
                 if let sdpMlineIndex = self.sdpMlineIndex {
                     builder.sdpMlineIndex = sdpMlineIndex
                 }
+
                 if let sdp = self.sdp {
                     builder.sdp = sdp
                 }
@@ -623,24 +558,40 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let id: UInt64
-    @objc public let sdpMid: String?
-    @objc public let sdpMlineIndex: UInt32?
-    @objc public let sdp: String?
+    fileprivate let proto: SignalServiceProtos_CallMessage.IceUpdate
 
-    @objc public init(id: UInt64,
-                      sdpMid: String?,
-                      sdpMlineIndex: UInt32?,
-                      sdp: String?) {
+    @objc public let id: UInt64
+
+    @objc public var sdpMid: String {
+        return proto.sdpMid
+    }
+    @objc public var hasSdpMid: Bool {
+        return proto.hasSdpMid
+    }
+
+    @objc public var sdpMlineIndex: UInt32 {
+        return proto.sdpMlineIndex
+    }
+    @objc public var hasSdpMlineIndex: Bool {
+        return proto.hasSdpMlineIndex
+    }
+
+    @objc public var sdp: String {
+        return proto.sdp
+    }
+    @objc public var hasSdp: Bool {
+        return proto.hasSdp
+    }
+
+    private init(proto: SignalServiceProtos_CallMessage.IceUpdate,
+                 id: UInt64) {
+        self.proto = proto
         self.id = id
-        self.sdpMid = sdpMid
-        self.sdpMlineIndex = sdpMlineIndex
-        self.sdp = sdp
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoCallMessageIceUpdate {
@@ -654,50 +605,13 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
-        var sdpMid: String? = nil
-        if proto.hasSdpMid {
-            sdpMid = proto.sdpMid
-        }
-
-        var sdpMlineIndex: UInt32? = nil
-        if proto.hasSdpMlineIndex {
-            sdpMlineIndex = proto.sdpMlineIndex
-        }
-
-        var sdp: String? = nil
-        if proto.hasSdp {
-            sdp = proto.sdp
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessageIceUpdate -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageIceUpdate -
 
-        let result = SSKProtoCallMessageIceUpdate(id: id,
-                                                  sdpMid: sdpMid,
-                                                  sdpMlineIndex: sdpMlineIndex,
-                                                  sdp: sdp)
+        let result = SSKProtoCallMessageIceUpdate(proto: proto,
+                                                  id: id)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_CallMessage.IceUpdate {
-        let proto = SignalServiceProtos_CallMessage.IceUpdate.with { (builder) in
-            builder.id = self.id
-
-            if let sdpMid = self.sdpMid {
-                builder.sdpMid = sdpMid
-            }
-
-            if let sdpMlineIndex = self.sdpMlineIndex {
-                builder.sdpMlineIndex = sdpMlineIndex
-            }
-
-            if let sdp = self.sdp {
-                builder.sdp = sdp
-            }
-        }
-
-        return proto
     }
 }
 
@@ -713,8 +627,8 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
+        @objc public func setId(_ _value: UInt64) {
+            id = _value
         }
 
         @objc public func build() throws -> SSKProtoCallMessageBusy {
@@ -729,15 +643,19 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_CallMessage.Busy
+
     @objc public let id: UInt64
 
-    @objc public init(id: UInt64) {
+    private init(proto: SignalServiceProtos_CallMessage.Busy,
+                 id: UInt64) {
+        self.proto = proto
         self.id = id
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoCallMessageBusy {
@@ -755,16 +673,9 @@ public enum SSKProtoError: Error {
 
         // MARK: - End Validation Logic for SSKProtoCallMessageBusy -
 
-        let result = SSKProtoCallMessageBusy(id: id)
+        let result = SSKProtoCallMessageBusy(proto: proto,
+                                             id: id)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Busy {
-        let proto = SignalServiceProtos_CallMessage.Busy.with { (builder) in
-            builder.id = self.id
-        }
-
-        return proto
     }
 }
 
@@ -780,8 +691,8 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
+        @objc public func setId(_ _value: UInt64) {
+            id = _value
         }
 
         @objc public func build() throws -> SSKProtoCallMessageHangup {
@@ -796,15 +707,19 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_CallMessage.Hangup
+
     @objc public let id: UInt64
 
-    @objc public init(id: UInt64) {
+    private init(proto: SignalServiceProtos_CallMessage.Hangup,
+                 id: UInt64) {
+        self.proto = proto
         self.id = id
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoCallMessageHangup {
@@ -822,16 +737,9 @@ public enum SSKProtoError: Error {
 
         // MARK: - End Validation Logic for SSKProtoCallMessageHangup -
 
-        let result = SSKProtoCallMessageHangup(id: id)
+        let result = SSKProtoCallMessageHangup(proto: proto,
+                                               id: id)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Hangup {
-        let proto = SignalServiceProtos_CallMessage.Hangup.with { (builder) in
-            builder.id = self.id
-        }
-
-        return proto
     }
 }
 
@@ -845,54 +753,61 @@ public enum SSKProtoError: Error {
 
         private var offer: SSKProtoCallMessageOffer?
         private var answer: SSKProtoCallMessageAnswer?
-        private var iceUpdate: [SSKProtoCallMessageIceUpdate]
+        private var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         private var hangup: SSKProtoCallMessageHangup?
         private var busy: SSKProtoCallMessageBusy?
         private var profileKey: Data?
 
         @objc public override init() {}
 
-        @objc public func setOffer(_ value: SSKProtoCallMessageOffer) {
-            offer = value
+        @objc public func setOffer(_ _value: SSKProtoCallMessageOffer) {
+            offer = _value
         }
 
-        @objc public func setAnswer(_ value: SSKProtoCallMessageAnswer) {
-            answer = value
+        @objc public func setAnswer(_ _value: SSKProtoCallMessageAnswer) {
+            answer = _value
         }
 
-        @objc public func addIceUpdate(_ value: SSKProtoCallMessageIceUpdate) {
-            iceUpdate.append(value)
+        @objc public func addIceUpdate(_ _value: SSKProtoCallMessageIceUpdate) {
+            iceUpdate.append(_value)
         }
 
-        @objc public func setHangup(_ value: SSKProtoCallMessageHangup) {
-            hangup = value
+        @objc public func setHangup(_ _value: SSKProtoCallMessageHangup) {
+            hangup = _value
         }
 
-        @objc public func setBusy(_ value: SSKProtoCallMessageBusy) {
-            busy = value
+        @objc public func setBusy(_ _value: SSKProtoCallMessageBusy) {
+            busy = _value
         }
 
-        @objc public func setProfileKey(_ value: Data) {
-            profileKey = value
+        @objc public func setProfileKey(_ _value: Data) {
+            profileKey = _value
         }
 
         @objc public func build() throws -> SSKProtoCallMessage {
             let proto = SignalServiceProtos_CallMessage.with { (builder) in
                 if let offer = self.offer {
-                    builder.offer = offer.asProtobuf
+                    builder.offer = offer.proto
                 }
+
                 if let answer = self.answer {
-                    builder.answer = answer.asProtobuf
+                    builder.answer = answer.proto
                 }
+
+                var iceUpdateWrapped: [SignalServiceProtos_CallMessage.IceUpdate] = []
                 for item in iceUpdate {
-                    builder.addIceUpdate(item.asProtobuf)
+                    iceUpdateWrapped.append(item.proto)
                 }
+                builder.iceUpdate = iceUpdateWrapped
+
                 if let hangup = self.hangup {
-                    builder.hangup = hangup.asProtobuf
+                    builder.hangup = hangup.proto
                 }
+
                 if let busy = self.busy {
-                    builder.busy = busy.asProtobuf
+                    builder.busy = busy.proto
                 }
+
                 if let profileKey = self.profileKey {
                     builder.profileKey = profileKey
                 }
@@ -903,30 +818,38 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_CallMessage
+
     @objc public let offer: SSKProtoCallMessageOffer?
     @objc public let answer: SSKProtoCallMessageAnswer?
     @objc public let iceUpdate: [SSKProtoCallMessageIceUpdate]
     @objc public let hangup: SSKProtoCallMessageHangup?
     @objc public let busy: SSKProtoCallMessageBusy?
-    @objc public let profileKey: Data?
 
-    @objc public init(offer: SSKProtoCallMessageOffer?,
-                      answer: SSKProtoCallMessageAnswer?,
-                      iceUpdate: [SSKProtoCallMessageIceUpdate],
-                      hangup: SSKProtoCallMessageHangup?,
-                      busy: SSKProtoCallMessageBusy?,
-                      profileKey: Data?) {
+    @objc public var profileKey: Data {
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
+    }
+
+    private init(proto: SignalServiceProtos_CallMessage,
+                 offer: SSKProtoCallMessageOffer?,
+                 answer: SSKProtoCallMessageAnswer?,
+                 iceUpdate: [SSKProtoCallMessageIceUpdate],
+                 hangup: SSKProtoCallMessageHangup?,
+                 busy: SSKProtoCallMessageBusy?) {
+        self.proto = proto
         self.offer = offer
         self.answer = answer
         self.iceUpdate = iceUpdate
         self.hangup = hangup
         self.busy = busy
-        self.profileKey = profileKey
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoCallMessage {
@@ -961,54 +884,17 @@ public enum SSKProtoError: Error {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
 
-        var profileKey: Data? = nil
-        if proto.hasProfileKey {
-            profileKey = proto.profileKey
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoCallMessage -
 
         // MARK: - End Validation Logic for SSKProtoCallMessage -
 
-        let result = SSKProtoCallMessage(offer: offer,
+        let result = SSKProtoCallMessage(proto: proto,
+                                         offer: offer,
                                          answer: answer,
                                          iceUpdate: iceUpdate,
                                          hangup: hangup,
-                                         busy: busy,
-                                         profileKey: profileKey)
+                                         busy: busy)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_CallMessage {
-        let proto = SignalServiceProtos_CallMessage.with { (builder) in
-            if let offer = self.offer {
-                builder.offer = offer.asProtobuf
-            }
-
-            if let answer = self.answer {
-                builder.answer = answer.asProtobuf
-            }
-
-            var iceUpdateUnwrapped = [SignalServiceProtos_CallMessage.IceUpdate]()
-            for item in iceUpdate {
-                iceUpdateUnwrapped.append(item.asProtobuf)
-            }
-            builder.iceUpdate = iceUpdateUnwrapped
-
-            if let hangup = self.hangup {
-                builder.hangup = hangup.asProtobuf
-            }
-
-            if let busy = self.busy {
-                builder.busy = busy.asProtobuf
-            }
-
-            if let profileKey = self.profileKey {
-                builder.profileKey = profileKey
-            }
-        }
-
-        return proto
     }
 }
 
@@ -1045,20 +931,20 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setContentType(_ value: String) {
-            contentType = value
+        @objc public func setContentType(_ _value: String) {
+            contentType = _value
         }
 
-        @objc public func setFileName(_ value: String) {
-            fileName = value
+        @objc public func setFileName(_ _value: String) {
+            fileName = _value
         }
 
-        @objc public func setThumbnail(_ value: SSKProtoAttachmentPointer) {
-            thumbnail = value
+        @objc public func setThumbnail(_ _value: SSKProtoAttachmentPointer) {
+            thumbnail = _value
         }
 
-        @objc public func setFlags(_ value: UInt32) {
-            flags = value
+        @objc public func setFlags(_ _value: UInt32) {
+            flags = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageQuoteQuotedAttachment {
@@ -1066,12 +952,15 @@ public enum SSKProtoError: Error {
                 if let contentType = self.contentType {
                     builder.contentType = contentType
                 }
+
                 if let fileName = self.fileName {
                     builder.fileName = fileName
                 }
+
                 if let thumbnail = self.thumbnail {
-                    builder.thumbnail = thumbnail.asProtobuf
+                    builder.thumbnail = thumbnail.proto
                 }
+
                 if let flags = self.flags {
                     builder.flags = flags
                 }
@@ -1082,24 +971,40 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let contentType: String?
-    @objc public let fileName: String?
-    @objc public let thumbnail: SSKProtoAttachmentPointer?
-    @objc public let flags: UInt32?
+    fileprivate let proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment
 
-    @objc public init(contentType: String?,
-                      fileName: String?,
-                      thumbnail: SSKProtoAttachmentPointer?,
-                      flags: UInt32?) {
-        self.contentType = contentType
-        self.fileName = fileName
+    @objc public let thumbnail: SSKProtoAttachmentPointer?
+
+    @objc public var contentType: String {
+        return proto.contentType
+    }
+    @objc public var hasContentType: Bool {
+        return proto.hasContentType
+    }
+
+    @objc public var fileName: String {
+        return proto.fileName
+    }
+    @objc public var hasFileName: Bool {
+        return proto.hasFileName
+    }
+
+    @objc public var flags: UInt32 {
+        return proto.flags
+    }
+    @objc public var hasFlags: Bool {
+        return proto.hasFlags
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment,
+                 thumbnail: SSKProtoAttachmentPointer?) {
+        self.proto = proto
         self.thumbnail = thumbnail
-        self.flags = flags
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
@@ -1108,57 +1013,18 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var contentType: String? = nil
-        if proto.hasContentType {
-            contentType = proto.contentType
-        }
-
-        var fileName: String? = nil
-        if proto.hasFileName {
-            fileName = proto.fileName
-        }
-
         var thumbnail: SSKProtoAttachmentPointer? = nil
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
-        }
-
-        var flags: UInt32? = nil
-        if proto.hasFlags {
-            flags = proto.flags
         }
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessageQuoteQuotedAttachment -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageQuoteQuotedAttachment -
 
-        let result = SSKProtoDataMessageQuoteQuotedAttachment(contentType: contentType,
-                                                              fileName: fileName,
-                                                              thumbnail: thumbnail,
-                                                              flags: flags)
+        let result = SSKProtoDataMessageQuoteQuotedAttachment(proto: proto,
+                                                              thumbnail: thumbnail)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Quote.QuotedAttachment {
-        let proto = SignalServiceProtos_DataMessage.Quote.QuotedAttachment.with { (builder) in
-            if let contentType = self.contentType {
-                builder.contentType = contentType
-            }
-
-            if let fileName = self.fileName {
-                builder.fileName = fileName
-            }
-
-            if let thumbnail = self.thumbnail {
-                builder.thumbnail = thumbnail.asProtobuf
-            }
-
-            if let flags = self.flags {
-                builder.flags = flags
-            }
-        }
-
-        return proto
     }
 }
 
@@ -1173,24 +1039,24 @@ public enum SSKProtoError: Error {
         private var id: UInt64?
         private var author: String?
         private var text: String?
-        private var attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
+        private var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
 
         @objc public override init() {}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
+        @objc public func setId(_ _value: UInt64) {
+            id = _value
         }
 
-        @objc public func setAuthor(_ value: String) {
-            author = value
+        @objc public func setAuthor(_ _value: String) {
+            author = _value
         }
 
-        @objc public func setText(_ value: String) {
-            text = value
+        @objc public func setText(_ _value: String) {
+            text = _value
         }
 
-        @objc public func addAttachments(_ value: SSKProtoDataMessageQuoteQuotedAttachment) {
-            attachments.append(value)
+        @objc public func addAttachments(_ _value: SSKProtoDataMessageQuoteQuotedAttachment) {
+            attachments.append(_value)
         }
 
         @objc public func build() throws -> SSKProtoDataMessageQuote {
@@ -1198,15 +1064,20 @@ public enum SSKProtoError: Error {
                 if let id = self.id {
                     builder.id = id
                 }
+
                 if let author = self.author {
                     builder.author = author
                 }
+
                 if let text = self.text {
                     builder.text = text
                 }
+
+                var attachmentsWrapped: [SignalServiceProtos_DataMessage.Quote.QuotedAttachment] = []
                 for item in attachments {
-                    builder.addAttachments(item.asProtobuf)
+                    attachmentsWrapped.append(item.proto)
                 }
+                builder.attachments = attachmentsWrapped
             }
 
             let wrapper = try SSKProtoDataMessageQuote.parseProto(proto)
@@ -1214,24 +1085,32 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_DataMessage.Quote
+
     @objc public let id: UInt64
-    @objc public let author: String?
-    @objc public let text: String?
+    @objc public let author: String
     @objc public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
 
-    @objc public init(id: UInt64,
-                      author: String?,
-                      text: String?,
-                      attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
+    @objc public var text: String {
+        return proto.text
+    }
+    @objc public var hasText: Bool {
+        return proto.hasText
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Quote,
+                 id: UInt64,
+                 author: String,
+                 attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
+        self.proto = proto
         self.id = id
         self.author = author
-        self.text = text
         self.attachments = attachments
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageQuote {
@@ -1250,11 +1129,6 @@ public enum SSKProtoError: Error {
         }
         let author = proto.author
 
-        var text: String? = nil
-        if proto.hasText {
-            text = proto.text
-        }
-
         var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
         for item in proto.attachments {
             let wrapped = try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(item)
@@ -1265,33 +1139,11 @@ public enum SSKProtoError: Error {
 
         // MARK: - End Validation Logic for SSKProtoDataMessageQuote -
 
-        let result = SSKProtoDataMessageQuote(id: id,
+        let result = SSKProtoDataMessageQuote(proto: proto,
+                                              id: id,
                                               author: author,
-                                              text: text,
                                               attachments: attachments)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Quote {
-        let proto = SignalServiceProtos_DataMessage.Quote.with { (builder) in
-            builder.id = self.id
-
-            if let author = self.author {
-                builder.author = author
-            }
-
-            if let text = self.text {
-                builder.text = text
-            }
-
-            var attachmentsUnwrapped = [SignalServiceProtos_DataMessage.Quote.QuotedAttachment]()
-            for item in attachments {
-                attachmentsUnwrapped.append(item.asProtobuf)
-            }
-            builder.attachments = attachmentsUnwrapped
-        }
-
-        return proto
     }
 }
 
@@ -1312,28 +1164,28 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setGivenName(_ value: String) {
-            givenName = value
+        @objc public func setGivenName(_ _value: String) {
+            givenName = _value
         }
 
-        @objc public func setFamilyName(_ value: String) {
-            familyName = value
+        @objc public func setFamilyName(_ _value: String) {
+            familyName = _value
         }
 
-        @objc public func setPrefix(_ value: String) {
-            prefix = value
+        @objc public func setPrefix(_ _value: String) {
+            prefix = _value
         }
 
-        @objc public func setSuffix(_ value: String) {
-            suffix = value
+        @objc public func setSuffix(_ _value: String) {
+            suffix = _value
         }
 
-        @objc public func setMiddleName(_ value: String) {
-            middleName = value
+        @objc public func setMiddleName(_ _value: String) {
+            middleName = _value
         }
 
-        @objc public func setDisplayName(_ value: String) {
-            displayName = value
+        @objc public func setDisplayName(_ _value: String) {
+            displayName = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactName {
@@ -1341,18 +1193,23 @@ public enum SSKProtoError: Error {
                 if let givenName = self.givenName {
                     builder.givenName = givenName
                 }
+
                 if let familyName = self.familyName {
                     builder.familyName = familyName
                 }
+
                 if let prefix = self.prefix {
                     builder.prefix = prefix
                 }
+
                 if let suffix = self.suffix {
                     builder.suffix = suffix
                 }
+
                 if let middleName = self.middleName {
                     builder.middleName = middleName
                 }
+
                 if let displayName = self.displayName {
                     builder.displayName = displayName
                 }
@@ -1363,30 +1220,57 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let givenName: String?
-    @objc public let familyName: String?
-    @objc public let prefix: String?
-    @objc public let suffix: String?
-    @objc public let middleName: String?
-    @objc public let displayName: String?
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Name
 
-    @objc public init(givenName: String?,
-                      familyName: String?,
-                      prefix: String?,
-                      suffix: String?,
-                      middleName: String?,
-                      displayName: String?) {
-        self.givenName = givenName
-        self.familyName = familyName
-        self.prefix = prefix
-        self.suffix = suffix
-        self.middleName = middleName
-        self.displayName = displayName
+    @objc public var givenName: String {
+        return proto.givenName
+    }
+    @objc public var hasGivenName: Bool {
+        return proto.hasGivenName
+    }
+
+    @objc public var familyName: String {
+        return proto.familyName
+    }
+    @objc public var hasFamilyName: Bool {
+        return proto.hasFamilyName
+    }
+
+    @objc public var prefix: String {
+        return proto.prefix
+    }
+    @objc public var hasPrefix: Bool {
+        return proto.hasPrefix
+    }
+
+    @objc public var suffix: String {
+        return proto.suffix
+    }
+    @objc public var hasSuffix: Bool {
+        return proto.hasSuffix
+    }
+
+    @objc public var middleName: String {
+        return proto.middleName
+    }
+    @objc public var hasMiddleName: Bool {
+        return proto.hasMiddleName
+    }
+
+    @objc public var displayName: String {
+        return proto.displayName
+    }
+    @objc public var hasDisplayName: Bool {
+        return proto.hasDisplayName
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact.Name) {
+        self.proto = proto
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageContactName {
@@ -1395,77 +1279,12 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Name) throws -> SSKProtoDataMessageContactName {
-        var givenName: String? = nil
-        if proto.hasGivenName {
-            givenName = proto.givenName
-        }
-
-        var familyName: String? = nil
-        if proto.hasFamilyName {
-            familyName = proto.familyName
-        }
-
-        var prefix: String? = nil
-        if proto.hasPrefix {
-            prefix = proto.prefix
-        }
-
-        var suffix: String? = nil
-        if proto.hasSuffix {
-            suffix = proto.suffix
-        }
-
-        var middleName: String? = nil
-        if proto.hasMiddleName {
-            middleName = proto.middleName
-        }
-
-        var displayName: String? = nil
-        if proto.hasDisplayName {
-            displayName = proto.displayName
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactName -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactName -
 
-        let result = SSKProtoDataMessageContactName(givenName: givenName,
-                                                    familyName: familyName,
-                                                    prefix: prefix,
-                                                    suffix: suffix,
-                                                    middleName: middleName,
-                                                    displayName: displayName)
+        let result = SSKProtoDataMessageContactName(proto: proto)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Name {
-        let proto = SignalServiceProtos_DataMessage.Contact.Name.with { (builder) in
-            if let givenName = self.givenName {
-                builder.givenName = givenName
-            }
-
-            if let familyName = self.familyName {
-                builder.familyName = familyName
-            }
-
-            if let prefix = self.prefix {
-                builder.prefix = prefix
-            }
-
-            if let suffix = self.suffix {
-                builder.suffix = suffix
-            }
-
-            if let middleName = self.middleName {
-                builder.middleName = middleName
-            }
-
-            if let displayName = self.displayName {
-                builder.displayName = displayName
-            }
-        }
-
-        return proto
     }
 }
 
@@ -1510,16 +1329,16 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setValue(_ value: String) {
-            value = value
+        @objc public func setValue(_ _value: String) {
+            value = _value
         }
 
-        @objc public func setType(_ value: SSKProtoDataMessageContactPhoneType) {
-            type = value
+        @objc public func setType(_ _value: SSKProtoDataMessageContactPhoneType) {
+            type = _value
         }
 
-        @objc public func setLabel(_ value: String) {
-            label = value
+        @objc public func setLabel(_ _value: String) {
+            label = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactPhone {
@@ -1527,9 +1346,11 @@ public enum SSKProtoError: Error {
                 if let value = self.value {
                     builder.value = value
                 }
+
                 if let type = self.type {
                     builder.type = SSKProtoDataMessageContactPhoneTypeUnwrap(type)
                 }
+
                 if let label = self.label {
                     builder.label = label
                 }
@@ -1540,21 +1361,33 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let value: String?
-    @objc public let type: SSKProtoDataMessageContactPhoneType
-    @objc public let label: String?
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Phone
 
-    @objc public init(value: String?,
-                      type: SSKProtoDataMessageContactPhoneType,
-                      label: String?) {
+    @objc public let value: String
+
+    @objc public var type: SSKProtoDataMessageContactPhoneType {
+        return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc public var label: String {
+        return proto.label
+    }
+    @objc public var hasLabel: Bool {
+        return proto.hasLabel
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact.Phone,
+                 value: String) {
+        self.proto = proto
         self.value = value
-        self.type = type
-        self.label = label
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageContactPhone {
@@ -1568,44 +1401,13 @@ public enum SSKProtoError: Error {
         }
         let value = proto.value
 
-        var type: SSKProtoDataMessageContactPhoneType = .home
-        if proto.hasType {
-            type = SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
-        }
-
-        var label: String? = nil
-        if proto.hasLabel {
-            label = proto.label
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactPhone -
-
-        guard proto.hasValue else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: value")
-        }
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactPhone -
 
-        let result = SSKProtoDataMessageContactPhone(value: value,
-                                                     type: type,
-                                                     label: label)
+        let result = SSKProtoDataMessageContactPhone(proto: proto,
+                                                     value: value)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Phone {
-        let proto = SignalServiceProtos_DataMessage.Contact.Phone.with { (builder) in
-            if let value = self.value {
-                builder.value = value
-            }
-
-            builder.type = SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeUnwrap(self.type)
-
-            if let label = self.label {
-                builder.label = label
-            }
-        }
-
-        return proto
     }
 }
 
@@ -1650,16 +1452,16 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setValue(_ value: String) {
-            value = value
+        @objc public func setValue(_ _value: String) {
+            value = _value
         }
 
-        @objc public func setType(_ value: SSKProtoDataMessageContactEmailType) {
-            type = value
+        @objc public func setType(_ _value: SSKProtoDataMessageContactEmailType) {
+            type = _value
         }
 
-        @objc public func setLabel(_ value: String) {
-            label = value
+        @objc public func setLabel(_ _value: String) {
+            label = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactEmail {
@@ -1667,9 +1469,11 @@ public enum SSKProtoError: Error {
                 if let value = self.value {
                     builder.value = value
                 }
+
                 if let type = self.type {
                     builder.type = SSKProtoDataMessageContactEmailTypeUnwrap(type)
                 }
+
                 if let label = self.label {
                     builder.label = label
                 }
@@ -1680,21 +1484,33 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let value: String?
-    @objc public let type: SSKProtoDataMessageContactEmailType
-    @objc public let label: String?
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Email
 
-    @objc public init(value: String?,
-                      type: SSKProtoDataMessageContactEmailType,
-                      label: String?) {
+    @objc public let value: String
+
+    @objc public var type: SSKProtoDataMessageContactEmailType {
+        return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc public var label: String {
+        return proto.label
+    }
+    @objc public var hasLabel: Bool {
+        return proto.hasLabel
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact.Email,
+                 value: String) {
+        self.proto = proto
         self.value = value
-        self.type = type
-        self.label = label
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageContactEmail {
@@ -1708,44 +1524,13 @@ public enum SSKProtoError: Error {
         }
         let value = proto.value
 
-        var type: SSKProtoDataMessageContactEmailType = .home
-        if proto.hasType {
-            type = SSKProtoDataMessageContactEmailTypeWrap(proto.type)
-        }
-
-        var label: String? = nil
-        if proto.hasLabel {
-            label = proto.label
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactEmail -
-
-        guard proto.hasValue else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: value")
-        }
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactEmail -
 
-        let result = SSKProtoDataMessageContactEmail(value: value,
-                                                     type: type,
-                                                     label: label)
+        let result = SSKProtoDataMessageContactEmail(proto: proto,
+                                                     value: value)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Email {
-        let proto = SignalServiceProtos_DataMessage.Contact.Email.with { (builder) in
-            if let value = self.value {
-                builder.value = value
-            }
-
-            builder.type = SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeUnwrap(self.type)
-
-            if let label = self.label {
-                builder.label = label
-            }
-        }
-
-        return proto
     }
 }
 
@@ -1793,40 +1578,40 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setType(_ value: SSKProtoDataMessageContactPostalAddressType) {
-            type = value
+        @objc public func setType(_ _value: SSKProtoDataMessageContactPostalAddressType) {
+            type = _value
         }
 
-        @objc public func setLabel(_ value: String) {
-            label = value
+        @objc public func setLabel(_ _value: String) {
+            label = _value
         }
 
-        @objc public func setStreet(_ value: String) {
-            street = value
+        @objc public func setStreet(_ _value: String) {
+            street = _value
         }
 
-        @objc public func setPobox(_ value: String) {
-            pobox = value
+        @objc public func setPobox(_ _value: String) {
+            pobox = _value
         }
 
-        @objc public func setNeighborhood(_ value: String) {
-            neighborhood = value
+        @objc public func setNeighborhood(_ _value: String) {
+            neighborhood = _value
         }
 
-        @objc public func setCity(_ value: String) {
-            city = value
+        @objc public func setCity(_ _value: String) {
+            city = _value
         }
 
-        @objc public func setRegion(_ value: String) {
-            region = value
+        @objc public func setRegion(_ _value: String) {
+            region = _value
         }
 
-        @objc public func setPostcode(_ value: String) {
-            postcode = value
+        @objc public func setPostcode(_ _value: String) {
+            postcode = _value
         }
 
-        @objc public func setCountry(_ value: String) {
-            country = value
+        @objc public func setCountry(_ _value: String) {
+            country = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactPostalAddress {
@@ -1834,27 +1619,35 @@ public enum SSKProtoError: Error {
                 if let type = self.type {
                     builder.type = SSKProtoDataMessageContactPostalAddressTypeUnwrap(type)
                 }
+
                 if let label = self.label {
                     builder.label = label
                 }
+
                 if let street = self.street {
                     builder.street = street
                 }
+
                 if let pobox = self.pobox {
                     builder.pobox = pobox
                 }
+
                 if let neighborhood = self.neighborhood {
                     builder.neighborhood = neighborhood
                 }
+
                 if let city = self.city {
                     builder.city = city
                 }
+
                 if let region = self.region {
                     builder.region = region
                 }
+
                 if let postcode = self.postcode {
                     builder.postcode = postcode
                 }
+
                 if let country = self.country {
                     builder.country = country
                 }
@@ -1865,39 +1658,78 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let type: SSKProtoDataMessageContactPostalAddressType
-    @objc public let label: String?
-    @objc public let street: String?
-    @objc public let pobox: String?
-    @objc public let neighborhood: String?
-    @objc public let city: String?
-    @objc public let region: String?
-    @objc public let postcode: String?
-    @objc public let country: String?
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact.PostalAddress
 
-    @objc public init(type: SSKProtoDataMessageContactPostalAddressType,
-                      label: String?,
-                      street: String?,
-                      pobox: String?,
-                      neighborhood: String?,
-                      city: String?,
-                      region: String?,
-                      postcode: String?,
-                      country: String?) {
-        self.type = type
-        self.label = label
-        self.street = street
-        self.pobox = pobox
-        self.neighborhood = neighborhood
-        self.city = city
-        self.region = region
-        self.postcode = postcode
-        self.country = country
+    @objc public var type: SSKProtoDataMessageContactPostalAddressType {
+        return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc public var label: String {
+        return proto.label
+    }
+    @objc public var hasLabel: Bool {
+        return proto.hasLabel
+    }
+
+    @objc public var street: String {
+        return proto.street
+    }
+    @objc public var hasStreet: Bool {
+        return proto.hasStreet
+    }
+
+    @objc public var pobox: String {
+        return proto.pobox
+    }
+    @objc public var hasPobox: Bool {
+        return proto.hasPobox
+    }
+
+    @objc public var neighborhood: String {
+        return proto.neighborhood
+    }
+    @objc public var hasNeighborhood: Bool {
+        return proto.hasNeighborhood
+    }
+
+    @objc public var city: String {
+        return proto.city
+    }
+    @objc public var hasCity: Bool {
+        return proto.hasCity
+    }
+
+    @objc public var region: String {
+        return proto.region
+    }
+    @objc public var hasRegion: Bool {
+        return proto.hasRegion
+    }
+
+    @objc public var postcode: String {
+        return proto.postcode
+    }
+    @objc public var hasPostcode: Bool {
+        return proto.hasPostcode
+    }
+
+    @objc public var country: String {
+        return proto.country
+    }
+    @objc public var hasCountry: Bool {
+        return proto.hasCountry
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact.PostalAddress) {
+        self.proto = proto
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageContactPostalAddress {
@@ -1906,105 +1738,12 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.PostalAddress) throws -> SSKProtoDataMessageContactPostalAddress {
-        var type: SSKProtoDataMessageContactPostalAddressType = .home
-        if proto.hasType {
-            type = SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
-        }
-
-        var label: String? = nil
-        if proto.hasLabel {
-            label = proto.label
-        }
-
-        var street: String? = nil
-        if proto.hasStreet {
-            street = proto.street
-        }
-
-        var pobox: String? = nil
-        if proto.hasPobox {
-            pobox = proto.pobox
-        }
-
-        var neighborhood: String? = nil
-        if proto.hasNeighborhood {
-            neighborhood = proto.neighborhood
-        }
-
-        var city: String? = nil
-        if proto.hasCity {
-            city = proto.city
-        }
-
-        var region: String? = nil
-        if proto.hasRegion {
-            region = proto.region
-        }
-
-        var postcode: String? = nil
-        if proto.hasPostcode {
-            postcode = proto.postcode
-        }
-
-        var country: String? = nil
-        if proto.hasCountry {
-            country = proto.country
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactPostalAddress -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactPostalAddress -
 
-        let result = SSKProtoDataMessageContactPostalAddress(type: type,
-                                                             label: label,
-                                                             street: street,
-                                                             pobox: pobox,
-                                                             neighborhood: neighborhood,
-                                                             city: city,
-                                                             region: region,
-                                                             postcode: postcode,
-                                                             country: country)
+        let result = SSKProtoDataMessageContactPostalAddress(proto: proto)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.PostalAddress {
-        let proto = SignalServiceProtos_DataMessage.Contact.PostalAddress.with { (builder) in
-            builder.type = SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeUnwrap(self.type)
-
-            if let label = self.label {
-                builder.label = label
-            }
-
-            if let street = self.street {
-                builder.street = street
-            }
-
-            if let pobox = self.pobox {
-                builder.pobox = pobox
-            }
-
-            if let neighborhood = self.neighborhood {
-                builder.neighborhood = neighborhood
-            }
-
-            if let city = self.city {
-                builder.city = city
-            }
-
-            if let region = self.region {
-                builder.region = region
-            }
-
-            if let postcode = self.postcode {
-                builder.postcode = postcode
-            }
-
-            if let country = self.country {
-                builder.country = country
-            }
-        }
-
-        return proto
     }
 }
 
@@ -2021,19 +1760,20 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setAvatar(_ value: SSKProtoAttachmentPointer) {
-            avatar = value
+        @objc public func setAvatar(_ _value: SSKProtoAttachmentPointer) {
+            avatar = _value
         }
 
-        @objc public func setIsProfile(_ value: Bool) {
-            isProfile = value
+        @objc public func setIsProfile(_ _value: Bool) {
+            isProfile = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactAvatar {
             let proto = SignalServiceProtos_DataMessage.Contact.Avatar.with { (builder) in
                 if let avatar = self.avatar {
-                    builder.avatar = avatar.asProtobuf
+                    builder.avatar = avatar.proto
                 }
+
                 if let isProfile = self.isProfile {
                     builder.isProfile = isProfile
                 }
@@ -2044,18 +1784,26 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let avatar: SSKProtoAttachmentPointer?
-    @objc public let isProfile: Bool?
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Avatar
 
-    @objc public init(avatar: SSKProtoAttachmentPointer?,
-                      isProfile: Bool?) {
+    @objc public let avatar: SSKProtoAttachmentPointer?
+
+    @objc public var isProfile: Bool {
+        return proto.isProfile
+    }
+    @objc public var hasIsProfile: Bool {
+        return proto.hasIsProfile
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact.Avatar,
+                 avatar: SSKProtoAttachmentPointer?) {
+        self.proto = proto
         self.avatar = avatar
-        self.isProfile = isProfile
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageContactAvatar {
@@ -2069,32 +1817,13 @@ public enum SSKProtoError: Error {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
 
-        var isProfile: Bool? = nil
-        if proto.hasIsProfile {
-            isProfile = proto.isProfile
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactAvatar -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactAvatar -
 
-        let result = SSKProtoDataMessageContactAvatar(avatar: avatar,
-                                                      isProfile: isProfile)
+        let result = SSKProtoDataMessageContactAvatar(proto: proto,
+                                                      avatar: avatar)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Avatar {
-        let proto = SignalServiceProtos_DataMessage.Contact.Avatar.with { (builder) in
-            if let avatar = self.avatar {
-                builder.avatar = avatar.asProtobuf
-            }
-
-            if let isProfile = self.isProfile {
-                builder.isProfile = isProfile
-            }
-        }
-
-        return proto
     }
 }
 
@@ -2107,55 +1836,66 @@ public enum SSKProtoError: Error {
     @objc public class SSKProtoDataMessageContactBuilder: NSObject {
 
         private var name: SSKProtoDataMessageContactName?
-        private var number: [SSKProtoDataMessageContactPhone]
-        private var email: [SSKProtoDataMessageContactEmail]
-        private var address: [SSKProtoDataMessageContactPostalAddress]
+        private var number: [SSKProtoDataMessageContactPhone] = []
+        private var email: [SSKProtoDataMessageContactEmail] = []
+        private var address: [SSKProtoDataMessageContactPostalAddress] = []
         private var avatar: SSKProtoDataMessageContactAvatar?
         private var organization: String?
 
         @objc public override init() {}
 
-        @objc public func setName(_ value: SSKProtoDataMessageContactName) {
-            name = value
+        @objc public func setName(_ _value: SSKProtoDataMessageContactName) {
+            name = _value
         }
 
-        @objc public func addNumber(_ value: SSKProtoDataMessageContactPhone) {
-            number.append(value)
+        @objc public func addNumber(_ _value: SSKProtoDataMessageContactPhone) {
+            number.append(_value)
         }
 
-        @objc public func addEmail(_ value: SSKProtoDataMessageContactEmail) {
-            email.append(value)
+        @objc public func addEmail(_ _value: SSKProtoDataMessageContactEmail) {
+            email.append(_value)
         }
 
-        @objc public func addAddress(_ value: SSKProtoDataMessageContactPostalAddress) {
-            address.append(value)
+        @objc public func addAddress(_ _value: SSKProtoDataMessageContactPostalAddress) {
+            address.append(_value)
         }
 
-        @objc public func setAvatar(_ value: SSKProtoDataMessageContactAvatar) {
-            avatar = value
+        @objc public func setAvatar(_ _value: SSKProtoDataMessageContactAvatar) {
+            avatar = _value
         }
 
-        @objc public func setOrganization(_ value: String) {
-            organization = value
+        @objc public func setOrganization(_ _value: String) {
+            organization = _value
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContact {
             let proto = SignalServiceProtos_DataMessage.Contact.with { (builder) in
                 if let name = self.name {
-                    builder.name = name.asProtobuf
+                    builder.name = name.proto
                 }
+
+                var numberWrapped: [SignalServiceProtos_DataMessage.Contact.Phone] = []
                 for item in number {
-                    builder.addNumber(item.asProtobuf)
+                    numberWrapped.append(item.proto)
                 }
+                builder.number = numberWrapped
+
+                var emailWrapped: [SignalServiceProtos_DataMessage.Contact.Email] = []
                 for item in email {
-                    builder.addEmail(item.asProtobuf)
+                    emailWrapped.append(item.proto)
                 }
+                builder.email = emailWrapped
+
+                var addressWrapped: [SignalServiceProtos_DataMessage.Contact.PostalAddress] = []
                 for item in address {
-                    builder.addAddress(item.asProtobuf)
+                    addressWrapped.append(item.proto)
                 }
+                builder.address = addressWrapped
+
                 if let avatar = self.avatar {
-                    builder.avatar = avatar.asProtobuf
+                    builder.avatar = avatar.proto
                 }
+
                 if let organization = self.organization {
                     builder.organization = organization
                 }
@@ -2166,30 +1906,38 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_DataMessage.Contact
+
     @objc public let name: SSKProtoDataMessageContactName?
     @objc public let number: [SSKProtoDataMessageContactPhone]
     @objc public let email: [SSKProtoDataMessageContactEmail]
     @objc public let address: [SSKProtoDataMessageContactPostalAddress]
     @objc public let avatar: SSKProtoDataMessageContactAvatar?
-    @objc public let organization: String?
 
-    @objc public init(name: SSKProtoDataMessageContactName?,
-                      number: [SSKProtoDataMessageContactPhone],
-                      email: [SSKProtoDataMessageContactEmail],
-                      address: [SSKProtoDataMessageContactPostalAddress],
-                      avatar: SSKProtoDataMessageContactAvatar?,
-                      organization: String?) {
+    @objc public var organization: String {
+        return proto.organization
+    }
+    @objc public var hasOrganization: Bool {
+        return proto.hasOrganization
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.Contact,
+                 name: SSKProtoDataMessageContactName?,
+                 number: [SSKProtoDataMessageContactPhone],
+                 email: [SSKProtoDataMessageContactEmail],
+                 address: [SSKProtoDataMessageContactPostalAddress],
+                 avatar: SSKProtoDataMessageContactAvatar?) {
+        self.proto = proto
         self.name = name
         self.number = number
         self.email = email
         self.address = address
         self.avatar = avatar
-        self.organization = organization
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageContact {
@@ -2226,58 +1974,17 @@ public enum SSKProtoError: Error {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
 
-        var organization: String? = nil
-        if proto.hasOrganization {
-            organization = proto.organization
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContact -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContact -
 
-        let result = SSKProtoDataMessageContact(name: name,
+        let result = SSKProtoDataMessageContact(proto: proto,
+                                                name: name,
                                                 number: number,
                                                 email: email,
                                                 address: address,
-                                                avatar: avatar,
-                                                organization: organization)
+                                                avatar: avatar)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact {
-        let proto = SignalServiceProtos_DataMessage.Contact.with { (builder) in
-            if let name = self.name {
-                builder.name = name.asProtobuf
-            }
-
-            var numberUnwrapped = [SignalServiceProtos_DataMessage.Contact.Phone]()
-            for item in number {
-                numberUnwrapped.append(item.asProtobuf)
-            }
-            builder.number = numberUnwrapped
-
-            var emailUnwrapped = [SignalServiceProtos_DataMessage.Contact.Email]()
-            for item in email {
-                emailUnwrapped.append(item.asProtobuf)
-            }
-            builder.email = emailUnwrapped
-
-            var addressUnwrapped = [SignalServiceProtos_DataMessage.Contact.PostalAddress]()
-            for item in address {
-                addressUnwrapped.append(item.asProtobuf)
-            }
-            builder.address = addressUnwrapped
-
-            if let avatar = self.avatar {
-                builder.avatar = avatar.asProtobuf
-            }
-
-            if let organization = self.organization {
-                builder.organization = organization
-            }
-        }
-
-        return proto
     }
 }
 
@@ -2314,51 +2021,51 @@ public enum SSKProtoError: Error {
     @objc public class SSKProtoDataMessageBuilder: NSObject {
 
         private var body: String?
-        private var attachments: [SSKProtoAttachmentPointer]
+        private var attachments: [SSKProtoAttachmentPointer] = []
         private var group: SSKProtoGroupContext?
         private var flags: UInt32?
         private var expireTimer: UInt32?
         private var profileKey: Data?
         private var timestamp: UInt64?
         private var quote: SSKProtoDataMessageQuote?
-        private var contact: [SSKProtoDataMessageContact]
+        private var contact: [SSKProtoDataMessageContact] = []
 
         @objc public override init() {}
 
-        @objc public func setBody(_ value: String) {
-            body = value
+        @objc public func setBody(_ _value: String) {
+            body = _value
         }
 
-        @objc public func addAttachments(_ value: SSKProtoAttachmentPointer) {
-            attachments.append(value)
+        @objc public func addAttachments(_ _value: SSKProtoAttachmentPointer) {
+            attachments.append(_value)
         }
 
-        @objc public func setGroup(_ value: SSKProtoGroupContext) {
-            group = value
+        @objc public func setGroup(_ _value: SSKProtoGroupContext) {
+            group = _value
         }
 
-        @objc public func setFlags(_ value: UInt32) {
-            flags = value
+        @objc public func setFlags(_ _value: UInt32) {
+            flags = _value
         }
 
-        @objc public func setExpireTimer(_ value: UInt32) {
-            expireTimer = value
+        @objc public func setExpireTimer(_ _value: UInt32) {
+            expireTimer = _value
         }
 
-        @objc public func setProfileKey(_ value: Data) {
-            profileKey = value
+        @objc public func setProfileKey(_ _value: Data) {
+            profileKey = _value
         }
 
-        @objc public func setTimestamp(_ value: UInt64) {
-            timestamp = value
+        @objc public func setTimestamp(_ _value: UInt64) {
+            timestamp = _value
         }
 
-        @objc public func setQuote(_ value: SSKProtoDataMessageQuote) {
-            quote = value
+        @objc public func setQuote(_ _value: SSKProtoDataMessageQuote) {
+            quote = _value
         }
 
-        @objc public func addContact(_ value: SSKProtoDataMessageContact) {
-            contact.append(value)
+        @objc public func addContact(_ _value: SSKProtoDataMessageContact) {
+            contact.append(_value)
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -2366,30 +2073,42 @@ public enum SSKProtoError: Error {
                 if let body = self.body {
                     builder.body = body
                 }
+
+                var attachmentsWrapped: [SignalServiceProtos_AttachmentPointer] = []
                 for item in attachments {
-                    builder.addAttachments(item.asProtobuf)
+                    attachmentsWrapped.append(item.proto)
                 }
+                builder.attachments = attachmentsWrapped
+
                 if let group = self.group {
-                    builder.group = group.asProtobuf
+                    builder.group = group.proto
                 }
+
                 if let flags = self.flags {
                     builder.flags = flags
                 }
+
                 if let expireTimer = self.expireTimer {
                     builder.expireTimer = expireTimer
                 }
+
                 if let profileKey = self.profileKey {
                     builder.profileKey = profileKey
                 }
+
                 if let timestamp = self.timestamp {
                     builder.timestamp = timestamp
                 }
+
                 if let quote = self.quote {
-                    builder.quote = quote.asProtobuf
+                    builder.quote = quote.proto
                 }
+
+                var contactWrapped: [SignalServiceProtos_DataMessage.Contact] = []
                 for item in contact {
-                    builder.addContact(item.asProtobuf)
+                    contactWrapped.append(item.proto)
                 }
+                builder.contact = contactWrapped
             }
 
             let wrapper = try SSKProtoDataMessage.parseProto(proto)
@@ -2397,39 +2116,63 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let body: String?
+    fileprivate let proto: SignalServiceProtos_DataMessage
+
     @objc public let attachments: [SSKProtoAttachmentPointer]
     @objc public let group: SSKProtoGroupContext?
-    @objc public let flags: UInt32?
-    @objc public let expireTimer: UInt32?
-    @objc public let profileKey: Data?
-    @objc public let timestamp: UInt64?
     @objc public let quote: SSKProtoDataMessageQuote?
     @objc public let contact: [SSKProtoDataMessageContact]
 
-    @objc public init(body: String?,
-                      attachments: [SSKProtoAttachmentPointer],
-                      group: SSKProtoGroupContext?,
-                      flags: UInt32?,
-                      expireTimer: UInt32?,
-                      profileKey: Data?,
-                      timestamp: UInt64?,
-                      quote: SSKProtoDataMessageQuote?,
-                      contact: [SSKProtoDataMessageContact]) {
-        self.body = body
+    @objc public var body: String {
+        return proto.body
+    }
+    @objc public var hasBody: Bool {
+        return proto.hasBody
+    }
+
+    @objc public var flags: UInt32 {
+        return proto.flags
+    }
+    @objc public var hasFlags: Bool {
+        return proto.hasFlags
+    }
+
+    @objc public var expireTimer: UInt32 {
+        return proto.expireTimer
+    }
+    @objc public var hasExpireTimer: Bool {
+        return proto.hasExpireTimer
+    }
+
+    @objc public var profileKey: Data {
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
+    }
+
+    @objc public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    @objc public var hasTimestamp: Bool {
+        return proto.hasTimestamp
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage,
+                 attachments: [SSKProtoAttachmentPointer],
+                 group: SSKProtoGroupContext?,
+                 quote: SSKProtoDataMessageQuote?,
+                 contact: [SSKProtoDataMessageContact]) {
+        self.proto = proto
         self.attachments = attachments
         self.group = group
-        self.flags = flags
-        self.expireTimer = expireTimer
-        self.profileKey = profileKey
-        self.timestamp = timestamp
         self.quote = quote
         self.contact = contact
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessage {
@@ -2438,11 +2181,6 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage) throws -> SSKProtoDataMessage {
-        var body: String? = nil
-        if proto.hasBody {
-            body = proto.body
-        }
-
         var attachments: [SSKProtoAttachmentPointer] = []
         for item in proto.attachments {
             let wrapped = try SSKProtoAttachmentPointer.parseProto(item)
@@ -2452,26 +2190,6 @@ public enum SSKProtoError: Error {
         var group: SSKProtoGroupContext? = nil
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
-        }
-
-        var flags: UInt32? = nil
-        if proto.hasFlags {
-            flags = proto.flags
-        }
-
-        var expireTimer: UInt32? = nil
-        if proto.hasExpireTimer {
-            expireTimer = proto.expireTimer
-        }
-
-        var profileKey: Data? = nil
-        if proto.hasProfileKey {
-            profileKey = proto.profileKey
-        }
-
-        var timestamp: UInt64? = nil
-        if proto.hasTimestamp {
-            timestamp = proto.timestamp
         }
 
         var quote: SSKProtoDataMessageQuote? = nil
@@ -2489,62 +2207,12 @@ public enum SSKProtoError: Error {
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
 
-        let result = SSKProtoDataMessage(body: body,
+        let result = SSKProtoDataMessage(proto: proto,
                                          attachments: attachments,
                                          group: group,
-                                         flags: flags,
-                                         expireTimer: expireTimer,
-                                         profileKey: profileKey,
-                                         timestamp: timestamp,
                                          quote: quote,
                                          contact: contact)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_DataMessage {
-        let proto = SignalServiceProtos_DataMessage.with { (builder) in
-            if let body = self.body {
-                builder.body = body
-            }
-
-            var attachmentsUnwrapped = [SignalServiceProtos_AttachmentPointer]()
-            for item in attachments {
-                attachmentsUnwrapped.append(item.asProtobuf)
-            }
-            builder.attachments = attachmentsUnwrapped
-
-            if let group = self.group {
-                builder.group = group.asProtobuf
-            }
-
-            if let flags = self.flags {
-                builder.flags = flags
-            }
-
-            if let expireTimer = self.expireTimer {
-                builder.expireTimer = expireTimer
-            }
-
-            if let profileKey = self.profileKey {
-                builder.profileKey = profileKey
-            }
-
-            if let timestamp = self.timestamp {
-                builder.timestamp = timestamp
-            }
-
-            if let quote = self.quote {
-                builder.quote = quote.asProtobuf
-            }
-
-            var contactUnwrapped = [SignalServiceProtos_DataMessage.Contact]()
-            for item in contact {
-                contactUnwrapped.append(item.asProtobuf)
-            }
-            builder.contact = contactUnwrapped
-        }
-
-        return proto
     }
 }
 
@@ -2560,8 +2228,8 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setPadding(_ value: Data) {
-            padding = value
+        @objc public func setPadding(_ _value: Data) {
+            padding = _value
         }
 
         @objc public func build() throws -> SSKProtoNullMessage {
@@ -2576,15 +2244,22 @@ public enum SSKProtoError: Error {
         }
     }
 
-    @objc public let padding: Data?
+    fileprivate let proto: SignalServiceProtos_NullMessage
 
-    @objc public init(padding: Data?) {
-        self.padding = padding
+    @objc public var padding: Data {
+        return proto.padding
+    }
+    @objc public var hasPadding: Bool {
+        return proto.hasPadding
+    }
+
+    private init(proto: SignalServiceProtos_NullMessage) {
+        self.proto = proto
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoNullMessage {
@@ -2593,27 +2268,12 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_NullMessage) throws -> SSKProtoNullMessage {
-        var padding: Data? = nil
-        if proto.hasPadding {
-            padding = proto.padding
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoNullMessage -
 
         // MARK: - End Validation Logic for SSKProtoNullMessage -
 
-        let result = SSKProtoNullMessage(padding: padding)
+        let result = SSKProtoNullMessage(proto: proto)
         return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_NullMessage {
-        let proto = SignalServiceProtos_NullMessage.with { (builder) in
-            if let padding = self.padding {
-                builder.padding = padding
-            }
-        }
-
-        return proto
     }
 }
 
@@ -2647,16 +2307,16 @@ public enum SSKProtoError: Error {
     @objc public class SSKProtoReceiptMessageBuilder: NSObject {
 
         private var type: SSKProtoReceiptMessageType?
-        private var timestamp: [UInt64]
+        private var timestamp: [UInt64] = []
 
         @objc public override init() {}
 
-        @objc public func setType(_ value: SSKProtoReceiptMessageType) {
-            type = value
+        @objc public func setType(_ _value: SSKProtoReceiptMessageType) {
+            type = _value
         }
 
-        @objc public func addTimestamp(_ value: UInt64) {
-            timestamp.append(value)
+        @objc public func addTimestamp(_ _value: UInt64) {
+            timestamp.append(_value)
         }
 
         @objc public func build() throws -> SSKProtoReceiptMessage {
@@ -2664,9 +2324,12 @@ public enum SSKProtoError: Error {
                 if let type = self.type {
                     builder.type = SSKProtoReceiptMessageTypeUnwrap(type)
                 }
+
+                var timestampWrapped: [UInt64] = []
                 for item in timestamp {
-                    builder.addTimestamp(item)
+                    timestampWrapped.append(item)
                 }
+                builder.timestamp = timestampWrapped
             }
 
             let wrapper = try SSKProtoReceiptMessage.parseProto(proto)
@@ -2674,199 +2337,102 @@ public enum SSKProtoError: Error {
         }
     }
 
+    fileprivate let proto: SignalServiceProtos_ReceiptMessage
+
     @objc public let type: SSKProtoReceiptMessageType
-    @objc public let timestamp: [UInt64]
 
-    @objc public init(type: SSKProtoReceiptMessageType,
-                      timestamp: [UInt64]) {
-        self.type = type
-        self.timestamp = timestamp
+    @objc public var timestamp: [UInt64] {
+    return proto.timestamp
+}
+
+private init(proto: SignalServiceProtos_ReceiptMessage,
+             type: SSKProtoReceiptMessageType) {
+    self.proto = proto
+    self.type = type
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoReceiptMessage {
+    let proto = try SignalServiceProtos_ReceiptMessage(serializedData: serializedData)
+    return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_ReceiptMessage) throws -> SSKProtoReceiptMessage {
+    guard proto.hasType else {
+        throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
     }
+    let type = SSKProtoReceiptMessageTypeWrap(proto.type)
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
+    // MARK: - Begin Validation Logic for SSKProtoReceiptMessage -
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoReceiptMessage {
-        let proto = try SignalServiceProtos_ReceiptMessage(serializedData: serializedData)
-        return try parseProto(proto)
-    }
+    // MARK: - End Validation Logic for SSKProtoReceiptMessage -
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_ReceiptMessage) throws -> SSKProtoReceiptMessage {
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoReceiptMessageTypeWrap(proto.type)
-
-        var timestamp: [UInt64] = []
-        for item in proto.timestamp {
-            let wrapped = item
-            timestamp.append(wrapped)
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoReceiptMessage -
-
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoReceiptMessage -
-
-        let result = SSKProtoReceiptMessage(type: type,
-                                            timestamp: timestamp)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_ReceiptMessage {
-        let proto = SignalServiceProtos_ReceiptMessage.with { (builder) in
-            builder.type = SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeUnwrap(self.type)
-
-            var timestampUnwrapped = [UInt64]()
-            for item in timestamp {
-                timestampUnwrapped.append(item)
-            }
-            builder.timestamp = timestampUnwrapped
-        }
-
-        return proto
-    }
+    let result = SSKProtoReceiptMessage(proto: proto,
+                                        type: type)
+    return result
+}
 }
 
 // MARK: - SSKProtoVerified
 
 @objc public class SSKProtoVerified: NSObject {
 
-    // MARK: - SSKProtoVerifiedState
+// MARK: - SSKProtoVerifiedState
 
-    @objc public enum SSKProtoVerifiedState: Int32 {
-        case `default` = 0
-        case verified = 1
-        case unverified = 2
+@objc public enum SSKProtoVerifiedState: Int32 {
+    case `default` = 0
+    case verified = 1
+    case unverified = 2
+}
+
+private class func SSKProtoVerifiedStateWrap(_ value: SignalServiceProtos_Verified.State) -> SSKProtoVerifiedState {
+    switch value {
+    case .default: return .default
+    case .verified: return .verified
+    case .unverified: return .unverified
+    }
+}
+
+private class func SSKProtoVerifiedStateUnwrap(_ value: SSKProtoVerifiedState) -> SignalServiceProtos_Verified.State {
+    switch value {
+    case .default: return .default
+    case .verified: return .verified
+    case .unverified: return .unverified
+    }
+}
+
+// MARK: - SSKProtoVerifiedBuilder
+
+@objc public class SSKProtoVerifiedBuilder: NSObject {
+
+    private var destination: String?
+    private var identityKey: Data?
+    private var state: SSKProtoVerifiedState?
+    private var nullMessage: Data?
+
+    @objc public override init() {}
+
+    @objc public func setDestination(_ _value: String) {
+        destination = _value
     }
 
-    private class func SSKProtoVerifiedStateWrap(_ value: SignalServiceProtos_Verified.State) -> SSKProtoVerifiedState {
-        switch value {
-        case .default: return .default
-        case .verified: return .verified
-        case .unverified: return .unverified
-        }
+    @objc public func setIdentityKey(_ _value: Data) {
+        identityKey = _value
     }
 
-    private class func SSKProtoVerifiedStateUnwrap(_ value: SSKProtoVerifiedState) -> SignalServiceProtos_Verified.State {
-        switch value {
-        case .default: return .default
-        case .verified: return .verified
-        case .unverified: return .unverified
-        }
+    @objc public func setState(_ _value: SSKProtoVerifiedState) {
+        state = _value
     }
 
-    // MARK: - SSKProtoVerifiedBuilder
-
-    @objc public class SSKProtoVerifiedBuilder: NSObject {
-
-        private var destination: String?
-        private var identityKey: Data?
-        private var state: SSKProtoVerifiedState?
-        private var nullMessage: Data?
-
-        @objc public override init() {}
-
-        @objc public func setDestination(_ value: String) {
-            destination = value
-        }
-
-        @objc public func setIdentityKey(_ value: Data) {
-            identityKey = value
-        }
-
-        @objc public func setState(_ value: SSKProtoVerifiedState) {
-            state = value
-        }
-
-        @objc public func setNullMessage(_ value: Data) {
-            nullMessage = value
-        }
-
-        @objc public func build() throws -> SSKProtoVerified {
-            let proto = SignalServiceProtos_Verified.with { (builder) in
-                if let destination = self.destination {
-                    builder.destination = destination
-                }
-                if let identityKey = self.identityKey {
-                    builder.identityKey = identityKey
-                }
-                if let state = self.state {
-                    builder.state = SSKProtoVerifiedStateUnwrap(state)
-                }
-                if let nullMessage = self.nullMessage {
-                    builder.nullMessage = nullMessage
-                }
-            }
-
-            let wrapper = try SSKProtoVerified.parseProto(proto)
-            return wrapper
-        }
+    @objc public func setNullMessage(_ _value: Data) {
+        nullMessage = _value
     }
 
-    @objc public let destination: String?
-    @objc public let identityKey: Data?
-    @objc public let state: SSKProtoVerifiedState
-    @objc public let nullMessage: Data?
-
-    @objc public init(destination: String?,
-                      identityKey: Data?,
-                      state: SSKProtoVerifiedState,
-                      nullMessage: Data?) {
-        self.destination = destination
-        self.identityKey = identityKey
-        self.state = state
-        self.nullMessage = nullMessage
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoVerified {
-        let proto = try SignalServiceProtos_Verified(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_Verified) throws -> SSKProtoVerified {
-        guard proto.hasDestination else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: destination")
-        }
-        let destination = proto.destination
-
-        var identityKey: Data? = nil
-        if proto.hasIdentityKey {
-            identityKey = proto.identityKey
-        }
-
-        var state: SSKProtoVerifiedState = .default
-        if proto.hasState {
-            state = SSKProtoVerifiedStateWrap(proto.state)
-        }
-
-        var nullMessage: Data? = nil
-        if proto.hasNullMessage {
-            nullMessage = proto.nullMessage
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoVerified -
-
-        // MARK: - End Validation Logic for SSKProtoVerified -
-
-        let result = SSKProtoVerified(destination: destination,
-                                      identityKey: identityKey,
-                                      state: state,
-                                      nullMessage: nullMessage)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_Verified {
+    @objc public func build() throws -> SSKProtoVerified {
         let proto = SignalServiceProtos_Verified.with { (builder) in
             if let destination = self.destination {
                 builder.destination = destination
@@ -2876,127 +2442,109 @@ public enum SSKProtoError: Error {
                 builder.identityKey = identityKey
             }
 
-            builder.state = SSKProtoVerified.SSKProtoVerifiedStateUnwrap(self.state)
+            if let state = self.state {
+                builder.state = SSKProtoVerifiedStateUnwrap(state)
+            }
 
             if let nullMessage = self.nullMessage {
                 builder.nullMessage = nullMessage
             }
         }
 
-        return proto
+        let wrapper = try SSKProtoVerified.parseProto(proto)
+        return wrapper
     }
+}
+
+fileprivate let proto: SignalServiceProtos_Verified
+
+@objc public let destination: String
+
+@objc public var identityKey: Data {
+    return proto.identityKey
+}
+@objc public var hasIdentityKey: Bool {
+    return proto.hasIdentityKey
+}
+
+@objc public var state: SSKProtoVerifiedState {
+    return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
+}
+@objc public var hasState: Bool {
+    return proto.hasState
+}
+
+@objc public var nullMessage: Data {
+    return proto.nullMessage
+}
+@objc public var hasNullMessage: Bool {
+    return proto.hasNullMessage
+}
+
+private init(proto: SignalServiceProtos_Verified,
+             destination: String) {
+    self.proto = proto
+    self.destination = destination
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoVerified {
+    let proto = try SignalServiceProtos_Verified(serializedData: serializedData)
+    return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_Verified) throws -> SSKProtoVerified {
+    guard proto.hasDestination else {
+        throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: destination")
+    }
+    let destination = proto.destination
+
+    // MARK: - Begin Validation Logic for SSKProtoVerified -
+
+    // MARK: - End Validation Logic for SSKProtoVerified -
+
+    let result = SSKProtoVerified(proto: proto,
+                                  destination: destination)
+    return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageSent
 
 @objc public class SSKProtoSyncMessageSent: NSObject {
 
-    // MARK: - SSKProtoSyncMessageSentBuilder
+// MARK: - SSKProtoSyncMessageSentBuilder
 
-    @objc public class SSKProtoSyncMessageSentBuilder: NSObject {
+@objc public class SSKProtoSyncMessageSentBuilder: NSObject {
 
-        private var destination: String?
-        private var timestamp: UInt64?
-        private var message: SSKProtoDataMessage?
-        private var expirationStartTimestamp: UInt64?
+    private var destination: String?
+    private var timestamp: UInt64?
+    private var message: SSKProtoDataMessage?
+    private var expirationStartTimestamp: UInt64?
 
-        @objc public override init() {}
+    @objc public override init() {}
 
-        @objc public func setDestination(_ value: String) {
-            destination = value
-        }
-
-        @objc public func setTimestamp(_ value: UInt64) {
-            timestamp = value
-        }
-
-        @objc public func setMessage(_ value: SSKProtoDataMessage) {
-            message = value
-        }
-
-        @objc public func setExpirationStartTimestamp(_ value: UInt64) {
-            expirationStartTimestamp = value
-        }
-
-        @objc public func build() throws -> SSKProtoSyncMessageSent {
-            let proto = SignalServiceProtos_SyncMessage.Sent.with { (builder) in
-                if let destination = self.destination {
-                    builder.destination = destination
-                }
-                if let timestamp = self.timestamp {
-                    builder.timestamp = timestamp
-                }
-                if let message = self.message {
-                    builder.message = message.asProtobuf
-                }
-                if let expirationStartTimestamp = self.expirationStartTimestamp {
-                    builder.expirationStartTimestamp = expirationStartTimestamp
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessageSent.parseProto(proto)
-            return wrapper
-        }
+    @objc public func setDestination(_ _value: String) {
+        destination = _value
     }
 
-    @objc public let destination: String?
-    @objc public let timestamp: UInt64?
-    @objc public let message: SSKProtoDataMessage?
-    @objc public let expirationStartTimestamp: UInt64?
-
-    @objc public init(destination: String?,
-                      timestamp: UInt64?,
-                      message: SSKProtoDataMessage?,
-                      expirationStartTimestamp: UInt64?) {
-        self.destination = destination
-        self.timestamp = timestamp
-        self.message = message
-        self.expirationStartTimestamp = expirationStartTimestamp
+    @objc public func setTimestamp(_ _value: UInt64) {
+        timestamp = _value
     }
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+    @objc public func setMessage(_ _value: SSKProtoDataMessage) {
+        message = _value
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageSent {
-        let proto = try SignalServiceProtos_SyncMessage.Sent(serializedData: serializedData)
-        return try parseProto(proto)
+    @objc public func setExpirationStartTimestamp(_ _value: UInt64) {
+        expirationStartTimestamp = _value
     }
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var destination: String? = nil
-        if proto.hasDestination {
-            destination = proto.destination
-        }
-
-        var timestamp: UInt64? = nil
-        if proto.hasTimestamp {
-            timestamp = proto.timestamp
-        }
-
-        var message: SSKProtoDataMessage? = nil
-        if proto.hasMessage {
-            message = try SSKProtoDataMessage.parseProto(proto.message)
-        }
-
-        var expirationStartTimestamp: UInt64? = nil
-        if proto.hasExpirationStartTimestamp {
-            expirationStartTimestamp = proto.expirationStartTimestamp
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSent -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageSent -
-
-        let result = SSKProtoSyncMessageSent(destination: destination,
-                                             timestamp: timestamp,
-                                             message: message,
-                                             expirationStartTimestamp: expirationStartTimestamp)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Sent {
+    @objc public func build() throws -> SSKProtoSyncMessageSent {
         let proto = SignalServiceProtos_SyncMessage.Sent.with { (builder) in
             if let destination = self.destination {
                 builder.destination = destination
@@ -3007,7 +2555,7 @@ public enum SSKProtoError: Error {
             }
 
             if let message = self.message {
-                builder.message = message.asProtobuf
+                builder.message = message.proto
             }
 
             if let expirationStartTimestamp = self.expirationStartTimestamp {
@@ -3015,93 +2563,93 @@ public enum SSKProtoError: Error {
             }
         }
 
-        return proto
+        let wrapper = try SSKProtoSyncMessageSent.parseProto(proto)
+        return wrapper
     }
+}
+
+fileprivate let proto: SignalServiceProtos_SyncMessage.Sent
+
+@objc public let message: SSKProtoDataMessage?
+
+@objc public var destination: String {
+    return proto.destination
+}
+@objc public var hasDestination: Bool {
+    return proto.hasDestination
+}
+
+@objc public var timestamp: UInt64 {
+    return proto.timestamp
+}
+@objc public var hasTimestamp: Bool {
+    return proto.hasTimestamp
+}
+
+@objc public var expirationStartTimestamp: UInt64 {
+    return proto.expirationStartTimestamp
+}
+@objc public var hasExpirationStartTimestamp: Bool {
+    return proto.hasExpirationStartTimestamp
+}
+
+private init(proto: SignalServiceProtos_SyncMessage.Sent,
+             message: SSKProtoDataMessage?) {
+    self.proto = proto
+    self.message = message
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageSent {
+    let proto = try SignalServiceProtos_SyncMessage.Sent(serializedData: serializedData)
+    return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
+    var message: SSKProtoDataMessage? = nil
+    if proto.hasMessage {
+        message = try SSKProtoDataMessage.parseProto(proto.message)
+    }
+
+    // MARK: - Begin Validation Logic for SSKProtoSyncMessageSent -
+
+    // MARK: - End Validation Logic for SSKProtoSyncMessageSent -
+
+    let result = SSKProtoSyncMessageSent(proto: proto,
+                                         message: message)
+    return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageContacts
 
 @objc public class SSKProtoSyncMessageContacts: NSObject {
 
-    // MARK: - SSKProtoSyncMessageContactsBuilder
+// MARK: - SSKProtoSyncMessageContactsBuilder
 
-    @objc public class SSKProtoSyncMessageContactsBuilder: NSObject {
+@objc public class SSKProtoSyncMessageContactsBuilder: NSObject {
 
-        private var blob: SSKProtoAttachmentPointer?
-        private var isComplete: Bool?
+    private var blob: SSKProtoAttachmentPointer?
+    private var isComplete: Bool?
 
-        @objc public override init() {}
+    @objc public override init() {}
 
-        @objc public func setBlob(_ value: SSKProtoAttachmentPointer) {
-            blob = value
-        }
-
-        @objc public func setIsComplete(_ value: Bool) {
-            isComplete = value
-        }
-
-        @objc public func build() throws -> SSKProtoSyncMessageContacts {
-            let proto = SignalServiceProtos_SyncMessage.Contacts.with { (builder) in
-                if let blob = self.blob {
-                    builder.blob = blob.asProtobuf
-                }
-                if let isComplete = self.isComplete {
-                    builder.isComplete = isComplete
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessageContacts.parseProto(proto)
-            return wrapper
-        }
+    @objc public func setBlob(_ _value: SSKProtoAttachmentPointer) {
+        blob = _value
     }
 
-    @objc public let blob: SSKProtoAttachmentPointer?
-    @objc public let isComplete: Bool?
-
-    @objc public init(blob: SSKProtoAttachmentPointer?,
-                      isComplete: Bool?) {
-        self.blob = blob
-        self.isComplete = isComplete
+    @objc public func setIsComplete(_ _value: Bool) {
+        isComplete = _value
     }
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageContacts {
-        let proto = try SignalServiceProtos_SyncMessage.Contacts(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Contacts) throws -> SSKProtoSyncMessageContacts {
-        guard proto.hasBlob else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
-        }
-        let blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
-
-        var isComplete: Bool? = false
-        if proto.hasIsComplete {
-            isComplete = proto.isComplete
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageContacts -
-
-        guard proto.hasBlob else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageContacts -
-
-        let result = SSKProtoSyncMessageContacts(blob: blob,
-                                                 isComplete: isComplete)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Contacts {
+    @objc public func build() throws -> SSKProtoSyncMessageContacts {
         let proto = SignalServiceProtos_SyncMessage.Contacts.with { (builder) in
             if let blob = self.blob {
-                builder.blob = blob.asProtobuf
+                builder.blob = blob.proto
             }
 
             if let isComplete = self.isComplete {
@@ -3109,1727 +2657,1502 @@ public enum SSKProtoError: Error {
             }
         }
 
-        return proto
+        let wrapper = try SSKProtoSyncMessageContacts.parseProto(proto)
+        return wrapper
     }
+}
+
+fileprivate let proto: SignalServiceProtos_SyncMessage.Contacts
+
+@objc public let blob: SSKProtoAttachmentPointer
+
+@objc public var isComplete: Bool {
+    return proto.isComplete
+}
+@objc public var hasIsComplete: Bool {
+    return proto.hasIsComplete
+}
+
+private init(proto: SignalServiceProtos_SyncMessage.Contacts,
+             blob: SSKProtoAttachmentPointer) {
+    self.proto = proto
+    self.blob = blob
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageContacts {
+    let proto = try SignalServiceProtos_SyncMessage.Contacts(serializedData: serializedData)
+    return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Contacts) throws -> SSKProtoSyncMessageContacts {
+    guard proto.hasBlob else {
+        throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
+    }
+    let blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
+
+    // MARK: - Begin Validation Logic for SSKProtoSyncMessageContacts -
+
+    // MARK: - End Validation Logic for SSKProtoSyncMessageContacts -
+
+    let result = SSKProtoSyncMessageContacts(proto: proto,
+                                             blob: blob)
+    return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageGroups
 
 @objc public class SSKProtoSyncMessageGroups: NSObject {
 
-    // MARK: - SSKProtoSyncMessageGroupsBuilder
+// MARK: - SSKProtoSyncMessageGroupsBuilder
 
-    @objc public class SSKProtoSyncMessageGroupsBuilder: NSObject {
+@objc public class SSKProtoSyncMessageGroupsBuilder: NSObject {
 
-        private var blob: SSKProtoAttachmentPointer?
+    private var blob: SSKProtoAttachmentPointer?
 
-        @objc public override init() {}
+    @objc public override init() {}
 
-        @objc public func setBlob(_ value: SSKProtoAttachmentPointer) {
-            blob = value
-        }
-
-        @objc public func build() throws -> SSKProtoSyncMessageGroups {
-            let proto = SignalServiceProtos_SyncMessage.Groups.with { (builder) in
-                if let blob = self.blob {
-                    builder.blob = blob.asProtobuf
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessageGroups.parseProto(proto)
-            return wrapper
-        }
+    @objc public func setBlob(_ _value: SSKProtoAttachmentPointer) {
+        blob = _value
     }
 
-    @objc public let blob: SSKProtoAttachmentPointer?
-
-    @objc public init(blob: SSKProtoAttachmentPointer?) {
-        self.blob = blob
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageGroups {
-        let proto = try SignalServiceProtos_SyncMessage.Groups(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer? = nil
-        if proto.hasBlob {
-            blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageGroups -
-
-        guard proto.hasBlob else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageGroups -
-
-        let result = SSKProtoSyncMessageGroups(blob: blob)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Groups {
+    @objc public func build() throws -> SSKProtoSyncMessageGroups {
         let proto = SignalServiceProtos_SyncMessage.Groups.with { (builder) in
             if let blob = self.blob {
-                builder.blob = blob.asProtobuf
+                builder.blob = blob.proto
             }
         }
 
-        return proto
+        let wrapper = try SSKProtoSyncMessageGroups.parseProto(proto)
+        return wrapper
     }
+}
+
+fileprivate let proto: SignalServiceProtos_SyncMessage.Groups
+
+@objc public let blob: SSKProtoAttachmentPointer?
+
+private init(proto: SignalServiceProtos_SyncMessage.Groups,
+             blob: SSKProtoAttachmentPointer?) {
+    self.proto = proto
+    self.blob = blob
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageGroups {
+    let proto = try SignalServiceProtos_SyncMessage.Groups(serializedData: serializedData)
+    return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
+    var blob: SSKProtoAttachmentPointer? = nil
+    if proto.hasBlob {
+        blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
+    }
+
+    // MARK: - Begin Validation Logic for SSKProtoSyncMessageGroups -
+
+    // MARK: - End Validation Logic for SSKProtoSyncMessageGroups -
+
+    let result = SSKProtoSyncMessageGroups(proto: proto,
+                                           blob: blob)
+    return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageBlocked
 
 @objc public class SSKProtoSyncMessageBlocked: NSObject {
 
-    // MARK: - SSKProtoSyncMessageBlockedBuilder
+// MARK: - SSKProtoSyncMessageBlockedBuilder
 
-    @objc public class SSKProtoSyncMessageBlockedBuilder: NSObject {
+@objc public class SSKProtoSyncMessageBlockedBuilder: NSObject {
 
-        private var numbers: [String]
+    private var numbers: [String] = []
 
-        @objc public override init() {}
+    @objc public override init() {}
 
-        @objc public func addNumbers(_ value: String) {
-            numbers.append(value)
-        }
-
-        @objc public func build() throws -> SSKProtoSyncMessageBlocked {
-            let proto = SignalServiceProtos_SyncMessage.Blocked.with { (builder) in
-                for item in numbers {
-                    builder.addNumbers(item)
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessageBlocked.parseProto(proto)
-            return wrapper
-        }
+    @objc public func addNumbers(_ _value: String) {
+        numbers.append(_value)
     }
 
-    @objc public let numbers: [String]
-
-    @objc public init(numbers: [String]) {
-        self.numbers = numbers
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageBlocked {
-        let proto = try SignalServiceProtos_SyncMessage.Blocked(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Blocked) throws -> SSKProtoSyncMessageBlocked {
-        var numbers: [String] = []
-        for item in proto.numbers {
-            let wrapped = item
-            numbers.append(wrapped)
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageBlocked -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageBlocked -
-
-        let result = SSKProtoSyncMessageBlocked(numbers: numbers)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Blocked {
+    @objc public func build() throws -> SSKProtoSyncMessageBlocked {
         let proto = SignalServiceProtos_SyncMessage.Blocked.with { (builder) in
-            var numbersUnwrapped = [String]()
+            var numbersWrapped: [String] = []
             for item in numbers {
-                numbersUnwrapped.append(item)
+                numbersWrapped.append(item)
             }
-            builder.numbers = numbersUnwrapped
+            builder.numbers = numbersWrapped
         }
 
-        return proto
+        let wrapper = try SSKProtoSyncMessageBlocked.parseProto(proto)
+        return wrapper
     }
+}
+
+fileprivate let proto: SignalServiceProtos_SyncMessage.Blocked
+
+@objc public var numbers: [String] {
+return proto.numbers
+}
+
+private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
+self.proto = proto
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageBlocked {
+let proto = try SignalServiceProtos_SyncMessage.Blocked(serializedData: serializedData)
+return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Blocked) throws -> SSKProtoSyncMessageBlocked {
+// MARK: - Begin Validation Logic for SSKProtoSyncMessageBlocked -
+
+// MARK: - End Validation Logic for SSKProtoSyncMessageBlocked -
+
+let result = SSKProtoSyncMessageBlocked(proto: proto)
+return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageRequest
 
 @objc public class SSKProtoSyncMessageRequest: NSObject {
 
-    // MARK: - SSKProtoSyncMessageRequestType
+// MARK: - SSKProtoSyncMessageRequestType
 
-    @objc public enum SSKProtoSyncMessageRequestType: Int32 {
-        case unknown = 0
-        case contacts = 1
-        case groups = 2
-        case blocked = 3
-        case configuration = 4
-    }
+@objc public enum SSKProtoSyncMessageRequestType: Int32 {
+case unknown = 0
+case contacts = 1
+case groups = 2
+case blocked = 3
+case configuration = 4
+}
 
-    private class func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessageRequestType {
-        switch value {
-        case .unknown: return .unknown
-        case .contacts: return .contacts
-        case .groups: return .groups
-        case .blocked: return .blocked
-        case .configuration: return .configuration
+private class func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessageRequestType {
+switch value {
+case .unknown: return .unknown
+case .contacts: return .contacts
+case .groups: return .groups
+case .blocked: return .blocked
+case .configuration: return .configuration
+}
+}
+
+private class func SSKProtoSyncMessageRequestTypeUnwrap(_ value: SSKProtoSyncMessageRequestType) -> SignalServiceProtos_SyncMessage.Request.TypeEnum {
+switch value {
+case .unknown: return .unknown
+case .contacts: return .contacts
+case .groups: return .groups
+case .blocked: return .blocked
+case .configuration: return .configuration
+}
+}
+
+// MARK: - SSKProtoSyncMessageRequestBuilder
+
+@objc public class SSKProtoSyncMessageRequestBuilder: NSObject {
+
+private var type: SSKProtoSyncMessageRequestType?
+
+@objc public override init() {}
+
+@objc public func setType(_ _value: SSKProtoSyncMessageRequestType) {
+    type = _value
+}
+
+@objc public func build() throws -> SSKProtoSyncMessageRequest {
+    let proto = SignalServiceProtos_SyncMessage.Request.with { (builder) in
+        if let type = self.type {
+            builder.type = SSKProtoSyncMessageRequestTypeUnwrap(type)
         }
     }
 
-    private class func SSKProtoSyncMessageRequestTypeUnwrap(_ value: SSKProtoSyncMessageRequestType) -> SignalServiceProtos_SyncMessage.Request.TypeEnum {
-        switch value {
-        case .unknown: return .unknown
-        case .contacts: return .contacts
-        case .groups: return .groups
-        case .blocked: return .blocked
-        case .configuration: return .configuration
-        }
-    }
+    let wrapper = try SSKProtoSyncMessageRequest.parseProto(proto)
+    return wrapper
+}
+}
 
-    // MARK: - SSKProtoSyncMessageRequestBuilder
+fileprivate let proto: SignalServiceProtos_SyncMessage.Request
 
-    @objc public class SSKProtoSyncMessageRequestBuilder: NSObject {
+@objc public let type: SSKProtoSyncMessageRequestType
 
-        private var type: SSKProtoSyncMessageRequestType?
+private init(proto: SignalServiceProtos_SyncMessage.Request,
+             type: SSKProtoSyncMessageRequestType) {
+self.proto = proto
+self.type = type
+}
 
-        @objc public override init() {}
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        @objc public func setType(_ value: SSKProtoSyncMessageRequestType) {
-            type = value
-        }
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageRequest {
+let proto = try SignalServiceProtos_SyncMessage.Request(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-        @objc public func build() throws -> SSKProtoSyncMessageRequest {
-            let proto = SignalServiceProtos_SyncMessage.Request.with { (builder) in
-                if let type = self.type {
-                    builder.type = SSKProtoSyncMessageRequestTypeUnwrap(type)
-                }
-            }
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Request) throws -> SSKProtoSyncMessageRequest {
+guard proto.hasType else {
+    throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+}
+let type = SSKProtoSyncMessageRequestTypeWrap(proto.type)
 
-            let wrapper = try SSKProtoSyncMessageRequest.parseProto(proto)
-            return wrapper
-        }
-    }
+// MARK: - Begin Validation Logic for SSKProtoSyncMessageRequest -
 
-    @objc public let type: SSKProtoSyncMessageRequestType
+// MARK: - End Validation Logic for SSKProtoSyncMessageRequest -
 
-    @objc public init(type: SSKProtoSyncMessageRequestType) {
-        self.type = type
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageRequest {
-        let proto = try SignalServiceProtos_SyncMessage.Request(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Request) throws -> SSKProtoSyncMessageRequest {
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoSyncMessageRequestTypeWrap(proto.type)
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageRequest -
-
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageRequest -
-
-        let result = SSKProtoSyncMessageRequest(type: type)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Request {
-        let proto = SignalServiceProtos_SyncMessage.Request.with { (builder) in
-            builder.type = SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeUnwrap(self.type)
-        }
-
-        return proto
-    }
+let result = SSKProtoSyncMessageRequest(proto: proto,
+                                        type: type)
+return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageRead
 
 @objc public class SSKProtoSyncMessageRead: NSObject {
 
-    // MARK: - SSKProtoSyncMessageReadBuilder
+// MARK: - SSKProtoSyncMessageReadBuilder
 
-    @objc public class SSKProtoSyncMessageReadBuilder: NSObject {
+@objc public class SSKProtoSyncMessageReadBuilder: NSObject {
 
-        private var sender: String?
-        private var timestamp: UInt64?
+private var sender: String?
+private var timestamp: UInt64?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setSender(_ value: String) {
-            sender = value
+@objc public func setSender(_ _value: String) {
+    sender = _value
+}
+
+@objc public func setTimestamp(_ _value: UInt64) {
+    timestamp = _value
+}
+
+@objc public func build() throws -> SSKProtoSyncMessageRead {
+    let proto = SignalServiceProtos_SyncMessage.Read.with { (builder) in
+        if let sender = self.sender {
+            builder.sender = sender
         }
 
-        @objc public func setTimestamp(_ value: UInt64) {
-            timestamp = value
-        }
-
-        @objc public func build() throws -> SSKProtoSyncMessageRead {
-            let proto = SignalServiceProtos_SyncMessage.Read.with { (builder) in
-                if let sender = self.sender {
-                    builder.sender = sender
-                }
-                if let timestamp = self.timestamp {
-                    builder.timestamp = timestamp
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessageRead.parseProto(proto)
-            return wrapper
+        if let timestamp = self.timestamp {
+            builder.timestamp = timestamp
         }
     }
 
-    @objc public let sender: String?
-    @objc public let timestamp: UInt64
+    let wrapper = try SSKProtoSyncMessageRead.parseProto(proto)
+    return wrapper
+}
+}
 
-    @objc public init(sender: String?,
-                      timestamp: UInt64) {
-        self.sender = sender
-        self.timestamp = timestamp
-    }
+fileprivate let proto: SignalServiceProtos_SyncMessage.Read
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
+@objc public let sender: String
+@objc public let timestamp: UInt64
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageRead {
-        let proto = try SignalServiceProtos_SyncMessage.Read(serializedData: serializedData)
-        return try parseProto(proto)
-    }
+private init(proto: SignalServiceProtos_SyncMessage.Read,
+             sender: String,
+             timestamp: UInt64) {
+self.proto = proto
+self.sender = sender
+self.timestamp = timestamp
+}
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Read) throws -> SSKProtoSyncMessageRead {
-        guard proto.hasSender else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
-        }
-        let sender = proto.sender
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
-        }
-        let timestamp = proto.timestamp
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageRead {
+let proto = try SignalServiceProtos_SyncMessage.Read(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageRead -
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Read) throws -> SSKProtoSyncMessageRead {
+guard proto.hasSender else {
+    throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
+}
+let sender = proto.sender
 
-        guard proto.hasSender else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
-        }
-        guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
-        }
+guard proto.hasTimestamp else {
+    throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+}
+let timestamp = proto.timestamp
 
-        // MARK: - End Validation Logic for SSKProtoSyncMessageRead -
+// MARK: - Begin Validation Logic for SSKProtoSyncMessageRead -
 
-        let result = SSKProtoSyncMessageRead(sender: sender,
-                                             timestamp: timestamp)
-        return result
-    }
+// MARK: - End Validation Logic for SSKProtoSyncMessageRead -
 
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Read {
-        let proto = SignalServiceProtos_SyncMessage.Read.with { (builder) in
-            if let sender = self.sender {
-                builder.sender = sender
-            }
-
-            builder.timestamp = self.timestamp
-        }
-
-        return proto
-    }
+let result = SSKProtoSyncMessageRead(proto: proto,
+                                     sender: sender,
+                                     timestamp: timestamp)
+return result
+}
 }
 
 // MARK: - SSKProtoSyncMessageConfiguration
 
 @objc public class SSKProtoSyncMessageConfiguration: NSObject {
 
-    // MARK: - SSKProtoSyncMessageConfigurationBuilder
+// MARK: - SSKProtoSyncMessageConfigurationBuilder
 
-    @objc public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
+@objc public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
 
-        private var readReceipts: Bool?
+private var readReceipts: Bool?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setReadReceipts(_ value: Bool) {
-            readReceipts = value
-        }
+@objc public func setReadReceipts(_ _value: Bool) {
+    readReceipts = _value
+}
 
-        @objc public func build() throws -> SSKProtoSyncMessageConfiguration {
-            let proto = SignalServiceProtos_SyncMessage.Configuration.with { (builder) in
-                if let readReceipts = self.readReceipts {
-                    builder.readReceipts = readReceipts
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessageConfiguration.parseProto(proto)
-            return wrapper
+@objc public func build() throws -> SSKProtoSyncMessageConfiguration {
+    let proto = SignalServiceProtos_SyncMessage.Configuration.with { (builder) in
+        if let readReceipts = self.readReceipts {
+            builder.readReceipts = readReceipts
         }
     }
 
-    @objc public let readReceipts: Bool?
+    let wrapper = try SSKProtoSyncMessageConfiguration.parseProto(proto)
+    return wrapper
+}
+}
 
-    @objc public init(readReceipts: Bool?) {
-        self.readReceipts = readReceipts
-    }
+fileprivate let proto: SignalServiceProtos_SyncMessage.Configuration
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
+@objc public var readReceipts: Bool {
+return proto.readReceipts
+}
+@objc public var hasReadReceipts: Bool {
+return proto.hasReadReceipts
+}
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageConfiguration {
-        let proto = try SignalServiceProtos_SyncMessage.Configuration(serializedData: serializedData)
-        return try parseProto(proto)
-    }
+private init(proto: SignalServiceProtos_SyncMessage.Configuration) {
+self.proto = proto
+}
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Configuration) throws -> SSKProtoSyncMessageConfiguration {
-        var readReceipts: Bool? = nil
-        if proto.hasReadReceipts {
-            readReceipts = proto.readReceipts
-        }
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageConfiguration -
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageConfiguration {
+let proto = try SignalServiceProtos_SyncMessage.Configuration(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-        // MARK: - End Validation Logic for SSKProtoSyncMessageConfiguration -
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Configuration) throws -> SSKProtoSyncMessageConfiguration {
+// MARK: - Begin Validation Logic for SSKProtoSyncMessageConfiguration -
 
-        let result = SSKProtoSyncMessageConfiguration(readReceipts: readReceipts)
-        return result
-    }
+// MARK: - End Validation Logic for SSKProtoSyncMessageConfiguration -
 
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Configuration {
-        let proto = SignalServiceProtos_SyncMessage.Configuration.with { (builder) in
-            if let readReceipts = self.readReceipts {
-                builder.readReceipts = readReceipts
-            }
-        }
-
-        return proto
-    }
+let result = SSKProtoSyncMessageConfiguration(proto: proto)
+return result
+}
 }
 
 // MARK: - SSKProtoSyncMessage
 
 @objc public class SSKProtoSyncMessage: NSObject {
 
-    // MARK: - SSKProtoSyncMessageBuilder
+// MARK: - SSKProtoSyncMessageBuilder
 
-    @objc public class SSKProtoSyncMessageBuilder: NSObject {
+@objc public class SSKProtoSyncMessageBuilder: NSObject {
 
-        private var sent: SSKProtoSyncMessageSent?
-        private var contacts: SSKProtoSyncMessageContacts?
-        private var groups: SSKProtoSyncMessageGroups?
-        private var request: SSKProtoSyncMessageRequest?
-        private var read: [SSKProtoSyncMessageRead]
-        private var blocked: SSKProtoSyncMessageBlocked?
-        private var verified: SSKProtoVerified?
-        private var configuration: SSKProtoSyncMessageConfiguration?
-        private var padding: Data?
+private var sent: SSKProtoSyncMessageSent?
+private var contacts: SSKProtoSyncMessageContacts?
+private var groups: SSKProtoSyncMessageGroups?
+private var request: SSKProtoSyncMessageRequest?
+private var read: [SSKProtoSyncMessageRead] = []
+private var blocked: SSKProtoSyncMessageBlocked?
+private var verified: SSKProtoVerified?
+private var configuration: SSKProtoSyncMessageConfiguration?
+private var padding: Data?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setSent(_ value: SSKProtoSyncMessageSent) {
-            sent = value
+@objc public func setSent(_ _value: SSKProtoSyncMessageSent) {
+    sent = _value
+}
+
+@objc public func setContacts(_ _value: SSKProtoSyncMessageContacts) {
+    contacts = _value
+}
+
+@objc public func setGroups(_ _value: SSKProtoSyncMessageGroups) {
+    groups = _value
+}
+
+@objc public func setRequest(_ _value: SSKProtoSyncMessageRequest) {
+    request = _value
+}
+
+@objc public func addRead(_ _value: SSKProtoSyncMessageRead) {
+    read.append(_value)
+}
+
+@objc public func setBlocked(_ _value: SSKProtoSyncMessageBlocked) {
+    blocked = _value
+}
+
+@objc public func setVerified(_ _value: SSKProtoVerified) {
+    verified = _value
+}
+
+@objc public func setConfiguration(_ _value: SSKProtoSyncMessageConfiguration) {
+    configuration = _value
+}
+
+@objc public func setPadding(_ _value: Data) {
+    padding = _value
+}
+
+@objc public func build() throws -> SSKProtoSyncMessage {
+    let proto = SignalServiceProtos_SyncMessage.with { (builder) in
+        if let sent = self.sent {
+            builder.sent = sent.proto
         }
 
-        @objc public func setContacts(_ value: SSKProtoSyncMessageContacts) {
-            contacts = value
+        if let contacts = self.contacts {
+            builder.contacts = contacts.proto
         }
 
-        @objc public func setGroups(_ value: SSKProtoSyncMessageGroups) {
-            groups = value
+        if let groups = self.groups {
+            builder.groups = groups.proto
         }
 
-        @objc public func setRequest(_ value: SSKProtoSyncMessageRequest) {
-            request = value
+        if let request = self.request {
+            builder.request = request.proto
         }
 
-        @objc public func addRead(_ value: SSKProtoSyncMessageRead) {
-            read.append(value)
+        var readWrapped: [SignalServiceProtos_SyncMessage.Read] = []
+        for item in read {
+            readWrapped.append(item.proto)
+        }
+        builder.read = readWrapped
+
+        if let blocked = self.blocked {
+            builder.blocked = blocked.proto
         }
 
-        @objc public func setBlocked(_ value: SSKProtoSyncMessageBlocked) {
-            blocked = value
+        if let verified = self.verified {
+            builder.verified = verified.proto
         }
 
-        @objc public func setVerified(_ value: SSKProtoVerified) {
-            verified = value
+        if let configuration = self.configuration {
+            builder.configuration = configuration.proto
         }
 
-        @objc public func setConfiguration(_ value: SSKProtoSyncMessageConfiguration) {
-            configuration = value
-        }
-
-        @objc public func setPadding(_ value: Data) {
-            padding = value
-        }
-
-        @objc public func build() throws -> SSKProtoSyncMessage {
-            let proto = SignalServiceProtos_SyncMessage.with { (builder) in
-                if let sent = self.sent {
-                    builder.sent = sent.asProtobuf
-                }
-                if let contacts = self.contacts {
-                    builder.contacts = contacts.asProtobuf
-                }
-                if let groups = self.groups {
-                    builder.groups = groups.asProtobuf
-                }
-                if let request = self.request {
-                    builder.request = request.asProtobuf
-                }
-                for item in read {
-                    builder.addRead(item.asProtobuf)
-                }
-                if let blocked = self.blocked {
-                    builder.blocked = blocked.asProtobuf
-                }
-                if let verified = self.verified {
-                    builder.verified = verified.asProtobuf
-                }
-                if let configuration = self.configuration {
-                    builder.configuration = configuration.asProtobuf
-                }
-                if let padding = self.padding {
-                    builder.padding = padding
-                }
-            }
-
-            let wrapper = try SSKProtoSyncMessage.parseProto(proto)
-            return wrapper
+        if let padding = self.padding {
+            builder.padding = padding
         }
     }
 
-    @objc public let sent: SSKProtoSyncMessageSent?
-    @objc public let contacts: SSKProtoSyncMessageContacts?
-    @objc public let groups: SSKProtoSyncMessageGroups?
-    @objc public let request: SSKProtoSyncMessageRequest?
-    @objc public let read: [SSKProtoSyncMessageRead]
-    @objc public let blocked: SSKProtoSyncMessageBlocked?
-    @objc public let verified: SSKProtoVerified?
-    @objc public let configuration: SSKProtoSyncMessageConfiguration?
-    @objc public let padding: Data?
+    let wrapper = try SSKProtoSyncMessage.parseProto(proto)
+    return wrapper
+}
+}
 
-    @objc public init(sent: SSKProtoSyncMessageSent?,
-                      contacts: SSKProtoSyncMessageContacts?,
-                      groups: SSKProtoSyncMessageGroups?,
-                      request: SSKProtoSyncMessageRequest?,
-                      read: [SSKProtoSyncMessageRead],
-                      blocked: SSKProtoSyncMessageBlocked?,
-                      verified: SSKProtoVerified?,
-                      configuration: SSKProtoSyncMessageConfiguration?,
-                      padding: Data?) {
-        self.sent = sent
-        self.contacts = contacts
-        self.groups = groups
-        self.request = request
-        self.read = read
-        self.blocked = blocked
-        self.verified = verified
-        self.configuration = configuration
-        self.padding = padding
-    }
+fileprivate let proto: SignalServiceProtos_SyncMessage
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
+@objc public let sent: SSKProtoSyncMessageSent?
+@objc public let contacts: SSKProtoSyncMessageContacts?
+@objc public let groups: SSKProtoSyncMessageGroups?
+@objc public let request: SSKProtoSyncMessageRequest?
+@objc public let read: [SSKProtoSyncMessageRead]
+@objc public let blocked: SSKProtoSyncMessageBlocked?
+@objc public let verified: SSKProtoVerified?
+@objc public let configuration: SSKProtoSyncMessageConfiguration?
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessage {
-        let proto = try SignalServiceProtos_SyncMessage(serializedData: serializedData)
-        return try parseProto(proto)
-    }
+@objc public var padding: Data {
+return proto.padding
+}
+@objc public var hasPadding: Bool {
+return proto.hasPadding
+}
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent? = nil
-        if proto.hasSent {
-            sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
-        }
+private init(proto: SignalServiceProtos_SyncMessage,
+             sent: SSKProtoSyncMessageSent?,
+             contacts: SSKProtoSyncMessageContacts?,
+             groups: SSKProtoSyncMessageGroups?,
+             request: SSKProtoSyncMessageRequest?,
+             read: [SSKProtoSyncMessageRead],
+             blocked: SSKProtoSyncMessageBlocked?,
+             verified: SSKProtoVerified?,
+             configuration: SSKProtoSyncMessageConfiguration?) {
+self.proto = proto
+self.sent = sent
+self.contacts = contacts
+self.groups = groups
+self.request = request
+self.read = read
+self.blocked = blocked
+self.verified = verified
+self.configuration = configuration
+}
 
-        var contacts: SSKProtoSyncMessageContacts? = nil
-        if proto.hasContacts {
-            contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
-        }
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        var groups: SSKProtoSyncMessageGroups? = nil
-        if proto.hasGroups {
-            groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
-        }
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessage {
+let proto = try SignalServiceProtos_SyncMessage(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-        var request: SSKProtoSyncMessageRequest? = nil
-        if proto.hasRequest {
-            request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
-        }
+fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
+var sent: SSKProtoSyncMessageSent? = nil
+if proto.hasSent {
+    sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
+}
 
-        var read: [SSKProtoSyncMessageRead] = []
-        for item in proto.read {
-            let wrapped = try SSKProtoSyncMessageRead.parseProto(item)
-            read.append(wrapped)
-        }
+var contacts: SSKProtoSyncMessageContacts? = nil
+if proto.hasContacts {
+    contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
+}
 
-        var blocked: SSKProtoSyncMessageBlocked? = nil
-        if proto.hasBlocked {
-            blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
-        }
+var groups: SSKProtoSyncMessageGroups? = nil
+if proto.hasGroups {
+    groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
+}
 
-        var verified: SSKProtoVerified? = nil
-        if proto.hasVerified {
-            verified = try SSKProtoVerified.parseProto(proto.verified)
-        }
+var request: SSKProtoSyncMessageRequest? = nil
+if proto.hasRequest {
+    request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
+}
 
-        var configuration: SSKProtoSyncMessageConfiguration? = nil
-        if proto.hasConfiguration {
-            configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
-        }
+var read: [SSKProtoSyncMessageRead] = []
+for item in proto.read {
+    let wrapped = try SSKProtoSyncMessageRead.parseProto(item)
+    read.append(wrapped)
+}
 
-        var padding: Data? = nil
-        if proto.hasPadding {
-            padding = proto.padding
-        }
+var blocked: SSKProtoSyncMessageBlocked? = nil
+if proto.hasBlocked {
+    blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
+}
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
+var verified: SSKProtoVerified? = nil
+if proto.hasVerified {
+    verified = try SSKProtoVerified.parseProto(proto.verified)
+}
 
-        // MARK: - End Validation Logic for SSKProtoSyncMessage -
+var configuration: SSKProtoSyncMessageConfiguration? = nil
+if proto.hasConfiguration {
+    configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
+}
 
-        let result = SSKProtoSyncMessage(sent: sent,
-                                         contacts: contacts,
-                                         groups: groups,
-                                         request: request,
-                                         read: read,
-                                         blocked: blocked,
-                                         verified: verified,
-                                         configuration: configuration,
-                                         padding: padding)
-        return result
-    }
+// MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
-    fileprivate var asProtobuf: SignalServiceProtos_SyncMessage {
-        let proto = SignalServiceProtos_SyncMessage.with { (builder) in
-            if let sent = self.sent {
-                builder.sent = sent.asProtobuf
-            }
+// MARK: - End Validation Logic for SSKProtoSyncMessage -
 
-            if let contacts = self.contacts {
-                builder.contacts = contacts.asProtobuf
-            }
-
-            if let groups = self.groups {
-                builder.groups = groups.asProtobuf
-            }
-
-            if let request = self.request {
-                builder.request = request.asProtobuf
-            }
-
-            var readUnwrapped = [SignalServiceProtos_SyncMessage.Read]()
-            for item in read {
-                readUnwrapped.append(item.asProtobuf)
-            }
-            builder.read = readUnwrapped
-
-            if let blocked = self.blocked {
-                builder.blocked = blocked.asProtobuf
-            }
-
-            if let verified = self.verified {
-                builder.verified = verified.asProtobuf
-            }
-
-            if let configuration = self.configuration {
-                builder.configuration = configuration.asProtobuf
-            }
-
-            if let padding = self.padding {
-                builder.padding = padding
-            }
-        }
-
-        return proto
-    }
+let result = SSKProtoSyncMessage(proto: proto,
+                                 sent: sent,
+                                 contacts: contacts,
+                                 groups: groups,
+                                 request: request,
+                                 read: read,
+                                 blocked: blocked,
+                                 verified: verified,
+                                 configuration: configuration)
+return result
+}
 }
 
 // MARK: - SSKProtoAttachmentPointer
 
 @objc public class SSKProtoAttachmentPointer: NSObject {
 
-    // MARK: - SSKProtoAttachmentPointerFlags
+// MARK: - SSKProtoAttachmentPointerFlags
 
-    @objc public enum SSKProtoAttachmentPointerFlags: Int32 {
-        case voiceMessage = 1
-    }
+@objc public enum SSKProtoAttachmentPointerFlags: Int32 {
+case voiceMessage = 1
+}
 
-    private class func SSKProtoAttachmentPointerFlagsWrap(_ value: SignalServiceProtos_AttachmentPointer.Flags) -> SSKProtoAttachmentPointerFlags {
-        switch value {
-        case .voiceMessage: return .voiceMessage
+private class func SSKProtoAttachmentPointerFlagsWrap(_ value: SignalServiceProtos_AttachmentPointer.Flags) -> SSKProtoAttachmentPointerFlags {
+switch value {
+case .voiceMessage: return .voiceMessage
+}
+}
+
+private class func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPointerFlags) -> SignalServiceProtos_AttachmentPointer.Flags {
+switch value {
+case .voiceMessage: return .voiceMessage
+}
+}
+
+// MARK: - SSKProtoAttachmentPointerBuilder
+
+@objc public class SSKProtoAttachmentPointerBuilder: NSObject {
+
+private var id: UInt64?
+private var contentType: String?
+private var key: Data?
+private var size: UInt32?
+private var thumbnail: Data?
+private var digest: Data?
+private var fileName: String?
+private var flags: UInt32?
+private var width: UInt32?
+private var height: UInt32?
+
+@objc public override init() {}
+
+@objc public func setId(_ _value: UInt64) {
+    id = _value
+}
+
+@objc public func setContentType(_ _value: String) {
+    contentType = _value
+}
+
+@objc public func setKey(_ _value: Data) {
+    key = _value
+}
+
+@objc public func setSize(_ _value: UInt32) {
+    size = _value
+}
+
+@objc public func setThumbnail(_ _value: Data) {
+    thumbnail = _value
+}
+
+@objc public func setDigest(_ _value: Data) {
+    digest = _value
+}
+
+@objc public func setFileName(_ _value: String) {
+    fileName = _value
+}
+
+@objc public func setFlags(_ _value: UInt32) {
+    flags = _value
+}
+
+@objc public func setWidth(_ _value: UInt32) {
+    width = _value
+}
+
+@objc public func setHeight(_ _value: UInt32) {
+    height = _value
+}
+
+@objc public func build() throws -> SSKProtoAttachmentPointer {
+    let proto = SignalServiceProtos_AttachmentPointer.with { (builder) in
+        if let id = self.id {
+            builder.id = id
+        }
+
+        if let contentType = self.contentType {
+            builder.contentType = contentType
+        }
+
+        if let key = self.key {
+            builder.key = key
+        }
+
+        if let size = self.size {
+            builder.size = size
+        }
+
+        if let thumbnail = self.thumbnail {
+            builder.thumbnail = thumbnail
+        }
+
+        if let digest = self.digest {
+            builder.digest = digest
+        }
+
+        if let fileName = self.fileName {
+            builder.fileName = fileName
+        }
+
+        if let flags = self.flags {
+            builder.flags = flags
+        }
+
+        if let width = self.width {
+            builder.width = width
+        }
+
+        if let height = self.height {
+            builder.height = height
         }
     }
 
-    private class func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPointerFlags) -> SignalServiceProtos_AttachmentPointer.Flags {
-        switch value {
-        case .voiceMessage: return .voiceMessage
-        }
-    }
+    let wrapper = try SSKProtoAttachmentPointer.parseProto(proto)
+    return wrapper
+}
+}
 
-    // MARK: - SSKProtoAttachmentPointerBuilder
+fileprivate let proto: SignalServiceProtos_AttachmentPointer
 
-    @objc public class SSKProtoAttachmentPointerBuilder: NSObject {
+@objc public let id: UInt64
 
-        private var id: UInt64?
-        private var contentType: String?
-        private var key: Data?
-        private var size: UInt32?
-        private var thumbnail: Data?
-        private var digest: Data?
-        private var fileName: String?
-        private var flags: UInt32?
-        private var width: UInt32?
-        private var height: UInt32?
+@objc public var contentType: String {
+return proto.contentType
+}
+@objc public var hasContentType: Bool {
+return proto.hasContentType
+}
 
-        @objc public override init() {}
+@objc public var key: Data {
+return proto.key
+}
+@objc public var hasKey: Bool {
+return proto.hasKey
+}
 
-        @objc public func setId(_ value: UInt64) {
-            id = value
-        }
+@objc public var size: UInt32 {
+return proto.size
+}
+@objc public var hasSize: Bool {
+return proto.hasSize
+}
 
-        @objc public func setContentType(_ value: String) {
-            contentType = value
-        }
+@objc public var thumbnail: Data {
+return proto.thumbnail
+}
+@objc public var hasThumbnail: Bool {
+return proto.hasThumbnail
+}
 
-        @objc public func setKey(_ value: Data) {
-            key = value
-        }
+@objc public var digest: Data {
+return proto.digest
+}
+@objc public var hasDigest: Bool {
+return proto.hasDigest
+}
 
-        @objc public func setSize(_ value: UInt32) {
-            size = value
-        }
+@objc public var fileName: String {
+return proto.fileName
+}
+@objc public var hasFileName: Bool {
+return proto.hasFileName
+}
 
-        @objc public func setThumbnail(_ value: Data) {
-            thumbnail = value
-        }
+@objc public var flags: UInt32 {
+return proto.flags
+}
+@objc public var hasFlags: Bool {
+return proto.hasFlags
+}
 
-        @objc public func setDigest(_ value: Data) {
-            digest = value
-        }
+@objc public var width: UInt32 {
+return proto.width
+}
+@objc public var hasWidth: Bool {
+return proto.hasWidth
+}
 
-        @objc public func setFileName(_ value: String) {
-            fileName = value
-        }
+@objc public var height: UInt32 {
+return proto.height
+}
+@objc public var hasHeight: Bool {
+return proto.hasHeight
+}
 
-        @objc public func setFlags(_ value: UInt32) {
-            flags = value
-        }
+private init(proto: SignalServiceProtos_AttachmentPointer,
+             id: UInt64) {
+self.proto = proto
+self.id = id
+}
 
-        @objc public func setWidth(_ value: UInt32) {
-            width = value
-        }
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        @objc public func setHeight(_ value: UInt32) {
-            height = value
-        }
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoAttachmentPointer {
+let proto = try SignalServiceProtos_AttachmentPointer(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-        @objc public func build() throws -> SSKProtoAttachmentPointer {
-            let proto = SignalServiceProtos_AttachmentPointer.with { (builder) in
-                if let id = self.id {
-                    builder.id = id
-                }
-                if let contentType = self.contentType {
-                    builder.contentType = contentType
-                }
-                if let key = self.key {
-                    builder.key = key
-                }
-                if let size = self.size {
-                    builder.size = size
-                }
-                if let thumbnail = self.thumbnail {
-                    builder.thumbnail = thumbnail
-                }
-                if let digest = self.digest {
-                    builder.digest = digest
-                }
-                if let fileName = self.fileName {
-                    builder.fileName = fileName
-                }
-                if let flags = self.flags {
-                    builder.flags = flags
-                }
-                if let width = self.width {
-                    builder.width = width
-                }
-                if let height = self.height {
-                    builder.height = height
-                }
-            }
+fileprivate class func parseProto(_ proto: SignalServiceProtos_AttachmentPointer) throws -> SSKProtoAttachmentPointer {
+guard proto.hasID else {
+    throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+}
+let id = proto.id
 
-            let wrapper = try SSKProtoAttachmentPointer.parseProto(proto)
-            return wrapper
-        }
-    }
+// MARK: - Begin Validation Logic for SSKProtoAttachmentPointer -
 
-    @objc public let id: UInt64
-    @objc public let contentType: String?
-    @objc public let key: Data?
-    @objc public let size: UInt32?
-    @objc public let thumbnail: Data?
-    @objc public let digest: Data?
-    @objc public let fileName: String?
-    @objc public let flags: UInt32?
-    @objc public let width: UInt32?
-    @objc public let height: UInt32?
+// MARK: - End Validation Logic for SSKProtoAttachmentPointer -
 
-    @objc public init(id: UInt64,
-                      contentType: String?,
-                      key: Data?,
-                      size: UInt32?,
-                      thumbnail: Data?,
-                      digest: Data?,
-                      fileName: String?,
-                      flags: UInt32?,
-                      width: UInt32?,
-                      height: UInt32?) {
-        self.id = id
-        self.contentType = contentType
-        self.key = key
-        self.size = size
-        self.thumbnail = thumbnail
-        self.digest = digest
-        self.fileName = fileName
-        self.flags = flags
-        self.width = width
-        self.height = height
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoAttachmentPointer {
-        let proto = try SignalServiceProtos_AttachmentPointer(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_AttachmentPointer) throws -> SSKProtoAttachmentPointer {
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-        let id = proto.id
-
-        var contentType: String? = nil
-        if proto.hasContentType {
-            contentType = proto.contentType
-        }
-
-        var key: Data? = nil
-        if proto.hasKey {
-            key = proto.key
-        }
-
-        var size: UInt32? = nil
-        if proto.hasSize {
-            size = proto.size
-        }
-
-        var thumbnail: Data? = nil
-        if proto.hasThumbnail {
-            thumbnail = proto.thumbnail
-        }
-
-        var digest: Data? = nil
-        if proto.hasDigest {
-            digest = proto.digest
-        }
-
-        var fileName: String? = nil
-        if proto.hasFileName {
-            fileName = proto.fileName
-        }
-
-        var flags: UInt32? = nil
-        if proto.hasFlags {
-            flags = proto.flags
-        }
-
-        var width: UInt32? = nil
-        if proto.hasWidth {
-            width = proto.width
-        }
-
-        var height: UInt32? = nil
-        if proto.hasHeight {
-            height = proto.height
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoAttachmentPointer -
-
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoAttachmentPointer -
-
-        let result = SSKProtoAttachmentPointer(id: id,
-                                               contentType: contentType,
-                                               key: key,
-                                               size: size,
-                                               thumbnail: thumbnail,
-                                               digest: digest,
-                                               fileName: fileName,
-                                               flags: flags,
-                                               width: width,
-                                               height: height)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_AttachmentPointer {
-        let proto = SignalServiceProtos_AttachmentPointer.with { (builder) in
-            builder.id = self.id
-
-            if let contentType = self.contentType {
-                builder.contentType = contentType
-            }
-
-            if let key = self.key {
-                builder.key = key
-            }
-
-            if let size = self.size {
-                builder.size = size
-            }
-
-            if let thumbnail = self.thumbnail {
-                builder.thumbnail = thumbnail
-            }
-
-            if let digest = self.digest {
-                builder.digest = digest
-            }
-
-            if let fileName = self.fileName {
-                builder.fileName = fileName
-            }
-
-            if let flags = self.flags {
-                builder.flags = flags
-            }
-
-            if let width = self.width {
-                builder.width = width
-            }
-
-            if let height = self.height {
-                builder.height = height
-            }
-        }
-
-        return proto
-    }
+let result = SSKProtoAttachmentPointer(proto: proto,
+                                       id: id)
+return result
+}
 }
 
 // MARK: - SSKProtoGroupContext
 
 @objc public class SSKProtoGroupContext: NSObject {
 
-    // MARK: - SSKProtoGroupContextType
+// MARK: - SSKProtoGroupContextType
 
-    @objc public enum SSKProtoGroupContextType: Int32 {
-        case unknown = 0
-        case update = 1
-        case deliver = 2
-        case quit = 3
-        case requestInfo = 4
-    }
+@objc public enum SSKProtoGroupContextType: Int32 {
+case unknown = 0
+case update = 1
+case deliver = 2
+case quit = 3
+case requestInfo = 4
+}
 
-    private class func SSKProtoGroupContextTypeWrap(_ value: SignalServiceProtos_GroupContext.TypeEnum) -> SSKProtoGroupContextType {
-        switch value {
-        case .unknown: return .unknown
-        case .update: return .update
-        case .deliver: return .deliver
-        case .quit: return .quit
-        case .requestInfo: return .requestInfo
+private class func SSKProtoGroupContextTypeWrap(_ value: SignalServiceProtos_GroupContext.TypeEnum) -> SSKProtoGroupContextType {
+switch value {
+case .unknown: return .unknown
+case .update: return .update
+case .deliver: return .deliver
+case .quit: return .quit
+case .requestInfo: return .requestInfo
+}
+}
+
+private class func SSKProtoGroupContextTypeUnwrap(_ value: SSKProtoGroupContextType) -> SignalServiceProtos_GroupContext.TypeEnum {
+switch value {
+case .unknown: return .unknown
+case .update: return .update
+case .deliver: return .deliver
+case .quit: return .quit
+case .requestInfo: return .requestInfo
+}
+}
+
+// MARK: - SSKProtoGroupContextBuilder
+
+@objc public class SSKProtoGroupContextBuilder: NSObject {
+
+private var id: Data?
+private var type: SSKProtoGroupContextType?
+private var name: String?
+private var members: [String] = []
+private var avatar: SSKProtoAttachmentPointer?
+
+@objc public override init() {}
+
+@objc public func setId(_ _value: Data) {
+    id = _value
+}
+
+@objc public func setType(_ _value: SSKProtoGroupContextType) {
+    type = _value
+}
+
+@objc public func setName(_ _value: String) {
+    name = _value
+}
+
+@objc public func addMembers(_ _value: String) {
+    members.append(_value)
+}
+
+@objc public func setAvatar(_ _value: SSKProtoAttachmentPointer) {
+    avatar = _value
+}
+
+@objc public func build() throws -> SSKProtoGroupContext {
+    let proto = SignalServiceProtos_GroupContext.with { (builder) in
+        if let id = self.id {
+            builder.id = id
+        }
+
+        if let type = self.type {
+            builder.type = SSKProtoGroupContextTypeUnwrap(type)
+        }
+
+        if let name = self.name {
+            builder.name = name
+        }
+
+        var membersWrapped: [String] = []
+        for item in members {
+            membersWrapped.append(item)
+        }
+        builder.members = membersWrapped
+
+        if let avatar = self.avatar {
+            builder.avatar = avatar.proto
         }
     }
 
-    private class func SSKProtoGroupContextTypeUnwrap(_ value: SSKProtoGroupContextType) -> SignalServiceProtos_GroupContext.TypeEnum {
-        switch value {
-        case .unknown: return .unknown
-        case .update: return .update
-        case .deliver: return .deliver
-        case .quit: return .quit
-        case .requestInfo: return .requestInfo
-        }
-    }
+    let wrapper = try SSKProtoGroupContext.parseProto(proto)
+    return wrapper
+}
+}
 
-    // MARK: - SSKProtoGroupContextBuilder
+fileprivate let proto: SignalServiceProtos_GroupContext
 
-    @objc public class SSKProtoGroupContextBuilder: NSObject {
+@objc public let id: Data
+@objc public let type: SSKProtoGroupContextType
+@objc public let avatar: SSKProtoAttachmentPointer?
 
-        private var id: Data?
-        private var type: SSKProtoGroupContextType?
-        private var name: String?
-        private var members: [String]
-        private var avatar: SSKProtoAttachmentPointer?
+@objc public var name: String {
+return proto.name
+}
+@objc public var hasName: Bool {
+return proto.hasName
+}
 
-        @objc public override init() {}
+@objc public var members: [String] {
+return proto.members
+}
 
-        @objc public func setId(_ value: Data) {
-            id = value
-        }
+private init(proto: SignalServiceProtos_GroupContext,
+             id: Data,
+             type: SSKProtoGroupContextType,
+             avatar: SSKProtoAttachmentPointer?) {
+self.proto = proto
+self.id = id
+self.type = type
+self.avatar = avatar
+}
 
-        @objc public func setType(_ value: SSKProtoGroupContextType) {
-            type = value
-        }
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        @objc public func setName(_ value: String) {
-            name = value
-        }
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupContext {
+let proto = try SignalServiceProtos_GroupContext(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-        @objc public func addMembers(_ value: String) {
-            members.append(value)
-        }
+fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupContext) throws -> SSKProtoGroupContext {
+guard proto.hasID else {
+throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+}
+let id = proto.id
 
-        @objc public func setAvatar(_ value: SSKProtoAttachmentPointer) {
-            avatar = value
-        }
+guard proto.hasType else {
+throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+}
+let type = SSKProtoGroupContextTypeWrap(proto.type)
 
-        @objc public func build() throws -> SSKProtoGroupContext {
-            let proto = SignalServiceProtos_GroupContext.with { (builder) in
-                if let id = self.id {
-                    builder.id = id
-                }
-                if let type = self.type {
-                    builder.type = SSKProtoGroupContextTypeUnwrap(type)
-                }
-                if let name = self.name {
-                    builder.name = name
-                }
-                for item in members {
-                    builder.addMembers(item)
-                }
-                if let avatar = self.avatar {
-                    builder.avatar = avatar.asProtobuf
-                }
-            }
+var avatar: SSKProtoAttachmentPointer? = nil
+if proto.hasAvatar {
+avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
+}
 
-            let wrapper = try SSKProtoGroupContext.parseProto(proto)
-            return wrapper
-        }
-    }
+// MARK: - Begin Validation Logic for SSKProtoGroupContext -
 
-    @objc public let id: Data?
-    @objc public let type: SSKProtoGroupContextType
-    @objc public let name: String?
-    @objc public let members: [String]
-    @objc public let avatar: SSKProtoAttachmentPointer?
+// MARK: - End Validation Logic for SSKProtoGroupContext -
 
-    @objc public init(id: Data?,
-                      type: SSKProtoGroupContextType,
-                      name: String?,
-                      members: [String],
-                      avatar: SSKProtoAttachmentPointer?) {
-        self.id = id
-        self.type = type
-        self.name = name
-        self.members = members
-        self.avatar = avatar
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupContext {
-        let proto = try SignalServiceProtos_GroupContext(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupContext) throws -> SSKProtoGroupContext {
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-        let id = proto.id
-
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoGroupContextTypeWrap(proto.type)
-
-        var name: String? = nil
-        if proto.hasName {
-            name = proto.name
-        }
-
-        var members: [String] = []
-        for item in proto.members {
-            let wrapped = item
-            members.append(wrapped)
-        }
-
-        var avatar: SSKProtoAttachmentPointer? = nil
-        if proto.hasAvatar {
-            avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoGroupContext -
-
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoGroupContext -
-
-        let result = SSKProtoGroupContext(id: id,
-                                          type: type,
-                                          name: name,
-                                          members: members,
-                                          avatar: avatar)
-        return result
-    }
-
-    fileprivate var asProtobuf: SignalServiceProtos_GroupContext {
-        let proto = SignalServiceProtos_GroupContext.with { (builder) in
-            if let id = self.id {
-                builder.id = id
-            }
-
-            builder.type = SSKProtoGroupContext.SSKProtoGroupContextTypeUnwrap(self.type)
-
-            if let name = self.name {
-                builder.name = name
-            }
-
-            var membersUnwrapped = [String]()
-            for item in members {
-                membersUnwrapped.append(item)
-            }
-            builder.members = membersUnwrapped
-
-            if let avatar = self.avatar {
-                builder.avatar = avatar.asProtobuf
-            }
-        }
-
-        return proto
-    }
+let result = SSKProtoGroupContext(proto: proto,
+                                  id: id,
+                                  type: type,
+                                  avatar: avatar)
+return result
+}
 }
 
 // MARK: - SSKProtoContactDetailsAvatar
 
 @objc public class SSKProtoContactDetailsAvatar: NSObject {
 
-    // MARK: - SSKProtoContactDetailsAvatarBuilder
+// MARK: - SSKProtoContactDetailsAvatarBuilder
 
-    @objc public class SSKProtoContactDetailsAvatarBuilder: NSObject {
+@objc public class SSKProtoContactDetailsAvatarBuilder: NSObject {
 
-        private var contentType: String?
-        private var length: UInt32?
+private var contentType: String?
+private var length: UInt32?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setContentType(_ value: String) {
-            contentType = value
-        }
+@objc public func setContentType(_ _value: String) {
+contentType = _value
+}
 
-        @objc public func setLength(_ value: UInt32) {
-            length = value
-        }
+@objc public func setLength(_ _value: UInt32) {
+length = _value
+}
 
-        @objc public func build() throws -> SSKProtoContactDetailsAvatar {
-            let proto = SignalServiceProtos_ContactDetails.Avatar.with { (builder) in
-                if let contentType = self.contentType {
-                    builder.contentType = contentType
-                }
-                if let length = self.length {
-                    builder.length = length
-                }
-            }
-
-            let wrapper = try SSKProtoContactDetailsAvatar.parseProto(proto)
-            return wrapper
-        }
+@objc public func build() throws -> SSKProtoContactDetailsAvatar {
+let proto = SignalServiceProtos_ContactDetails.Avatar.with { (builder) in
+    if let contentType = self.contentType {
+        builder.contentType = contentType
     }
 
-    @objc public let contentType: String?
-    @objc public let length: UInt32?
-
-    @objc public init(contentType: String?,
-                      length: UInt32?) {
-        self.contentType = contentType
-        self.length = length
+    if let length = self.length {
+        builder.length = length
     }
+}
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
+let wrapper = try SSKProtoContactDetailsAvatar.parseProto(proto)
+return wrapper
+}
+}
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoContactDetailsAvatar {
-        let proto = try SignalServiceProtos_ContactDetails.Avatar(serializedData: serializedData)
-        return try parseProto(proto)
-    }
+fileprivate let proto: SignalServiceProtos_ContactDetails.Avatar
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails.Avatar) throws -> SSKProtoContactDetailsAvatar {
-        var contentType: String? = nil
-        if proto.hasContentType {
-            contentType = proto.contentType
-        }
+@objc public var contentType: String {
+return proto.contentType
+}
+@objc public var hasContentType: Bool {
+return proto.hasContentType
+}
 
-        var length: UInt32? = nil
-        if proto.hasLength {
-            length = proto.length
-        }
+@objc public var length: UInt32 {
+return proto.length
+}
+@objc public var hasLength: Bool {
+return proto.hasLength
+}
 
-        // MARK: - Begin Validation Logic for SSKProtoContactDetailsAvatar -
+private init(proto: SignalServiceProtos_ContactDetails.Avatar) {
+self.proto = proto
+}
 
-        // MARK: - End Validation Logic for SSKProtoContactDetailsAvatar -
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        let result = SSKProtoContactDetailsAvatar(contentType: contentType,
-                                                  length: length)
-        return result
-    }
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoContactDetailsAvatar {
+let proto = try SignalServiceProtos_ContactDetails.Avatar(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-    fileprivate var asProtobuf: SignalServiceProtos_ContactDetails.Avatar {
-        let proto = SignalServiceProtos_ContactDetails.Avatar.with { (builder) in
-            if let contentType = self.contentType {
-                builder.contentType = contentType
-            }
+fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails.Avatar) throws -> SSKProtoContactDetailsAvatar {
+// MARK: - Begin Validation Logic for SSKProtoContactDetailsAvatar -
 
-            if let length = self.length {
-                builder.length = length
-            }
-        }
+// MARK: - End Validation Logic for SSKProtoContactDetailsAvatar -
 
-        return proto
-    }
+let result = SSKProtoContactDetailsAvatar(proto: proto)
+return result
+}
 }
 
 // MARK: - SSKProtoContactDetails
 
 @objc public class SSKProtoContactDetails: NSObject {
 
-    // MARK: - SSKProtoContactDetailsBuilder
+// MARK: - SSKProtoContactDetailsBuilder
 
-    @objc public class SSKProtoContactDetailsBuilder: NSObject {
+@objc public class SSKProtoContactDetailsBuilder: NSObject {
 
-        private var number: String?
-        private var name: String?
-        private var avatar: SSKProtoContactDetailsAvatar?
-        private var color: String?
-        private var verified: SSKProtoVerified?
-        private var profileKey: Data?
-        private var blocked: Bool?
-        private var expireTimer: UInt32?
+private var number: String?
+private var name: String?
+private var avatar: SSKProtoContactDetailsAvatar?
+private var color: String?
+private var verified: SSKProtoVerified?
+private var profileKey: Data?
+private var blocked: Bool?
+private var expireTimer: UInt32?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setNumber(_ value: String) {
-            number = value
-        }
+@objc public func setNumber(_ _value: String) {
+number = _value
+}
 
-        @objc public func setName(_ value: String) {
-            name = value
-        }
+@objc public func setName(_ _value: String) {
+name = _value
+}
 
-        @objc public func setAvatar(_ value: SSKProtoContactDetailsAvatar) {
-            avatar = value
-        }
+@objc public func setAvatar(_ _value: SSKProtoContactDetailsAvatar) {
+avatar = _value
+}
 
-        @objc public func setColor(_ value: String) {
-            color = value
-        }
+@objc public func setColor(_ _value: String) {
+color = _value
+}
 
-        @objc public func setVerified(_ value: SSKProtoVerified) {
-            verified = value
-        }
+@objc public func setVerified(_ _value: SSKProtoVerified) {
+verified = _value
+}
 
-        @objc public func setProfileKey(_ value: Data) {
-            profileKey = value
-        }
+@objc public func setProfileKey(_ _value: Data) {
+profileKey = _value
+}
 
-        @objc public func setBlocked(_ value: Bool) {
-            blocked = value
-        }
+@objc public func setBlocked(_ _value: Bool) {
+blocked = _value
+}
 
-        @objc public func setExpireTimer(_ value: UInt32) {
-            expireTimer = value
-        }
+@objc public func setExpireTimer(_ _value: UInt32) {
+expireTimer = _value
+}
 
-        @objc public func build() throws -> SSKProtoContactDetails {
-            let proto = SignalServiceProtos_ContactDetails.with { (builder) in
-                if let number = self.number {
-                    builder.number = number
-                }
-                if let name = self.name {
-                    builder.name = name
-                }
-                if let avatar = self.avatar {
-                    builder.avatar = avatar.asProtobuf
-                }
-                if let color = self.color {
-                    builder.color = color
-                }
-                if let verified = self.verified {
-                    builder.verified = verified.asProtobuf
-                }
-                if let profileKey = self.profileKey {
-                    builder.profileKey = profileKey
-                }
-                if let blocked = self.blocked {
-                    builder.blocked = blocked
-                }
-                if let expireTimer = self.expireTimer {
-                    builder.expireTimer = expireTimer
-                }
-            }
-
-            let wrapper = try SSKProtoContactDetails.parseProto(proto)
-            return wrapper
-        }
+@objc public func build() throws -> SSKProtoContactDetails {
+let proto = SignalServiceProtos_ContactDetails.with { (builder) in
+    if let number = self.number {
+        builder.number = number
     }
 
-    @objc public let number: String?
-    @objc public let name: String?
-    @objc public let avatar: SSKProtoContactDetailsAvatar?
-    @objc public let color: String?
-    @objc public let verified: SSKProtoVerified?
-    @objc public let profileKey: Data?
-    @objc public let blocked: Bool?
-    @objc public let expireTimer: UInt32?
-
-    @objc public init(number: String?,
-                      name: String?,
-                      avatar: SSKProtoContactDetailsAvatar?,
-                      color: String?,
-                      verified: SSKProtoVerified?,
-                      profileKey: Data?,
-                      blocked: Bool?,
-                      expireTimer: UInt32?) {
-        self.number = number
-        self.name = name
-        self.avatar = avatar
-        self.color = color
-        self.verified = verified
-        self.profileKey = profileKey
-        self.blocked = blocked
-        self.expireTimer = expireTimer
+    if let name = self.name {
+        builder.name = name
     }
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+    if let avatar = self.avatar {
+        builder.avatar = avatar.proto
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoContactDetails {
-        let proto = try SignalServiceProtos_ContactDetails(serializedData: serializedData)
-        return try parseProto(proto)
+    if let color = self.color {
+        builder.color = color
     }
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails) throws -> SSKProtoContactDetails {
-        guard proto.hasNumber else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
-        }
-        let number = proto.number
-
-        var name: String? = nil
-        if proto.hasName {
-            name = proto.name
-        }
-
-        var avatar: SSKProtoContactDetailsAvatar? = nil
-        if proto.hasAvatar {
-            avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
-        }
-
-        var color: String? = nil
-        if proto.hasColor {
-            color = proto.color
-        }
-
-        var verified: SSKProtoVerified? = nil
-        if proto.hasVerified {
-            verified = try SSKProtoVerified.parseProto(proto.verified)
-        }
-
-        var profileKey: Data? = nil
-        if proto.hasProfileKey {
-            profileKey = proto.profileKey
-        }
-
-        var blocked: Bool? = nil
-        if proto.hasBlocked {
-            blocked = proto.blocked
-        }
-
-        var expireTimer: UInt32? = nil
-        if proto.hasExpireTimer {
-            expireTimer = proto.expireTimer
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoContactDetails -
-
-        guard proto.hasNumber else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoContactDetails -
-
-        let result = SSKProtoContactDetails(number: number,
-                                            name: name,
-                                            avatar: avatar,
-                                            color: color,
-                                            verified: verified,
-                                            profileKey: profileKey,
-                                            blocked: blocked,
-                                            expireTimer: expireTimer)
-        return result
+    if let verified = self.verified {
+        builder.verified = verified.proto
     }
 
-    fileprivate var asProtobuf: SignalServiceProtos_ContactDetails {
-        let proto = SignalServiceProtos_ContactDetails.with { (builder) in
-            if let number = self.number {
-                builder.number = number
-            }
-
-            if let name = self.name {
-                builder.name = name
-            }
-
-            if let avatar = self.avatar {
-                builder.avatar = avatar.asProtobuf
-            }
-
-            if let color = self.color {
-                builder.color = color
-            }
-
-            if let verified = self.verified {
-                builder.verified = verified.asProtobuf
-            }
-
-            if let profileKey = self.profileKey {
-                builder.profileKey = profileKey
-            }
-
-            if let blocked = self.blocked {
-                builder.blocked = blocked
-            }
-
-            if let expireTimer = self.expireTimer {
-                builder.expireTimer = expireTimer
-            }
-        }
-
-        return proto
+    if let profileKey = self.profileKey {
+        builder.profileKey = profileKey
     }
+
+    if let blocked = self.blocked {
+        builder.blocked = blocked
+    }
+
+    if let expireTimer = self.expireTimer {
+        builder.expireTimer = expireTimer
+    }
+}
+
+let wrapper = try SSKProtoContactDetails.parseProto(proto)
+return wrapper
+}
+}
+
+fileprivate let proto: SignalServiceProtos_ContactDetails
+
+@objc public let number: String
+@objc public let avatar: SSKProtoContactDetailsAvatar?
+@objc public let verified: SSKProtoVerified?
+
+@objc public var name: String {
+return proto.name
+}
+@objc public var hasName: Bool {
+return proto.hasName
+}
+
+@objc public var color: String {
+return proto.color
+}
+@objc public var hasColor: Bool {
+return proto.hasColor
+}
+
+@objc public var profileKey: Data {
+return proto.profileKey
+}
+@objc public var hasProfileKey: Bool {
+return proto.hasProfileKey
+}
+
+@objc public var blocked: Bool {
+return proto.blocked
+}
+@objc public var hasBlocked: Bool {
+return proto.hasBlocked
+}
+
+@objc public var expireTimer: UInt32 {
+return proto.expireTimer
+}
+@objc public var hasExpireTimer: Bool {
+return proto.hasExpireTimer
+}
+
+private init(proto: SignalServiceProtos_ContactDetails,
+             number: String,
+             avatar: SSKProtoContactDetailsAvatar?,
+             verified: SSKProtoVerified?) {
+self.proto = proto
+self.number = number
+self.avatar = avatar
+self.verified = verified
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoContactDetails {
+let proto = try SignalServiceProtos_ContactDetails(serializedData: serializedData)
+return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails) throws -> SSKProtoContactDetails {
+guard proto.hasNumber else {
+throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
+}
+let number = proto.number
+
+var avatar: SSKProtoContactDetailsAvatar? = nil
+if proto.hasAvatar {
+avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
+}
+
+var verified: SSKProtoVerified? = nil
+if proto.hasVerified {
+verified = try SSKProtoVerified.parseProto(proto.verified)
+}
+
+// MARK: - Begin Validation Logic for SSKProtoContactDetails -
+
+// MARK: - End Validation Logic for SSKProtoContactDetails -
+
+let result = SSKProtoContactDetails(proto: proto,
+                                    number: number,
+                                    avatar: avatar,
+                                    verified: verified)
+return result
+}
 }
 
 // MARK: - SSKProtoGroupDetailsAvatar
 
 @objc public class SSKProtoGroupDetailsAvatar: NSObject {
 
-    // MARK: - SSKProtoGroupDetailsAvatarBuilder
+// MARK: - SSKProtoGroupDetailsAvatarBuilder
 
-    @objc public class SSKProtoGroupDetailsAvatarBuilder: NSObject {
+@objc public class SSKProtoGroupDetailsAvatarBuilder: NSObject {
 
-        private var contentType: String?
-        private var length: UInt32?
+private var contentType: String?
+private var length: UInt32?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setContentType(_ value: String) {
-            contentType = value
-        }
+@objc public func setContentType(_ _value: String) {
+contentType = _value
+}
 
-        @objc public func setLength(_ value: UInt32) {
-            length = value
-        }
+@objc public func setLength(_ _value: UInt32) {
+length = _value
+}
 
-        @objc public func build() throws -> SSKProtoGroupDetailsAvatar {
-            let proto = SignalServiceProtos_GroupDetails.Avatar.with { (builder) in
-                if let contentType = self.contentType {
-                    builder.contentType = contentType
-                }
-                if let length = self.length {
-                    builder.length = length
-                }
-            }
-
-            let wrapper = try SSKProtoGroupDetailsAvatar.parseProto(proto)
-            return wrapper
-        }
+@objc public func build() throws -> SSKProtoGroupDetailsAvatar {
+let proto = SignalServiceProtos_GroupDetails.Avatar.with { (builder) in
+    if let contentType = self.contentType {
+        builder.contentType = contentType
     }
 
-    @objc public let contentType: String?
-    @objc public let length: UInt32?
-
-    @objc public init(contentType: String?,
-                      length: UInt32?) {
-        self.contentType = contentType
-        self.length = length
+    if let length = self.length {
+        builder.length = length
     }
+}
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
-    }
+let wrapper = try SSKProtoGroupDetailsAvatar.parseProto(proto)
+return wrapper
+}
+}
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupDetailsAvatar {
-        let proto = try SignalServiceProtos_GroupDetails.Avatar(serializedData: serializedData)
-        return try parseProto(proto)
-    }
+fileprivate let proto: SignalServiceProtos_GroupDetails.Avatar
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupDetails.Avatar) throws -> SSKProtoGroupDetailsAvatar {
-        var contentType: String? = nil
-        if proto.hasContentType {
-            contentType = proto.contentType
-        }
+@objc public var contentType: String {
+return proto.contentType
+}
+@objc public var hasContentType: Bool {
+return proto.hasContentType
+}
 
-        var length: UInt32? = nil
-        if proto.hasLength {
-            length = proto.length
-        }
+@objc public var length: UInt32 {
+return proto.length
+}
+@objc public var hasLength: Bool {
+return proto.hasLength
+}
 
-        // MARK: - Begin Validation Logic for SSKProtoGroupDetailsAvatar -
+private init(proto: SignalServiceProtos_GroupDetails.Avatar) {
+self.proto = proto
+}
 
-        // MARK: - End Validation Logic for SSKProtoGroupDetailsAvatar -
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
 
-        let result = SSKProtoGroupDetailsAvatar(contentType: contentType,
-                                                length: length)
-        return result
-    }
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupDetailsAvatar {
+let proto = try SignalServiceProtos_GroupDetails.Avatar(serializedData: serializedData)
+return try parseProto(proto)
+}
 
-    fileprivate var asProtobuf: SignalServiceProtos_GroupDetails.Avatar {
-        let proto = SignalServiceProtos_GroupDetails.Avatar.with { (builder) in
-            if let contentType = self.contentType {
-                builder.contentType = contentType
-            }
+fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupDetails.Avatar) throws -> SSKProtoGroupDetailsAvatar {
+// MARK: - Begin Validation Logic for SSKProtoGroupDetailsAvatar -
 
-            if let length = self.length {
-                builder.length = length
-            }
-        }
+// MARK: - End Validation Logic for SSKProtoGroupDetailsAvatar -
 
-        return proto
-    }
+let result = SSKProtoGroupDetailsAvatar(proto: proto)
+return result
+}
 }
 
 // MARK: - SSKProtoGroupDetails
 
 @objc public class SSKProtoGroupDetails: NSObject {
 
-    // MARK: - SSKProtoGroupDetailsBuilder
+// MARK: - SSKProtoGroupDetailsBuilder
 
-    @objc public class SSKProtoGroupDetailsBuilder: NSObject {
+@objc public class SSKProtoGroupDetailsBuilder: NSObject {
 
-        private var id: Data?
-        private var name: String?
-        private var members: [String]
-        private var avatar: SSKProtoGroupDetailsAvatar?
-        private var active: Bool?
-        private var expireTimer: UInt32?
-        private var color: String?
+private var id: Data?
+private var name: String?
+private var members: [String] = []
+private var avatar: SSKProtoGroupDetailsAvatar?
+private var active: Bool?
+private var expireTimer: UInt32?
+private var color: String?
 
-        @objc public override init() {}
+@objc public override init() {}
 
-        @objc public func setId(_ value: Data) {
-            id = value
-        }
+@objc public func setId(_ _value: Data) {
+id = _value
+}
 
-        @objc public func setName(_ value: String) {
-            name = value
-        }
+@objc public func setName(_ _value: String) {
+name = _value
+}
 
-        @objc public func addMembers(_ value: String) {
-            members.append(value)
-        }
+@objc public func addMembers(_ _value: String) {
+members.append(_value)
+}
 
-        @objc public func setAvatar(_ value: SSKProtoGroupDetailsAvatar) {
-            avatar = value
-        }
+@objc public func setAvatar(_ _value: SSKProtoGroupDetailsAvatar) {
+avatar = _value
+}
 
-        @objc public func setActive(_ value: Bool) {
-            active = value
-        }
+@objc public func setActive(_ _value: Bool) {
+active = _value
+}
 
-        @objc public func setExpireTimer(_ value: UInt32) {
-            expireTimer = value
-        }
+@objc public func setExpireTimer(_ _value: UInt32) {
+expireTimer = _value
+}
 
-        @objc public func setColor(_ value: String) {
-            color = value
-        }
+@objc public func setColor(_ _value: String) {
+color = _value
+}
 
-        @objc public func build() throws -> SSKProtoGroupDetails {
-            let proto = SignalServiceProtos_GroupDetails.with { (builder) in
-                if let id = self.id {
-                    builder.id = id
-                }
-                if let name = self.name {
-                    builder.name = name
-                }
-                for item in members {
-                    builder.addMembers(item)
-                }
-                if let avatar = self.avatar {
-                    builder.avatar = avatar.asProtobuf
-                }
-                if let active = self.active {
-                    builder.active = active
-                }
-                if let expireTimer = self.expireTimer {
-                    builder.expireTimer = expireTimer
-                }
-                if let color = self.color {
-                    builder.color = color
-                }
-            }
-
-            let wrapper = try SSKProtoGroupDetails.parseProto(proto)
-            return wrapper
-        }
+@objc public func build() throws -> SSKProtoGroupDetails {
+let proto = SignalServiceProtos_GroupDetails.with { (builder) in
+    if let id = self.id {
+        builder.id = id
     }
 
-    @objc public let id: Data?
-    @objc public let name: String?
-    @objc public let members: [String]
-    @objc public let avatar: SSKProtoGroupDetailsAvatar?
-    @objc public let active: Bool?
-    @objc public let expireTimer: UInt32?
-    @objc public let color: String?
-
-    @objc public init(id: Data?,
-                      name: String?,
-                      members: [String],
-                      avatar: SSKProtoGroupDetailsAvatar?,
-                      active: Bool?,
-                      expireTimer: UInt32?,
-                      color: String?) {
-        self.id = id
-        self.name = name
-        self.members = members
-        self.avatar = avatar
-        self.active = active
-        self.expireTimer = expireTimer
-        self.color = color
+    if let name = self.name {
+        builder.name = name
     }
 
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+    var membersWrapped: [String] = []
+    for item in members {
+        membersWrapped.append(item)
+    }
+    builder.members = membersWrapped
+
+    if let avatar = self.avatar {
+        builder.avatar = avatar.proto
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupDetails {
-        let proto = try SignalServiceProtos_GroupDetails(serializedData: serializedData)
-        return try parseProto(proto)
+    if let active = self.active {
+        builder.active = active
     }
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupDetails) throws -> SSKProtoGroupDetails {
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-        let id = proto.id
-
-        var name: String? = nil
-        if proto.hasName {
-            name = proto.name
-        }
-
-        var members: [String] = []
-        for item in proto.members {
-            let wrapped = item
-            members.append(wrapped)
-        }
-
-        var avatar: SSKProtoGroupDetailsAvatar? = nil
-        if proto.hasAvatar {
-            avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
-        }
-
-        var active: Bool? = true
-        if proto.hasActive {
-            active = proto.active
-        }
-
-        var expireTimer: UInt32? = nil
-        if proto.hasExpireTimer {
-            expireTimer = proto.expireTimer
-        }
-
-        var color: String? = nil
-        if proto.hasColor {
-            color = proto.color
-        }
-
-        // MARK: - Begin Validation Logic for SSKProtoGroupDetails -
-
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-
-        // MARK: - End Validation Logic for SSKProtoGroupDetails -
-
-        let result = SSKProtoGroupDetails(id: id,
-                                          name: name,
-                                          members: members,
-                                          avatar: avatar,
-                                          active: active,
-                                          expireTimer: expireTimer,
-                                          color: color)
-        return result
+    if let expireTimer = self.expireTimer {
+        builder.expireTimer = expireTimer
     }
 
-    fileprivate var asProtobuf: SignalServiceProtos_GroupDetails {
-        let proto = SignalServiceProtos_GroupDetails.with { (builder) in
-            if let id = self.id {
-                builder.id = id
-            }
-
-            if let name = self.name {
-                builder.name = name
-            }
-
-            var membersUnwrapped = [String]()
-            for item in members {
-                membersUnwrapped.append(item)
-            }
-            builder.members = membersUnwrapped
-
-            if let avatar = self.avatar {
-                builder.avatar = avatar.asProtobuf
-            }
-
-            if let active = self.active {
-                builder.active = active
-            }
-
-            if let expireTimer = self.expireTimer {
-                builder.expireTimer = expireTimer
-            }
-
-            if let color = self.color {
-                builder.color = color
-            }
-        }
-
-        return proto
+    if let color = self.color {
+        builder.color = color
     }
+}
+
+let wrapper = try SSKProtoGroupDetails.parseProto(proto)
+return wrapper
+}
+}
+
+fileprivate let proto: SignalServiceProtos_GroupDetails
+
+@objc public let id: Data
+@objc public let avatar: SSKProtoGroupDetailsAvatar?
+
+@objc public var name: String {
+return proto.name
+}
+@objc public var hasName: Bool {
+return proto.hasName
+}
+
+@objc public var members: [String] {
+return proto.members
+}
+
+@objc public var active: Bool {
+return proto.active
+}
+@objc public var hasActive: Bool {
+return proto.hasActive
+}
+
+@objc public var expireTimer: UInt32 {
+return proto.expireTimer
+}
+@objc public var hasExpireTimer: Bool {
+return proto.hasExpireTimer
+}
+
+@objc public var color: String {
+return proto.color
+}
+@objc public var hasColor: Bool {
+return proto.hasColor
+}
+
+private init(proto: SignalServiceProtos_GroupDetails,
+             id: Data,
+             avatar: SSKProtoGroupDetailsAvatar?) {
+self.proto = proto
+self.id = id
+self.avatar = avatar
+}
+
+@objc
+public func serializedData() throws -> Data {
+    return try self.proto.serializedData()
+}
+
+@objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupDetails {
+let proto = try SignalServiceProtos_GroupDetails(serializedData: serializedData)
+return try parseProto(proto)
+}
+
+fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupDetails) throws -> SSKProtoGroupDetails {
+guard proto.hasID else {
+throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+}
+let id = proto.id
+
+var avatar: SSKProtoGroupDetailsAvatar? = nil
+if proto.hasAvatar {
+avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
+}
+
+// MARK: - Begin Validation Logic for SSKProtoGroupDetails -
+
+// MARK: - End Validation Logic for SSKProtoGroupDetails -
+
+let result = SSKProtoGroupDetails(proto: proto,
+                                  id: id,
+                                  avatar: avatar)
+return result
+}
 }

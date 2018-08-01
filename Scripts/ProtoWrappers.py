@@ -178,10 +178,12 @@ class BaseContext(object):
                 # Failure
                 return field.proto_type
     
-    def swift_type_for_field(self, field):
+    def swift_type_for_field(self, field, suppress_optional=False):
         base_type = self.base_swift_type_for_field(field)
         
         if field.rules == 'optional':
+            if suppress_optional:
+                return base_type
             can_be_optional = self.can_field_be_optional(field)
             if can_be_optional:
                 return '%s?' % base_type
@@ -291,6 +293,7 @@ import Foundation
         writer.extend(('''
 public enum %s: Error {
     case invalidProtobuf(description: String)
+    case invalidProtoAccess(description: String)
 }
 ''' % writer.invalid_protobuf_error_name).strip())
         writer.newline()        
@@ -369,32 +372,87 @@ class MessageContext(BaseContext):
         wrapped_swift_name = self.derive_wrapped_swift_name()
 
         # Prepare fields
+        explict_fields = []
+        implict_fields = []
         for field in self.fields():
             field.type_swift = self.swift_type_for_field(field)
+            field.type_swift_not_optional = self.swift_type_for_field(field, suppress_optional=True)
             field.name_swift = lowerCamlCaseForUnderscoredText_wrapped(field.name)
+            
+            is_explicit = False
+            if field.is_required:
+                is_explicit = True
+            elif self.is_field_a_proto(field):
+                is_explicit = True
+            if is_explicit:
+                explict_fields.append(field)
+            else:
+                implict_fields.append(field)
 
         self.generate_builder(writer)
         
-        # writer.add('private let proto: %s' % wrapped_swift_name )
-        # writer.newline()
+        writer.add('fileprivate let proto: %s' % wrapped_swift_name )
+        writer.newline()
         
         # Property Declarations
-        for field in self.fields():
-            writer.add('@objc public let %s: %s' % (field.name_swift, field.type_swift))
-        writer.newline()
+        if len(explict_fields) > 0:
+            for field in explict_fields:
+                type_name = field.type_swift_not_optional if field.is_required else field.type_swift
+                writer.add('@objc public let %s: %s' % (field.name_swift, type_name))
+            writer.newline()
+
+        if len(implict_fields) > 0:
+            for field in implict_fields:
+                if field.rules == 'optional':
+                    writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
+                    writer.push_indent()
+                    if self.is_field_an_enum(field):
+                        enum_context = self.context_for_proto_type(field)
+                        writer.add('return %s.%sWrap(proto.%s)' % ( enum_context.parent.swift_name, enum_context.swift_name, field.name_swift, ) )
+                    else:
+                        writer.add('return proto.%s' % field.name_swift )
+                    writer.pop_indent()
+                    writer.add('}')
+
+                    writer.add('@objc public var %s: Bool {' % field.has_accessor_name() )
+                    writer.push_indent()
+                    writer.add('return proto.%s' % field.has_accessor_name() )
+                    writer.pop_indent()
+                    writer.add('}')
+                    writer.newline()
+                elif field.rules == 'repeated':
+                    writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
+                    writer.add('return proto.%s' % field.name_swift )
+                    writer.pop_indent()
+                    writer.add('}')
+                    writer.newline()
+                else:
+                    writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
+                    writer.push_indent()
+                    if self.is_field_an_enum(field):
+                        enum_context = self.context_for_proto_type(field)
+                        writer.add('return %sUnwrap(proto.%s)' % ( enum_context.swift_name, field.name_swift, ) )
+                    else:
+                        writer.add('return proto.%s' % field.name_swift )
+                    writer.pop_indent()
+                    writer.add('}')
+                    writer.newline()
+                
         
         # Initializer
         initializer_parameters = []
-        initializer_prefix = '@objc public init('
-        for index, field in enumerate(self.fields()):
-            parameter = '%s: %s' % (field.name_swift, field.type_swift)
-            if index > 0:
-                parameter = '\n' + ' ' * len(initializer_prefix) + parameter
+        initializer_parameters.append('proto: %s' % wrapped_swift_name)        
+        initializer_prefix = 'private init('
+        for field in explict_fields:
+            type_name = field.type_swift_not_optional if field.is_required else field.type_swift
+            parameter = '%s: %s' % (field.name_swift, type_name)
+            parameter = '\n' + ' ' * len(initializer_prefix) + parameter
             initializer_parameters.append(parameter)
         initializer_parameters = ', '.join(initializer_parameters)
         writer.extend('%s%s) {' % ( initializer_prefix, initializer_parameters, ) )
         writer.push_indent()
-        for field in self.fields():
+        writer.add('self.proto = proto')
+        for field in explict_fields:
             writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
         writer.pop_indent()
         writer.add('}')
@@ -404,7 +462,7 @@ class MessageContext(BaseContext):
         writer.extend(('''
 @objc
 public func serializedData() throws -> Data {
-    return try self.asProtobuf.serializedData()
+    return try self.proto.serializedData()
 }
 ''').strip())
         writer.newline()
@@ -422,7 +480,7 @@ public func serializedData() throws -> Data {
         writer.add('fileprivate class func parseProto(_ proto: %s) throws -> %s {' % ( wrapped_swift_name, self.swift_name, ) )
         writer.push_indent()
         
-        for field in self.fields():
+        for field in explict_fields:
             if field.is_required:
             # if self.can_field_be_optional(field):
                 writer.add('guard proto.%s else {' % field.has_accessor_name() )
@@ -492,10 +550,10 @@ public func serializedData() throws -> Data {
         
         initializer_prefix = 'let result = %s(' % self.swift_name
         initializer_arguments = []
-        for index, field in enumerate(self.fields()):
+        initializer_arguments.append('proto: proto')
+        for field in explict_fields:
             argument = '%s: %s' % (field.name_swift, field.name_swift)
-            if index > 0:
-                argument = '\n' + ' ' * len(initializer_prefix) + argument
+            argument = '\n' + ' ' * len(initializer_prefix) + argument
             initializer_arguments.append(argument)
         initializer_arguments = ', '.join(initializer_arguments)
         writer.extend('%s%s)' % ( initializer_prefix, initializer_arguments, ) )
@@ -503,58 +561,7 @@ public func serializedData() throws -> Data {
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-    
-        # asProtobuf() func
-        writer.add('fileprivate var asProtobuf: %s {' % wrapped_swift_name)
-        writer.push_indent()
-        writer.add('let proto = %s.with { (builder) in' % wrapped_swift_name)
-        writer.push_indent()
-        for field in self.fields():
-            if self.is_field_an_enum(field):
-                # TODO: Assert that rules is empty.
-                enum_context = self.context_for_proto_type(field)
-                writer.add('builder.%s = %s.%sUnwrap(self.%s)' % ( field.name_swift, self.swift_name, enum_context.swift_name, field.name_swift, ) )
-            elif field.rules == 'repeated':
-                # TODO: Assert that type is a message.
-                list_wrapped_swift_name = None
-                if self.is_field_a_proto(field):
-                    message_context = self.context_for_proto_type(field)
-                    list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
-                else:
-                    # TODO: Assert not an enum.
-                    list_wrapped_swift_name = self.base_swift_type_for_field(field)
-                writer.add('var %sUnwrapped = [%s]()' % (field.name_swift, list_wrapped_swift_name))
-                writer.add('for item in %s {' % (field.name_swift))
-                writer.push_indent()
-                if self.is_field_a_proto(field):
-                    writer.add('%sUnwrapped.append(item.asProtobuf)' % field.name_swift)
-                else:
-                    writer.add('%sUnwrapped.append(item)' % field.name_swift)
-                writer.pop_indent()
-                writer.add('}')
-                writer.add('builder.%s = %sUnwrapped' % (field.name_swift, field.name_swift))
-            elif field.rules == 'optional' and self.can_field_be_optional(field):
-                writer.add('if let %s = self.%s {' % (field.name_swift, field.name_swift))
-                writer.push_indent()
-                if self.is_field_a_proto(field):
-                    writer.add('builder.%s = %s.asProtobuf' % (field.name_swift, field.name_swift))
-                else:
-                    writer.add('builder.%s = %s' % (field.name_swift, field.name_swift))
-                writer.pop_indent()
-                writer.add('}')
-            else:
-                writer.add('builder.%s = self.%s' % (field.name_swift, field.name_swift))
-            writer.newline()
-        #     writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
-        writer.rstrip()
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-        writer.add('return proto')
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-        
+            
         writer.pop_context()
 
         writer.rstrip()
@@ -578,7 +585,7 @@ public func serializedData() throws -> Data {
         # Property Declarations
         for field in self.fields():
             if field.rules == 'repeated':
-                writer.add('private var %s: [%s]' % ( field.name_swift, self.base_swift_type_for_field(field), ))
+                writer.add('private var %s: [%s] = []' % ( field.name_swift, self.base_swift_type_for_field(field), ))
             else:
                 writer.add('private var %s: %s?' % ( field.name_swift, self.base_swift_type_for_field(field), ))
         writer.newline() 
@@ -592,18 +599,18 @@ public func serializedData() throws -> Data {
             if field.rules == 'repeated':
                 accessor_name = field.name_swift
                 accessor_name = 'add' + accessor_name[0].upper() + accessor_name[1:]
-                writer.add('@objc public func %s(_ value: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.add('@objc public func %s(_ _value: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
                 writer.push_indent()
-                writer.add('%s.append(value)' % ( field.name_swift, ) )
+                writer.add('%s.append(_value)' % ( field.name_swift, ) )
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
             else:
                 accessor_name = field.name_swift
                 accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
-                writer.add('@objc public func %s(_ value: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.add('@objc public func %s(_ _value: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
                 writer.push_indent()
-                writer.add('%s = value' % ( field.name_swift, ) )
+                writer.add('%s = _value' % ( field.name_swift, ) )
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
@@ -615,20 +622,27 @@ public func serializedData() throws -> Data {
         writer.push_indent()
         for field in self.fields():
             if field.rules == 'repeated':
-                accessor_name = field.name_swift
-                accessor_name = 'add' + accessor_name[0].upper() + accessor_name[1:]
-                
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    item_wrapped_swift_name = enum_context.derive_wrapped_swift_name()
+                elif self.is_field_a_proto(field):
+                    message_context = self.context_for_proto_type(field)
+                    item_wrapped_swift_name = message_context.derive_wrapped_swift_name()
+                else:
+                    item_wrapped_swift_name = self.base_swift_type_for_field(field)
+                writer.add('var %sWrapped : [%s] = []' % ( field.name_swift, item_wrapped_swift_name, ) )
                 writer.add('for item in %s {' % (field.name_swift))
                 writer.push_indent()
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
-                    writer.add('builder.%s(%sUnwrap(item))' % ( accessor_name, enum_context.swift_name, ) )
+                    writer.add('%sWrapped.append(%sUnwrap(item))' % ( field.name_swift, enum_context.swift_name, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('builder.%s(item.asProtobuf)' % accessor_name)
+                    writer.add('%sWrapped.append(item.proto)' % field.name_swift)
                 else:
-                    writer.add('builder.%s(item)' % accessor_name)
+                    writer.add('%sWrapped.append(item)' % field.name_swift)
                 writer.pop_indent()
                 writer.add('}')
+                writer.add('builder.%s = %sWrapped' % ( field.name_swift, field.name_swift, ) )
             else:
                 writer.add('if let %s = self.%s {' % ( field.name_swift, field.name_swift, ))
                 writer.push_indent()
@@ -636,53 +650,17 @@ public func serializedData() throws -> Data {
                     enum_context = self.context_for_proto_type(field)
                     writer.add('builder.%s = %sUnwrap(%s)' % ( field.name_swift, enum_context.swift_name, field.name_swift, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('builder.%s = %s.asProtobuf' % ( field.name_swift, field.name_swift, ) )
+                    writer.add('builder.%s = %s.proto' % ( field.name_swift, field.name_swift, ) )
                 else:
                     writer.add('builder.%s = %s' % ( field.name_swift, field.name_swift, ) )
                 writer.pop_indent()
                 writer.add('}')
+            writer.newline()
                 
-            # if self.is_field_an_enum(field):
-            #     # TODO: Assert that rules is empty.
-            #     enum_context = self.context_for_proto_type(field)
-            #     writer.add('builder.%s = %s.%sUnwrap(self.%s)' % ( field.name_swift, self.swift_name, enum_context.swift_name, field.name_swift, ) )
-            # elif field.rules == 'repeated':
-            #     # TODO: Assert that type is a message.
-            #     list_wrapped_swift_name = None
-            #     if self.is_field_a_proto(field):
-            #         message_context = self.context_for_proto_type(field)
-            #         list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
-            #     else:
-            #         # TODO: Assert not an enum.
-            #         list_wrapped_swift_name = self.base_swift_type_for_field(field)
-            #     writer.add('var %sUnwrapped = [%s]()' % (field.name_swift, list_wrapped_swift_name))
-            #     writer.add('for item in %s {' % (field.name_swift))
-            #     writer.push_indent()
-            #     if self.is_field_a_proto(field):
-            #         writer.add('%sUnwrapped.append(item.asProtobuf)' % field.name_swift)
-            #     else:
-            #         writer.add('%sUnwrapped.append(item)' % field.name_swift)
-            #     writer.pop_indent()
-            #     writer.add('}')
-            #     writer.add('builder.%s = %sUnwrapped' % (field.name_swift, field.name_swift))
-            # elif field.rules == 'optional' and self.can_field_be_optional(field):
-            #     writer.add('if let %s = self.%s {' % (field.name_swift, field.name_swift))
-            #     writer.push_indent()
-            #     if self.is_field_a_proto(field):
-            #         writer.add('builder.%s = %s.asProtobuf' % (field.name_swift, field.name_swift))
-            #     else:
-            #         writer.add('builder.%s = %s' % (field.name_swift, field.name_swift))
-            #     writer.pop_indent()
-            #     writer.add('}')
-            # else:
-            #     writer.add('builder.%s = self.%s' % (field.name_swift, field.name_swift))
-            # writer.newline()
-        #     writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
         writer.rstrip()
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-        # writer.add('let protoData = try proto.serializedData()')
         writer.add('let wrapper = try %s.parseProto(proto)' % self.swift_name)
         writer.add('return wrapper')
         writer.pop_indent()

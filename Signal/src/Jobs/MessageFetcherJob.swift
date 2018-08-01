@@ -122,19 +122,32 @@ public class MessageFetcherJob: NSObject {
         do {
             let params = ParamParser(dictionary: messageDict)
 
+            let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder()
+
             let typeInt: Int32 = try params.required(key: "type")
             guard let type: SSKProtoEnvelope.SSKProtoEnvelopeType = SSKProtoEnvelope.SSKProtoEnvelopeType(rawValue: typeInt) else {
                 Logger.error("\(self.logTag) `typeInt` was invalid: \(typeInt)")
                 throw ParamParser.ParseError.invalidFormat("type")
             }
+            builder.setType(type)
 
-            let timestamp: UInt64 = try params.required(key: "timestamp")
-            let source: String = try params.required(key: "source")
-            let sourceDevice: UInt32 = try params.required(key: "sourceDevice")
-            let legacyMessage: Data? = try params.optionalBase64EncodedData(key: "message")
-            let content: Data? = try params.optionalBase64EncodedData(key: "content")
+            if let timestamp: UInt64 = try params.required(key: "timestamp") {
+                builder.setTimestamp(timestamp)
+            }
+            if let source: String = try params.required(key: "source") {
+                builder.setSource(source)
+            }
+            if let sourceDevice: UInt32 = try params.required(key: "sourceDevice") {
+                builder.setSourceDevice(sourceDevice)
+            }
+            if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
+                builder.setLegacyMessage(legacyMessage)
+            }
+            if let content = try params.optionalBase64EncodedData(key: "content") {
+                builder.setContent(content)
+            }
 
-            return SSKProtoEnvelope(type: type, source: source, sourceDevice: sourceDevice, relay: nil, timestamp: UInt64(timestamp), legacyMessage: legacyMessage, content: content)
+            return try builder.build()
         } catch {
             owsFail("\(self.logTag) in \(#function) error building envelope: \(error)")
             return nil
