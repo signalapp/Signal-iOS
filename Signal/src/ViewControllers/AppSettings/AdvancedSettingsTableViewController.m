@@ -267,10 +267,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableLogSwitch:(UISwitch *)sender
 {
     if (!sender.isOn) {
+        DDLogInfo(@"%@ disabling logging.", self.logTag);
         [[DebugLogger sharedLogger] wipeLogs];
         [[DebugLogger sharedLogger] disableFileLogging];
     } else {
         [[DebugLogger sharedLogger] enableFileLogging];
+        DDLogInfo(@"%@ enabling logging.", self.logTag);
     }
 
     [OWSPreferences setIsLoggingEnabled:sender.isOn];
