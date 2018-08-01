@@ -72,7 +72,7 @@ class LineWriter:
         self.pop_indent()
     
     def add(self, line):
-        self.lines.append(('\t' * self.indent()) + line)
+        self.lines.append(('    ' * self.indent()) + line)
     
     def add_raw(self, line):
         self.lines.append(line)
