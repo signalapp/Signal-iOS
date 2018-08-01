@@ -52,7 +52,13 @@ public enum SSKProtoError: Error {
 	@objc public let legacyMessage: Data?
 	@objc public let content: Data?
 
-	@objc public init(type: SSKProtoEnvelopeType, relay: String?, source: String?, timestamp: UInt64, sourceDevice: UInt32, legacyMessage: Data?, content: Data?) {
+	@objc public init(type: SSKProtoEnvelopeType,
+	                  relay: String?,
+	                  source: String?,
+	                  timestamp: UInt64,
+	                  sourceDevice: UInt32,
+	                  legacyMessage: Data?,
+	                  content: Data?) {
 		self.type = type
 		self.relay = relay
 		self.source = source
@@ -125,7 +131,13 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoEnvelope -
 
-		let result = SSKProtoEnvelope(type: type, relay: relay, source: source, timestamp: timestamp, sourceDevice: sourceDevice, legacyMessage: legacyMessage, content: content)
+		let result = SSKProtoEnvelope(type: type,
+		                              relay: relay,
+		                              source: source,
+		                              timestamp: timestamp,
+		                              sourceDevice: sourceDevice,
+		                              legacyMessage: legacyMessage,
+		                              content: content)
 		return result
 	}
 
@@ -168,7 +180,11 @@ public enum SSKProtoError: Error {
 	@objc public let receiptMessage: SSKProtoReceiptMessage?
 	@objc public let nullMessage: SSKProtoNullMessage?
 
-	@objc public init(dataMessage: SSKProtoDataMessage?, callMessage: SSKProtoCallMessage?, syncMessage: SSKProtoSyncMessage?, receiptMessage: SSKProtoReceiptMessage?, nullMessage: SSKProtoNullMessage?) {
+	@objc public init(dataMessage: SSKProtoDataMessage?,
+	                  callMessage: SSKProtoCallMessage?,
+	                  syncMessage: SSKProtoSyncMessage?,
+	                  receiptMessage: SSKProtoReceiptMessage?,
+	                  nullMessage: SSKProtoNullMessage?) {
 		self.dataMessage = dataMessage
 		self.callMessage = callMessage
 		self.syncMessage = syncMessage
@@ -216,7 +232,11 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoContent -
 
-		let result = SSKProtoContent(dataMessage: dataMessage, callMessage: callMessage, syncMessage: syncMessage, receiptMessage: receiptMessage, nullMessage: nullMessage)
+		let result = SSKProtoContent(dataMessage: dataMessage,
+		                             callMessage: callMessage,
+		                             syncMessage: syncMessage,
+		                             receiptMessage: receiptMessage,
+		                             nullMessage: nullMessage)
 		return result
 	}
 
@@ -254,7 +274,8 @@ public enum SSKProtoError: Error {
 	@objc public let id: UInt64
 	@objc public let sessionDescription: String?
 
-	@objc public init(id: UInt64, sessionDescription: String?) {
+	@objc public init(id: UInt64,
+	                  sessionDescription: String?) {
 		self.id = id
 		self.sessionDescription = sessionDescription
 	}
@@ -284,7 +305,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoCallMessageOffer -
 
-		let result = SSKProtoCallMessageOffer(id: id, sessionDescription: sessionDescription)
+		let result = SSKProtoCallMessageOffer(id: id,
+		                                      sessionDescription: sessionDescription)
 		return result
 	}
 
@@ -308,7 +330,8 @@ public enum SSKProtoError: Error {
 	@objc public let id: UInt64
 	@objc public let sessionDescription: String?
 
-	@objc public init(id: UInt64, sessionDescription: String?) {
+	@objc public init(id: UInt64,
+	                  sessionDescription: String?) {
 		self.id = id
 		self.sessionDescription = sessionDescription
 	}
@@ -338,7 +361,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoCallMessageAnswer -
 
-		let result = SSKProtoCallMessageAnswer(id: id, sessionDescription: sessionDescription)
+		let result = SSKProtoCallMessageAnswer(id: id,
+		                                       sessionDescription: sessionDescription)
 		return result
 	}
 
@@ -364,7 +388,10 @@ public enum SSKProtoError: Error {
 	@objc public let sdpMid: String?
 	@objc public let sdp: String?
 
-	@objc public init(id: UInt64, sdpMlineIndex: UInt32, sdpMid: String?, sdp: String?) {
+	@objc public init(id: UInt64,
+	                  sdpMlineIndex: UInt32,
+	                  sdpMid: String?,
+	                  sdp: String?) {
 		self.id = id
 		self.sdpMlineIndex = sdpMlineIndex
 		self.sdpMid = sdpMid
@@ -406,7 +433,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoCallMessageIceUpdate -
 
-		let result = SSKProtoCallMessageIceUpdate(id: id, sdpMlineIndex: sdpMlineIndex, sdpMid: sdpMid, sdp: sdp)
+		let result = SSKProtoCallMessageIceUpdate(id: id,
+		                                          sdpMlineIndex: sdpMlineIndex,
+		                                          sdpMid: sdpMid,
+		                                          sdp: sdp)
 		return result
 	}
 
@@ -526,7 +556,12 @@ public enum SSKProtoError: Error {
 	@objc public let hangup: SSKProtoCallMessageHangup?
 	@objc public let profileKey: Data?
 
-	@objc public init(offer: SSKProtoCallMessageOffer?, iceUpdate: [SSKProtoCallMessageIceUpdate], answer: SSKProtoCallMessageAnswer?, busy: SSKProtoCallMessageBusy?, hangup: SSKProtoCallMessageHangup?, profileKey: Data?) {
+	@objc public init(offer: SSKProtoCallMessageOffer?,
+	                  iceUpdate: [SSKProtoCallMessageIceUpdate],
+	                  answer: SSKProtoCallMessageAnswer?,
+	                  busy: SSKProtoCallMessageBusy?,
+	                  hangup: SSKProtoCallMessageHangup?,
+	                  profileKey: Data?) {
 		self.offer = offer
 		self.iceUpdate = iceUpdate
 		self.answer = answer
@@ -581,7 +616,12 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoCallMessage -
 
-		let result = SSKProtoCallMessage(offer: offer, iceUpdate: iceUpdate, answer: answer, busy: busy, hangup: hangup, profileKey: profileKey)
+		let result = SSKProtoCallMessage(offer: offer,
+		                                 iceUpdate: iceUpdate,
+		                                 answer: answer,
+		                                 busy: busy,
+		                                 hangup: hangup,
+		                                 profileKey: profileKey)
 		return result
 	}
 
@@ -645,7 +685,10 @@ public enum SSKProtoError: Error {
 	@objc public let fileName: String?
 	@objc public let flags: UInt32
 
-	@objc public init(contentType: String?, thumbnail: SSKProtoAttachmentPointer?, fileName: String?, flags: UInt32) {
+	@objc public init(contentType: String?,
+	                  thumbnail: SSKProtoAttachmentPointer?,
+	                  fileName: String?,
+	                  flags: UInt32) {
 		self.contentType = contentType
 		self.thumbnail = thumbnail
 		self.fileName = fileName
@@ -687,7 +730,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageQuoteQuotedAttachment -
 
-		let result = SSKProtoDataMessageQuoteQuotedAttachment(contentType: contentType, thumbnail: thumbnail, fileName: fileName, flags: flags)
+		let result = SSKProtoDataMessageQuoteQuotedAttachment(contentType: contentType,
+		                                                      thumbnail: thumbnail,
+		                                                      fileName: fileName,
+		                                                      flags: flags)
 		return result
 	}
 
@@ -721,7 +767,10 @@ public enum SSKProtoError: Error {
 	@objc public let author: String?
 	@objc public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
 
-	@objc public init(id: UInt64, text: String?, author: String?, attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
+	@objc public init(id: UInt64,
+	                  text: String?,
+	                  author: String?,
+	                  attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
 		self.id = id
 		self.text = text
 		self.author = author
@@ -764,7 +813,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageQuote -
 
-		let result = SSKProtoDataMessageQuote(id: id, text: text, author: author, attachments: attachments)
+		let result = SSKProtoDataMessageQuote(id: id,
+		                                      text: text,
+		                                      author: author,
+		                                      attachments: attachments)
 		return result
 	}
 
@@ -802,7 +854,12 @@ public enum SSKProtoError: Error {
 	@objc public let suffix: String?
 	@objc public let displayName: String?
 
-	@objc public init(givenName: String?, prefix: String?, familyName: String?, middleName: String?, suffix: String?, displayName: String?) {
+	@objc public init(givenName: String?,
+	                  prefix: String?,
+	                  familyName: String?,
+	                  middleName: String?,
+	                  suffix: String?,
+	                  displayName: String?) {
 		self.givenName = givenName
 		self.prefix = prefix
 		self.familyName = familyName
@@ -856,7 +913,12 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactName -
 
-		let result = SSKProtoDataMessageContactName(givenName: givenName, prefix: prefix, familyName: familyName, middleName: middleName, suffix: suffix, displayName: displayName)
+		let result = SSKProtoDataMessageContactName(givenName: givenName,
+		                                            prefix: prefix,
+		                                            familyName: familyName,
+		                                            middleName: middleName,
+		                                            suffix: suffix,
+		                                            displayName: displayName)
 		return result
 	}
 
@@ -926,7 +988,9 @@ public enum SSKProtoError: Error {
 	@objc public let label: String?
 	@objc public let type: SSKProtoDataMessageContactPhoneType
 
-	@objc public init(value: String?, label: String?, type: SSKProtoDataMessageContactPhoneType) {
+	@objc public init(value: String?,
+	                  label: String?,
+	                  type: SSKProtoDataMessageContactPhoneType) {
 		self.value = value
 		self.label = label
 		self.type = type
@@ -962,7 +1026,9 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactPhone -
 
-		let result = SSKProtoDataMessageContactPhone(value: value, label: label, type: type)
+		let result = SSKProtoDataMessageContactPhone(value: value,
+		                                             label: label,
+		                                             type: type)
 		return result
 	}
 
@@ -1018,7 +1084,9 @@ public enum SSKProtoError: Error {
 	@objc public let label: String?
 	@objc public let type: SSKProtoDataMessageContactEmailType
 
-	@objc public init(value: String?, label: String?, type: SSKProtoDataMessageContactEmailType) {
+	@objc public init(value: String?,
+	                  label: String?,
+	                  type: SSKProtoDataMessageContactEmailType) {
 		self.value = value
 		self.label = label
 		self.type = type
@@ -1054,7 +1122,9 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactEmail -
 
-		let result = SSKProtoDataMessageContactEmail(value: value, label: label, type: type)
+		let result = SSKProtoDataMessageContactEmail(value: value,
+		                                             label: label,
+		                                             type: type)
 		return result
 	}
 
@@ -1113,7 +1183,15 @@ public enum SSKProtoError: Error {
 	@objc public let country: String?
 	@objc public let postcode: String?
 
-	@objc public init(type: SSKProtoDataMessageContactPostalAddressType, street: String?, label: String?, neighborhood: String?, pobox: String?, region: String?, city: String?, country: String?, postcode: String?) {
+	@objc public init(type: SSKProtoDataMessageContactPostalAddressType,
+	                  street: String?,
+	                  label: String?,
+	                  neighborhood: String?,
+	                  pobox: String?,
+	                  region: String?,
+	                  city: String?,
+	                  country: String?,
+	                  postcode: String?) {
 		self.type = type
 		self.street = street
 		self.label = label
@@ -1185,7 +1263,15 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactPostalAddress -
 
-		let result = SSKProtoDataMessageContactPostalAddress(type: type, street: street, label: label, neighborhood: neighborhood, pobox: pobox, region: region, city: city, country: country, postcode: postcode)
+		let result = SSKProtoDataMessageContactPostalAddress(type: type,
+		                                                     street: street,
+		                                                     label: label,
+		                                                     neighborhood: neighborhood,
+		                                                     pobox: pobox,
+		                                                     region: region,
+		                                                     city: city,
+		                                                     country: country,
+		                                                     postcode: postcode)
 		return result
 	}
 
@@ -1237,7 +1323,8 @@ public enum SSKProtoError: Error {
 	@objc public let avatar: SSKProtoAttachmentPointer?
 	@objc public let isProfile: Bool
 
-	@objc public init(avatar: SSKProtoAttachmentPointer?, isProfile: Bool) {
+	@objc public init(avatar: SSKProtoAttachmentPointer?,
+	                  isProfile: Bool) {
 		self.avatar = avatar
 		self.isProfile = isProfile
 	}
@@ -1267,7 +1354,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactAvatar -
 
-		let result = SSKProtoDataMessageContactAvatar(avatar: avatar, isProfile: isProfile)
+		let result = SSKProtoDataMessageContactAvatar(avatar: avatar,
+		                                              isProfile: isProfile)
 		return result
 	}
 
@@ -1295,7 +1383,12 @@ public enum SSKProtoError: Error {
 	@objc public let organization: String?
 	@objc public let avatar: SSKProtoDataMessageContactAvatar?
 
-	@objc public init(name: SSKProtoDataMessageContactName?, number: [SSKProtoDataMessageContactPhone], address: [SSKProtoDataMessageContactPostalAddress], email: [SSKProtoDataMessageContactEmail], organization: String?, avatar: SSKProtoDataMessageContactAvatar?) {
+	@objc public init(name: SSKProtoDataMessageContactName?,
+	                  number: [SSKProtoDataMessageContactPhone],
+	                  address: [SSKProtoDataMessageContactPostalAddress],
+	                  email: [SSKProtoDataMessageContactEmail],
+	                  organization: String?,
+	                  avatar: SSKProtoDataMessageContactAvatar?) {
 		self.name = name
 		self.number = number
 		self.address = address
@@ -1352,7 +1445,12 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContact -
 
-		let result = SSKProtoDataMessageContact(name: name, number: number, address: address, email: email, organization: organization, avatar: avatar)
+		let result = SSKProtoDataMessageContact(name: name,
+		                                        number: number,
+		                                        address: address,
+		                                        email: email,
+		                                        organization: organization,
+		                                        avatar: avatar)
 		return result
 	}
 
@@ -1431,7 +1529,15 @@ public enum SSKProtoError: Error {
 	@objc public let contact: [SSKProtoDataMessageContact]
 	@objc public let quote: SSKProtoDataMessageQuote?
 
-	@objc public init(body: String?, group: SSKProtoGroupContext?, attachments: [SSKProtoAttachmentPointer], expireTimer: UInt32, flags: UInt32, timestamp: UInt64, profileKey: Data?, contact: [SSKProtoDataMessageContact], quote: SSKProtoDataMessageQuote?) {
+	@objc public init(body: String?,
+	                  group: SSKProtoGroupContext?,
+	                  attachments: [SSKProtoAttachmentPointer],
+	                  expireTimer: UInt32,
+	                  flags: UInt32,
+	                  timestamp: UInt64,
+	                  profileKey: Data?,
+	                  contact: [SSKProtoDataMessageContact],
+	                  quote: SSKProtoDataMessageQuote?) {
 		self.body = body
 		self.group = group
 		self.attachments = attachments
@@ -1505,7 +1611,15 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoDataMessage -
 
-		let result = SSKProtoDataMessage(body: body, group: group, attachments: attachments, expireTimer: expireTimer, flags: flags, timestamp: timestamp, profileKey: profileKey, contact: contact, quote: quote)
+		let result = SSKProtoDataMessage(body: body,
+		                                 group: group,
+		                                 attachments: attachments,
+		                                 expireTimer: expireTimer,
+		                                 flags: flags,
+		                                 timestamp: timestamp,
+		                                 profileKey: profileKey,
+		                                 contact: contact,
+		                                 quote: quote)
 		return result
 	}
 
@@ -1623,7 +1737,8 @@ public enum SSKProtoError: Error {
 	@objc public let type: SSKProtoReceiptMessageType
 	@objc public let timestamp: [UInt64]
 
-	@objc public init(type: SSKProtoReceiptMessageType, timestamp: [UInt64]) {
+	@objc public init(type: SSKProtoReceiptMessageType,
+	                  timestamp: [UInt64]) {
 		self.type = type
 		self.timestamp = timestamp
 	}
@@ -1654,7 +1769,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoReceiptMessage -
 
-		let result = SSKProtoReceiptMessage(type: type, timestamp: timestamp)
+		let result = SSKProtoReceiptMessage(type: type,
+		                                    timestamp: timestamp)
 		return result
 	}
 
@@ -1706,7 +1822,10 @@ public enum SSKProtoError: Error {
 	@objc public let identityKey: Data?
 	@objc public let nullMessage: Data?
 
-	@objc public init(destination: String?, state: SSKProtoVerifiedState, identityKey: Data?, nullMessage: Data?) {
+	@objc public init(destination: String?,
+	                  state: SSKProtoVerifiedState,
+	                  identityKey: Data?,
+	                  nullMessage: Data?) {
 		self.destination = destination
 		self.state = state
 		self.identityKey = identityKey
@@ -1748,7 +1867,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoVerified -
 
-		let result = SSKProtoVerified(destination: destination, state: state, identityKey: identityKey, nullMessage: nullMessage)
+		let result = SSKProtoVerified(destination: destination,
+		                              state: state,
+		                              identityKey: identityKey,
+		                              nullMessage: nullMessage)
 		return result
 	}
 
@@ -1782,7 +1904,10 @@ public enum SSKProtoError: Error {
 	@objc public let timestamp: UInt64
 	@objc public let expirationStartTimestamp: UInt64
 
-	@objc public init(destination: String?, message: SSKProtoDataMessage?, timestamp: UInt64, expirationStartTimestamp: UInt64) {
+	@objc public init(destination: String?,
+	                  message: SSKProtoDataMessage?,
+	                  timestamp: UInt64,
+	                  expirationStartTimestamp: UInt64) {
 		self.destination = destination
 		self.message = message
 		self.timestamp = timestamp
@@ -1824,7 +1949,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoSyncMessageSent -
 
-		let result = SSKProtoSyncMessageSent(destination: destination, message: message, timestamp: timestamp, expirationStartTimestamp: expirationStartTimestamp)
+		let result = SSKProtoSyncMessageSent(destination: destination,
+		                                     message: message,
+		                                     timestamp: timestamp,
+		                                     expirationStartTimestamp: expirationStartTimestamp)
 		return result
 	}
 
@@ -1854,7 +1982,8 @@ public enum SSKProtoError: Error {
 	@objc public let blob: SSKProtoAttachmentPointer?
 	@objc public let isComplete: Bool
 
-	@objc public init(blob: SSKProtoAttachmentPointer?, isComplete: Bool) {
+	@objc public init(blob: SSKProtoAttachmentPointer?,
+	                  isComplete: Bool) {
 		self.blob = blob
 		self.isComplete = isComplete
 	}
@@ -1884,7 +2013,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoSyncMessageContacts -
 
-		let result = SSKProtoSyncMessageContacts(blob: blob, isComplete: isComplete)
+		let result = SSKProtoSyncMessageContacts(blob: blob,
+		                                         isComplete: isComplete)
 		return result
 	}
 
@@ -2074,7 +2204,8 @@ public enum SSKProtoError: Error {
 	@objc public let sender: String?
 	@objc public let timestamp: UInt64
 
-	@objc public init(sender: String?, timestamp: UInt64) {
+	@objc public init(sender: String?,
+	                  timestamp: UInt64) {
 		self.sender = sender
 		self.timestamp = timestamp
 	}
@@ -2104,7 +2235,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoSyncMessageRead -
 
-		let result = SSKProtoSyncMessageRead(sender: sender, timestamp: timestamp)
+		let result = SSKProtoSyncMessageRead(sender: sender,
+		                                     timestamp: timestamp)
 		return result
 	}
 
@@ -2178,7 +2310,15 @@ public enum SSKProtoError: Error {
 	@objc public let configuration: SSKProtoSyncMessageConfiguration?
 	@objc public let padding: Data?
 
-	@objc public init(sent: SSKProtoSyncMessageSent?, groups: SSKProtoSyncMessageGroups?, contacts: SSKProtoSyncMessageContacts?, read: [SSKProtoSyncMessageRead], request: SSKProtoSyncMessageRequest?, verified: SSKProtoVerified?, blocked: SSKProtoSyncMessageBlocked?, configuration: SSKProtoSyncMessageConfiguration?, padding: Data?) {
+	@objc public init(sent: SSKProtoSyncMessageSent?,
+	                  groups: SSKProtoSyncMessageGroups?,
+	                  contacts: SSKProtoSyncMessageContacts?,
+	                  read: [SSKProtoSyncMessageRead],
+	                  request: SSKProtoSyncMessageRequest?,
+	                  verified: SSKProtoVerified?,
+	                  blocked: SSKProtoSyncMessageBlocked?,
+	                  configuration: SSKProtoSyncMessageConfiguration?,
+	                  padding: Data?) {
 		self.sent = sent
 		self.groups = groups
 		self.contacts = contacts
@@ -2251,7 +2391,15 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoSyncMessage -
 
-		let result = SSKProtoSyncMessage(sent: sent, groups: groups, contacts: contacts, read: read, request: request, verified: verified, blocked: blocked, configuration: configuration, padding: padding)
+		let result = SSKProtoSyncMessage(sent: sent,
+		                                 groups: groups,
+		                                 contacts: contacts,
+		                                 read: read,
+		                                 request: request,
+		                                 verified: verified,
+		                                 blocked: blocked,
+		                                 configuration: configuration,
+		                                 padding: padding)
 		return result
 	}
 
@@ -2333,7 +2481,16 @@ public enum SSKProtoError: Error {
 	@objc public let width: UInt32
 	@objc public let flags: UInt32
 
-	@objc public init(height: UInt32, id: UInt64, key: Data?, contentType: String?, thumbnail: Data?, size: UInt32, fileName: String?, digest: Data?, width: UInt32, flags: UInt32) {
+	@objc public init(height: UInt32,
+	                  id: UInt64,
+	                  key: Data?,
+	                  contentType: String?,
+	                  thumbnail: Data?,
+	                  size: UInt32,
+	                  fileName: String?,
+	                  digest: Data?,
+	                  width: UInt32,
+	                  flags: UInt32) {
 		self.height = height
 		self.id = id
 		self.key = key
@@ -2411,7 +2568,16 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoAttachmentPointer -
 
-		let result = SSKProtoAttachmentPointer(height: height, id: id, key: key, contentType: contentType, thumbnail: thumbnail, size: size, fileName: fileName, digest: digest, width: width, flags: flags)
+		let result = SSKProtoAttachmentPointer(height: height,
+		                                       id: id,
+		                                       key: key,
+		                                       contentType: contentType,
+		                                       thumbnail: thumbnail,
+		                                       size: size,
+		                                       fileName: fileName,
+		                                       digest: digest,
+		                                       width: width,
+		                                       flags: flags)
 		return result
 	}
 
@@ -2492,7 +2658,11 @@ public enum SSKProtoError: Error {
 	@objc public let avatar: SSKProtoAttachmentPointer?
 	@objc public let members: [String]
 
-	@objc public init(id: Data?, name: String?, type: SSKProtoGroupContextType, avatar: SSKProtoAttachmentPointer?, members: [String]) {
+	@objc public init(id: Data?,
+	                  name: String?,
+	                  type: SSKProtoGroupContextType,
+	                  avatar: SSKProtoAttachmentPointer?,
+	                  members: [String]) {
 		self.id = id
 		self.name = name
 		self.type = type
@@ -2541,7 +2711,11 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoGroupContext -
 
-		let result = SSKProtoGroupContext(id: id, name: name, type: type, avatar: avatar, members: members)
+		let result = SSKProtoGroupContext(id: id,
+		                                  name: name,
+		                                  type: type,
+		                                  avatar: avatar,
+		                                  members: members)
 		return result
 	}
 
@@ -2579,7 +2753,8 @@ public enum SSKProtoError: Error {
 	@objc public let contentType: String?
 	@objc public let length: UInt32
 
-	@objc public init(contentType: String?, length: UInt32) {
+	@objc public init(contentType: String?,
+	                  length: UInt32) {
 		self.contentType = contentType
 		self.length = length
 	}
@@ -2609,7 +2784,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoContactDetailsAvatar -
 
-		let result = SSKProtoContactDetailsAvatar(contentType: contentType, length: length)
+		let result = SSKProtoContactDetailsAvatar(contentType: contentType,
+		                                          length: length)
 		return result
 	}
 
@@ -2639,7 +2815,14 @@ public enum SSKProtoError: Error {
 	@objc public let profileKey: Data?
 	@objc public let expireTimer: UInt32
 
-	@objc public init(number: String?, avatar: SSKProtoContactDetailsAvatar?, name: String?, verified: SSKProtoVerified?, color: String?, blocked: Bool, profileKey: Data?, expireTimer: UInt32) {
+	@objc public init(number: String?,
+	                  avatar: SSKProtoContactDetailsAvatar?,
+	                  name: String?,
+	                  verified: SSKProtoVerified?,
+	                  color: String?,
+	                  blocked: Bool,
+	                  profileKey: Data?,
+	                  expireTimer: UInt32) {
 		self.number = number
 		self.avatar = avatar
 		self.name = name
@@ -2705,7 +2888,14 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoContactDetails -
 
-		let result = SSKProtoContactDetails(number: number, avatar: avatar, name: name, verified: verified, color: color, blocked: blocked, profileKey: profileKey, expireTimer: expireTimer)
+		let result = SSKProtoContactDetails(number: number,
+		                                    avatar: avatar,
+		                                    name: name,
+		                                    verified: verified,
+		                                    color: color,
+		                                    blocked: blocked,
+		                                    profileKey: profileKey,
+		                                    expireTimer: expireTimer)
 		return result
 	}
 
@@ -2751,7 +2941,8 @@ public enum SSKProtoError: Error {
 	@objc public let contentType: String?
 	@objc public let length: UInt32
 
-	@objc public init(contentType: String?, length: UInt32) {
+	@objc public init(contentType: String?,
+	                  length: UInt32) {
 		self.contentType = contentType
 		self.length = length
 	}
@@ -2781,7 +2972,8 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoGroupDetailsAvatar -
 
-		let result = SSKProtoGroupDetailsAvatar(contentType: contentType, length: length)
+		let result = SSKProtoGroupDetailsAvatar(contentType: contentType,
+		                                        length: length)
 		return result
 	}
 
@@ -2810,7 +3002,13 @@ public enum SSKProtoError: Error {
 	@objc public let color: String?
 	@objc public let expireTimer: UInt32
 
-	@objc public init(id: Data?, members: [String], name: String?, active: Bool, avatar: SSKProtoGroupDetailsAvatar?, color: String?, expireTimer: UInt32) {
+	@objc public init(id: Data?,
+	                  members: [String],
+	                  name: String?,
+	                  active: Bool,
+	                  avatar: SSKProtoGroupDetailsAvatar?,
+	                  color: String?,
+	                  expireTimer: UInt32) {
 		self.id = id
 		self.members = members
 		self.name = name
@@ -2871,7 +3069,13 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoGroupDetails -
 
-		let result = SSKProtoGroupDetails(id: id, members: members, name: name, active: active, avatar: avatar, color: color, expireTimer: expireTimer)
+		let result = SSKProtoGroupDetails(id: id,
+		                                  members: members,
+		                                  name: name,
+		                                  active: active,
+		                                  avatar: avatar,
+		                                  color: color,
+		                                  expireTimer: expireTimer)
 		return result
 	}
 

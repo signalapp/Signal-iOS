@@ -360,10 +360,14 @@ class MessageContext(BaseContext):
         
         # Initializer
         initializer_parameters = []
-        for field in self.fields():
-            initializer_parameters.append('%s: %s' % (field.name_swift, field.type_swift))
+        initializer_prefix = '@objc public init('
+        for index, field in enumerate(self.fields()):
+            parameter = '%s: %s' % (field.name_swift, field.type_swift)
+            if index > 0:
+                parameter = '\n' + ' ' * len(initializer_prefix) + parameter
+            initializer_parameters.append(parameter)
         initializer_parameters = ', '.join(initializer_parameters)
-        writer.add('@objc public init(%s) {' % initializer_parameters)
+        writer.extend('%s%s) {' % ( initializer_prefix, initializer_parameters, ) )
         writer.push_indent()
         for field in self.fields():
             writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
@@ -448,11 +452,15 @@ public func serializedData() throws -> Data {
         writer.add('// MARK: - End Validation Logic for %s -' % self.swift_name)
         writer.newline()
         
+        initializer_prefix = 'let result = %s(' % self.swift_name
         initializer_arguments = []
-        for field in self.fields():
-            initializer_arguments.append('%s: %s' % (field.name_swift, field.name_swift))
+        for index, field in enumerate(self.fields()):
+            argument = '%s: %s' % (field.name_swift, field.name_swift)
+            if index > 0:
+                argument = '\n' + ' ' * len(initializer_prefix) + argument
+            initializer_arguments.append(argument)
         initializer_arguments = ', '.join(initializer_arguments)
-        writer.add('let result = %s(%s)' % ( self.swift_name, initializer_arguments, ) )
+        writer.extend('%s%s)' % ( initializer_prefix, initializer_arguments, ) )
         writer.add('return result')        
         writer.pop_indent()
         writer.add('}')
