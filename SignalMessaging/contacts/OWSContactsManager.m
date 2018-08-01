@@ -588,7 +588,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
         DDLogDebug(@"%@ no signal account", self.logTag);
@@ -616,7 +616,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     return signalAccount.contact.firstName.filterStringForDisplay;
 }
 
@@ -624,7 +624,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     return signalAccount.contact.lastName.filterStringForDisplay;
 }
 
@@ -821,7 +821,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     // Append unique label for contacts with multiple Signal accounts
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     if (signalAccount && signalAccount.multipleAccountLabelText) {
         OWSAssert(signalAccount.multipleAccountLabelText.length > 0);
 
@@ -938,7 +938,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return formattedPhoneNumber;
 }
 
-- (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
+- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -955,11 +955,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return signalAccount;
 }
 
-- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId
+- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
 {
-    return [self signalAccountForRecipientId:recipientId] != nil;
+    OWSAssert(recipientId.length > 0);
+
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
 }
 
+- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId
+{
+    return [self fetchSignalAccountForRecipientId:recipientId] != nil;
+}
 
 - (UIImage *_Nullable)systemContactImageForPhoneIdentifier:(NSString *_Nullable)identifier
 {
@@ -971,7 +978,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (!contact) {
         // If we haven't loaded system contacts yet, we may have a cached
         // copy in the db
-        contact = [self signalAccountForRecipientId:identifier].contact;
+        contact = [self fetchSignalAccountForRecipientId:identifier].contact;
     }
 
     return [self avatarImageForCNContactId:contact.cnContactId];

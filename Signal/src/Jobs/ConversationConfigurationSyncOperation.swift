@@ -55,7 +55,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private func sync(contactThread: TSContactThread) {
-        guard let signalAccount: SignalAccount = self.contactsManager.signalAccount(forRecipientId: contactThread.contactIdentifier()) else {
+        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(forRecipientId: contactThread.contactIdentifier()) else {
             reportAssertionError(description: "unable to find signalAccount")
             return
         }

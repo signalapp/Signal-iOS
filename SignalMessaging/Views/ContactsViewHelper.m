@@ -102,12 +102,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (nullable SignalAccount *)signalAccountForRecipientId:(NSString *)recipientId
+- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssertIsOnMainThread();
     OWSAssert(recipientId.length > 0);
 
     return self.signalAccountMap[recipientId];
+}
+
+- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
 }
 
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
@@ -310,7 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    editImmediately:(BOOL)shouldEditImmediately
                             addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.

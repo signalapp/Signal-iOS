@@ -283,7 +283,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
-                            [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                            [cell configureWithRecipientId:signalAccount.recipientId
+                                           contactsManager:helper.contactsManager];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -411,10 +412,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    SignalAccount *_Nullable signalAccount = [self.contactsViewHelper signalAccountForRecipientId:recipientId];
-    if (!signalAccount) {
-        signalAccount = [[SignalAccount alloc] initWithRecipientId:recipientId];
-    }
+    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForRecipientId:recipientId];
     [self signalAccountWasSelected:signalAccount];
 }
 

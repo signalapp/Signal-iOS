@@ -8,14 +8,11 @@ extern const NSUInteger kContactCellAvatarSize;
 extern const CGFloat kContactCellAvatarTextMargin;
 
 @class OWSContactsManager;
-@class SignalAccount;
 @class TSThread;
 
 @interface ContactCellView : UIStackView
 
 @property (nonatomic, nullable) NSString *accessoryMessage;
-
-- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager;
 

@@ -462,8 +462,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                     @"An indicator that a contact has been blocked.");
                                             }
 
-                                            [cell configureWithSignalAccount:signalAccount
-                                                             contactsManager:self.contactsViewHelper.contactsManager];
+                                            [cell configureWithRecipientId:signalAccount.recipientId
+                                                           contactsManager:self.contactsViewHelper.contactsManager];
 
                                             return cell;
                                         }
@@ -510,15 +510,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     cell.accessoryMessage = NSLocalizedString(
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
-
-                                SignalAccount *signalAccount = [helper signalAccountForRecipientId:phoneNumber];
-                                if (signalAccount) {
-                                    [cell configureWithSignalAccount:signalAccount
-                                                     contactsManager:helper.contactsManager];
-                                } else {
-                                    [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
-                                }
-
+                                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
@@ -566,7 +558,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
-                            [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                            [cell configureWithRecipientId:signalAccount.recipientId
+                                           contactsManager:helper.contactsManager];
 
                             return cell;
                         }

@@ -53,11 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.userInteractionEnabled = NO;
 }
 
-- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
-{
-    [self configureWithRecipientId:signalAccount.recipientId contactsManager:contactsManager];
-}
-
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
 {
     [OWSTableItem configureCell:self];

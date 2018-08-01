@@ -162,12 +162,12 @@ NS_ASSUME_NONNULL_BEGIN
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     // Sort the group members using contacts manager.
-    NSArray<NSString *> *sortedRecipientIds =
-        [recipientIds sortedArrayUsingComparator:^NSComparisonResult(NSString *recipientIdA, NSString *recipientIdB) {
-            SignalAccount *signalAccountA = [helper.contactsManager signalAccountForRecipientId:recipientIdA];
-            SignalAccount *signalAccountB = [helper.contactsManager signalAccountForRecipientId:recipientIdB];
-            return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
-        }];
+    NSArray<NSString *> *sortedRecipientIds = [recipientIds sortedArrayUsingComparator:^NSComparisonResult(
+        NSString *recipientIdA, NSString *recipientIdB) {
+        SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdA];
+        SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdB];
+        return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
+    }];
     for (NSString *recipientId in sortedRecipientIds) {
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -175,7 +175,6 @@ NS_ASSUME_NONNULL_BEGIN
                                  OWSCAssert(strongSelf);
 
                                  ContactTableViewCell *cell = [ContactTableViewCell new];
-                                 SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
                                  OWSVerificationState verificationState =
                                      [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
                                  BOOL isVerified = verificationState == OWSVerificationStateVerified;
@@ -189,12 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                  }
 
-                                 if (signalAccount) {
-                                     [cell configureWithSignalAccount:signalAccount
-                                                      contactsManager:helper.contactsManager];
-                                 } else {
-                                     [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
-                                 }
+                                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
 
                                  if (isVerified) {
                                      [cell setAttributedSubtitle:cell.verifiedSubtitle];
@@ -279,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipientId.length > 0);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
 
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];

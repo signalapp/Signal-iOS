@@ -682,9 +682,9 @@ private class SignalCallData: NSObject {
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let unknownCaller = self.contactsManager.signalAccount(forRecipientId: thread.contactIdentifier()) == nil
+            let isUnknownCaller = !self.contactsManager.hasSignalAccount(forRecipientId: thread.contactIdentifier())
 
-            let useTurnOnly = unknownCaller || Environment.current().preferences.doCallsHideIPAddress()
+            let useTurnOnly = isUnknownCaller || Environment.current().preferences.doCallsHideIPAddress()
 
             Logger.debug("\(self.logTag) setting peerConnectionClient in \(#function) for: \(newCall.identifiersForLogs)")
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)

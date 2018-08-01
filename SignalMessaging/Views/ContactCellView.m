@@ -103,11 +103,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
-- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
-{
-    [self configureWithRecipientId:signalAccount.recipientId contactsManager:contactsManager];
-}
-
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssert(recipientId.length > 0);

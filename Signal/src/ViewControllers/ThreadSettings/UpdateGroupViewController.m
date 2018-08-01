@@ -266,7 +266,6 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSCAssert(strongSelf);
 
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
                             BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
                             BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                             if (isPreviousMember) {
@@ -286,19 +285,14 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"An indicator that a user is a new member of the group.");
                             }
 
-                            if (signalAccount) {
-                                [cell configureWithSignalAccount:signalAccount
-                                                 contactsManager:contactsViewHelper.contactsManager];
-                            } else {
-                                [cell configureWithRecipientId:recipientId
-                                               contactsManager:contactsViewHelper.contactsManager];
-                            }
-
+                            [cell configureWithRecipientId:recipientId
+                                           contactsManager:contactsViewHelper.contactsManager];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
-                            SignalAccount *signalAccount = [contactsViewHelper signalAccountForRecipientId:recipientId];
+                            SignalAccount *_Nullable signalAccount =
+                                [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
                             BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
                             BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                             if (isPreviousMember) {

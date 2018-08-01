@@ -83,16 +83,8 @@ NS_ASSUME_NONNULL_BEGIN
         [blocklistSection addItem:[OWSTableItem
                                       itemWithCustomCellBlock:^{
                                           ContactTableViewCell *cell = [ContactTableViewCell new];
-                                          SignalAccount *signalAccount =
-                                              [helper signalAccountForRecipientId:phoneNumber];
-                                          if (signalAccount) {
-                                              [cell configureWithSignalAccount:signalAccount
-                                                               contactsManager:helper.contactsManager];
-                                          } else {
-                                              [cell configureWithRecipientId:phoneNumber
-                                                             contactsManager:helper.contactsManager];
-                                          }
-
+                                          [cell configureWithRecipientId:phoneNumber
+                                                         contactsManager:helper.contactsManager];
                                           return cell;
                                       }
                                       customRowHeight:UITableViewAutomaticDimension

@@ -226,8 +226,6 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                 OWSCAssert(strongSelf);
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                SignalAccount *signalAccount =
-                                    [contactsViewHelper signalAccountForRecipientId:recipientId];
                                 BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
                                 BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
                                 if (isCurrentMember) {
@@ -239,15 +237,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                     cell.accessoryMessage = NSLocalizedString(
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
-
-                                if (signalAccount) {
-                                    [cell configureWithSignalAccount:signalAccount
-                                                     contactsManager:contactsViewHelper.contactsManager];
-                                } else {
-                                    [cell configureWithRecipientId:recipientId
-                                                   contactsManager:contactsViewHelper.contactsManager];
-                                }
-
+                                [cell configureWithRecipientId:recipientId
+                                               contactsManager:contactsViewHelper.contactsManager];
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
@@ -335,9 +326,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
 
-                                [cell configureWithSignalAccount:signalAccount
-                                                 contactsManager:contactsViewHelper.contactsManager];
-
+                                [cell configureWithRecipientId:signalAccount.recipientId
+                                               contactsManager:contactsViewHelper.contactsManager];
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
