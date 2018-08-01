@@ -196,15 +196,22 @@ class BaseContext(object):
             return base_type
         
     def can_field_be_optional(self, field):
-        if field.proto_type == 'uint64':
-            return False
-        elif field.proto_type == 'uint32':
-            return False
-        elif field.proto_type == 'fixed64':
-            return False
-        elif field.proto_type == 'bool':
-            return False
-        elif self.is_field_an_enum(field):
+        if field.proto_type in ('uint64',
+            'uint32',
+            'fixed64',
+            'bool', ):
+            return not field.is_required
+
+        # if field.proto_type == 'uint64':
+        #     return False
+        # elif field.proto_type == 'uint32':
+        #     return False
+        # elif field.proto_type == 'fixed64':
+        #     return False
+        # elif field.proto_type == 'bool':
+        #     return False
+        # elif self.is_field_an_enum(field):
+        if self.is_field_an_enum(field):
             return False
         else:
             return True
@@ -293,15 +300,23 @@ public enum %s: Error {
 
 
 class MessageField:
-    def __init__(self, name, index, rules, proto_type, default_value, sort_index):
+    def __init__(self, name, index, rules, proto_type, default_value, sort_index, is_required):
         self.name = name
         self.index = index
         self.rules = rules
         self.proto_type = proto_type
         self.default_value = default_value
         self.sort_index = sort_index
+        self.is_required = is_required
             
-
+    def has_accessor_name(self):
+        name = 'has' + self.name_swift[0].upper() + self.name_swift[1:]
+        if name == 'hasId':
+            # TODO: I'm not sure why "Apple Swift Proto" code formats the
+            # the name in this way.
+            name = 'hasID'
+        return name
+        
 class MessageContext(BaseContext):
     def __init__(self, args, parent, proto_name):
         BaseContext.__init__(self)
@@ -339,7 +354,7 @@ class MessageContext(BaseContext):
     def generate(self, writer):
         for child in self.messages:
             child.generate(writer)
-        
+    
         writer.add('// MARK: - %s' % self.swift_name)
         writer.newline()
         
@@ -351,10 +366,17 @@ class MessageContext(BaseContext):
         for child in self.enums:
             child.generate(writer)
 
+        wrapped_swift_name = self.derive_wrapped_swift_name()
+
         # Prepare fields
         for field in self.fields():
             field.type_swift = self.swift_type_for_field(field)
             field.name_swift = lowerCamlCaseForUnderscoredText_wrapped(field.name)
+
+        self.generate_builder(writer)
+        
+        # writer.add('private let proto: %s' % wrapped_swift_name )
+        # writer.newline()
         
         # Property Declarations
         for field in self.fields():
@@ -388,7 +410,6 @@ public func serializedData() throws -> Data {
         writer.newline()
 
         # parseData() func
-        wrapped_swift_name = self.derive_wrapped_swift_name()
         writer.add('@objc public class func parseData(_ serializedData: Data) throws -> %s {' % self.swift_name)
         writer.push_indent()
         writer.add('let proto = try %s(serializedData: serializedData)' % ( wrapped_swift_name, ) )
@@ -402,6 +423,25 @@ public func serializedData() throws -> Data {
         writer.push_indent()
         
         for field in self.fields():
+            if field.is_required:
+            # if self.can_field_be_optional(field):
+                writer.add('guard proto.%s else {' % field.has_accessor_name() )
+                writer.push_indent()
+                writer.add('throw %s.invalidProtobuf(description: "\(logTag) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )   
+                writer.pop_indent()
+                writer.add('}')
+            
+                if self.is_field_an_enum(field):
+                    # TODO: Assert that rules is empty.
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('let %s = %sWrap(proto.%s)' % ( field.name_swift, enum_context.swift_name, field.name_swift, ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('let %s = try %s.parseProto(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
+                else:
+                    writer.add('let %s = proto.%s' % ( field.name_swift, field.name_swift, ) )
+                writer.newline()
+                continue
+            
             default_value = self.default_value_for_field(field)
             if default_value is None:
                 writer.add('var %s: %s' % (field.name_swift, field.type_swift))
@@ -421,12 +461,7 @@ public func serializedData() throws -> Data {
                     writer.add('let wrapped = item')
                 writer.add('%s.append(wrapped)' % ( field.name_swift, ) )
             else:
-                hasAccessor = 'has' + field.name_swift[0].upper() + field.name_swift[1:]
-                if hasAccessor == 'hasId':
-                    # TODO: I'm not sure why "Apple Swift Proto" code formats the
-                    # the name in this way.
-                    hasAccessor = 'hasID'
-                writer.add('if proto.%s {' % hasAccessor)
+                writer.add('if proto.%s {' % field.has_accessor_name() )
                 writer.push_indent()
             
                 if self.is_field_an_enum(field):
@@ -526,7 +561,140 @@ public func serializedData() throws -> Data {
         writer.add('}')
         writer.newline()
         
+    def generate_builder(self, writer):
+    
+        wrapped_swift_name = self.derive_wrapped_swift_name()
         
+        writer.add('// MARK: - %sBuilder' % self.swift_name)
+        writer.newline()
+        
+        writer.add('@objc public class %sBuilder: NSObject {' % self.swift_name)
+        writer.newline()
+        
+        writer.push_context(self.proto_name, self.swift_name)
+
+        wrapped_swift_name = self.derive_wrapped_swift_name()
+        
+        # Property Declarations
+        for field in self.fields():
+            if field.rules == 'repeated':
+                writer.add('private var %s: [%s]' % ( field.name_swift, self.base_swift_type_for_field(field), ))
+            else:
+                writer.add('private var %s: %s?' % ( field.name_swift, self.base_swift_type_for_field(field), ))
+        writer.newline() 
+        
+        # Initializer
+        writer.add('@objc public override init() {}')
+        writer.newline()
+        
+        # Setters
+        for field in self.fields():
+            if field.rules == 'repeated':
+                accessor_name = field.name_swift
+                accessor_name = 'add' + accessor_name[0].upper() + accessor_name[1:]
+                writer.add('@objc public func %s(_ value: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.push_indent()
+                writer.add('%s.append(value)' % ( field.name_swift, ) )
+                writer.pop_indent()
+                writer.add('}')
+                writer.newline()
+            else:
+                accessor_name = field.name_swift
+                accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
+                writer.add('@objc public func %s(_ value: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.push_indent()
+                writer.add('%s = value' % ( field.name_swift, ) )
+                writer.pop_indent()
+                writer.add('}')
+                writer.newline()
+    
+        # build() func
+        writer.add('@objc public func build() throws -> %s {' % self.swift_name)
+        writer.push_indent()
+        writer.add('let proto = %s.with { (builder) in' % wrapped_swift_name)
+        writer.push_indent()
+        for field in self.fields():
+            if field.rules == 'repeated':
+                accessor_name = field.name_swift
+                accessor_name = 'add' + accessor_name[0].upper() + accessor_name[1:]
+                
+                writer.add('for item in %s {' % (field.name_swift))
+                writer.push_indent()
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('builder.%s(%sUnwrap(item))' % ( accessor_name, enum_context.swift_name, ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('builder.%s(item.asProtobuf)' % accessor_name)
+                else:
+                    writer.add('builder.%s(item)' % accessor_name)
+                writer.pop_indent()
+                writer.add('}')
+            else:
+                writer.add('if let %s = self.%s {' % ( field.name_swift, field.name_swift, ))
+                writer.push_indent()
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('builder.%s = %sUnwrap(%s)' % ( field.name_swift, enum_context.swift_name, field.name_swift, ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('builder.%s = %s.asProtobuf' % ( field.name_swift, field.name_swift, ) )
+                else:
+                    writer.add('builder.%s = %s' % ( field.name_swift, field.name_swift, ) )
+                writer.pop_indent()
+                writer.add('}')
+                
+            # if self.is_field_an_enum(field):
+            #     # TODO: Assert that rules is empty.
+            #     enum_context = self.context_for_proto_type(field)
+            #     writer.add('builder.%s = %s.%sUnwrap(self.%s)' % ( field.name_swift, self.swift_name, enum_context.swift_name, field.name_swift, ) )
+            # elif field.rules == 'repeated':
+            #     # TODO: Assert that type is a message.
+            #     list_wrapped_swift_name = None
+            #     if self.is_field_a_proto(field):
+            #         message_context = self.context_for_proto_type(field)
+            #         list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
+            #     else:
+            #         # TODO: Assert not an enum.
+            #         list_wrapped_swift_name = self.base_swift_type_for_field(field)
+            #     writer.add('var %sUnwrapped = [%s]()' % (field.name_swift, list_wrapped_swift_name))
+            #     writer.add('for item in %s {' % (field.name_swift))
+            #     writer.push_indent()
+            #     if self.is_field_a_proto(field):
+            #         writer.add('%sUnwrapped.append(item.asProtobuf)' % field.name_swift)
+            #     else:
+            #         writer.add('%sUnwrapped.append(item)' % field.name_swift)
+            #     writer.pop_indent()
+            #     writer.add('}')
+            #     writer.add('builder.%s = %sUnwrapped' % (field.name_swift, field.name_swift))
+            # elif field.rules == 'optional' and self.can_field_be_optional(field):
+            #     writer.add('if let %s = self.%s {' % (field.name_swift, field.name_swift))
+            #     writer.push_indent()
+            #     if self.is_field_a_proto(field):
+            #         writer.add('builder.%s = %s.asProtobuf' % (field.name_swift, field.name_swift))
+            #     else:
+            #         writer.add('builder.%s = %s' % (field.name_swift, field.name_swift))
+            #     writer.pop_indent()
+            #     writer.add('}')
+            # else:
+            #     writer.add('builder.%s = self.%s' % (field.name_swift, field.name_swift))
+            # writer.newline()
+        #     writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
+        writer.rstrip()
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        # writer.add('let protoData = try proto.serializedData()')
+        writer.add('let wrapper = try %s.parseProto(proto)' % self.swift_name)
+        writer.add('return wrapper')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        
+        writer.pop_context()
+
+        writer.rstrip()
+        writer.add('}')
+        writer.newline()
+                
 class EnumContext(BaseContext):
     def __init__(self, args, parent, proto_name):
         BaseContext.__init__(self)
@@ -613,25 +781,42 @@ class EnumContext(BaseContext):
         writer.add('}')
         writer.newline()
         
-
-def line_parser(text):
-    # lineParser = LineParser(text.split('\n'))
+ 
+class LineParser:
+    def __init__(self, text):
+        self.lines = text.split('\n')
+        self.lines.reverse()
+        self.next_line_comments = []
     
-    for line in text.split('\n'):
-        line = line.strip()
-        # if not line:
-        #     continue
+    def next(self):
+        # lineParser = LineParser(text.split('\n'))
+    
+        self.next_line_comments = []
+        while len(self.lines) > 0:
+            line = self.lines.pop()
+            line = line.strip()
+            # if not line:
+            #     continue
 
-        comment_index = line.find('//')
-        if comment_index >= 0:
-            line = line[:comment_index].strip()
-        if not line:
-            continue
+            comment_index = line.find('//')
+            if comment_index >= 0:
+                comment = line[comment_index + len('//'):].strip()
+                line = line[:comment_index].strip()
+                if not line:
+                    if comment:
+                        self.next_line_comments.append(comment)
+            else:
+                if not line:
+                    self.next_line_comments = []
+                
+            if not line:
+                continue
         
-        if args.verbose:
-            print 'line:', line
+            # if args.verbose:
+            #     print 'line:', line
             
-        yield line
+            return line
+        raise StopIteration()
         
 
 def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
@@ -648,8 +833,8 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
             raise Exception('Incomplete enum: %s' % proto_file_path)
     
         if line == '}':
-            if args.verbose:
-                print
+            # if args.verbose:
+            #     print
             parent_context.enums.append(context)
             return
 
@@ -696,9 +881,11 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
         except StopIteration:
             raise Exception('Incomplete message: %s' % proto_file_path)
     
+        field_comments = parser.next_line_comments
+        
         if line == '}':
-            if args.verbose:
-                print
+            # if args.verbose:
+            #     print
             parent_context.messages.append(context)
             return
 
@@ -743,6 +930,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 'name': item_name,
                 'index': item_index,
                 'default': item_default,
+                'field_comments': field_comments,
             }
             # print 'message_field:', message_field
         
@@ -757,7 +945,10 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 raise Exception('Duplicate message field index[%s]: %s' % (proto_file_path, item_name))
             # context.field_indices.add(item_index)
             
-            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index)
+            is_required = '@required' in field_comments
+            # if is_required:
+            #     print 'is_required:', item_name
+            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required)
             
             sort_index = sort_index + 1
             
@@ -815,7 +1006,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
     package_regex = re.compile(r'^package\s+(.+);')
     option_regex = re.compile(r'^option ')
     
-    parser = line_parser(text)
+    parser = LineParser(text)
     
     # lineParser = LineParser(text.split('\n'))
     

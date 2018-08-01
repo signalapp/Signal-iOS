@@ -32,6 +32,7 @@ struct SignalServiceProtos_Envelope {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var type: SignalServiceProtos_Envelope.TypeEnum {
     get {return _type ?? .unknown}
     set {_type = newValue}
@@ -41,6 +42,7 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `type`. Subsequent reads from it will return its default value.
   mutating func clearType() {self._type = nil}
 
+  /// @required
   var source: String {
     get {return _source ?? String()}
     set {_source = newValue}
@@ -50,6 +52,7 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `source`. Subsequent reads from it will return its default value.
   mutating func clearSource() {self._source = nil}
 
+  /// @required
   var sourceDevice: UInt32 {
     get {return _sourceDevice ?? 0}
     set {_sourceDevice = newValue}
@@ -68,6 +71,7 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `relay`. Subsequent reads from it will return its default value.
   mutating func clearRelay() {self._relay = nil}
 
+  /// @required
   var timestamp: UInt64 {
     get {return _timestamp ?? 0}
     set {_timestamp = newValue}
@@ -266,6 +270,7 @@ struct SignalServiceProtos_CallMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var id: UInt64 {
       get {return _id ?? 0}
       set {_id = newValue}
@@ -299,6 +304,7 @@ struct SignalServiceProtos_CallMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var id: UInt64 {
       get {return _id ?? 0}
       set {_id = newValue}
@@ -332,6 +338,7 @@ struct SignalServiceProtos_CallMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var id: UInt64 {
       get {return _id ?? 0}
       set {_id = newValue}
@@ -383,6 +390,7 @@ struct SignalServiceProtos_CallMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var id: UInt64 {
       get {return _id ?? 0}
       set {_id = newValue}
@@ -404,6 +412,7 @@ struct SignalServiceProtos_CallMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var id: UInt64 {
       get {return _id ?? 0}
       set {_id = newValue}
@@ -539,6 +548,7 @@ struct SignalServiceProtos_DataMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var id: UInt64 {
       get {return _id ?? 0}
       set {_id = newValue}
@@ -548,6 +558,7 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
+    /// @required
     var author: String {
       get {return _author ?? String()}
       set {_author = newValue}
@@ -773,6 +784,7 @@ struct SignalServiceProtos_DataMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
+      /// @required
       var value: String {
         get {return _value ?? String()}
         set {_value = newValue}
@@ -846,6 +858,7 @@ struct SignalServiceProtos_DataMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
+      /// @required
       var value: String {
         get {return _value ?? String()}
         set {_value = newValue}
@@ -1110,6 +1123,7 @@ struct SignalServiceProtos_ReceiptMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var type: SignalServiceProtos_ReceiptMessage.TypeEnum {
     get {return _type ?? .delivery}
     set {_type = newValue}
@@ -1159,6 +1173,7 @@ struct SignalServiceProtos_Verified {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var destination: String {
     get {return _destination ?? String()}
     set {_destination = newValue}
@@ -1371,6 +1386,7 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var blob: SignalServiceProtos_AttachmentPointer {
       get {return _storage._blob ?? SignalServiceProtos_AttachmentPointer()}
       set {_uniqueStorage()._blob = newValue}
@@ -1435,6 +1451,7 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var type: SignalServiceProtos_SyncMessage.Request.TypeEnum {
       get {return _type ?? .unknown}
       set {_type = newValue}
@@ -1491,6 +1508,7 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var sender: String {
       get {return _sender ?? String()}
       set {_sender = newValue}
@@ -1500,6 +1518,7 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `sender`. Subsequent reads from it will return its default value.
     mutating func clearSender() {self._sender = nil}
 
+    /// @required
     var timestamp: UInt64 {
       get {return _timestamp ?? 0}
       set {_timestamp = newValue}
@@ -1548,6 +1567,7 @@ struct SignalServiceProtos_AttachmentPointer {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var id: UInt64 {
     get {return _id ?? 0}
     set {_id = newValue}
@@ -1682,6 +1702,7 @@ struct SignalServiceProtos_GroupContext {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var id: Data {
     get {return _storage._id ?? SwiftProtobuf.Internal.emptyData}
     set {_uniqueStorage()._id = newValue}
@@ -1691,6 +1712,7 @@ struct SignalServiceProtos_GroupContext {
   /// Clears the value of `id`. Subsequent reads from it will return its default value.
   mutating func clearID() {_storage._id = nil}
 
+  /// @required
   var type: SignalServiceProtos_GroupContext.TypeEnum {
     get {return _storage._type ?? .unknown}
     set {_uniqueStorage()._type = newValue}
@@ -1770,6 +1792,7 @@ struct SignalServiceProtos_ContactDetails {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var number: String {
     get {return _storage._number ?? String()}
     set {_uniqueStorage()._number = newValue}
@@ -1885,6 +1908,7 @@ struct SignalServiceProtos_GroupDetails {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var id: Data {
     get {return _storage._id ?? SwiftProtobuf.Internal.emptyData}
     set {_uniqueStorage()._id = newValue}
