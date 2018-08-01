@@ -11,10 +11,8 @@ syntax = "proto2";
 // iOS - package name determines class prefix
 package IOSProtos;
 
-message BackupSnapshot
-{
-    message BackupEntity
-    {
+message BackupSnapshot {
+    message BackupEntity {
         enum Type {
             UNKNOWN = 0;
             MIGRATION = 1;
