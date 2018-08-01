@@ -65,6 +65,13 @@ extern NSString *const kLocalProfileUniqueId;
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion;
 
+#pragma mark - Profile Avatars Directory
+
++ (NSString *)profileAvatarFilepathWithFilename:(NSString *)filename;
++ (nullable NSError *)migrateToSharedData;
++ (NSString *)profileAvatarsDirPath;
++ (void)resetProfileStorage;
+
 @end
 
 NS_ASSUME_NONNULL_END

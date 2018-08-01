@@ -304,7 +304,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             OWSAssert(data);
             if (data) {
                 NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
-                NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+                NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
                 BOOL success = [data writeToFile:filePath atomically:YES];
                 OWSAssert(success);
                 if (success) {
@@ -817,7 +817,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
         NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
-        NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
 
         @synchronized(self.currentAvatarDownloads)
         {
@@ -883,6 +883,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
                     OWSUserProfile *localUserProfile = self.localUserProfile;
                     OWSAssert(localUserProfile);
+
                     [localUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
                     [self updateProfileAvatarCache:image filename:fileName];
                 }
@@ -1074,7 +1075,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(filename.length > 0);
 
-    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+    NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
     return [NSData dataWithContentsOfFile:filePath];
 }
 
@@ -1114,49 +1115,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         } else {
             [self.profileAvatarImageCache removeObjectForKey:filename];
         }
-    }
-}
-
-+ (NSString *)legacyProfileAvatarsDirPath
-{
-    return [[OWSFileSystem appDocumentDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
-}
-
-+ (NSString *)sharedDataProfileAvatarsDirPath
-{
-    return [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"ProfileAvatars"];
-}
-
-+ (nullable NSError *)migrateToSharedData
-{
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
-                       sharedDataFilePath:self.sharedDataProfileAvatarsDirPath];
-}
-
-- (NSString *)profileAvatarsDirPath
-{
-    static NSString *profileAvatarsDirPath = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        profileAvatarsDirPath = OWSProfileManager.sharedDataProfileAvatarsDirPath;
-        
-        [OWSFileSystem ensureDirectoryExists:profileAvatarsDirPath];
-    });
-    return profileAvatarsDirPath;
-}
-
-// TODO: We may want to clean up this directory in the "orphan cleanup" logic.
-
-- (void)resetProfileStorage
-{
-    OWSAssertIsOnMainThread();
-
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
-    if (error) {
-        DDLogError(@"Failed to delete database: %@", error.description);
     }
 }
 

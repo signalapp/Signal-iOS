@@ -302,7 +302,7 @@ static NSTimeInterval launchStartedAt;
         error = [OWSPrimaryStorage migrateToSharedData];
     }
     if (!error) {
-        error = [OWSProfileManager migrateToSharedData];
+        error = [OWSUserProfile migrateToSharedData];
     }
     if (!error) {
         error = [TSAttachmentStream migrateToSharedData];
