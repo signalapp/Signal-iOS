@@ -640,9 +640,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             //
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
-            return DataSourcePath.dataSource(with: url)
+            return DataSourcePath.dataSource(with: url,
+                                             shouldDeleteOnDeallocation: false)
         } else {
-            guard let dataSource = DataSourcePath.dataSource(with: url) else {
+            guard let dataSource = DataSourcePath.dataSource(with: url,
+                                                             shouldDeleteOnDeallocation: false) else {
                 return nil
             }
 

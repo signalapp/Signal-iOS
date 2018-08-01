@@ -60,11 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (void)setShouldDeleteOnDeallocation
-{
-    self.shouldDeleteOnDeallocation = YES;
-}
-
 - (BOOL)isValidImage
 {
     NSString *_Nullable dataPath = [self dataPathIfOnDisk];
@@ -102,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *fileExtension;
 
 // This property is lazy-populated.
-@property (nonatomic) NSString *cachedFilePath;
+@property (nonatomic, nullable) NSString *cachedFilePath;
 
 @end
 
@@ -113,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     if (self.shouldDeleteOnDeallocation) {
-        NSString *filePath = self.cachedFilePath;
+        NSString *_Nullable filePath = self.cachedFilePath;
         if (filePath) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSError *error;
@@ -126,7 +121,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension
++ (nullable DataSource *)dataSourceWithData:(NSData *)data
+                              fileExtension:(NSString *)fileExtension
 {
     OWSAssert(data);
 
@@ -137,12 +133,12 @@ NS_ASSUME_NONNULL_BEGIN
     DataSourceValue *instance = [DataSourceValue new];
     instance.dataValue = data;
     instance.fileExtension = fileExtension;
-    // Always try to clean up temp files created by this instance.
-    [instance setShouldDeleteOnDeallocation];
+    instance.shouldDeleteOnDeallocation = YES;
     return instance;
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType
++ (nullable DataSource *)dataSourceWithData:(NSData *)data
+                                    utiType:(NSString *)utiType
 {
     NSString *fileExtension = [MIMETypeUtil fileExtensionForUTIType:utiType];
     return [self dataSourceWithData:data fileExtension:fileExtension];
@@ -269,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl
++ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssert(fileUrl);
 
@@ -278,10 +274,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     DataSourcePath *instance = [DataSourcePath new];
     instance.filePath = fileUrl.path;
+    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
     return instance;
 }
 
 + (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
+                     shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssert(filePath);
 
@@ -291,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DataSourcePath *instance = [DataSourcePath new];
     instance.filePath = filePath;
-    OWSAssert(!instance.shouldDeleteOnDeallocation);
+    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
     return instance;
 }
 

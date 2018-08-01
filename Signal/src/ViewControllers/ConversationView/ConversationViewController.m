@@ -2884,7 +2884,7 @@ typedef enum : NSUInteger {
 
     OWSAssert(type);
     OWSAssert(filename);
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
     if (!dataSource) {
         OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.logTag, url);
 
@@ -3176,14 +3176,6 @@ typedef enum : NSUInteger {
         }];
 }
 
-- (NSURL *)videoTempFolder
-{
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *videoDirPath = [temporaryDirectory stringByAppendingPathComponent:@"videos"];
-    [OWSFileSystem ensureDirectoryExists:videoDirPath];
-    return [NSURL fileURLWithPath:videoDirPath];
-}
-
 - (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL
                                      filename:(NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
@@ -3194,7 +3186,8 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      DataSource *dataSource = [DataSourcePath dataSourceWithURL:movieURL];
+                      DataSource *dataSource =
+                          [DataSourcePath dataSourceWithURL:movieURL shouldDeleteOnDeallocation:NO];
                       dataSource.sourceFilename = filename;
                       VideoCompressionResult *compressionResult =
                           [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
@@ -3675,7 +3668,8 @@ typedef enum : NSUInteger {
         return;
     }
 
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url];
+    DataSource *_Nullable dataSource =
+        [DataSourcePath dataSourceWithURL:self.audioRecorder.url shouldDeleteOnDeallocation:YES];
     self.audioRecorder = nil;
 
     if (!dataSource) {
@@ -3687,8 +3681,6 @@ typedef enum : NSUInteger {
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
         stringByAppendingPathExtension:@"m4a"];
     [dataSource setSourceFilename:filename];
-    // Remove temporary file when complete.
-    [dataSource setShouldDeleteOnDeallocation];
     SignalAttachment *attachment =
         [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
     DDLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.logTag, durationSeconds, [dataSource dataLength]);
@@ -3948,9 +3940,8 @@ typedef enum : NSUInteger {
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueAttachment:dataSource
+        [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
-            sourceFilename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);

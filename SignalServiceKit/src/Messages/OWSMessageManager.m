@@ -825,9 +825,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (gThread.groupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueAttachment:dataSource
+        [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
-            sourceFilename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);

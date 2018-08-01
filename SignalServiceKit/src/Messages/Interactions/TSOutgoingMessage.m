@@ -354,6 +354,41 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return self;
 }
 
+- (void)dealloc
+{
+    [self removeTemporaryAttachments];
+}
+
+// Each message has the responsibility for eagerly cleaning up its attachments.
+// Normally this is done in [TSMessage removeWithTransaction], but that doesn't
+// apply for "transient", unsaved messages (i.e. shouldBeSaved == NO).  These
+// messages should clean up their attachments upon deallocation.
+- (void)removeTemporaryAttachments
+{
+    if (self.shouldBeSaved) {
+        // Message is not transient; no need to clean up attachments.
+        return;
+    }
+    NSArray<NSString *> *_Nullable attachmentIds = self.attachmentIds;
+    if (attachmentIds.count < 1) {
+        return;
+    }
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (NSString *attachmentId in attachmentIds) {
+            // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
+            TSAttachment *_Nullable attachment =
+                [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+            if (!attachment) {
+                OWSCFail(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
+                continue;
+            }
+            [attachment removeWithTransaction:transaction];
+        };
+    }];
+}
+
+#pragma mark -
+
 - (TSOutgoingMessageState)messageState
 {
     TSOutgoingMessageState newMessageState =

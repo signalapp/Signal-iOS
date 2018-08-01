@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -1701,7 +1701,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -4593,7 +4593,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     OWSAssert(transaction);
 
     if (isAttachmentDownloaded) {
-        DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
+        DataSource *dataSource =
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
         NSString *filename = dataSource.sourceFilename;
         // To support "fake missing" attachments, we sometimes lie about the
         // length of the data.

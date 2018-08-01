@@ -980,7 +980,8 @@ public class SignalAttachment: NSObject {
             let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
-            guard let dataSource = DataSourcePath.dataSource(with: exportURL) else {
+            guard let dataSource = DataSourcePath.dataSource(with: exportURL,
+                                                             shouldDeleteOnDeallocation: true) else {
                 owsFail("Failed to build data source for exported video URL")
                 let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
                 attachment.error = .couldNotConvertToMpeg4
@@ -988,7 +989,6 @@ public class SignalAttachment: NSObject {
                 return
             }
 
-            dataSource.setShouldDeleteOnDeallocation()
             dataSource.sourceFilename = mp4Filename
 
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
