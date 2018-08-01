@@ -8,6 +8,9 @@
 
 @implementation TSRequest
 
+@synthesize authUsername = _authUsername;
+@synthesize authPassword = _authPassword;
+
 - (id)initWithURL:(NSURL *)URL {
     OWSAssert(URL);
     self = [super initWithURL:URL
@@ -71,17 +74,40 @@
 
 #pragma mark - Authorization
 
+- (void)setAuthUsername:(nullable NSString *)authUsername
+{
+    OWSAssert(self.shouldHaveAuthorizationHeaders);
+
+    @synchronized(self) {
+        _authUsername = authUsername;
+    }
+}
+
+- (void)setAuthPassword:(nullable NSString *)authPassword
+{
+    OWSAssert(self.shouldHaveAuthorizationHeaders);
+
+    @synchronized(self) {
+        _authPassword = authPassword;
+    }
+}
+
 - (NSString *)authUsername
 {
     OWSAssert(self.shouldHaveAuthorizationHeaders);
-    return (_authUsername ?: [TSAccountManager localNumber]);
+
+    @synchronized(self) {
+        return (_authUsername ?: [TSAccountManager localNumber]);
+    }
 }
 
 - (NSString *)authPassword
 {
     OWSAssert(self.shouldHaveAuthorizationHeaders);
-    return (_authPassword ?: [TSAccountManager serverAuthToken]);
-}
 
+    @synchronized(self) {
+        return (_authPassword ?: [TSAccountManager serverAuthToken]);
+    }
+}
 
 @end
