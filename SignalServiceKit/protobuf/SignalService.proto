@@ -135,7 +135,6 @@ message DataMessage {
         CUSTOM = 4;
       }
 
-      // @required
       optional string value = 1;
       optional Type   type  = 2;
       optional string label = 3;
@@ -149,7 +148,6 @@ message DataMessage {
         CUSTOM = 4;
       }
 
-      // @required
       optional string value = 1;
       optional Type   type  = 2;
       optional string label = 3;

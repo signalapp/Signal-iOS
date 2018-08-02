@@ -930,20 +930,43 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
-- (SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
     SSKProtoDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
 
-    return [builder build];
+    NSError *error;
+    SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
+    if (error || !dataProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return dataProto;
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
+    NSError *error;
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:self.recipientId];
+    if (!dataMessage) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
-    contentBuilder.dataMessage = [self buildDataMessage:recipient.recipientId];
-    return [[contentBuilder build] data];
+    [contentBuilder setDataMessage:dataMessage];
+    SSKProtoContent *_Nullable contentProto = [contentBuilder buildAndReturnError:&error];
+    if (error || !contentProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return;
+    }
+    NSData *_Nullable contentData = [contentProto serializedDataAndReturnError:&error];
+    if (error || !contentData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return;
+    }
+    return contentData;
 }
 
 - (BOOL)shouldSyncTranscript

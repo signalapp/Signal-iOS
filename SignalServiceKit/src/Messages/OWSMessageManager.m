@@ -294,32 +294,44 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (envelope.content != nil) {
-        SSKProtoContent *content = [SSKProtoContent parseFromData:plaintextData];
-        DDLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:content]);
+    if (envelope.hasContent) {
+        NSError *error;
+        SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
+        if (error || !contentProto) {
+            OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
+            return;
+        }
+        DDLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:contentProto]);
 
-        if (content.hasSyncMessage) {
-            [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage transaction:transaction];
+        if (contentProto.hasSyncMessage) {
+            [self handleIncomingEnvelope:envelope withSyncMessage:contentProto.syncMessage transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
-        } else if (content.hasDataMessage) {
-            [self handleIncomingEnvelope:envelope withDataMessage:content.dataMessage transaction:transaction];
-        } else if (content.hasCallMessage) {
-            [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
-        } else if (content.hasNullMessage) {
+        } else if (contentProto.hasDataMessage) {
+            [self handleIncomingEnvelope:envelope withDataMessage:contentProto.dataMessage transaction:transaction];
+        } else if (contentProto.hasCallMessage) {
+            [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage];
+        } else if (contentProto.hasNullMessage) {
             DDLogInfo(@"%@ Received null message.", self.logTag);
-        } else if (content.hasReceiptMessage) {
-            [self handleIncomingEnvelope:envelope withReceiptMessage:content.receiptMessage transaction:transaction];
+        } else if (contentProto.hasReceiptMessage) {
+            [self handleIncomingEnvelope:envelope
+                      withReceiptMessage:contentProto.receiptMessage
+                             transaction:transaction];
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.logTag);
         }
-    } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
-        SSKProtoDataMessage *dataMessage =
-            [SSKProtoDataMessage parseFromData:plaintextData];
-        DDLogInfo(
-            @"%@ handling message: <DataMessage: %@ />", self.logTag, [self descriptionForDataMessage:dataMessage]);
+    } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
+        NSError *error;
+        SSKProtoDataMessage *_Nullable dataMessageProto = [SSKProtoDataMessage parseData:plaintextData error:&error];
+        if (error || !dataMessageProto) {
+            OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
+            return;
+        }
+        DDLogInfo(@"%@ handling message: <DataMessage: %@ />",
+            self.logTag,
+            [self descriptionForDataMessage:dataMessageProto]);
 
-        [self handleIncomingEnvelope:envelope withDataMessage:dataMessage transaction:transaction];
+        [self handleIncomingEnvelope:envelope withDataMessage:dataMessageProto transaction:transaction];
     } else {
         OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
     }
@@ -436,12 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(receiptMessage);
     OWSAssert(transaction);
 
-    PBArray *messageTimestamps = receiptMessage.timestamp;
-    NSMutableArray<NSNumber *> *sentTimestamps = [NSMutableArray new];
-    for (int i = 0; i < messageTimestamps.count; i++) {
-        UInt64 timestamp = [messageTimestamps uint64AtIndex:i];
-        [sentTimestamps addObject:@(timestamp)];
-    }
+    NSArray<NSNumber *> *sentTimestamps = receiptMessage.timestamp;
 
     switch (receiptMessage.type) {
         case SSKProtoReceiptMessageTypeDelivery:

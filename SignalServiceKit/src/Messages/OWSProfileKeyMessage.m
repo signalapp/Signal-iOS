@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
     
@@ -57,7 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
         [profileManager addUserToProfileWhitelist:recipientId];
     }
 
-    return [builder build];
+    NSError *error;
+    SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
+    if (error || !dataProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return dataProto;
 }
 
 @end

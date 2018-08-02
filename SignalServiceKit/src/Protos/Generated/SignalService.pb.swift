@@ -784,7 +784,6 @@ struct SignalServiceProtos_DataMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      /// @required
       var value: String {
         get {return _value ?? String()}
         set {_value = newValue}
@@ -858,7 +857,6 @@ struct SignalServiceProtos_DataMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      /// @required
       var value: String {
         get {return _value ?? String()}
         set {_value = newValue}

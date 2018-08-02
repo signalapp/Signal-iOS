@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetailsBuilder new];
     [groupBuilder setId:group.groupId];
     [groupBuilder setName:group.groupName];
-    [groupBuilder setMembersArray:group.groupMemberIds];
+    [groupBuilder setMembers:group.groupMemberIds];
 #ifdef CONVERSATION_COLORS_ENABLED
     [groupBuilder setColor:groupThread.conversationColorName];
 #endif
@@ -38,7 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
         [avatarBuilder setContentType:OWSMimeTypeImagePng];
         avatarPng = UIImagePNGRepresentation(group.groupImage);
         [avatarBuilder setLength:(uint32_t)avatarPng.length];
-        [groupBuilder setAvatarBuilder:avatarBuilder];
+
+        NSError *error;
+        SSKProtoGroupDetailsAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
+        if (error || !avatarProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        } else {
+            [groupBuilder setAvatar:avatarProto];
+        }
     }
 
     OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
@@ -53,7 +60,18 @@ NS_ASSUME_NONNULL_BEGIN
         [groupBuilder setExpireTimer:0];
     }
 
-    NSData *groupData = [[groupBuilder build] data];
+    NSError *error;
+    SSKProtoGroupDetails *_Nullable groupProto = [groupBuilder buildAndReturnError:&error];
+    if (error || !groupProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return;
+    }
+    NSData *_Nullable groupData = [groupProto serializedDataAndReturnError:&error];
+    if (error || !groupData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return;
+    }
+
     uint32_t groupDataLength = (uint32_t)groupData.length;
 
     [self.delegateStream writeRawVarint32:groupDataLength];

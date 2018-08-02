@@ -407,7 +407,14 @@ class MessageContext(BaseContext):
             for field in explict_fields:
                 type_name = field.type_swift_not_optional if field.is_required else field.type_swift
                 writer.add('@objc public let %s: %s' % (field.name_swift, type_name))
-            writer.newline()
+                
+                if (not field.is_required) and field.rules != 'repeated':
+                    writer.add('@objc public var %s: Bool {' % field.has_accessor_name() )
+                    writer.push_indent()
+                    writer.add('return proto.%s' % field.has_accessor_name() )
+                    writer.pop_indent()
+                    writer.add('}')
+                writer.newline()
 
         if len(implict_fields) > 0:
             for field in implict_fields:

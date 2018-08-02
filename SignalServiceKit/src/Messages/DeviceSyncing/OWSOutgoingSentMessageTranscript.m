@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * recipientId is nil when building "sent" sync messages for messages
  * sent to groups.
  */
-- (SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
+- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 @end
 
@@ -58,7 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
     [sentBuilder setDestination:self.sentRecipientId];
-    [sentBuilder setMessage:[self.message buildDataMessage:self.sentRecipientId]];
+
+    SSKProtoDataMessage *_Nullable dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    if (!dataMessage) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     NSError *error;
