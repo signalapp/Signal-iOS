@@ -33,6 +33,4 @@ static inline CGFloat CeilEven(CGFloat value)
     return 2.f * (CGFloat)ceil(value * 0.5f);
 }
 
-void SetRandFunctionSeed(void);
-
 NS_ASSUME_NONNULL_END

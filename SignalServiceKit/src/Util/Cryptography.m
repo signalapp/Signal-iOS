@@ -151,6 +151,15 @@ const NSUInteger kAES256_KeyByteLength = 32;
     return result;
 }
 
++ (unsigned)randomUnsigned
+{
+    size_t size = sizeof(unsigned);
+    NSData *data = [self generateRandomBytes:size];
+    unsigned result = 0;
+    [data getBytes:&result range:NSMakeRange(0, size)];
+    return result;
+}
+
 #pragma mark - SHA1
 
 // Used by TSContactManager to send hashed/truncated contact list to server.
@@ -775,6 +784,12 @@ const NSUInteger kAES256_KeyByteLength = 32;
                            additionalAuthenticatedData:nil
                                                authTag:authTag
                                                    key:key];
+}
+
++ (void)seedRandom
+{
+    unsigned seed = [Cryptography randomUnsigned];
+    srand(seed);
 }
 
 @end
