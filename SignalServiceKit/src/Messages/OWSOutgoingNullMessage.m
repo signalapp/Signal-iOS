@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessageBuilder new];
 
     NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
@@ -64,10 +63,28 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contentLength > 0);
 
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
-    
-    contentBuilder.nullMessage = [nullMessageBuilder build];
 
-    return [contentBuilder build].data;
+    NSError *error;
+    SSKProtoNullMessage *_Nullable nullMessage = [nullMessageBuilder buildAndReturnError:&error];
+    if (error || !nullMessage) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    contentBuilder.nullMessage = nullMessage;
+
+    SSKProtoContent *_Nullable contentProto = [contentBuilder buildAndReturnError:&error];
+    if (error || !contentProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    NSData *_Nullable contentData = [contentProto serializedDataAndReturnError:&error];
+    if (error || !contentData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return contentData;
 }
 
 - (BOOL)shouldSyncTranscript

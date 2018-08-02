@@ -917,7 +917,15 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                     [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
             }
 
-            [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
+            NSError *error;
+            SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
+                [quotedAttachmentBuilder buildAndReturnError:&error];
+            if (!quotedAttachmentMessage) {
+                OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+                return nil;
+            }
+
+            [quoteBuilder addAttachments:quotedAttachmentMessage];
         }
     }
 
@@ -948,7 +956,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:self.recipientId];
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
     if (!dataMessage) {
         OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
@@ -959,12 +967,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     SSKProtoContent *_Nullable contentProto = [contentBuilder buildAndReturnError:&error];
     if (error || !contentProto) {
         OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-        return;
+        return nil;
     }
     NSData *_Nullable contentData = [contentProto serializedDataAndReturnError:&error];
     if (error || !contentData) {
         OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
-        return;
+        return nil;
     }
     return contentData;
 }

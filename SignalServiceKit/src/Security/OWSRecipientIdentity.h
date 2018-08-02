@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+//#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import "SignalServiceKit-Swift.h"
 #import "TSYapDatabaseObject.h"
 

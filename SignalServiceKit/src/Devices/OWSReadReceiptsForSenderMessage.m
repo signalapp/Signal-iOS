@@ -58,12 +58,30 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipient);
 
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
+    if (!receiptMessage) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
+
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
-    [contentBuilder setReceiptMessage:[self buildReceiptMessage:recipient.recipientId]];
-    return [[contentBuilder build] data];
+    [contentBuilder setReceiptMessage:receiptMessage];
+
+    NSError *error;
+    SSKProtoContent *_Nullable contentProto = [contentBuilder buildAndReturnError:&error];
+    if (error || !contentProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    NSData *_Nullable contentData = [contentProto serializedDataAndReturnError:&error];
+    if (error || !contentData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return contentData;
 }
 
-- (SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
 {
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessageBuilder new];
 
@@ -73,7 +91,13 @@ NS_ASSUME_NONNULL_BEGIN
         [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
     }
 
-    return [builder build];
+    NSError *error;
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
+    if (error || !receiptMessage) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return receiptMessage;
 }
 
 #pragma mark - TSYapDatabaseObject overrides
