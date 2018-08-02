@@ -63,24 +63,17 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
-    verifiedBuilder.destination = self.verificationForRecipientId;
-    verifiedBuilder.identityKey = self.identityKey;
-    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
-
-    OWSAssert(self.paddingBytesLength != 0);
-
     // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
     // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
     // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
     // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
     // verification sync which is ~1-512 bytes larger then that.
-    verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:self.paddingBytesLength];
+    OWSAssert(self.paddingBytesLength != 0);
 
-    NSError *error;
-    SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
-    if (error || !verifiedProto) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProto(
+        self.verificationForRecipientId, self.identityKey, self.verificationState, self.paddingBytesLength);
+    if (!verifiedProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
         return nil;
     }
 
@@ -98,12 +91,19 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
-    verifiedBuilder.destination = self.verificationForRecipientId;
-    verifiedBuilder.identityKey = self.identityKey;
-    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
-
-    return [verifiedBuilder build].data.length;
+    SSKProtoVerified *_Nullable verifiedProto
+        = BuildVerifiedProto(self.verificationForRecipientId, self.identityKey, self.verificationState, 0);
+    if (!verifiedProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return 0;
+    }
+    NSError *error;
+    NSData *_Nullable verifiedData = [verifiedProto serializedDataAndReturnError:&error];
+    if (error || !verifiedData) {
+        OWSFail(@"%@ could not serialize protobuf.", self.logTag);
+        return 0;
+    }
+    return verifiedData.length;
 }
 
 @end

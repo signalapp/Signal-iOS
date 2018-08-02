@@ -9,6 +9,7 @@
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
 #import <ImageIO/ImageIO.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -787,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (SSKProtoAttachmentPointer *)buildProto
+- (nullable SSKProtoAttachmentPointer *)buildProto
 {
     SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointerBuilder new];
 
@@ -816,7 +817,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    return [builder build];
+    NSError *error;
+    SSKProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
+    if (error || !attachmentProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return attachmentProto;
 }
 
 @end

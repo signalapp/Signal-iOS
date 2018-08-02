@@ -4,7 +4,7 @@
 
 #import "OWSProfileKeyMessage.h"
 #import "ProfileManagerProtocol.h"
-#import "ProtoBuf+OWS.h"
+#import "ProtoUtils.h"
 #import "TextSecureKitEnv.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -44,10 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
-    
-    SSKProtoDataMessageBuilder *builder = [self dataMessageBuilder];
+
+    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
+    if (!builder) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
     [builder setTimestamp:self.timestamp];
-    [builder addLocalProfileKey];
+    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:builder];
     [builder setFlags:SSKProtoDataMessageFlagsProfileKeyUpdate];
     
     if (recipientId.length > 0) {

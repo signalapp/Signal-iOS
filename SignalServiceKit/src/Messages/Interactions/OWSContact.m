@@ -899,10 +899,16 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 
     if (contact.avatarAttachmentId != nil) {
+        SSKProtoAttachmentPointer *_Nullable attachmentProto =
+            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
+        if (!attachmentProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return nil;
+        }
+
         SSKProtoDataMessageContactAvatarBuilder *avatarBuilder =
             [SSKProtoDataMessageContactAvatarBuilder new];
-        avatarBuilder.avatar =
-            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
+        avatarBuilder.avatar = attachmentProto;
         SSKProtoDataMessageContactAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
         if (error || !avatarProto) {
             OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);

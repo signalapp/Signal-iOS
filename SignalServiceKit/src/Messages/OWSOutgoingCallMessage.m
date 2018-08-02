@@ -9,7 +9,7 @@
 #import "OWSCallHangupMessage.h"
 #import "OWSCallIceUpdateMessage.h"
 #import "OWSCallOfferMessage.h"
-#import "ProtoBuf+OWS.h"
+#import "ProtoUtils.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -193,8 +193,8 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:proto];
     }
 
-    [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
-    
+    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId callMessageBuilder:builder];
+
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
     if (error || !result) {

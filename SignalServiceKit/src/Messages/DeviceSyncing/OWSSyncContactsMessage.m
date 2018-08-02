@@ -56,8 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
             (unsigned long)self.attachmentIds.count);
     }
 
-    SSKProtoAttachmentPointer *attachmentProto =
+    SSKProtoAttachmentPointer *_Nullable attachmentProto =
         [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+    if (!attachmentProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
 
     SSKProtoSyncMessageContactsBuilder *contactsBuilder =
         [SSKProtoSyncMessageContactsBuilder new];
@@ -70,8 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
     [syncMessageBuilder setContacts:contactsProto];
-
     return syncMessageBuilder;
 }
 

@@ -3,8 +3,11 @@
 //
 
 #import "OWSRecipientIdentity.h"
+#import "Cryptography.h"
+#import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,6 +34,40 @@ SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState veri
         case OWSVerificationStateNoLongerVerified:
             return SSKProtoVerifiedStateUnverified;
     }
+}
+
+SSKProtoVerified *_Nullable BuildVerifiedProto(NSString *destinationRecipientId,
+    NSData *identityKey,
+    OWSVerificationState verificationState,
+    NSUInteger paddingBytesLength)
+{
+    OWSCAssert(identityKey.length == kIdentityKeyLength);
+    OWSCAssert(destinationRecipientId.length > 0);
+    // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
+    // will figure that out on it's own.
+    OWSCAssert(verificationState != OWSVerificationStateNoLongerVerified);
+
+    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
+    verifiedBuilder.destination = destinationRecipientId;
+    verifiedBuilder.identityKey = identityKey;
+    verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
+
+    if (paddingBytesLength > 0) {
+        // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so
+        // that the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage.
+        // We pad the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be
+        // *additionally* padded by the superclass while being sent. The end result is we send a NullMessage of a
+        // non-distinct size, and a verification sync which is ~1-512 bytes larger then that.
+        verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:paddingBytesLength];
+    }
+
+    NSError *error;
+    SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
+    if (error || !verifiedProto) {
+        OWSCFail(@"%@ could not build protobuf: %@", @"[BuildVerifiedProto]", error);
+        return nil;
+    }
+    return verifiedProto;
 }
 
 @interface OWSRecipientIdentity ()

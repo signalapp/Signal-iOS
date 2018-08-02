@@ -26,6 +26,7 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -115,13 +115,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoDataMessageQuote *quoteProto = [dataMessage quote];
 
-    if (![quoteProto hasId] || [quoteProto id] == 0) {
+    if (quoteProto.id == 0) {
         OWSFail(@"%@ quoted message missing id", self.logTag);
         return nil;
     }
     uint64_t timestamp = [quoteProto id];
 
-    if (![quoteProto hasAuthor] || [quoteProto author].length == 0) {
+    if (quoteProto.author.length == 0) {
         OWSFail(@"%@ quoted message missing author", self.logTag);
         return nil;
     }

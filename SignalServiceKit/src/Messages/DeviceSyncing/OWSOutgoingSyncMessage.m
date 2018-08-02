@@ -5,7 +5,7 @@
 #import "OWSOutgoingSyncMessage.h"
 #import "Cryptography.h"
 #import "NSDate+OWS.h"
-#import "ProtoBuf+OWS.h"
+#import "ProtoUtils.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
 
-- (SSKProtoAttachmentPointer *)buildProto;
+- (nullable SSKProtoAttachmentPointer *)buildProto;
 
 @end
 

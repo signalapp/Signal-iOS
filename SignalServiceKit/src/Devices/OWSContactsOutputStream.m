@@ -39,18 +39,14 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
 #endif
 
     if (recipientIdentity != nil) {
-        SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
-        verifiedBuilder.destination = recipientIdentity.recipientId;
-        verifiedBuilder.identityKey = [recipientIdentity.identityKey prependKeyType];
-        verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
-
-        NSError *error;
-        SSKProtoVerified *_Nullable verified = [verifiedBuilder buildAndReturnError:&error];
-        if (error || !verified) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        SSKProtoVerified *_Nullable verified = BuildVerifiedProto(recipientIdentity.recipientId,
+            [recipientIdentity.identityKey prependKeyType],
+            recipientIdentity.verificationState,
+            0);
+        if (!verified) {
+            OWSFail(@"%@ could not build protobuf.", self.logTag);
             return;
         }
-
         contactBuilder.verified = verified;
     }
 

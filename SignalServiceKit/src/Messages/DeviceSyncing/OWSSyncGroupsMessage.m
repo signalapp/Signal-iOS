@@ -28,12 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    SSKProtoAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+
+    SSKProtoAttachmentPointer *_Nullable attachmentProto =
+        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+    if (!attachmentProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
 
     SSKProtoSyncMessageGroupsBuilder *groupsBuilder =
         [SSKProtoSyncMessageGroupsBuilder new];

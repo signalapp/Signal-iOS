@@ -2,8 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-//#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import "SignalServiceKit-Swift.h"
 #import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,8 +12,13 @@ typedef NS_ENUM(NSUInteger, OWSVerificationState) {
     OWSVerificationStateNoLongerVerified,
 };
 
+@class SSKProtoVerified;
+
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
-SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState);
+SSKProtoVerified *_Nullable BuildVerifiedProto(NSString *destinationRecipientId,
+    NSData *identityKey,
+    OWSVerificationState verificationState,
+    NSUInteger paddingBytesLength);
 
 @interface OWSRecipientIdentity : TSYapDatabaseObject
 

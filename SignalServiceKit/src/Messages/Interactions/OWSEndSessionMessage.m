@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
     SSKProtoDataMessageBuilder *builder = [super dataMessageBuilder];
     [builder setTimestamp:self.timestamp];
