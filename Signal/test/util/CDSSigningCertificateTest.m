@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSignalServiceProtos.pb.h"
+#import "SSKProto.pb.h"
 #import <SignalServiceKit/CDSSigningCertificate.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSData+OWS.h>

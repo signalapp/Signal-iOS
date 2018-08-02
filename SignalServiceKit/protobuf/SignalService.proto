@@ -50,6 +50,7 @@ message CallMessage {
     optional uint64 id          = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
+    // @required
     optional string sessionDescription = 2;
   }
 
@@ -58,14 +59,18 @@ message CallMessage {
     optional uint64 id          = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
+    // @required
     optional string sessionDescription = 2;
   }
 
   message IceUpdate {
     // @required
     optional uint64 id            = 1;
+    // @required
     optional string sdpMid        = 2;
+    // @required
     optional uint32 sdpMLineIndex = 3;
+    // @required
     optional string sdp           = 4;
   }
 

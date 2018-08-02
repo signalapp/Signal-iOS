@@ -5,7 +5,7 @@
 shift-base:CodedInputStream.m
 # generated protos
 bool:WebSocketResources.pb.m
-bool:OWSSignalServiceProtos.pb.m
+bool:SSKProto.pb.m
 bool:WhisperTextProtocol.pb.m
 bool:OWSWebRTCDataProtos.pb.m
 bool:OWSSignaliOSProtos.pb.m

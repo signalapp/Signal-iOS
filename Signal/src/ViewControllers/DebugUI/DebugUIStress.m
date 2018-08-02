@@ -13,6 +13,7 @@
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SecurityUtils.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -49,120 +50,135 @@ NS_ASSUME_NONNULL_BEGIN
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send no payload message"
                                      actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
-                                             OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-                                             return [[contentBuilder build] data];
-                                         }];
+                                         [DebugUIStress sendStressMessage:thread
+                                                                    block:^(SignalRecipient *recipient) {
+                                                                        SSKProtoContentBuilder *contentBuilder =
+                                                                            [SSKProtoContentBuilder new];
+                                                                        return [[contentBuilder buildIgnoringErrors]
+                                                                            serializedDataIgnoringErrors];
+                                                                    }];
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty null message"
                                      actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
-                                             OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-                                             OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
-                                             contentBuilder.nullMessage = [nullMessageBuilder build];
-                                             return [[contentBuilder build] data];
-                                         }];
+                                         [DebugUIStress sendStressMessage:thread
+                                                                    block:^(SignalRecipient *recipient) {
+                                                                        SSKProtoContentBuilder *contentBuilder =
+                                                                            [SSKProtoContentBuilder new];
+                                                                        SSKProtoNullMessageBuilder *nullMessageBuilder =
+                                                                            [SSKProtoNullMessageBuilder new];
+                                                                        contentBuilder.nullMessage =
+                                                                            [nullMessageBuilder buildIgnoringErrors];
+                                                                        return [[contentBuilder buildIgnoringErrors]
+                                                                            serializedDataIgnoringErrors];
+                                                                    }];
                                      }]];
-    [items
-        addObject:[OWSTableItem itemWithTitle:@"Send random null message"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder =
-                                                              [OWSSignalServiceProtosNullMessageBuilder new];
-                                                          NSUInteger contentLength = arc4random_uniform(32);
-                                                          nullMessageBuilder.padding =
-                                                              [Cryptography generateRandomBytes:contentLength];
-                                                          contentBuilder.nullMessage = [nullMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
-    [items
-        addObject:[OWSTableItem itemWithTitle:@"Send empty sync message"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
-    [items
-        addObject:[OWSTableItem itemWithTitle:@"Send empty sync sent message"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Send random null message"
+                                     actionBlock:^{
+                                         [DebugUIStress
+                                             sendStressMessage:thread
+                                                         block:^(SignalRecipient *recipient) {
+                                                             SSKProtoContentBuilder *contentBuilder =
+                                                                 [SSKProtoContentBuilder new];
+                                                             SSKProtoNullMessageBuilder *nullMessageBuilder =
+                                                                 [SSKProtoNullMessageBuilder new];
+                                                             NSUInteger contentLength = arc4random_uniform(32);
+                                                             nullMessageBuilder.padding =
+                                                                 [Cryptography generateRandomBytes:contentLength];
+                                                             contentBuilder.nullMessage =
+                                                                 [nullMessageBuilder buildIgnoringErrors];
+                                                             return [[contentBuilder buildIgnoringErrors]
+                                                                 serializedDataIgnoringErrors];
+                                                         }];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Send empty sync message"
+                                     actionBlock:^{
+                                         [DebugUIStress sendStressMessage:thread
+                                                                    block:^(SignalRecipient *recipient) {
+                                                                        SSKProtoContentBuilder *contentBuilder =
+                                                                            [SSKProtoContentBuilder new];
+                                                                        SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                                            [SSKProtoSyncMessageBuilder new];
+                                                                        contentBuilder.syncMessage =
+                                                                            [syncMessageBuilder buildIgnoringErrors];
+                                                                        return [[contentBuilder buildIgnoringErrors]
+                                                                            serializedDataIgnoringErrors];
+                                                                    }];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Send empty sync sent message"
+                                     actionBlock:^{
+                                         [DebugUIStress sendStressMessage:thread
+                                                                    block:^(SignalRecipient *recipient) {
+                                                                        SSKProtoContentBuilder *contentBuilder =
+                                                                            [SSKProtoContentBuilder new];
+                                                                        SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                                            [SSKProtoSyncMessageBuilder new];
+                                                                        SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                                            [SSKProtoSyncMessageSentBuilder new];
+                                                                        syncMessageBuilder.sent =
+                                                                            [sentBuilder buildIgnoringErrors];
+                                                                        contentBuilder.syncMessage =
+                                                                            [syncMessageBuilder buildIgnoringErrors];
+                                                                        return [[contentBuilder buildIgnoringErrors]
+                                                                            serializedDataIgnoringErrors];
+                                                                    }];
+                                     }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send whitespace text data message"
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
                                                          block:^(SignalRecipient *recipient) {
-                                                             OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                                 [OWSSignalServiceProtosContentBuilder new];
-                                                             OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                                 [OWSSignalServiceProtosDataMessageBuilder new];
+                                                             SSKProtoContentBuilder *contentBuilder =
+                                                                 [SSKProtoContentBuilder new];
+                                                             SSKProtoDataMessageBuilder *dataBuilder =
+                                                                 [SSKProtoDataMessageBuilder new];
                                                              dataBuilder.body = @" ";
                                                              [DebugUIStress ensureGroupOfDataBuilder:dataBuilder
                                                                                               thread:thread];
-                                                             contentBuilder.dataMessage = [dataBuilder build];
-                                                             return [[contentBuilder build] data];
+                                                             contentBuilder.dataMessage =
+                                                                 [dataBuilder buildIgnoringErrors];
+                                                             return [[contentBuilder buildIgnoringErrors]
+                                                                 serializedDataIgnoringErrors];
                                                          }];
                                      }]];
-    [items addObject:[OWSTableItem
-                         itemWithTitle:@"Send bad attachment data message"
-                           actionBlock:^{
-                               [DebugUIStress
-                                   sendStressMessage:thread
-                                               block:^(SignalRecipient *recipient) {
-                                                   OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                       [OWSSignalServiceProtosContentBuilder new];
-                                                   OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                       [OWSSignalServiceProtosDataMessageBuilder new];
-                                                   OWSSignalServiceProtosAttachmentPointerBuilder *attachmentPointer =
-                                                       [OWSSignalServiceProtosAttachmentPointerBuilder new];
-                                                   [attachmentPointer setId:arc4random_uniform(32) + 1];
-                                                   [attachmentPointer setContentType:@"1"];
-                                                   [attachmentPointer setSize:arc4random_uniform(32) + 1];
-                                                   [attachmentPointer setDigest:[Cryptography generateRandomBytes:1]];
-                                                   [attachmentPointer setFileName:@" "];
-                                                   [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
-                                                   contentBuilder.dataMessage = [dataBuilder build];
-                                                   return [[contentBuilder build] data];
-                                               }];
-                           }]];
+    [items
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Send bad attachment data message"
+                        actionBlock:^{
+                            [DebugUIStress
+                                sendStressMessage:thread
+                                            block:^(SignalRecipient *recipient) {
+                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                                SSKProtoDataMessageBuilder *dataBuilder =
+                                                    [SSKProtoDataMessageBuilder new];
+                                                SSKProtoAttachmentPointerBuilder *attachmentPointer =
+                                                    [SSKProtoAttachmentPointerBuilder new];
+                                                [attachmentPointer setId:arc4random_uniform(32) + 1];
+                                                [attachmentPointer setContentType:@"1"];
+                                                [attachmentPointer setSize:arc4random_uniform(32) + 1];
+                                                [attachmentPointer setDigest:[Cryptography generateRandomBytes:1]];
+                                                [attachmentPointer setFileName:@" "];
+                                                [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
+                                                contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                return
+                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
+                                            }];
+                        }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send normal text data message"
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
                                                          block:^(SignalRecipient *recipient) {
-                                                             OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                                 [OWSSignalServiceProtosContentBuilder new];
-                                                             OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                                 [OWSSignalServiceProtosDataMessageBuilder new];
+                                                             SSKProtoContentBuilder *contentBuilder =
+                                                                 [SSKProtoContentBuilder new];
+                                                             SSKProtoDataMessageBuilder *dataBuilder =
+                                                                 [SSKProtoDataMessageBuilder new];
                                                              dataBuilder.body = @"alice";
                                                              [DebugUIStress ensureGroupOfDataBuilder:dataBuilder
                                                                                               thread:thread];
-                                                             contentBuilder.dataMessage = [dataBuilder build];
-                                                             return [[contentBuilder build] data];
+                                                             contentBuilder.dataMessage =
+                                                                 [dataBuilder buildIgnoringErrors];
+                                                             return [[contentBuilder buildIgnoringErrors]
+                                                                 serializedDataIgnoringErrors];
                                                          }];
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send N text messages with same timestamp"
@@ -173,17 +189,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                  sendStressMessage:thread
                                                          timestamp:timestamp
                                                              block:^(SignalRecipient *recipient) {
-                                                                 OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                                     [OWSSignalServiceProtosContentBuilder new];
-                                                                 OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                                     [OWSSignalServiceProtosDataMessageBuilder new];
+                                                                 SSKProtoContentBuilder *contentBuilder =
+                                                                     [SSKProtoContentBuilder new];
+                                                                 SSKProtoDataMessageBuilder *dataBuilder =
+                                                                     [SSKProtoDataMessageBuilder new];
                                                                  dataBuilder.body = [NSString stringWithFormat:@"%@ %d",
                                                                                               [NSUUID UUID].UUIDString,
                                                                                               i];
                                                                  [DebugUIStress ensureGroupOfDataBuilder:dataBuilder
                                                                                                   thread:thread];
-                                                                 contentBuilder.dataMessage = [dataBuilder build];
-                                                                 return [[contentBuilder build] data];
+                                                                 contentBuilder.dataMessage =
+                                                                     [dataBuilder buildIgnoringErrors];
+                                                                 return [[contentBuilder buildIgnoringErrors]
+                                                                     serializedDataIgnoringErrors];
                                                              }];
                                          }
                                      }]];
@@ -195,15 +213,16 @@ NS_ASSUME_NONNULL_BEGIN
                                    sendStressMessage:thread
                                            timestamp:timestamp
                                                block:^(SignalRecipient *recipient) {
-                                                   OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                       [OWSSignalServiceProtosContentBuilder new];
-                                                   OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                       [OWSSignalServiceProtosDataMessageBuilder new];
+                                                   SSKProtoContentBuilder *contentBuilder =
+                                                       [SSKProtoContentBuilder new];
+                                                   SSKProtoDataMessageBuilder *dataBuilder =
+                                                       [SSKProtoDataMessageBuilder new];
                                                    dataBuilder.body =
                                                        [[NSUUID UUID].UUIDString stringByAppendingString:@" now"];
                                                    [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
-                                                   contentBuilder.dataMessage = [dataBuilder build];
-                                                   return [[contentBuilder build] data];
+                                                   contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                   return [[contentBuilder buildIgnoringErrors]
+                                                       serializedDataIgnoringErrors];
                                                }];
                            }]];
     [items addObject:[OWSTableItem
@@ -215,15 +234,16 @@ NS_ASSUME_NONNULL_BEGIN
                                    sendStressMessage:thread
                                            timestamp:timestamp
                                                block:^(SignalRecipient *recipient) {
-                                                   OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                       [OWSSignalServiceProtosContentBuilder new];
-                                                   OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                       [OWSSignalServiceProtosDataMessageBuilder new];
+                                                   SSKProtoContentBuilder *contentBuilder =
+                                                       [SSKProtoContentBuilder new];
+                                                   SSKProtoDataMessageBuilder *dataBuilder =
+                                                       [SSKProtoDataMessageBuilder new];
                                                    dataBuilder.body =
                                                        [[NSUUID UUID].UUIDString stringByAppendingString:@" now"];
                                                    [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
-                                                   contentBuilder.dataMessage = [dataBuilder build];
-                                                   return [[contentBuilder build] data];
+                                                   contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                   return [[contentBuilder buildIgnoringErrors]
+                                                       serializedDataIgnoringErrors];
                                                }];
                            }]];
     [items addObject:[OWSTableItem
@@ -235,27 +255,27 @@ NS_ASSUME_NONNULL_BEGIN
                                    sendStressMessage:thread
                                            timestamp:timestamp
                                                block:^(SignalRecipient *recipient) {
-                                                   OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                       [OWSSignalServiceProtosContentBuilder new];
-                                                   OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                       [OWSSignalServiceProtosDataMessageBuilder new];
+                                                   SSKProtoContentBuilder *contentBuilder =
+                                                       [SSKProtoContentBuilder new];
+                                                   SSKProtoDataMessageBuilder *dataBuilder =
+                                                       [SSKProtoDataMessageBuilder new];
                                                    dataBuilder.body =
                                                        [[NSUUID UUID].UUIDString stringByAppendingString:@" now"];
                                                    [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
-                                                   contentBuilder.dataMessage = [dataBuilder build];
-                                                   return [[contentBuilder build] data];
+                                                   contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
+                                                   return [[contentBuilder buildIgnoringErrors]
+                                                       serializedDataIgnoringErrors];
                                                }];
                            }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send N text messages with same timestamp"
                                      actionBlock:^{
-                                         OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                             [OWSSignalServiceProtosContentBuilder new];
-                                         OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                             [OWSSignalServiceProtosDataMessageBuilder new];
+                                         SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                         SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessageBuilder new];
                                          dataBuilder.body = @"alice";
-                                         contentBuilder.dataMessage = [dataBuilder build];
+                                         contentBuilder.dataMessage = [dataBuilder buildIgnoringErrors];
                                          [DebugUIStress ensureGroupOfDataBuilder:dataBuilder thread:thread];
-                                         NSData *data = [[contentBuilder build] data];
+                                         NSData *data =
+                                             [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
 
                                          uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
 
@@ -268,145 +288,151 @@ NS_ASSUME_NONNULL_BEGIN
                                          }
                                      }]];
     [items
-        addObject:[OWSTableItem itemWithTitle:@"Send malformed sync sent message 1"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          sentBuilder.destination = @"abc";
-                                                          sentBuilder.timestamp = arc4random_uniform(32) + 1;
-                                                          OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                              [OWSSignalServiceProtosDataMessageBuilder new];
-                                                          sentBuilder.message = [dataBuilder build];
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Send malformed sync sent message 1"
+                        actionBlock:^{
+                            [DebugUIStress
+                                sendStressMessage:thread
+                                            block:^(SignalRecipient *recipient) {
+                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                                SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                    [SSKProtoSyncMessageBuilder new];
+                                                SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                    [SSKProtoSyncMessageSentBuilder new];
+                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.timestamp = arc4random_uniform(32) + 1;
+                                                SSKProtoDataMessageBuilder *dataBuilder =
+                                                    [SSKProtoDataMessageBuilder new];
+                                                sentBuilder.message = [dataBuilder buildIgnoringErrors];
+                                                syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
+                                                contentBuilder.syncMessage = [syncMessageBuilder buildIgnoringErrors];
+                                                return
+                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
+                                            }];
+                        }]];
     [items
-        addObject:[OWSTableItem itemWithTitle:@"Send malformed sync sent message 2"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          sentBuilder.destination = @"abc";
-                                                          sentBuilder.timestamp = 0;
-                                                          OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                              [OWSSignalServiceProtosDataMessageBuilder new];
-                                                          sentBuilder.message = [dataBuilder build];
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Send malformed sync sent message 2"
+                        actionBlock:^{
+                            [DebugUIStress
+                                sendStressMessage:thread
+                                            block:^(SignalRecipient *recipient) {
+                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                                SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                    [SSKProtoSyncMessageBuilder new];
+                                                SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                    [SSKProtoSyncMessageSentBuilder new];
+                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.timestamp = 0;
+                                                SSKProtoDataMessageBuilder *dataBuilder =
+                                                    [SSKProtoDataMessageBuilder new];
+                                                sentBuilder.message = [dataBuilder buildIgnoringErrors];
+                                                syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
+                                                contentBuilder.syncMessage = [syncMessageBuilder buildIgnoringErrors];
+                                                return
+                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
+                                            }];
+                        }]];
     [items
-        addObject:[OWSTableItem itemWithTitle:@"Send malformed sync sent message 3"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          sentBuilder.destination = @"abc";
-                                                          sentBuilder.timestamp = 0;
-                                                          OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                              [OWSSignalServiceProtosDataMessageBuilder new];
-                                                          dataBuilder.body = @" ";
-                                                          sentBuilder.message = [dataBuilder build];
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Send malformed sync sent message 3"
+                        actionBlock:^{
+                            [DebugUIStress
+                                sendStressMessage:thread
+                                            block:^(SignalRecipient *recipient) {
+                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                                SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                    [SSKProtoSyncMessageBuilder new];
+                                                SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                    [SSKProtoSyncMessageSentBuilder new];
+                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.timestamp = 0;
+                                                SSKProtoDataMessageBuilder *dataBuilder =
+                                                    [SSKProtoDataMessageBuilder new];
+                                                dataBuilder.body = @" ";
+                                                sentBuilder.message = [dataBuilder buildIgnoringErrors];
+                                                syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
+                                                contentBuilder.syncMessage = [syncMessageBuilder buildIgnoringErrors];
+                                                return
+                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
+                                            }];
+                        }]];
     [items
-        addObject:[OWSTableItem itemWithTitle:@"Send malformed sync sent message 4"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          sentBuilder.destination = @"abc";
-                                                          sentBuilder.timestamp = 0;
-                                                          OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                              [OWSSignalServiceProtosDataMessageBuilder new];
-                                                          dataBuilder.body = @" ";
-                                                          OWSSignalServiceProtosGroupContextBuilder *groupBuilder =
-                                                              [OWSSignalServiceProtosGroupContextBuilder new];
-                                                          [groupBuilder setId:[Cryptography generateRandomBytes:1]];
-                                                          dataBuilder.group = [groupBuilder build];
-                                                          sentBuilder.message = [dataBuilder build];
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Send malformed sync sent message 4"
+                        actionBlock:^{
+                            [DebugUIStress
+                                sendStressMessage:thread
+                                            block:^(SignalRecipient *recipient) {
+                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                                SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                    [SSKProtoSyncMessageBuilder new];
+                                                SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                    [SSKProtoSyncMessageSentBuilder new];
+                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.timestamp = 0;
+                                                SSKProtoDataMessageBuilder *dataBuilder =
+                                                    [SSKProtoDataMessageBuilder new];
+                                                dataBuilder.body = @" ";
+                                                SSKProtoGroupContextBuilder *groupBuilder =
+                                                    [SSKProtoGroupContextBuilder new];
+                                                [groupBuilder setId:[Cryptography generateRandomBytes:1]];
+                                                dataBuilder.group = [groupBuilder buildIgnoringErrors];
+                                                sentBuilder.message = [dataBuilder buildIgnoringErrors];
+                                                syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
+                                                contentBuilder.syncMessage = [syncMessageBuilder buildIgnoringErrors];
+                                                return
+                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
+                                            }];
+                        }]];
     [items
-        addObject:[OWSTableItem itemWithTitle:@"Send malformed sync sent message 5"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          sentBuilder.destination = @"abc";
-                                                          sentBuilder.timestamp = 0;
-                                                          OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
-                                                              [OWSSignalServiceProtosDataMessageBuilder new];
-                                                          dataBuilder.body = @" ";
-                                                          OWSSignalServiceProtosGroupContextBuilder *groupBuilder =
-                                                              [OWSSignalServiceProtosGroupContextBuilder new];
-                                                          [groupBuilder setId:[Cryptography generateRandomBytes:1]];
-                                                          dataBuilder.group = [groupBuilder build];
-                                                          sentBuilder.message = [dataBuilder build];
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
-    [items
-        addObject:[OWSTableItem itemWithTitle:@"Send empty sync sent message 6"
-                                  actionBlock:^{
-                                      [DebugUIStress
-                                          sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
-                                                          OWSSignalServiceProtosContentBuilder *contentBuilder =
-                                                              [OWSSignalServiceProtosContentBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageBuilder new];
-                                                          OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder =
-                                                              [OWSSignalServiceProtosSyncMessageSentBuilder new];
-                                                          sentBuilder.destination = @"abc";
-                                                          syncMessageBuilder.sent = [sentBuilder build];
-                                                          contentBuilder.syncMessage = [syncMessageBuilder build];
-                                                          return [[contentBuilder build] data];
-                                                      }];
-                                  }]];
-    
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Send malformed sync sent message 5"
+                        actionBlock:^{
+                            [DebugUIStress
+                                sendStressMessage:thread
+                                            block:^(SignalRecipient *recipient) {
+                                                SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+                                                SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                    [SSKProtoSyncMessageBuilder new];
+                                                SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                    [SSKProtoSyncMessageSentBuilder new];
+                                                sentBuilder.destination = @"abc";
+                                                sentBuilder.timestamp = 0;
+                                                SSKProtoDataMessageBuilder *dataBuilder =
+                                                    [SSKProtoDataMessageBuilder new];
+                                                dataBuilder.body = @" ";
+                                                SSKProtoGroupContextBuilder *groupBuilder =
+                                                    [SSKProtoGroupContextBuilder new];
+                                                [groupBuilder setId:[Cryptography generateRandomBytes:1]];
+                                                dataBuilder.group = [groupBuilder buildIgnoringErrors];
+                                                sentBuilder.message = [dataBuilder buildIgnoringErrors];
+                                                syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
+                                                contentBuilder.syncMessage = [syncMessageBuilder buildIgnoringErrors];
+                                                return
+                                                    [[contentBuilder buildIgnoringErrors] serializedDataIgnoringErrors];
+                                            }];
+                        }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Send empty sync sent message 6"
+                                     actionBlock:^{
+                                         [DebugUIStress sendStressMessage:thread
+                                                                    block:^(SignalRecipient *recipient) {
+                                                                        SSKProtoContentBuilder *contentBuilder =
+                                                                            [SSKProtoContentBuilder new];
+                                                                        SSKProtoSyncMessageBuilder *syncMessageBuilder =
+                                                                            [SSKProtoSyncMessageBuilder new];
+                                                                        SSKProtoSyncMessageSentBuilder *sentBuilder =
+                                                                            [SSKProtoSyncMessageSentBuilder new];
+                                                                        sentBuilder.destination = @"abc";
+                                                                        syncMessageBuilder.sent =
+                                                                            [sentBuilder buildIgnoringErrors];
+                                                                        contentBuilder.syncMessage =
+                                                                            [syncMessageBuilder buildIgnoringErrors];
+                                                                        return [[contentBuilder buildIgnoringErrors]
+                                                                            serializedDataIgnoringErrors];
+                                                                    }];
+                                     }]];
+
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [items addObject:[OWSTableItem itemWithTitle:@"Hallucinate twin group"
@@ -417,7 +443,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-+ (void)ensureGroupOfDataBuilder:(OWSSignalServiceProtosDataMessageBuilder *)dataBuilder thread:(TSThread *)thread
++ (void)ensureGroupOfDataBuilder:(SSKProtoDataMessageBuilder *)dataBuilder thread:(TSThread *)thread
 {
     OWSAssert(dataBuilder);
     OWSAssert(thread);
@@ -427,10 +453,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)thread;
-    OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-    [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+    SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContextBuilder new];
+    [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
     [groupBuilder setId:groupThread.groupModel.groupId];
-    [dataBuilder setGroup:groupBuilder.build];
+    [dataBuilder setGroup:groupBuilder.buildIgnoringErrors];
 }
 
 + (void)sendStressMessage:(TSOutgoingMessage *)message

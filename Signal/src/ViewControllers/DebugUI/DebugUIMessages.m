@@ -3863,20 +3863,20 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
 
-    OWSSignalServiceProtosDataMessageBuilder *dataMessageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *dataMessageBuilder = [SSKProtoDataMessageBuilder new];
     [dataMessageBuilder setBody:text];
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-        [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContextBuilder new];
+        [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
         [groupBuilder setId:groupThread.groupModel.groupId];
-        [dataMessageBuilder setGroup:groupBuilder.build];
+        [dataMessageBuilder setGroup:groupBuilder.buildIgnoringErrors];
     }
 
-    OWSSignalServiceProtosContentBuilder *payloadBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [payloadBuilder setDataMessage:dataMessageBuilder.build];
-    NSData *plaintextData = [payloadBuilder build].data;
+    SSKProtoContentBuilder *payloadBuilder = [SSKProtoContentBuilder new];
+    [payloadBuilder setDataMessage:dataMessageBuilder.buildIgnoringErrors];
+    NSData *plaintextData = [payloadBuilder buildIgnoringErrors].serializedDataIgnoringErrors;
 
     // Try to use an arbitrary member of the current thread that isn't
     // ourselves as the sender.

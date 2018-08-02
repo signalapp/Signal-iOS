@@ -33,11 +33,11 @@ class SSKProtoEnvelopeTest: XCTestCase {
 
     func testParse_ValidData() {
         // `encodedData` was derived thus:
-        //     let builder = OWSSignalServiceProtosEnvelopeBuilder()
+        //     let builder = SSKProtoEnvelopeBuilder()
         //     builder.setTimestamp(NSDate.ows_millisecondTimeStamp())
         //     builder.setSource("+15551231234")
         //     builder.setSourceDevice(1)
-        //     builder.setType(OWSSignalServiceProtosEnvelopeType.ciphertext)
+        //     builder.setType(SSKProtoEnvelopeType.ciphertext)
         //     let encodedData = builder.build().data()!.base64EncodedString()
         let encodedData = "CAESDCsxNTU1MTIzMTIzNCjKm4WazSw4AQ=="
         let data = Data(base64Encoded: encodedData)!
@@ -47,7 +47,7 @@ class SSKProtoEnvelopeTest: XCTestCase {
 
     func testParse_invalidData() {
         // `encodedData` was derived thus:
-        //     let builder = OWSSignalServiceProtosEnvelopeBuilder()
+        //     let builder = SSKProtoEnvelopeBuilder()
         //     builder.setTimestamp(NSDate.ows_millisecondTimeStamp())
         //     builder.setSource("+15551231234")
         //     builder.setSourceDevice(1)
