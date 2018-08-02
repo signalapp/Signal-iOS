@@ -264,12 +264,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    NSMutableSet<NSString *> *allFilePaths = [NSMutableSet new];
-    [allFilePaths unionSet:legacyAttachmentFilePaths];
-    [allFilePaths unionSet:sharedDataAttachmentFilePaths];
-    [allFilePaths unionSet:legacyProfileAvatarsFilePaths];
-    [allFilePaths unionSet:sharedDataProfileAvatarFilePaths];
-    [allFilePaths addObjectsFromArray:tempFilePaths];
+    NSMutableSet<NSString *> *allOnDiskFilePaths = [NSMutableSet new];
+    [allOnDiskFilePaths unionSet:legacyAttachmentFilePaths];
+    [allOnDiskFilePaths unionSet:sharedDataAttachmentFilePaths];
+    [allOnDiskFilePaths unionSet:legacyProfileAvatarsFilePaths];
+    [allOnDiskFilePaths unionSet:sharedDataProfileAvatarFilePaths];
+    [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
     NSSet<NSString *> *profileAvatarFilePaths = [OWSUserProfile allProfileAvatarFilePaths];
 
@@ -277,13 +277,13 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    NSNumber *_Nullable totalFileSize = [self fileSizeOfFilePathsSafe:allFilePaths.allObjects];
+    NSNumber *_Nullable totalFileSize = [self fileSizeOfFilePathsSafe:allOnDiskFilePaths.allObjects];
 
     if (!totalFileSize || !self.isMainAppAndActive) {
         return nil;
     }
 
-    NSUInteger fileCount = allFilePaths.count;
+    NSUInteger fileCount = allOnDiskFilePaths.count;
 
     // Attachments
     __block int attachmentStreamCount = 0;
@@ -375,11 +375,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     DDLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
     DDLogDebug(@"%@ attachmentStreams with file paths: %zu", self.logTag, allAttachmentFilePaths.count);
 
-    NSMutableSet<NSString *> *orphanFilePaths = [allFilePaths mutableCopy];
+    NSMutableSet<NSString *> *orphanFilePaths = [allOnDiskFilePaths mutableCopy];
     [orphanFilePaths minusSet:allAttachmentFilePaths];
     [orphanFilePaths minusSet:profileAvatarFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];
-    [missingAttachmentFilePaths minusSet:allFilePaths];
+    [missingAttachmentFilePaths minusSet:allOnDiskFilePaths];
 
     DDLogDebug(@"%@ orphan file paths: %zu", self.logTag, orphanFilePaths.count);
     DDLogDebug(@"%@ missing attachment file paths: %zu", self.logTag, missingAttachmentFilePaths.count);
@@ -415,7 +415,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssertIsOnMainThread();
 
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = primaryStorage.newDatabaseConnection;
+    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
 
     // In production, only clean up once per app version.
 #ifndef DEBUG
@@ -438,7 +438,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = primaryStorage.newDatabaseConnection;
+    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
 
     [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection];
 }
