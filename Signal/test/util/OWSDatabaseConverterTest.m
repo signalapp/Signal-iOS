@@ -14,6 +14,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface YapDatabase (OWSDatabaseConverterTest)
+
+- (void)flushInternalQueue;
+- (void)flushCheckpointQueue;
+
+@end
+
 @interface OWSStorage (OWSDatabaseConverterTest)
 
 + (YapDatabaseDeserializer)logOnFailureDeserializer;

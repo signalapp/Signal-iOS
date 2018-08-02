@@ -7,14 +7,14 @@ import Foundation
 // Create a searchable index for objects of type T
 public class SearchIndexer<T> {
 
-    private let indexBlock: (T) -> String
+    private let indexBlock: (T, YapDatabaseReadTransaction) -> String
 
-    public init(indexBlock: @escaping (T) -> String) {
+    public init(indexBlock: @escaping (T, YapDatabaseReadTransaction) -> String) {
         self.indexBlock = indexBlock
     }
 
-    public func index(_ item: T) -> String {
-        return normalize(indexingText: indexBlock(item))
+    public func index(_ item: T, transaction: YapDatabaseReadTransaction) -> String {
+        return normalize(indexingText: indexBlock(item, transaction))
     }
 
     private func normalize(indexingText: String) -> String {
@@ -157,22 +157,22 @@ public class FullTextSearchFinder: NSObject {
         return TextSecureKitEnv.shared().contactsManager
     }
 
-    private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread) in
+    private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread, transaction: YapDatabaseReadTransaction) in
         let groupName = groupThread.groupModel.groupName ?? ""
 
         let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
-            recipientIndexer.index(recipientId)
+            recipientIndexer.index(recipientId, transaction: transaction)
         }.joined(separator: " ")
 
         return "\(groupName) \(memberStrings)"
     }
 
-    private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread) in
+    private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: YapDatabaseReadTransaction) in
         let recipientId =  contactThread.contactIdentifier()
-        return recipientIndexer.index(recipientId)
+        return recipientIndexer.index(recipientId, transaction: transaction)
     }
 
-    private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
+    private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, _: YapDatabaseReadTransaction) in
         let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
 
         let nationalNumber: String = { (recipientId: String) -> String in
@@ -193,46 +193,46 @@ public class FullTextSearchFinder: NSObject {
         return "\(recipientId) \(nationalNumber) \(displayName)"
     }
 
-    private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
+    private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
         if let body = message.body, body.count > 0 {
             return body
         }
-        if let oversizeText = oversizeText(forMessage: message) {
+        if let oversizeText = oversizeText(forMessage: message, transaction: transaction) {
             return oversizeText
         }
         return ""
     }
 
-    private static func oversizeText(forMessage message: TSMessage) -> String? {
+    private static func oversizeText(forMessage message: TSMessage, transaction: YapDatabaseReadTransaction) -> String? {
         guard message.hasAttachments() else {
             return nil
         }
-        let dbConnection = OWSPrimaryStorage.shared().dbReadConnection
-        var oversizeText: String?
-        dbConnection.read({ (transaction) in
-            guard let attachment = message.attachment(with: transaction) else {
-                // This can happen during the initial save of incoming messages.
-                Logger.warn("Could not load attachment for search indexing.")
-                return
-            }
-            guard let attachmentStream = attachment as? TSAttachmentStream else {
-                return
-            }
-            guard attachmentStream.isOversizeText() else {
-                return
-            }
-            guard let text = attachmentStream.readOversizeText() else {
-                owsFail("Could not load oversize text attachment")
-                return
-            }
-            oversizeText = text
-        })
-        return oversizeText
+
+        guard let attachment = message.attachment(with: transaction) else {
+            // This can happen during the initial save of incoming messages.
+            Logger.warn("Could not load attachment for search indexing.")
+            return nil
+        }
+
+        guard let attachmentStream = attachment as? TSAttachmentStream else {
+            return nil
+        }
+
+        guard attachmentStream.isOversizeText() else {
+            return nil
+        }
+
+        guard let text = attachmentStream.readOversizeText() else {
+            owsFail("Could not load oversize text attachment")
+            return nil
+        }
+
+        return text
     }
 
-    private class func indexContent(object: Any) -> String? {
+    private class func indexContent(object: Any, transaction: YapDatabaseReadTransaction) -> String? {
         if let groupThread = object as? TSGroupThread {
-            return self.groupThreadIndexer.index(groupThread)
+            return self.groupThreadIndexer.index(groupThread, transaction: transaction)
         } else if let contactThread = object as? TSContactThread {
             guard contactThread.hasEverHadMessage else {
                 // If we've never sent/received a message in a TSContactThread,
@@ -240,11 +240,11 @@ public class FullTextSearchFinder: NSObject {
                 // than in the "Conversations" section.
                 return nil
             }
-            return self.contactThreadIndexer.index(contactThread)
+            return self.contactThreadIndexer.index(contactThread, transaction: transaction)
         } else if let message = object as? TSMessage {
-            return self.messageIndexer.index(message)
+            return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
-            return self.recipientIndexer.index(signalAccount.recipientId)
+            return self.recipientIndexer.index(signalAccount.recipientId, transaction: transaction)
         } else {
             return nil
         }
@@ -277,8 +277,8 @@ public class FullTextSearchFinder: NSObject {
 
         let contentColumnName = "content"
 
-        let handler = YapDatabaseFullTextSearchHandler.withObjectBlock { (dict: NSMutableDictionary, _: String, _: String, object: Any) in
-            if let content: String = indexContent(object: object) {
+        let handler = YapDatabaseFullTextSearchHandler.withObjectBlock { (transaction: YapDatabaseReadTransaction, dict: NSMutableDictionary, _: String, _: String, object: Any) in
+            if let content: String = indexContent(object: object, transaction: transaction) {
                 dict[contentColumnName] = content
             }
         }
