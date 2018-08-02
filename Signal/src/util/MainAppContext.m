@@ -8,12 +8,15 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MainAppContext ()
 
 @property (atomic) UIApplicationState reportedApplicationState;
+
+@property (nonatomic, nullable) NSMutableArray<AppActiveBlock> *appActiveBlocks;
 
 @end
 
@@ -53,6 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(applicationWillTerminate:)
                                                  name:UIApplicationWillTerminateNotification
                                                object:nil];
+
+    // We can't use OWSSingletonAssert() since it uses the app context.
+
+    self.appActiveBlocks = [NSMutableArray new];
 
     return self;
 }
@@ -108,6 +115,8 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
+
+    [self runAppActiveBlocks];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -226,6 +235,49 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:value];
+}
+
+#pragma mark -
+
+- (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
+{
+    OWSAssert(block);
+
+    DispatchMainThreadSafe(^{
+        if (self.isMainAppAndActive) {
+            // App active blocks typically will be used to safely access the
+            // shared data container, so use a background task to protect this
+            // work.
+            OWSBackgroundTask *_Nullable backgroundTask =
+                [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+            block();
+            OWSAssert(backgroundTask);
+            backgroundTask = nil;
+            return;
+        }
+
+        [self.appActiveBlocks addObject:block];
+    });
+}
+
+- (void)runAppActiveBlocks
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(self.isMainAppAndActive);
+
+    // App active blocks typically will be used to safely access the
+    // shared data container, so use a background task to protect this
+    // work.
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
+    NSArray<AppActiveBlock> *appActiveBlocks = [self.appActiveBlocks copy];
+    [self.appActiveBlocks removeAllObjects];
+    for (AppActiveBlock block in appActiveBlocks) {
+        block();
+    }
+
+    OWSAssert(backgroundTask);
+    backgroundTask = nil;
 }
 
 @end

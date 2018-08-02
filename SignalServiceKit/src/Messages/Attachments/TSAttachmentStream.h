@@ -62,7 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)readOversizeText;
 
 + (void)deleteAttachments;
+
 + (NSString *)attachmentsFolder;
++ (NSString *)legacyAttachmentsDirPath;
++ (NSString *)sharedDataAttachmentsDirPath;
 
 - (BOOL)shouldHaveImageSize;
 - (CGSize)imageSize;

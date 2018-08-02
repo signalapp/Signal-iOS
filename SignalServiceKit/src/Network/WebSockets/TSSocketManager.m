@@ -732,7 +732,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     if ([message.path isEqualToString:@"/api/v1/message"] && [message.verb isEqualToString:@"PUT"]) {
 
-        __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+        __block OWSBackgroundTask *_Nullable backgroundTask =
+            [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             @try {
@@ -743,6 +744,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 if (!decryptedPayload) {
                     DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
                     [self sendWebSocketMessageAcknowledgement:message];
+                    OWSAssert(backgroundTask);
                     backgroundTask = nil;
                     return;
                 }
@@ -762,6 +764,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendWebSocketMessageAcknowledgement:message];
+                OWSAssert(backgroundTask);
                 backgroundTask = nil;
             });
         });

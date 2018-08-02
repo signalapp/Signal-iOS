@@ -71,6 +71,7 @@ extern NSString *const kLocalProfileUniqueId;
 + (nullable NSError *)migrateToSharedData;
 + (NSString *)profileAvatarsDirPath;
 + (void)resetProfileStorage;
++ (NSSet<NSString *> *)allProfileAvatarFilePaths;
 
 @end
 

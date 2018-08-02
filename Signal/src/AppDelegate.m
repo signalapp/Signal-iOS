@@ -12,6 +12,7 @@
 #import "NotificationsManager.h"
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
+#import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
 #import "PushManager.h"
@@ -43,7 +44,6 @@
 #import <SignalServiceKit/OWSIncompleteCallsJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSOrphanedDataCleaner.h>
 #import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -149,7 +149,7 @@ static NSTimeInterval launchStartedAt;
         return YES;
     }
 
-    [AppVersion instance];
+    [AppVersion sharedInstance];
 
     [self startupLogging];
 
@@ -314,6 +314,7 @@ static NSTimeInterval launchStartedAt;
         return NO;
     }
 
+    OWSAssert(backgroundTask);
     backgroundTask = nil;
 
     return YES;
@@ -325,7 +326,7 @@ static NSTimeInterval launchStartedAt;
     self.didAppLaunchFail = YES;
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-    [AppVersion instance];
+    [AppVersion sharedInstance];
     [self startupLogging];
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -1061,7 +1062,7 @@ static NSTimeInterval launchStartedAt;
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
-    [AppVersion.instance mainAppLaunchDidComplete];
+    [AppVersion.sharedInstance mainAppLaunchDidComplete];
 
     [Environment.current.contactsManager loadSignalAccountsFromCache];
     [Environment.current.contactsManager startObserving];
@@ -1090,7 +1091,7 @@ static NSTimeInterval launchStartedAt;
     // TODO: Orphan cleanup is somewhat expensive - not least in doing a bunch
     //       of disk access.  We might want to only run it "once per version"
     //       or something like that in production.
-    [OWSOrphanedDataCleaner auditAndCleanupAsync:nil];
+    [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
 
     [OWSProfileManager.sharedManager fetchLocalUsersProfile];

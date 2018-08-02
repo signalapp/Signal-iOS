@@ -137,6 +137,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     DDLogDebug(@"%@ Removed %lu expired messages", self.logTag, (unsigned long)expirationCount);
 
+    OWSAssert(backgroundTask);
     backgroundTask = nil;
     return expirationCount;
 }
@@ -223,8 +224,8 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSAssert(timestampForSorting > 0);
     OWSAssert(transaction);
 
-    __block OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-    
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
@@ -256,6 +257,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                                           createdInExistingGroup:createdInExistingGroup];
     [infoMessage saveWithTransaction:transaction];
 
+    OWSAssert(backgroundTask);
     backgroundTask = nil;
 }
 

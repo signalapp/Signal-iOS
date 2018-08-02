@@ -122,7 +122,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 {
     OWSAssert(transaction);
 
-    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    __block OWSBackgroundTask *_Nullable backgroundTask =
+        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     [self setAttachment:attachment isDownloadingInMessage:message transaction:transaction];
 
@@ -132,6 +133,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             [self setAttachment:attachment didFailInMessage:message error:error];
             failureHandler(error);
 
+            OWSAssert(backgroundTask);
             backgroundTask = nil;
         });
     };
@@ -144,6 +146,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 [message touch];
             }
 
+            OWSAssert(backgroundTask);
             backgroundTask = nil;
         });
     };

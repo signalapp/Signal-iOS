@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic) BOOL isAppReady;
 
-@property (nonatomic, nullable) NSMutableArray<AppReadyBlock> *appReadyBlocks;
+@property (nonatomic) NSMutableArray<AppReadyBlock> *appReadyBlocks;
 
 @end
 
@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    self.appReadyBlocks = [NSMutableArray new];
+
     return self;
 }
 
@@ -64,9 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (!self.appReadyBlocks) {
-        self.appReadyBlocks = [NSMutableArray new];
-    }
     [self.appReadyBlocks addObject:block];
 }
 
@@ -92,10 +91,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert(self.isAppReady);
 
-    for (AppReadyBlock block in self.appReadyBlocks) {
+    NSArray<AppReadyBlock> *appReadyBlocks = [self.appReadyBlocks copy];
+    [self.appReadyBlocks removeAllObjects];
+    for (AppReadyBlock block in appReadyBlocks) {
         block();
     }
-    self.appReadyBlocks = nil;
 }
 
 @end

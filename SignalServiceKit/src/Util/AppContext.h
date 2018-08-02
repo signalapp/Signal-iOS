@@ -16,6 +16,7 @@ extern NSString *const OWSApplicationWillResignActiveNotification;
 extern NSString *const OWSApplicationDidBecomeActiveNotification;
 
 typedef void (^BackgroundTaskExpirationHandler)(void);
+typedef void (^AppActiveBlock)(void);
 
 NSString *NSStringForUIApplicationState(UIApplicationState value);
 
@@ -90,6 +91,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;
+
+- (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block;
 
 @end
 

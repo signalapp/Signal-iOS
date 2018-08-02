@@ -355,12 +355,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return;
     }
 
-    OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     NSArray<OWSMessageContentJob *> *processedJobs = [self processJobs:batchJobs];
 
     [self.finder removeJobsWithIds:processedJobs.uniqueIds];
 
+    OWSAssert(backgroundTask);
     backgroundTask = nil;
 
     DDLogVerbose(@"%@ completed %lu/%lu jobs. %lu jobs left.",

@@ -4,17 +4,21 @@
 
 @interface AppVersion : NSObject
 
-@property (nonatomic, readonly) NSString *firstAppVersion;
-@property (nonatomic, readonly) NSString *lastAppVersion;
-@property (nonatomic, readonly) NSString *currentAppVersion;
+// The properties are updated immediately after launch.
+@property (atomic, readonly) NSString *firstAppVersion;
+@property (atomic, readonly) NSString *lastAppVersion;
+@property (atomic, readonly) NSString *currentAppVersion;
 
-// Unlike lastAppVersion, this property isn't updated until
-// appLaunchDidComplete is called.
-@property (nonatomic, readonly) NSString *lastCompletedLaunchAppVersion;
-@property (nonatomic, readonly) NSString *lastCompletedLaunchMainAppVersion;
-@property (nonatomic, readonly) NSString *lastCompletedLaunchSAEAppVersion;
+// There properties aren't updated until appLaunchDidComplete is called.
+@property (atomic, readonly) NSString *lastCompletedLaunchAppVersion;
+@property (atomic, readonly) NSString *lastCompletedLaunchMainAppVersion;
+@property (atomic, readonly) NSString *lastCompletedLaunchSAEAppVersion;
 
-+ (instancetype)instance;
+@property (atomic, readonly) NSDate *appLaunchTime;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)sharedInstance;
 
 - (void)mainAppLaunchDidComplete;
 - (void)saeLaunchDidComplete;
