@@ -3372,7 +3372,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                completion:nil];
 }
 
-+ (SSKEnvelope *)createEnvelopeForThread:(TSThread *)thread
++ (SSKProtoEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssert(thread);
 
@@ -3390,13 +3390,17 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }
     }();
 
-    SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
-                                                            source:source
-                                                      sourceDevice:1
-                                                              type:SSKEnvelopeTypeCiphertext
-                                                           content:nil
-                                                     legacyMessage:nil];
-
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    envelopeBuilder.type = SSKProtoEnvelopeTypeCiphertext;
+    envelopeBuilder.source = source;
+    envelopeBuilder.sourceDevice = 1;
+    envelopeBuilder.timestamp = timestamp;
+    NSError *error;
+    SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
+    if (error || !envelope) {
+        OWSFail(@"%@ Could not construct envelope: %@.", self.logTag, error);
+        return nil;
+    }
     return envelope;
 }
 
@@ -3886,19 +3890,27 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
     NSString *source = recipientId;
     uint32_t sourceDevice = 1;
-    SSKEnvelopeType envelopeType = SSKEnvelopeTypeCiphertext;
+    SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
-    SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
-                                                            source:source
-                                                      sourceDevice:sourceDevice
-                                                              type:envelopeType
-                                                           content:content
-                                                     legacyMessage:nil];
-
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    envelopeBuilder.type = envelopeType;
+    envelopeBuilder.source = source;
+    envelopeBuilder.sourceDevice = sourceDevice;
+    envelopeBuilder.timestamp = timestamp;
+    envelopeBuilder.content = content;
     NSError *error;
+    SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
+    if (error || !envelope) {
+        OWSFail(@"%@ Could not construct envelope: %@.", self.logTag, error);
+        return;
+    }
+
     NSData *_Nullable envelopeData = [envelope serializedDataAndReturnError:&error];
-    OWSAssert(!error && envelopeData);
+    if (error || !envelopeData) {
+        OWSFail(@"%@ Could not serialize envelope: %@.", self.logTag, error);
+        return;
+    }
 
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData

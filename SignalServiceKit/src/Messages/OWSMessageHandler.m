@@ -9,31 +9,31 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // used in log formatting
-NSString *envelopeAddress(SSKEnvelope *envelope)
+NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
     return [NSString stringWithFormat:@"%@.%d", envelope.source, (unsigned int)envelope.sourceDevice];
 }
 
 @implementation OWSMessageHandler
 
-- (NSString *)descriptionForEnvelopeType:(SSKEnvelope *)envelope
+- (NSString *)descriptionForEnvelopeType:(SSKProtoEnvelope *)envelope
 {
     OWSAssert(envelope != nil);
 
     switch (envelope.type) {
-        case SSKEnvelopeTypeReceipt:
+        case SSKProtoEnvelopeTypeReceipt:
             return @"DeliveryReceipt";
-        case SSKEnvelopeTypeUnknown:
+        case SSKProtoEnvelopeTypeUnknown:
             // Shouldn't happen
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
             return @"Unknown";
-        case SSKEnvelopeTypeCiphertext:
+        case SSKProtoEnvelopeTypeCiphertext:
             return @"SignalEncryptedMessage";
-        case SSKEnvelopeTypeKeyExchange:
+        case SSKProtoEnvelopeTypeKeyExchange:
             // Unsupported
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeKeyExchange]);
             return @"KeyExchange";
-        case SSKEnvelopeTypePrekeyBundle:
+        case SSKProtoEnvelopeTypePrekeyBundle:
             return @"PreKeyEncryptedMessage";
         default:
             // Shouldn't happen
@@ -42,7 +42,7 @@ NSString *envelopeAddress(SSKEnvelope *envelope)
     }
 }
 
-- (NSString *)descriptionForEnvelope:(SSKEnvelope *)envelope
+- (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope
 {
     OWSAssert(envelope != nil);
 

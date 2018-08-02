@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) NSData *envelopeData;
-@property (nonatomic, readonly, nullable) SSKEnvelope *envelopeProto;
+@property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelopeProto;
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
@@ -68,10 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKEnvelope *)envelopeProto
+- (nullable SSKProtoEnvelope *)envelopeProto
 {
     NSError *error;
-    SSKEnvelope *_Nullable envelope = [[SSKEnvelope alloc] initWithSerializedData:self.envelopeData error:&error];
+    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
     if (error || envelope == nil) {
         OWSFail(@"%@ failed to parase envelope with error: %@", self.logTag, error);
         return nil;
@@ -327,7 +327,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     AssertOnDispatchQueue(self.serialQueue);
     OWSAssert(job);
 
-    SSKEnvelope *_Nullable envelope = nil;
+    SSKProtoEnvelope *_Nullable envelope = nil;
     @try {
         envelope = job.envelopeProto;
     } @catch (NSException *exception) {

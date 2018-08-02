@@ -28,13 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
-    SSKEnvelope *_Nullable _envelope;
+    SSKProtoEnvelope *_Nullable _envelope;
 }
 
 @synthesize envelopeData = _envelopeData;
 
-+ (nullable instancetype)untrustedKeyWithEnvelope:(SSKEnvelope *)envelope
-                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction
++ (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
+                                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSContactThread *contactThread =
     [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
@@ -46,8 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
-                                              inThread:(TSThread *)thread
-                                      incomingEnvelope:(SSKEnvelope *)envelope
+                                                       inThread:(TSThread *)thread
+                                               incomingEnvelope:(SSKProtoEnvelope *)envelope
 {
     self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
     if (!self) {
@@ -66,11 +66,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SSKEnvelope *)envelope
+- (nullable SSKProtoEnvelope *)envelope
 {
     if (!_envelope) {
         NSError *error;
-        SSKEnvelope *_Nullable envelope = [[SSKEnvelope alloc] initWithSerializedData:self.envelopeData error:&error];
+        SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
         if (error || envelope == nil) {
             OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, error);
         } else {
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (self.envelope.type != SSKEnvelopeTypePrekeyBundle) {
+    if (self.envelope.type != SSKProtoEnvelopeTypePrekeyBundle) {
         DDLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
         return nil;
     }

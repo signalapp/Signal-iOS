@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocking
 
-- (BOOL)isEnvelopeBlocked:(SSKEnvelope *)envelope
+- (BOOL)isEnvelopeBlocked:(SSKProtoEnvelope *)envelope
 {
     OWSAssert(envelope);
 
@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-- (void)processEnvelope:(SSKEnvelope *)envelope
+- (void)processEnvelope:(SSKProtoEnvelope *)envelope
           plaintextData:(NSData *_Nullable)plaintextData
             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -189,8 +189,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(![self isEnvelopeBlocked:envelope]);
 
     switch (envelope.type) {
-        case SSKEnvelopeTypeCiphertext:
-        case SSKEnvelopeTypePrekeyBundle:
+        case SSKProtoEnvelopeTypeCiphertext:
+        case SSKProtoEnvelopeTypePrekeyBundle:
             if (plaintextData) {
                 [self handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
             } else {
@@ -198,15 +198,15 @@ NS_ASSUME_NONNULL_BEGIN
                     @"%@ missing decrypted data for envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
             }
             break;
-        case SSKEnvelopeTypeReceipt:
+        case SSKProtoEnvelopeTypeReceipt:
             OWSAssert(!plaintextData);
             [self handleDeliveryReceipt:envelope transaction:transaction];
             break;
             // Other messages are just dismissed for now.
-        case SSKEnvelopeTypeKeyExchange:
+        case SSKProtoEnvelopeTypeKeyExchange:
             DDLogWarn(@"Received Key Exchange Message, not supported");
             break;
-        case SSKEnvelopeTypeUnknown:
+        case SSKProtoEnvelopeTypeUnknown:
             DDLogWarn(@"Received an unknown message type");
             break;
         default:
@@ -215,8 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleDeliveryReceipt:(SSKEnvelope *)envelope
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)handleDeliveryReceipt:(SSKProtoEnvelope *)envelope transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(envelope);
     OWSAssert(transaction);
@@ -272,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleEnvelope:(SSKEnvelope *)envelope
+- (void)handleEnvelope:(SSKProtoEnvelope *)envelope
          plaintextData:(NSData *)plaintextData
            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -326,7 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleIncomingEnvelope:(SSKEnvelope *)envelope
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -395,7 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)sendGroupInfoRequest:(NSData *)groupId
-                    envelope:(SSKEnvelope *)envelope
+                    envelope:(SSKProtoEnvelope *)envelope
                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(groupId.length > 0);
@@ -429,7 +428,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [TextSecureKitEnv sharedEnv].profileManager;
 }
 
-- (void)handleIncomingEnvelope:(SSKEnvelope *)envelope
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
             withReceiptMessage:(OWSSignalServiceProtosReceiptMessage *)receiptMessage
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -464,7 +463,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleIncomingEnvelope:(SSKEnvelope *)envelope
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
 {
     OWSAssert(envelope);
@@ -499,7 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)handleReceivedGroupAvatarUpdateWithEnvelope:(SSKEnvelope *)envelope
+- (void)handleReceivedGroupAvatarUpdateWithEnvelope:(SSKProtoEnvelope *)envelope
                                         dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -537,7 +536,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)handleReceivedMediaWithEnvelope:(SSKEnvelope *)envelope
+- (void)handleReceivedMediaWithEnvelope:(SSKProtoEnvelope *)envelope
                             dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -585,7 +584,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)handleIncomingEnvelope:(SSKEnvelope *)envelope
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -720,7 +719,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleEndSessionMessageWithEnvelope:(SSKEnvelope *)envelope
+- (void)handleEndSessionMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                 dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -737,7 +736,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
 }
 
-- (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKEnvelope *)envelope
+- (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                            dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -780,7 +779,7 @@ NS_ASSUME_NONNULL_BEGIN
     [message saveWithTransaction:transaction];
 }
 
-- (void)handleProfileKeyMessageWithEnvelope:(SSKEnvelope *)envelope
+- (void)handleProfileKeyMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                 dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
 {
     OWSAssert(envelope);
@@ -805,7 +804,7 @@ NS_ASSUME_NONNULL_BEGIN
     [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
 }
 
-- (void)handleReceivedTextMessageWithEnvelope:(SSKEnvelope *)envelope
+- (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -845,7 +844,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleGroupInfoRequest:(SSKEnvelope *)envelope
+- (void)handleGroupInfoRequest:(SSKProtoEnvelope *)envelope
                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -901,7 +900,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendGroupUpdateForThread:gThread message:message];
 }
 
-- (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKEnvelope *)envelope
+- (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope
                                        withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                          attachmentIds:(NSArray<NSString *> *)attachmentIds
                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -1083,7 +1082,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
                          thread:(TSThread *)thread
-                       envelope:(SSKEnvelope *)envelope
+                       envelope:(SSKProtoEnvelope *)envelope
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
@@ -1203,7 +1202,7 @@ NS_ASSUME_NONNULL_BEGIN
  *   Group or Contact thread for message, creating a new contact thread if necessary,
  *   but never creating a new group thread.
  */
-- (nullable TSThread *)threadForEnvelope:(SSKEnvelope *)envelope
+- (nullable TSThread *)threadForEnvelope:(SSKProtoEnvelope *)envelope
                              dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {

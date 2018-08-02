@@ -23,10 +23,14 @@ message Envelope {
     RECEIPT       = 5;
   }
 
+  // @required
   optional Type   type          = 1;
+  // @required
   optional string source        = 2;
+  // @required
   optional uint32 sourceDevice  = 7;
   optional string relay         = 3;
+  // @required
   optional uint64 timestamp     = 5;
   optional bytes  legacyMessage = 6; // Contains an encrypted DataMessage
   optional bytes  content       = 8; // Contains an encrypted Content
@@ -42,6 +46,7 @@ message Content {
 
 message CallMessage {
   message Offer {
+    // @required
     optional uint64 id          = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
@@ -49,6 +54,7 @@ message CallMessage {
   }
 
   message Answer {
+    // @required
     optional uint64 id          = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
@@ -56,6 +62,7 @@ message CallMessage {
   }
 
   message IceUpdate {
+    // @required
     optional uint64 id            = 1;
     optional string sdpMid        = 2;
     optional uint32 sdpMLineIndex = 3;
@@ -63,10 +70,12 @@ message CallMessage {
   }
 
   message Busy {
+    // @required
     optional uint64 id = 1;
   }
 
   message Hangup {
+    // @required
     optional uint64 id = 1;
   }
 
@@ -100,7 +109,9 @@ message DataMessage {
       optional uint32            flags       = 4;
     }
 
+    // @required
     optional uint64            id          = 1;
+    // @required
     optional string            author      = 2;
     optional string            text        = 3;
     repeated QuotedAttachment  attachments = 4;
@@ -124,6 +135,7 @@ message DataMessage {
         CUSTOM = 4;
       }
 
+      // @required
       optional string value = 1;
       optional Type   type  = 2;
       optional string label = 3;
@@ -137,6 +149,7 @@ message DataMessage {
         CUSTOM = 4;
       }
 
+      // @required
       optional string value = 1;
       optional Type   type  = 2;
       optional string label = 3;
@@ -194,6 +207,7 @@ message ReceiptMessage {
     READ     = 1;
   }
 
+  // @required
   optional Type   type      = 1;
   repeated uint64 timestamp = 2;
 }
@@ -205,6 +219,7 @@ message Verified {
     UNVERIFIED = 2;
   }
 
+  // @required
   optional string destination = 1;
   optional bytes  identityKey = 2;
   optional State  state       = 3;
@@ -220,6 +235,7 @@ message SyncMessage {
   }
 
   message Contacts {
+    // @required
     optional AttachmentPointer blob       = 1;
     // Signal-iOS renamed this property.
     optional bool              isComplete = 2 [default = false];
@@ -242,11 +258,14 @@ message SyncMessage {
       CONFIGURATION = 4;
     }
 
+    // @required
     optional Type type = 1;
   }
 
   message Read {
+    // @required
     optional string sender    = 1;
+    // @required
     optional uint64 timestamp = 2;
   }
 
@@ -270,6 +289,7 @@ message AttachmentPointer {
     VOICE_MESSAGE = 1;
   }
 
+  // @required
   optional fixed64 id          = 1;
   optional string  contentType = 2;
   optional bytes   key         = 3;
@@ -290,7 +310,9 @@ message GroupContext {
     QUIT         = 3;
     REQUEST_INFO = 4;
   }
+  // @required
   optional bytes             id      = 1;
+  // @required
   optional Type              type    = 2;
   optional string            name    = 3;
   repeated string            members = 4;
@@ -303,6 +325,7 @@ message ContactDetails {
     optional uint32 length      = 2;
   }
 
+  // @required
   optional string   number      = 1;
   optional string   name        = 2;
   optional Avatar   avatar      = 3;
@@ -319,6 +342,7 @@ message GroupDetails {
     optional uint32 length      = 2;
   }
 
+  // @required
   optional bytes  id          = 1;
   optional string name        = 2;
   repeated string members     = 3;

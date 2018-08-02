@@ -2,12 +2,16 @@
 
 PROTOC=protoc \
 		--proto_path='./'
+WRAPPER_SCRIPT=../../Scripts/ProtoWrappers.py \
+		--proto-dir='./' --verbose
 
 all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos
 
 signal_service_protos: SignalService.proto
 	$(PROTOC) --swift_out=../src/Protos/Generated \
 		SignalService.proto
+	$(WRAPPER_SCRIPT) --dst-dir=../src/Protos/Generated \
+		--wrapper-prefix=SSKProto --proto-prefix=SignalServiceProtos --proto-file=SignalService.proto
 
 provisioning_protos: Provisioning.proto
 	$(PROTOC) --swift_out=../src/Protos/Generated \

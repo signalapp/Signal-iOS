@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
 
-@property (nonatomic, readonly, nullable) SSKEnvelope *envelope;
+@property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelope;
 
 @end
 
@@ -74,13 +74,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKEnvelope *)envelope
+- (nullable SSKProtoEnvelope *)envelope
 {
     NSError *error;
-    SSKEnvelope *_Nullable result = [[SSKEnvelope alloc] initWithSerializedData:self.envelopeData error:&error];
+    SSKProtoEnvelope *_Nullable result = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
 
     if (error) {
-        OWSProdLogAndFail(@"%@ paring SSKEnvelope failed with error: %@", self.logTag, error);
+        OWSProdLogAndFail(@"%@ paring SSKProtoEnvelope failed with error: %@", self.logTag, error);
         return nil;
     }
     
@@ -396,7 +396,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
             };
 
             @try {
-                SSKEnvelope *_Nullable envelope = job.envelope;
+                SSKProtoEnvelope *_Nullable envelope = job.envelope;
                 if (!envelope) {
                     reportFailure(transaction);
                 } else {
