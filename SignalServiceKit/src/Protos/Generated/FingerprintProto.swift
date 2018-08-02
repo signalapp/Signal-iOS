@@ -14,15 +14,43 @@ public enum FingerprintProtoError: Error {
 
 @objc public class FingerprintProtoLogicalFingerprint: NSObject {
 
-    @objc public let identityData: Data?
+    // MARK: - FingerprintProtoLogicalFingerprintBuilder
 
-    @objc public init(identityData: Data?) {
-        self.identityData = identityData
+    @objc public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
+
+        private var proto = FingerprintProtos_LogicalFingerprint()
+
+        @objc public override init() {}
+
+        @objc public func setIdentityData(_ valueParam: Data) {
+            proto.identityData = valueParam
+        }
+
+        @objc public func build() throws -> FingerprintProtoLogicalFingerprint {
+            let wrapper = try FingerprintProtoLogicalFingerprint.parseProto(proto)
+            return wrapper
+        }
+    }
+
+    fileprivate let proto: FingerprintProtos_LogicalFingerprint
+
+    @objc public var identityData: Data? {
+        guard proto.hasIdentityData else {
+            return nil
+        }
+        return proto.identityData
+    }
+    @objc public var hasIdentityData: Bool {
+        return proto.hasIdentityData
+    }
+
+    private init(proto: FingerprintProtos_LogicalFingerprint) {
+        self.proto = proto
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> FingerprintProtoLogicalFingerprint {
@@ -31,27 +59,12 @@ public enum FingerprintProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: FingerprintProtos_LogicalFingerprint) throws -> FingerprintProtoLogicalFingerprint {
-        var identityData: Data? = nil
-        if proto.hasIdentityData {
-            identityData = proto.identityData
-        }
-
         // MARK: - Begin Validation Logic for FingerprintProtoLogicalFingerprint -
 
         // MARK: - End Validation Logic for FingerprintProtoLogicalFingerprint -
 
-        let result = FingerprintProtoLogicalFingerprint(identityData: identityData)
+        let result = FingerprintProtoLogicalFingerprint(proto: proto)
         return result
-    }
-
-    fileprivate var asProtobuf: FingerprintProtos_LogicalFingerprint {
-        let proto = FingerprintProtos_LogicalFingerprint.with { (builder) in
-            if let identityData = self.identityData {
-                builder.identityData = identityData
-            }
-        }
-
-        return proto
     }
 }
 
@@ -59,21 +72,55 @@ public enum FingerprintProtoError: Error {
 
 @objc public class FingerprintProtoLogicalFingerprints: NSObject {
 
-    @objc public let version: UInt32
+    // MARK: - FingerprintProtoLogicalFingerprintsBuilder
+
+    @objc public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
+
+        private var proto = FingerprintProtos_LogicalFingerprints()
+
+        @objc public override init() {}
+
+        @objc public func setVersion(_ valueParam: UInt32) {
+            proto.version = valueParam
+        }
+
+        @objc public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+            proto.localFingerprint = valueParam.proto
+        }
+
+        @objc public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+            proto.remoteFingerprint = valueParam.proto
+        }
+
+        @objc public func build() throws -> FingerprintProtoLogicalFingerprints {
+            let wrapper = try FingerprintProtoLogicalFingerprints.parseProto(proto)
+            return wrapper
+        }
+    }
+
+    fileprivate let proto: FingerprintProtos_LogicalFingerprints
+
     @objc public let localFingerprint: FingerprintProtoLogicalFingerprint?
     @objc public let remoteFingerprint: FingerprintProtoLogicalFingerprint?
 
-    @objc public init(version: UInt32,
-                      localFingerprint: FingerprintProtoLogicalFingerprint?,
-                      remoteFingerprint: FingerprintProtoLogicalFingerprint?) {
-        self.version = version
+    @objc public var version: UInt32 {
+        return proto.version
+    }
+    @objc public var hasVersion: Bool {
+        return proto.hasVersion
+    }
+
+    private init(proto: FingerprintProtos_LogicalFingerprints,
+                 localFingerprint: FingerprintProtoLogicalFingerprint?,
+                 remoteFingerprint: FingerprintProtoLogicalFingerprint?) {
+        self.proto = proto
         self.localFingerprint = localFingerprint
         self.remoteFingerprint = remoteFingerprint
     }
 
     @objc
     public func serializedData() throws -> Data {
-        return try self.asProtobuf.serializedData()
+        return try self.proto.serializedData()
     }
 
     @objc public class func parseData(_ serializedData: Data) throws -> FingerprintProtoLogicalFingerprints {
@@ -82,11 +129,6 @@ public enum FingerprintProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: FingerprintProtos_LogicalFingerprints) throws -> FingerprintProtoLogicalFingerprints {
-        var version: UInt32 = 0
-        if proto.hasVersion {
-            version = proto.version
-        }
-
         var localFingerprint: FingerprintProtoLogicalFingerprint? = nil
         if proto.hasLocalFingerprint {
             localFingerprint = try FingerprintProtoLogicalFingerprint.parseProto(proto.localFingerprint)
@@ -101,25 +143,9 @@ public enum FingerprintProtoError: Error {
 
         // MARK: - End Validation Logic for FingerprintProtoLogicalFingerprints -
 
-        let result = FingerprintProtoLogicalFingerprints(version: version,
+        let result = FingerprintProtoLogicalFingerprints(proto: proto,
                                                          localFingerprint: localFingerprint,
                                                          remoteFingerprint: remoteFingerprint)
         return result
-    }
-
-    fileprivate var asProtobuf: FingerprintProtos_LogicalFingerprints {
-        let proto = FingerprintProtos_LogicalFingerprints.with { (builder) in
-            builder.version = self.version
-
-            if let localFingerprint = self.localFingerprint {
-                builder.localFingerprint = localFingerprint.asProtobuf
-            }
-
-            if let remoteFingerprint = self.remoteFingerprint {
-                builder.remoteFingerprint = remoteFingerprint.asProtobuf
-            }
-        }
-
-        return proto
     }
 }
