@@ -58,7 +58,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
 
-+ (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage
-                                             completion:(nullable dispatch_block_t)completion;
++ (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 
 @end
