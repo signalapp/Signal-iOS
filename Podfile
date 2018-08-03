@@ -8,7 +8,7 @@ def shared_pods
   # pod 'SQLCipher', path: '../sqlcipher2'
   pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
-  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'release/unencryptedHeaders'
+  pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
   # pod 'AxolotlKit',   path: '../SignalProtocolKit'
   pod 'SignalServiceKit', path: '.'
   pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git'

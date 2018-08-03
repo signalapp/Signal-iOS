@@ -30,50 +30,6 @@ NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnect
 NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
-void RunSyncRegistrationsForStorage(OWSStorage *storage)
-{
-    OWSCAssert(storage);
-
-    // Synchronously register extensions which are essential for views.
-    [TSDatabaseView registerCrossProcessNotifier:storage];
-}
-
-void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t completion)
-{
-    OWSCAssert(storage);
-    OWSCAssert(completion);
-
-    // Asynchronously register other extensions.
-    //
-    // All sync registrations must be done before all async registrations,
-    // or the sync registrations will block on the async registrations.
-
-    [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:storage];
-    [TSDatabaseView asyncRegisterThreadDatabaseView:storage];
-    [TSDatabaseView asyncRegisterUnreadDatabaseView:storage];
-    [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
-                           withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
-    [OWSMessageReceiver asyncRegisterDatabaseExtension:storage];
-    [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:storage];
-
-    [TSDatabaseView asyncRegisterUnseenDatabaseView:storage];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
-
-    [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:storage];
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:storage];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
-    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-    [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-    [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-
-    // NOTE: Always pass the completion to the _LAST_ of the async database
-    // view registrations.
-    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
-}
-
 void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
@@ -208,7 +164,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)runSyncRegistrations
 {
-    RunSyncRegistrationsForStorage(self);
+    // Synchronously register extensions which are essential for views.
+    [TSDatabaseView registerCrossProcessNotifier:self];
 
     // See comments on OWSDatabaseConnection.
     //
@@ -223,22 +180,48 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion
 {
     OWSAssert(completion);
+    OWSAssert(self.database);
 
     DDLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
 
-    RunAsyncRegistrationsForStorage(self, ^{
-        OWSAssertIsOnMainThread();
+    // Asynchronously register other extensions.
+    //
+    // All sync registrations must be done before all async registrations,
+    // or the sync registrations will block on the async registrations.
+    [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadDatabaseView:self];
+    [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
+    [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
+                        withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
 
-        OWSAssert(!self.areAsyncRegistrationsComplete);
+    [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
+    [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:self];
 
-        DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
+    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
 
-        self.areAsyncRegistrationsComplete = YES;
+    [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
+    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
+    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
+    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
+    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+    [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+    [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
 
-        completion();
+    [self.database flushExtensionRequestsWithCompletionQueue:nil
+                                             completionBlock:^{
+                                                 OWSAssertIsOnMainThread();
+                                                 OWSAssert(!self.areAsyncRegistrationsComplete);
+                                                 DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+                                                 self.areAsyncRegistrationsComplete = YES;
 
-        [self verifyDatabaseViews];
-    });
+                                                 completion();
+
+                                                 [self verifyDatabaseViews];
+                                             }];
 }
 
 - (void)verifyDatabaseViews
