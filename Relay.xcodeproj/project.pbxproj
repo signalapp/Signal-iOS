@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		042AE02FEBA302AB373774E6 /* Pods_RelayShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */; };
-		09D21D05BFF37073094C582D /* Pods_RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04F98C3E458646751D685473 /* Pods_RelayMessaging.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -83,13 +82,9 @@
 		34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B651FD0AA9400BC14EF /* UIFont+OWS.m */; };
 		34480B681FD0AA9400BC14EF /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B661FD0AA9400BC14EF /* UIFont+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		344D6CEA20069E070042AF96 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 344D6CE620069E060042AF96 /* SelectRecipientViewController.h */; };
-		344D6CEB20069E070042AF96 /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344D6CE720069E060042AF96 /* SelectRecipientViewController.m */; };
-		344D6CEC20069E070042AF96 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344D6CE820069E070042AF96 /* NewNonContactConversationViewController.m */; };
 		344D6CED20069E070042AF96 /* NewNonContactConversationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 344D6CE920069E070042AF96 /* NewNonContactConversationViewController.h */; };
 		344F248420069E9C00CFB4F4 /* CountryCodeViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 344F248220069E9B00CFB4F4 /* CountryCodeViewController.h */; };
-		344F248520069E9C00CFB4F4 /* CountryCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F248320069E9B00CFB4F4 /* CountryCodeViewController.m */; };
 		344F248A20069F0600CFB4F4 /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 344F248820069F0600CFB4F4 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		344F248B20069F0600CFB4F4 /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F248920069F0600CFB4F4 /* ViewControllerUtils.m */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
 		344F2499200FD03300CFB4F4 /* SharingThreadPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 344F2495200FD03200CFB4F4 /* SharingThreadPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		344F249B200FD03300CFB4F4 /* SharingThreadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2497200FD03200CFB4F4 /* SharingThreadPickerViewController.m */; };
@@ -248,6 +243,7 @@
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
+		4070A49B3118F91857CED384 /* Pods_RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_RelayMessaging.framework */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */; };
@@ -256,7 +252,6 @@
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
 		450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */; };
 		450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34B3F8391E8DF1700035BE1A /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
 		450C800C20AD191E00F3A091 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C42D5A1F45F7A80072EC04 /* OWSNavigationController.m */; };
 		450C800D20AD193100F3A091 /* OWSNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C42D591F45F7A80072EC04 /* OWSNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		450C800E20AD1A6500F3A091 /* OWSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FDA43420A4D22700396358 /* OWSNavigationBar.swift */; };
@@ -453,6 +448,7 @@
 		7D6565162113C6AE00365A19 /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6565152113C6AD00365A19 /* ContactFieldView.swift */; };
 		7D6565192113CB3E00365A19 /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6565172113CB3E00365A19 /* OWSContactsManager.m */; };
 		7D65651A2113CB3E00365A19 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D6565182113CB3E00365A19 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7D7705C02114CD4B00B40BB9 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
 		7DD9C9ED2114A60C000A1CDC /* RelayMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* RelayMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -519,7 +515,6 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
-		DA5E07ADADDEE940332D8D69 /* Pods_RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_RelayMessaging.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E6431F0E7EAC0CB73D75A38B /* Pods_Relay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE34D2C7844709C73962401 /* Pods_Relay.framework */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
@@ -1285,8 +1280,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				346129741FD1E02D00532771 /* PromiseKit.framework in Frameworks */,
-				09D21D05BFF37073094C582D /* Pods_RelayMessaging.framework in Frameworks */,
-				DA5E07ADADDEE940332D8D69 /* Pods_RelayMessaging.framework in Frameworks */,
+				4070A49B3118F91857CED384 /* Pods_RelayMessaging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1294,10 +1288,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D7705C02114CD4B00B40BB9 /* WebRTC.framework in Frameworks */,
 				455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */,
 				455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */,
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
-				4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */,
 				456C38961DC7B882007536A7 /* PromiseKit.framework in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
 				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
@@ -3224,7 +3218,6 @@
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				34641E1B2088DA4100E2EDE5 /* ScreenLockViewController.m in Sources */,
-				344F248520069E9C00CFB4F4 /* CountryCodeViewController.m in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
 				346129AB1FD1F0EE00532771 /* OWSFormat.m in Sources */,
@@ -3233,7 +3226,6 @@
 				348BB25B209CF8E50047AEC2 /* TappableView.swift in Sources */,
 				348BB25A209CF8E50047AEC2 /* TappableStackView.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
-				344D6CEC20069E070042AF96 /* NewNonContactConversationViewController.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				7D6564FD2113BD8B00365A19 /* SystemContactsFetcher.swift in Sources */,
 				7D6565042113BDF500365A19 /* MessageApprovalViewController.swift in Sources */,
@@ -3255,7 +3247,6 @@
 				346129FE1FD5F31400532771 /* OWS106EnsureProfileComplete.swift in Sources */,
 				346129F91FD5F31400532771 /* OWS104CreateRecipientIdentities.m in Sources */,
 				346129D01FD207F300532771 /* OWSAlerts.swift in Sources */,
-				7D6564F82113BD8B00365A19 /* ViewControllerUtils.m in Sources */,
 				454A965F1FD60EA3008D2A0E /* OWSFlatButton.swift in Sources */,
 				346129B61FD1F7E800532771 /* ProfileFetcherJob.swift in Sources */,
 				451573962061B49500803601 /* GradientView.swift in Sources */,
@@ -3292,7 +3283,6 @@
 				346129DF1FD5C02A00532771 /* LockInteractionController.m in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
-				344D6CEB20069E070042AF96 /* SelectRecipientViewController.m in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
@@ -3309,9 +3299,9 @@
 				450C800E20AD1A6500F3A091 /* OWSNavigationBar.swift in Sources */,
 				3461293C1FD1D46A00532771 /* OWSMath.m in Sources */,
 				451F8A391FD711D6005CB9DA /* ContactsViewHelper.m in Sources */,
-				344F248B20069F0600CFB4F4 /* ViewControllerUtils.m in Sources */,
 				451F8A411FD714B8005CB9DA /* ContactTableViewCell.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
+				7D6564F82113BD8B00365A19 /* ViewControllerUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3653,7 +3643,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalShareExtension/RelayShareExtension-Prefix.pch";
+				GCC_PREFIX_HEADER = "RelayShareExtension/RelayShareExtension-Prefix.pch";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/Info.plist";
@@ -3665,7 +3655,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = "SignalShareExtension/SignalShareExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "RelayShareExtension/RelayShareExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -3718,7 +3708,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "SignalShareExtension/RelayShareExtension-Prefix.pch";
+				GCC_PREFIX_HEADER = "RelayShareExtension/RelayShareExtension-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -3734,7 +3724,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "SignalShareExtension/SignalShareExtension-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "RelayShareExtension/RelayShareExtension-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;

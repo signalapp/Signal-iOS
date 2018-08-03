@@ -3,7 +3,7 @@
 //
 
 #import "AboutTableViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSPreferences.h>

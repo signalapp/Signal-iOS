@@ -5,7 +5,7 @@
 #import "OWSMessageFooterView.h"
 #import "DateUtil.h"
 #import "OWSMessageTimerView.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <QuartzCore/QuartzCore.h>
 
 NS_ASSUME_NONNULL_BEGIN

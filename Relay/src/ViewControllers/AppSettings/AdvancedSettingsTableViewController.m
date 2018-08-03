@@ -8,7 +8,7 @@
 #import "OWSCountryMetadata.h"
 #import "Pastelog.h"
 #import "PushManager.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "TSAccountManager.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>

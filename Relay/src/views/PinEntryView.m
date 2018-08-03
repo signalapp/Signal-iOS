@@ -3,7 +3,7 @@
 //
 
 #import "PinEntryView.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>

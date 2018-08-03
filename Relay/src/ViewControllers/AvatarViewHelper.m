@@ -4,7 +4,7 @@
 
 #import "AvatarViewHelper.h"
 #import "OWSNavigationController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>

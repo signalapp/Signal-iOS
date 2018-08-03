@@ -7,7 +7,7 @@
 #import "DebugUIMessagesAction.h"
 #import "DebugUIMessagesAssetLoader.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <RelayMessaging/Environment.h>
 #import <SignalServiceKit/MIMETypeUtil.h>

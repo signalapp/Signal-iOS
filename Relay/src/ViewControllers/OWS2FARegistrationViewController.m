@@ -5,7 +5,7 @@
 #import "OWS2FARegistrationViewController.h"
 #import "PinEntryView.h"
 #import "ProfileViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIViewController+OWS.h>

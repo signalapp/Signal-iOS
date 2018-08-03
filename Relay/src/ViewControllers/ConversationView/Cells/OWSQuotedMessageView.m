@@ -6,7 +6,7 @@
 #import "ConversationViewItem.h"
 #import "Environment.h"
 #import "OWSBubbleView.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIColor+OWS.h>

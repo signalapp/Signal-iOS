@@ -4,7 +4,7 @@
 
 #import "NotificationsManager.h"
 #import "PushManager.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <AudioToolbox/AudioServices.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/NSString+OWS.h>

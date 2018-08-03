@@ -6,7 +6,7 @@
 #import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSSignalServiceProtos.pb.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>

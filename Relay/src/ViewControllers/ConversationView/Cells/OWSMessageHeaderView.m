@@ -4,7 +4,7 @@
 
 #import "OWSMessageHeaderView.h"
 #import "ConversationViewItem.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/OWSUnreadIndicator.h>
 #import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>

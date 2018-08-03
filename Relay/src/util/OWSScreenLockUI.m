@@ -4,7 +4,7 @@
 
 #import "OWSScreenLockUI.h"
 #import "OWSWindowManager.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/ScreenLockViewController.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIView+OWS.h>

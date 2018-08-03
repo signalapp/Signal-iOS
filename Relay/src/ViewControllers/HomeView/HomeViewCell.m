@@ -4,7 +4,7 @@
 
 #import "HomeViewCell.h"
 #import "OWSAvatarBuilder.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/OWSFormat.h>
 #import <RelayMessaging/OWSMath.h>
 #import <RelayMessaging/OWSUserProfile.h>

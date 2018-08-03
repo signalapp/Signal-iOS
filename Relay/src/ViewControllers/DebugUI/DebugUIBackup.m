@@ -5,7 +5,7 @@
 #import "DebugUIBackup.h"
 #import "OWSBackup.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 
 @import CloudKit;

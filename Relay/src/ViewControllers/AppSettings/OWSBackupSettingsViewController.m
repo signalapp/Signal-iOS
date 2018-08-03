@@ -4,7 +4,7 @@
 
 #import "OWSBackupSettingsViewController.h"
 #import "OWSBackup.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "ThreadUtil.h"
 #import <RelayMessaging/AttachmentSharing.h>
 #import <RelayMessaging/Environment.h>

@@ -11,7 +11,7 @@
 #import "OWSSoundSettingsViewController.h"
 #import "PhoneNumber.h"
 #import "ShowGroupMembersViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"

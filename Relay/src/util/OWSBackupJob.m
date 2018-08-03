@@ -4,7 +4,7 @@
 
 #import "OWSBackupJob.h"
 #import "OWSBackupIO.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>

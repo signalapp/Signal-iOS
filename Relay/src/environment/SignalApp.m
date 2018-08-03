@@ -5,7 +5,7 @@
 #import "SignalApp.h"
 #import "ConversationViewController.h"
 #import "HomeViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/DebugLogger.h>
 #import <RelayMessaging/Environment.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>

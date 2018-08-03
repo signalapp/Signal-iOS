@@ -3,7 +3,7 @@
 //
 
 #import "Pastelog.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "ThreadUtil.h"
 #import "zlib.h"
 #import <AFNetworking/AFNetworking.h>

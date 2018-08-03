@@ -4,7 +4,7 @@
 
 #import "OWS2FASettingsViewController.h"
 #import "OWSTableViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "RelayMessaging.h"
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>

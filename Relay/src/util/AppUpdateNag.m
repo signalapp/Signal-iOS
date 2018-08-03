@@ -4,7 +4,7 @@
 
 #import "AppUpdateNag.h"
 #import "RegistrationViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <ATAppUpdater/ATAppUpdater.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>

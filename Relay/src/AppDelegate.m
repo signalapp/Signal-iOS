@@ -16,7 +16,7 @@
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"

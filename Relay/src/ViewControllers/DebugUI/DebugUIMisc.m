@@ -7,7 +7,7 @@
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
 #import "RegistrationViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "ThreadUtil.h"
 #import <AxolotlKit/PreKeyBundle.h>
 #import <RelayMessaging/AttachmentSharing.h>

@@ -3,7 +3,7 @@
 //
 
 #import "NotificationSettingsOptionsViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "SignalApp.h"
 #import <RelayMessaging/Environment.h>
 

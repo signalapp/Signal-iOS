@@ -15,7 +15,7 @@
 #import "ProfileViewController.h"
 #import "PushManager.h"
 #import "RegistrationUtils.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>

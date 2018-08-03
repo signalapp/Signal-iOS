@@ -5,7 +5,7 @@
 #import "PushManager.h"
 #import "AppDelegate.h"
 #import "NotificationsManager.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <RelayMessaging/OWSContactsManager.h>

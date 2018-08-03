@@ -6,7 +6,7 @@
 #import "AddToGroupViewController.h"
 #import "AvatarViewHelper.h"
 #import "OWSNavigationController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "SignalApp.h"
 #import <RelayMessaging/BlockListUIUtils.h>
 #import <RelayMessaging/ContactTableViewCell.h>

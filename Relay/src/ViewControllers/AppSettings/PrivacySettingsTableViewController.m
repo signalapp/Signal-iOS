@@ -5,7 +5,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
 #import "OWS2FASettingsViewController.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/ThreadUtil.h>

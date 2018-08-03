@@ -4,7 +4,7 @@
 
 #import "OWSContactShareView.h"
 #import "OWSContactAvatarBuilder.h"
-#import "Signal-Swift.h"
+#import "Relay-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
