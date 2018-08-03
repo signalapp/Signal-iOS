@@ -4164,7 +4164,9 @@ typedef enum : NSUInteger {
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
     void (^adjustInsets)(void) = ^(void) {
-        self.collectionView.contentInset = newInsets;
+        if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
+            self.collectionView.contentInset = newInsets;
+        }
         self.collectionView.scrollIndicatorInsets = newInsets;
 
         // Note there is a bug in iOS11.2 which where switching to the emoji keyboard
