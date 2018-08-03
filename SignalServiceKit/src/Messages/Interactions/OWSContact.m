@@ -800,10 +800,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     NSError *error;
     SSKProtoDataMessageContactName *_Nullable nameProto = [nameBuilder buildAndReturnError:&error];
     if (error || !nameProto) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-        return nil;
+        DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+    } else {
+        [contactBuilder setName:nameProto];
     }
-    [contactBuilder setName:nameProto];
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
         SSKProtoDataMessageContactPhoneBuilder *phoneBuilder =
@@ -828,10 +828,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
         SSKProtoDataMessageContactPhone *_Nullable numberProto = [phoneBuilder buildAndReturnError:&error];
         if (error || !numberProto) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-            return nil;
+            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+        } else {
+            [contactBuilder addNumber:numberProto];
         }
-        [contactBuilder addNumber:numberProto];
     }
 
     for (OWSContactEmail *email in contact.emails) {
@@ -857,10 +857,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
         SSKProtoDataMessageContactEmail *_Nullable emailProto = [emailBuilder buildAndReturnError:&error];
         if (error || !emailProto) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-            return nil;
+            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+        } else {
+            [contactBuilder addEmail:emailProto];
         }
-        [contactBuilder addEmail:emailProto];
     }
 
     for (OWSContactAddress *address in contact.addresses) {
@@ -892,29 +892,27 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
         SSKProtoDataMessageContactPostalAddress *_Nullable addressProto = [addressBuilder buildAndReturnError:&error];
         if (error || !addressProto) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-            return nil;
+            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+        } else {
+            [contactBuilder addAddress:addressProto];
         }
-        [contactBuilder addAddress:addressProto];
     }
 
     if (contact.avatarAttachmentId != nil) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
             [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
         if (!attachmentProto) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-            return nil;
+            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+        } else {
+            SSKProtoDataMessageContactAvatarBuilder *avatarBuilder = [SSKProtoDataMessageContactAvatarBuilder new];
+            avatarBuilder.avatar = attachmentProto;
+            SSKProtoDataMessageContactAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
+            if (error || !avatarProto) {
+                DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+            } else {
+                contactBuilder.avatar = avatarProto;
+            }
         }
-
-        SSKProtoDataMessageContactAvatarBuilder *avatarBuilder =
-            [SSKProtoDataMessageContactAvatarBuilder new];
-        avatarBuilder.avatar = attachmentProto;
-        SSKProtoDataMessageContactAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
-        if (error || !avatarProto) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-            return nil;
-        }
-        contactBuilder.avatar = avatarProto;
     }
 
     SSKProtoDataMessageContact *_Nullable contactProto = [contactBuilder buildAndReturnError:&error];

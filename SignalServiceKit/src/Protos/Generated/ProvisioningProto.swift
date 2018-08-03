@@ -41,8 +41,11 @@ public enum ProvisioningProtoError: Error {
         }
 
         @objc public func build() throws -> ProvisioningProtoProvisionEnvelope {
-            let wrapper = try ProvisioningProtoProvisionEnvelope.parseProto(proto)
-            return wrapper
+            return try ProvisioningProtoProvisionEnvelope.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try ProvisioningProtoProvisionEnvelope.parseProto(proto).serializedData()
         }
     }
 
@@ -151,8 +154,11 @@ public enum ProvisioningProtoError: Error {
         }
 
         @objc public func build() throws -> ProvisioningProtoProvisionMessage {
-            let wrapper = try ProvisioningProtoProvisionMessage.parseProto(proto)
-            return wrapper
+            return try ProvisioningProtoProvisionMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try ProvisioningProtoProvisionMessage.parseProto(proto).serializedData()
         }
     }
 

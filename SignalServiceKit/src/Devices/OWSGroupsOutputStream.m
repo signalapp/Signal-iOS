@@ -61,12 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSError *error;
-    SSKProtoGroupDetails *_Nullable groupProto = [groupBuilder buildAndReturnError:&error];
-    if (error || !groupProto) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-        return;
-    }
-    NSData *_Nullable groupData = [groupProto serializedDataAndReturnError:&error];
+    NSData *_Nullable groupData = [groupBuilder buildSerializedDataAndReturnError:&error];
     if (error || !groupData) {
         OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return;

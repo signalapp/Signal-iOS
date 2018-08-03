@@ -37,8 +37,11 @@ public enum FingerprintProtoError: Error {
         }
 
         @objc public func build() throws -> FingerprintProtoLogicalFingerprint {
-            let wrapper = try FingerprintProtoLogicalFingerprint.parseProto(proto)
-            return wrapper
+            return try FingerprintProtoLogicalFingerprint.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try FingerprintProtoLogicalFingerprint.parseProto(proto).serializedData()
         }
     }
 
@@ -121,8 +124,11 @@ public enum FingerprintProtoError: Error {
         }
 
         @objc public func build() throws -> FingerprintProtoLogicalFingerprints {
-            let wrapper = try FingerprintProtoLogicalFingerprints.parseProto(proto)
-            return wrapper
+            return try FingerprintProtoLogicalFingerprints.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try FingerprintProtoLogicalFingerprints.parseProto(proto).serializedData()
         }
     }
 

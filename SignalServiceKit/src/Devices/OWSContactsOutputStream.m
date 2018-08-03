@@ -89,12 +89,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     }
 
     NSError *error;
-    SSKProtoContactDetails *_Nullable contactProto = [contactBuilder buildAndReturnError:&error];
-    if (error || !contactProto) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-        return;
-    }
-    NSData *_Nullable contactData = [contactProto serializedDataAndReturnError:&error];
+    NSData *_Nullable contactData = [contactBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contactData) {
         OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return;

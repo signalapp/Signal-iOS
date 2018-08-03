@@ -91,8 +91,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
-            let wrapper = try SSKProtoEnvelope.parseProto(proto)
-            return wrapper
+            return try SSKProtoEnvelope.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoEnvelope.parseProto(proto).serializedData()
         }
     }
 
@@ -243,8 +246,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoContent {
-            let wrapper = try SSKProtoContent.parseProto(proto)
-            return wrapper
+            return try SSKProtoContent.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoContent.parseProto(proto).serializedData()
         }
     }
 
@@ -378,8 +384,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoCallMessageOffer {
-            let wrapper = try SSKProtoCallMessageOffer.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageOffer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageOffer.parseProto(proto).serializedData()
         }
     }
 
@@ -468,8 +477,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoCallMessageAnswer {
-            let wrapper = try SSKProtoCallMessageAnswer.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageAnswer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageAnswer.parseProto(proto).serializedData()
         }
     }
 
@@ -566,8 +578,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoCallMessageIceUpdate {
-            let wrapper = try SSKProtoCallMessageIceUpdate.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageIceUpdate.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageIceUpdate.parseProto(proto).serializedData()
         }
     }
 
@@ -672,8 +687,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoCallMessageBusy {
-            let wrapper = try SSKProtoCallMessageBusy.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageBusy.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageBusy.parseProto(proto).serializedData()
         }
     }
 
@@ -748,8 +766,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoCallMessageHangup {
-            let wrapper = try SSKProtoCallMessageHangup.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageHangup.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageHangup.parseProto(proto).serializedData()
         }
     }
 
@@ -854,8 +875,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoCallMessage {
-            let wrapper = try SSKProtoCallMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -1023,8 +1047,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-            let wrapper = try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto).serializedData()
         }
     }
 
@@ -1151,8 +1178,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageQuote {
-            let wrapper = try SSKProtoDataMessageQuote.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageQuote.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageQuote.parseProto(proto).serializedData()
         }
     }
 
@@ -1278,8 +1308,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactName {
-            let wrapper = try SSKProtoDataMessageContactName.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactName.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactName.parseProto(proto).serializedData()
         }
     }
 
@@ -1439,8 +1472,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactPhone {
-            let wrapper = try SSKProtoDataMessageContactPhone.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactPhone.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactPhone.parseProto(proto).serializedData()
         }
     }
 
@@ -1567,8 +1603,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactEmail {
-            let wrapper = try SSKProtoDataMessageContactEmail.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactEmail.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactEmail.parseProto(proto).serializedData()
         }
     }
 
@@ -1716,8 +1755,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactPostalAddress {
-            let wrapper = try SSKProtoDataMessageContactPostalAddress.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactPostalAddress.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactPostalAddress.parseProto(proto).serializedData()
         }
     }
 
@@ -1873,8 +1915,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContactAvatar {
-            let wrapper = try SSKProtoDataMessageContactAvatar.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactAvatar.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactAvatar.parseProto(proto).serializedData()
         }
     }
 
@@ -2009,8 +2054,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessageContact {
-            let wrapper = try SSKProtoDataMessageContact.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContact.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContact.parseProto(proto).serializedData()
         }
     }
 
@@ -2220,8 +2268,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
-            let wrapper = try SSKProtoDataMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -2375,8 +2426,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoNullMessage {
-            let wrapper = try SSKProtoNullMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoNullMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoNullMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -2486,8 +2540,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoReceiptMessage {
-            let wrapper = try SSKProtoReceiptMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoReceiptMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoReceiptMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -2602,8 +2659,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoVerified {
-            let wrapper = try SSKProtoVerified.parseProto(proto)
-            return wrapper
+            return try SSKProtoVerified.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoVerified.parseProto(proto).serializedData()
         }
     }
 
@@ -2717,8 +2777,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageSent {
-            let wrapper = try SSKProtoSyncMessageSent.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageSent.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageSent.parseProto(proto).serializedData()
         }
     }
 
@@ -2824,8 +2887,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageContacts {
-            let wrapper = try SSKProtoSyncMessageContacts.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageContacts.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageContacts.parseProto(proto).serializedData()
         }
     }
 
@@ -2907,8 +2973,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageGroups {
-            let wrapper = try SSKProtoSyncMessageGroups.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageGroups.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageGroups.parseProto(proto).serializedData()
         }
     }
 
@@ -2996,8 +3065,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageBlocked {
-            let wrapper = try SSKProtoSyncMessageBlocked.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageBlocked.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageBlocked.parseProto(proto).serializedData()
         }
     }
 
@@ -3096,8 +3168,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageRequest {
-            let wrapper = try SSKProtoSyncMessageRequest.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageRequest.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageRequest.parseProto(proto).serializedData()
         }
     }
 
@@ -3176,8 +3251,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageRead {
-            let wrapper = try SSKProtoSyncMessageRead.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageRead.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageRead.parseProto(proto).serializedData()
         }
     }
 
@@ -3262,8 +3340,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageConfiguration {
-            let wrapper = try SSKProtoSyncMessageConfiguration.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageConfiguration.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageConfiguration.parseProto(proto).serializedData()
         }
     }
 
@@ -3377,8 +3458,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoSyncMessage {
-            let wrapper = try SSKProtoSyncMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -3609,8 +3693,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoAttachmentPointer {
-            let wrapper = try SSKProtoAttachmentPointer.parseProto(proto)
-            return wrapper
+            return try SSKProtoAttachmentPointer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoAttachmentPointer.parseProto(proto).serializedData()
         }
     }
 
@@ -3819,8 +3906,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoGroupContext {
-            let wrapper = try SSKProtoGroupContext.parseProto(proto)
-            return wrapper
+            return try SSKProtoGroupContext.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupContext.parseProto(proto).serializedData()
         }
     }
 
@@ -3936,8 +4026,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoContactDetailsAvatar {
-            let wrapper = try SSKProtoContactDetailsAvatar.parseProto(proto)
-            return wrapper
+            return try SSKProtoContactDetailsAvatar.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoContactDetailsAvatar.parseProto(proto).serializedData()
         }
     }
 
@@ -4047,8 +4140,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoContactDetails {
-            let wrapper = try SSKProtoContactDetails.parseProto(proto)
-            return wrapper
+            return try SSKProtoContactDetails.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoContactDetails.parseProto(proto).serializedData()
         }
     }
 
@@ -4197,8 +4293,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoGroupDetailsAvatar {
-            let wrapper = try SSKProtoGroupDetailsAvatar.parseProto(proto)
-            return wrapper
+            return try SSKProtoGroupDetailsAvatar.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupDetailsAvatar.parseProto(proto).serializedData()
         }
     }
 
@@ -4314,8 +4413,11 @@ public enum SSKProtoError: Error {
         }
 
         @objc public func build() throws -> SSKProtoGroupDetails {
-            let wrapper = try SSKProtoGroupDetails.parseProto(proto)
-            return wrapper
+            return try SSKProtoGroupDetails.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupDetails.parseProto(proto).serializedData()
         }
     }
 

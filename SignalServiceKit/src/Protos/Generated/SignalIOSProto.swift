@@ -71,8 +71,11 @@ public enum SignalIOSProtoError: Error {
         }
 
         @objc public func build() throws -> SignalIOSProtoBackupSnapshotBackupEntity {
-            let wrapper = try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto)
-            return wrapper
+            return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto).serializedData()
         }
     }
 
@@ -167,8 +170,11 @@ public enum SignalIOSProtoError: Error {
         }
 
         @objc public func build() throws -> SignalIOSProtoBackupSnapshot {
-            let wrapper = try SignalIOSProtoBackupSnapshot.parseProto(proto)
-            return wrapper
+            return try SignalIOSProtoBackupSnapshot.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SignalIOSProtoBackupSnapshot.parseProto(proto).serializedData()
         }
     }
 

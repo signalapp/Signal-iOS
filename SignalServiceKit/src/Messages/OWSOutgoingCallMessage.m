@@ -134,12 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
     [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
     
     NSError *error;
-    SSKProtoContent *_Nullable result = [builder buildAndReturnError:&error];
-    if (error || !result) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
-        return nil;
-    }
-    NSData *_Nullable data = [result serializedDataAndReturnError:&error];
+    NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
     if (error || !data) {
         OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return nil;

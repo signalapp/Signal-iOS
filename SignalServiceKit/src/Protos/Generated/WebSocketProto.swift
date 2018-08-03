@@ -63,8 +63,11 @@ public enum WebSocketProtoError: Error {
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketRequestMessage {
-            let wrapper = try WebSocketProtoWebSocketRequestMessage.parseProto(proto)
-            return wrapper
+            return try WebSocketProtoWebSocketRequestMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try WebSocketProtoWebSocketRequestMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -199,8 +202,11 @@ public enum WebSocketProtoError: Error {
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketResponseMessage {
-            let wrapper = try WebSocketProtoWebSocketResponseMessage.parseProto(proto)
-            return wrapper
+            return try WebSocketProtoWebSocketResponseMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try WebSocketProtoWebSocketResponseMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -341,8 +347,11 @@ public enum WebSocketProtoError: Error {
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketMessage {
-            let wrapper = try WebSocketProtoWebSocketMessage.parseProto(proto)
-            return wrapper
+            return try WebSocketProtoWebSocketMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try WebSocketProtoWebSocketMessage.parseProto(proto).serializedData()
         }
     }
 

@@ -3900,13 +3900,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     envelopeBuilder.timestamp = timestamp;
     envelopeBuilder.content = content;
     NSError *error;
-    SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
-    if (error || !envelope) {
-        OWSFail(@"%@ Could not construct envelope: %@.", self.logTag, error);
-        return;
-    }
-
-    NSData *_Nullable envelopeData = [envelope serializedDataAndReturnError:&error];
+    NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
     if (error || !envelopeData) {
         OWSFail(@"%@ Could not serialize envelope: %@.", self.logTag, error);
         return;

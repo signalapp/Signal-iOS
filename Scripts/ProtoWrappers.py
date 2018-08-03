@@ -724,9 +724,15 @@ public func serializedData() throws -> Data {
         # build() func
         writer.add('@objc public func build() throws -> %s {' % self.swift_name)
         writer.push_indent()
-        writer.add('let wrapper = try %s.parseProto(proto)' % self.swift_name)
-        writer.add('return wrapper')
-        
+        writer.add('return try %s.parseProto(proto)' % self.swift_name)
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+        # build() func
+        writer.add('@objc public func buildSerializedData() throws -> Data {')
+        writer.push_indent()
+        writer.add('return try %s.parseProto(proto).serializedData()' % self.swift_name)
         writer.pop_indent()
         writer.add('}')
         writer.newline()
