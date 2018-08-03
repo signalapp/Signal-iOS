@@ -8,6 +8,7 @@ import Foundation
 
 public enum WebSocketProtoError: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 
 // MARK: - WebSocketProtoWebSocketRequestMessage
@@ -40,8 +41,25 @@ public enum WebSocketProtoError: Error {
             proto.headers = items
         }
 
+        @objc public func setHeaders(_ wrappedItems: [String]) {
+            var unwrappedItems = [String]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem)
+            }
+            proto.headers = unwrappedItems
+        }
+
         @objc public func setRequestID(_ valueParam: UInt64) {
             proto.requestID = valueParam
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketRequestMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketRequestMessage {
@@ -53,7 +71,9 @@ public enum WebSocketProtoError: Error {
     fileprivate let proto: WebSocketProtos_WebSocketRequestMessage
 
     @objc public let verb: String
+
     @objc public let path: String
+
     @objc public let requestID: UInt64
 
     @objc public var body: Data? {
@@ -78,6 +98,15 @@ public enum WebSocketProtoError: Error {
         self.verb = verb
         self.path = path
         self.requestID = requestID
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -148,8 +177,25 @@ public enum WebSocketProtoError: Error {
             proto.headers = items
         }
 
+        @objc public func setHeaders(_ wrappedItems: [String]) {
+            var unwrappedItems = [String]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem)
+            }
+            proto.headers = unwrappedItems
+        }
+
         @objc public func setBody(_ valueParam: Data) {
             proto.body = valueParam
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketResponseMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketResponseMessage {
@@ -161,7 +207,9 @@ public enum WebSocketProtoError: Error {
     fileprivate let proto: WebSocketProtos_WebSocketResponseMessage
 
     @objc public let requestID: UInt64
+
     @objc public let status: UInt32
+
     @objc public let body: Data
 
     @objc public var message: String? {
@@ -186,6 +234,15 @@ public enum WebSocketProtoError: Error {
         self.requestID = requestID
         self.status = status
         self.body = body
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -274,6 +331,15 @@ public enum WebSocketProtoError: Error {
             proto.response = valueParam.proto
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> WebSocketProtoWebSocketMessage {
             let wrapper = try WebSocketProtoWebSocketMessage.parseProto(proto)
             return wrapper
@@ -283,8 +349,16 @@ public enum WebSocketProtoError: Error {
     fileprivate let proto: WebSocketProtos_WebSocketMessage
 
     @objc public let type: WebSocketProtoWebSocketMessageType
+
     @objc public let request: WebSocketProtoWebSocketRequestMessage?
+    @objc public var hasRequest: Bool {
+        return proto.hasRequest
+    }
+
     @objc public let response: WebSocketProtoWebSocketResponseMessage?
+    @objc public var hasResponse: Bool {
+        return proto.hasResponse
+    }
 
     private init(proto: WebSocketProtos_WebSocketMessage,
                  type: WebSocketProtoWebSocketMessageType,
@@ -294,6 +368,15 @@ public enum WebSocketProtoError: Error {
         self.type = type
         self.request = request
         self.response = response
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc

@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKProto.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <XCTest/XCTest.h>
 
 @interface ProtoParsingTest : XCTestCase
@@ -13,29 +13,22 @@
 
 @implementation ProtoParsingTest
 
-- (void)testProtoParsing_nil
-{
-    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseFromData:nil];
-    XCTAssertNotNil(envelope);
-}
-
 - (void)testProtoParsing_empty
 {
     NSData *data = [NSData new];
-    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseFromData:data];
-    XCTAssertNotNil(envelope);
+    NSError *error;
+    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:data error:&error];
+    XCTAssertNil(envelope);
+    XCTAssertNotNil(error);
 }
 
 - (void)testProtoParsing_wrong1
 {
-    @try {
-        NSData *data = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
-        [SSKProtoEnvelope parseFromData:data];
-        XCTFail(@"Missing expected exception");
-    } @catch (NSException *exception) {
-        // Exception is expected.
-        NSLog(@"Caught expected exception: %@", [exception class]);
-    }
+    NSData *data = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error;
+    SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:data error:&error];
+    XCTAssertNil(envelope);
+    XCTAssertNotNil(error);
 }
 
 @end

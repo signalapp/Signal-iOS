@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     // verification sync which is ~1-512 bytes larger then that.
     OWSAssert(self.paddingBytesLength != 0);
 
-    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProto(
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
         self.verificationForRecipientId, self.identityKey, self.verificationState, self.paddingBytesLength);
     if (!verifiedProto) {
         OWSFail(@"%@ could not build protobuf.", self.logTag);
@@ -91,8 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerified *_Nullable verifiedProto
-        = BuildVerifiedProto(self.verificationForRecipientId, self.identityKey, self.verificationState, 0);
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
+        self.verificationForRecipientId, self.identityKey, self.verificationState, 0);
     if (!verifiedProto) {
         OWSFail(@"%@ could not build protobuf.", self.logTag);
         return 0;

@@ -302,6 +302,7 @@ import Foundation
         writer.extend(('''
 public enum %s: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 ''' % writer.invalid_protobuf_error_name).strip())
         writer.newline()        
@@ -493,8 +494,14 @@ class MessageContext(BaseContext):
 
         # serializedDataIgnoringErrors() func
         writer.add('// NOTE: This method is intended for debugging purposes only.')
-        writer.add('@objc public func serializedDataIgnoringErrors() -> Data {')
+        writer.add('@objc public func serializedDataIgnoringErrors() -> Data? {')
         writer.push_indent()
+        writer.add('guard _isDebugAssertConfiguration() else {')
+        writer.push_indent()
+        writer.add('return nil')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
         writer.add('return try! self.serializedData()')
         writer.pop_indent()
         writer.add('}')
@@ -701,8 +708,14 @@ public func serializedData() throws -> Data {
 
         # buildIgnoringErrors() func
         writer.add('// NOTE: This method is intended for debugging purposes only.')
-        writer.add('@objc public func buildIgnoringErrors() -> %s {' % self.swift_name)
+        writer.add('@objc public func buildIgnoringErrors() -> %s? {' % self.swift_name)
         writer.push_indent()
+        writer.add('guard _isDebugAssertConfiguration() else {')
+        writer.push_indent()
+        writer.add('return nil')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
         writer.add('return try! self.build()')
         writer.pop_indent()
         writer.add('}')

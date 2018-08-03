@@ -8,6 +8,7 @@ import Foundation
 
 public enum SignalIOSProtoError: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 
 // MARK: - SignalIOSProtoBackupSnapshotBackupEntity
@@ -60,6 +61,15 @@ public enum SignalIOSProtoError: Error {
             proto.entityData = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SignalIOSProtoBackupSnapshotBackupEntity? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SignalIOSProtoBackupSnapshotBackupEntity {
             let wrapper = try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto)
             return wrapper
@@ -69,6 +79,7 @@ public enum SignalIOSProtoError: Error {
     fileprivate let proto: IOSProtos_BackupSnapshot.BackupEntity
 
     @objc public let type: SignalIOSProtoBackupSnapshotBackupEntityType
+
     @objc public let entityData: Data
 
     private init(proto: IOSProtos_BackupSnapshot.BackupEntity,
@@ -77,6 +88,15 @@ public enum SignalIOSProtoError: Error {
         self.proto = proto
         self.type = type
         self.entityData = entityData
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -129,6 +149,23 @@ public enum SignalIOSProtoError: Error {
             proto.entity = items
         }
 
+        @objc public func setEntity(_ wrappedItems: [SignalIOSProtoBackupSnapshotBackupEntity]) {
+            var unwrappedItems = [IOSProtos_BackupSnapshot.BackupEntity]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.entity = unwrappedItems
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SignalIOSProtoBackupSnapshot? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SignalIOSProtoBackupSnapshot {
             let wrapper = try SignalIOSProtoBackupSnapshot.parseProto(proto)
             return wrapper
@@ -143,6 +180,15 @@ public enum SignalIOSProtoError: Error {
                  entity: [SignalIOSProtoBackupSnapshotBackupEntity]) {
         self.proto = proto
         self.entity = entity
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc

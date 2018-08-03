@@ -15,7 +15,7 @@ typedef NS_ENUM(NSUInteger, OWSVerificationState) {
 @class SSKProtoVerified;
 
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
-SSKProtoVerified *_Nullable BuildVerifiedProto(NSString *destinationRecipientId,
+SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
     NSData *identityKey,
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength);

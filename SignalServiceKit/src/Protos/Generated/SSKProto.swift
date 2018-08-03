@@ -8,6 +8,7 @@ import Foundation
 
 public enum SSKProtoError: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 
 // MARK: - SSKProtoEnvelope
@@ -81,7 +82,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoEnvelope {
+        @objc public func buildIgnoringErrors() -> SSKProtoEnvelope? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -144,7 +149,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -225,7 +234,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoContent {
+        @objc public func buildIgnoringErrors() -> SSKProtoContent? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -277,7 +290,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -352,7 +369,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageOffer {
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageOffer? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -377,7 +398,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -434,7 +459,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageAnswer {
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageAnswer? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -459,7 +488,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -524,7 +557,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageIceUpdate {
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageIceUpdate? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -557,7 +594,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -622,7 +663,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageBusy {
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageBusy? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -643,7 +688,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -690,7 +739,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageHangup {
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageHangup? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -711,7 +764,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -788,7 +845,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoCallMessage {
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -847,7 +908,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -949,7 +1014,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageQuoteQuotedAttachment {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageQuoteQuotedAttachment? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1000,7 +1069,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1069,7 +1142,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageQuote {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageQuote? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1108,7 +1185,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1188,7 +1269,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactName {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactName? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1265,7 +1350,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1341,7 +1430,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactPhone {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactPhone? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1385,7 +1478,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1461,7 +1558,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactEmail {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactEmail? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1505,7 +1606,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1602,7 +1707,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactPostalAddress {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactPostalAddress? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1706,7 +1815,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1751,7 +1864,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactAvatar {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactAvatar? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1782,7 +1899,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -1879,7 +2000,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContact {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContact? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -1932,7 +2057,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2082,7 +2211,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoDataMessage {
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2162,7 +2295,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2229,7 +2366,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoNullMessage {
+        @objc public func buildIgnoringErrors() -> SSKProtoNullMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2256,7 +2397,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2332,7 +2477,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoReceiptMessage {
+        @objc public func buildIgnoringErrors() -> SSKProtoReceiptMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2357,7 +2506,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2440,7 +2593,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoVerified {
+        @objc public func buildIgnoringErrors() -> SSKProtoVerified? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2488,7 +2645,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2547,7 +2708,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageSent {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageSent? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2595,7 +2760,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2646,7 +2815,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageContacts {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageContacts? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2674,7 +2847,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2721,7 +2898,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageGroups {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageGroups? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2745,7 +2926,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2802,7 +2987,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageBlocked {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageBlocked? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2823,7 +3012,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2894,7 +3087,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageRequest {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageRequest? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2915,7 +3112,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -2966,7 +3167,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageRead {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageRead? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -2991,7 +3196,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3044,7 +3253,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageConfiguration {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageConfiguration? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3068,7 +3281,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3151,7 +3368,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessage {
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3231,7 +3452,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3375,7 +3600,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoAttachmentPointer {
+        @objc public func buildIgnoringErrors() -> SSKProtoAttachmentPointer? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3474,7 +3703,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3577,7 +3810,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoGroupContext {
+        @objc public func buildIgnoringErrors() -> SSKProtoGroupContext? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3623,7 +3860,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3686,7 +3927,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoContactDetailsAvatar {
+        @objc public func buildIgnoringErrors() -> SSKProtoContactDetailsAvatar? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3720,7 +3965,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3789,7 +4038,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoContactDetails {
+        @objc public func buildIgnoringErrors() -> SSKProtoContactDetails? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3868,7 +4121,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -3931,7 +4188,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoGroupDetailsAvatar {
+        @objc public func buildIgnoringErrors() -> SSKProtoGroupDetailsAvatar? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -3965,7 +4226,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 
@@ -4040,7 +4305,11 @@ public enum SSKProtoError: Error {
         }
 
         // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> SSKProtoGroupDetails {
+        @objc public func buildIgnoringErrors() -> SSKProtoGroupDetails? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
             return try! self.build()
         }
 
@@ -4106,7 +4375,11 @@ public enum SSKProtoError: Error {
     }
 
     // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
         return try! self.serializedData()
     }
 

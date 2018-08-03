@@ -36,7 +36,7 @@ SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState veri
     }
 }
 
-SSKProtoVerified *_Nullable BuildVerifiedProto(NSString *destinationRecipientId,
+SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
     NSData *identityKey,
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength)
@@ -64,7 +64,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProto(NSString *destinationRecipientId,
     NSError *error;
     SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
     if (error || !verifiedProto) {
-        OWSCFail(@"%@ could not build protobuf: %@", @"[BuildVerifiedProto]", error);
+        OWSCFail(@"%@ could not build protobuf: %@", @"[BuildVerifiedProtoWithRecipientId]", error);
         return nil;
     }
     return verifiedProto;
