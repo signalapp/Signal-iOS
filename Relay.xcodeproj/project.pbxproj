@@ -449,6 +449,9 @@
 		7D6565192113CB3E00365A19 /* OWSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6565172113CB3E00365A19 /* OWSContactsManager.m */; };
 		7D65651A2113CB3E00365A19 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D6565182113CB3E00365A19 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7D7705C02114CD4B00B40BB9 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
+		7D7705C42114D8E700B40BB9 /* ValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */; };
+		7D7705C52114D8E700B40BB9 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C22114D8E600B40BB9 /* LoginViewController.swift */; };
+		7D7705C62114D8E700B40BB9 /* NewAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C32114D8E600B40BB9 /* NewAccountViewController.swift */; };
 		7DD9C9ED2114A60C000A1CDC /* RelayMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* RelayMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1152,6 +1155,9 @@
 		7D6565152113C6AD00365A19 /* ContactFieldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactFieldView.swift; sourceTree = "<group>"; };
 		7D6565172113CB3E00365A19 /* OWSContactsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsManager.m; sourceTree = "<group>"; };
 		7D6565182113CB3E00365A19 /* OWSContactsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsManager.h; sourceTree = "<group>"; };
+		7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationViewController.swift; sourceTree = "<group>"; };
+		7D7705C22114D8E600B40BB9 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		7D7705C32114D8E600B40BB9 /* NewAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewAccountViewController.swift; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1398,6 +1404,9 @@
 		340FC875204DAC8C007AEB0F /* Registration */ = {
 			isa = PBXGroup;
 			children = (
+				7D7705C22114D8E600B40BB9 /* LoginViewController.swift */,
+				7D7705C32114D8E600B40BB9 /* NewAccountViewController.swift */,
+				7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */,
 				340FC879204DAC8C007AEB0F /* CodeVerificationViewController.h */,
 				340FC877204DAC8C007AEB0F /* CodeVerificationViewController.m */,
 				340FC878204DAC8C007AEB0F /* RegistrationViewController.h */,
@@ -3380,11 +3389,13 @@
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
+				7D7705C62114D8E700B40BB9 /* NewAccountViewController.swift in Sources */,
 				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				450DF2051E0D74AC003D14BE /* Platform.swift in Sources */,
+				7D7705C52114D8E700B40BB9 /* LoginViewController.swift in Sources */,
 				340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
@@ -3403,6 +3414,7 @@
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
 				34D920E720E179C200D51158 /* OWSMessageFooterView.m in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
+				7D7705C42114D8E700B40BB9 /* ValidationViewController.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
