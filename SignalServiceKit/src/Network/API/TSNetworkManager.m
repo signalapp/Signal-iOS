@@ -12,7 +12,7 @@
 #import <AFNetworking/AFNetworking.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-NSString *const TSNetworkManagerDomain = @"org.whispersystems.signal.networkManager";
+NSString *const TSNetworkManagerDomain = @"io.forsta.relay.networkManager";
 
 BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 {

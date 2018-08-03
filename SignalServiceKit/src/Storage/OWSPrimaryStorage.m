@@ -277,7 +277,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilename
 {
-    return @"Signal.sqlite";
+    return @"RelayActive.sqlite";
 }
 
 + (NSString *)databaseFilename_SHM

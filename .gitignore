@@ -28,3 +28,7 @@ DerivedData
 *.xcuserstate
 Index/
 
+Pods/*
+Podfile.lock
+
+Forsta-values.plist

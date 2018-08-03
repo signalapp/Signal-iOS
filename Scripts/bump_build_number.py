@@ -144,7 +144,7 @@ if __name__ == '__main__':
     project_root_path = find_project_root()
     # print 'project_root_path', project_root_path
     # plist_path
-    main_plist_path = os.path.join(project_root_path, 'Signal', 'Signal-Info.plist')
+    main_plist_path = os.path.join(project_root_path, 'Relay', 'Relay-Info.plist')
     if not os.path.exists(main_plist_path):
         fail('Could not find main app info .plist')
     share_ext_plist_path = os.path.join(project_root_path, 'SignalShareExtension', 'Info.plist')

@@ -2,7 +2,7 @@
 SHELL=/bin/bash -o pipefail -o errexit
 
 WORKING_DIR = ./
-SCHEME = Signal
+SCHEME = Relay
 XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME) -sdk iphonesimulator
 
 .PHONY: build test retest clean dependencies
