@@ -86,7 +86,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
                                     do {
                                         token = try result.dematerialize()
                                     } catch {
-                                        DDLogDebug("Error retrieving token.")
+                                        Logger.debug("Error retrieving recaptcha token.")
                                     }
                                     
                                     // remove the recaptcha webview
@@ -136,7 +136,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
                                                                                             let messages = (dictionary.object(forKey: keys.last!) as? Array<String>)!
                                                                                             message = messages.last!
                                                                                         } else {
-                                                                                            DDLogDebug((error?.localizedDescription)!)
+                                                                                            Logger.debug((error?.localizedDescription)!)
                                                                                             message = String(format: "%@\n\n%@", NSLocalizedString("REGISTER_CREATION_FAILURE", comment: ""), (error?.localizedDescription)!)
                                                                                         }
                                                                                         self.presentAlertWithMessage(title: title, message: message)
@@ -162,7 +162,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
         //                                                                                    }
         //                                                                                } else {
         //                                                                                    DispatchQueue.main.async {
-        //                                                                                        DDLogDebug((error?.localizedDescription)!)
+        //                                                                                        Logger.debug((error?.localizedDescription)!)
         //                                                                                        let message: String = String(format: "%@\n\n%@", NSLocalizedString("REGISTER_CREATION_FAILURE", comment: ""), (error?.localizedDescription)!)
         //                                                                                        self.presentAlertWithMessage(message: message)
         //                                                                                        self.recaptcha.reset()
@@ -192,7 +192,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
     
     private func proceedToMain() {
         DispatchQueue.global(qos: .default).async {
-            TSSocketManager.becomeActiveFromForeground()
+            TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }
         self.performSegue(withIdentifier: "mainSegue", sender: self)

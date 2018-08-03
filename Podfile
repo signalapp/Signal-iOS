@@ -33,6 +33,7 @@ end
 
 target 'Relay' do
   shared_pods
+  pod 'ReCaptcha', '~> 1.2', :inhibit_warnings => true
   pod 'ATAppUpdater', :inhibit_warnings => true
   pod 'SSZipArchive', :inhibit_warnings => true
 
