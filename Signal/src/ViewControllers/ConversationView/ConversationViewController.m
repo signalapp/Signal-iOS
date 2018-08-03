@@ -448,7 +448,6 @@ typedef enum : NSUInteger {
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
     _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
-    self.collapseCutoffDate = [NSDate new];
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
@@ -724,6 +723,8 @@ typedef enum : NSUInteger {
     [self updateBarButtonItems];
     [self updateNavigationTitle];
 
+    [self resetContentAndLayout];
+
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition];
@@ -821,7 +822,6 @@ typedef enum : NSUInteger {
 {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
-    self.collapseCutoffDate = [NSDate new];
     [self reloadViewItems];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
@@ -3388,11 +3388,9 @@ typedef enum : NSUInteger {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
         OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
-        self.lastReloadDate = [NSDate new];
-        self.collapseCutoffDate = [NSDate new];
-        [self reloadViewItems];
-        [self.collectionView reloadData];
+        [self resetContentAndLayout];
         [self updateLastVisibleTimestamp];
+        [self scrollToBottomAnimated:NO];
         return;
     }
 
@@ -4354,11 +4352,8 @@ typedef enum : NSUInteger {
 - (void)conversationColorWasUpdated
 {
     [self.conversationStyle updateProperties];
-    self.collapseCutoffDate = [NSDate new];
-    self.lastReloadDate = [NSDate new];
-    [self reloadViewItems];
     [self.headerView updateAvatar];
-    [self.collectionView reloadData];
+    [self resetContentAndLayout];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
@@ -4825,6 +4820,8 @@ typedef enum : NSUInteger {
 // cell view models.
 - (void)reloadViewItems
 {
+    self.collapseCutoffDate = [NSDate new];
+
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
