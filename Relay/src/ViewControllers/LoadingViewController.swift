@@ -16,14 +16,16 @@ public class LoadingViewController: UIViewController {
 
     override public func loadView() {
         self.view = UIView()
-        view.backgroundColor = UIColor.ows_materialBlue
+        view.backgroundColor = UIColor.black
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "logoSignal"))
+        self.logoView = UIImageView(image: #imageLiteral(resourceName: "forsta_splash"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
-        logoView.autoPinToSquareAspectRatio()
-        logoView.autoMatch(.width, to: .width, of: view, withMultiplier: 1/3)
+//        logoView.autoPinToSquareAspectRatio()
+//        logoView.autoMatch(.width, to: .width, of: view, withMultiplier: 1/3)
+        logoView.contentMode = .scaleAspectFill
+        logoView.autoPinEdgesToSuperviewEdges()
 
         self.topLabel = buildLabel()
         topLabel.alpha = 0
