@@ -38,17 +38,21 @@ class SAEFailedViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(cancelPressed))
-        self.navigationItem.title = "Signal"
+        self.navigationItem.title = "Relay"
 
         self.view.backgroundColor = UIColor.ows_signalBrandBlue
 
-        let logoImage = UIImage(named: "logoSignal")
-        let logoImageView = UIImageView(image: logoImage)
+//        let logoImage = UIImage(named: "logoSignal")
+        let logoImageView = UIImageView(image: #imageLiteral(resourceName: "forsta_splash"))
+
+//        let logoImageView = UIImageView(image: logoImage)
         self.view.addSubview(logoImageView)
         logoImageView.autoCenterInSuperview()
-        let logoSize = CGFloat(120)
-        logoImageView.autoSetDimension(.width, toSize: logoSize)
-        logoImageView.autoSetDimension(.height, toSize: logoSize)
+//        let logoSize = CGFloat(120)
+//        logoImageView.autoSetDimension(.width, toSize: logoSize)
+//        logoImageView.autoSetDimension(.height, toSize: logoSize)
+        logoImageView.contentMode = .scaleAspectFill
+        logoImageView.autoPinEdgesToSuperviewEdges()
 
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
