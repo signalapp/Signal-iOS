@@ -209,8 +209,7 @@ public class FullTextSearchFinder: NSObject {
         }
 
         guard let attachment = message.attachment(with: transaction) else {
-            // This can happen during the initial save of incoming messages.
-            Logger.warn("Could not load attachment for search indexing.")
+            owsFail("\(self.logTag) in \(#function) attachment was unexpectedly nil")
             return nil
         }
 
