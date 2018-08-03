@@ -8,22 +8,31 @@
 // the legacy proto format.
 syntax = "proto2";
 
-package ProvisioningProto;
+package ProvisioningProtos;
 
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "ProvisioningProtos";
 
 message ProvisionEnvelope {
+  // @required
   optional bytes publicKey = 1;
+  // @required
   optional bytes body      = 2; // Encrypted ProvisionMessage
 }
 
 message ProvisionMessage {
+  // @required
   optional bytes  identityKeyPublic  = 1;
+  // @required
   optional bytes  identityKeyPrivate = 2;
+  // @required
   optional string number             = 3;
+  // @required
   optional string provisioningCode   = 4;
+  // @required
   optional string userAgent          = 5;
+  // @required
   optional bytes  profileKey         = 6;
+  // @required
   optional bool   readReceipts       = 7;
 }

@@ -32,6 +32,7 @@ struct WebSocketProtos_WebSocketRequestMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var verb: String {
     get {return _verb ?? String()}
     set {_verb = newValue}
@@ -41,6 +42,7 @@ struct WebSocketProtos_WebSocketRequestMessage {
   /// Clears the value of `verb`. Subsequent reads from it will return its default value.
   mutating func clearVerb() {self._verb = nil}
 
+  /// @required
   var path: String {
     get {return _path ?? String()}
     set {_path = newValue}
@@ -61,6 +63,7 @@ struct WebSocketProtos_WebSocketRequestMessage {
 
   var headers: [String] = []
 
+  /// @required
   var requestID: UInt64 {
     get {return _requestID ?? 0}
     set {_requestID = newValue}
@@ -85,6 +88,7 @@ struct WebSocketProtos_WebSocketResponseMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var requestID: UInt64 {
     get {return _requestID ?? 0}
     set {_requestID = newValue}
@@ -94,6 +98,7 @@ struct WebSocketProtos_WebSocketResponseMessage {
   /// Clears the value of `requestID`. Subsequent reads from it will return its default value.
   mutating func clearRequestID() {self._requestID = nil}
 
+  /// @required
   var status: UInt32 {
     get {return _status ?? 0}
     set {_status = newValue}
@@ -114,6 +119,7 @@ struct WebSocketProtos_WebSocketResponseMessage {
 
   var headers: [String] = []
 
+  /// @required
   var body: Data {
     get {return _body ?? SwiftProtobuf.Internal.emptyData}
     set {_body = newValue}
@@ -138,6 +144,7 @@ struct WebSocketProtos_WebSocketMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var type: WebSocketProtos_WebSocketMessage.TypeEnum {
     get {return _storage._type ?? .unknown}
     set {_uniqueStorage()._type = newValue}

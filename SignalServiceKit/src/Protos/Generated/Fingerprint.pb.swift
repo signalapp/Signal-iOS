@@ -27,7 +27,7 @@ struct FingerprintProtos_LogicalFingerprint {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  ///  optional bytes identifier = 2;
+  /// @required
   var identityData: Data {
     get {return _identityData ?? SwiftProtobuf.Internal.emptyData}
     set {_identityData = newValue}
@@ -49,6 +49,7 @@ struct FingerprintProtos_LogicalFingerprints {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var version: UInt32 {
     get {return _storage._version ?? 0}
     set {_uniqueStorage()._version = newValue}
@@ -58,6 +59,7 @@ struct FingerprintProtos_LogicalFingerprints {
   /// Clears the value of `version`. Subsequent reads from it will return its default value.
   mutating func clearVersion() {_storage._version = nil}
 
+  /// @required
   var localFingerprint: FingerprintProtos_LogicalFingerprint {
     get {return _storage._localFingerprint ?? FingerprintProtos_LogicalFingerprint()}
     set {_uniqueStorage()._localFingerprint = newValue}
@@ -67,6 +69,7 @@ struct FingerprintProtos_LogicalFingerprints {
   /// Clears the value of `localFingerprint`. Subsequent reads from it will return its default value.
   mutating func clearLocalFingerprint() {_storage._localFingerprint = nil}
 
+  /// @required
   var remoteFingerprint: FingerprintProtos_LogicalFingerprint {
     get {return _storage._remoteFingerprint ?? FingerprintProtos_LogicalFingerprint()}
     set {_uniqueStorage()._remoteFingerprint = newValue}
