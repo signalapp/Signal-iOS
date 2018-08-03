@@ -42,11 +42,7 @@ public enum WebSocketProtoError: Error {
         }
 
         @objc public func setHeaders(_ wrappedItems: [String]) {
-            var unwrappedItems = [String]()
-            for wrappedItem in wrappedItems {
-                unwrappedItems.append(wrappedItem)
-            }
-            proto.headers = unwrappedItems
+            proto.headers = wrappedItems
         }
 
         @objc public func setRequestID(_ valueParam: UInt64) {
@@ -181,11 +177,7 @@ public enum WebSocketProtoError: Error {
         }
 
         @objc public func setHeaders(_ wrappedItems: [String]) {
-            var unwrappedItems = [String]()
-            for wrappedItem in wrappedItems {
-                unwrappedItems.append(wrappedItem)
-            }
-            proto.headers = unwrappedItems
+            proto.headers = wrappedItems
         }
 
         @objc public func setBody(_ valueParam: Data) {

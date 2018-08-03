@@ -294,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (envelope.hasContent) {
+    if (envelope.content != nil) {
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
         if (error || !contentProto) {
@@ -320,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.logTag);
         }
-    } else if (envelope.hasLegacyMessage) { // DEPRECATED - Remove after all clients have been upgraded.
+    } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
         NSError *error;
         SSKProtoDataMessage *_Nullable dataMessageProto = [SSKProtoDataMessage parseData:plaintextData error:&error];
         if (error || !dataMessageProto) {

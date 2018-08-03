@@ -556,17 +556,13 @@ public func serializedData() throws -> Data {
                 writer.add('var %s: %s = %s' % (field.name_swift, field.type_swift, default_value))
                 
             if field.rules == 'repeated':
-                writer.add('for item in proto.%s {' % (field.name_swift))
-                writer.push_indent()
-                
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
-                    writer.add('let wrapped = %sWrap(item)' % ( enum_context.swift_name, ) )
+                    writer.add('%s = proto.%s.map { %sWrap($0) }' % ( field.name_swift, field.name_swift, enum_context.swift_name, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('let wrapped = try %s.parseProto(item)' % (self.base_swift_type_for_field(field))),
+                    writer.add('%s = try proto.%s.map { try %s.parseProto($0) }' % ( field.name_swift, field.name_swift, self.base_swift_type_for_field(field), ) )
                 else:
-                    writer.add('let wrapped = item')
-                writer.add('%s.append(wrapped)' % ( field.name_swift, ) )
+                    writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
             else:
                 writer.add('if proto.%s {' % field.has_accessor_name() )
                 writer.push_indent()
@@ -580,8 +576,8 @@ public func serializedData() throws -> Data {
                 else:
                     writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
                 
-            writer.pop_indent()
-            writer.add('}')
+                writer.pop_indent()
+                writer.add('}')
             writer.newline()
 
         writer.add('// MARK: - Begin Validation Logic for %s -' % self.swift_name)
@@ -663,28 +659,13 @@ public func serializedData() throws -> Data {
                 accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
                 writer.add('@objc public func %s(_ wrappedItems: [%s]) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
                 writer.push_indent()
-                list_wrapped_swift_name = None
-                if self.is_field_a_proto(field):
-                    message_context = self.context_for_proto_type(field)
-                    list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
-                else:
-                    # TODO: Assert not an enum.
-                    list_wrapped_swift_name = self.base_swift_type_for_field(field)
-                writer.add('var unwrappedItems = [%s]()' % list_wrapped_swift_name)
-                writer.add('for wrappedItem in wrappedItems {')
-                writer.push_indent()
-                
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
-                    writer.add('unwrappedItems.append(%sUnwrap(wrappedItem))' % enum_context.swift_name )
+                    writer.add('proto.%s = wrappedItems.map { %sUnwrap($0) }' % ( field.name_swift, enum_context.swift_name, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('unwrappedItems.append(wrappedItem.proto)')
+                    writer.add('proto.%s = wrappedItems.map { $0.proto }' % ( field.name_swift, ) )
                 else:
-                    writer.add('unwrappedItems.append(wrappedItem)')
-                    
-                writer.pop_indent()
-                writer.add('}')
-                writer.add('proto.%s = unwrappedItems' % ( field.name_swift, ) )
+                    writer.add('proto.%s = wrappedItems' % ( field.name_swift, ) )
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
@@ -1021,7 +1002,7 @@ def preserve_validation_logic(args, proto_file_path, dst_file_path):
             end = old_text.find(end_marker)
             # print '\t end:', end
             if end < start:
-                raise Exception('Malformed validation: %s' % proto_file_path)
+                raise Exception('Malformed validation: %s, %s' % ( proto_file_path, name, ) )
             validation_block = old_text[start:end]
             # print '\t validation_block:', validation_block
             

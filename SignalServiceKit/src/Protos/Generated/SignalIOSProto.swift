@@ -153,11 +153,7 @@ public enum SignalIOSProtoError: Error {
         }
 
         @objc public func setEntity(_ wrappedItems: [SignalIOSProtoBackupSnapshotBackupEntity]) {
-            var unwrappedItems = [IOSProtos_BackupSnapshot.BackupEntity]()
-            for wrappedItem in wrappedItems {
-                unwrappedItems.append(wrappedItem.proto)
-            }
-            proto.entity = unwrappedItems
+            proto.entity = wrappedItems.map { $0.proto }
         }
 
         // NOTE: This method is intended for debugging purposes only.
@@ -209,10 +205,7 @@ public enum SignalIOSProtoError: Error {
 
     fileprivate class func parseProto(_ proto: IOSProtos_BackupSnapshot) throws -> SignalIOSProtoBackupSnapshot {
         var entity: [SignalIOSProtoBackupSnapshotBackupEntity] = []
-        for item in proto.entity {
-            let wrapped = try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(item)
-            entity.append(wrapped)
-        }
+        entity = try proto.entity.map { try SignalIOSProtoBackupSnapshotBackupEntity.parseProto($0) }
 
         // MARK: - Begin Validation Logic for SignalIOSProtoBackupSnapshot -
 
