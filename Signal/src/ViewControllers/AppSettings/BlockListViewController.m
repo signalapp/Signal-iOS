@@ -40,9 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _tableViewController = [OWSTableViewController new];
     [self.view addSubview:self.tableViewController.view];
-    [_tableViewController.view autoPinWidthToSuperview];
-    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self addChildViewController:self.tableViewController];
+    [_tableViewController.view autoPinEdgesToSuperviewEdges];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
 
