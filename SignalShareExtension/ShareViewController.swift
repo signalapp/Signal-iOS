@@ -48,7 +48,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         startupLogging()
 
-        SetRandFunctionSeed()
+        Cryptography.seedRandom()
 
         // We don't need to use DeviceSleepManager in the SAE.
 

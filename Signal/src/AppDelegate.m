@@ -123,7 +123,7 @@ static NSTimeInterval launchStartedAt;
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
-    SetRandFunctionSeed();
+    [Cryptography seedRandom];
 
     // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
