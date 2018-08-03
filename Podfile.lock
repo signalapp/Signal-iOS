@@ -147,7 +147,7 @@ DEPENDENCIES:
   - PureLayout
   - Reachability
   - SignalServiceKit (from `.`)
-  - SocketRocket (from `https://github.com/facebook/SocketRocket.git`)
+  - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
   - SQLCipher (from `https://github.com/sqlcipher/sqlcipher.git`, commit `d5c2bec`)
   - SSZipArchive
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `signal-release`)
@@ -183,7 +183,8 @@ EXTERNAL SOURCES:
   SignalServiceKit:
     :path: "."
   SocketRocket:
-    :git: https://github.com/facebook/SocketRocket.git
+    :branch: mkirk/handle-sec-err
+    :git: https://github.com/signalapp/SocketRocket.git
   SQLCipher:
     :commit: d5c2bec
     :git: https://github.com/sqlcipher/sqlcipher.git
@@ -205,8 +206,8 @@ CHECKOUT OPTIONS:
     :commit: d2e2e50990e88537d6c4e38cc32a6f6debd83446
     :git: https://github.com/signalapp/HKDFKit.git
   SocketRocket:
-    :commit: 28035e1a98a427853e4038ff1b70479fa8374cfa
-    :git: https://github.com/facebook/SocketRocket.git
+    :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
+    :git: https://github.com/signalapp/SocketRocket.git
   SQLCipher:
     :commit: d5c2bec
     :git: https://github.com/sqlcipher/sqlcipher.git
@@ -237,6 +238,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: b378e1ac40edbfc9d4f66410d26ea18a8a0a32dc
+PODFILE CHECKSUM: dfec9ac3c4b7b32878c1b2cc2a27eb1e22574cda
 
 COCOAPODS: 1.5.3
