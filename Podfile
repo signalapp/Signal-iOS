@@ -30,21 +30,21 @@ def shared_pods
   pod 'YYImage', :inhibit_warnings => true
 end
 
-target 'Signal' do
+target 'Relay' do
   shared_pods
   pod 'ATAppUpdater', :inhibit_warnings => true
   pod 'SSZipArchive', :inhibit_warnings => true
 
-  target 'SignalTests' do
+  target 'RelayTests' do
     inherit! :search_paths
   end
 end
 
-target 'SignalShareExtension' do
+target 'RelayShareExtension' do
   shared_pods
 end
 
-target 'SignalMessaging' do
+target 'RelayMessaging' do
   shared_pods
 end
 

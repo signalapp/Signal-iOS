@@ -4,7 +4,7 @@ This script can be used to grep the source to tree to see which localized string
 
 author: corbett
 usage: ./unused_strings.py Localizable.strings source_dir
-eg:    ./unused_strings.py ../Signal/translations/en.lproj/Localizable.strings ../Signal/src
+eg:    ./unused_strings.py ../Relay/translations/en.lproj/Localizable.strings ../Relay/src
 """
 import sys
 import os
