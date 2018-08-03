@@ -28,6 +28,7 @@ def shared_pods
   pod 'Reachability', :inhibit_warnings => true
   pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
+  pod 'GoogleWebRTC', '~> 1.1', :inhibit_warnings => true
 end
 
 target 'Relay' do
