@@ -33,13 +33,13 @@ struct AppNotifications {
     static func category(_ type: Category) -> UNNotificationCategory {
         switch type {
         case .missedCall:
-            return UNNotificationCategory(identifier: "org.whispersystems.signal.AppNotifications.Category.missedCall",
+            return UNNotificationCategory(identifier: "io.forsta.relay.AppNotifications.Category.missedCall",
                                           actions: [ action(.callBack) ],
                                           intentIdentifiers: [],
                                           options: [])
 
         case .missedCallFromNoLongerVerifiedIdentity:
-            return UNNotificationCategory(identifier: "org.whispersystems.signal.AppNotifications.Category.missedCallFromNoLongerVerifiedIdentity",
+            return UNNotificationCategory(identifier: "io.forsta.relay.AppNotifications.Category.missedCallFromNoLongerVerifiedIdentity",
                                           actions: [ action(.showThread) ],
                                           intentIdentifiers: [],
                                           options: [])
@@ -49,11 +49,11 @@ struct AppNotifications {
     static func action(_ type: Action) -> UNNotificationAction {
         switch type {
         case .callBack:
-            return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.callBack",
+            return UNNotificationAction(identifier: "io.forsta.relay.AppNotifications.Action.callBack",
                                         title: CallStrings.callBackButtonTitle,
                                         options: .authenticationRequired)
         case .showThread:
-            return UNNotificationAction(identifier: "org.whispersystems.signal.AppNotifications.Action.showThread",
+            return UNNotificationAction(identifier: "io.forsta.relay.AppNotifications.Action.showThread",
                                         title: CallStrings.showThreadButtonTitle,
                                         options: .authenticationRequired)
         }

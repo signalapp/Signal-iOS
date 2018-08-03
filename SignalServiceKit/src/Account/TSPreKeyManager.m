@@ -84,7 +84,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     static dispatch_once_t onceToken;
     static dispatch_queue_t queue;
     dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.prekeyQueue", NULL);
+        queue = dispatch_queue_create("io.forsta.relay.prekeyQueue", NULL);
     });
     return queue;
 }

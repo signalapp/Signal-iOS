@@ -5,7 +5,7 @@
 import Foundation
 import SignalServiceKit
 
-let CompareSafetyNumbersActivityType = "org.whispersystems.signal.activity.CompareSafetyNumbers"
+let CompareSafetyNumbersActivityType = "io.forsta.io.activity.CompareSafetyNumbers"
 
 @objc(OWSCompareSafetyNumbersActivityDelegate)
 protocol CompareSafetyNumbersActivityDelegate {

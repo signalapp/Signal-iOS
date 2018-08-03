@@ -63,6 +63,6 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 #define textSecure2FAAPI @"/v1/accounts/pin"
 
-#define SignalApplicationGroup @"group.org.whispersystems.signal.group"
+#define SignalApplicationGroup @"group.io.forsta.relay"
 
 #endif

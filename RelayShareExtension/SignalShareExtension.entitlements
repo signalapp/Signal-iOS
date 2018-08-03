@@ -6,11 +6,11 @@
 	<string>NSFileProtectionComplete</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.org.whispersystems.signal.group</string>
+		<string>io.forsta.relay</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)org.whispersystems.signal</string>
+		<string>$(AppIdentifierPrefix)io.forsta.relay</string>
 	</array>
 </dict>
 </plist>
