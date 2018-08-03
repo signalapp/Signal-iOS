@@ -1,8 +1,9 @@
-//  Created by Michael Kirk on 12/8/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSCallHangupMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,13 +21,19 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosCallMessageHangup *)asProtobuf
+- (nullable SSKProtoCallMessageHangup *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageHangupBuilder *builder = [OWSSignalServiceProtosCallMessageHangupBuilder new];
+    SSKProtoCallMessageHangupBuilder *builder = [SSKProtoCallMessageHangupBuilder new];
 
     builder.id = self.callId;
-
-    return [builder build];
+    
+    NSError *error;
+    SSKProtoCallMessageHangup *_Nullable result = [builder buildAndReturnError:&error];
+    if (error || !result) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return result;
 }
 
 

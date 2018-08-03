@@ -5,12 +5,12 @@
 #import "OWSSyncGroupsMessage.h"
 #import "NSDate+OWS.h"
 #import "OWSGroupsOutputStream.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,22 +26,33 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    OWSSignalServiceProtosAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
 
-    OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
-        [OWSSignalServiceProtosSyncMessageGroupsBuilder new];
+    SSKProtoAttachmentPointer *_Nullable attachmentProto =
+        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+    if (!attachmentProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
 
+    SSKProtoSyncMessageGroupsBuilder *groupsBuilder =
+        [SSKProtoSyncMessageGroupsBuilder new];
     [groupsBuilder setBlob:attachmentProto];
 
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    [syncMessageBuilder setGroupsBuilder:groupsBuilder];
+    NSError *error;
+    SSKProtoSyncMessageGroups *_Nullable groupsProto = [groupsBuilder buildAndReturnError:&error];
+    if (error || !groupsProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    [syncMessageBuilder setGroups:groupsProto];
 
     return syncMessageBuilder;
 }

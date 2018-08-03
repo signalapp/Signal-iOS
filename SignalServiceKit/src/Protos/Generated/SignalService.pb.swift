@@ -282,6 +282,7 @@ struct SignalServiceProtos_CallMessage {
 
     /// Signal-iOS renamed the description field to avoid
     /// conflicts with [NSObject description].
+    /// @required
     var sessionDescription: String {
       get {return _sessionDescription ?? String()}
       set {_sessionDescription = newValue}
@@ -316,6 +317,7 @@ struct SignalServiceProtos_CallMessage {
 
     /// Signal-iOS renamed the description field to avoid
     /// conflicts with [NSObject description].
+    /// @required
     var sessionDescription: String {
       get {return _sessionDescription ?? String()}
       set {_sessionDescription = newValue}
@@ -348,6 +350,7 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
+    /// @required
     var sdpMid: String {
       get {return _sdpMid ?? String()}
       set {_sdpMid = newValue}
@@ -357,6 +360,7 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `sdpMid`. Subsequent reads from it will return its default value.
     mutating func clearSdpMid() {self._sdpMid = nil}
 
+    /// @required
     var sdpMlineIndex: UInt32 {
       get {return _sdpMlineIndex ?? 0}
       set {_sdpMlineIndex = newValue}
@@ -366,6 +370,7 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `sdpMlineIndex`. Subsequent reads from it will return its default value.
     mutating func clearSdpMlineIndex() {self._sdpMlineIndex = nil}
 
+    /// @required
     var sdp: String {
       get {return _sdp ?? String()}
       set {_sdp = newValue}
@@ -784,7 +789,6 @@ struct SignalServiceProtos_DataMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      /// @required
       var value: String {
         get {return _value ?? String()}
         set {_value = newValue}
@@ -858,7 +862,6 @@ struct SignalServiceProtos_DataMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      /// @required
       var value: String {
         get {return _value ?? String()}
         set {_value = newValue}

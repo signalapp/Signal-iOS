@@ -11,7 +11,6 @@
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSGroupModel.h"
@@ -20,6 +19,7 @@
 #import "TSMessage.h"
 #import "TSNetworkManager.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -56,7 +56,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     return self;
 }
 
-- (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
+- (instancetype)initWithAttachmentProtos:(NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
                           networkManager:(TSNetworkManager *)networkManager
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -70,7 +70,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
-    for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
+    for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
         TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto];
 
         [attachmentIds addObject:pointer.uniqueId];

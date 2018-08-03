@@ -17,8 +17,8 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
 extern const NSUInteger kIdentityKeyLength;
 
 @class OWSRecipientIdentity;
-@class OWSSignalServiceProtosVerified;
 @class OWSStorage;
+@class SSKProtoVerified;
 @class YapDatabaseReadWriteTransaction;
 
 // This class can be safely accessed and used from any thread.
@@ -60,7 +60,7 @@ extern const NSUInteger kIdentityKeyLength;
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
 // This method can be called from any thread.
-- (void)processIncomingSyncMessage:(OWSSignalServiceProtosVerified *)verified
+- (void)processIncomingSyncMessage:(SSKProtoVerified *)verified
                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;

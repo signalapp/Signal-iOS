@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSCallAnswerMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,14 +22,20 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosCallMessageAnswer *)asProtobuf
+- (nullable SSKProtoCallMessageAnswer *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageAnswerBuilder *builder = [OWSSignalServiceProtosCallMessageAnswerBuilder new];
+    SSKProtoCallMessageAnswerBuilder *builder = [SSKProtoCallMessageAnswerBuilder new];
 
     builder.id = self.callId;
     builder.sessionDescription = self.sessionDescription;
-
-    return [builder build];
+    
+    NSError *error;
+    SSKProtoCallMessageAnswer *_Nullable result = [builder buildAndReturnError:&error];
+    if (error || !result) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return result;
 }
 
 @end

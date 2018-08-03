@@ -4,7 +4,7 @@
 
 #import "OWSSyncGroupsRequestMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,15 +57,22 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-    [groupContextBuilder setType:OWSSignalServiceProtosGroupContextTypeRequestInfo];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
+    [groupContextBuilder setType:SSKProtoGroupContextTypeRequestInfo];
     [groupContextBuilder setId:self.groupId];
 
-    OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
+    NSError *error;
+    SSKProtoGroupContext *_Nullable groupContextProto = [groupContextBuilder buildAndReturnError:&error];
+    if (error || !groupContextProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
-    [builder setGroupBuilder:groupContextBuilder];
+    [builder setGroup:groupContextProto];
 
     return builder;
 }

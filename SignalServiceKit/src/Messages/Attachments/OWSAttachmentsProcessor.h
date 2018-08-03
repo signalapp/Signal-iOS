@@ -9,7 +9,7 @@ extern NSString *const kAttachmentDownloadProgressKey;
 extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 @class OWSPrimaryStorage;
-@class OWSSignalServiceProtosAttachmentPointer;
+@class SSKProtoAttachmentPointer;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
@@ -29,7 +29,7 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
+- (instancetype)initWithAttachmentProtos:(NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
                           networkManager:(TSNetworkManager *)networkManager
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 

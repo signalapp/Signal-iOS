@@ -3,7 +3,7 @@
 //
 
 #import "OWSBlockedPhoneNumbersMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,14 +32,19 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    OWSSignalServiceProtosSyncMessageBlockedBuilder *blockedPhoneNumbersBuilder =
-        [OWSSignalServiceProtosSyncMessageBlockedBuilder new];
-    [blockedPhoneNumbersBuilder setNumbersArray:_phoneNumbers];
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    [syncMessageBuilder setBlocked:[blockedPhoneNumbersBuilder build]];
+    SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlockedBuilder new];
+    [blockedBuilder setNumbers:_phoneNumbers];
+    NSError *error;
+    SSKProtoSyncMessageBlocked *_Nullable blockedProto = [blockedBuilder buildAndReturnError:&error];
+    if (error || !blockedProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
 
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    [syncMessageBuilder setBlocked:blockedProto];
     return syncMessageBuilder;
 }
 

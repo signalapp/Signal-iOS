@@ -5,7 +5,7 @@
 #import "OWSVerificationStateSyncMessage.h"
 #import "Cryptography.h"
 #import "OWSIdentityManager.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     OWSAssert(self.identityKey.length == kIdentityKeyLength);
     OWSAssert(self.verificationForRecipientId.length > 0);
@@ -63,24 +63,22 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-
-    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
-    verifiedBuilder.destination = self.verificationForRecipientId;
-    verifiedBuilder.identityKey = self.identityKey;
-    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
-
-    OWSAssert(self.paddingBytesLength != 0);
-
     // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
     // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
     // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
     // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
     // verification sync which is ~1-512 bytes larger then that.
-    verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:self.paddingBytesLength];
-    
-    syncMessageBuilder.verifiedBuilder = verifiedBuilder;
-    
+    OWSAssert(self.paddingBytesLength != 0);
+
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
+        self.verificationForRecipientId, self.identityKey, self.verificationState, self.paddingBytesLength);
+    if (!verifiedProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
+
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    [syncMessageBuilder setVerified:verifiedProto];
     return syncMessageBuilder;
 }
 
@@ -93,12 +91,19 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
-    verifiedBuilder.destination = self.verificationForRecipientId;
-    verifiedBuilder.identityKey = self.identityKey;
-    verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
-
-    return [verifiedBuilder build].data.length;
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
+        self.verificationForRecipientId, self.identityKey, self.verificationState, 0);
+    if (!verifiedProto) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return 0;
+    }
+    NSError *error;
+    NSData *_Nullable verifiedData = [verifiedProto serializedDataAndReturnError:&error];
+    if (error || !verifiedData) {
+        OWSFail(@"%@ could not serialize protobuf.", self.logTag);
+        return 0;
+    }
+    return verifiedData.length;
 }
 
 @end

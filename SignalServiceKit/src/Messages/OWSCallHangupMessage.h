@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingCallMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosCallMessageHangup;
+@class SSKProtoCallMessageHangup;
 
 /**
  * Sent by either party in a call to indicate the user intentionally ended the call.
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UInt64 callId;
 
-- (OWSSignalServiceProtosCallMessageHangup *)asProtobuf;
+- (nullable SSKProtoCallMessageHangup *)asProtobuf;
 
 @end
 

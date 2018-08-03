@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -7,23 +7,23 @@ import SignalServiceKit
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
-    public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from callerId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
 
-    public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
+    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from callerId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
 
-    public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
+    public func receivedIceUpdate(_ iceUpdate: SSKProtoCallMessageIceUpdate, from callerId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
 
-    public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
+    public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from callerId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
 
-    public func receivedBusy(_ busy: OWSSignalServiceProtosCallMessageBusy, from callerId: String) {
+    public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from callerId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
 }

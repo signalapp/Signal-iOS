@@ -3,7 +3,6 @@
 //
 
 #import "OWSMessageHandler.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -57,7 +56,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
  * We don't want to just log `content.description` because we'd potentially log message bodies for dataMesssages and
  * sync transcripts
  */
-- (NSString *)descriptionForContent:(OWSSignalServiceProtosContent *)content
+- (NSString *)descriptionForContent:(SSKProtoContent *)content
 {
     if (content.hasSyncMessage) {
         return [NSString stringWithFormat:@"<SyncMessage: %@ />", [self descriptionForSyncMessage:content.syncMessage]];
@@ -78,7 +77,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     }
 }
 
-- (NSString *)descriptionForCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
+- (NSString *)descriptionForCallMessage:(SSKProtoCallMessage *)callMessage
 {
     NSString *messageType;
     UInt64 callId;
@@ -110,7 +109,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 /**
  * We don't want to just log `dataMessage.description` because we'd potentially log message contents
  */
-- (NSString *)descriptionForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+- (NSString *)descriptionForDataMessage:(SSKProtoDataMessage *)dataMessage
 {
     NSMutableString *description = [NSMutableString new];
 
@@ -118,11 +117,11 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         [description appendString:@"(Group:YES) "];
     }
 
-    if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0) {
+    if ((dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0) {
         [description appendString:@"EndSession"];
-    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0) {
+    } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
         [description appendString:@"ExpirationTimerUpdate"];
-    } else if ((dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsProfileKeyUpdate) != 0) {
+    } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         [description appendString:@"ProfileKey"];
     } else if (dataMessage.attachments.count > 0) {
         [description appendString:@"MessageWithAttachment"];
@@ -136,19 +135,19 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 /**
  * We don't want to just log `syncMessage.description` because we'd potentially log message contents in sent transcripts
  */
-- (NSString *)descriptionForSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage
+- (NSString *)descriptionForSyncMessage:(SSKProtoSyncMessage *)syncMessage
 {
     NSMutableString *description = [NSMutableString new];
     if (syncMessage.hasSent) {
         [description appendString:@"SentTranscript"];
     } else if (syncMessage.hasRequest) {
-        if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
+        if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
             [description appendString:@"ContactRequest"];
-        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
+        } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
             [description appendString:@"GroupRequest"];
-        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
+        } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             [description appendString:@"BlockedRequest"];
-        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeConfiguration) {
+        } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             [description appendString:@"ConfigurationRequest"];
         } else {
             // Shouldn't happen

@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosCallMessageIceUpdate;
+@class SSKProtoCallMessageIceUpdate;
 
 /**
  * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SInt32 sdpMLineIndex;
 @property (nullable, nonatomic, readonly, copy) NSString *sdpMid;
 
-- (OWSSignalServiceProtosCallMessageIceUpdate *)asProtobuf;
+- (nullable SSKProtoCallMessageIceUpdate *)asProtobuf;
 
 @end
 

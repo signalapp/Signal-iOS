@@ -5,9 +5,9 @@
 #import "OWSOutgoingNullMessage.h"
 #import "Cryptography.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSContactThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,10 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
+    SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessageBuilder new];
 
     NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
 
@@ -64,10 +63,23 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contentLength > 0);
 
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
-    
-    contentBuilder.nullMessage = [nullMessageBuilder build];
 
-    return [contentBuilder build].data;
+    NSError *error;
+    SSKProtoNullMessage *_Nullable nullMessage = [nullMessageBuilder buildAndReturnError:&error];
+    if (error || !nullMessage) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    contentBuilder.nullMessage = nullMessage;
+
+    NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
+    if (error || !contentData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return contentData;
 }
 
 - (BOOL)shouldSyncTranscript

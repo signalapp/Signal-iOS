@@ -3,10 +3,10 @@
 //
 
 #import "OWSProfileKeyMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "ProfileManagerProtocol.h"
-#import "ProtoBuf+OWS.h"
+#import "ProtoUtils.h"
 #import "TextSecureKitEnv.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,14 +41,18 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
-    
-    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+
+    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
+    if (!builder) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
     [builder setTimestamp:self.timestamp];
-    [builder addLocalProfileKey];
-    [builder setFlags:OWSSignalServiceProtosDataMessageFlagsProfileKeyUpdate];
+    [ProtoUtils addLocalProfileKeyToDataMessageBuilder:builder];
+    [builder setFlags:SSKProtoDataMessageFlagsProfileKeyUpdate];
     
     if (recipientId.length > 0) {
         // Once we've shared our profile key with a user (perhaps due to being
@@ -57,7 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
         [profileManager addUserToProfileWhitelist:recipientId];
     }
 
-    return [builder build];
+    NSError *error;
+    SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
+    if (error || !dataProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return dataProto;
 }
 
 @end

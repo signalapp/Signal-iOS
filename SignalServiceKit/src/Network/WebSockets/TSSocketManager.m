@@ -15,7 +15,6 @@
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalService.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"

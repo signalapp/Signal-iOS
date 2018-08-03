@@ -11,10 +11,10 @@
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "SignalAccount.h"
 #import "TSContactThread.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +31,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssert(signalAccount.contact);
     OWSAssert(contactsManager);
 
-    OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
+    SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
 #ifdef CONVERSATION_COLORS_ENABLED
@@ -39,11 +39,15 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
 #endif
 
     if (recipientIdentity != nil) {
-        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
-        verifiedBuilder.destination = recipientIdentity.recipientId;
-        verifiedBuilder.identityKey = [recipientIdentity.identityKey prependKeyType];
-        verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
-        contactBuilder.verifiedBuilder = verifiedBuilder;
+        SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithRecipientId(recipientIdentity.recipientId,
+            [recipientIdentity.identityKey prependKeyType],
+            recipientIdentity.verificationState,
+            0);
+        if (!verified) {
+            DDLogError(@"%@ could not build protobuf.", self.logTag);
+            return;
+        }
+        contactBuilder.verified = verified;
     }
 
     UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
@@ -51,12 +55,18 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     if (rawAvatar) {
         avatarPng = UIImagePNGRepresentation(rawAvatar);
         if (avatarPng) {
-            OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
-                [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
-
+            SSKProtoContactDetailsAvatarBuilder *avatarBuilder =
+                [SSKProtoContactDetailsAvatarBuilder new];
             [avatarBuilder setContentType:OWSMimeTypeImagePng];
             [avatarBuilder setLength:(uint32_t)avatarPng.length];
-            [contactBuilder setAvatarBuilder:avatarBuilder];
+
+            NSError *error;
+            SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
+            if (error || !avatar) {
+                DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+                return;
+            }
+            [contactBuilder setAvatar:avatar];
         }
     }
 
@@ -78,7 +88,12 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         [contactBuilder setBlocked:YES];
     }
 
-    NSData *contactData = [[contactBuilder build] data];
+    NSError *error;
+    NSData *_Nullable contactData = [contactBuilder buildSerializedDataAndReturnError:&error];
+    if (error || !contactData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return;
+    }
 
     uint32_t contactDataLength = (uint32_t)contactData.length;
     [self.delegateStream writeRawVarint32:contactDataLength];

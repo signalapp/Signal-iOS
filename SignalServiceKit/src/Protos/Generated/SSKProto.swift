@@ -8,6 +8,7 @@ import Foundation
 
 public enum SSKProtoError: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 
 // MARK: - SSKProtoEnvelope
@@ -80,17 +81,32 @@ public enum SSKProtoError: Error {
             proto.content = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoEnvelope? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoEnvelope {
-            let wrapper = try SSKProtoEnvelope.parseProto(proto)
-            return wrapper
+            return try SSKProtoEnvelope.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoEnvelope.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_Envelope
 
     @objc public let type: SSKProtoEnvelopeType
+
     @objc public let source: String
+
     @objc public let sourceDevice: UInt32
+
     @objc public let timestamp: UInt64
 
     @objc public var relay: String? {
@@ -133,6 +149,15 @@ public enum SSKProtoError: Error {
         self.source = source
         self.sourceDevice = sourceDevice
         self.timestamp = timestamp
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -211,19 +236,50 @@ public enum SSKProtoError: Error {
             proto.receiptMessage = valueParam.proto
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoContent? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoContent {
-            let wrapper = try SSKProtoContent.parseProto(proto)
-            return wrapper
+            return try SSKProtoContent.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoContent.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_Content
 
     @objc public let dataMessage: SSKProtoDataMessage?
+    @objc public var hasDataMessage: Bool {
+        return proto.hasDataMessage
+    }
+
     @objc public let syncMessage: SSKProtoSyncMessage?
+    @objc public var hasSyncMessage: Bool {
+        return proto.hasSyncMessage
+    }
+
     @objc public let callMessage: SSKProtoCallMessage?
+    @objc public var hasCallMessage: Bool {
+        return proto.hasCallMessage
+    }
+
     @objc public let nullMessage: SSKProtoNullMessage?
+    @objc public var hasNullMessage: Bool {
+        return proto.hasNullMessage
+    }
+
     @objc public let receiptMessage: SSKProtoReceiptMessage?
+    @objc public var hasReceiptMessage: Bool {
+        return proto.hasReceiptMessage
+    }
 
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
@@ -237,6 +293,15 @@ public enum SSKProtoError: Error {
         self.callMessage = callMessage
         self.nullMessage = nullMessage
         self.receiptMessage = receiptMessage
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -309,9 +374,21 @@ public enum SSKProtoError: Error {
             proto.sessionDescription = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageOffer? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoCallMessageOffer {
-            let wrapper = try SSKProtoCallMessageOffer.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageOffer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageOffer.parseProto(proto).serializedData()
         }
     }
 
@@ -319,20 +396,23 @@ public enum SSKProtoError: Error {
 
     @objc public let id: UInt64
 
-    @objc public var sessionDescription: String? {
-        guard proto.hasSessionDescription else {
-            return nil
-        }
-        return proto.sessionDescription
-    }
-    @objc public var hasSessionDescription: Bool {
-        return proto.hasSessionDescription
-    }
+    @objc public let sessionDescription: String
 
     private init(proto: SignalServiceProtos_CallMessage.Offer,
-                 id: UInt64) {
+                 id: UInt64,
+                 sessionDescription: String) {
         self.proto = proto
         self.id = id
+        self.sessionDescription = sessionDescription
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -351,12 +431,18 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
+        guard proto.hasSessionDescription else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sessionDescription")
+        }
+        let sessionDescription = proto.sessionDescription
+
         // MARK: - Begin Validation Logic for SSKProtoCallMessageOffer -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageOffer -
 
         let result = SSKProtoCallMessageOffer(proto: proto,
-                                              id: id)
+                                              id: id,
+                                              sessionDescription: sessionDescription)
         return result
     }
 }
@@ -381,9 +467,21 @@ public enum SSKProtoError: Error {
             proto.sessionDescription = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageAnswer? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoCallMessageAnswer {
-            let wrapper = try SSKProtoCallMessageAnswer.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageAnswer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageAnswer.parseProto(proto).serializedData()
         }
     }
 
@@ -391,20 +489,23 @@ public enum SSKProtoError: Error {
 
     @objc public let id: UInt64
 
-    @objc public var sessionDescription: String? {
-        guard proto.hasSessionDescription else {
-            return nil
-        }
-        return proto.sessionDescription
-    }
-    @objc public var hasSessionDescription: Bool {
-        return proto.hasSessionDescription
-    }
+    @objc public let sessionDescription: String
 
     private init(proto: SignalServiceProtos_CallMessage.Answer,
-                 id: UInt64) {
+                 id: UInt64,
+                 sessionDescription: String) {
         self.proto = proto
         self.id = id
+        self.sessionDescription = sessionDescription
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -423,12 +524,18 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
+        guard proto.hasSessionDescription else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sessionDescription")
+        }
+        let sessionDescription = proto.sessionDescription
+
         // MARK: - Begin Validation Logic for SSKProtoCallMessageAnswer -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageAnswer -
 
         let result = SSKProtoCallMessageAnswer(proto: proto,
-                                               id: id)
+                                               id: id,
+                                               sessionDescription: sessionDescription)
         return result
     }
 }
@@ -461,9 +568,21 @@ public enum SSKProtoError: Error {
             proto.sdp = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageIceUpdate? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoCallMessageIceUpdate {
-            let wrapper = try SSKProtoCallMessageIceUpdate.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageIceUpdate.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageIceUpdate.parseProto(proto).serializedData()
         }
     }
 
@@ -471,37 +590,31 @@ public enum SSKProtoError: Error {
 
     @objc public let id: UInt64
 
-    @objc public var sdpMid: String? {
-        guard proto.hasSdpMid else {
-            return nil
-        }
-        return proto.sdpMid
-    }
-    @objc public var hasSdpMid: Bool {
-        return proto.hasSdpMid
-    }
+    @objc public let sdpMid: String
 
-    @objc public var sdpMlineIndex: UInt32 {
-        return proto.sdpMlineIndex
-    }
-    @objc public var hasSdpMlineIndex: Bool {
-        return proto.hasSdpMlineIndex
-    }
+    @objc public let sdpMlineIndex: UInt32
 
-    @objc public var sdp: String? {
-        guard proto.hasSdp else {
-            return nil
-        }
-        return proto.sdp
-    }
-    @objc public var hasSdp: Bool {
-        return proto.hasSdp
-    }
+    @objc public let sdp: String
 
     private init(proto: SignalServiceProtos_CallMessage.IceUpdate,
-                 id: UInt64) {
+                 id: UInt64,
+                 sdpMid: String,
+                 sdpMlineIndex: UInt32,
+                 sdp: String) {
         self.proto = proto
         self.id = id
+        self.sdpMid = sdpMid
+        self.sdpMlineIndex = sdpMlineIndex
+        self.sdp = sdp
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -520,12 +633,30 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
+        guard proto.hasSdpMid else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdpMid")
+        }
+        let sdpMid = proto.sdpMid
+
+        guard proto.hasSdpMlineIndex else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdpMlineIndex")
+        }
+        let sdpMlineIndex = proto.sdpMlineIndex
+
+        guard proto.hasSdp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
+        }
+        let sdp = proto.sdp
+
         // MARK: - Begin Validation Logic for SSKProtoCallMessageIceUpdate -
 
         // MARK: - End Validation Logic for SSKProtoCallMessageIceUpdate -
 
         let result = SSKProtoCallMessageIceUpdate(proto: proto,
-                                                  id: id)
+                                                  id: id,
+                                                  sdpMid: sdpMid,
+                                                  sdpMlineIndex: sdpMlineIndex,
+                                                  sdp: sdp)
         return result
     }
 }
@@ -546,9 +677,21 @@ public enum SSKProtoError: Error {
             proto.id = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageBusy? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoCallMessageBusy {
-            let wrapper = try SSKProtoCallMessageBusy.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageBusy.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageBusy.parseProto(proto).serializedData()
         }
     }
 
@@ -560,6 +703,15 @@ public enum SSKProtoError: Error {
                  id: UInt64) {
         self.proto = proto
         self.id = id
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -604,9 +756,21 @@ public enum SSKProtoError: Error {
             proto.id = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessageHangup? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoCallMessageHangup {
-            let wrapper = try SSKProtoCallMessageHangup.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessageHangup.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessageHangup.parseProto(proto).serializedData()
         }
     }
 
@@ -618,6 +782,15 @@ public enum SSKProtoError: Error {
                  id: UInt64) {
         self.proto = proto
         self.id = id
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -672,6 +845,10 @@ public enum SSKProtoError: Error {
             proto.iceUpdate = items
         }
 
+        @objc public func setIceUpdate(_ wrappedItems: [SSKProtoCallMessageIceUpdate]) {
+            proto.iceUpdate = wrappedItems.map { $0.proto }
+        }
+
         @objc public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
             proto.hangup = valueParam.proto
         }
@@ -684,19 +861,47 @@ public enum SSKProtoError: Error {
             proto.profileKey = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoCallMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoCallMessage {
-            let wrapper = try SSKProtoCallMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoCallMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoCallMessage.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_CallMessage
 
     @objc public let offer: SSKProtoCallMessageOffer?
+    @objc public var hasOffer: Bool {
+        return proto.hasOffer
+    }
+
     @objc public let answer: SSKProtoCallMessageAnswer?
+    @objc public var hasAnswer: Bool {
+        return proto.hasAnswer
+    }
+
     @objc public let iceUpdate: [SSKProtoCallMessageIceUpdate]
+
     @objc public let hangup: SSKProtoCallMessageHangup?
+    @objc public var hasHangup: Bool {
+        return proto.hasHangup
+    }
+
     @objc public let busy: SSKProtoCallMessageBusy?
+    @objc public var hasBusy: Bool {
+        return proto.hasBusy
+    }
 
     @objc public var profileKey: Data? {
         guard proto.hasProfileKey else {
@@ -722,6 +927,15 @@ public enum SSKProtoError: Error {
         self.busy = busy
     }
 
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
+    }
+
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -744,10 +958,7 @@ public enum SSKProtoError: Error {
         }
 
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
-        for item in proto.iceUpdate {
-            let wrapped = try SSKProtoCallMessageIceUpdate.parseProto(item)
-            iceUpdate.append(wrapped)
-        }
+        iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
         var hangup: SSKProtoCallMessageHangup? = nil
         if proto.hasHangup {
@@ -819,15 +1030,30 @@ public enum SSKProtoError: Error {
             proto.flags = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageQuoteQuotedAttachment? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-            let wrapper = try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment
 
     @objc public let thumbnail: SSKProtoAttachmentPointer?
+    @objc public var hasThumbnail: Bool {
+        return proto.hasThumbnail
+    }
 
     @objc public var contentType: String? {
         guard proto.hasContentType else {
@@ -860,6 +1086,15 @@ public enum SSKProtoError: Error {
                  thumbnail: SSKProtoAttachmentPointer?) {
         self.proto = proto
         self.thumbnail = thumbnail
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -918,16 +1153,34 @@ public enum SSKProtoError: Error {
             proto.attachments = items
         }
 
+        @objc public func setAttachments(_ wrappedItems: [SSKProtoDataMessageQuoteQuotedAttachment]) {
+            proto.attachments = wrappedItems.map { $0.proto }
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageQuote? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageQuote {
-            let wrapper = try SSKProtoDataMessageQuote.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageQuote.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageQuote.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Quote
 
     @objc public let id: UInt64
+
     @objc public let author: String
+
     @objc public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
 
     @objc public var text: String? {
@@ -948,6 +1201,15 @@ public enum SSKProtoError: Error {
         self.id = id
         self.author = author
         self.attachments = attachments
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -972,10 +1234,7 @@ public enum SSKProtoError: Error {
         let author = proto.author
 
         var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
-        for item in proto.attachments {
-            let wrapped = try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(item)
-            attachments.append(wrapped)
-        }
+        attachments = try proto.attachments.map { try SSKProtoDataMessageQuoteQuotedAttachment.parseProto($0) }
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessageQuote -
 
@@ -1025,9 +1284,21 @@ public enum SSKProtoError: Error {
             proto.displayName = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactName? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageContactName {
-            let wrapper = try SSKProtoDataMessageContactName.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactName.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactName.parseProto(proto).serializedData()
         }
     }
 
@@ -1095,6 +1366,15 @@ public enum SSKProtoError: Error {
 
     private init(proto: SignalServiceProtos_DataMessage.Contact.Name) {
         self.proto = proto
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -1168,15 +1448,35 @@ public enum SSKProtoError: Error {
             proto.label = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactPhone? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageContactPhone {
-            let wrapper = try SSKProtoDataMessageContactPhone.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactPhone.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactPhone.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Phone
 
-    @objc public let value: String
+    @objc public var value: String? {
+        guard proto.hasValue else {
+            return nil
+        }
+        return proto.value
+    }
+    @objc public var hasValue: Bool {
+        return proto.hasValue
+    }
 
     @objc public var type: SSKProtoDataMessageContactPhoneType {
         return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
@@ -1195,10 +1495,17 @@ public enum SSKProtoError: Error {
         return proto.hasLabel
     }
 
-    private init(proto: SignalServiceProtos_DataMessage.Contact.Phone,
-                 value: String) {
+    private init(proto: SignalServiceProtos_DataMessage.Contact.Phone) {
         self.proto = proto
-        self.value = value
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -1212,17 +1519,11 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Phone) throws -> SSKProtoDataMessageContactPhone {
-        guard proto.hasValue else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: value")
-        }
-        let value = proto.value
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactPhone -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactPhone -
 
-        let result = SSKProtoDataMessageContactPhone(proto: proto,
-                                                     value: value)
+        let result = SSKProtoDataMessageContactPhone(proto: proto)
         return result
     }
 }
@@ -1278,15 +1579,35 @@ public enum SSKProtoError: Error {
             proto.label = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactEmail? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageContactEmail {
-            let wrapper = try SSKProtoDataMessageContactEmail.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactEmail.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactEmail.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Email
 
-    @objc public let value: String
+    @objc public var value: String? {
+        guard proto.hasValue else {
+            return nil
+        }
+        return proto.value
+    }
+    @objc public var hasValue: Bool {
+        return proto.hasValue
+    }
 
     @objc public var type: SSKProtoDataMessageContactEmailType {
         return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
@@ -1305,10 +1626,17 @@ public enum SSKProtoError: Error {
         return proto.hasLabel
     }
 
-    private init(proto: SignalServiceProtos_DataMessage.Contact.Email,
-                 value: String) {
+    private init(proto: SignalServiceProtos_DataMessage.Contact.Email) {
         self.proto = proto
-        self.value = value
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -1322,17 +1650,11 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Email) throws -> SSKProtoDataMessageContactEmail {
-        guard proto.hasValue else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: value")
-        }
-        let value = proto.value
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessageContactEmail -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageContactEmail -
 
-        let result = SSKProtoDataMessageContactEmail(proto: proto,
-                                                     value: value)
+        let result = SSKProtoDataMessageContactEmail(proto: proto)
         return result
     }
 }
@@ -1409,9 +1731,21 @@ public enum SSKProtoError: Error {
             proto.country = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactPostalAddress? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageContactPostalAddress {
-            let wrapper = try SSKProtoDataMessageContactPostalAddress.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactPostalAddress.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactPostalAddress.parseProto(proto).serializedData()
         }
     }
 
@@ -1508,6 +1842,15 @@ public enum SSKProtoError: Error {
         self.proto = proto
     }
 
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
+    }
+
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -1548,15 +1891,30 @@ public enum SSKProtoError: Error {
             proto.isProfile = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContactAvatar? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageContactAvatar {
-            let wrapper = try SSKProtoDataMessageContactAvatar.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContactAvatar.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContactAvatar.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Avatar
 
     @objc public let avatar: SSKProtoAttachmentPointer?
+    @objc public var hasAvatar: Bool {
+        return proto.hasAvatar
+    }
 
     @objc public var isProfile: Bool {
         return proto.isProfile
@@ -1569,6 +1927,15 @@ public enum SSKProtoError: Error {
                  avatar: SSKProtoAttachmentPointer?) {
         self.proto = proto
         self.avatar = avatar
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -1619,16 +1986,28 @@ public enum SSKProtoError: Error {
             proto.number = items
         }
 
+        @objc public func setNumber(_ wrappedItems: [SSKProtoDataMessageContactPhone]) {
+            proto.number = wrappedItems.map { $0.proto }
+        }
+
         @objc public func addEmail(_ valueParam: SSKProtoDataMessageContactEmail) {
             var items = proto.email
             items.append(valueParam.proto)
             proto.email = items
         }
 
+        @objc public func setEmail(_ wrappedItems: [SSKProtoDataMessageContactEmail]) {
+            proto.email = wrappedItems.map { $0.proto }
+        }
+
         @objc public func addAddress(_ valueParam: SSKProtoDataMessageContactPostalAddress) {
             var items = proto.address
             items.append(valueParam.proto)
             proto.address = items
+        }
+
+        @objc public func setAddress(_ wrappedItems: [SSKProtoDataMessageContactPostalAddress]) {
+            proto.address = wrappedItems.map { $0.proto }
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoDataMessageContactAvatar) {
@@ -1639,19 +2018,41 @@ public enum SSKProtoError: Error {
             proto.organization = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessageContact? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessageContact {
-            let wrapper = try SSKProtoDataMessageContact.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessageContact.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageContact.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact
 
     @objc public let name: SSKProtoDataMessageContactName?
+    @objc public var hasName: Bool {
+        return proto.hasName
+    }
+
     @objc public let number: [SSKProtoDataMessageContactPhone]
+
     @objc public let email: [SSKProtoDataMessageContactEmail]
+
     @objc public let address: [SSKProtoDataMessageContactPostalAddress]
+
     @objc public let avatar: SSKProtoDataMessageContactAvatar?
+    @objc public var hasAvatar: Bool {
+        return proto.hasAvatar
+    }
 
     @objc public var organization: String? {
         guard proto.hasOrganization else {
@@ -1677,6 +2078,15 @@ public enum SSKProtoError: Error {
         self.avatar = avatar
     }
 
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
+    }
+
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -1694,22 +2104,13 @@ public enum SSKProtoError: Error {
         }
 
         var number: [SSKProtoDataMessageContactPhone] = []
-        for item in proto.number {
-            let wrapped = try SSKProtoDataMessageContactPhone.parseProto(item)
-            number.append(wrapped)
-        }
+        number = try proto.number.map { try SSKProtoDataMessageContactPhone.parseProto($0) }
 
         var email: [SSKProtoDataMessageContactEmail] = []
-        for item in proto.email {
-            let wrapped = try SSKProtoDataMessageContactEmail.parseProto(item)
-            email.append(wrapped)
-        }
+        email = try proto.email.map { try SSKProtoDataMessageContactEmail.parseProto($0) }
 
         var address: [SSKProtoDataMessageContactPostalAddress] = []
-        for item in proto.address {
-            let wrapped = try SSKProtoDataMessageContactPostalAddress.parseProto(item)
-            address.append(wrapped)
-        }
+        address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
         var avatar: SSKProtoDataMessageContactAvatar? = nil
         if proto.hasAvatar {
@@ -1776,6 +2177,10 @@ public enum SSKProtoError: Error {
             proto.attachments = items
         }
 
+        @objc public func setAttachments(_ wrappedItems: [SSKProtoAttachmentPointer]) {
+            proto.attachments = wrappedItems.map { $0.proto }
+        }
+
         @objc public func setGroup(_ valueParam: SSKProtoGroupContext) {
             proto.group = valueParam.proto
         }
@@ -1806,17 +2211,42 @@ public enum SSKProtoError: Error {
             proto.contact = items
         }
 
+        @objc public func setContact(_ wrappedItems: [SSKProtoDataMessageContact]) {
+            proto.contact = wrappedItems.map { $0.proto }
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoDataMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
-            let wrapper = try SSKProtoDataMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoDataMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessage.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage
 
     @objc public let attachments: [SSKProtoAttachmentPointer]
+
     @objc public let group: SSKProtoGroupContext?
+    @objc public var hasGroup: Bool {
+        return proto.hasGroup
+    }
+
     @objc public let quote: SSKProtoDataMessageQuote?
+    @objc public var hasQuote: Bool {
+        return proto.hasQuote
+    }
+
     @objc public let contact: [SSKProtoDataMessageContact]
 
     @objc public var body: String? {
@@ -1872,6 +2302,15 @@ public enum SSKProtoError: Error {
         self.contact = contact
     }
 
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
+    }
+
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -1884,10 +2323,7 @@ public enum SSKProtoError: Error {
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage) throws -> SSKProtoDataMessage {
         var attachments: [SSKProtoAttachmentPointer] = []
-        for item in proto.attachments {
-            let wrapped = try SSKProtoAttachmentPointer.parseProto(item)
-            attachments.append(wrapped)
-        }
+        attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
         var group: SSKProtoGroupContext? = nil
         if proto.hasGroup {
@@ -1900,10 +2336,7 @@ public enum SSKProtoError: Error {
         }
 
         var contact: [SSKProtoDataMessageContact] = []
-        for item in proto.contact {
-            let wrapped = try SSKProtoDataMessageContact.parseProto(item)
-            contact.append(wrapped)
-        }
+        contact = try proto.contact.map { try SSKProtoDataMessageContact.parseProto($0) }
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
@@ -1934,9 +2367,21 @@ public enum SSKProtoError: Error {
             proto.padding = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoNullMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoNullMessage {
-            let wrapper = try SSKProtoNullMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoNullMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoNullMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -1954,6 +2399,15 @@ public enum SSKProtoError: Error {
 
     private init(proto: SignalServiceProtos_NullMessage) {
         self.proto = proto
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2019,9 +2473,25 @@ public enum SSKProtoError: Error {
             proto.timestamp = items
         }
 
+        @objc public func setTimestamp(_ wrappedItems: [UInt64]) {
+            proto.timestamp = wrappedItems
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoReceiptMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoReceiptMessage {
-            let wrapper = try SSKProtoReceiptMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoReceiptMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoReceiptMessage.parseProto(proto).serializedData()
         }
     }
 
@@ -2037,6 +2507,15 @@ public enum SSKProtoError: Error {
                  type: SSKProtoReceiptMessageType) {
         self.proto = proto
         self.type = type
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2117,9 +2596,21 @@ public enum SSKProtoError: Error {
             proto.nullMessage = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoVerified? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoVerified {
-            let wrapper = try SSKProtoVerified.parseProto(proto)
-            return wrapper
+            return try SSKProtoVerified.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoVerified.parseProto(proto).serializedData()
         }
     }
 
@@ -2158,6 +2649,15 @@ public enum SSKProtoError: Error {
                  destination: String) {
         self.proto = proto
         self.destination = destination
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2214,15 +2714,30 @@ public enum SSKProtoError: Error {
             proto.expirationStartTimestamp = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageSent? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageSent {
-            let wrapper = try SSKProtoSyncMessageSent.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageSent.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageSent.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent
 
     @objc public let message: SSKProtoDataMessage?
+    @objc public var hasMessage: Bool {
+        return proto.hasMessage
+    }
 
     @objc public var destination: String? {
         guard proto.hasDestination else {
@@ -2252,6 +2767,15 @@ public enum SSKProtoError: Error {
                  message: SSKProtoDataMessage?) {
         self.proto = proto
         self.message = message
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2300,9 +2824,21 @@ public enum SSKProtoError: Error {
             proto.isComplete = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageContacts? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageContacts {
-            let wrapper = try SSKProtoSyncMessageContacts.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageContacts.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageContacts.parseProto(proto).serializedData()
         }
     }
 
@@ -2321,6 +2857,15 @@ public enum SSKProtoError: Error {
                  blob: SSKProtoAttachmentPointer) {
         self.proto = proto
         self.blob = blob
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2365,20 +2910,44 @@ public enum SSKProtoError: Error {
             proto.blob = valueParam.proto
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageGroups? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageGroups {
-            let wrapper = try SSKProtoSyncMessageGroups.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageGroups.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageGroups.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Groups
 
     @objc public let blob: SSKProtoAttachmentPointer?
+    @objc public var hasBlob: Bool {
+        return proto.hasBlob
+    }
 
     private init(proto: SignalServiceProtos_SyncMessage.Groups,
                  blob: SSKProtoAttachmentPointer?) {
         self.proto = proto
         self.blob = blob
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2425,9 +2994,25 @@ public enum SSKProtoError: Error {
             proto.numbers = items
         }
 
+        @objc public func setNumbers(_ wrappedItems: [String]) {
+            proto.numbers = wrappedItems
+        }
+
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageBlocked? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageBlocked {
-            let wrapper = try SSKProtoSyncMessageBlocked.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageBlocked.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageBlocked.parseProto(proto).serializedData()
         }
     }
 
@@ -2439,6 +3024,15 @@ public enum SSKProtoError: Error {
 
     private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
         self.proto = proto
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2507,9 +3101,21 @@ public enum SSKProtoError: Error {
             proto.type = SSKProtoSyncMessageRequestTypeUnwrap(valueParam)
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageRequest? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageRequest {
-            let wrapper = try SSKProtoSyncMessageRequest.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageRequest.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageRequest.parseProto(proto).serializedData()
         }
     }
 
@@ -2521,6 +3127,15 @@ public enum SSKProtoError: Error {
                  type: SSKProtoSyncMessageRequestType) {
         self.proto = proto
         self.type = type
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2569,15 +3184,28 @@ public enum SSKProtoError: Error {
             proto.timestamp = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageRead? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageRead {
-            let wrapper = try SSKProtoSyncMessageRead.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageRead.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageRead.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Read
 
     @objc public let sender: String
+
     @objc public let timestamp: UInt64
 
     private init(proto: SignalServiceProtos_SyncMessage.Read,
@@ -2586,6 +3214,15 @@ public enum SSKProtoError: Error {
         self.proto = proto
         self.sender = sender
         self.timestamp = timestamp
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2636,9 +3273,21 @@ public enum SSKProtoError: Error {
             proto.readReceipts = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageConfiguration? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageConfiguration {
-            let wrapper = try SSKProtoSyncMessageConfiguration.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessageConfiguration.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageConfiguration.parseProto(proto).serializedData()
         }
     }
 
@@ -2653,6 +3302,15 @@ public enum SSKProtoError: Error {
 
     private init(proto: SignalServiceProtos_SyncMessage.Configuration) {
         self.proto = proto
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2709,6 +3367,10 @@ public enum SSKProtoError: Error {
             proto.read = items
         }
 
+        @objc public func setRead(_ wrappedItems: [SSKProtoSyncMessageRead]) {
+            proto.read = wrappedItems.map { $0.proto }
+        }
+
         @objc public func setBlocked(_ valueParam: SSKProtoSyncMessageBlocked) {
             proto.blocked = valueParam.proto
         }
@@ -2725,22 +3387,62 @@ public enum SSKProtoError: Error {
             proto.padding = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoSyncMessage? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessage {
-            let wrapper = try SSKProtoSyncMessage.parseProto(proto)
-            return wrapper
+            return try SSKProtoSyncMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessage.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_SyncMessage
 
     @objc public let sent: SSKProtoSyncMessageSent?
+    @objc public var hasSent: Bool {
+        return proto.hasSent
+    }
+
     @objc public let contacts: SSKProtoSyncMessageContacts?
+    @objc public var hasContacts: Bool {
+        return proto.hasContacts
+    }
+
     @objc public let groups: SSKProtoSyncMessageGroups?
+    @objc public var hasGroups: Bool {
+        return proto.hasGroups
+    }
+
     @objc public let request: SSKProtoSyncMessageRequest?
+    @objc public var hasRequest: Bool {
+        return proto.hasRequest
+    }
+
     @objc public let read: [SSKProtoSyncMessageRead]
+
     @objc public let blocked: SSKProtoSyncMessageBlocked?
+    @objc public var hasBlocked: Bool {
+        return proto.hasBlocked
+    }
+
     @objc public let verified: SSKProtoVerified?
+    @objc public var hasVerified: Bool {
+        return proto.hasVerified
+    }
+
     @objc public let configuration: SSKProtoSyncMessageConfiguration?
+    @objc public var hasConfiguration: Bool {
+        return proto.hasConfiguration
+    }
 
     @objc public var padding: Data? {
         guard proto.hasPadding else {
@@ -2770,6 +3472,15 @@ public enum SSKProtoError: Error {
         self.blocked = blocked
         self.verified = verified
         self.configuration = configuration
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -2804,10 +3515,7 @@ public enum SSKProtoError: Error {
         }
 
         var read: [SSKProtoSyncMessageRead] = []
-        for item in proto.read {
-            let wrapped = try SSKProtoSyncMessageRead.parseProto(item)
-            read.append(wrapped)
-        }
+        read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
         var blocked: SSKProtoSyncMessageBlocked? = nil
         if proto.hasBlocked {
@@ -2911,9 +3619,21 @@ public enum SSKProtoError: Error {
             proto.height = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoAttachmentPointer? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoAttachmentPointer {
-            let wrapper = try SSKProtoAttachmentPointer.parseProto(proto)
-            return wrapper
+            return try SSKProtoAttachmentPointer.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoAttachmentPointer.parseProto(proto).serializedData()
         }
     }
 
@@ -3005,6 +3725,15 @@ public enum SSKProtoError: Error {
         self.id = id
     }
 
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
+    }
+
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -3091,21 +3820,42 @@ public enum SSKProtoError: Error {
             proto.members = items
         }
 
+        @objc public func setMembers(_ wrappedItems: [String]) {
+            proto.members = wrappedItems
+        }
+
         @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
             proto.avatar = valueParam.proto
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoGroupContext? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoGroupContext {
-            let wrapper = try SSKProtoGroupContext.parseProto(proto)
-            return wrapper
+            return try SSKProtoGroupContext.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupContext.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_GroupContext
 
     @objc public let id: Data
+
     @objc public let type: SSKProtoGroupContextType
+
     @objc public let avatar: SSKProtoAttachmentPointer?
+    @objc public var hasAvatar: Bool {
+        return proto.hasAvatar
+    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -3129,6 +3879,15 @@ public enum SSKProtoError: Error {
         self.id = id
         self.type = type
         self.avatar = avatar
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -3189,9 +3948,21 @@ public enum SSKProtoError: Error {
             proto.length = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoContactDetailsAvatar? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoContactDetailsAvatar {
-            let wrapper = try SSKProtoContactDetailsAvatar.parseProto(proto)
-            return wrapper
+            return try SSKProtoContactDetailsAvatar.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoContactDetailsAvatar.parseProto(proto).serializedData()
         }
     }
 
@@ -3216,6 +3987,15 @@ public enum SSKProtoError: Error {
 
     private init(proto: SignalServiceProtos_ContactDetails.Avatar) {
         self.proto = proto
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -3282,17 +4062,37 @@ public enum SSKProtoError: Error {
             proto.expireTimer = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoContactDetails? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoContactDetails {
-            let wrapper = try SSKProtoContactDetails.parseProto(proto)
-            return wrapper
+            return try SSKProtoContactDetails.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoContactDetails.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_ContactDetails
 
     @objc public let number: String
+
     @objc public let avatar: SSKProtoContactDetailsAvatar?
+    @objc public var hasAvatar: Bool {
+        return proto.hasAvatar
+    }
+
     @objc public let verified: SSKProtoVerified?
+    @objc public var hasVerified: Bool {
+        return proto.hasVerified
+    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -3346,6 +4146,15 @@ public enum SSKProtoError: Error {
         self.number = number
         self.avatar = avatar
         self.verified = verified
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -3406,9 +4215,21 @@ public enum SSKProtoError: Error {
             proto.length = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoGroupDetailsAvatar? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoGroupDetailsAvatar {
-            let wrapper = try SSKProtoGroupDetailsAvatar.parseProto(proto)
-            return wrapper
+            return try SSKProtoGroupDetailsAvatar.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupDetailsAvatar.parseProto(proto).serializedData()
         }
     }
 
@@ -3433,6 +4254,15 @@ public enum SSKProtoError: Error {
 
     private init(proto: SignalServiceProtos_GroupDetails.Avatar) {
         self.proto = proto
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -3481,6 +4311,10 @@ public enum SSKProtoError: Error {
             proto.members = items
         }
 
+        @objc public func setMembers(_ wrappedItems: [String]) {
+            proto.members = wrappedItems
+        }
+
         @objc public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {
             proto.avatar = valueParam.proto
         }
@@ -3497,16 +4331,32 @@ public enum SSKProtoError: Error {
             proto.color = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> SSKProtoGroupDetails? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> SSKProtoGroupDetails {
-            let wrapper = try SSKProtoGroupDetails.parseProto(proto)
-            return wrapper
+            return try SSKProtoGroupDetails.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupDetails.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: SignalServiceProtos_GroupDetails
 
     @objc public let id: Data
+
     @objc public let avatar: SSKProtoGroupDetailsAvatar?
+    @objc public var hasAvatar: Bool {
+        return proto.hasAvatar
+    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -3552,6 +4402,15 @@ public enum SSKProtoError: Error {
         self.proto = proto
         self.id = id
         self.avatar = avatar
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc

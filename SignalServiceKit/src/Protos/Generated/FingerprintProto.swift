@@ -8,6 +8,7 @@ import Foundation
 
 public enum FingerprintProtoError: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 
 // MARK: - FingerprintProtoLogicalFingerprint
@@ -26,9 +27,21 @@ public enum FingerprintProtoError: Error {
             proto.identityData = valueParam
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprint? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> FingerprintProtoLogicalFingerprint {
-            let wrapper = try FingerprintProtoLogicalFingerprint.parseProto(proto)
-            return wrapper
+            return try FingerprintProtoLogicalFingerprint.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try FingerprintProtoLogicalFingerprint.parseProto(proto).serializedData()
         }
     }
 
@@ -40,6 +53,15 @@ public enum FingerprintProtoError: Error {
                  identityData: Data) {
         self.proto = proto
         self.identityData = identityData
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc
@@ -92,16 +114,30 @@ public enum FingerprintProtoError: Error {
             proto.remoteFingerprint = valueParam.proto
         }
 
+        // NOTE: This method is intended for debugging purposes only.
+        @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprints? {
+            guard _isDebugAssertConfiguration() else {
+                return nil
+            }
+
+            return try! self.build()
+        }
+
         @objc public func build() throws -> FingerprintProtoLogicalFingerprints {
-            let wrapper = try FingerprintProtoLogicalFingerprints.parseProto(proto)
-            return wrapper
+            return try FingerprintProtoLogicalFingerprints.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try FingerprintProtoLogicalFingerprints.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: FingerprintProtos_LogicalFingerprints
 
     @objc public let version: UInt32
+
     @objc public let localFingerprint: FingerprintProtoLogicalFingerprint
+
     @objc public let remoteFingerprint: FingerprintProtoLogicalFingerprint
 
     private init(proto: FingerprintProtos_LogicalFingerprints,
@@ -112,6 +148,15 @@ public enum FingerprintProtoError: Error {
         self.version = version
         self.localFingerprint = localFingerprint
         self.remoteFingerprint = remoteFingerprint
+    }
+
+    // NOTE: This method is intended for debugging purposes only.
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        guard _isDebugAssertConfiguration() else {
+            return nil
+        }
+
+        return try! self.serializedData()
     }
 
     @objc

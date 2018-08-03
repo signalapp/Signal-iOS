@@ -5,8 +5,8 @@
 #import "OWSOutgoingSyncMessage.h"
 #import "Cryptography.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
-#import "ProtoBuf+OWS.h"
+#import "ProtoUtils.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,28 +48,51 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // This method should not be overridden, since we want to add random padding to *every* sync message
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (nullable SSKProtoSyncMessage *)buildSyncMessage
 {
-    OWSSignalServiceProtosSyncMessageBuilder *builder = [self syncMessageBuilder];
-    
+    SSKProtoSyncMessageBuilder *_Nullable builder = [self syncMessageBuilder];
+    if (!builder) {
+        return nil;
+    }
+
     // Add a random 1-512 bytes to obscure sync message type
     size_t paddingBytesLength = arc4random_uniform(512) + 1;
     builder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
 
-    return [builder build];
+    NSError *error;
+    SSKProtoSyncMessage *_Nullable proto = [builder buildAndReturnError:&error];
+    if (error || !proto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return proto;
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    OWSFail(@"Abstract method should be overridden in subclass.");
-    return [OWSSignalServiceProtosSyncMessageBuilder new];
+    OWS_ABSTRACT_METHOD();
+
+    return [SSKProtoSyncMessageBuilder new];
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setSyncMessage:[self buildSyncMessage]];
-    return [[contentBuilder build] data];
+    SSKProtoSyncMessage *_Nullable syncMessage = [self buildSyncMessage];
+    if (!syncMessage) {
+        return nil;
+    }
+
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    [contentBuilder setSyncMessage:syncMessage];
+
+    NSError *error;
+    NSData *_Nullable data = [contentBuilder buildSerializedDataAndReturnError:&error];
+    if (error || !data) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    return data;
 }
 
 @end

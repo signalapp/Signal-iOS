@@ -4,8 +4,8 @@
 
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "SignalRecipient.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,26 +54,45 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSAssert(recipient);
 
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setReceiptMessage:[self buildReceiptMessage:recipient.recipientId]];
-    return [[contentBuilder build] data];
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
+    if (!receiptMessage) {
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
+        return nil;
+    }
+
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    [contentBuilder setReceiptMessage:receiptMessage];
+
+    NSError *error;
+    NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
+    if (error || !contentData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return contentData;
 }
 
-- (OWSSignalServiceProtosReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
 {
-    OWSSignalServiceProtosReceiptMessageBuilder *builder = [OWSSignalServiceProtosReceiptMessageBuilder new];
+    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessageBuilder new];
 
-    [builder setType:OWSSignalServiceProtosReceiptMessageTypeRead];
+    [builder setType:SSKProtoReceiptMessageTypeRead];
     OWSAssert(self.messageTimestamps.count > 0);
     for (NSNumber *messageTimestamp in self.messageTimestamps) {
         [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];
     }
 
-    return [builder build];
+    NSError *error;
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
+    if (error || !receiptMessage) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return receiptMessage;
 }
 
 #pragma mark - TSYapDatabaseObject overrides

@@ -302,6 +302,7 @@ import Foundation
         writer.extend(('''
 public enum %s: Error {
     case invalidProtobuf(description: String)
+    case unsafeProtobuf(description: String)
 }
 ''' % writer.invalid_protobuf_error_name).strip())
         writer.newline()        
@@ -407,7 +408,14 @@ class MessageContext(BaseContext):
             for field in explict_fields:
                 type_name = field.type_swift_not_optional if field.is_required else field.type_swift
                 writer.add('@objc public let %s: %s' % (field.name_swift, type_name))
-            writer.newline()
+                
+                if (not field.is_required) and field.rules != 'repeated':
+                    writer.add('@objc public var %s: Bool {' % field.has_accessor_name() )
+                    writer.push_indent()
+                    writer.add('return proto.%s' % field.has_accessor_name() )
+                    writer.pop_indent()
+                    writer.add('}')
+                writer.newline()
 
         if len(implict_fields) > 0:
             for field in implict_fields:
@@ -484,6 +492,21 @@ class MessageContext(BaseContext):
         writer.add('}')
         writer.newline()
 
+        # serializedDataIgnoringErrors() func
+        writer.add('// NOTE: This method is intended for debugging purposes only.')
+        writer.add('@objc public func serializedDataIgnoringErrors() -> Data? {')
+        writer.push_indent()
+        writer.add('guard _isDebugAssertConfiguration() else {')
+        writer.push_indent()
+        writer.add('return nil')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        writer.add('return try! self.serializedData()')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
         # serializedData() func
         writer.extend(('''
 @objc
@@ -533,17 +556,13 @@ public func serializedData() throws -> Data {
                 writer.add('var %s: %s = %s' % (field.name_swift, field.type_swift, default_value))
                 
             if field.rules == 'repeated':
-                writer.add('for item in proto.%s {' % (field.name_swift))
-                writer.push_indent()
-                
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
-                    writer.add('let wrapped = %sWrap(item)' % ( enum_context.swift_name, ) )
+                    writer.add('%s = proto.%s.map { %sWrap($0) }' % ( field.name_swift, field.name_swift, enum_context.swift_name, ) )
                 elif self.is_field_a_proto(field):
-                    writer.add('let wrapped = try %s.parseProto(item)' % (self.base_swift_type_for_field(field))),
+                    writer.add('%s = try proto.%s.map { try %s.parseProto($0) }' % ( field.name_swift, field.name_swift, self.base_swift_type_for_field(field), ) )
                 else:
-                    writer.add('let wrapped = item')
-                writer.add('%s.append(wrapped)' % ( field.name_swift, ) )
+                    writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
             else:
                 writer.add('if proto.%s {' % field.has_accessor_name() )
                 writer.push_indent()
@@ -557,8 +576,8 @@ public func serializedData() throws -> Data {
                 else:
                     writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
                 
-            writer.pop_indent()
-            writer.add('}')
+                writer.pop_indent()
+                writer.add('}')
             writer.newline()
 
         writer.add('// MARK: - Begin Validation Logic for %s -' % self.swift_name)
@@ -616,6 +635,7 @@ public func serializedData() throws -> Data {
         # Setters
         for field in self.fields():
             if field.rules == 'repeated':
+                # Add
                 accessor_name = field.name_swift
                 accessor_name = 'add' + accessor_name[0].upper() + accessor_name[1:]
                 writer.add('@objc public func %s(_ valueParam: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
@@ -630,6 +650,22 @@ public func serializedData() throws -> Data {
                 else:
                     writer.add('items.append(valueParam)')
                 writer.add('proto.%s = items' % ( field.name_swift, ) )
+                writer.pop_indent()
+                writer.add('}')
+                writer.newline()
+                
+                # Set
+                accessor_name = field.name_swift
+                accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
+                writer.add('@objc public func %s(_ wrappedItems: [%s]) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.push_indent()
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('proto.%s = wrappedItems.map { %sUnwrap($0) }' % ( field.name_swift, enum_context.swift_name, ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('proto.%s = wrappedItems.map { $0.proto }' % ( field.name_swift, ) )
+                else:
+                    writer.add('proto.%s = wrappedItems' % ( field.name_swift, ) )
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
@@ -650,13 +686,34 @@ public func serializedData() throws -> Data {
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
-    
+
+        # buildIgnoringErrors() func
+        writer.add('// NOTE: This method is intended for debugging purposes only.')
+        writer.add('@objc public func buildIgnoringErrors() -> %s? {' % self.swift_name)
+        writer.push_indent()
+        writer.add('guard _isDebugAssertConfiguration() else {')
+        writer.push_indent()
+        writer.add('return nil')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        writer.add('return try! self.build()')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
         # build() func
         writer.add('@objc public func build() throws -> %s {' % self.swift_name)
         writer.push_indent()
-        writer.add('let wrapper = try %s.parseProto(proto)' % self.swift_name)
-        writer.add('return wrapper')
-        
+        writer.add('return try %s.parseProto(proto)' % self.swift_name)
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+        # build() func
+        writer.add('@objc public func buildSerializedData() throws -> Data {')
+        writer.push_indent()
+        writer.add('return try %s.parseProto(proto).serializedData()' % self.swift_name)
         writer.pop_indent()
         writer.add('}')
         writer.newline()
@@ -945,7 +1002,7 @@ def preserve_validation_logic(args, proto_file_path, dst_file_path):
             end = old_text.find(end_marker)
             # print '\t end:', end
             if end < start:
-                raise Exception('Malformed validation: %s' % proto_file_path)
+                raise Exception('Malformed validation: %s, %s' % ( proto_file_path, name, ) )
             validation_block = old_text[start:end]
             # print '\t validation_block:', validation_block
             

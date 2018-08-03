@@ -2,17 +2,18 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "ProtoUtils.h"
 #import "Cryptography.h"
 #import "ProfileManagerProtocol.h"
-#import "ProtoBuf+OWS.h"
 #import "TSThread.h"
 #import "TextSecureKitEnv.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation PBGeneratedMessageBuilder (OWS)
+@implementation ProtoUtils
 
-- (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
++ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
     OWSAssert(thread);
 
@@ -32,24 +33,21 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (OWSAES256Key *)localProfileKey
++ (OWSAES256Key *)localProfileKey
 {
     id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
     return profileManager.localProfileKey;
 }
 
-@end
-
-#pragma mark -
-
-@implementation OWSSignalServiceProtosDataMessageBuilder (OWS)
-
-- (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
++ (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
+                          recipientId:(NSString *_Nullable)recipientId
+                   dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
     OWSAssert(thread);
+    OWSAssert(dataMessageBuilder);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
-        [self setProfileKey:self.localProfileKey.keyData];
+        [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
         if (recipientId.length > 0) {
             // Once we've shared our profile key with a user (perhaps due to being
@@ -63,24 +61,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)addLocalProfileKey
++ (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    [self setProfileKey:self.localProfileKey.keyData];
+    OWSAssert(dataMessageBuilder);
+
+    [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 }
 
-@end
-
-#pragma mark -
-
-@implementation OWSSignalServiceProtosCallMessageBuilder (OWS)
-
-- (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *)recipientId
++ (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
+                          recipientId:(NSString *)recipientId
+                   callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
 {
     OWSAssert(thread);
     OWSAssert(recipientId.length > 0);
+    OWSAssert(callMessageBuilder);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
-        [self setProfileKey:self.localProfileKey.keyData];
+        [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.

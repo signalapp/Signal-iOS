@@ -9,8 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class OWSAttachmentInfo;
-@class OWSSignalServiceProtosDataMessage;
-@class OWSSignalServiceProtosDataMessageContact;
+@class SSKProtoDataMessage;
+@class SSKProtoDataMessageContact;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class YapDatabaseReadTransaction;
@@ -173,9 +173,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 #pragma mark - Proto Serialization
 
-+ (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact;
++ (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact;
 
-+ (nullable OWSContact *)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
++ (nullable OWSContact *)contactForDataMessage:(SSKProtoDataMessage *)dataMessage
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end

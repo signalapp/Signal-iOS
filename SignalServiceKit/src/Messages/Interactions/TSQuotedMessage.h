@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosDataMessage;
+@class SSKProtoDataMessage;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 
 
-+ (nullable instancetype)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
++ (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                               thread:(TSThread *)thread
                                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
