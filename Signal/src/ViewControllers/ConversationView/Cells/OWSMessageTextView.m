@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [super setTextColor:textColor];
-    self.cachedSize = nil;
+    // No need to clear cached size here.
 }
 
 - (void)setFont:(nullable UIFont *)font
