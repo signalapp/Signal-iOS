@@ -40,8 +40,8 @@ public enum WebSocketProtoError: Error {
             proto.headers = items
         }
 
-        @objc public func setRequestId(_ valueParam: UInt64) {
-            proto.requestId = valueParam
+        @objc public func setRequestID(_ valueParam: UInt64) {
+            proto.requestID = valueParam
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketRequestMessage {
@@ -52,25 +52,9 @@ public enum WebSocketProtoError: Error {
 
     fileprivate let proto: WebSocketProtos_WebSocketRequestMessage
 
-    @objc public var verb: String? {
-        guard proto.hasVerb else {
-            return nil
-        }
-        return proto.verb
-    }
-    @objc public var hasVerb: Bool {
-        return proto.hasVerb
-    }
-
-    @objc public var path: String? {
-        guard proto.hasPath else {
-            return nil
-        }
-        return proto.path
-    }
-    @objc public var hasPath: Bool {
-        return proto.hasPath
-    }
+    @objc public let verb: String
+    @objc public let path: String
+    @objc public let requestID: UInt64
 
     @objc public var body: Data? {
         guard proto.hasBody else {
@@ -86,15 +70,14 @@ public enum WebSocketProtoError: Error {
         return proto.headers
     }
 
-    @objc public var requestId: UInt64 {
-        return proto.requestId
-    }
-    @objc public var hasRequestId: Bool {
-        return proto.hasRequestId
-    }
-
-    private init(proto: WebSocketProtos_WebSocketRequestMessage) {
+    private init(proto: WebSocketProtos_WebSocketRequestMessage,
+                 verb: String,
+                 path: String,
+                 requestID: UInt64) {
         self.proto = proto
+        self.verb = verb
+        self.path = path
+        self.requestID = requestID
     }
 
     @objc
@@ -108,11 +91,29 @@ public enum WebSocketProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: WebSocketProtos_WebSocketRequestMessage) throws -> WebSocketProtoWebSocketRequestMessage {
+        guard proto.hasVerb else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: verb")
+        }
+        let verb = proto.verb
+
+        guard proto.hasPath else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: path")
+        }
+        let path = proto.path
+
+        guard proto.hasRequestID else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: requestID")
+        }
+        let requestID = proto.requestID
+
         // MARK: - Begin Validation Logic for WebSocketProtoWebSocketRequestMessage -
 
         // MARK: - End Validation Logic for WebSocketProtoWebSocketRequestMessage -
 
-        let result = WebSocketProtoWebSocketRequestMessage(proto: proto)
+        let result = WebSocketProtoWebSocketRequestMessage(proto: proto,
+                                                           verb: verb,
+                                                           path: path,
+                                                           requestID: requestID)
         return result
     }
 }
@@ -129,8 +130,8 @@ public enum WebSocketProtoError: Error {
 
         @objc public override init() {}
 
-        @objc public func setRequestId(_ valueParam: UInt64) {
-            proto.requestId = valueParam
+        @objc public func setRequestID(_ valueParam: UInt64) {
+            proto.requestID = valueParam
         }
 
         @objc public func setStatus(_ valueParam: UInt32) {
@@ -159,19 +160,9 @@ public enum WebSocketProtoError: Error {
 
     fileprivate let proto: WebSocketProtos_WebSocketResponseMessage
 
-    @objc public var requestId: UInt64 {
-        return proto.requestId
-    }
-    @objc public var hasRequestId: Bool {
-        return proto.hasRequestId
-    }
-
-    @objc public var status: UInt32 {
-        return proto.status
-    }
-    @objc public var hasStatus: Bool {
-        return proto.hasStatus
-    }
+    @objc public let requestID: UInt64
+    @objc public let status: UInt32
+    @objc public let body: Data
 
     @objc public var message: String? {
         guard proto.hasMessage else {
@@ -187,18 +178,14 @@ public enum WebSocketProtoError: Error {
         return proto.headers
     }
 
-    @objc public var body: Data? {
-        guard proto.hasBody else {
-            return nil
-        }
-        return proto.body
-    }
-    @objc public var hasBody: Bool {
-        return proto.hasBody
-    }
-
-    private init(proto: WebSocketProtos_WebSocketResponseMessage) {
+    private init(proto: WebSocketProtos_WebSocketResponseMessage,
+                 requestID: UInt64,
+                 status: UInt32,
+                 body: Data) {
         self.proto = proto
+        self.requestID = requestID
+        self.status = status
+        self.body = body
     }
 
     @objc
@@ -212,11 +199,29 @@ public enum WebSocketProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: WebSocketProtos_WebSocketResponseMessage) throws -> WebSocketProtoWebSocketResponseMessage {
+        guard proto.hasRequestID else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: requestID")
+        }
+        let requestID = proto.requestID
+
+        guard proto.hasStatus else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: status")
+        }
+        let status = proto.status
+
+        guard proto.hasBody else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: body")
+        }
+        let body = proto.body
+
         // MARK: - Begin Validation Logic for WebSocketProtoWebSocketResponseMessage -
 
         // MARK: - End Validation Logic for WebSocketProtoWebSocketResponseMessage -
 
-        let result = WebSocketProtoWebSocketResponseMessage(proto: proto)
+        let result = WebSocketProtoWebSocketResponseMessage(proto: proto,
+                                                            requestID: requestID,
+                                                            status: status,
+                                                            body: body)
         return result
     }
 }
@@ -277,20 +282,16 @@ public enum WebSocketProtoError: Error {
 
     fileprivate let proto: WebSocketProtos_WebSocketMessage
 
+    @objc public let type: WebSocketProtoWebSocketMessageType
     @objc public let request: WebSocketProtoWebSocketRequestMessage?
     @objc public let response: WebSocketProtoWebSocketResponseMessage?
 
-    @objc public var type: WebSocketProtoWebSocketMessageType {
-        return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
-    }
-    @objc public var hasType: Bool {
-        return proto.hasType
-    }
-
     private init(proto: WebSocketProtos_WebSocketMessage,
+                 type: WebSocketProtoWebSocketMessageType,
                  request: WebSocketProtoWebSocketRequestMessage?,
                  response: WebSocketProtoWebSocketResponseMessage?) {
         self.proto = proto
+        self.type = type
         self.request = request
         self.response = response
     }
@@ -306,6 +307,11 @@ public enum WebSocketProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: WebSocketProtos_WebSocketMessage) throws -> WebSocketProtoWebSocketMessage {
+        guard proto.hasType else {
+            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
+
         var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
@@ -321,6 +327,7 @@ public enum WebSocketProtoError: Error {
         // MARK: - End Validation Logic for WebSocketProtoWebSocketMessage -
 
         let result = WebSocketProtoWebSocketMessage(proto: proto,
+                                                    type: type,
                                                     request: request,
                                                     response: response)
         return result

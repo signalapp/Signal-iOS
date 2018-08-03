@@ -41,6 +41,7 @@ struct IOSProtos_BackupSnapshot {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// @required
     var type: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum {
       get {return _type ?? .unknown}
       set {_type = newValue}
@@ -50,6 +51,7 @@ struct IOSProtos_BackupSnapshot {
     /// Clears the value of `type`. Subsequent reads from it will return its default value.
     mutating func clearType() {self._type = nil}
 
+    /// @required
     var entityData: Data {
       get {return _entityData ?? SwiftProtobuf.Internal.emptyData}
       set {_entityData = newValue}

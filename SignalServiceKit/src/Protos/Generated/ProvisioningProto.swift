@@ -38,28 +38,15 @@ public enum ProvisioningProtoError: Error {
 
     fileprivate let proto: ProvisioningProtos_ProvisionEnvelope
 
-    @objc public var publicKey: Data? {
-        guard proto.hasPublicKey else {
-            return nil
-        }
-        return proto.publicKey
-    }
-    @objc public var hasPublicKey: Bool {
-        return proto.hasPublicKey
-    }
+    @objc public let publicKey: Data
+    @objc public let body: Data
 
-    @objc public var body: Data? {
-        guard proto.hasBody else {
-            return nil
-        }
-        return proto.body
-    }
-    @objc public var hasBody: Bool {
-        return proto.hasBody
-    }
-
-    private init(proto: ProvisioningProtos_ProvisionEnvelope) {
+    private init(proto: ProvisioningProtos_ProvisionEnvelope,
+                 publicKey: Data,
+                 body: Data) {
         self.proto = proto
+        self.publicKey = publicKey
+        self.body = body
     }
 
     @objc
@@ -73,11 +60,23 @@ public enum ProvisioningProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: ProvisioningProtos_ProvisionEnvelope) throws -> ProvisioningProtoProvisionEnvelope {
+        guard proto.hasPublicKey else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: publicKey")
+        }
+        let publicKey = proto.publicKey
+
+        guard proto.hasBody else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: body")
+        }
+        let body = proto.body
+
         // MARK: - Begin Validation Logic for ProvisioningProtoProvisionEnvelope -
 
         // MARK: - End Validation Logic for ProvisioningProtoProvisionEnvelope -
 
-        let result = ProvisioningProtoProvisionEnvelope(proto: proto)
+        let result = ProvisioningProtoProvisionEnvelope(proto: proto,
+                                                        publicKey: publicKey,
+                                                        body: body)
         return result
     }
 }
@@ -130,75 +129,30 @@ public enum ProvisioningProtoError: Error {
 
     fileprivate let proto: ProvisioningProtos_ProvisionMessage
 
-    @objc public var identityKeyPublic: Data? {
-        guard proto.hasIdentityKeyPublic else {
-            return nil
-        }
-        return proto.identityKeyPublic
-    }
-    @objc public var hasIdentityKeyPublic: Bool {
-        return proto.hasIdentityKeyPublic
-    }
+    @objc public let identityKeyPublic: Data
+    @objc public let identityKeyPrivate: Data
+    @objc public let number: String
+    @objc public let provisioningCode: String
+    @objc public let userAgent: String
+    @objc public let profileKey: Data
+    @objc public let readReceipts: Bool
 
-    @objc public var identityKeyPrivate: Data? {
-        guard proto.hasIdentityKeyPrivate else {
-            return nil
-        }
-        return proto.identityKeyPrivate
-    }
-    @objc public var hasIdentityKeyPrivate: Bool {
-        return proto.hasIdentityKeyPrivate
-    }
-
-    @objc public var number: String? {
-        guard proto.hasNumber else {
-            return nil
-        }
-        return proto.number
-    }
-    @objc public var hasNumber: Bool {
-        return proto.hasNumber
-    }
-
-    @objc public var provisioningCode: String? {
-        guard proto.hasProvisioningCode else {
-            return nil
-        }
-        return proto.provisioningCode
-    }
-    @objc public var hasProvisioningCode: Bool {
-        return proto.hasProvisioningCode
-    }
-
-    @objc public var userAgent: String? {
-        guard proto.hasUserAgent else {
-            return nil
-        }
-        return proto.userAgent
-    }
-    @objc public var hasUserAgent: Bool {
-        return proto.hasUserAgent
-    }
-
-    @objc public var profileKey: Data? {
-        guard proto.hasProfileKey else {
-            return nil
-        }
-        return proto.profileKey
-    }
-    @objc public var hasProfileKey: Bool {
-        return proto.hasProfileKey
-    }
-
-    @objc public var readReceipts: Bool {
-        return proto.readReceipts
-    }
-    @objc public var hasReadReceipts: Bool {
-        return proto.hasReadReceipts
-    }
-
-    private init(proto: ProvisioningProtos_ProvisionMessage) {
+    private init(proto: ProvisioningProtos_ProvisionMessage,
+                 identityKeyPublic: Data,
+                 identityKeyPrivate: Data,
+                 number: String,
+                 provisioningCode: String,
+                 userAgent: String,
+                 profileKey: Data,
+                 readReceipts: Bool) {
         self.proto = proto
+        self.identityKeyPublic = identityKeyPublic
+        self.identityKeyPrivate = identityKeyPrivate
+        self.number = number
+        self.provisioningCode = provisioningCode
+        self.userAgent = userAgent
+        self.profileKey = profileKey
+        self.readReceipts = readReceipts
     }
 
     @objc
@@ -212,11 +166,53 @@ public enum ProvisioningProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: ProvisioningProtos_ProvisionMessage) throws -> ProvisioningProtoProvisionMessage {
+        guard proto.hasIdentityKeyPublic else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: identityKeyPublic")
+        }
+        let identityKeyPublic = proto.identityKeyPublic
+
+        guard proto.hasIdentityKeyPrivate else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: identityKeyPrivate")
+        }
+        let identityKeyPrivate = proto.identityKeyPrivate
+
+        guard proto.hasNumber else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
+        }
+        let number = proto.number
+
+        guard proto.hasProvisioningCode else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: provisioningCode")
+        }
+        let provisioningCode = proto.provisioningCode
+
+        guard proto.hasUserAgent else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: userAgent")
+        }
+        let userAgent = proto.userAgent
+
+        guard proto.hasProfileKey else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: profileKey")
+        }
+        let profileKey = proto.profileKey
+
+        guard proto.hasReadReceipts else {
+            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: readReceipts")
+        }
+        let readReceipts = proto.readReceipts
+
         // MARK: - Begin Validation Logic for ProvisioningProtoProvisionMessage -
 
         // MARK: - End Validation Logic for ProvisioningProtoProvisionMessage -
 
-        let result = ProvisioningProtoProvisionMessage(proto: proto)
+        let result = ProvisioningProtoProvisionMessage(proto: proto,
+                                                       identityKeyPublic: identityKeyPublic,
+                                                       identityKeyPrivate: identityKeyPrivate,
+                                                       number: number,
+                                                       provisioningCode: provisioningCode,
+                                                       userAgent: userAgent,
+                                                       profileKey: profileKey,
+                                                       readReceipts: readReceipts)
         return result
     }
 }

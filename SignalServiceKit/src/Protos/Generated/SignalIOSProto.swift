@@ -68,25 +68,15 @@ public enum SignalIOSProtoError: Error {
 
     fileprivate let proto: IOSProtos_BackupSnapshot.BackupEntity
 
-    @objc public var type: SignalIOSProtoBackupSnapshotBackupEntityType {
-        return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
-    }
-    @objc public var hasType: Bool {
-        return proto.hasType
-    }
+    @objc public let type: SignalIOSProtoBackupSnapshotBackupEntityType
+    @objc public let entityData: Data
 
-    @objc public var entityData: Data? {
-        guard proto.hasEntityData else {
-            return nil
-        }
-        return proto.entityData
-    }
-    @objc public var hasEntityData: Bool {
-        return proto.hasEntityData
-    }
-
-    private init(proto: IOSProtos_BackupSnapshot.BackupEntity) {
+    private init(proto: IOSProtos_BackupSnapshot.BackupEntity,
+                 type: SignalIOSProtoBackupSnapshotBackupEntityType,
+                 entityData: Data) {
         self.proto = proto
+        self.type = type
+        self.entityData = entityData
     }
 
     @objc
@@ -100,11 +90,23 @@ public enum SignalIOSProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: IOSProtos_BackupSnapshot.BackupEntity) throws -> SignalIOSProtoBackupSnapshotBackupEntity {
+        guard proto.hasType else {
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+        let type = SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
+
+        guard proto.hasEntityData else {
+            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: entityData")
+        }
+        let entityData = proto.entityData
+
         // MARK: - Begin Validation Logic for SignalIOSProtoBackupSnapshotBackupEntity -
 
         // MARK: - End Validation Logic for SignalIOSProtoBackupSnapshotBackupEntity -
 
-        let result = SignalIOSProtoBackupSnapshotBackupEntity(proto: proto)
+        let result = SignalIOSProtoBackupSnapshotBackupEntity(proto: proto,
+                                                              type: type,
+                                                              entityData: entityData)
         return result
     }
 }

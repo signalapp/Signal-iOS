@@ -19,6 +19,7 @@ def lowerCamlCaseForUnderscoredText(name):
     splits[0] = splits[0].lower()
     return ''.join(splits)
         
+
 # The generated code for "Apple Swift Protos" suppresses
 # adjacent capital letters in lowerCamlCase.
 def lowerCamlCaseForUnderscoredText_wrapped(name):
@@ -29,7 +30,11 @@ def lowerCamlCaseForUnderscoredText_wrapped(name):
             char = char.lower()
         chars.append(char)
         lastWasUpper = (char.upper() == char)
-    return ''.join(chars)
+    result = ''.join(chars)
+    if result.endswith('Id'):
+        result = result[:-2] + 'ID'
+    return result
+
 
 class WriterContext:
     def __init__(self, proto_name, swift_name, parent=None):

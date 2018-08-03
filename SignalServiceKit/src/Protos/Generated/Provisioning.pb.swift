@@ -32,6 +32,7 @@ struct ProvisioningProtos_ProvisionEnvelope {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var publicKey: Data {
     get {return _publicKey ?? SwiftProtobuf.Internal.emptyData}
     set {_publicKey = newValue}
@@ -41,7 +42,7 @@ struct ProvisioningProtos_ProvisionEnvelope {
   /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
   mutating func clearPublicKey() {self._publicKey = nil}
 
-  /// Encrypted ProvisionMessage
+  /// @required
   var body: Data {
     get {return _body ?? SwiftProtobuf.Internal.emptyData}
     set {_body = newValue}
@@ -64,6 +65,7 @@ struct ProvisioningProtos_ProvisionMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  /// @required
   var identityKeyPublic: Data {
     get {return _identityKeyPublic ?? SwiftProtobuf.Internal.emptyData}
     set {_identityKeyPublic = newValue}
@@ -73,6 +75,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `identityKeyPublic`. Subsequent reads from it will return its default value.
   mutating func clearIdentityKeyPublic() {self._identityKeyPublic = nil}
 
+  /// @required
   var identityKeyPrivate: Data {
     get {return _identityKeyPrivate ?? SwiftProtobuf.Internal.emptyData}
     set {_identityKeyPrivate = newValue}
@@ -82,6 +85,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `identityKeyPrivate`. Subsequent reads from it will return its default value.
   mutating func clearIdentityKeyPrivate() {self._identityKeyPrivate = nil}
 
+  /// @required
   var number: String {
     get {return _number ?? String()}
     set {_number = newValue}
@@ -91,6 +95,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `number`. Subsequent reads from it will return its default value.
   mutating func clearNumber() {self._number = nil}
 
+  /// @required
   var provisioningCode: String {
     get {return _provisioningCode ?? String()}
     set {_provisioningCode = newValue}
@@ -100,6 +105,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `provisioningCode`. Subsequent reads from it will return its default value.
   mutating func clearProvisioningCode() {self._provisioningCode = nil}
 
+  /// @required
   var userAgent: String {
     get {return _userAgent ?? String()}
     set {_userAgent = newValue}
@@ -109,6 +115,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `userAgent`. Subsequent reads from it will return its default value.
   mutating func clearUserAgent() {self._userAgent = nil}
 
+  /// @required
   var profileKey: Data {
     get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
     set {_profileKey = newValue}
@@ -118,6 +125,7 @@ struct ProvisioningProtos_ProvisionMessage {
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
   mutating func clearProfileKey() {self._profileKey = nil}
 
+  /// @required
   var readReceipts: Bool {
     get {return _readReceipts ?? false}
     set {_readReceipts = newValue}
