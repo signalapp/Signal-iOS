@@ -9,7 +9,7 @@ As of this writing, that's Xcode 9.4.
 Clone the repo to a working directory:
 
 ```
-git clone --recurse-submodules https:github.com/signalapp/Signal-iOS
+git clone --recurse-submodules https://github.com/signalapp/Signal-iOS
 ```
 
 Since we make use of submodules, you must use `git clone`, rather than
@@ -24,7 +24,7 @@ git clone --recurse-submodules https://github.com/<USERNAME>/Signal-iOS.git
 You can then add the Signal repo to sync with upstream changes:
 
 ```
-git remote add upstream https:github.com/signalapp/Signal-iOS
+git remote add upstream https://github.com/signalapp/Signal-iOS
 ```
 
 ## 2. Dependencies
