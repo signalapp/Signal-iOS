@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ShareAppExtensionContext
 
 @synthesize mainWindow = _mainWindow;
+@synthesize appLaunchTime = _appLaunchTime;
 
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController
 {

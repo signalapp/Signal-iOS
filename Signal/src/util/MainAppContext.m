@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation MainAppContext
 
 @synthesize mainWindow = _mainWindow;
+@synthesize appLaunchTime = _appLaunchTime;
 
 - (instancetype)init
 {
