@@ -3,6 +3,7 @@
 //
 
 #import "OWSOrphanDataCleaner.h"
+#import "DateUtil.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -23,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSOrphanDataCleaner_Collection = @"OWSOrphanDataCleaner_Collection";
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
+NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
 
 @interface OWSOrphanData : NSObject
 
@@ -414,24 +416,39 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     OWSAssertIsOnMainThread();
 
+    // In production, do not audit or clean up.
+#ifndef DEBUG
+    return;
+#endif
+
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
 
-    // In production, only clean up once per app version.
-#ifndef DEBUG
-    NSString *_Nullable lastCleaningVersion =
-        [databaseConnection stringForKey:OWSOrphanDataCleaner_LastCleaningVersionKey
-                            inCollection:OWSOrphanDataCleaner_Collection];
+    __block NSString *_Nullable lastCleaningVersion;
+    __block NSDate *_Nullable lastCleaningDate;
+    [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        lastCleaningVersion = [databaseConnection stringForKey:OWSOrphanDataCleaner_LastCleaningVersionKey
+                                                  inCollection:OWSOrphanDataCleaner_Collection];
+        lastCleaningDate = [databaseConnection dateForKey:OWSOrphanDataCleaner_LastCleaningDateKey
+                                             inCollection:OWSOrphanDataCleaner_Collection];
+    }];
+
+    // Only clean up once per app version.
     NSString *currentAppVersion = AppVersion.sharedInstance.currentAppVersion;
     if (lastCleaningVersion && [lastCleaningVersion isEqualToString:currentAppVersion]) {
         DDLogVerbose(@"%@ skipping orphan data cleanup; already done on %@.", self.logTag, currentAppVersion);
         return;
     }
-#endif
+
+    // Only clean up once per day.
+    if (lastCleaningDate && [DateUtil dateIsToday:lastCleaningDate]) {
+        DDLogVerbose(@"%@ skipping orphan data cleanup; already done today.", self.logTag);
+        return;
+    }
 
     // If we want to be cautious, we can disable orphan deletion using
     // flag - the cleanup will just be a dry run with logging.
-    BOOL shouldRemoveOrphans = YES;
+    BOOL shouldRemoveOrphans = NO;
     [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection];
 }
 
@@ -501,6 +518,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                     [databaseConnection setObject:AppVersion.sharedInstance.currentAppVersion
                                            forKey:OWSOrphanDataCleaner_LastCleaningVersionKey
                                      inCollection:OWSOrphanDataCleaner_Collection];
+                    [databaseConnection setDate:[NSDate new]
+                                         forKey:OWSOrphanDataCleaner_LastCleaningDateKey
+                                   inCollection:OWSOrphanDataCleaner_Collection];
                 }
                 failure:^{
                     DDLogInfo(@"%@ Aborting orphan data cleanup.", self.logTag);
