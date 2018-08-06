@@ -4,7 +4,6 @@
 # protobuf lib
 shift-base:CodedInputStream.m
 # generated protos
-bool:WebSocketResources.pb.m
 bool:WhisperTextProtocol.pb.m
 bool:OWSWebRTCDataProtos.pb.m
 

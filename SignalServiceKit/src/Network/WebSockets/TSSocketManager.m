@@ -22,7 +22,6 @@
 #import "TSRequest.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
-#import "WebSocketResources.pb.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -492,26 +491,32 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }
     }
 
-    WebSocketResourcesWebSocketRequestMessageBuilder *requestBuilder =
-        [WebSocketResourcesWebSocketRequestMessageBuilder new];
-    [requestBuilder setRequestId:socketMessage.requestId];
+    WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder = [WebSocketProtoWebSocketRequestMessageBuilder new];
+    [requestBuilder setRequestID:socketMessage.requestId];
     [requestBuilder setVerb:request.HTTPMethod];
     [requestBuilder setPath:requestPath];
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
-        [requestBuilder setHeadersArray:@[
+        [requestBuilder setHeaders:@[
             @"content-type:application/json",
         ]];
     }
 
-    WebSocketResourcesWebSocketMessageBuilder *messageBuilder = [WebSocketResourcesWebSocketMessageBuilder new];
-    [messageBuilder setType:WebSocketResourcesWebSocketMessageTypeRequest];
-    [messageBuilder setRequestBuilder:requestBuilder];
+    NSError *error;
+    WebSocketProtoWebSocketRequestMessage *_Nullable requestProto = [requestBuilder buildAndReturnError:&error];
+    if (!requestProto || error) {
+        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
+        return;
+    }
 
-    NSData *messageData = [messageBuilder build].data;
-    if (!messageData) {
-        OWSProdLogAndFail(@"%@ could not serialize message.", self.logTag);
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessageBuilder new];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeRequest];
+    [messageBuilder setRequest:requestProto];
+
+    NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
+    if (!messageData || error) {
+        OWSProdLogAndFail(@"%@ could not serialize proto: %@.", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
@@ -522,7 +527,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    NSError *error;
     BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
     if (!wasScheduled || error) {
         OWSProdLogAndFail(@"%@ could not send socket request: %@", self.logTag, error);
@@ -545,7 +549,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         });
 }
 
-- (void)processWebSocketResponseMessage:(WebSocketResourcesWebSocketResponseMessage *)message
+- (void)processWebSocketResponseMessage:(WebSocketProtoWebSocketResponseMessage *)message
 {
     OWSAssertIsOnMainThread();
     OWSAssert(message);
@@ -555,26 +559,18 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     });
 }
 
-- (void)processWebSocketResponseMessageAsync:(WebSocketResourcesWebSocketResponseMessage *)message
+- (void)processWebSocketResponseMessageAsync:(WebSocketProtoWebSocketResponseMessage *)message
 {
     OWSAssert(message);
 
     DDLogInfo(@"%@ received WebSocket response.", self.logTag);
 
-    if (![message hasRequestId]) {
-        DDLogError(@"%@ received incomplete WebSocket response.", self.logTag);
-        return;
-    }
-
     DispatchMainThreadSafe(^{
         [self requestSocketAliveForAtLeastSeconds:kMakeRequestKeepSocketAliveDurationSeconds];
     });
 
-    UInt64 requestId = message.requestId;
-    UInt32 responseStatus = 0;
-    if (message.hasStatus) {
-        responseStatus = message.status;
-    }
+    UInt64 requestId = message.requestID;
+    UInt32 responseStatus = message.status;
     NSString *_Nullable responseMessage;
     if (message.hasMessage) {
         responseMessage = message.message;
@@ -702,25 +698,30 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     // If we receive a response, we know we're not de-registered.
     [TSAccountManager.sharedInstance setIsDeregistered:NO];
 
-    WebSocketResourcesWebSocketMessage *wsMessage;
+    WebSocketProtoWebSocketMessage *_Nullable wsMessage;
     @try {
-        wsMessage = [WebSocketResourcesWebSocketMessage parseFromData:data];
+        NSError *error;
+        wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
+        if (!wsMessage || error) {
+            OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
+            return;
+        }
     } @catch (NSException *exception) {
         OWSProdLogAndFail(@"%@ Received an invalid message: %@", self.logTag, exception.debugDescription);
         // TODO: Add analytics.
         return;
     }
 
-    if (wsMessage.type == WebSocketResourcesWebSocketMessageTypeRequest) {
+    if (wsMessage.type == WebSocketProtoWebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.type == WebSocketResourcesWebSocketMessageTypeResponse) {
+    } else if (wsMessage.type == WebSocketProtoWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
         DDLogWarn(@"%@ webSocket:didReceiveMessage: unknown.", self.logTag);
     }
 }
 
-- (void)processWebSocketRequestMessage:(WebSocketResourcesWebSocketRequestMessage *)message
+- (void)processWebSocketRequestMessage:(WebSocketProtoWebSocketRequestMessage *)message
 {
     OWSAssertIsOnMainThread();
 
@@ -779,21 +780,34 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 }
 
-- (void)sendWebSocketMessageAcknowledgement:(WebSocketResourcesWebSocketRequestMessage *)request
+- (void)sendWebSocketMessageAcknowledgement:(WebSocketProtoWebSocketRequestMessage *)request
 {
     OWSAssertIsOnMainThread();
 
-    WebSocketResourcesWebSocketResponseMessageBuilder *response = [WebSocketResourcesWebSocketResponseMessage builder];
-    [response setStatus:200];
-    [response setMessage:@"OK"];
-    [response setRequestId:request.requestId];
-
-    WebSocketResourcesWebSocketMessageBuilder *message = [WebSocketResourcesWebSocketMessage builder];
-    [message setResponse:response.build];
-    [message setType:WebSocketResourcesWebSocketMessageTypeResponse];
-
     NSError *error;
-    [self.websocket sendDataNoCopy:message.build.data error:&error];
+
+    WebSocketProtoWebSocketResponseMessageBuilder *responseBuilder =
+        [WebSocketProtoWebSocketResponseMessageBuilder new];
+    [responseBuilder setStatus:200];
+    [responseBuilder setMessage:@"OK"];
+    [responseBuilder setRequestID:request.requestID];
+    WebSocketProtoWebSocketResponseMessage *_Nullable response = [responseBuilder buildAndReturnError:&error];
+    if (!response || error) {
+        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
+        return;
+    }
+
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessageBuilder new];
+    [messageBuilder setResponse:response];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeResponse];
+
+    NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
+    if (!messageData || error) {
+        OWSFail(@"%@ could not serialize proto: %@", self.logTag, error);
+        return;
+    }
+
+    [self.websocket sendDataNoCopy:messageData error:&error];
     if (error) {
         DDLogWarn(@"Error while trying to write on websocket %@", error);
         [self handleSocketFailure];

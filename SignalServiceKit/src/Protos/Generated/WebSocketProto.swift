@@ -208,8 +208,6 @@ public enum WebSocketProtoError: Error {
 
     @objc public let status: UInt32
 
-    @objc public let body: Data
-
     @objc public var message: String? {
         guard proto.hasMessage else {
             return nil
@@ -224,14 +222,22 @@ public enum WebSocketProtoError: Error {
         return proto.headers
     }
 
+    @objc public var body: Data? {
+        guard proto.hasBody else {
+            return nil
+        }
+        return proto.body
+    }
+    @objc public var hasBody: Bool {
+        return proto.hasBody
+    }
+
     private init(proto: WebSocketProtos_WebSocketResponseMessage,
                  requestID: UInt64,
-                 status: UInt32,
-                 body: Data) {
+                 status: UInt32) {
         self.proto = proto
         self.requestID = requestID
         self.status = status
-        self.body = body
     }
 
     // NOTE: This method is intended for debugging purposes only.
@@ -264,19 +270,13 @@ public enum WebSocketProtoError: Error {
         }
         let status = proto.status
 
-        guard proto.hasBody else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: body")
-        }
-        let body = proto.body
-
         // MARK: - Begin Validation Logic for WebSocketProtoWebSocketResponseMessage -
 
         // MARK: - End Validation Logic for WebSocketProtoWebSocketResponseMessage -
 
         let result = WebSocketProtoWebSocketResponseMessage(proto: proto,
                                                             requestID: requestID,
-                                                            status: status,
-                                                            body: body)
+                                                            status: status)
         return result
     }
 }
