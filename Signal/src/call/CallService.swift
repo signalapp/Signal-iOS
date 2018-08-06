@@ -78,7 +78,7 @@ public enum CallError: Error {
     case externalError(underlyingError: Error)
     case timeout(description: String)
     case obsoleteCall(description: String)
-    case protoErro(description: String)
+    case fatalError(description: String)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -417,7 +417,7 @@ private class SignalCallData: NSObject {
                     return self.messageSender.sendPromise(message: callMessage)
                 } catch {
                     owsFail("Couldn't build proto in \(#function)")
-                    throw CallError.protoErro(description: "Couldn't build proto in \(#function)")
+                    throw CallError.fatalError(description: "Couldn't build proto in \(#function)")
                 }
             }
         }.then {
@@ -722,7 +722,7 @@ private class SignalCallData: NSObject {
                 return self.messageSender.sendPromise(message: callAnswerMessage)
             } catch {
                 owsFail("Couldn't build proto in \(#function)")
-                throw CallError.protoErro(description: "Couldn't build proto in \(#function)")
+                throw CallError.fatalError(description: "Couldn't build proto in \(#function)")
             }
         }.then {
             guard self.call == newCall else {
@@ -841,12 +841,38 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+            guard let sdpMid = iceCandidate.sdpMid else {
+                owsFail("Missing sdpMid in \(#function)")
+                throw CallError.fatalError(description: "Missing sdpMid in \(#function)")
+            }
+
+            guard iceCandidate.sdpMLineIndex < UINT32_MAX else {
+                owsFail("Invalid sdpMLineIndex in \(#function)")
+                throw CallError.fatalError(description: "Invalid sdpMLineIndex in \(#function)")
+            }
 
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-            let sendPromise = self.messageSender.sendPromise(message: callMessage)
-            sendPromise.retainUntilComplete()
+
+            /**
+             * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
+             * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
+             * exchanged, the clients can connect directly.
+             */
+            let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder()
+            iceUpdateBuilder.setId(call.signalingId)
+            iceUpdateBuilder.setSdp(iceCandidate.sdp)
+            iceUpdateBuilder.setSdpMlineIndex(UInt32(iceCandidate.sdpMLineIndex))
+            iceUpdateBuilder.setSdpMid(sdpMid)
+            do {
+                let iceUpdate = try iceUpdateBuilder.build()
+
+                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdate)
+                let sendPromise = self.messageSender.sendPromise(message: callMessage)
+                sendPromise.retainUntilComplete()
+            } catch {
+                owsFail("Couldn't build proto in \(#function)")
+                throw CallError.fatalError(description: "Couldn't build proto in \(#function)")
+            }
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalAddedIceCandidate(), file: #file, function: #function, line: #line)
             Logger.error("\(self.logTag) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")

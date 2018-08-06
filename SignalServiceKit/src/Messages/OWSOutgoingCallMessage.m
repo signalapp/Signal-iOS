@@ -6,7 +6,6 @@
 #import "NSDate+OWS.h"
 #import "OWSCallBusyMessage.h"
 #import "OWSCallHangupMessage.h"
-#import "OWSCallIceUpdateMessage.h"
 #import "ProtoUtils.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
@@ -61,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(OWSCallIceUpdateMessage *)iceUpdateMessage
+- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(SSKProtoCallMessageIceUpdate *)iceUpdateMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -74,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
-             iceUpdateMessages:(NSArray<OWSCallIceUpdateMessage *> *)iceUpdateMessages
+             iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -152,14 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setAnswer:self.answerMessage];
     }
 
-    if (self.iceUpdateMessages) {
-        for (OWSCallIceUpdateMessage *iceUpdateMessage in self.iceUpdateMessages) {
-            SSKProtoCallMessageIceUpdate *_Nullable proto = [iceUpdateMessage asProtobuf];
-            if (!proto) {
-                return nil;
-            }
-            [builder addIceUpdate:proto];
-        }
+    if (self.iceUpdateMessages.count > 0) {
+        [builder setIceUpdate:self.iceUpdateMessages];
     }
 
     if (self.hangupMessage) {
