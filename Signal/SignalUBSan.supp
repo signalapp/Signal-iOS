@@ -8,8 +8,6 @@ bool:WebSocketResources.pb.m
 bool:WhisperTextProtocol.pb.m
 bool:OWSWebRTCDataProtos.pb.m
 bool:OWSSignaliOSProtos.pb.m
-bool:OWSProvisioningProtos.pb.m
-bool:OWSFingerprintProtos.pb.m
 
 # YapDatabase
 bool:YapDatabaseAutoViewTransaction.m
