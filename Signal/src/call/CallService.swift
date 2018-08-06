@@ -1201,17 +1201,25 @@ private class SignalCallData: NSObject {
         }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
-        let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
-        let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
-            Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
-        }.catch { error in
-            OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
-            Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
-        }
-        sendPromise.retainUntilComplete()
 
-        terminateCall()
+        do {
+            let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder()
+            hangupBuilder.setId(call.signalingId)
+            let hangupProto = try hangupBuilder.build()
+
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupProto)
+            let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
+                Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
+                }.catch { error in
+                    OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
+                    Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
+            }
+            sendPromise.retainUntilComplete()
+
+            terminateCall()
+        } catch {
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto in \(#function)"))
+        }
     }
 
     /**

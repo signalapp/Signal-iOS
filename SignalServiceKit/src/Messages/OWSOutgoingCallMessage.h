@@ -7,8 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSCallBusyMessage;
-@class OWSCallHangupMessage;
 @class SSKProtoCallMessageAnswer;
+@class SSKProtoCallMessageHangup;
 @class SSKProtoCallMessageIceUpdate;
 @class SSKProtoCallMessageOffer;
 @class TSThread;
@@ -34,13 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(SSKProtoCallMessageIceUpdate *)iceUpdateMessage;
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessage;
-- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(OWSCallHangupMessage *)hangupMessage;
+- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage;
 - (instancetype)initWithThread:(TSThread *)thread busyMessage:(OWSCallBusyMessage *)busyMessage;
 
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageOffer *offerMessage;
 @property (nullable, nonatomic, readonly) SSKProtoCallMessageAnswer *answerMessage;
 @property (nullable, nonatomic, readonly) NSArray<SSKProtoCallMessageIceUpdate *> *iceUpdateMessages;
-@property (nullable, nonatomic, readonly) OWSCallHangupMessage *hangupMessage;
+@property (nullable, nonatomic, readonly) SSKProtoCallMessageHangup *hangupMessage;
 @property (nullable, nonatomic, readonly) OWSCallBusyMessage *busyMessage;
 
 @end

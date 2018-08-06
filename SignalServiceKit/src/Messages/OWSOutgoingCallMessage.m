@@ -5,7 +5,6 @@
 #import "OWSOutgoingCallMessage.h"
 #import "NSDate+OWS.h"
 #import "OWSCallBusyMessage.h"
-#import "OWSCallHangupMessage.h"
 #import "ProtoUtils.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
@@ -85,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(OWSCallHangupMessage *)hangupMessage
+- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -156,11 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.hangupMessage) {
-        SSKProtoCallMessageHangup *_Nullable proto = [self.hangupMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setHangup:proto];
+        [builder setHangup:self.hangupMessage];
     }
 
     if (self.busyMessage) {
