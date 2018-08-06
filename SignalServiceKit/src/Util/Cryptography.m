@@ -257,7 +257,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
                            withHMACKey:(NSData *)HMACKey
                             truncation:(NSUInteger)truncation
 {
-    OWSAssert(truncation >= CC_SHA1_DIGEST_LENGTH);
+    OWSAssert(truncation <= CC_SHA1_DIGEST_LENGTH);
 
     return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
 }
@@ -266,7 +266,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
                              withHMACKey:(NSData *)HMACKey
                               truncation:(NSUInteger)truncation
 {
-    OWSAssert(truncation >= CC_SHA256_DIGEST_LENGTH);
+    OWSAssert(truncation <= CC_SHA256_DIGEST_LENGTH);
 
     return
         [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
