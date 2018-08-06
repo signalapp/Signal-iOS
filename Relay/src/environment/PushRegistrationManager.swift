@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 import PushKit
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 public enum PushRegistrationError: Error {

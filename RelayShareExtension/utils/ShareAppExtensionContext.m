@@ -4,7 +4,7 @@
 
 #import "ShareAppExtensionContext.h"
 #import <RelayMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/OWSStorage.h>
+#import <RelayServiceKit/OWSStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,8 +6,8 @@
 #import "RegistrationViewController.h"
 #import "Relay-Swift.h"
 #import <ATAppUpdater/ATAppUpdater.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
 
 NSString *const OWSPrimaryStorageAppUpgradeNagCollection = @"TSStorageManagerAppUpgradeNagCollection";
 NSString *const OWSPrimaryStorageAppUpgradeNagDate = @"TSStorageManagerAppUpgradeNagDate";

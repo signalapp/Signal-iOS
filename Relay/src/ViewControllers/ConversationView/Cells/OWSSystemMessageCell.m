@@ -11,10 +11,10 @@
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSErrorMessage.h>
-#import <SignalServiceKit/TSInfoMessage.h>
+#import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
+#import <RelayServiceKit/TSCall.h>
+#import <RelayServiceKit/TSErrorMessage.h>
+#import <RelayServiceKit/TSInfoMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -5,10 +5,10 @@
 #import "OWSSounds.h"
 #import "OWSAudioPlayer.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/OWSFileSystem.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSThread.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
 NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";

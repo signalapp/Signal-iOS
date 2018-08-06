@@ -5,11 +5,11 @@
 #import "ConversationViewItem.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/MIMETypeUtil.h>
+#import <RelayServiceKit/SecurityUtils.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
 #import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 

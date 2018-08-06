@@ -10,24 +10,24 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <Curve25519Kit/Randomness.h>
 #import <RelayMessaging/Environment.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSSyncConfigurationMessage.h>
-#import <SignalServiceKit/OWSSyncContactsMessage.h>
-#import <SignalServiceKit/OWSSyncGroupsMessage.h>
-#import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/OWSBatchMessageProcessor.h>
+#import <RelayServiceKit/OWSBlockingManager.h>
+#import <RelayServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/OWSReadReceiptManager.h>
+#import <RelayServiceKit/OWSSyncConfigurationMessage.h>
+#import <RelayServiceKit/OWSSyncContactsMessage.h>
+#import <RelayServiceKit/OWSSyncGroupsMessage.h>
+#import <RelayServiceKit/OWSSyncGroupsRequestMessage.h>
+#import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
+#import <RelayServiceKit/SecurityUtils.h>
+#import <RelayServiceKit/TSCall.h>
+#import <RelayServiceKit/TSDatabaseView.h>
+#import <RelayServiceKit/TSIncomingMessage.h>
+#import <RelayServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -5,7 +5,7 @@
 import Foundation
 import WebRTC
 import PromiseKit
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 // TODO: Add category so that button handlers can be defined where button is created.

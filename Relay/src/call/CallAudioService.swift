@@ -4,7 +4,7 @@
 
 import Foundation
 import AVFoundation
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 struct AudioSource: Hashable {

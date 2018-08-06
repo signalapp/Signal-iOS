@@ -4,7 +4,7 @@
 
 #import "UIUtil.h"
 #import "UIColor+OWS.h"
-#import <SignalServiceKit/AppContext.h>
+#import <RelayServiceKit/AppContext.h>
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
 

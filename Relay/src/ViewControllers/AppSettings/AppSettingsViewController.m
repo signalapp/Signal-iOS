@@ -19,8 +19,8 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSSocketManager.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSSocketManager.h>
 
 @interface AppSettingsViewController ()
 

@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 import CallKit
 import AVFoundation
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 /**

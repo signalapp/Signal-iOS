@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import RelayServiceKit
 
 public class ConversationSearchResult: Comparable {
     public let thread: ThreadViewModel

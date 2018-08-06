@@ -3,7 +3,7 @@
 //
 
 #import "OWSCallNotificationsAdaptee.h"
-#import <SignalServiceKit/NotificationsProtocol.h>
+#import <RelayServiceKit/NotificationsProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

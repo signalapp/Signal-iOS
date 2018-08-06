@@ -15,10 +15,10 @@
 #import <MessageUI/MessageUI.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/AppVersion.h>
+#import <RelayServiceKit/PhoneNumberUtil.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

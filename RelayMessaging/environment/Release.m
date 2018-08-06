@@ -6,9 +6,9 @@
 #import "Environment.h"
 #import "NotificationsManager.h"
 #import "OWSContactsManager.h"
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/TSNetworkManager.h>
+#import <RelayServiceKit/ContactsUpdater.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/TSNetworkManager.h>
 
 @implementation Release
 

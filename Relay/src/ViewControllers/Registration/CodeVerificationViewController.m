@@ -8,9 +8,9 @@
 #import "Relay-Swift.h"
 #import <PromiseKit/AnyPromise.h>
 #import <RelayMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
+#import <RelayServiceKit/OWSError.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
 
-                if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+                if ([error.domain isEqualToString:OWSRelayServiceKitErrorDomain]
                     && error.code == OWSErrorCodeRegistrationMissing2FAPIN) {
                     CodeVerificationViewController *strongSelf = weakSelf;
                     if (!strongSelf) {

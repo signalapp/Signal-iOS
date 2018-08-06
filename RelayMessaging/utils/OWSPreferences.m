@@ -3,12 +3,12 @@
 //
 
 #import "OWSPreferences.h"
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/TSStorageHeaders.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
-#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/NSNotificationCenter+OWS.h>
+#import <RelayServiceKit/NSUserDefaults+OWS.h>
+#import <RelayServiceKit/TSStorageHeaders.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/YapDatabaseTransaction+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

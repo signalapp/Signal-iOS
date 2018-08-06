@@ -5,9 +5,9 @@
 #import "SignalsNavigationController.h"
 #import "Relay-Swift.h"
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/TSSocketManager.h>
+#import <RelayServiceKit/NSTimer+OWS.h>
+#import <RelayServiceKit/OWSSignalService.h>
+#import <RelayServiceKit/TSSocketManager.h>
 
 static double const STALLED_PROGRESS = 0.9;
 

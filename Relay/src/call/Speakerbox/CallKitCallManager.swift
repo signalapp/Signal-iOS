@@ -4,7 +4,7 @@
 
 import UIKit
 import CallKit
-import SignalServiceKit
+import RelayServiceKit
 
 /**
  * Requests actions from CallKit

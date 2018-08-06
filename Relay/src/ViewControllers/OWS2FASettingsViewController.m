@@ -12,7 +12,7 @@
 #import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
-#import <SignalServiceKit/OWS2FAManager.h>
+#import <RelayServiceKit/OWS2FAManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

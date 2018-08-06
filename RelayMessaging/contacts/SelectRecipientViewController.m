@@ -15,12 +15,12 @@
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/ContactsUpdater.h>
+#import <RelayServiceKit/OWSBlockingManager.h>
+#import <RelayServiceKit/PhoneNumberUtil.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

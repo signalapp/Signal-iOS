@@ -11,8 +11,8 @@
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/OWSFormat.h>
 #import <RelayMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/MimeTypeUtil.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/MimeTypeUtil.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

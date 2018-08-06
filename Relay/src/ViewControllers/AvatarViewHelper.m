@@ -8,10 +8,10 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/PhoneNumber.h>
+#import <RelayServiceKit/TSGroupModel.h>
+#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

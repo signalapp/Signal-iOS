@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 class DebugUICalling: DebugUIPage {

@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 import YYImage
 

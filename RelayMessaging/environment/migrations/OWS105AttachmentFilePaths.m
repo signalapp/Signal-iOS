@@ -3,7 +3,7 @@
 //
 
 #import "OWS105AttachmentFilePaths.h"
-#import <SignalServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN

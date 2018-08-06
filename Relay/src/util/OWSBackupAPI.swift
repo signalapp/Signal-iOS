@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import RelayServiceKit
 import CloudKit
 
 // We don't worry about atomic writes.  Each backup export

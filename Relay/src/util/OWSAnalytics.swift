@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import RelayServiceKit
 
 func FormatAnalyticsLocation(file: String, function: String) -> NSString {
     return "\((file as NSString).lastPathComponent):\(function)" as NSString

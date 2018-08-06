@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/AppContext.h>
+#import <RelayServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

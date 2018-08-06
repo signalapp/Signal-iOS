@@ -3,9 +3,9 @@
 //
 
 #import "SignalKeyingStorage.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/SecurityUtils.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
 
 #define SignalKeyingCollection @"SignalKeyingCollection"
 

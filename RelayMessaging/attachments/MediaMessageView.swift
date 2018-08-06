@@ -5,7 +5,7 @@
 import Foundation
 import MediaPlayer
 import YYImage
-import SignalServiceKit
+import RelayServiceKit
 
 @objc
 public enum MediaMessageViewMode: UInt {

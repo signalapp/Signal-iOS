@@ -12,10 +12,10 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
+#import <RelayServiceKit/OWSError.h>
+#import <RelayServiceKit/OWSFingerprint.h>
+#import <RelayServiceKit/OWSFingerprintBuilder.h>
+#import <RelayServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

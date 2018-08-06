@@ -13,10 +13,10 @@ Instructions on how to set up your development environment and build Signal-iOS 
 ## Contributing Ideas
 Have something you want to say about Open Whisper Systems projects or want to be part of the conversation? Get involved in the [community forum](https://community.signalusers.org).
 
-## SignalServiceKit
+## RelayServiceKit
 
-Check out the [SignalServiceKit README](SignalServiceKit/README.md) for
-details about using SignalServiceKit in your own app.
+Check out the [RelayServiceKit README](RelayServiceKit/README.md) for
+details about using RelayServiceKit in your own app.
 
 ## Cryptography Notice
 

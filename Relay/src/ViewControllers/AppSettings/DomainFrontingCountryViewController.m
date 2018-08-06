@@ -7,7 +7,7 @@
 #import "OWSTableViewController.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalServiceKit/OWSSignalService.h>
+#import <RelayServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

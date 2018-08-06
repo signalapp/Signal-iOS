@@ -4,8 +4,8 @@
 
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/UIImage+OWS.h>
+#import <RelayServiceKit/MIMETypeUtil.h>
+#import <RelayServiceKit/UIImage+OWS.h>
 
 typedef void (^completionBlock)(void);
 

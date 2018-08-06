@@ -2,7 +2,7 @@
 //  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
-import SignalServiceKit
+import RelayServiceKit
 
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {

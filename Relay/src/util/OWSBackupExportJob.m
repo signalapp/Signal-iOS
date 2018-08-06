@@ -7,16 +7,16 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "Relay-Swift.h"
-#import <SignalServiceKit/NSData+Base64.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/TSAttachment.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSMessage.h>
-#import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/Threading.h>
+#import <RelayServiceKit/NSData+Base64.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSBackgroundTask.h>
+#import <RelayServiceKit/OWSError.h>
+#import <RelayServiceKit/OWSFileSystem.h>
+#import <RelayServiceKit/TSAttachment.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/TSMessage.h>
+#import <RelayServiceKit/TSThread.h>
+#import <RelayServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
