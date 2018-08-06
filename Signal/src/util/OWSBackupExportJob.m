@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSMutableArray<OWSBackupExportItem *> *exportItems;
 
-@property (nonatomic, nullable) OWSSignaliOSProtosBackupSnapshotBuilder *backupSnapshotBuilder;
+@property (nonatomic, nullable) SignalIOSProtoBackupSnapshotBuilder *backupSnapshotBuilder;
 
 @property (nonatomic) NSUInteger cachedItemCount;
 
@@ -111,8 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 // It isn't strictly necessary to capture the entity type (the importer doesn't
 // use this state), but I think it'll be helpful to have around to future-proof
 // this work, help with debugging issue, etc.
-- (BOOL)writeObject:(TSYapDatabaseObject *)object
-         entityType:(OWSSignaliOSProtosBackupSnapshotBackupEntityType)entityType
+- (BOOL)writeObject:(TSYapDatabaseObject *)object entityType:(SignalIOSProtoBackupSnapshotBackupEntityType)entityType
 {
     OWSAssert(object);
 
@@ -123,15 +122,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.backupSnapshotBuilder) {
-        self.backupSnapshotBuilder = [OWSSignaliOSProtosBackupSnapshotBuilder new];
+        self.backupSnapshotBuilder = [SignalIOSProtoBackupSnapshotBuilder new];
     }
 
-    OWSSignaliOSProtosBackupSnapshotBackupEntityBuilder *entityBuilder =
-        [OWSSignaliOSProtosBackupSnapshotBackupEntityBuilder new];
+    SignalIOSProtoBackupSnapshotBackupEntityBuilder *entityBuilder =
+        [SignalIOSProtoBackupSnapshotBackupEntityBuilder new];
     [entityBuilder setType:entityType];
     [entityBuilder setEntityData:data];
 
-    [self.backupSnapshotBuilder addEntity:[entityBuilder build]];
+    NSError *error;
+    SignalIOSProtoBackupSnapshotBackupEntity *_Nullable entity = [entityBuilder buildAndReturnError:&error];
+    if (!entity || error) {
+        OWSProdLogAndFail(@"%@ couldn't build proto: %@", self.logTag, error);
+        return NO;
+    }
+
+    [self.backupSnapshotBuilder addEntity:entity];
 
     self.cachedItemCount = self.cachedItemCount + 1;
     self.totalItemCount = self.totalItemCount + 1;
@@ -158,7 +164,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Try to release allocated buffers ASAP.
     @autoreleasepool {
-        NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder build].data;
+        NSError *error;
+        NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder buildSerializedDataAndReturnError:&error];
+        if (!uncompressedData || error) {
+            OWSProdLogAndFail(@"%@ couldn't serialize proto: %@", self.logTag, error);
+            return NO;
+        }
+
         NSUInteger uncompressedDataLength = uncompressedData.length;
         self.backupSnapshotBuilder = nil;
         self.cachedItemCount = 0;
@@ -475,12 +487,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *,
         Class,
         EntityFilter _Nullable,
-        OWSSignaliOSProtosBackupSnapshotBackupEntityType);
+        SignalIOSProtoBackupSnapshotBackupEntityType);
     ExportBlock exportEntities = ^(YapDatabaseReadTransaction *transaction,
         NSString *collection,
         Class expectedClass,
         EntityFilter _Nullable filter,
-        OWSSignaliOSProtosBackupSnapshotBackupEntityType entityType) {
+        SignalIOSProtoBackupSnapshotBackupEntityType entityType) {
         __block NSUInteger count = 0;
         [transaction
             enumerateKeysAndObjectsInCollection:collection
@@ -518,7 +530,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSThread collection],
             [TSThread class],
             nil,
-            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeThread);
+            SignalIOSProtoBackupSnapshotBackupEntityTypeThread);
         if (aborted) {
             return;
         }
@@ -548,7 +560,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 return YES;
             },
-            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeAttachment);
+            SignalIOSProtoBackupSnapshotBackupEntityTypeAttachment);
         if (aborted) {
             return;
         }
@@ -572,7 +584,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 return YES;
             },
-            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeInteraction);
+            SignalIOSProtoBackupSnapshotBackupEntityTypeInteraction);
         if (aborted) {
             return;
         }
@@ -581,7 +593,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSDatabaseMigration collection],
             [OWSDatabaseMigration class],
             nil,
-            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeMigration);
+            SignalIOSProtoBackupSnapshotBackupEntityTypeMigration);
     }];
 
     if (aborted || self.isComplete) {

@@ -7,7 +7,6 @@ shift-base:CodedInputStream.m
 bool:WebSocketResources.pb.m
 bool:WhisperTextProtocol.pb.m
 bool:OWSWebRTCDataProtos.pb.m
-bool:OWSSignaliOSProtos.pb.m
 
 # YapDatabase
 bool:YapDatabaseAutoViewTransaction.m
