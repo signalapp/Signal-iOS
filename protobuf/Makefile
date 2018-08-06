@@ -5,10 +5,6 @@ WRAPPER_SCRIPT=../Scripts/ProtoWrappers.py \
 
 all: webrtc_data_proto
 
-# webrtc_data_proto: OWSWebRTCDataProtos.proto
-# 	$(PROTOC) --objc_out=../Signal/src/call/ \
-# 		OWSWebRTCDataProtos.proto
-
 webrtc_data_proto: OWSWebRTCDataProtos.proto
 	$(PROTOC) --swift_out=../Signal/src/Generated \
 		OWSWebRTCDataProtos.proto
