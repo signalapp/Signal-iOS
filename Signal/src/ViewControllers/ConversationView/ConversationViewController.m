@@ -822,6 +822,7 @@ typedef enum : NSUInteger {
 {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
+    self.collapseCutoffDate = [NSDate new];
     [self reloadViewItems];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
@@ -1780,6 +1781,7 @@ typedef enum : NSUInteger {
 
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
     [self updateShowLoadMoreHeader];
+    self.collapseCutoffDate = [NSDate new];
     [self reloadViewItems];
 }
 
@@ -4783,6 +4785,7 @@ typedef enum : NSUInteger {
         }];
         [self updateMessageMappingRangeOptions];
     }
+    self.collapseCutoffDate = [NSDate new];
     [self reloadViewItems];
 
     [self resetContentAndLayout];
@@ -4820,8 +4823,6 @@ typedef enum : NSUInteger {
 // cell view models.
 - (void)reloadViewItems
 {
-    self.collapseCutoffDate = [NSDate new];
-
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
