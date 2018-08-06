@@ -91,6 +91,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;
 
+@property (atomic, readonly) NSDate *appLaunchTime;
+
 @end
 
 id<AppContext> CurrentAppContext(void);
