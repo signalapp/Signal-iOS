@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
 
 // NOTE: This method uses a transaction.
-- (NSString *)localNumber;
+- (NSString *)localUID;
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
 

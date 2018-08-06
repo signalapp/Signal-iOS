@@ -3,10 +3,10 @@
 //
 
 #import "ThreadViewHelper.h"
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSDatabaseView.h>
+#import <RelayServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>

@@ -1075,7 +1075,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     if ([thread isKindOfClass:[TSGroupThread class]]) {
 
         TSGroupThread *gThread = (TSGroupThread *)thread;
-        if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+        if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localUID]]) {
             UIAlertController *removingFromGroup = [UIAlertController
                 alertControllerWithTitle:[NSString
                                              stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]

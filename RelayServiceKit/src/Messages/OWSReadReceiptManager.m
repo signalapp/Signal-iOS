@@ -323,7 +323,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
-            if ([message.messageAuthorId isEqualToString:[TSAccountManager localNumber]]) {
+            if ([message.messageAuthorId isEqualToString:[TSAccountManager localUID]]) {
                 DDLogVerbose(@"%@ Ignoring read receipt for self-sender.", self.logTag);
                 return;
             }

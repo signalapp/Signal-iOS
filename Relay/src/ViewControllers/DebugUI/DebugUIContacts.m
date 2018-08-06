@@ -1349,7 +1349,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSString *> *recipientIds = [@[
         unregisteredRecipientId,
         validRecipientId,
-        [TSAccountManager localNumber],
+        [TSAccountManager localUID],
     ] mutableCopy];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
     TSGroupModel *model =

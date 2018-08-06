@@ -42,11 +42,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 {
     OWSAssert(groupId.length > 0);
 
-    NSString *localNumber = [TSAccountManager localNumber];
-    OWSAssert(localNumber.length > 0);
+    NSString *localUID = [TSAccountManager localUID];
+    OWSAssert(localUID.length > 0);
 
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
-                                                         memberIds:@[ localNumber ]
+                                                         memberIds:@[ localUID ]
                                                              image:nil
                                                            groupId:groupId];
 
@@ -139,7 +139,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
         return @[];
     }
 
-    [groupMemberIds removeObject:[TSAccountManager localNumber]];
+    [groupMemberIds removeObject:[TSAccountManager localUID]];
 
     return [groupMemberIds copy];
 }

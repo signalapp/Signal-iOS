@@ -3,7 +3,7 @@
 //
 
 #import "LockInteractionController.h"
-#import <SignalServiceKit/AppContext.h>
+#import <RelayServiceKit/AppContext.h>
 
 @interface LockInteractionController ()
 

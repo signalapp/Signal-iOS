@@ -1001,7 +1001,7 @@ const CGFloat kIconViewLength = 24;
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-    [newGroupMemberIds removeObject:[self.accountManager localNumber]];
+    [newGroupMemberIds removeObject:[self.accountManager localUID]];
     gThread.groupModel.groupMemberIds = newGroupMemberIds;
     [gThread save];
 

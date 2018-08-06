@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[helper localNumber]];
+    [memberRecipientIds removeObject:[helper localUID]];
     [self addMembers:memberRecipientIds.allObjects toSection:membersSection useVerifyAction:NO];
     [contents addSection:membersSection];
 

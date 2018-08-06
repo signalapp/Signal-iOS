@@ -3801,7 +3801,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSString *groupName = [NSUUID UUID].UUIDString;
     NSMutableArray<NSString *> *recipientIds = [@[
         recipientId,
-        [TSAccountManager localNumber],
+        [TSAccountManager localUID],
     ] mutableCopy];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
     TSGroupModel *groupModel =
@@ -4202,7 +4202,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         @(now - 2 * (long long)kMonthInMs),
     ];
     NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
-    [recipientIds removeObject:[TSAccountManager localNumber]];
+    [recipientIds removeObject:[TSAccountManager localUID]];
     NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
 
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -4291,7 +4291,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                     NSString *groupName = string;
                     NSMutableArray<NSString *> *recipientIds = [@[
                         recipientId,
-                        [TSAccountManager localNumber],
+                        [TSAccountManager localUID],
                     ] mutableCopy];
                     NSData *groupId = [SecurityUtils generateRandomBytes:16];
                     TSGroupModel *groupModel =
@@ -4330,7 +4330,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                     NSString *groupName = string;
                     NSMutableArray<NSString *> *recipientIds = [@[
                         recipientId,
-                        [TSAccountManager localNumber],
+                        [TSAccountManager localUID],
                     ] mutableCopy];
                     NSData *groupId = [SecurityUtils generateRandomBytes:16];
                     TSGroupModel *groupModel =

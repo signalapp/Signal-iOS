@@ -401,8 +401,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     NSString *countryCode = self.countryCode;
     NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, phoneNumberText];
-    PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
-    NSString *parsedPhoneNumber = localNumber.toE164;
+    PhoneNumber *localUID = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
+    NSString *parsedPhoneNumber = localUID.toE164;
     if (parsedPhoneNumber.length < 1) {
         [OWSAlerts showAlertWithTitle:
                        NSLocalizedString(@"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",

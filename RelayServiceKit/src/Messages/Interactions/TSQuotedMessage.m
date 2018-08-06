@@ -214,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
                                    return [authorId isEqual:incomingMessage.messageAuthorId];
                                } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                   return [authorId isEqual:[TSAccountManager localNumber]];
+                                   return [authorId isEqual:[TSAccountManager localUID]];
                                } else {
                                    // ignore other interaction types
                                    return NO;

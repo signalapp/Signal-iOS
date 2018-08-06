@@ -519,7 +519,7 @@ typedef enum : NSUInteger {
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return ![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]];
+    return ![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localUID]];
 }
 
 - (void)hideInputIfNeeded
@@ -1543,7 +1543,7 @@ typedef enum : NSUInteger {
 - (BOOL)canCall
 {
     return !(self.isGroupConversation ||
-        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
+        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localUID]]);
 }
 
 #pragma mark - Dynamic Text
@@ -4355,7 +4355,7 @@ typedef enum : NSUInteger {
     OWSAssert(groupModel);
 
     NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
-    [groupMemberIds addObject:[TSAccountManager localNumber]];
+    [groupMemberIds addObject:[TSAccountManager localUID]];
     groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
     [self updateGroupModelTo:groupModel successCompletion:nil];
 }

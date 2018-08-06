@@ -450,7 +450,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(direction != TSMessageDirectionUnknown);
     OWSAssert(transaction);
 
-    if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
+    if ([[TSAccountManager localUID] isEqualToString:recipientId]) {
         ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairWithTransaction:transaction];
 
         if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {

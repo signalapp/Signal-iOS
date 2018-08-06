@@ -97,7 +97,7 @@
     OWSAssert(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authUsername ?: [TSAccountManager localNumber]);
+        return (_authUsername ?: [TSAccountManager localUID]);
     }
 }
 

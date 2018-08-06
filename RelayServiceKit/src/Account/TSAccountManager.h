@@ -10,7 +10,7 @@ extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
 extern NSString *const DeregistrationStateDidChangeNotification;
-extern NSString *const kNSNotificationName_LocalNumberDidChange;
+extern NSString *const kNSNotificationName_LocalUIDDidChange;
 
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
@@ -47,8 +47,8 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  *
  *  @return E164 formatted phone number
  */
-+ (nullable NSString *)localNumber;
-- (nullable NSString *)localNumber;
++ (nullable NSString *)localUID;
+- (nullable NSString *)localUID;
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
@@ -74,6 +74,17 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 + (uint32_t)getOrGenerateRegistrationId;
 + (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
+
+// MARK: Forsta additions
++(nullable NSString *)orgname;
+-(nullable NSString *)orgname;
+
++(nullable NSString *)username;
+-(nullable NSString *)username;
+
++(nullable NSString *)sessiontoken;
+-(nullable NSString *)sessiontoken;
+
 
 #pragma mark - Register with phone number
 

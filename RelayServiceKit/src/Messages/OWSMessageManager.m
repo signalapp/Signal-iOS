@@ -594,7 +594,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert([TSAccountManager isRegistered]);
 
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
     if (![localNumber isEqualToString:envelope.source]) {
         // Sync messages should only come from linked devices.
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
@@ -880,7 +880,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Ensure we are in the group.
     OWSAssert([TSAccountManager isRegistered]);
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
     if (![gThread.groupModel.groupMemberIds containsObject:localNumber]) {
         DDLogWarn(@"%@ Ignoring 'Request Group Info' message for group we no longer belong to.", self.logTag);
         return;
@@ -1105,7 +1105,7 @@ NS_ASSUME_NONNULL_BEGIN
     [incomingMessage saveWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([envelope.source isEqualToString:TSAccountManager.localNumber]) {
+    if ([envelope.source isEqualToString:TSAccountManager.localUID]) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
