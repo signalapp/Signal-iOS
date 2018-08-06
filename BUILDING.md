@@ -41,7 +41,7 @@ Else if the above completed without error - jump ahead to step 3.
 
 ### Dependency Details
 
-We have a couple of dependency management tools. We us Carthage for
+We have a couple of dependency management tools. We use Carthage for
 managing frameworks, but because some of our dependencies are not yet
 framework compatible, we use Cocoapods to manage the remainder in a
 static library.
