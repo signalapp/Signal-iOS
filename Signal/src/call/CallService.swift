@@ -712,10 +712,18 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
 
-            let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
-            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
+            let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder()
+            answerBuilder.setId(newCall.signalingId)
+            answerBuilder.setSessionDescription(negotiatedSessionDescription.sdp)
+            do {
+                let answer = try answerBuilder.build()
+                let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answer)
 
-            return self.messageSender.sendPromise(message: callAnswerMessage)
+                return self.messageSender.sendPromise(message: callAnswerMessage)
+            } catch {
+                owsFail("Couldn't build proto in \(#function)")
+                throw CallError.protoErro(description: "Couldn't build proto in \(#function)")
+            }
         }.then {
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")

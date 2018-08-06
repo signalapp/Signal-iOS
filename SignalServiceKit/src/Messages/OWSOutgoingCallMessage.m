@@ -4,7 +4,6 @@
 
 #import "OWSOutgoingCallMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSCallAnswerMessage.h"
 #import "OWSCallBusyMessage.h"
 #import "OWSCallHangupMessage.h"
 #import "OWSCallIceUpdateMessage.h"
@@ -50,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread answerMessage:(OWSCallAnswerMessage *)answerMessage
+- (instancetype)initWithThread:(TSThread *)thread answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -150,11 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.answerMessage) {
-        SSKProtoCallMessageAnswer *_Nullable proto = [self.answerMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setAnswer:proto];
+        [builder setAnswer:self.answerMessage];
     }
 
     if (self.iceUpdateMessages) {

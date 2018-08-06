@@ -82,7 +82,6 @@
 #import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSCallAnswerMessage.h>
 #import <SignalServiceKit/OWSCallBusyMessage.h>
 #import <SignalServiceKit/OWSCallHangupMessage.h>
 #import <SignalServiceKit/OWSCallIceUpdateMessage.h>
