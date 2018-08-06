@@ -12,10 +12,10 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/OWSBlockingManager.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSGroupModel.h>
+#import <RelayServiceKit/TSGroupThread.h>
 
 @import ContactsUI;
 

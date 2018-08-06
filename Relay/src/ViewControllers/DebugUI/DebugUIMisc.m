@@ -12,15 +12,15 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <RelayMessaging/AttachmentSharing.h>
 #import <RelayMessaging/Environment.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/UIImage+OWS.h>
+#import <RelayServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
+#import <RelayServiceKit/SecurityUtils.h>
+#import <RelayServiceKit/TSCall.h>
+#import <RelayServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <RelayServiceKit/TSThread.h>
+#import <RelayServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

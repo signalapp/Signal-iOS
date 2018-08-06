@@ -6,13 +6,13 @@
 #import "Environment.h"
 #import "OWSContactsManager.h"
 #import "OWSProfileManager.h"
-#import <SignalServiceKit/DataSource.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/OWSSyncContactsMessage.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/DataSource.h>
+#import <RelayServiceKit/MIMETypeUtil.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/OWSSyncContactsMessage.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -10,9 +10,9 @@
 #import <RelayMessaging/OWSDatabaseMigration.h>
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
+#import <RelayServiceKit/OWSBackgroundTask.h>
+#import <RelayServiceKit/OWSStorage.h>
+#import <RelayServiceKit/TextSecureKitEnv.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

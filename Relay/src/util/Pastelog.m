@@ -11,12 +11,12 @@
 #import <RelayMessaging/AttachmentSharing.h>
 #import <RelayMessaging/DebugLogger.h>
 #import <RelayMessaging/Environment.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/MimeTypeUtil.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/Threading.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/MimeTypeUtil.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

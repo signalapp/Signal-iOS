@@ -7,12 +7,12 @@
 #import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "SignalKeyingStorage.h"
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/AppVersion.h>
+#import <RelayServiceKit/NSUserDefaults+OWS.h>
+#import <RelayServiceKit/OWSRequestFactory.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -5,16 +5,16 @@
 #import "OWSQuotedReplyModel.h"
 #import "ConversationViewItem.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSAttachmentPointer.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSMessage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/MIMETypeUtil.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSAttachmentPointer.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/TSIncomingMessage.h>
+#import <RelayServiceKit/TSMessage.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/TSQuotedMessage.h>
+#import <RelayServiceKit/TSThread.h>
 
 // View Model which has already fetched any thumbnail attachment.
 @implementation OWSQuotedReplyModel

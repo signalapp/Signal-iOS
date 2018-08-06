@@ -3,7 +3,7 @@
 //
 
 import XCTest
-@testable import SignalServiceKit
+@testable import RelayServiceKit
 
 class ContactDiscoveryOperationTest: XCTestCase {
 

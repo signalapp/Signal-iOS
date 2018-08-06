@@ -3,8 +3,8 @@
 //
 
 #import "OWS104CreateRecipientIdentities.h"
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <RelayServiceKit/OWSIdentityManager.h>
+#import <RelayServiceKit/OWSRecipientIdentity.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

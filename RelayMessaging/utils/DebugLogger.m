@@ -4,9 +4,9 @@
 
 #import "DebugLogger.h"
 #import "OWSScrubbingLogFormatter.h"
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSFileSystem.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSFileSystem.h>
 
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.
 #import <CocoaLumberjack/DDTTYLogger.h>

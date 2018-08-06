@@ -5,7 +5,7 @@
 #import "SAEScreenLockViewController.h"
 #import "UIColor+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
+#import <RelayServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

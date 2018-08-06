@@ -4,7 +4,7 @@
 
 import Foundation
 import MediaPlayer
-import SignalServiceKit
+import RelayServiceKit
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).

@@ -16,11 +16,11 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/PhoneNumber.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

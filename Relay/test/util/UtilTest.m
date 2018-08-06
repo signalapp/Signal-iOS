@@ -6,9 +6,9 @@
 #import "DateUtil.h"
 #import "TestUtil.h"
 #import <RelayMessaging/NSString+OWS.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/NSObject+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/NSObject+OWS.h>
+#import <RelayServiceKit/NSString+SSK.h>
 
 @interface DateUtil (Test)
 

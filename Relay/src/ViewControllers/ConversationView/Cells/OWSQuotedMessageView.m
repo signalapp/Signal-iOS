@@ -11,9 +11,9 @@
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSMessage.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/TSMessage.h>
+#import <RelayServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

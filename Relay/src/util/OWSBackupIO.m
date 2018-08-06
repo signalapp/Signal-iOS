@@ -4,7 +4,7 @@
 
 #import "OWSBackupIO.h"
 #import <Curve25519Kit/Randomness.h>
-#import <SignalServiceKit/OWSFileSystem.h>
+#import <RelayServiceKit/OWSFileSystem.h>
 
 @import Compression;
 

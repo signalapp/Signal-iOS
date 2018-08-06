@@ -14,7 +14,7 @@
 #import <Reachability/Reachability.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSPreferences.h>
-#import <SignalServiceKit/OWSSignalService.h>
+#import <RelayServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

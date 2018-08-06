@@ -5,11 +5,11 @@
 #import "DebugUIDiskUsage.h"
 #import "OWSTableViewController.h"
 #import "Relay-Swift.h"
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSOrphanedDataCleaner.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSInteraction.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSOrphanedDataCleaner.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSDatabaseView.h>
+#import <RelayServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-import SignalServiceKit
+import RelayServiceKit
 
 @objc
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {

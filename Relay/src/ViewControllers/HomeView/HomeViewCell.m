@@ -9,9 +9,9 @@
 #import <RelayMessaging/OWSMath.h>
 #import <RelayMessaging/OWSUserProfile.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/OWSMessageManager.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

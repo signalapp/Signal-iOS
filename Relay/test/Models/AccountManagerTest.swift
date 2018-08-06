@@ -4,7 +4,7 @@
 
 import XCTest
 import PromiseKit
-import SignalServiceKit
+import RelayServiceKit
 @testable import Signal
 
 struct VerificationFailedError: Error { }

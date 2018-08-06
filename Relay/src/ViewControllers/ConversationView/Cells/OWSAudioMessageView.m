@@ -9,7 +9,7 @@
 #import "ViewControllerUtils.h"
 #import <RelayMessaging/OWSFormat.h>
 #import <RelayMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
+#import <RelayServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
