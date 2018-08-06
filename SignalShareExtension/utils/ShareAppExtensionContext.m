@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateActive;
 
+    _appLaunchTime = [NSDate new];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(extensionHostDidBecomeActive:)
                                                  name:NSExtensionHostDidBecomeActiveNotification

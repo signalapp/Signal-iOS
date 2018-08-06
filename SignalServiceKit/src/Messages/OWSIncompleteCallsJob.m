@@ -3,6 +3,7 @@
 //
 
 #import "OWSIncompleteCallsJob.h"
+#import "AppContent.h"
 #import "OWSPrimaryStorage.h"
 #import "TSCall.h"
 #import <YapDatabase/YapDatabase.h>
@@ -78,9 +79,17 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
 {
     __block uint count = 0;
 
+    OWSAssert(CurrentAppContext().appLaunchTime);
+    uint64_t cutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:CurrentAppContext().appLaunchTime];
+
     [[self.primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
+                if (call.timestamp <= cutoffTimestamp) {
+                    inc DDLogInfo(@"%@ ignoring new call: %@", self.logTag, call.uniqueId);
+                    return;
+                }
+
                 if (call.callType == RPRecentCallTypeOutgoingIncomplete) {
                     DDLogDebug(@"%@ marking call as missed: %@", self.logTag, call.uniqueId);
                     [call updateCallType:RPRecentCallTypeOutgoingMissed transaction:transaction];
@@ -99,7 +108,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
                                   transaction:transaction];
     }];
 
-    DDLogDebug(@"%@ Marked %u calls as missed", self.logTag, count);
+    DDLogInfo(@"%@ Marked %u calls as missed", self.logTag, count);
 }
 
 #pragma mark - YapDatabaseExtension
