@@ -69,6 +69,8 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 
 + (nullable NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString;
 
++ (nullable NSData *)computeSHA256HMAC:(NSData *)data withHMACKey:(NSData *)HMACKey;
+
 #pragma mark encrypt and decrypt attachment data
 
 // Though digest can and will be nil for legacy clients, we now reject attachments lacking a digest.
