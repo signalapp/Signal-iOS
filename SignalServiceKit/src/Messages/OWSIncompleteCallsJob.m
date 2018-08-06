@@ -87,7 +87,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
                 if (call.timestamp <= cutoffTimestamp) {
-                    inc DDLogInfo(@"%@ ignoring new call: %@", self.logTag, call.uniqueId);
+                    DDLogInfo(@"%@ ignoring new call: %@", self.logTag, call.uniqueId);
                     return;
                 }
 
