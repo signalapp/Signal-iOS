@@ -259,14 +259,20 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)formatDateShort:(NSDate *)date
 {
+    OWSAssertIsOnMainThread();
     OWSAssert(date);
+
+    NSDate *now = [NSDate date];
+    NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
+    BOOL dateIsOlderThanToday = dayDifference > 0;
+    BOOL dateIsOlderThanOneWeek = dayDifference > 6;
 
     NSString *dateTimeString;
     if (![DateUtil dateIsThisYear:date]) {
         dateTimeString = [[DateUtil dateFormatter] stringFromDate:date];
-    } else if ([DateUtil dateIsOlderThanOneWeek:date]) {
+    } else if (dateIsOlderThanOneWeek) {
         dateTimeString = [[DateUtil monthAndDayFormatter] stringFromDate:date];
-    } else if ([DateUtil dateIsOlderThanToday:date]) {
+    } else if (dateIsOlderThanToday) {
         dateTimeString = [[DateUtil shortDayOfWeekFormatter] stringFromDate:date];
     } else {
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];

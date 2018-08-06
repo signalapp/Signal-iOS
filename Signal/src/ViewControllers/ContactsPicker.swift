@@ -28,12 +28,11 @@ public enum SubtitleCellValue: Int {
 @objc
 public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
-    @IBOutlet var tableView: UITableView!
-    @IBOutlet var searchBar: UISearchBar!
+    var tableView: UITableView!
+    var searchBar: UISearchBar!
 
     // MARK: - Properties
 
-    private let TAG = "[ContactsPicker]"
     private let contactCellReuseIdentifier = "contactCellReuseIdentifier"
 
     private var contactsManager: OWSContactsManager {
@@ -84,7 +83,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
         self.allowsMultipleSelection = allowsMultipleSelection
         self.subtitleCellType = subtitleCellType
-        super.init(nibName: "ContactsPicker", bundle: nil)
+        super.init(nibName: nil, bundle: nil)
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -92,6 +91,26 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     // MARK: - Lifecycle Methods
+
+    override public func loadView() {
+        self.view = UIView()
+        let tableView = UITableView()
+        self.tableView = tableView
+
+        view.addSubview(tableView)
+        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        let searchBar = UISearchBar()
+        self.searchBar = searchBar
+        searchBar.searchBarStyle = .minimal
+        searchBar.delegate = self
+        searchBar.backgroundColor = .white
+        searchBar.sizeToFit()
+
+        tableView.tableHeaderView = searchBar
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -102,8 +121,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.searchBar.backgroundColor = Theme.backgroundColor
         self.searchBar.barStyle = Theme.barStyle()
         searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
-        // Prevent content from going under the navigation bar
-        self.edgesForExtendedLayout = []
 
         // Auto size cells for dynamic type
         tableView.estimatedRowHeight = 60.0
@@ -145,7 +162,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     private func reloadContacts() {
         getContacts( onError: { error in
-            Logger.error("\(self.TAG) failed to reload contacts with error:\(error)")
+            Logger.error("\(self.logTag) failed to reload contacts with error:\(error)")
         })
     }
 
@@ -197,7 +214,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                     }
                     self.sections = collatedContacts(contacts)
                 } catch let error as NSError {
-                    Logger.error("\(self.TAG) Failed to fetch contacts with error:\(error)")
+                    Logger.error("\(self.logTag) Failed to fetch contacts with error:\(error)")
                 }
         }
     }
@@ -336,7 +353,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 let filteredContacts = try contactStore.unifiedContacts(matching: predicate, keysToFetch: allowedContactKeys)
                     filteredSections = collatedContacts(filteredContacts)
             } catch let error as NSError {
-                Logger.error("\(self.TAG) updating search results failed with error: \(error)")
+                Logger.error("\(self.logTag) updating search results failed with error: \(error)")
             }
         }
         self.tableView.reloadData()

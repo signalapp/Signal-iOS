@@ -234,6 +234,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic, nullable) NSDate *lastReloadDate;
+@property (nonatomic, nullable) NSDate *collapseCutoffDate;
 
 @end
 
@@ -713,6 +714,8 @@ typedef enum : NSUInteger {
     [self updateBarButtonItems];
     [self updateNavigationTitle];
 
+    [self resetContentAndLayout];
+
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self scrollToDefaultPosition];
@@ -809,9 +812,10 @@ typedef enum : NSUInteger {
 - (void)resetContentAndLayout
 {
     // Avoid layout corrupt issues and out-of-date message subtitles.
+    self.lastReloadDate = [NSDate new];
+    [self reloadViewItems];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
-    self.lastReloadDate = [NSDate new];
 }
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
@@ -3370,10 +3374,9 @@ typedef enum : NSUInteger {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
         OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
-        [self reloadViewItems];
-        [self.collectionView reloadData];
-        self.lastReloadDate = [NSDate new];
+        [self resetContentAndLayout];
         [self updateLastVisibleTimestamp];
+        [self scrollToBottomAnimated:NO];
         return;
     }
 
@@ -4346,8 +4349,7 @@ typedef enum : NSUInteger {
 {
     [self.conversationStyle updateProperties];
     [self.headerView updateAvatar];
-    [self.collectionView reloadData];
-    self.lastReloadDate = [NSDate new];
+    [self resetContentAndLayout];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
@@ -4814,6 +4816,8 @@ typedef enum : NSUInteger {
 // cell view models.
 - (void)reloadViewItems
 {
+    self.collapseCutoffDate = [NSDate new];
+
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
@@ -4858,6 +4862,8 @@ typedef enum : NSUInteger {
     BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
     OWSUnreadIndicator *_Nullable unreadIndicator = self.dynamicInteractions.unreadIndicator;
+    uint64_t collapseCutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:self.collapseCutoffDate];
+
     BOOL hasPlacedUnreadIndicator = NO;
     for (ConversationViewItem *viewItem in viewItems) {
         BOOL canShowDate = NO;
@@ -5065,6 +5071,10 @@ typedef enum : NSUInteger {
                         || nextViewItem.hasCellHeader);
                 }
             }
+        }
+
+        if (viewItem.interaction.timestampForSorting > collapseCutoffTimestamp) {
+            shouldHideFooter = NO;
         }
 
         viewItem.isFirstInCluster = isFirstInCluster;
