@@ -8,7 +8,6 @@
 #import "OWSCallBusyMessage.h"
 #import "OWSCallHangupMessage.h"
 #import "OWSCallIceUpdateMessage.h"
-#import "OWSCallOfferMessage.h"
 #import "ProtoUtils.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
@@ -39,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread offerMessage:(OWSCallOfferMessage *)offerMessage
+- (instancetype)initWithThread:(TSThread *)thread offerMessage:(SSKProtoCallMessageOffer *)offerMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -147,11 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessageBuilder new];
 
     if (self.offerMessage) {
-        SSKProtoCallMessageOffer *_Nullable proto = [self.offerMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setOffer:proto];
+        [builder setOffer:self.offerMessage];
     }
 
     if (self.answerMessage) {

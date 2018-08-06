@@ -87,7 +87,6 @@
 #import <SignalServiceKit/OWSCallHangupMessage.h>
 #import <SignalServiceKit/OWSCallIceUpdateMessage.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
-#import <SignalServiceKit/OWSCallOfferMessage.h>
 #import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>

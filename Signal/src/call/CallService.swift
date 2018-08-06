@@ -78,6 +78,7 @@ public enum CallError: Error {
     case externalError(underlyingError: Error)
     case timeout(description: String)
     case obsoleteCall(description: String)
+    case protoErro(description: String)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -407,9 +408,17 @@ private class SignalCallData: NSObject {
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
-                let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
-                let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offerMessage)
-                return self.messageSender.sendPromise(message: callMessage)
+                let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder()
+                offerBuilder.setId(call.signalingId)
+                offerBuilder.setSessionDescription(sessionDescription.sdp)
+                do {
+                    let offer = try offerBuilder.build()
+                    let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offer)
+                    return self.messageSender.sendPromise(message: callMessage)
+                } catch {
+                    owsFail("Couldn't build proto in \(#function)")
+                    throw CallError.protoErro(description: "Couldn't build proto in \(#function)")
+                }
             }
         }.then {
             guard self.call == call else {
