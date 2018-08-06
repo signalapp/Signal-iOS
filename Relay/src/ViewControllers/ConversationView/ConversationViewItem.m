@@ -12,8 +12,8 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/OWSUnreadIndicator.h>
-#import <SignalServiceKit/OWSContact.h>
-#import <SignalServiceKit/TSInteraction.h>
+#import <RelayServiceKit/OWSContact.h>
+#import <RelayServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

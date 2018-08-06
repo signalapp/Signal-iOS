@@ -9,9 +9,9 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/ThreadUtil.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWS2FAManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <RelayServiceKit/NSString+SSK.h>
+#import <RelayServiceKit/OWS2FAManager.h>
+#import <RelayServiceKit/OWSReadReceiptManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,6 +1,6 @@
 //  Copyright © 2016 Open Whisper Systems. All rights reserved.
 
-#import <SignalServiceKit/OWSDevice.h>
+#import <RelayServiceKit/OWSDevice.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

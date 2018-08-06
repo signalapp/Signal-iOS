@@ -4,7 +4,7 @@
 
 #import "OWSMath.h"
 #import "UIColor+OWS.h"
-#import <SignalServiceKit/Cryptography.h>
+#import <RelayServiceKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,7 +4,7 @@
 
 import UIKit
 import Contacts
-import SignalServiceKit
+import RelayServiceKit
 
 class ContactCell: UITableViewCell {
 

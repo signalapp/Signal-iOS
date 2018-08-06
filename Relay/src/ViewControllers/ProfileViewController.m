@@ -16,8 +16,8 @@
 #import <RelayMessaging/OWSNavigationController.h>
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

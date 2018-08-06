@@ -5,7 +5,7 @@
 #import "DateUtil.h"
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/OWSFormat.h>
-#import <SignalServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

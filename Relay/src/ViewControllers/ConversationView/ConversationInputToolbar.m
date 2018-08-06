@@ -13,8 +13,8 @@
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <RelayMessaging/OWSFormat.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
+#import <RelayServiceKit/NSTimer+OWS.h>
+#import <RelayServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

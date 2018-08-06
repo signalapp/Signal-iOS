@@ -4,7 +4,7 @@
 
 import XCTest
 
-import SignalServiceKit
+import RelayServiceKit
 import SwiftProtobuf
 
 class SSKEnvelopeTest: XCTestCase {

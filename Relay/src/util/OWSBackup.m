@@ -8,7 +8,7 @@
 #import "OWSBackupImportJob.h"
 #import "Relay-Swift.h"
 #import <Curve25519Kit/Randomness.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
 
 NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
 

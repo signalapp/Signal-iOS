@@ -9,7 +9,7 @@
 #import <PromiseKit/AnyPromise.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/OWS2FAManager.h>
+#import <RelayServiceKit/OWS2FAManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

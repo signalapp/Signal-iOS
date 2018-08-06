@@ -52,4 +52,4 @@ FOUNDATION_EXPORT const unsigned char RelayMessagingVersionString[];
 #import <RelayMessaging/UIViewController+OWS.h>
 #import <RelayMessaging/VersionMigrations.h>
 #import <RelayMessaging/ViewControllerUtils.h>
-#import <SignalServiceKit/UIImage+OWS.h>
+#import <RelayServiceKit/UIImage+OWS.h>

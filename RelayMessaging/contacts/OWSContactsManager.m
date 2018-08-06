@@ -12,13 +12,13 @@
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/SignalAccount.h>
+#import <RelayServiceKit/ContactsUpdater.h>
+#import <RelayServiceKit/NSNotificationCenter+OWS.h>
+#import <RelayServiceKit/NSString+SSK.h>
+#import <RelayServiceKit/OWSError.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/PhoneNumber.h>
+#import <RelayServiceKit/SignalAccount.h>
 
 @import Contacts;
 
@@ -366,7 +366,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         successParameter([NSSet setWithArray:registeredRecipientIds]);
     };
     void (^failure)(NSError *) = ^(NSError *error) {
-        if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+        if ([error.domain isEqualToString:OWSRelayServiceKitErrorDomain]
             && error.code == OWSErrorCodeContactsUpdaterRateLimit) {
             DDLogError(@"Contact intersection hit rate limit with error: %@", error);
             failureParameter(error);

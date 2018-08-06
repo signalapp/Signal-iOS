@@ -7,11 +7,11 @@
 #import "OWSLinkDeviceViewController.h"
 #import "Relay-Swift.h"
 #import "UIViewController+Permissions.h"
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDevicesService.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
+#import <RelayServiceKit/NSTimer+OWS.h>
+#import <RelayServiceKit/OWSDevice.h>
+#import <RelayServiceKit/OWSDevicesService.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSDatabaseView.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>

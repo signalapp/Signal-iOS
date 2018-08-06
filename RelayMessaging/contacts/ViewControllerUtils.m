@@ -7,7 +7,7 @@
 #import "PhoneNumber.h"
 #import <AVFoundation/AVFoundation.h>
 #import <RelayMessaging/Environment.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
+#import <RelayServiceKit/PhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -10,19 +10,19 @@
 #import "Relay-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <RelayMessaging/Environment.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/MIMETypeUtil.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSBatchMessageProcessor.h>
+#import <RelayServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <RelayServiceKit/OWSMessageUtils.h>
+#import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <RelayServiceKit/OWSSyncGroupsRequestMessage.h>
+#import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
+#import <RelayServiceKit/TSIncomingMessage.h>
+#import <RelayServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

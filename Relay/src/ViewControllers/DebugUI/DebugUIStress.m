@@ -8,13 +8,13 @@
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <RelayMessaging/Environment.h>
-#import <SignalServiceKit/Cryptography.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/Cryptography.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSDynamicOutgoingMessage.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/SecurityUtils.h>
+#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

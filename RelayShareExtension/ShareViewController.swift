@@ -6,7 +6,7 @@ import UIKit
 
 import RelayMessaging
 import PureLayout
-import SignalServiceKit
+import RelayServiceKit
 import PromiseKit
 
 @objc

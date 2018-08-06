@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import RelayServiceKit
 
 let CompareSafetyNumbersActivityType = "io.forsta.io.activity.CompareSafetyNumbers"
 

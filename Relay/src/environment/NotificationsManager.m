@@ -11,13 +11,13 @@
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/OWSSounds.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSErrorMessage.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
-#import <SignalServiceKit/Threading.h>
+#import <RelayServiceKit/NSString+SSK.h>
+#import <RelayServiceKit/TSCall.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSErrorMessage.h>
+#import <RelayServiceKit/TSIncomingMessage.h>
+#import <RelayServiceKit/TextSecureKitEnv.h>
+#import <RelayServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 @interface NotificationsManager ()

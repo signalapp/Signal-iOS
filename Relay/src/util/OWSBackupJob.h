@@ -3,7 +3,7 @@
 //
 
 #import "TSYapDatabaseObject.h"
-#import <SignalServiceKit/OWSBackupFragment.h>
+#import <RelayServiceKit/OWSBackupFragment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

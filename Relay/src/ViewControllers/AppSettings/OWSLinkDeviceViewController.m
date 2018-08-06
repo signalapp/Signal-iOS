@@ -8,12 +8,12 @@
 #import "OWSLinkedDevicesTableViewController.h"
 #import "Relay-Swift.h"
 #import <RelayMessaging/OWSProfileManager.h>
-#import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
-#import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDeviceProvisioner.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/ECKeyPair+OWSPrivateKey.h>
+#import <RelayServiceKit/OWSDevice.h>
+#import <RelayServiceKit/OWSDeviceProvisioner.h>
+#import <RelayServiceKit/OWSIdentityManager.h>
+#import <RelayServiceKit/OWSReadReceiptManager.h>
+#import <RelayServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

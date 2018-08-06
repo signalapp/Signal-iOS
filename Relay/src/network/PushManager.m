@@ -9,18 +9,18 @@
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <RelayMessaging/OWSContactsManager.h>
-#import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSSocketManager.h>
+#import <RelayServiceKit/AppReadiness.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/NSString+SSK.h>
+#import <RelayServiceKit/OWSDevice.h>
+#import <RelayServiceKit/OWSMessageReceiver.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/OWSReadReceiptManager.h>
+#import <RelayServiceKit/OWSSignalService.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSIncomingMessage.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/TSSocketManager.h>
 
 NSString *const Signal_Thread_UserInfo_Key = @"Signal_Thread_Id";
 NSString *const Signal_Message_UserInfo_Key = @"Signal_Message_Id";

@@ -5,9 +5,9 @@
 #import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/NSNotificationCenter+OWS.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

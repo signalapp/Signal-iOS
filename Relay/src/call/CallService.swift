@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 import WebRTC
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 /**

@@ -23,15 +23,15 @@
 #import <RelayMessaging/OWSSounds.h>
 #import <RelayMessaging/OWSUserProfile.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/TSThread.h>
 
 @import ContactsUI;
 

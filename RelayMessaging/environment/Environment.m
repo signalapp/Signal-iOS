@@ -5,13 +5,13 @@
 #import "Environment.h"
 #import "DebugLogger.h"
 #import "SignalKeyingStorage.h"
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/Threading.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/ContactsUpdater.h>
+#import <RelayServiceKit/OWSMessageReceiver.h>
+#import <RelayServiceKit/OWSSignalService.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/Threading.h>
 
 static Environment *sharedEnvironment = nil;
 

@@ -6,7 +6,7 @@
 #import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
+#import <RelayServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

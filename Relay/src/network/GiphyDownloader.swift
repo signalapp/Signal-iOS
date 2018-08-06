@@ -4,7 +4,7 @@
 
 import Foundation
 import ObjectiveC
-import SignalServiceKit
+import RelayServiceKit
 import RelayMessaging
 
 // Stills should be loaded before full GIFs.

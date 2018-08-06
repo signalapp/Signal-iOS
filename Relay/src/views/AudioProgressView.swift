@@ -3,7 +3,7 @@
 //
 
 import UIKit
-import SignalServiceKit
+import RelayServiceKit
 
 @objc public class AudioProgressView: UIView {
 

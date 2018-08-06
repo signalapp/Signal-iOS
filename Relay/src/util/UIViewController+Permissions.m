@@ -7,7 +7,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/Threading.h>
+#import <RelayServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

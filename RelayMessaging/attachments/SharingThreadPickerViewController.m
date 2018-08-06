@@ -11,10 +11,10 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/OWSDispatch.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/OWSDispatch.h>
+#import <RelayServiceKit/OWSError.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -403,7 +403,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
 
-    if ([error.domain isEqual:OWSSignalServiceKitErrorDomain] && error.code == OWSErrorCodeUntrustedIdentity) {
+    if ([error.domain isEqual:OWSRelayServiceKitErrorDomain] && error.code == OWSErrorCodeUntrustedIdentity) {
         NSString *_Nullable untrustedRecipientId = error.userInfo[OWSErrorRecipientIdentifierKey];
 
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",

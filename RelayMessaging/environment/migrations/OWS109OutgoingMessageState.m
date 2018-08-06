@@ -3,8 +3,8 @@
 //
 
 #import "OWS109OutgoingMessageState.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN

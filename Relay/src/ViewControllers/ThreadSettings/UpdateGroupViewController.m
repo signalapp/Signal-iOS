@@ -19,13 +19,13 @@
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/SecurityUtils.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSGroupModel.h>
+#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

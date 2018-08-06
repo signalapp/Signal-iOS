@@ -13,7 +13,7 @@
 #import "OWS109OutgoingMessageState.h"
 #import "OWSDatabaseMigration.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
+#import <RelayServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

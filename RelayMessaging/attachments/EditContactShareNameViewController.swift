@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import RelayServiceKit
 
 @objc
 public protocol ContactNameFieldViewDelegate: class {

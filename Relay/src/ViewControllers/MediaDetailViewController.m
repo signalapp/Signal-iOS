@@ -17,7 +17,7 @@
 #import <MediaPlayer/MPMoviePlayerViewController.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/NSData+Image.h>
+#import <RelayServiceKit/NSData+Image.h>
 #import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN

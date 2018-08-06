@@ -7,7 +7,7 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
+#import <RelayServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

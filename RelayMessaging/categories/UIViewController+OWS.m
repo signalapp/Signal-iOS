@@ -5,7 +5,7 @@
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
-#import <SignalServiceKit/AppContext.h>
+#import <RelayServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

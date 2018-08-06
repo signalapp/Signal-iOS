@@ -8,10 +8,10 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

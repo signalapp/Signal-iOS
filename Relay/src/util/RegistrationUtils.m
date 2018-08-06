@@ -7,7 +7,7 @@
 #import "OWSNavigationController.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,9 +7,9 @@
 #import "OWSProgressView.h"
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/OWSUploadOperation.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/OWSUploadOperation.h>
+#import <RelayServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

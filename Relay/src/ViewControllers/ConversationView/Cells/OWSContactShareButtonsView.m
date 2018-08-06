@@ -10,7 +10,7 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/OWSContact.h>
+#import <RelayServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

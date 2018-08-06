@@ -9,7 +9,7 @@
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <QuartzCore/QuartzCore.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
+#import <RelayServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

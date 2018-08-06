@@ -3,7 +3,7 @@
 //
 
 #import "OWSDatabaseMigration.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

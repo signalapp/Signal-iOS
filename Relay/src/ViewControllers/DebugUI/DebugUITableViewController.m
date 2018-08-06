@@ -12,8 +12,8 @@
 #import "DebugUIStress.h"
 #import "DebugUISyncMessages.h"
 #import "Relay-Swift.h"
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

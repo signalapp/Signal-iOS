@@ -8,8 +8,8 @@
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
+#import <RelayServiceKit/OWSPrimaryStorage.h>
+#import <RelayServiceKit/TSDatabaseView.h>
 
 @implementation AboutTableViewController
 

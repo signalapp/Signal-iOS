@@ -4,10 +4,10 @@
 
 #import "OWSDatabaseConverterTest.h"
 #import <Curve25519Kit/Randomness.h>
-#import <SignalServiceKit/NSData+OWS.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <RelayServiceKit/NSData+OWS.h>
+#import <RelayServiceKit/OWSFileSystem.h>
+#import <RelayServiceKit/OWSStorage.h>
+#import <RelayServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <YapDatabase/YapDatabasePrivate.h>

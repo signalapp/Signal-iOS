@@ -10,21 +10,21 @@
 #import "TSUnreadIndicatorInteraction.h"
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
-#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <RelayServiceKit/NSDate+OWS.h>
+#import <RelayServiceKit/OWSAddToContactsOfferMessage.h>
+#import <RelayServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <RelayServiceKit/OWSBlockingManager.h>
+#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <RelayServiceKit/OWSMessageSender.h>
+#import <RelayServiceKit/OWSUnknownContactBlockOfferMessage.h>
+#import <RelayServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/TSCall.h>
+#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSDatabaseView.h>
+#import <RelayServiceKit/TSIncomingMessage.h>
+#import <RelayServiceKit/TSInvalidIdentityKeyErrorMessage.h>
+#import <RelayServiceKit/TSOutgoingMessage.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
