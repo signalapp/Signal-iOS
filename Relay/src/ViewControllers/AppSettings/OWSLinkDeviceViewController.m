@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.ows_privateKey;
-    NSString *accountIdentifier = [TSAccountManager localNumber];
+    NSString *accountIdentifier = [TSAccountManager localUID];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
     BOOL areReadReceiptsEnabled = self.readReceiptManager.areReadReceiptsEnabled;
 

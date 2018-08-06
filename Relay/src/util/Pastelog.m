@@ -519,7 +519,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     if (![TSAccountManager isRegistered]) {
         return;
     }
-    NSString *recipientId = [TSAccountManager localNumber];
+    NSString *recipientId = [TSAccountManager localUID];
     OWSMessageSender *messageSender = Environment.current.messageSender;
 
     DispatchMainThreadSafe(^{

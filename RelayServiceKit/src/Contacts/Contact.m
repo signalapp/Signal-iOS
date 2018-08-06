@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *phoneNumberString in userTextPhoneNumbers) {
         for (PhoneNumber *phoneNumber in
             [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:phoneNumberString
-                                                  clientPhoneNumber:[TSAccountManager localNumber]]) {
+                                                  clientPhoneNumber:[TSAccountManager localUID]]) {
             [parsedPhoneNumbers addObject:phoneNumber];
             parsedPhoneNumberMap[phoneNumber.toE164] = phoneNumber;
             NSString *phoneNumberName = phoneNumberNameMap[phoneNumberString];

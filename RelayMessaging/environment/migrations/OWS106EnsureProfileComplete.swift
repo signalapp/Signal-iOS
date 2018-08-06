@@ -85,7 +85,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func ensureProfileComplete() -> Promise<Void> {
-            guard let localRecipientId = TSAccountManager.localNumber() else {
+            guard let localRecipientId = TSAccountManager.localUID() else {
                 // local app doesn't think we're registered, so nothing to worry about.
                 return Promise(value: ())
             }

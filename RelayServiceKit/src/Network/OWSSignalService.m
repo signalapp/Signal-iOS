@@ -77,7 +77,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localNumberDidChange:)
-                                                 name:kNSNotificationName_LocalNumberDidChange
+                                                 name:kNSNotificationName_LocalUIDDidChange
                                                object:nil];
 }
 
@@ -88,7 +88,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)updateHasCensoredPhoneNumber
 {
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
 
     if (localNumber) {
         self.hasCensoredPhoneNumber = [OWSCensorshipConfiguration isCensoredPhoneNumber:localNumber];
@@ -273,7 +273,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 
     OWSCensorshipConfiguration *configuration =
-        [OWSCensorshipConfiguration censorshipConfigurationWithPhoneNumber:TSAccountManager.localNumber];
+        [OWSCensorshipConfiguration censorshipConfigurationWithPhoneNumber:TSAccountManager.localUID];
     return configuration;
 }
 

@@ -211,7 +211,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)populateDefaultCountryNameAndCode
 {
-    PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localNumber]];
+    PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localUID]];
     OWSAssert(localNumber);
 
     NSString *countryCode;
@@ -295,7 +295,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     NSMutableArray<NSString *> *possiblePhoneNumbers = [NSMutableArray new];
     for (PhoneNumber *phoneNumber in
         [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:rawPhoneNumber
-                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
+                                              clientPhoneNumber:[TSAccountManager localUID]]) {
         [possiblePhoneNumbers addObject:phoneNumber.toE164];
     }
     if ([possiblePhoneNumbers count] < 1) {
@@ -377,7 +377,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [self.callingCode stringByAppendingString:self.phoneNumberTextField.text.digitsOnly];
     NSArray<PhoneNumber *> *parsePhoneNumbers =
         [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:possiblePhoneNumber
-                                              clientPhoneNumber:[TSAccountManager localNumber]];
+                                              clientPhoneNumber:[TSAccountManager localUID]];
     if (parsePhoneNumbers.count < 1) {
         return NO;
     }

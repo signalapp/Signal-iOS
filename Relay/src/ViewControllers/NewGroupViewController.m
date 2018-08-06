@@ -506,7 +506,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 {
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
-    [recipientIds addObject:[self.contactsViewHelper localNumber]];
+    [recipientIds addObject:[self.contactsViewHelper localUID]];
     NSData *groupId = [SecurityUtils generateRandomBytes:16];
     return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
 }

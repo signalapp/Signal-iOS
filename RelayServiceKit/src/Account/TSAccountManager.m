@@ -25,7 +25,7 @@ NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
 NSString *const DeregistrationStateDidChangeNotification = @"DeregistrationStateDidChangeNotification";
-NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
+NSString *const kNSNotificationName_LocalUIDDidChange = @"kNSNotificationName_LocalUIDDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
@@ -36,6 +36,14 @@ NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountC
 NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
 NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 
+// CCSM Additions
+NSString *const CCSMStorageDatabaseCollection = @"CCSMInformation";
+NSString *const CCSMStorageKeyOrgName = @"CCSMOrganizationName";
+NSString *const CCSMStorageKeyUserName = @"CCSMUserName";
+NSString *const CCSMStorageKeySessionToken = @"CCSMSessionToken";
+NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
+
+
 @interface TSAccountManager ()
 
 @property (nonatomic, readonly) BOOL isRegistered;
@@ -45,7 +53,10 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
 #endif
 
-@property (nonatomic, nullable) NSString *cachedLocalNumber;
+@property (nonatomic, nullable) NSString *cachedLocalUID;
+@property (nonatomic, nullable) NSString *cachedUsername;
+@property (nonatomic, nullable) NSString *cachedOrgName;
+
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
@@ -102,7 +113,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 {
     _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalNumberDidChange
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalUIDDidChange
                                                              object:nil
                                                            userInfo:nil];
 }
@@ -119,7 +130,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             return YES;
         } else {
             // Cache this once it's true since it's called alot, involves a dbLookup, and once set - it doesn't change.
-            _isRegistered = [self storedLocalNumber] != nil;
+            _isRegistered = [self storedLocalUID] != nil;
         }
     }
     return _isRegistered;
@@ -134,7 +145,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
         OWSRaiseException(@"RegistrationFail", @"Internal Corrupted State");
     }
 
-    [self storeLocalNumber:phoneNumber];
+    [self storeLocalUID:phoneNumber];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
                                                              object:nil
@@ -142,16 +153,55 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
     // Warm these cached values.
     [self isRegistered];
-    [self localNumber];
+    [self localUID];
     [self isDeregistered];
 }
 
-+ (nullable NSString *)localNumber
++(nullable NSString *)username
 {
-    return [[self sharedInstance] localNumber];
+    return [[self sharedInstance] username];
 }
 
-- (nullable NSString *)localNumber
+- (nullable NSString *)username
+{
+    if (self.cachedUsername == nil) {
+        self.cachedUsername = [self storedUsername];
+    }
+    return self.cachedUsername;
+}
+
++(nullable NSString *)orgname
+{
+    return [[self sharedInstance] orgname];
+}
+
+- (nullable NSString *)orgname
+{
+    if (self.cachedOrgName == nil) {
+        self.cachedOrgName = [self storedOrgName];
+    }
+    return self.cachedOrgName;
+}
+
++(nullable NSString *)sessiontoken
+{
+    return [[self sharedInstance] sessiontoken];
+}
+
+- (nullable NSString *)sessiontoken
+{
+    @synchronized (self) {
+        return [self.dbConnection stringForKey:CCSMStorageKeySessionToken
+                                  inCollection:CCSMStorageDatabaseCollection];
+    }
+}
+
++ (nullable NSString *)localUID
+{
+    return [[self sharedInstance] localUID];
+}
+
+- (nullable NSString *)localUID
 {
     NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
     if (awaitingVerif) {
@@ -161,15 +211,16 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     // Cache this since we access this a lot, and once set it will not change.
     @synchronized(self)
     {
-        if (self.cachedLocalNumber == nil) {
-            self.cachedLocalNumber = self.storedLocalNumber;
+        if (self.cachedLocalUID == nil) {
+            self.cachedLocalUID = self.storedLocalUID;
         }
     }
 
-    return self.cachedLocalNumber;
+    return self.cachedLocalUID;
 }
 
-- (nullable NSString *)storedLocalNumber
+
+- (nullable NSString *)storedLocalUID
 {
     @synchronized (self) {
         return [self.dbConnection stringForKey:TSAccountManager_RegisteredNumberKey
@@ -177,10 +228,10 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     }
 }
 
-- (void)storeLocalNumber:(NSString *)localNumber
+- (void)storeLocalUID:(NSString *)localUID
 {
     @synchronized (self) {
-        [self.dbConnection setObject:localNumber
+        [self.dbConnection setObject:localUID
                               forKey:TSAccountManager_RegisteredNumberKey
                         inCollection:TSAccountManager_UserAccountCollection];
 
@@ -189,9 +240,27 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
         self.phoneNumberAwaitingVerification = nil;
 
-        self.cachedLocalNumber = localNumber;
+        self.cachedLocalUID = localUID;
     }
 }
+
+- (nullable NSString *)storedUsername
+{
+    @synchronized (self) {
+        return [self.dbConnection stringForKey:CCSMStorageKeyUserName
+                                  inCollection:CCSMStorageDatabaseCollection];
+    }
+}
+
+- (nullable NSString *)storedOrgName
+{
+    @synchronized (self) {
+        return [self.dbConnection stringForKey:CCSMStorageKeyOrgName
+                                  inCollection:CCSMStorageDatabaseCollection];
+    }
+}
+
+
 
 + (uint32_t)getOrGenerateRegistrationId
 {
@@ -568,14 +637,14 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 - (BOOL)resetForReregistration
 {
     @synchronized(self) {
-        NSString *_Nullable localNumber = self.localNumber;
-        if (!localNumber) {
+        NSString *_Nullable localUID = self.localUID;
+        if (!localUID) {
             OWSFail(@"%@ can't re-register without valid local number.", self.logTag);
             return NO;
         }
 
         _isRegistered = NO;
-        _cachedLocalNumber = nil;
+        _cachedLocalUID = nil;
         _phoneNumberAwaitingVerification = nil;
         _cachedIsDeregistered = nil;
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -583,7 +652,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
             [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
 
-            [transaction setObject:localNumber
+            [transaction setObject:localUID
                             forKey:TSAccountManager_ReregisteringPhoneNumberKey
                       inCollection:TSAccountManager_UserAccountCollection];
         }];

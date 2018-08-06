@@ -226,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(blockingManager);
     OWSAssert(maxRangeSize > 0);
 
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
     OWSAssert(localNumber.length > 0);
 
     // Many OWSProfileManager methods aren't safe to call from inside a database
@@ -757,8 +757,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(timestamp > 0);
     OWSAssert(authorId.length > 0);
 
-    NSString *localNumber = [TSAccountManager localNumber];
-    if (localNumber.length < 1) {
+    NSString *localUID = [TSAccountManager localUID];
+    if (localUID.length < 1) {
         OWSFail(@"%@ missing long number.", self.logTag);
         return nil;
     }
@@ -771,7 +771,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
                                                   messageAuthorId = incomingMessage.authorId;
                                               } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                                  messageAuthorId = localNumber;
+                                                  messageAuthorId = localUID;
                                               }
                                               if (messageAuthorId.length < 1) {
                                                   return NO;
