@@ -997,8 +997,21 @@ private class SignalCallData: NSObject {
         callRecord.save()
         call.callRecord = callRecord
 
-        let message = DataChannelMessage.forConnected(callId: call.signalingId)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "connected", isCritical: true)
+        var messageData: Data
+        do {
+            let connectedBuilder = WebRTCProtoConnected.WebRTCProtoConnectedBuilder()
+            connectedBuilder.setId(call.signalingId)
+            let connectedProto = try connectedBuilder.build()
+
+            let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+            dataBuilder.setConnected(connectedProto)
+            messageData = try dataBuilder.buildSerializedData()
+        } catch {
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto in \(#function)"))
+            return
+        }
+
+        peerConnectionClient.sendDataChannelMessage(data: messageData, description: "connected", isCritical: true)
 
         handleConnectedCall(currentCallData)
     }
@@ -1124,8 +1137,22 @@ private class SignalCallData: NSObject {
             ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
 
             // If the call is connected, we can send the hangup via the data channel for faster hangup.
-            let message = DataChannelMessage.forHangup(callId: call.signalingId)
-            peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "hangup", isCritical: true)
+
+            var messageData: Data
+            do {
+                let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder()
+                hangupBuilder.setId(call.signalingId)
+                let hangupProto = try hangupBuilder.build()
+
+                let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+                dataBuilder.setHangup(hangupProto)
+                messageData = try dataBuilder.buildSerializedData()
+            } catch {
+                handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto in \(#function)"))
+                return
+            }
+
+            peerConnectionClient.sendDataChannelMessage(data: messageData, description: "hangup", isCritical: true)
         } else {
             Logger.info("\(self.logTag) ending call before peer connection created. Device offline or quick hangup.")
         }
@@ -1289,7 +1316,7 @@ private class SignalCallData: NSObject {
      *
      * Used by both Incoming and Outgoing calls.
      */
-    private func handleDataChannelMessage(_ message: OWSWebRTCProtosData) {
+    private func handleDataChannelMessage(_ message: WebRTCProtoData) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let callData = self.callData else {
@@ -1301,7 +1328,7 @@ private class SignalCallData: NSObject {
         }
         let call = callData.call
 
-        if message.hasConnected() {
+        if message.hasConnected {
             Logger.debug("\(self.logTag) remote participant sent Connected via data channel: \(call.identifiersForLogs).")
 
             let connected = message.connected!
@@ -1317,7 +1344,7 @@ private class SignalCallData: NSObject {
             self.callUIAdapter.recipientAcceptedCall(call)
             handleConnectedCall(callData)
 
-        } else if message.hasHangup() {
+        } else if message.hasHangup {
             Logger.debug("\(self.logTag) remote participant sent Hangup via data channel: \(call.identifiersForLogs).")
 
             let hangup = message.hangup!
@@ -1331,10 +1358,15 @@ private class SignalCallData: NSObject {
             }
 
             handleRemoteHangup(thread: call.thread, callId: hangup.id)
-        } else if message.hasVideoStreamingStatus() {
+        } else if message.hasVideoStreamingStatus {
             Logger.debug("\(self.logTag) remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
 
-            callData.isRemoteVideoEnabled = message.videoStreamingStatus.enabled()
+            guard let videoStreamingStatus = message.videoStreamingStatus else {
+                owsFail("\(logTag) missing videoStreamingStatus")
+                return
+            }
+
+            callData.isRemoteVideoEnabled = videoStreamingStatus.enabled
             self.fireDidUpdateVideoTracks()
         } else {
             Logger.info("\(self.logTag) received unknown or empty DataChannelMessage: \(call.identifiersForLogs).")
@@ -1402,7 +1434,7 @@ private class SignalCallData: NSObject {
     /**
      * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
      */
-    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: WebRTCProtoData) {
         SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1613,8 +1645,22 @@ private class SignalCallData: NSObject {
 
         self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
 
-        let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled: shouldHaveLocalVideoTrack)
-        peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "videoStreamingStatus", isCritical: false)
+        var messageData: Data
+        do {
+            let videoStreamingStatusBuilder = WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder()
+            videoStreamingStatusBuilder.setId(call.signalingId)
+            videoStreamingStatusBuilder.setEnabled(shouldHaveLocalVideoTrack)
+            let videoStreamingStatusProto = try videoStreamingStatusBuilder.build()
+
+            let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+            dataBuilder.setVideoStreamingStatus(videoStreamingStatusProto)
+            messageData = try dataBuilder.buildSerializedData()
+        } catch {
+            Logger.error("\(self.logTag) couldn't build proto in \(#function)")
+            return
+        }
+
+        peerConnectionClient.sendDataChannelMessage(data: messageData, description: "videoStreamingStatus", isCritical: false)
     }
 
     // MARK: - Observers

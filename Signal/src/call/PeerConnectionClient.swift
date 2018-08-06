@@ -53,7 +53,7 @@ protocol PeerConnectionClientDelegate: class {
     /**
      * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
      */
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData)
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: WebRTCProtoData)
 
     /**
      * Fired whenever the local video track become active or inactive.
@@ -828,7 +828,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     /** The data channel successfully received a data buffer. */
     internal func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
         let proxyCopy = self.proxy
-        let completion: (OWSWebRTCProtosData) -> Void = { (dataChannelMessage) in
+        let completion: (WebRTCProtoData) -> Void = { (dataChannelMessage) in
             SwiftAssertIsOnMainThread(#function)
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
@@ -843,8 +843,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
             Logger.debug("\(strongSelf.logTag) dataChannel didReceiveMessageWith buffer:\(buffer)")
 
-            guard let dataChannelMessage = OWSWebRTCProtosData.parse(from: buffer.data) else {
-                // TODO can't proto parsings throw an exception? Is it just being lost in the Objc->Swift?
+            var dataChannelMessage: WebRTCProtoData
+            do {
+                dataChannelMessage = try WebRTCProtoData.parseData(buffer.data)
+            } catch {
                 Logger.error("\(strongSelf.logTag) failed to parse dataProto")
                 return
             }
@@ -1232,7 +1234,7 @@ class VideoCaptureController {
     }
 }
 
-// Mark: Pretty Print Objc enums.
+// MARK: Pretty Print Objc enums.
 
 fileprivate extension RTCSignalingState {
     var debugDescription: String {

@@ -5,7 +5,6 @@
 shift-base:CodedInputStream.m
 # generated protos
 bool:WhisperTextProtocol.pb.m
-bool:OWSWebRTCDataProtos.pb.m
 
 # YapDatabase
 bool:YapDatabaseAutoViewTransaction.m

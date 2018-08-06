@@ -201,6 +201,8 @@
 		34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
 		34C3C7922040B0DD0000134C /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */; };
+		34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4E2552118957600BEA353 /* OWSWebRTCDataProtos.pb.swift */; };
+		34C4E2582118957600BEA353 /* WebRTCProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C4E2562118957600BEA353 /* WebRTCProto.swift */; };
 		34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A51FA0E46F00D35993 /* test-gif.gif */; };
 		34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */; };
 		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
@@ -336,7 +338,6 @@
 		4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4539B5851F79348F007141FF /* PushRegistrationManager.swift */; };
 		4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541B71A209D2DAE0008608F /* ContactShareViewModel.swift */; };
 		4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF53208D40AC007B4E76 /* LoadingViewController.swift */; };
-		45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
 		454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A84032059C787008B8C75 /* MediaTileViewController.swift */; };
 		454A965A1FD6017E008D2A0E /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D913491F62D4A500722898 /* SignalAttachment.swift */; };
 		454A965B1FD601BF008D2A0E /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C281F7164F700E51C51 /* MediaMessageView.swift */; };
@@ -362,7 +363,6 @@
 		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
-		458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
 		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
@@ -860,6 +860,8 @@
 		34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactOffersInteraction.m; sourceTree = "<group>"; };
 		34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSUnreadIndicatorInteraction.h; sourceTree = "<group>"; };
 		34C42D651F4734ED0072EC04 /* TSUnreadIndicatorInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSUnreadIndicatorInteraction.m; sourceTree = "<group>"; };
+		34C4E2552118957600BEA353 /* OWSWebRTCDataProtos.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSWebRTCDataProtos.pb.swift; sourceTree = "<group>"; };
+		34C4E2562118957600BEA353 /* WebRTCProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebRTCProto.swift; sourceTree = "<group>"; };
 		34C6B0A51FA0E46F00D35993 /* test-gif.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "test-gif.gif"; sourceTree = "<group>"; };
 		34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "test-mp3.mp3"; sourceTree = "<group>"; };
 		34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "test-mp4.mp4"; sourceTree = "<group>"; };
@@ -1000,7 +1002,6 @@
 		4541B71A209D2DAE0008608F /* ContactShareViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactShareViewModel.swift; sourceTree = "<group>"; };
 		4542DF51208B82E9007B4E76 /* ThreadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadViewModel.swift; sourceTree = "<group>"; };
 		4542DF53208D40AC007B4E76 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
-		45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataChannelMessage.swift; sourceTree = "<group>"; };
 		454A84032059C787008B8C75 /* MediaTileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileViewController.swift; sourceTree = "<group>"; };
 		454A965E1FD60EA2008D2A0E /* OWSFlatButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSFlatButton.swift; path = SignalMessaging/Views/OWSFlatButton.swift; sourceTree = SOURCE_ROOT; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1032,8 +1033,6 @@
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeerConnectionClient.swift; sourceTree = "<group>"; };
-		458DE9D71DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWebRTCDataProtos.pb.h; sourceTree = "<group>"; };
-		458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWebRTCDataProtos.pb.m; sourceTree = "<group>"; };
 		458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceProvisioningURLParser.h; sourceTree = "<group>"; };
 		458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDeviceProvisioningURLParser.m; sourceTree = "<group>"; };
 		458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSDeviceProvisioningURLParserTest.m; path = Models/OWSDeviceProvisioningURLParserTest.m; sourceTree = "<group>"; };
@@ -1822,6 +1821,15 @@
 			path = Signal/AudioFiles/ringtoneSounds;
 			sourceTree = SOURCE_ROOT;
 		};
+		34C4E2542118957600BEA353 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				34C4E2552118957600BEA353 /* OWSWebRTCDataProtos.pb.swift */,
+				34C4E2562118957600BEA353 /* WebRTCProto.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
 		34C6B0A41FA0E46F00D35993 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -2029,9 +2037,6 @@
 			children = (
 				45C9DEB71DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift */,
 				45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */,
-				458DE9D71DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.h */,
-				458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */,
-				45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */,
 			);
 			name = Signaling;
 			sourceTree = "<group>";
@@ -2131,6 +2136,7 @@
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				76EB03FE18170B33006006FC /* call */,
 				76EB041118170B33006006FC /* environment */,
+				34C4E2542118957600BEA353 /* Generated */,
 				45D231751DC7E8C50034FA89 /* Jobs */,
 				457F3AC01D14A0F700C51351 /* Models */,
 				76EB041D18170B33006006FC /* network */,
@@ -3276,6 +3282,7 @@
 			files = (
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
+				34C4E2582118957600BEA353 /* WebRTCProto.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
 				34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */,
@@ -3314,7 +3321,6 @@
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
-				458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
 				34D2CCD220618B3000CB1A14 /* OWSBackupLazyRestoreJob.swift in Sources */,
 				3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */,
@@ -3345,7 +3351,6 @@
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
-				45464DBC1DFA041F001D3FD6 /* DataChannelMessage.swift in Sources */,
 				34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
@@ -3438,6 +3443,7 @@
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
+				34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
 				34A910601FFEB114000C4745 /* OWSBackup.m in Sources */,
