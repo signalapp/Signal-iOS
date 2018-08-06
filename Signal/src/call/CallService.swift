@@ -546,12 +546,19 @@ private class SignalCallData: NSObject {
         Logger.info("\(self.logTag) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
         SwiftAssertIsOnMainThread(#function)
 
-        let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
-        let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
-        let sendPromise = messageSender.sendPromise(message: callMessage)
-        sendPromise.retainUntilComplete()
+        do {
+            let busyBuilder = SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder()
+            busyBuilder.setId(call.signalingId)
+            let busyMessage = try busyBuilder.build()
 
-        handleMissedCall(call)
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
+            let sendPromise = messageSender.sendPromise(message: callMessage)
+            sendPromise.retainUntilComplete()
+
+            handleMissedCall(call)
+        } catch {
+            owsFail("Couldn't build proto in \(#function)")
+        }
     }
 
     /**

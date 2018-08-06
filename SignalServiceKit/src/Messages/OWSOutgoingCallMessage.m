@@ -4,7 +4,6 @@
 
 #import "OWSOutgoingCallMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSCallBusyMessage.h"
 #import "ProtoUtils.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
@@ -96,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread busyMessage:(OWSCallBusyMessage *)busyMessage
+- (instancetype)initWithThread:(TSThread *)thread busyMessage:(SSKProtoCallMessageBusy *)busyMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -159,11 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.busyMessage) {
-        SSKProtoCallMessageBusy *_Nullable proto = [self.busyMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setBusy:proto];
+        [builder setBusy:self.busyMessage];
     }
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId callMessageBuilder:builder];
