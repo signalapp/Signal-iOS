@@ -48,9 +48,13 @@ import SignalMessaging
                                                         identityManager: self.identityManager,
                                                         profileManager: self.profileManager)
 
-        var dataSource: DataSource? = nil
+        var dataSource: DataSource?
         self.editingDatabaseConnection.readWrite { transaction in
-             dataSource = DataSourceValue.dataSource(withSyncMessageData: syncContactsMessage.buildPlainTextAttachmentData(with: transaction))
+            guard let messageData: Data = syncContactsMessage.buildPlainTextAttachmentData(with: transaction) else {
+                owsFail("\(self.logTag) could not serialize sync contacts data")
+                return
+            }
+            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
         }
 
         guard let attachmentDataSource = dataSource else {

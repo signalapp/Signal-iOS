@@ -661,9 +661,15 @@ NS_ASSUME_NONNULL_BEGIN
                     [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
                                                            identityManager:self.identityManager
                                                             profileManager:self.profileManager];
-                DataSource *dataSource = [DataSourceValue
-                    dataSourceWithSyncMessageData:[syncContactsMessage
-                                                      buildPlainTextAttachmentDataWithTransaction:transaction]];
+                __block NSData *_Nullable syncData;
+                [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    syncData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+                }];
+                if (!syncData) {
+                    OWSFail(@"%@ Failed to serialize contacts sync message.", self.logTag);
+                    return;
+                }
+                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
                 [self.messageSender enqueueTemporaryAttachment:dataSource
                     contentType:OWSMimeTypeApplicationOctetStream
                     inMessage:syncContactsMessage
@@ -677,9 +683,12 @@ NS_ASSUME_NONNULL_BEGIN
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            DataSource *dataSource = [DataSourceValue
-                dataSourceWithSyncMessageData:[syncGroupsMessage
-                                                  buildPlainTextAttachmentDataWithTransaction:transaction]];
+            NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+            if (!syncData) {
+                OWSFail(@"%@ Failed to serialize groups sync message.", self.logTag);
+                return;
+            }
+            DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
             [self.messageSender enqueueTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage

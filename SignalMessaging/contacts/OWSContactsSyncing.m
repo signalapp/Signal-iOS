@@ -124,13 +124,18 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                                                    identityManager:self.identityManager
                                                     profileManager:self.profileManager];
 
-        __block NSData *messageData;
-        __block NSData *lastMessageData;
+        __block NSData *_Nullable messageData;
+        __block NSData *_Nullable lastMessageData;
         [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             lastMessageData = [transaction objectForKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                                            inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
         }];
+
+        if (!messageData) {
+            OWSFail(@"%@ Failed to serialize contacts sync message.", self.logTag);
+            return;
+        }
 
         if (lastMessageData && [lastMessageData isEqual:messageData]) {
             // Ignore redundant contacts sync message.

@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     id<ContactsManagerProtocol> contactsManager = TextSecureKitEnv.sharedEnv.contactsManager;
 
@@ -88,7 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
     // and uploading with streams).
     NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
     [dataOutputStream open];
-    OWSContactsOutputStream *contactsOutputStream = [OWSContactsOutputStream streamWithOutputStream:dataOutputStream];
+    OWSContactsOutputStream *contactsOutputStream =
+        [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     for (SignalAccount *signalAccount in self.signalAccounts) {
         OWSRecipientIdentity *_Nullable recipientIdentity =
@@ -115,8 +116,12 @@ NS_ASSUME_NONNULL_BEGIN
                disappearingMessagesConfiguration:disappearingMessagesConfiguration];
     }
 
-    [contactsOutputStream flush];
     [dataOutputStream close];
+
+    if (contactsOutputStream.hasError) {
+        OWSFail(@"%@ Could not write contacts sync stream.", self.logTag);
+        return nil;
+    }
 
     return [dataOutputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
 }

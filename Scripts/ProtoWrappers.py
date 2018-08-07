@@ -375,6 +375,11 @@ class MessageContext(BaseContext):
         
         writer.push_context(self.proto_name, self.swift_name)
         
+        if self.args.add_log_tag:
+            writer.add('fileprivate static let logTag = "%s"' % self.swift_name)
+            writer.add('fileprivate let logTag = "%s"' % self.swift_name)
+            writer.newline()
+        
         for child in self.enums:
             child.generate(writer)
 
@@ -606,6 +611,18 @@ public func serializedData() throws -> Data {
         writer.pop_indent()
         writer.add('}')
         writer.newline()
+
+        # description
+        if self.args.add_description:
+            writer.add('@objc public override var description: String {')
+            writer.push_indent()
+            writer.add('var fields = [String]()')
+            for field in self.fields():
+                writer.add('fields.append("%s: \(proto.%s)")' % ( field.name_swift, field.name_swift, ) )
+            writer.add('return "[" + fields.joined(separator: ", ") + "]"')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
             
         writer.pop_context()
 
@@ -710,13 +727,25 @@ public func serializedData() throws -> Data {
         writer.add('}')
         writer.newline()
 
-        # build() func
+        # buildSerializedData() func
         writer.add('@objc public func buildSerializedData() throws -> Data {')
         writer.push_indent()
         writer.add('return try %s.parseProto(proto).serializedData()' % self.swift_name)
         writer.pop_indent()
         writer.add('}')
         writer.newline()
+
+        # description
+        if self.args.add_description:
+            writer.add('@objc public override var description: String {')
+            writer.push_indent()
+            writer.add('var fields = [String]()')
+            for field in self.fields():
+                writer.add('fields.append("%s: \(proto.%s)")' % ( field.name_swift, field.name_swift, ) )
+            writer.add('return "[" + fields.joined(separator: ", ") + "]"')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
         
         writer.pop_context()
 
@@ -1096,6 +1125,8 @@ if __name__ == "__main__":
     parser.add_argument('--wrapper-prefix', help='name prefix for generated wrappers.')
     parser.add_argument('--proto-prefix', help='name prefix for proto bufs.')
     parser.add_argument('--dst-dir', help='path to the destination directory.')
+    parser.add_argument('--add-log-tag', action='store_true', help='add log tag properties.')
+    parser.add_argument('--add-description', action='store_true', help='add log tag properties.')
     parser.add_argument('--verbose', action='store_true', help='enables verbose logging')
     args = parser.parse_args()
     

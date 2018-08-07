@@ -1,15 +1,21 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class PBCodedOutputStream;
-
 @interface OWSChunkedOutputStream : NSObject
 
-@property (nonatomic, readonly) PBCodedOutputStream *delegateStream;
+// Indicates whether any write failed.
+@property (nonatomic, readonly) BOOL hasError;
 
-+ (instancetype)streamWithOutputStream:(NSOutputStream *)output;
-- (void)flush;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithOutputStream:(NSOutputStream *)outputStream;
+
+// Returns NO on error.
+- (BOOL)writeData:(NSData *)data;
+- (BOOL)writeVariableLengthUInt32:(UInt32)value;
 
 @end
 

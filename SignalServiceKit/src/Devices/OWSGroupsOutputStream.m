@@ -7,7 +7,6 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
-#import <ProtocolBuffers/CodedOutputStream.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -69,11 +68,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t groupDataLength = (uint32_t)groupData.length;
 
-    [self.delegateStream writeRawVarint32:groupDataLength];
-    [self.delegateStream writeRawData:groupData];
+    [self writeVariableLengthUInt32:groupDataLength];
+    [self writeData:groupData];
 
     if (avatarPng) {
-        [self.delegateStream writeRawData:avatarPng];
+        [self writeData:avatarPng];
     }
 }
 

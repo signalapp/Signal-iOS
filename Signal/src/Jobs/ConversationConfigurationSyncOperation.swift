@@ -64,9 +64,12 @@ class ConversationConfigurationSyncOperation: OWSOperation {
                                                                                  identityManager: self.identityManager,
                                                                                  profileManager: self.profileManager)
 
-        var dataSource: DataSource? = nil
+        var dataSource: DataSource?
         self.dbConnection.readWrite { transaction in
-            let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
+            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
+                owsFail("\(self.logTag) could not serialize sync contacts data")
+                return
+            }
             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
         }
 
@@ -85,9 +88,12 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         // What does Android do?
         let syncMessage: OWSSyncGroupsMessage = OWSSyncGroupsMessage()
 
-        var dataSource: DataSource? = nil
+        var dataSource: DataSource?
         self.dbConnection.read { transaction in
-            let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
+            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
+                owsFail("\(self.logTag) could not serialize sync groups data")
+                return
+            }
             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
         }
 
