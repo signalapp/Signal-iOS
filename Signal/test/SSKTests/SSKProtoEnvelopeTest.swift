@@ -65,4 +65,53 @@ class SSKProtoEnvelopeTest: XCTestCase {
             }
         }
     }
+
+    func testParse_buildVsRequired() {
+        let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder()
+
+        XCTAssertThrowsError(try builder.build()) { (error) -> Void in
+            switch error {
+            case SSKProtoError.invalidProtobuf:
+                break
+            default:
+                XCTFail("unexpected error: \(error)")
+            }
+        }
+    }
+
+    func testParse_roundtrip() {
+        let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder()
+
+        let phonyContent = "phony data".data(using: .utf8)!
+
+        builder.setType(SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
+        builder.setTimestamp(123)
+        builder.setSource("+13213214321")
+        builder.setSourceDevice(1)
+        builder.setContent(phonyContent)
+
+        var envelopeData: Data
+        do {
+            envelopeData = try builder.buildSerializedData()
+        } catch {
+            XCTFail("Couldn't serialize data.")
+            return
+        }
+
+        var envelope: SSKProtoEnvelope
+        do {
+            envelope = try SSKProtoEnvelope.parseData(envelopeData)
+        } catch {
+            XCTFail("Couldn't serialize data.")
+            return
+        }
+
+        XCTAssertEqual(envelope.type, SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
+        XCTAssertEqual(envelope.timestamp, 123)
+        XCTAssertEqual(envelope.source, "+13213214321")
+        XCTAssertEqual(envelope.sourceDevice, 1)
+        XCTAssertTrue(envelope.hasContent)
+        XCTAssertEqual(envelope.content, phonyContent)
+        XCTAssertFalse(envelope.hasLegacyMessage)
+    }
 }

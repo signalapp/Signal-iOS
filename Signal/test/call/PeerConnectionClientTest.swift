@@ -115,8 +115,14 @@ class PeerConnectionClientTest: XCTestCase {
     func testDataChannelMessage() {
         XCTAssertEqual(0, clientDelegate.dataChannelMessages.count)
 
-        let hangup = DataChannelMessage.forHangup(callId: 123)
-        let hangupBuffer = RTCDataBuffer(data: hangup.asData(), isBinary: false)
+        let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder()
+        hangupBuilder.setId(123)
+        let hangup = try! hangupBuilder.build()
+
+        let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+        dataBuilder.setHangup(hangup)
+        let hangupData = try! dataBuilder.buildSerializedData()
+        let hangupBuffer = RTCDataBuffer(data: hangupData, isBinary: false)
         client.dataChannel(dataChannel, didReceiveMessageWith: hangupBuffer)
 
         waitForPeerConnectionClient()
@@ -124,7 +130,7 @@ class PeerConnectionClientTest: XCTestCase {
         XCTAssertEqual(1, clientDelegate.dataChannelMessages.count)
 
         let dataChannelMessageProto = clientDelegate.dataChannelMessages[0]
-        XCTAssert(dataChannelMessageProto.hasHangup())
+        XCTAssert(dataChannelMessageProto.hasHangup)
 
         let hangupProto = dataChannelMessageProto.hangup!
         XCTAssertEqual(123, hangupProto.id)
