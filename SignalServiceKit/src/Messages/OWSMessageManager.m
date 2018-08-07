@@ -661,9 +661,15 @@ NS_ASSUME_NONNULL_BEGIN
                     [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
                                                            identityManager:self.identityManager
                                                             profileManager:self.profileManager];
-                DataSource *dataSource = [DataSourceValue
-                    dataSourceWithSyncMessageData:[syncContactsMessage
-                                                      buildPlainTextAttachmentDataWithTransaction:transaction]];
+                __block NSData *_Nullable syncData;
+                [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    syncData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+                }];
+                if (!syncData) {
+                    OWSFail(@"%@ Failed to serialize contacts sync message.", self.logTag);
+                    return;
+                }
+                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
                 [self.messageSender enqueueTemporaryAttachment:dataSource
                     contentType:OWSMimeTypeApplicationOctetStream
                     inMessage:syncContactsMessage
@@ -676,19 +682,31 @@ NS_ASSUME_NONNULL_BEGIN
                     }];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
-            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            DataSource *dataSource = [DataSourceValue
-                dataSourceWithSyncMessageData:[syncGroupsMessage
-                                                  buildPlainTextAttachmentDataWithTransaction:transaction]];
-            [self.messageSender enqueueTemporaryAttachment:dataSource
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncGroupsMessage
-                success:^{
-                    DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.logTag);
-                }
-                failure:^(NSError *error) {
-                    DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.logTag, error);
+            // We respond asynchronously.
+            //
+            // In rare cases this means we won't respond to the sync request, but that's
+            // acceptable.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+                __block NSData *_Nullable syncData;
+                [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
                 }];
+                if (!syncData) {
+                    OWSFail(@"%@ Failed to serialize groups sync message.", self.logTag);
+                    return;
+                }
+                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
+                [self.messageSender enqueueTemporaryAttachment:dataSource
+                    contentType:OWSMimeTypeApplicationOctetStream
+                    inMessage:syncGroupsMessage
+                    success:^{
+                        DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.logTag);
+                    }
+                    failure:^(NSError *error) {
+                        DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.logTag, error);
+                    }];
+            });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             DDLogInfo(@"%@ Received request for block list", self.logTag);
             [_blockingManager syncBlockedPhoneNumbers];

@@ -1,11 +1,6 @@
 # See https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html#runtime-suppressions
 # for details.
 
-# protobuf lib
-shift-base:CodedInputStream.m
-# generated protos
-bool:WhisperTextProtocol.pb.m
-
 # YapDatabase
 bool:YapDatabaseAutoViewTransaction.m
 

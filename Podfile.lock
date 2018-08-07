@@ -19,7 +19,7 @@ PODS:
     - CocoaLumberjack
     - Curve25519Kit (~> 2.1.0)
     - HKDFKit (~> 0.0.3)
-    - ProtocolBuffers (~> 1.9.8)
+    - SwiftProtobuf
   - CocoaLumberjack (3.4.2):
     - CocoaLumberjack/Default (= 3.4.2)
     - CocoaLumberjack/Extensions (= 3.4.2)
@@ -44,7 +44,6 @@ PODS:
     - PromiseKit/CorePromise
   - PromiseKit/UIKit (4.5.2):
     - PromiseKit/CorePromise
-  - ProtocolBuffers (1.9.11)
   - PureLayout (3.0.2)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
@@ -161,7 +160,6 @@ SPEC REPOS:
     - libPhoneNumber-iOS
     - Mantle
     - PromiseKit
-    - ProtocolBuffers
     - PureLayout
     - Reachability
     - SAMKeychain
@@ -192,7 +190,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 54d5f90558578bb96ebfa9688b3905093b489e31
+    :commit: 1fbdd114afe5ca981324892f22242d3a7a47794d
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
     :commit: ced146699622ebd3d282bbfce3d492db4456e9aa
@@ -216,7 +214,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   ATAppUpdater: a9f7027060959d47e58733d3b48f6b9a28cb8de1
-  AxolotlKit: 7cfd2e71329b8dc398734e95b936450a2081fd60
+  AxolotlKit: 07bd978ea931d113939de88d3d2d354896680ceb
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
@@ -224,7 +222,6 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
-  ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
@@ -236,6 +233,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: aa9ff0d7d6d50852127963f4b8aa60d8d1eff8d3
+PODFILE CHECKSUM: 0c3d5978b54712391b5b90835b9554277b07fa23
 
 COCOAPODS: 1.5.3

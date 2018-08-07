@@ -7,13 +7,13 @@
 #import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
+#import "NSData+OWS.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
 #import "SignalAccount.h"
 #import "TSContactThread.h"
-#import <ProtocolBuffers/CodedOutputStream.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -96,11 +96,11 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     }
 
     uint32_t contactDataLength = (uint32_t)contactData.length;
-    [self.delegateStream writeRawVarint32:contactDataLength];
-    [self.delegateStream writeRawData:contactData];
+    [self writeUInt32:contactDataLength];
+    [self writeData:contactData];
 
     if (avatarPng) {
-        [self.delegateStream writeRawData:avatarPng];
+        [self writeData:avatarPng];
     }
 }
 

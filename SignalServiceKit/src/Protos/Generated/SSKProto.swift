@@ -97,6 +97,18 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoEnvelope.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("type: \(proto.type)")
+            fields.append("source: \(proto.source)")
+            fields.append("sourceDevice: \(proto.sourceDevice)")
+            fields.append("relay: \(proto.relay)")
+            fields.append("timestamp: \(proto.timestamp)")
+            fields.append("legacyMessage: \(proto.legacyMessage)")
+            fields.append("content: \(proto.content)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_Envelope
@@ -202,6 +214,18 @@ public enum SSKProtoError: Error {
                                       timestamp: timestamp)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("type: \(proto.type)")
+        fields.append("source: \(proto.source)")
+        fields.append("sourceDevice: \(proto.sourceDevice)")
+        fields.append("relay: \(proto.relay)")
+        fields.append("timestamp: \(proto.timestamp)")
+        fields.append("legacyMessage: \(proto.legacyMessage)")
+        fields.append("content: \(proto.content)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoContent
@@ -251,6 +275,16 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoContent.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("dataMessage: \(proto.dataMessage)")
+            fields.append("syncMessage: \(proto.syncMessage)")
+            fields.append("callMessage: \(proto.callMessage)")
+            fields.append("nullMessage: \(proto.nullMessage)")
+            fields.append("receiptMessage: \(proto.receiptMessage)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -315,27 +349,27 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Content) throws -> SSKProtoContent {
-        var dataMessage: SSKProtoDataMessage? = nil
+        var dataMessage: SSKProtoDataMessage?
         if proto.hasDataMessage {
             dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
         }
 
-        var syncMessage: SSKProtoSyncMessage? = nil
+        var syncMessage: SSKProtoSyncMessage?
         if proto.hasSyncMessage {
             syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
-        var callMessage: SSKProtoCallMessage? = nil
+        var callMessage: SSKProtoCallMessage?
         if proto.hasCallMessage {
             callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
         }
 
-        var nullMessage: SSKProtoNullMessage? = nil
+        var nullMessage: SSKProtoNullMessage?
         if proto.hasNullMessage {
             nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
         }
 
-        var receiptMessage: SSKProtoReceiptMessage? = nil
+        var receiptMessage: SSKProtoReceiptMessage?
         if proto.hasReceiptMessage {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
@@ -351,6 +385,16 @@ public enum SSKProtoError: Error {
                                      nullMessage: nullMessage,
                                      receiptMessage: receiptMessage)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("dataMessage: \(proto.dataMessage)")
+        fields.append("syncMessage: \(proto.syncMessage)")
+        fields.append("callMessage: \(proto.callMessage)")
+        fields.append("nullMessage: \(proto.nullMessage)")
+        fields.append("receiptMessage: \(proto.receiptMessage)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -389,6 +433,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoCallMessageOffer.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("sessionDescription: \(proto.sessionDescription)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -445,6 +496,13 @@ public enum SSKProtoError: Error {
                                               sessionDescription: sessionDescription)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("sessionDescription: \(proto.sessionDescription)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoCallMessageAnswer
@@ -482,6 +540,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoCallMessageAnswer.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("sessionDescription: \(proto.sessionDescription)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -538,6 +603,13 @@ public enum SSKProtoError: Error {
                                                sessionDescription: sessionDescription)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("sessionDescription: \(proto.sessionDescription)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoCallMessageIceUpdate
@@ -583,6 +655,15 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoCallMessageIceUpdate.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("sdpMid: \(proto.sdpMid)")
+            fields.append("sdpMlineIndex: \(proto.sdpMlineIndex)")
+            fields.append("sdp: \(proto.sdp)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -659,6 +740,15 @@ public enum SSKProtoError: Error {
                                                   sdp: sdp)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("sdpMid: \(proto.sdpMid)")
+        fields.append("sdpMlineIndex: \(proto.sdpMlineIndex)")
+        fields.append("sdp: \(proto.sdp)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoCallMessageBusy
@@ -692,6 +782,12 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoCallMessageBusy.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -738,6 +834,12 @@ public enum SSKProtoError: Error {
                                              id: id)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoCallMessageHangup
@@ -771,6 +873,12 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoCallMessageHangup.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -816,6 +924,12 @@ public enum SSKProtoError: Error {
         let result = SSKProtoCallMessageHangup(proto: proto,
                                                id: id)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -876,6 +990,17 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoCallMessage.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("offer: \(proto.offer)")
+            fields.append("answer: \(proto.answer)")
+            fields.append("iceUpdate: \(proto.iceUpdate)")
+            fields.append("hangup: \(proto.hangup)")
+            fields.append("busy: \(proto.busy)")
+            fields.append("profileKey: \(proto.profileKey)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -947,12 +1072,12 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_CallMessage) throws -> SSKProtoCallMessage {
-        var offer: SSKProtoCallMessageOffer? = nil
+        var offer: SSKProtoCallMessageOffer?
         if proto.hasOffer {
             offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
         }
 
-        var answer: SSKProtoCallMessageAnswer? = nil
+        var answer: SSKProtoCallMessageAnswer?
         if proto.hasAnswer {
             answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
         }
@@ -960,12 +1085,12 @@ public enum SSKProtoError: Error {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup? = nil
+        var hangup: SSKProtoCallMessageHangup?
         if proto.hasHangup {
             hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
-        var busy: SSKProtoCallMessageBusy? = nil
+        var busy: SSKProtoCallMessageBusy?
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
@@ -981,6 +1106,17 @@ public enum SSKProtoError: Error {
                                          hangup: hangup,
                                          busy: busy)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("offer: \(proto.offer)")
+        fields.append("answer: \(proto.answer)")
+        fields.append("iceUpdate: \(proto.iceUpdate)")
+        fields.append("hangup: \(proto.hangup)")
+        fields.append("busy: \(proto.busy)")
+        fields.append("profileKey: \(proto.profileKey)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -1046,6 +1182,15 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageQuoteQuotedAttachment.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("contentType: \(proto.contentType)")
+            fields.append("fileName: \(proto.fileName)")
+            fields.append("thumbnail: \(proto.thumbnail)")
+            fields.append("flags: \(proto.flags)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment
@@ -1108,7 +1253,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var thumbnail: SSKProtoAttachmentPointer? = nil
+        var thumbnail: SSKProtoAttachmentPointer?
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
         }
@@ -1120,6 +1265,15 @@ public enum SSKProtoError: Error {
         let result = SSKProtoDataMessageQuoteQuotedAttachment(proto: proto,
                                                               thumbnail: thumbnail)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("contentType: \(proto.contentType)")
+        fields.append("fileName: \(proto.fileName)")
+        fields.append("thumbnail: \(proto.thumbnail)")
+        fields.append("flags: \(proto.flags)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -1172,6 +1326,15 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageQuote.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("author: \(proto.author)")
+            fields.append("text: \(proto.text)")
+            fields.append("attachments: \(proto.attachments)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -1246,6 +1409,15 @@ public enum SSKProtoError: Error {
                                               attachments: attachments)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("author: \(proto.author)")
+        fields.append("text: \(proto.text)")
+        fields.append("attachments: \(proto.attachments)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoDataMessageContactName
@@ -1299,6 +1471,17 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageContactName.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("givenName: \(proto.givenName)")
+            fields.append("familyName: \(proto.familyName)")
+            fields.append("prefix: \(proto.prefix)")
+            fields.append("suffix: \(proto.suffix)")
+            fields.append("middleName: \(proto.middleName)")
+            fields.append("displayName: \(proto.displayName)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -1395,6 +1578,17 @@ public enum SSKProtoError: Error {
         let result = SSKProtoDataMessageContactName(proto: proto)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("givenName: \(proto.givenName)")
+        fields.append("familyName: \(proto.familyName)")
+        fields.append("prefix: \(proto.prefix)")
+        fields.append("suffix: \(proto.suffix)")
+        fields.append("middleName: \(proto.middleName)")
+        fields.append("displayName: \(proto.displayName)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoDataMessageContactPhone
@@ -1464,6 +1658,14 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageContactPhone.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("value: \(proto.value)")
+            fields.append("type: \(proto.type)")
+            fields.append("label: \(proto.label)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Phone
@@ -1525,6 +1727,14 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoDataMessageContactPhone(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("value: \(proto.value)")
+        fields.append("type: \(proto.type)")
+        fields.append("label: \(proto.label)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -1595,6 +1805,14 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageContactEmail.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("value: \(proto.value)")
+            fields.append("type: \(proto.type)")
+            fields.append("label: \(proto.label)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Email
@@ -1656,6 +1874,14 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoDataMessageContactEmail(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("value: \(proto.value)")
+        fields.append("type: \(proto.type)")
+        fields.append("label: \(proto.label)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -1746,6 +1972,20 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageContactPostalAddress.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("type: \(proto.type)")
+            fields.append("label: \(proto.label)")
+            fields.append("street: \(proto.street)")
+            fields.append("pobox: \(proto.pobox)")
+            fields.append("neighborhood: \(proto.neighborhood)")
+            fields.append("city: \(proto.city)")
+            fields.append("region: \(proto.region)")
+            fields.append("postcode: \(proto.postcode)")
+            fields.append("country: \(proto.country)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -1869,6 +2109,20 @@ public enum SSKProtoError: Error {
         let result = SSKProtoDataMessageContactPostalAddress(proto: proto)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("type: \(proto.type)")
+        fields.append("label: \(proto.label)")
+        fields.append("street: \(proto.street)")
+        fields.append("pobox: \(proto.pobox)")
+        fields.append("neighborhood: \(proto.neighborhood)")
+        fields.append("city: \(proto.city)")
+        fields.append("region: \(proto.region)")
+        fields.append("postcode: \(proto.postcode)")
+        fields.append("country: \(proto.country)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoDataMessageContactAvatar
@@ -1906,6 +2160,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageContactAvatar.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("avatar: \(proto.avatar)")
+            fields.append("isProfile: \(proto.isProfile)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -1949,7 +2210,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws -> SSKProtoDataMessageContactAvatar {
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -1961,6 +2222,13 @@ public enum SSKProtoError: Error {
         let result = SSKProtoDataMessageContactAvatar(proto: proto,
                                                       avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("avatar: \(proto.avatar)")
+        fields.append("isProfile: \(proto.isProfile)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -2034,6 +2302,17 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessageContact.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("name: \(proto.name)")
+            fields.append("number: \(proto.number)")
+            fields.append("email: \(proto.email)")
+            fields.append("address: \(proto.address)")
+            fields.append("avatar: \(proto.avatar)")
+            fields.append("organization: \(proto.organization)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact
@@ -2098,7 +2377,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact) throws -> SSKProtoDataMessageContact {
-        var name: SSKProtoDataMessageContactName? = nil
+        var name: SSKProtoDataMessageContactName?
         if proto.hasName {
             name = try SSKProtoDataMessageContactName.parseProto(proto.name)
         }
@@ -2112,7 +2391,7 @@ public enum SSKProtoError: Error {
         var address: [SSKProtoDataMessageContactPostalAddress] = []
         address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
-        var avatar: SSKProtoDataMessageContactAvatar? = nil
+        var avatar: SSKProtoDataMessageContactAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
@@ -2128,6 +2407,17 @@ public enum SSKProtoError: Error {
                                                 address: address,
                                                 avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("name: \(proto.name)")
+        fields.append("number: \(proto.number)")
+        fields.append("email: \(proto.email)")
+        fields.append("address: \(proto.address)")
+        fields.append("avatar: \(proto.avatar)")
+        fields.append("organization: \(proto.organization)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -2231,6 +2521,20 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoDataMessage.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("body: \(proto.body)")
+            fields.append("attachments: \(proto.attachments)")
+            fields.append("group: \(proto.group)")
+            fields.append("flags: \(proto.flags)")
+            fields.append("expireTimer: \(proto.expireTimer)")
+            fields.append("profileKey: \(proto.profileKey)")
+            fields.append("timestamp: \(proto.timestamp)")
+            fields.append("quote: \(proto.quote)")
+            fields.append("contact: \(proto.contact)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_DataMessage
@@ -2325,12 +2629,12 @@ public enum SSKProtoError: Error {
         var attachments: [SSKProtoAttachmentPointer] = []
         attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
-        var group: SSKProtoGroupContext? = nil
+        var group: SSKProtoGroupContext?
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
         }
 
-        var quote: SSKProtoDataMessageQuote? = nil
+        var quote: SSKProtoDataMessageQuote?
         if proto.hasQuote {
             quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
         }
@@ -2348,6 +2652,20 @@ public enum SSKProtoError: Error {
                                          quote: quote,
                                          contact: contact)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("body: \(proto.body)")
+        fields.append("attachments: \(proto.attachments)")
+        fields.append("group: \(proto.group)")
+        fields.append("flags: \(proto.flags)")
+        fields.append("expireTimer: \(proto.expireTimer)")
+        fields.append("profileKey: \(proto.profileKey)")
+        fields.append("timestamp: \(proto.timestamp)")
+        fields.append("quote: \(proto.quote)")
+        fields.append("contact: \(proto.contact)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -2382,6 +2700,12 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoNullMessage.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("padding: \(proto.padding)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -2427,6 +2751,12 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoNullMessage(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("padding: \(proto.padding)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -2493,6 +2823,13 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoReceiptMessage.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("type: \(proto.type)")
+            fields.append("timestamp: \(proto.timestamp)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_ReceiptMessage
@@ -2541,6 +2878,13 @@ public enum SSKProtoError: Error {
         let result = SSKProtoReceiptMessage(proto: proto,
                                             type: type)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("type: \(proto.type)")
+        fields.append("timestamp: \(proto.timestamp)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -2611,6 +2955,15 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoVerified.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("destination: \(proto.destination)")
+            fields.append("identityKey: \(proto.identityKey)")
+            fields.append("state: \(proto.state)")
+            fields.append("nullMessage: \(proto.nullMessage)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -2684,6 +3037,15 @@ public enum SSKProtoError: Error {
                                       destination: destination)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("destination: \(proto.destination)")
+        fields.append("identityKey: \(proto.identityKey)")
+        fields.append("state: \(proto.state)")
+        fields.append("nullMessage: \(proto.nullMessage)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoSyncMessageSent
@@ -2729,6 +3091,15 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageSent.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("destination: \(proto.destination)")
+            fields.append("timestamp: \(proto.timestamp)")
+            fields.append("message: \(proto.message)")
+            fields.append("expirationStartTimestamp: \(proto.expirationStartTimestamp)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -2789,7 +3160,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var message: SSKProtoDataMessage? = nil
+        var message: SSKProtoDataMessage?
         if proto.hasMessage {
             message = try SSKProtoDataMessage.parseProto(proto.message)
         }
@@ -2801,6 +3172,15 @@ public enum SSKProtoError: Error {
         let result = SSKProtoSyncMessageSent(proto: proto,
                                              message: message)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("destination: \(proto.destination)")
+        fields.append("timestamp: \(proto.timestamp)")
+        fields.append("message: \(proto.message)")
+        fields.append("expirationStartTimestamp: \(proto.expirationStartTimestamp)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -2839,6 +3219,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageContacts.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("blob: \(proto.blob)")
+            fields.append("isComplete: \(proto.isComplete)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -2892,6 +3279,13 @@ public enum SSKProtoError: Error {
                                                  blob: blob)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("blob: \(proto.blob)")
+        fields.append("isComplete: \(proto.isComplete)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoSyncMessageGroups
@@ -2925,6 +3319,12 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageGroups.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("blob: \(proto.blob)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -2961,7 +3361,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer? = nil
+        var blob: SSKProtoAttachmentPointer?
         if proto.hasBlob {
             blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
@@ -2973,6 +3373,12 @@ public enum SSKProtoError: Error {
         let result = SSKProtoSyncMessageGroups(proto: proto,
                                                blob: blob)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("blob: \(proto.blob)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -3014,6 +3420,12 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageBlocked.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("numbers: \(proto.numbers)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Blocked
@@ -3052,6 +3464,12 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoSyncMessageBlocked(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("numbers: \(proto.numbers)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -3117,6 +3535,12 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageRequest.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("type: \(proto.type)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Request
@@ -3162,6 +3586,12 @@ public enum SSKProtoError: Error {
                                                 type: type)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("type: \(proto.type)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoSyncMessageRead
@@ -3199,6 +3629,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageRead.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("sender: \(proto.sender)")
+            fields.append("timestamp: \(proto.timestamp)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -3255,6 +3692,13 @@ public enum SSKProtoError: Error {
                                              timestamp: timestamp)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("sender: \(proto.sender)")
+        fields.append("timestamp: \(proto.timestamp)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoSyncMessageConfiguration
@@ -3288,6 +3732,12 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessageConfiguration.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("readReceipts: \(proto.readReceipts)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -3330,6 +3780,12 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoSyncMessageConfiguration(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("readReceipts: \(proto.readReceipts)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -3402,6 +3858,20 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoSyncMessage.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("sent: \(proto.sent)")
+            fields.append("contacts: \(proto.contacts)")
+            fields.append("groups: \(proto.groups)")
+            fields.append("request: \(proto.request)")
+            fields.append("read: \(proto.read)")
+            fields.append("blocked: \(proto.blocked)")
+            fields.append("verified: \(proto.verified)")
+            fields.append("configuration: \(proto.configuration)")
+            fields.append("padding: \(proto.padding)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -3494,22 +3964,22 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent? = nil
+        var sent: SSKProtoSyncMessageSent?
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
         }
 
-        var contacts: SSKProtoSyncMessageContacts? = nil
+        var contacts: SSKProtoSyncMessageContacts?
         if proto.hasContacts {
             contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
         }
 
-        var groups: SSKProtoSyncMessageGroups? = nil
+        var groups: SSKProtoSyncMessageGroups?
         if proto.hasGroups {
             groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
         }
 
-        var request: SSKProtoSyncMessageRequest? = nil
+        var request: SSKProtoSyncMessageRequest?
         if proto.hasRequest {
             request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
         }
@@ -3517,17 +3987,17 @@ public enum SSKProtoError: Error {
         var read: [SSKProtoSyncMessageRead] = []
         read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
-        var blocked: SSKProtoSyncMessageBlocked? = nil
+        var blocked: SSKProtoSyncMessageBlocked?
         if proto.hasBlocked {
             blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
 
-        var configuration: SSKProtoSyncMessageConfiguration? = nil
+        var configuration: SSKProtoSyncMessageConfiguration?
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
@@ -3546,6 +4016,20 @@ public enum SSKProtoError: Error {
                                          verified: verified,
                                          configuration: configuration)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("sent: \(proto.sent)")
+        fields.append("contacts: \(proto.contacts)")
+        fields.append("groups: \(proto.groups)")
+        fields.append("request: \(proto.request)")
+        fields.append("read: \(proto.read)")
+        fields.append("blocked: \(proto.blocked)")
+        fields.append("verified: \(proto.verified)")
+        fields.append("configuration: \(proto.configuration)")
+        fields.append("padding: \(proto.padding)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -3634,6 +4118,21 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoAttachmentPointer.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("contentType: \(proto.contentType)")
+            fields.append("key: \(proto.key)")
+            fields.append("size: \(proto.size)")
+            fields.append("thumbnail: \(proto.thumbnail)")
+            fields.append("digest: \(proto.digest)")
+            fields.append("fileName: \(proto.fileName)")
+            fields.append("flags: \(proto.flags)")
+            fields.append("width: \(proto.width)")
+            fields.append("height: \(proto.height)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -3758,6 +4257,21 @@ public enum SSKProtoError: Error {
                                                id: id)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("contentType: \(proto.contentType)")
+        fields.append("key: \(proto.key)")
+        fields.append("size: \(proto.size)")
+        fields.append("thumbnail: \(proto.thumbnail)")
+        fields.append("digest: \(proto.digest)")
+        fields.append("fileName: \(proto.fileName)")
+        fields.append("flags: \(proto.flags)")
+        fields.append("width: \(proto.width)")
+        fields.append("height: \(proto.height)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SSKProtoGroupContext
@@ -3844,6 +4358,16 @@ public enum SSKProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoGroupContext.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("type: \(proto.type)")
+            fields.append("name: \(proto.name)")
+            fields.append("members: \(proto.members)")
+            fields.append("avatar: \(proto.avatar)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: SignalServiceProtos_GroupContext
@@ -3911,7 +4435,7 @@ public enum SSKProtoError: Error {
         }
         let type = SSKProtoGroupContextTypeWrap(proto.type)
 
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -3925,6 +4449,16 @@ public enum SSKProtoError: Error {
                                           type: type,
                                           avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("type: \(proto.type)")
+        fields.append("name: \(proto.name)")
+        fields.append("members: \(proto.members)")
+        fields.append("avatar: \(proto.avatar)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -3963,6 +4497,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoContactDetailsAvatar.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("contentType: \(proto.contentType)")
+            fields.append("length: \(proto.length)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -4015,6 +4556,13 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoContactDetailsAvatar(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("contentType: \(proto.contentType)")
+        fields.append("length: \(proto.length)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -4077,6 +4625,19 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoContactDetails.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("number: \(proto.number)")
+            fields.append("name: \(proto.name)")
+            fields.append("avatar: \(proto.avatar)")
+            fields.append("color: \(proto.color)")
+            fields.append("verified: \(proto.verified)")
+            fields.append("profileKey: \(proto.profileKey)")
+            fields.append("blocked: \(proto.blocked)")
+            fields.append("expireTimer: \(proto.expireTimer)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -4173,12 +4734,12 @@ public enum SSKProtoError: Error {
         }
         let number = proto.number
 
-        var avatar: SSKProtoContactDetailsAvatar? = nil
+        var avatar: SSKProtoContactDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
@@ -4192,6 +4753,19 @@ public enum SSKProtoError: Error {
                                             avatar: avatar,
                                             verified: verified)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("number: \(proto.number)")
+        fields.append("name: \(proto.name)")
+        fields.append("avatar: \(proto.avatar)")
+        fields.append("color: \(proto.color)")
+        fields.append("verified: \(proto.verified)")
+        fields.append("profileKey: \(proto.profileKey)")
+        fields.append("blocked: \(proto.blocked)")
+        fields.append("expireTimer: \(proto.expireTimer)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -4230,6 +4804,13 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoGroupDetailsAvatar.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("contentType: \(proto.contentType)")
+            fields.append("length: \(proto.length)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -4282,6 +4863,13 @@ public enum SSKProtoError: Error {
 
         let result = SSKProtoGroupDetailsAvatar(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("contentType: \(proto.contentType)")
+        fields.append("length: \(proto.length)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -4346,6 +4934,18 @@ public enum SSKProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SSKProtoGroupDetails.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("id: \(proto.id)")
+            fields.append("name: \(proto.name)")
+            fields.append("members: \(proto.members)")
+            fields.append("avatar: \(proto.avatar)")
+            fields.append("active: \(proto.active)")
+            fields.append("expireTimer: \(proto.expireTimer)")
+            fields.append("color: \(proto.color)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -4429,7 +5029,7 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
-        var avatar: SSKProtoGroupDetailsAvatar? = nil
+        var avatar: SSKProtoGroupDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
@@ -4442,5 +5042,17 @@ public enum SSKProtoError: Error {
                                           id: id,
                                           avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("id: \(proto.id)")
+        fields.append("name: \(proto.name)")
+        fields.append("members: \(proto.members)")
+        fields.append("avatar: \(proto.avatar)")
+        fields.append("active: \(proto.active)")
+        fields.append("expireTimer: \(proto.expireTimer)")
+        fields.append("color: \(proto.color)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }

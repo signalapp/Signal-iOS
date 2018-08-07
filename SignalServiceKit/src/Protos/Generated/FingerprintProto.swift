@@ -43,6 +43,12 @@ public enum FingerprintProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try FingerprintProtoLogicalFingerprint.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("identityData: \(proto.identityData)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: FingerprintProtos_LogicalFingerprint
@@ -88,6 +94,12 @@ public enum FingerprintProtoError: Error {
                                                         identityData: identityData)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("identityData: \(proto.identityData)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - FingerprintProtoLogicalFingerprints
@@ -129,6 +141,14 @@ public enum FingerprintProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try FingerprintProtoLogicalFingerprints.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("version: \(proto.version)")
+            fields.append("localFingerprint: \(proto.localFingerprint)")
+            fields.append("remoteFingerprint: \(proto.remoteFingerprint)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -194,5 +214,13 @@ public enum FingerprintProtoError: Error {
                                                          localFingerprint: localFingerprint,
                                                          remoteFingerprint: remoteFingerprint)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("version: \(proto.version)")
+        fields.append("localFingerprint: \(proto.localFingerprint)")
+        fields.append("remoteFingerprint: \(proto.remoteFingerprint)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }

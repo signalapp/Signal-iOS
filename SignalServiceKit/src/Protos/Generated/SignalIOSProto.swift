@@ -77,6 +77,13 @@ public enum SignalIOSProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try SignalIOSProtoBackupSnapshotBackupEntity.parseProto(proto).serializedData()
         }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("type: \(proto.type)")
+            fields.append("entityData: \(proto.entityData)")
+            return "[" + fields.joined(separator: ", ") + "]"
+        }
     }
 
     fileprivate let proto: IOSProtos_BackupSnapshot.BackupEntity
@@ -132,6 +139,13 @@ public enum SignalIOSProtoError: Error {
                                                               entityData: entityData)
         return result
     }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("type: \(proto.type)")
+        fields.append("entityData: \(proto.entityData)")
+        return "[" + fields.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: - SignalIOSProtoBackupSnapshot
@@ -171,6 +185,12 @@ public enum SignalIOSProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try SignalIOSProtoBackupSnapshot.parseProto(proto).serializedData()
+        }
+
+        @objc public override var description: String {
+            var fields = [String]()
+            fields.append("entity: \(proto.entity)")
+            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -214,5 +234,11 @@ public enum SignalIOSProtoError: Error {
         let result = SignalIOSProtoBackupSnapshot(proto: proto,
                                                   entity: entity)
         return result
+    }
+
+    @objc public override var description: String {
+        var fields = [String]()
+        fields.append("entity: \(proto.entity)")
+        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
