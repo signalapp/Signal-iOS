@@ -408,10 +408,10 @@ private class SignalCallData: NSObject {
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
-                let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder()
-                offerBuilder.setId(call.signalingId)
-                offerBuilder.setSessionDescription(sessionDescription.sdp)
                 do {
+                    let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder()
+                    offerBuilder.setId(call.signalingId)
+                    offerBuilder.setSessionDescription(sessionDescription.sdp)
                     let offer = try offerBuilder.build()
                     let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offer)
                     return self.messageSender.sendPromise(message: callMessage)
@@ -719,10 +719,10 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
 
-            let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder()
-            answerBuilder.setId(newCall.signalingId)
-            answerBuilder.setSessionDescription(negotiatedSessionDescription.sdp)
             do {
+                let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder()
+                answerBuilder.setId(newCall.signalingId)
+                answerBuilder.setSessionDescription(negotiatedSessionDescription.sdp)
                 let answer = try answerBuilder.build()
                 let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answer)
 
@@ -860,17 +860,17 @@ private class SignalCallData: NSObject {
 
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
 
-            /**
-             * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
-             * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
-             * exchanged, the clients can connect directly.
-             */
-            let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder()
-            iceUpdateBuilder.setId(call.signalingId)
-            iceUpdateBuilder.setSdp(iceCandidate.sdp)
-            iceUpdateBuilder.setSdpMlineIndex(UInt32(iceCandidate.sdpMLineIndex))
-            iceUpdateBuilder.setSdpMid(sdpMid)
             do {
+                /**
+                 * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
+                 * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
+                 * exchanged, the clients can connect.
+                 */
+                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder()
+                iceUpdateBuilder.setId(call.signalingId)
+                iceUpdateBuilder.setSdp(iceCandidate.sdp)
+                iceUpdateBuilder.setSdpMlineIndex(UInt32(iceCandidate.sdpMLineIndex))
+                iceUpdateBuilder.setSdpMid(sdpMid)
                 let iceUpdate = try iceUpdateBuilder.build()
 
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdate)
@@ -1208,7 +1208,6 @@ private class SignalCallData: NSObject {
         }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
-
         do {
             let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder()
             hangupBuilder.setId(call.signalingId)
