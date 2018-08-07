@@ -7,6 +7,10 @@ bool:YapDatabaseAutoViewTransaction.m
 # SocketRocket
 bool:SRWebSocket.m
 
+# SQLCipher
+shift-base:sqlite3.c
+shift-exponent:sqlite3.c
+
 # Curve25519 expected
 shift-base:curve25519-donna.c
 shift-base:ge_scalarmult_base.c
