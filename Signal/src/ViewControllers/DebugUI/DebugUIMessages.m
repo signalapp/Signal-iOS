@@ -85,10 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMessages deleteAllMessagesInThread:thread];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"👷 Send All Contact Shares"
+    [items addObject:[OWSTableItem itemWithTitle:@"👷 Thrash insert/deletes"
                                      actionBlock:^{
-                                         [DebugUIMessages sendAllContacts:thread];
+                                         [DebugUIMessages thrashInsertAndDeleteForThread:(TSThread *)thread
+                                                                                 counter:300];
                                      }]];
+
     [items addObjectsFromArray:[self itemsForActions:@[
         [DebugUIMessages fakeAllContactShareAction:thread],
         [DebugUIMessages sendMessageVariationsAction:thread],
@@ -125,6 +127,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Select Send Media"
                         actionBlock:^{
                             [DebugUIMessages selectSendMediaAction:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send All Contact Shares"
+                        actionBlock:^{
+                            [DebugUIMessages sendAllContacts:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Select Quoted Reply"
                         actionBlock:^{
@@ -3111,7 +3117,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     OWSAssert(thread);
 
     return
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"👷 All Fake Contact Shares"
+        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
                                                  subactions:[self allFakeContactShareActions:thread includeLabels:YES]];
 }
 
@@ -3698,6 +3704,26 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             }
         });
     }
+}
+
++ (void)thrashInsertAndDeleteForThread:(TSThread *)thread counter:(NSUInteger)counter
+{
+    if (counter == 0) {
+        return;
+    }
+    uint32_t sendDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, sendDelay), dispatch_get_main_queue(), ^{
+        [self sendFakeMessages:1 thread:thread];
+    });
+
+    uint32_t deleteDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, deleteDelay), dispatch_get_main_queue(), ^{
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
+            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [self deleteRandomMessages:1 thread:thread transaction:transaction];
+            }];
+        [self thrashInsertAndDeleteForThread:thread counter:counter - 1];
+    });
 }
 
 // TODO: Remove.

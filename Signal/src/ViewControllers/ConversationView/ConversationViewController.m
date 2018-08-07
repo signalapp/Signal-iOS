@@ -3402,20 +3402,20 @@ typedef enum : NSUInteger {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogVerbose(@"YapDatabaseViewChangeDelete: %@, %@, %zd",
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
-                        rowChange.finalIndex);
+                        (unsigned long)rowChange.finalIndex);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
                     OWSAssert(collectionKey.key.length > 0);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogVerbose(@"YapDatabaseViewChangeInsert: %@, %@, %zd",
+                    DDLogVerbose(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
-                        rowChange.finalIndex);
+                        (unsigned long)rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
@@ -3429,19 +3429,20 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogVerbose(@"YapDatabaseViewChangeMove: %@, %@, %@, %zd",
+                    DDLogVerbose(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
+                                 @"finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath,
-                        rowChange.finalIndex);
+                        (unsigned long)rowChange.finalIndex);
                     [self.collectionView moveItemAtIndexPath:rowChange.indexPath toIndexPath:rowChange.newIndexPath];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogVerbose(@"YapDatabaseViewChangeUpdate: %@, %@, %zd",
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
-                        rowChange.finalIndex);
+                        (unsigned long)rowChange.finalIndex);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     break;
                 }
@@ -3466,16 +3467,31 @@ typedef enum : NSUInteger {
             [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
         }
     };
+
     if (shouldAnimateUpdates) {
         [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
     } else {
-        [UIView performWithoutAnimation:^{
-            [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-            if (scrollToBottom) {
-                [self scrollToBottomAnimated:NO];
-            }
-        }];
+        // HACK: We use `UIView.animateWithDuration:0` rather than `UIView.performWithAnimation` to work around a UIKit
+        // Crash like:
+        //
+        //     *** Assertion failure in -[ConversationViewLayout prepareForCollectionViewUpdates:],
+        //     /BuildRoot/Library/Caches/com.apple.xbs/Sources/UIKit_Sim/UIKit-3600.7.47/UICollectionViewLayout.m:760
+        //     *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'While
+        //     preparing update a visible view at <NSIndexPath: 0xc000000011c00016> {length = 2, path = 0 - 142} wasn't
+        //     found in the current data model and was not in an update animation. This is an internal error.'
+        //
+        // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
+        // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the conversation.
+        // See `DebugUIMessages#thrashCellsInThread:`
+        [UIView animateWithDuration:0.0
+                         animations:^{
+                             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+                             if (scrollToBottom) {
+                                 [self scrollToBottomAnimated:shouldAnimateUpdates];
+                             }
+                         }];
     }
+
     self.lastReloadDate = [NSDate new];
 }
 
