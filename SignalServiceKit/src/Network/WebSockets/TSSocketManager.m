@@ -698,17 +698,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     // If we receive a response, we know we're not de-registered.
     [TSAccountManager.sharedInstance setIsDeregistered:NO];
 
-    WebSocketProtoWebSocketMessage *_Nullable wsMessage;
-    @try {
-        NSError *error;
-        wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
-        if (!wsMessage || error) {
-            OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
-            return;
-        }
-    } @catch (NSException *exception) {
-        OWSProdLogAndFail(@"%@ Received an invalid message: %@", self.logTag, exception.debugDescription);
-        // TODO: Add analytics.
+    NSError *error;
+    WebSocketProtoWebSocketMessage *_Nullable wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
+    if (!wsMessage || error) {
+        OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
         return;
     }
 

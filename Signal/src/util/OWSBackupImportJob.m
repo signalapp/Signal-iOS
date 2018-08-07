@@ -391,19 +391,12 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                     aborted = YES;
                     return completion(NO);
                 }
-                SignalIOSProtoBackupSnapshot *_Nullable entities;
-                @try {
-                    NSError *error;
-                    entities = [SignalIOSProtoBackupSnapshot parseData:uncompressedData error:&error];
-                    if (!entities || error) {
-                        DDLogError(@"%@ could not parse proto: %@.", self.logTag, error);
-                        // Database-related errors are unrecoverable.
-                        aborted = YES;
-                        return completion(NO);
-                    }
-                } @catch (NSException *exception) {
-                    OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, exception.debugDescription);
-                    // TODO: Add analytics.
+                NSError *error;
+                SignalIOSProtoBackupSnapshot *_Nullable entities =
+                    [SignalIOSProtoBackupSnapshot parseData:uncompressedData error:&error];
+                if (!entities || error) {
+                    DDLogError(@"%@ could not parse proto: %@.", self.logTag, error);
+                    // Database-related errors are unrecoverable.
                     aborted = YES;
                     return completion(NO);
                 }

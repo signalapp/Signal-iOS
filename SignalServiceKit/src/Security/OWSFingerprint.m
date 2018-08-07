@@ -93,21 +93,15 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     OWSAssert(data.length > 0);
     OWSAssert(error);
 
-    FingerprintProtoLogicalFingerprints *logicalFingerprints;
-    @try {
-        *error = nil;
-        logicalFingerprints = [FingerprintProtoLogicalFingerprints parseData:data error:error];
-        if (!logicalFingerprints || *error) {
-            OWSFail(@"%@ fingerprint failure: %@", self.logTag, *error);
+    *error = nil;
+    FingerprintProtoLogicalFingerprints *_Nullable logicalFingerprints;
+    logicalFingerprints = [FingerprintProtoLogicalFingerprints parseData:data error:error];
+    if (!logicalFingerprints || *error) {
+        OWSFail(@"%@ fingerprint failure: %@", self.logTag, *error);
 
-            NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", @"alert body");
-            *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
-            return NO;
-        }
-    } @catch (NSException *exception) {
-        // Sync log in case we bail.
-        DDLogError(@"%@ parsing QRCode data failed with error: %@", self.logTag, exception);
-        @throw exception;
+        NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", @"alert body");
+        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
+        return NO;
     }
 
     if (logicalFingerprints.version < OWSFingerprintScannableFormatVersion) {
