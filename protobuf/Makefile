@@ -1,15 +1,12 @@
-# Assumes you've installed protobuf-objc
-# see: https://github.com/alexeyxo/protobuf-objc
-
 PROTOC=protoc \
-		--plugin=/usr/local/bin/proto-gen-objc \
-		--proto_path="${HOME}/src/Signal/protobuf-objc/src/compiler/" \
-		--proto_path="${HOME}/src/Signal/protobuf-objc/src/compiler/google/protobuf/" \
 		--proto_path='./'
+WRAPPER_SCRIPT=../Scripts/ProtoWrappers.py \
+		--proto-dir='./' --verbose
 
 all: webrtc_data_proto
 
 webrtc_data_proto: OWSWebRTCDataProtos.proto
-	$(PROTOC) --objc_out=../Signal/src/call/ \
+	$(PROTOC) --swift_out=../Signal/src/Generated \
 		OWSWebRTCDataProtos.proto
-
+	$(WRAPPER_SCRIPT) --dst-dir=../Signal/src/Generated \
+		--wrapper-prefix=WebRTCProto --proto-prefix=WebRTCProtos --proto-file=OWSWebRTCDataProtos.proto

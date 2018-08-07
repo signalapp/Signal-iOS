@@ -391,12 +391,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                     aborted = YES;
                     return completion(NO);
                 }
-                OWSSignaliOSProtosBackupSnapshot *_Nullable entities;
-                @try {
-                    entities = [OWSSignaliOSProtosBackupSnapshot parseFromData:uncompressedData];
-                } @catch (NSException *exception) {
-                    OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, exception.debugDescription);
-                    // TODO: Add analytics.
+                NSError *error;
+                SignalIOSProtoBackupSnapshot *_Nullable entities =
+                    [SignalIOSProtoBackupSnapshot parseData:uncompressedData error:&error];
+                if (!entities || error) {
+                    DDLogError(@"%@ could not parse proto: %@.", self.logTag, error);
+                    // Database-related errors are unrecoverable.
+                    aborted = YES;
+                    return completion(NO);
                 }
                 if (!entities || entities.entity.count < 1) {
                     DDLogError(@"%@ missing entities.", self.logTag);
@@ -404,7 +406,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                     aborted = YES;
                     return completion(NO);
                 }
-                for (OWSSignaliOSProtosBackupSnapshotBackupEntity *entity in entities.entity) {
+                for (SignalIOSProtoBackupSnapshotBackupEntity *entity in entities.entity) {
                     NSData *_Nullable entityData = entity.entityData;
                     if (entityData.length < 1) {
                         DDLogError(@"%@ missing entity data.", self.logTag);

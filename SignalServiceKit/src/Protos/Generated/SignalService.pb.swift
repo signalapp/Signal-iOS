@@ -149,6 +149,14 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _content: Data? = nil
 }
 
+#if swift(>=4.2)
+
+extension SignalServiceProtos_Envelope.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct SignalServiceProtos_Content {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1100,6 +1108,14 @@ struct SignalServiceProtos_DataMessage {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+#if swift(>=4.2)
+
+extension SignalServiceProtos_DataMessage.Flags: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct SignalServiceProtos_NullMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1170,6 +1186,14 @@ struct SignalServiceProtos_ReceiptMessage {
 
   fileprivate var _type: SignalServiceProtos_ReceiptMessage.TypeEnum? = nil
 }
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_ReceiptMessage.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_Verified {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1251,6 +1275,14 @@ struct SignalServiceProtos_Verified {
   fileprivate var _state: SignalServiceProtos_Verified.State? = nil
   fileprivate var _nullMessage: Data? = nil
 }
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_Verified.State: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_SyncMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1700,6 +1732,14 @@ struct SignalServiceProtos_AttachmentPointer {
   fileprivate var _height: UInt32? = nil
 }
 
+#if swift(>=4.2)
+
+extension SignalServiceProtos_AttachmentPointer.Flags: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
+
 struct SignalServiceProtos_GroupContext {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1789,6 +1829,14 @@ struct SignalServiceProtos_GroupContext {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_GroupContext.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_ContactDetails {
   // SwiftProtobuf.Message conformance is added in an extension below. See the

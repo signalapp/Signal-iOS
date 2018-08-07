@@ -119,7 +119,6 @@ struct WebSocketProtos_WebSocketResponseMessage {
 
   var headers: [String] = []
 
-  /// @required
   var body: Data {
     get {return _body ?? SwiftProtobuf.Internal.emptyData}
     set {_body = newValue}
@@ -207,6 +206,14 @@ struct WebSocketProtos_WebSocketMessage {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension WebSocketProtos_WebSocketMessage.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 

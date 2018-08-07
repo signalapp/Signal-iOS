@@ -32,7 +32,6 @@ message WebSocketResponseMessage {
     optional uint32 status = 2;
     optional string message = 3;
     repeated string headers = 5;
-    // @required
     optional bytes body = 4;
 }
 

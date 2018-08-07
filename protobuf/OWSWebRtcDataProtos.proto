@@ -4,36 +4,34 @@
  * Licensed according to the LICENSE file in this repository.
  */
 
-package signal;
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package WebRTCProtos;
 
 option java_package = "org.thoughtcrime.securesms.webrtc";
 option java_outer_classname = "WebRtcDataProtos";
 
-// These options require the objc protobuf tools and may need to be commented
-// out if using them for a different platform.
-import "objectivec-descriptor.proto";
-option (google.protobuf.objectivec_file_options).class_prefix = "OWSWebRTCProtos";
-
-message Connected
-{
-    optional uint64 id = 1;
+message Connected {
+  // @required
+  optional uint64 id = 1;
 }
 
-message Hangup
-{
-    optional uint64 id = 1;
+message Hangup {
+  // @required
+  optional uint64 id = 1;
 }
 
-message VideoStreamingStatus
-{
-    optional uint64 id = 1;
-    optional bool enabled = 2;
+message VideoStreamingStatus {
+  // @required
+  optional uint64 id = 1;
+  optional bool enabled = 2;
 }
 
-message Data
-{
-
-    optional Connected connected = 1;
-    optional Hangup hangup = 2;
-    optional VideoStreamingStatus videoStreamingStatus = 3;
+message Data {
+  optional Connected connected = 1;
+  optional Hangup hangup = 2;
+  optional VideoStreamingStatus videoStreamingStatus = 3;
 }

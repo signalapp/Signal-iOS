@@ -17,7 +17,7 @@ class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
 
     var connectionState: ConnectionState?
     var localIceCandidates = [RTCIceCandidate]()
-    var dataChannelMessages = [OWSWebRTCProtosData]()
+    var dataChannelMessages = [WebRTCProtoData]()
 
     func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
         connectionState = .connected
@@ -35,7 +35,7 @@ class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
         localIceCandidates.append(iceCandidate)
     }
 
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: WebRTCProtoData) {
         dataChannelMessages.append(dataChannelMessage)
     }
 
