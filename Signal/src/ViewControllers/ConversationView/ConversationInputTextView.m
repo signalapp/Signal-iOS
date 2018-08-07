@@ -27,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.delegate = self;
 
-        self.backgroundColor = [UIColor ows_light02Color];
-        self.layer.borderColor = [UIColor.ows_blackColor colorWithAlphaComponent:0.12f].CGColor;
+        self.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_dark95Color : UIColor.ows_light02Color);
+        self.layer.borderColor = [Theme.primaryColor colorWithAlphaComponent:0.12f].CGColor;
         self.layer.borderWidth = 0.5f;
 
         self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.userInteractionEnabled = YES;
 
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textColor = [UIColor blackColor];
+        self.textColor = Theme.primaryColor;
         self.textAlignment = NSTextAlignmentNatural;
 
         self.contentMode = UIViewContentModeRedraw;
@@ -48,7 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.placeholderView = [UILabel new];
         self.placeholderView.text = NSLocalizedString(@"new_message", @"");
-        self.placeholderView.textColor = UIColor.ows_light35Color;
+        self.placeholderView.textColor
+            = (Theme.isDarkThemeEnabled ? UIColor.ows_dark55Color : UIColor.ows_light35Color);
         self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
 

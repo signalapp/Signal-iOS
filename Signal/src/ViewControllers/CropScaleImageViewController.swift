@@ -141,14 +141,14 @@ import SignalMessaging
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.white
-
         createViews()
     }
 
     // MARK: - Create Views
 
     private func createViews() {
+
+        view.backgroundColor = UIColor.black
 
         let contentView = UIView()
         contentView.backgroundColor = UIColor.black
