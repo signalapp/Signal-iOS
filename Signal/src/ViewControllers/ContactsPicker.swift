@@ -106,7 +106,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.searchBar = searchBar
         searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
-        searchBar.backgroundColor = .white
         searchBar.sizeToFit()
 
         tableView.tableHeaderView = searchBar

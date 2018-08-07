@@ -189,8 +189,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func loadView() {
         self.view = UIView()
-
+        self.view.backgroundColor = UIColor.black
         self.view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+
         createViews()
         createViewConstraints()
     }
