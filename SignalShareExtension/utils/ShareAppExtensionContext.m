@@ -205,6 +205,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
+- (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
+{
+    OWSProdLogAndFail(@"%@ cannot run main app active blocks in share extension.", self.logTag);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

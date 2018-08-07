@@ -12,6 +12,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -435,6 +436,33 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     if (error) {
         DDLogError(@"Failed to delete database: %@", error.description);
     }
+}
+
++ (NSSet<NSString *> *)allProfileAvatarFilePaths
+{
+    NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
+    NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
+
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [OWSUserProfile
+            enumerateCollectionObjectsWithTransaction:transaction
+                                           usingBlock:^(id object, BOOL *stop) {
+                                               if (![object isKindOfClass:[OWSUserProfile class]]) {
+                                                   OWSProdLogAndFail(@"%@ unexpected object in user profiles: %@",
+                                                       self.logTag,
+                                                       [object class]);
+                                                   return;
+                                               }
+                                               OWSUserProfile *userProfile = object;
+                                               if (!userProfile.avatarFileName) {
+                                                   return;
+                                               }
+                                               NSString *filePath = [profileAvatarsDirPath
+                                                   stringByAppendingPathComponent:userProfile.avatarFileName];
+                                               [profileAvatarFilePaths addObject:filePath];
+                                           }];
+    }];
+    return [profileAvatarFilePaths copy];
 }
 
 @end

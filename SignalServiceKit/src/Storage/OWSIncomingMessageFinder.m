@@ -52,7 +52,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 - (YapDatabaseConnection *)dbConnection
 {
-    @synchronized (self) {
+    @synchronized(self) {
         if (!_dbConnection) {
             _dbConnection = [self.primaryStorage newDatabaseConnection];
         }

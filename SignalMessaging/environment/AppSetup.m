@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 migrationCompletion();
 
+                OWSAssert(backgroundTask);
                 backgroundTask = nil;
             }];
         }];

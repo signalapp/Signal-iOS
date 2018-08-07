@@ -53,7 +53,7 @@ class SyncPushTokensJob: NSObject {
                 shouldUploadTokens = true
             }
 
-            if AppVersion.instance().lastAppVersion != AppVersion.instance().currentAppVersion {
+            if AppVersion.sharedInstance().lastAppVersion != AppVersion.sharedInstance().currentAppVersion {
                 Logger.info("\(self.TAG) Uploading due to fresh install or app upgrade.")
                 shouldUploadTokens = true
             }
@@ -79,7 +79,7 @@ class SyncPushTokensJob: NSObject {
         return runPromise
     }
 
-    // MARK - objc wrappers, since objc can't use swift parameterized types
+    // MARK: - objc wrappers, since objc can't use swift parameterized types
 
     @objc class func run(accountManager: AccountManager, preferences: OWSPreferences) -> AnyPromise {
         let promise: Promise<Void> = self.run(accountManager: accountManager, preferences: preferences)

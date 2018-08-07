@@ -81,6 +81,7 @@
 		34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B601FD0A98800BC14EF /* UIView+OWS.m */; };
 		34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B651FD0AA9400BC14EF /* UIFont+OWS.m */; };
 		34480B681FD0AA9400BC14EF /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B661FD0AA9400BC14EF /* UIFont+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = 344825C5211390C800DB4BD8 /* OWSOrphanDataCleaner.m */; };
 		344D6CEA20069E070042AF96 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 344D6CE620069E060042AF96 /* SelectRecipientViewController.h */; };
 		344D6CEB20069E070042AF96 /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344D6CE720069E060042AF96 /* SelectRecipientViewController.m */; };
 		344D6CEC20069E070042AF96 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344D6CE820069E070042AF96 /* NewNonContactConversationViewController.m */; };
@@ -712,6 +713,8 @@
 		34480B601FD0A98800BC14EF /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
 		34480B651FD0AA9400BC14EF /* UIFont+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+OWS.m"; sourceTree = "<group>"; };
 		34480B661FD0AA9400BC14EF /* UIFont+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIFont+OWS.h"; sourceTree = "<group>"; };
+		344825C4211390C700DB4BD8 /* OWSOrphanDataCleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOrphanDataCleaner.h; sourceTree = "<group>"; };
+		344825C5211390C800DB4BD8 /* OWSOrphanDataCleaner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleaner.m; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
 		344D6CE620069E060042AF96 /* SelectRecipientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectRecipientViewController.h; path = SignalMessaging/contacts/SelectRecipientViewController.h; sourceTree = SOURCE_ROOT; };
 		344D6CE720069E060042AF96 /* SelectRecipientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectRecipientViewController.m; path = SignalMessaging/contacts/SelectRecipientViewController.m; sourceTree = SOURCE_ROOT; };
@@ -2203,6 +2206,8 @@
 				340FC8CB20518C76007AEB0F /* OWSBackupJob.h */,
 				340FC8CC20518C76007AEB0F /* OWSBackupJob.m */,
 				34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */,
+				344825C4211390C700DB4BD8 /* OWSOrphanDataCleaner.h */,
+				344825C5211390C800DB4BD8 /* OWSOrphanDataCleaner.m */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
 				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
@@ -3357,6 +3362,7 @@
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				452314A01F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
+				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,

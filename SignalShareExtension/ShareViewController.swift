@@ -44,7 +44,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("\(self.logTag) \(#function)")
 
-        _ = AppVersion()
+        _ = AppVersion.sharedInstance()
 
         startupLogging()
 
@@ -265,7 +265,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        AppVersion.instance().saeLaunchDidComplete()
+        AppVersion.sharedInstance().saeLaunchDidComplete()
 
         Environment.current().contactsManager.loadSignalAccountsFromCache()
         Environment.current().contactsManager.startObserving()
@@ -277,7 +277,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         OWSProfileManager.shared().ensureLocalProfileCached()
 
-        // We don't need to use OWSOrphanedDataCleaner in the SAE.
+        // We don't need to use OWSOrphanDataCleaner in the SAE.
 
         // We don't need to fetch the local profile in the SAE
 

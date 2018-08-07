@@ -110,10 +110,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
-- (uint64_t)millisecondsTimestamp {
-    return self.timestamp;
-}
-
 - (NSDate *)dateForSorting
 {
     return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForSorting];

@@ -40,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([Environment current]);
     OWSAssert(completion);
 
-    NSString *previousVersion = AppVersion.instance.lastAppVersion;
-    NSString *currentVersion = AppVersion.instance.currentAppVersion;
+    NSString *previousVersion = AppVersion.sharedInstance.lastAppVersion;
+    NSString *currentVersion = AppVersion.sharedInstance.currentAppVersion;
 
     DDLogInfo(@"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@",
         self.logTag,
