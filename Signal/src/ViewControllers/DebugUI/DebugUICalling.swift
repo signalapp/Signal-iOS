@@ -31,7 +31,15 @@ class DebugUICalling: DebugUIPage {
                 guard let strongSelf = self else { return }
 
                 let kFakeCallId = UInt64(12345)
-                let hangupMessage = OWSCallHangupMessage(callId: kFakeCallId)
+                var hangupMessage: SSKProtoCallMessageHangup
+                do {
+                    let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder()
+                    hangupBuilder.setId(kFakeCallId)
+                    hangupMessage = try hangupBuilder.build()
+                } catch {
+                    owsFail("\(strongSelf.logTag) could not build proto")
+                    return
+                }
                 let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).then {
@@ -44,7 +52,16 @@ class DebugUICalling: DebugUIPage {
                 guard let strongSelf = self else { return }
 
                 let kFakeCallId = UInt64(12345)
-                let busyMessage = OWSCallBusyMessage(callId: kFakeCallId)
+                var busyMessage: SSKProtoCallMessageBusy
+                do {
+                    let busyBuilder = SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder()
+                    busyBuilder.setId(kFakeCallId)
+                    busyMessage = try busyBuilder.build()
+                } catch {
+                    owsFail("Couldn't build proto in \(#function)")
+                    return
+                }
+
                 let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).then {

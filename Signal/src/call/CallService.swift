@@ -78,6 +78,7 @@ public enum CallError: Error {
     case externalError(underlyingError: Error)
     case timeout(description: String)
     case obsoleteCall(description: String)
+    case fatalError(description: String)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -407,9 +408,17 @@ private class SignalCallData: NSObject {
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
-                let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
-                let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offerMessage)
-                return self.messageSender.sendPromise(message: callMessage)
+                do {
+                    let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder()
+                    offerBuilder.setId(call.signalingId)
+                    offerBuilder.setSessionDescription(sessionDescription.sdp)
+                    let offer = try offerBuilder.build()
+                    let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offer)
+                    return self.messageSender.sendPromise(message: callMessage)
+                } catch {
+                    owsFail("Couldn't build proto in \(#function)")
+                    throw CallError.fatalError(description: "Couldn't build proto in \(#function)")
+                }
             }
         }.then {
             guard self.call == call else {
@@ -537,12 +546,19 @@ private class SignalCallData: NSObject {
         Logger.info("\(self.logTag) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
         SwiftAssertIsOnMainThread(#function)
 
-        let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
-        let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
-        let sendPromise = messageSender.sendPromise(message: callMessage)
-        sendPromise.retainUntilComplete()
+        do {
+            let busyBuilder = SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder()
+            busyBuilder.setId(call.signalingId)
+            let busyMessage = try busyBuilder.build()
 
-        handleMissedCall(call)
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
+            let sendPromise = messageSender.sendPromise(message: callMessage)
+            sendPromise.retainUntilComplete()
+
+            handleMissedCall(call)
+        } catch {
+            owsFail("Couldn't build proto in \(#function)")
+        }
     }
 
     /**
@@ -703,10 +719,18 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
 
-            let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
-            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
+            do {
+                let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder()
+                answerBuilder.setId(newCall.signalingId)
+                answerBuilder.setSessionDescription(negotiatedSessionDescription.sdp)
+                let answer = try answerBuilder.build()
+                let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answer)
 
-            return self.messageSender.sendPromise(message: callAnswerMessage)
+                return self.messageSender.sendPromise(message: callAnswerMessage)
+            } catch {
+                owsFail("Couldn't build proto in \(#function)")
+                throw CallError.fatalError(description: "Couldn't build proto in \(#function)")
+            }
         }.then {
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")
@@ -824,12 +848,38 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+            guard let sdpMid = iceCandidate.sdpMid else {
+                owsFail("Missing sdpMid in \(#function)")
+                throw CallError.fatalError(description: "Missing sdpMid in \(#function)")
+            }
+
+            guard iceCandidate.sdpMLineIndex < UINT32_MAX else {
+                owsFail("Invalid sdpMLineIndex in \(#function)")
+                throw CallError.fatalError(description: "Invalid sdpMLineIndex in \(#function)")
+            }
 
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-            let sendPromise = self.messageSender.sendPromise(message: callMessage)
-            sendPromise.retainUntilComplete()
+
+            do {
+                /**
+                 * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
+                 * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
+                 * exchanged, the clients can connect.
+                 */
+                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder()
+                iceUpdateBuilder.setId(call.signalingId)
+                iceUpdateBuilder.setSdp(iceCandidate.sdp)
+                iceUpdateBuilder.setSdpMlineIndex(UInt32(iceCandidate.sdpMLineIndex))
+                iceUpdateBuilder.setSdpMid(sdpMid)
+                let iceUpdate = try iceUpdateBuilder.build()
+
+                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdate)
+                let sendPromise = self.messageSender.sendPromise(message: callMessage)
+                sendPromise.retainUntilComplete()
+            } catch {
+                owsFail("Couldn't build proto in \(#function)")
+                throw CallError.fatalError(description: "Couldn't build proto in \(#function)")
+            }
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalAddedIceCandidate(), file: #file, function: #function, line: #line)
             Logger.error("\(self.logTag) in \(#function) waitUntilReadyToSendIceUpdates failed with error: \(error)")
@@ -1158,17 +1208,24 @@ private class SignalCallData: NSObject {
         }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
-        let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
-        let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
-            Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
-        }.catch { error in
-            OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
-            Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
-        }
-        sendPromise.retainUntilComplete()
+        do {
+            let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder()
+            hangupBuilder.setId(call.signalingId)
+            let hangupProto = try hangupBuilder.build()
 
-        terminateCall()
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupProto)
+            let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
+                Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
+                }.catch { error in
+                    OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
+                    Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
+            }
+            sendPromise.retainUntilComplete()
+
+            terminateCall()
+        } catch {
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto in \(#function)"))
+        }
     }
 
     /**

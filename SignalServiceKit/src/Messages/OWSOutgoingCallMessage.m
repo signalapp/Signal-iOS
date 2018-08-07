@@ -4,11 +4,6 @@
 
 #import "OWSOutgoingCallMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSCallAnswerMessage.h"
-#import "OWSCallBusyMessage.h"
-#import "OWSCallHangupMessage.h"
-#import "OWSCallIceUpdateMessage.h"
-#import "OWSCallOfferMessage.h"
 #import "ProtoUtils.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
@@ -39,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread offerMessage:(OWSCallOfferMessage *)offerMessage
+- (instancetype)initWithThread:(TSThread *)thread offerMessage:(SSKProtoCallMessageOffer *)offerMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -51,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread answerMessage:(OWSCallAnswerMessage *)answerMessage
+- (instancetype)initWithThread:(TSThread *)thread answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -63,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(OWSCallIceUpdateMessage *)iceUpdateMessage
+- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(SSKProtoCallMessageIceUpdate *)iceUpdateMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -76,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
-             iceUpdateMessages:(NSArray<OWSCallIceUpdateMessage *> *)iceUpdateMessages
+             iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -88,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(OWSCallHangupMessage *)hangupMessage
+- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -100,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread busyMessage:(OWSCallBusyMessage *)busyMessage
+- (instancetype)initWithThread:(TSThread *)thread busyMessage:(SSKProtoCallMessageBusy *)busyMessage
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -147,45 +142,23 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessageBuilder new];
 
     if (self.offerMessage) {
-        SSKProtoCallMessageOffer *_Nullable proto = [self.offerMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setOffer:proto];
+        [builder setOffer:self.offerMessage];
     }
 
     if (self.answerMessage) {
-        SSKProtoCallMessageAnswer *_Nullable proto = [self.answerMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setAnswer:proto];
+        [builder setAnswer:self.answerMessage];
     }
 
-    if (self.iceUpdateMessages) {
-        for (OWSCallIceUpdateMessage *iceUpdateMessage in self.iceUpdateMessages) {
-            SSKProtoCallMessageIceUpdate *_Nullable proto = [iceUpdateMessage asProtobuf];
-            if (!proto) {
-                return nil;
-            }
-            [builder addIceUpdate:proto];
-        }
+    if (self.iceUpdateMessages.count > 0) {
+        [builder setIceUpdate:self.iceUpdateMessages];
     }
 
     if (self.hangupMessage) {
-        SSKProtoCallMessageHangup *_Nullable proto = [self.hangupMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setHangup:proto];
+        [builder setHangup:self.hangupMessage];
     }
 
     if (self.busyMessage) {
-        SSKProtoCallMessageBusy *_Nullable proto = [self.busyMessage asProtobuf];
-        if (!proto) {
-            return nil;
-        }
-        [builder setBusy:proto];
+        [builder setBusy:self.busyMessage];
     }
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId callMessageBuilder:builder];
