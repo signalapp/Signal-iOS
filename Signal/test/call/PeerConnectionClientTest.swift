@@ -115,15 +115,13 @@ class PeerConnectionClientTest: XCTestCase {
     func testDataChannelMessage() {
         XCTAssertEqual(0, clientDelegate.dataChannelMessages.count)
 
-        var hangupData: Data
-        do {
-            let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder()
-            hangupBuilder.setId(123)
-            hangupData = try hangupBuilder.buildSerializedData()
-        } catch {
-            XCTFail("Couldn't build proto.")
-            return
-        }
+        let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder()
+        hangupBuilder.setId(123)
+        let hangup = try! hangupBuilder.build()
+
+        let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+        dataBuilder.setHangup(hangup)
+        let hangupData = try! dataBuilder.buildSerializedData()
         let hangupBuffer = RTCDataBuffer(data: hangupData, isBinary: false)
         client.dataChannel(dataChannel, didReceiveMessageWith: hangupBuffer)
 
