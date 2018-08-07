@@ -747,16 +747,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
 
-/* Second part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "Tap on the compose button.";
-
-/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "Start your first Signal conversation!";
-
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations for later from your Inbox.";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversations.";
 
 /* Full width label displayed when attempting to compose message */
@@ -765,16 +759,16 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Why don't you invite someone?";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TEXT" = "Tip: add a conversation as a reminder!";
+/* Body text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TITLE" = "Done. Done. Done.";
+/* Header text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
 
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "None. Zero. Zilch. Nada.";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TITLE" = "Squeaky Freaking Clean.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */

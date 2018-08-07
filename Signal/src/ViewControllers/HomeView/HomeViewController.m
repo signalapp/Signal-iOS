@@ -1504,22 +1504,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     if (self.homeViewMode == HomeViewMode_Inbox) {
         if ([Environment.preferences getHasSentAMessage]) {
-            firstLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");
+            firstLine = NSLocalizedString(
+                @"EMPTY_INBOX_TITLE", @"Header text an existing user sees when viewing an empty inbox");
+            secondLine = NSLocalizedString(
+                @"EMPTY_INBOX_TEXT", @"Body text an existing user sees when viewing an empty inbox");
         } else {
-            //  FIXME: Misleading localizable string key name.
-            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"First (bolded) part of the label that shows up when there are neither active nor archived conversations");
-            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"Second part of the label that shows up when there are neither active nor archived conversations");
+            firstLine = NSLocalizedString(
+                @"EMPTY_INBOX_NEW_USER_TITLE", @"Header text a new user sees when viewing an empty inbox");
+            secondLine = NSLocalizedString(
+                @"EMPTY_INBOX_NEW_USER_TEXT", @"Body text a new user sees when viewing an empty inbox");
         }
     } else {
-        if ([Environment.preferences getHasArchivedAMessage]) {
-            //  FIXME: Shows up after the archival tab is cleared up completely by the user, the localizable string key is misleading.
-            firstLine = NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_INBOX_TEXT", @"");
-        } else {
-            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_TEXT", @"");
-        }
+        OWSAssert(self.homeViewMode == HomeViewMode_Archive);
+        firstLine = NSLocalizedString(
+            @"EMPTY_ARCHIVE_TITLE", @"Header text an existing user sees when viewing an empty archive");
+        secondLine = NSLocalizedString(
+            @"EMPTY_ARCHIVE_TEXT", @"Body text an existing user sees when viewing an empty archive");
     }
     NSMutableAttributedString *fullLabelString =
         [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@", firstLine, secondLine]];
