@@ -2821,6 +2821,9 @@ typedef enum : NSUInteger {
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
 
+    if (!Environment.preferences.getHasSentAMessage) {
+        [Environment.preferences setHasSentAMessage:YES];
+    }
     if ([Environment.preferences soundInForeground]) {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
         AudioServicesPlaySystemSound(soundId);

@@ -1625,15 +1625,6 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
-/* No comment provided by engineer. */
-"RATING_MSG" = "If you enjoy using Signal to have private conversations, you can support our project by rating it. It won't take more than a minute, and will help others find some privacy.";
-
-/* No comment provided by engineer. */
-"RATING_RATE" = "Rate Signal";
-
-/* No comment provided by engineer. */
-"RATING_TITLE" = "Support Signal!";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
 
