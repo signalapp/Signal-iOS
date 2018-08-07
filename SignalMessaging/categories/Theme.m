@@ -25,6 +25,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 #ifndef THEME_ENABLED
     return NO;
 #else
+    if (!CurrentAppContext().isMainApp) {
+        // Ignore theme in app extensions.
+        return NO;
+    }
+
     return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
                                                            inCollection:ThemeCollection
                                                            defaultValue:NO];

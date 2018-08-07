@@ -40,7 +40,7 @@ extern NSString *const ThemeDidChangeNotification;
 
 #pragma mark -
 
-+ (UIBarStyle)barStyle;
+@property (class, readonly, nonatomic) UIBarStyle barStyle;
 
 @end
 
