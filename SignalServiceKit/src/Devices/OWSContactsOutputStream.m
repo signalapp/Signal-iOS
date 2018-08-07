@@ -96,7 +96,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     }
 
     uint32_t contactDataLength = (uint32_t)contactData.length;
-    [self writeUInt32:contactDataLength];
+    [self writeVariableLengthUInt32:contactDataLength];
     [self writeData:contactData];
 
     if (avatarPng) {

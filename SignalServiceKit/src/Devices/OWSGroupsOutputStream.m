@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t groupDataLength = (uint32_t)groupData.length;
 
-    [self writeUInt32:groupDataLength];
+    [self writeVariableLengthUInt32:groupDataLength];
     [self writeData:groupData];
 
     if (avatarPng) {

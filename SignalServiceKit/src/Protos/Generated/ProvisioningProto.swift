@@ -47,13 +47,6 @@ public enum ProvisioningProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try ProvisioningProtoProvisionEnvelope.parseProto(proto).serializedData()
         }
-
-        @objc public override var description: String {
-            var fields = [String]()
-            fields.append("publicKey: \(proto.publicKey)")
-            fields.append("body: \(proto.body)")
-            return "[" + fields.joined(separator: ", ") + "]"
-        }
     }
 
     fileprivate let proto: ProvisioningProtos_ProvisionEnvelope
@@ -108,13 +101,6 @@ public enum ProvisioningProtoError: Error {
                                                         publicKey: publicKey,
                                                         body: body)
         return result
-    }
-
-    @objc public override var description: String {
-        var fields = [String]()
-        fields.append("publicKey: \(proto.publicKey)")
-        fields.append("body: \(proto.body)")
-        return "[" + fields.joined(separator: ", ") + "]"
     }
 }
 
@@ -173,18 +159,6 @@ public enum ProvisioningProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try ProvisioningProtoProvisionMessage.parseProto(proto).serializedData()
-        }
-
-        @objc public override var description: String {
-            var fields = [String]()
-            fields.append("identityKeyPublic: \(proto.identityKeyPublic)")
-            fields.append("identityKeyPrivate: \(proto.identityKeyPrivate)")
-            fields.append("number: \(proto.number)")
-            fields.append("provisioningCode: \(proto.provisioningCode)")
-            fields.append("userAgent: \(proto.userAgent)")
-            fields.append("profileKey: \(proto.profileKey)")
-            fields.append("readReceipts: \(proto.readReceipts)")
-            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -290,17 +264,5 @@ public enum ProvisioningProtoError: Error {
                                                        profileKey: profileKey,
                                                        readReceipts: readReceipts)
         return result
-    }
-
-    @objc public override var description: String {
-        var fields = [String]()
-        fields.append("identityKeyPublic: \(proto.identityKeyPublic)")
-        fields.append("identityKeyPrivate: \(proto.identityKeyPrivate)")
-        fields.append("number: \(proto.number)")
-        fields.append("provisioningCode: \(proto.provisioningCode)")
-        fields.append("userAgent: \(proto.userAgent)")
-        fields.append("profileKey: \(proto.profileKey)")
-        fields.append("readReceipts: \(proto.readReceipts)")
-        return "[" + fields.joined(separator: ", ") + "]"
     }
 }

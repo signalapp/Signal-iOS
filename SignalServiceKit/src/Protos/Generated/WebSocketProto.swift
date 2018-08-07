@@ -65,16 +65,6 @@ public enum WebSocketProtoError: Error {
         @objc public func buildSerializedData() throws -> Data {
             return try WebSocketProtoWebSocketRequestMessage.parseProto(proto).serializedData()
         }
-
-        @objc public override var description: String {
-            var fields = [String]()
-            fields.append("verb: \(proto.verb)")
-            fields.append("path: \(proto.path)")
-            fields.append("body: \(proto.body)")
-            fields.append("headers: \(proto.headers)")
-            fields.append("requestID: \(proto.requestID)")
-            return "[" + fields.joined(separator: ", ") + "]"
-        }
     }
 
     fileprivate let proto: WebSocketProtos_WebSocketRequestMessage
@@ -154,16 +144,6 @@ public enum WebSocketProtoError: Error {
                                                            requestID: requestID)
         return result
     }
-
-    @objc public override var description: String {
-        var fields = [String]()
-        fields.append("verb: \(proto.verb)")
-        fields.append("path: \(proto.path)")
-        fields.append("body: \(proto.body)")
-        fields.append("headers: \(proto.headers)")
-        fields.append("requestID: \(proto.requestID)")
-        return "[" + fields.joined(separator: ", ") + "]"
-    }
 }
 
 // MARK: - WebSocketProtoWebSocketResponseMessage
@@ -219,16 +199,6 @@ public enum WebSocketProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try WebSocketProtoWebSocketResponseMessage.parseProto(proto).serializedData()
-        }
-
-        @objc public override var description: String {
-            var fields = [String]()
-            fields.append("requestID: \(proto.requestID)")
-            fields.append("status: \(proto.status)")
-            fields.append("message: \(proto.message)")
-            fields.append("headers: \(proto.headers)")
-            fields.append("body: \(proto.body)")
-            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -309,16 +279,6 @@ public enum WebSocketProtoError: Error {
                                                             status: status)
         return result
     }
-
-    @objc public override var description: String {
-        var fields = [String]()
-        fields.append("requestID: \(proto.requestID)")
-        fields.append("status: \(proto.status)")
-        fields.append("message: \(proto.message)")
-        fields.append("headers: \(proto.headers)")
-        fields.append("body: \(proto.body)")
-        return "[" + fields.joined(separator: ", ") + "]"
-    }
 }
 
 // MARK: - WebSocketProtoWebSocketMessage
@@ -384,14 +344,6 @@ public enum WebSocketProtoError: Error {
 
         @objc public func buildSerializedData() throws -> Data {
             return try WebSocketProtoWebSocketMessage.parseProto(proto).serializedData()
-        }
-
-        @objc public override var description: String {
-            var fields = [String]()
-            fields.append("type: \(proto.type)")
-            fields.append("request: \(proto.request)")
-            fields.append("response: \(proto.response)")
-            return "[" + fields.joined(separator: ", ") + "]"
         }
     }
 
@@ -463,13 +415,5 @@ public enum WebSocketProtoError: Error {
                                                     request: request,
                                                     response: response)
         return result
-    }
-
-    @objc public override var description: String {
-        var fields = [String]()
-        fields.append("type: \(proto.type)")
-        fields.append("request: \(proto.request)")
-        fields.append("response: \(proto.response)")
-        return "[" + fields.joined(separator: ", ") + "]"
     }
 }

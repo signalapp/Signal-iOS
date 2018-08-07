@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Returns NO on error.
 - (BOOL)writeData:(NSData *)data;
-- (BOOL)writeUInt32:(UInt32)value;
+- (BOOL)writeVariableLengthUInt32:(UInt32)value;
 
 @end
 

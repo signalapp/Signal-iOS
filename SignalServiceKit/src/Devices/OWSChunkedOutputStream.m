@@ -42,16 +42,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)writeData:(NSData *)data
 {
     OWSAssert(data);
-    NSInteger written = [self.outputStream write:data.bytes maxLength:data.length];
-    if (written != data.length) {
-        OWSFail(@"%@ could not write to output stream.", self.logTag);
-        self.hasError = YES;
-        return NO;
+
+    if (data.length < 1) {
+        return YES;
+    }
+
+    while (YES) {
+        NSInteger written = [self.outputStream write:data.bytes maxLength:data.length];
+        if (written < 1) {
+            OWSFail(@"%@ could not write to output stream.", self.logTag);
+            self.hasError = YES;
+            return NO;
+        }
+        if (written < data.length) {
+            data = [data subdataWithRange:NSMakeRange(written, data.length - written)];
+        } else {
+            return YES;
+        }
     }
     return YES;
 }
 
-- (BOOL)writeUInt32:(UInt32)value
+- (BOOL)writeVariableLengthUInt32:(UInt32)value
 {
     while (YES) {
         if (value <= 0x7F) {

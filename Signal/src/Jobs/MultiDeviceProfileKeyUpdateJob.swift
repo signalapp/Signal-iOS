@@ -54,7 +54,7 @@ import SignalMessaging
                 owsFail("\(self.logTag) could not serialize sync contacts data")
                 return
             }
-             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
+            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
         }
 
         guard let attachmentDataSource = dataSource else {
