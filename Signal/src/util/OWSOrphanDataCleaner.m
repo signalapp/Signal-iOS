@@ -17,7 +17,7 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -427,10 +427,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        lastCleaningVersion = [databaseConnection stringForKey:OWSOrphanDataCleaner_LastCleaningVersionKey
-                                                  inCollection:OWSOrphanDataCleaner_Collection];
-        lastCleaningDate = [databaseConnection dateForKey:OWSOrphanDataCleaner_LastCleaningDateKey
-                                             inCollection:OWSOrphanDataCleaner_Collection];
+        lastCleaningVersion = [transaction stringForKey:OWSOrphanDataCleaner_LastCleaningVersionKey
+                                           inCollection:OWSOrphanDataCleaner_Collection];
+        lastCleaningDate = [transaction dateForKey:OWSOrphanDataCleaner_LastCleaningDateKey
+                                      inCollection:OWSOrphanDataCleaner_Collection];
     }];
 
     // Only clean up once per app version.
@@ -515,12 +515,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 success:^{
                     DDLogInfo(@"%@ Completed orphan data cleanup.", self.logTag);
 
-                    [databaseConnection setObject:AppVersion.sharedInstance.currentAppVersion
-                                           forKey:OWSOrphanDataCleaner_LastCleaningVersionKey
-                                     inCollection:OWSOrphanDataCleaner_Collection];
-                    [databaseConnection setDate:[NSDate new]
-                                         forKey:OWSOrphanDataCleaner_LastCleaningDateKey
-                                   inCollection:OWSOrphanDataCleaner_Collection];
+                    [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [transaction setObject:AppVersion.sharedInstance.currentAppVersion
+                                        forKey:OWSOrphanDataCleaner_LastCleaningVersionKey
+                                  inCollection:OWSOrphanDataCleaner_Collection];
+                        [transaction setDate:[NSDate new]
+                                      forKey:OWSOrphanDataCleaner_LastCleaningDateKey
+                                inCollection:OWSOrphanDataCleaner_Collection];
+                    }];
                 }
                 failure:^{
                     DDLogInfo(@"%@ Aborting orphan data cleanup.", self.logTag);
