@@ -941,7 +941,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                            @"Pressing this button moves a thread from the inbox to the archive")
                                handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
                                    [self archiveIndexPath:tappedIndexPath];
-                                   [Environment.preferences setHasArchivedAMessage:YES];
                                }];
 
             } else {
@@ -1503,7 +1502,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     NSString *secondLine = @"";
 
     if (self.homeViewMode == HomeViewMode_Inbox) {
-        if ([Environment.preferences getHasSentAMessage]) {
+        if ([Environment.preferences hasSentAMessage]) {
             firstLine = NSLocalizedString(
                 @"EMPTY_INBOX_TITLE", @"Header text an existing user sees when viewing an empty inbox");
             secondLine = NSLocalizedString(
@@ -1545,7 +1544,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 // If the user hasn't sent a message, we don't want to ask them for a review yet.
 - (void)requestReviewIfAppropriate
 {
-    if (self.hasEverAppeared && Environment.preferences.getHasSentAMessage) {
+    if (self.hasEverAppeared && Environment.preferences.hasSentAMessage) {
         DDLogDebug(@"%@ in %s requesting review", self.logTag, __PRETTY_FUNCTION__);
         if (@available(iOS 10, *)) {
             // In Debug this pops up *every* time, which is helpful, but annoying.

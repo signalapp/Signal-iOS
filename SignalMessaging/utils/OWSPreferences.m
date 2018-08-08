@@ -19,7 +19,6 @@ NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";
 NSString *const OWSPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
 NSString *const OWSPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
 NSString *const OWSPreferencesKeyHasSentAMessage = @"User has sent a message";
-NSString *const OWSPreferencesKeyHasArchivedAMessage = @"User archived a message";
 NSString *const OWSPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
 NSString *const OWSPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const OWSPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
@@ -118,19 +117,9 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     [self setValueForKey:OWSPreferencesKeyScreenSecurity toValue:@(flag)];
 }
 
-- (BOOL)getHasSentAMessage
+- (BOOL)hasSentAMessage
 {
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasSentAMessage];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
-}
-
-- (BOOL)getHasArchivedAMessage
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasArchivedAMessage];
     if (preference) {
         return [preference boolValue];
     } else {
@@ -163,11 +152,6 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setHasSentAMessage:(BOOL)enabled
 {
     [self setValueForKey:OWSPreferencesKeyHasSentAMessage toValue:@(enabled)];
-}
-
-- (void)setHasArchivedAMessage:(BOOL)enabled
-{
-    [self setValueForKey:OWSPreferencesKeyHasArchivedAMessage toValue:@(enabled)];
 }
 
 - (BOOL)hasDeclinedNoContactsView

@@ -2821,7 +2821,7 @@ typedef enum : NSUInteger {
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
 
-    if (!Environment.preferences.getHasSentAMessage) {
+    if (!Environment.preferences.hasSentAMessage) {
         [Environment.preferences setHasSentAMessage:YES];
     }
     if ([Environment.preferences soundInForeground]) {
