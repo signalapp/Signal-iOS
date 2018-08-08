@@ -100,8 +100,10 @@ extension ConversationViewItem {
         if self.hasMediaActionContent {
             let copyMediaAction = MessageActionBuilder.copyMedia(conversationViewItem: self, delegate: delegate)
             actions.append(copyMediaAction)
-            let saveMediaAction = MessageActionBuilder.saveMedia(conversationViewItem: self, delegate: delegate)
-            actions.append(saveMediaAction)
+            if self.canSaveMedia() {
+                let saveMediaAction = MessageActionBuilder.saveMedia(conversationViewItem: self, delegate: delegate)
+                actions.append(saveMediaAction)
+            }
         }
 
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)

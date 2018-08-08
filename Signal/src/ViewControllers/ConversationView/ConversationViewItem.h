@@ -121,6 +121,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)saveMediaAction;
 - (void)deleteAction;
 
+- (BOOL)canSaveMedia;
+
 @end
 
 NS_ASSUME_NONNULL_END
