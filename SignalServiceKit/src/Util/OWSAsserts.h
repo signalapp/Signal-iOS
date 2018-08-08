@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                               \
     }
 
-#define OWSProdLogAndCFail(_messageFormat, ...)                                                                        \
+#define OWSCFail(_messageFormat, ...)                                                                                  \
     {                                                                                                                  \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
