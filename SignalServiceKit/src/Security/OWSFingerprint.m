@@ -276,11 +276,6 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (nullable UIImage *)image
 {
-    FingerprintProtoLogicalFingerprintsBuilder *logicalFingerprintsBuilder =
-        [FingerprintProtoLogicalFingerprintsBuilder new];
-
-    logicalFingerprintsBuilder.version = OWSFingerprintScannableFormatVersion;
-
     FingerprintProtoLogicalFingerprintBuilder *remoteFingerprintBuilder =
         [FingerprintProtoLogicalFingerprintBuilder new];
     remoteFingerprintBuilder.identityData = [self scannableData:self.theirFingerprintData];
@@ -291,7 +286,6 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         OWSFail(@"%@ could not build proto: %@", self.logTag, error);
         return nil;
     }
-    logicalFingerprintsBuilder.remoteFingerprint = remoteFingerprint;
 
     FingerprintProtoLogicalFingerprintBuilder *localFingerprintBuilder =
         [FingerprintProtoLogicalFingerprintBuilder new];
@@ -302,7 +296,11 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         OWSFail(@"%@ could not build proto: %@", self.logTag, error);
         return nil;
     }
-    logicalFingerprintsBuilder.localFingerprint = localFingerprint;
+
+    FingerprintProtoLogicalFingerprintsBuilder *logicalFingerprintsBuilder =
+        [[FingerprintProtoLogicalFingerprintsBuilder alloc] initWithVersion:OWSFingerprintScannableFormatVersion
+                                                           localFingerprint:localFingerprint
+                                                          remoteFingerprint:remoteFingerprint];
 
     // Build ByteMode QR (Latin-1 encodable data)
     NSData *_Nullable fingerprintData = [logicalFingerprintsBuilder buildSerializedDataAndReturnError:&error];

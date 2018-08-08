@@ -8,7 +8,6 @@ import Foundation
 
 public enum ProvisioningProtoError: Error {
     case invalidProtobuf(description: String)
-    case unsafeProtobuf(description: String)
 }
 
 // MARK: - ProvisioningProtoProvisionEnvelope
@@ -22,6 +21,14 @@ public enum ProvisioningProtoError: Error {
         private var proto = ProvisioningProtos_ProvisionEnvelope()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(publicKey: Data, body: Data) {
+            super.init()
+
+            setPublicKey(publicKey)
+            setBody(body)
+        }
 
         @objc public func setPublicKey(_ valueParam: Data) {
             proto.publicKey = valueParam
@@ -115,6 +122,19 @@ public enum ProvisioningProtoError: Error {
         private var proto = ProvisioningProtos_ProvisionMessage()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) {
+            super.init()
+
+            setIdentityKeyPublic(identityKeyPublic)
+            setIdentityKeyPrivate(identityKeyPrivate)
+            setNumber(number)
+            setProvisioningCode(provisioningCode)
+            setUserAgent(userAgent)
+            setProfileKey(profileKey)
+            setReadReceipts(readReceipts)
+        }
 
         @objc public func setIdentityKeyPublic(_ valueParam: Data) {
             proto.identityKeyPublic = valueParam

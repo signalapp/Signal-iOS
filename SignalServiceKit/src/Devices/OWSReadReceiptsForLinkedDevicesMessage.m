@@ -38,9 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
     for (OWSLinkedDeviceReadReceipt *readReceipt in self.readReceipts) {
         SSKProtoSyncMessageReadBuilder *readProtoBuilder =
-            [SSKProtoSyncMessageReadBuilder new];
-        [readProtoBuilder setSender:readReceipt.senderId];
-        [readProtoBuilder setTimestamp:readReceipt.messageIdTimestamp];
+            [[SSKProtoSyncMessageReadBuilder alloc] initWithSender:readReceipt.senderId
+                                                         timestamp:readReceipt.messageIdTimestamp];
 
         NSError *error;
         SSKProtoSyncMessageRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
