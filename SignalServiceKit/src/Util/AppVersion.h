@@ -14,8 +14,6 @@
 @property (atomic, readonly) NSString *lastCompletedLaunchMainAppVersion;
 @property (atomic, readonly) NSString *lastCompletedLaunchSAEAppVersion;
 
-@property (atomic, readonly) NSDate *appLaunchTime;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedInstance;

@@ -43,8 +43,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
 - (void)configure {
     OWSAssertIsOnMainThread();
 
-    _appLaunchTime = [NSDate new];
-
     self.currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     
     // The version of the app when it was first launched.
