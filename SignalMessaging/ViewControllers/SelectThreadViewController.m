@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       target:self
                                                       action:@selector(dismissPressed:)];
 
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = Theme.backgroundColor;
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _conversationSearcher = ConversationSearcher.shared;
@@ -91,7 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = [UIColor whiteColor];
+    searchBar.backgroundColor = [Theme backgroundColor];
+    searchBar.barStyle = Theme.barStyle;
     [searchBar sizeToFit];
 
     UIView *header = [self.selectThreadViewDelegate createHeaderWithSearchBar:searchBar];
@@ -223,8 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         [[DisappearingTimerConfigurationView alloc]
                                             initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
 
-                                    disappearingTimerConfigurationView.tintColor =
-                                        [UIColor colorWithWhite:0.5f alpha:1.f];
+                                    disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
                                     [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
                                     [cell ows_setAccessoryView:disappearingTimerConfigurationView];

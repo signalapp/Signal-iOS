@@ -35,7 +35,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
 
         let view = UIView()
         self.view = view
-        view.backgroundColor = .white
+        view.backgroundColor = Theme.backgroundColor
 
         let pinEntryView = PinEntryView()
         self.pinEntryView = pinEntryView

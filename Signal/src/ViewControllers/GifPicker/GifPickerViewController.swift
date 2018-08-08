@@ -150,7 +150,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func createViews() {
 
-        view.backgroundColor = UIColor.white
+        let backgroundColor = (Theme.isDarkThemeEnabled
+            ? UIColor(white: 0.08, alpha: 1.0)
+            : Theme.backgroundColor)
+        self.view.backgroundColor = backgroundColor
 
         // Block UIKit from adjust insets of collection view which screws up
         // min/max scroll positions.
@@ -161,7 +164,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment: "Placeholder text for the search field in GIF view")
-        searchBar.backgroundColor = UIColor.white
+        searchBar.backgroundColor = Theme.backgroundColor
+        searchBar.barStyle = Theme.barStyle
 
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
@@ -169,7 +173,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView.backgroundColor = UIColor.white
+        self.collectionView.backgroundColor = backgroundColor
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
         // Inserted below searchbar because we later occlude the collectionview
         // by inserting a masking layer between the search bar and collectionview
@@ -190,7 +194,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         bottomBanner.autoPinEdge(toSuperviewEdge: .top)
         bottomBanner.autoPinWidthToSuperview()
-        self.autoPinView(toBottomOfViewControllerOrKeyboard: bottomBanner)
+        self.autoPinView(toBottomOfViewControllerOrKeyboard: bottomBanner, avoidNotch: true)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
         let logoImage = UIImage(named: "giphy_logo")
@@ -228,7 +232,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func createErrorLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
-        label.textColor = UIColor.black
+        label.textColor = Theme.primaryColor
         label.font = UIFont.ows_mediumFont(withSize: 20)
         label.textAlignment = .center
         label.numberOfLines = 0

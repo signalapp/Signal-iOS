@@ -30,7 +30,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         view.addSubview(bodyLabel)
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(17, 22))
-        bodyLabel.textColor = UIColor.black
+        bodyLabel.textColor = Theme.primaryColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -140,7 +140,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         view.addSubview(bodyLabel)
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(17, 22))
-        bodyLabel.textColor = UIColor.black
+        bodyLabel.textColor = Theme.primaryColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -292,7 +292,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
         view.addSubview(bodyLabel)
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(17, 22))
-        bodyLabel.textColor = UIColor.black
+        bodyLabel.textColor = Theme.primaryColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -443,7 +443,7 @@ private class ExperienceUpgradeViewController: OWSViewController {
         view.addSubview(bodyLabel)
         bodyLabel.text = body
         bodyLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(17, 22))
-        bodyLabel.textColor = UIColor.black
+        bodyLabel.textColor = Theme.primaryColor
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.textAlignment = .center
@@ -529,7 +529,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
 
     @objc public override func loadView() {
         self.view = UIView.container()
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = Theme.backgroundColor
 
         //// Create Views
 

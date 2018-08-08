@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class OWSLayerView: UIView {
+public class OWSLayerView: UIView {
     let layoutCallback: ((UIView) -> Void)
 
     @objc
@@ -14,25 +14,25 @@ class OWSLayerView: UIView {
         super.init(frame: frame)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         self.layoutCallback = { _ in
         }
         super.init(coder: aDecoder)
     }
 
-    override var bounds: CGRect {
+    public override var bounds: CGRect {
         didSet {
             layoutCallback(self)
         }
     }
 
-    override var frame: CGRect {
+    public override var frame: CGRect {
         didSet {
             layoutCallback(self)
         }
     }
 
-    override var center: CGPoint {
+    public override var center: CGPoint {
         didSet {
             layoutCallback(self)
         }

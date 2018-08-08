@@ -139,7 +139,7 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
         return month.hashValue ^ year.hashValue
     }
 
-    // Mark: Comparable
+    // MARK: Comparable
 
     public static func < (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
         if lhs.year != rhs.year {
@@ -368,7 +368,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
                             // fade out content behind the pageViewController
                             // and behind the presentation view
-                            self.view.backgroundColor = .white
+                            self.view.backgroundColor = Theme.backgroundColor
             },
                            completion: { (_: Bool) in
                             // At this point our presentation view should be overlayed perfectly
@@ -512,7 +512,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                             // In case user has hidden bars, which changes background to black.
                             // We don't want to change this while detailView is visible, lest
                             // we obscure out the presentationView
-                            detailView.backgroundColor = .white
+                            detailView.backgroundColor = Theme.backgroundColor
             })
 
             // This intentionally overlaps the previous animation a bit

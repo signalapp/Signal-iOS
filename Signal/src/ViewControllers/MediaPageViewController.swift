@@ -170,7 +170,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let kFooterHeight: CGFloat = 44
 
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = Theme.backgroundColor
 
         let footerBar = UIToolbar()
         self.footerBar = footerBar
@@ -245,7 +245,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             // We don't animate the background color change because the old color shows through momentarily
             // behind where the status bar "used to be".
-            self.view.backgroundColor = shouldHideToolbars ? UIColor.black : UIColor.white
+            self.view.backgroundColor = (shouldHideToolbars ? UIColor.black : Theme.backgroundColor)
 
             UIView.animate(withDuration: 0.1) {
                 self.currentViewController.setShouldHideToolbars(self.shouldHideToolbars)
@@ -474,7 +474,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         Logger.debug("\(logTag) in \(#function) cache miss.")
-        var fetchedItem: ConversationViewItem? = nil
+        var fetchedItem: ConversationViewItem?
         self.uiDatabaseConnection.read { transaction in
             let message = galleryItem.message
             let thread = message.thread(with: transaction)

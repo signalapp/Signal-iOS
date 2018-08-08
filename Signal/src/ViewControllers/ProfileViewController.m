@@ -89,10 +89,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)createViews
 {
-    self.view.backgroundColor = [UIColor colorWithRGBHex:0xefeff4];
+    self.view.backgroundColor = Theme.offBackgroundColor;
 
     UIView *contentView = [UIView containerView];
-    contentView.backgroundColor = [UIColor whiteColor];
+    contentView.backgroundColor = Theme.backgroundColor;
     [self.view addSubview:contentView];
     [contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [contentView autoPinWidthToSuperview];
@@ -111,7 +111,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UILabel *nameLabel = [UILabel new];
     nameLabel.text = NSLocalizedString(
         @"PROFILE_VIEW_PROFILE_NAME_FIELD", @"Label for the profile name field of the profile view.");
-    nameLabel.textColor = [UIColor blackColor];
+    nameLabel.textColor = Theme.primaryColor;
     nameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [nameRow addSubview:nameLabel];
     [nameLabel autoPinLeadingToSuperviewMargin];
@@ -149,7 +149,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UILabel *avatarLabel = [UILabel new];
     avatarLabel.text = NSLocalizedString(
         @"PROFILE_VIEW_PROFILE_AVATAR_FIELD", @"Label for the profile avatar field of the profile view.");
-    avatarLabel.textColor = [UIColor blackColor];
+    avatarLabel.textColor = Theme.primaryColor;
     avatarLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [avatarRow addSubview:avatarLabel];
     [avatarLabel autoPinLeadingToSuperviewMargin];
@@ -183,7 +183,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [rows addObject:infoRow];
 
     UILabel *infoLabel = [UILabel new];
-    infoLabel.textColor = [UIColor ows_darkGrayColor];
+    infoLabel.textColor = Theme.secondaryColor;
     infoLabel.font = [UIFont ows_regularFontWithSize:11.f];
     infoLabel.textAlignment = NSTextAlignmentCenter;
     NSMutableAttributedString *text = [NSMutableAttributedString new];
@@ -249,7 +249,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
         if (lastRow == nameRow || lastRow == avatarRow) {
             UIView *separator = [UIView containerView];
-            separator.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.f];
+            separator.backgroundColor = Theme.secondaryColor;
             [contentView addSubview:separator];
             [separator autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
             [separator autoPinLeadingToSuperviewMarginWithInset:18.f];
@@ -356,7 +356,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     } else {
         self.saveButton.enabled = NO;
         [self.saveButton
-            setBackgroundColorsWithUpColor:[[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor]
+            setBackgroundColorsWithUpColor:[[UIColor ows_signalBrandBlueColor] blendWithColor:Theme.backgroundColor
                                                                                         alpha:0.5f]];
     }
 }
@@ -491,7 +491,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     self.avatarView.image = (self.avatar
             ?: [[UIImage imageNamed:@"profile_avatar_default"]
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
-    self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithRGBHex:0x888888]);
+    self.avatarView.tintColor = (self.avatar ? nil : Theme.middleGrayColor);
     self.cameraImageView.hidden = self.avatar != nil;
 }
 

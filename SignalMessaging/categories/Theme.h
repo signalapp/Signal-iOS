@@ -16,7 +16,8 @@ extern NSString *const ThemeDidChangeNotification;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (BOOL)isDarkThemeEnabled;
+@property (class, readonly, nonatomic) BOOL isDarkThemeEnabled;
+
 #ifdef THEME_ENABLED
 + (void)setIsDarkThemeEnabled:(BOOL)value;
 #endif
@@ -25,6 +26,8 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *primaryColor;
 @property (class, readonly, nonatomic) UIColor *secondaryColor;
 @property (class, readonly, nonatomic) UIColor *boldColor;
+@property (class, readonly, nonatomic) UIColor *offBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *middleGrayColor;
 
 #pragma mark - Global App Colors
 
@@ -40,7 +43,7 @@ extern NSString *const ThemeDidChangeNotification;
 
 #pragma mark -
 
-+ (UIBarStyle)barStyle;
+@property (class, readonly, nonatomic) UIBarStyle barStyle;
 
 @end
 

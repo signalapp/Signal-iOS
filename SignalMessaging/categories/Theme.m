@@ -25,6 +25,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 #ifndef THEME_ENABLED
     return NO;
 #else
+    if (!CurrentAppContext().isMainApp) {
+        // Ignore theme in app extensions.
+        return NO;
+    }
+
     return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
                                                            inCollection:ThemeCollection
                                                            defaultValue:NO];
@@ -49,6 +54,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
 }
 
++ (UIColor *)offBackgroundColor
+{
+    return (
+        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.9f alpha:1.f]);
+}
+
 + (UIColor *)primaryColor
 {
     // TODO: Theme, Review with design.
@@ -65,6 +76,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     // TODO: Review with design.
     return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.blackColor);
+}
+
++ (UIColor *)middleGrayColor
+{
+    // TODO: Review with design.
+    return [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
 #pragma mark - Global App Colors
@@ -98,7 +115,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)conversationButtonBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark05Color : UIColor.ows_light02Color);
+    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_light02Color);
 }
 
 #pragma mark -

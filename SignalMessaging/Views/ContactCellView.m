@@ -100,7 +100,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel.textColor = [Theme primaryColor];
     self.profileNameLabel.textColor = [Theme secondaryColor];
     self.subtitleLabel.textColor = [Theme secondaryColor];
-    self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+    self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager

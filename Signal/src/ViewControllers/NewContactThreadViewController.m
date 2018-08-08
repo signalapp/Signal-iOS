@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
 
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];
+    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view avoidNotch:NO];
     _tableViewController.tableView.tableHeaderView = searchBar;
 
     _noSignalContactsView = [self createNoSignalContactsView];
@@ -1000,7 +1000,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Theme
 
-- (void)themeDidChange:(id)notification
+- (void)themeDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 

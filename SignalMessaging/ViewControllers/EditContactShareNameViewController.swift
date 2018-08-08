@@ -70,7 +70,7 @@ class ContactNameFieldView: UIView {
             valueView.text = initialValue
         }
         valueView.font = UIFont.ows_dynamicTypeBody
-        valueView.textColor = UIColor.black
+        valueView.textColor = Theme.primaryColor
         stackView.addArrangedSubview(valueView)
 
         valueView.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -209,7 +209,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
                                                       comment: "Title for the 'edit contact share name' view.")
 
         self.view.preservesSuperviewLayoutMargins = false
-        self.view.backgroundColor = UIColor.white
+        self.view.backgroundColor = Theme.backgroundColor
 
         updateContent()
 

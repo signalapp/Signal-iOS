@@ -253,7 +253,10 @@ class ConversationSearchViewController: UITableViewController {
                 // a snippet for conversations that reflects the latest
                 // contents.
                 if let messageSnippet = searchResult.snippet {
-                    overrideSnippet = NSAttributedString(string: messageSnippet)
+                    overrideSnippet = NSAttributedString(string: messageSnippet,
+                                                         attributes: [
+                                                            NSAttributedStringKey.foregroundColor: Theme.primaryColor
+                    ])
                 } else {
                     owsFail("\(ConversationSearchViewController.logTag) message search result is missing message snippet")
                 }

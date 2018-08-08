@@ -891,8 +891,6 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showShareProfileAlert
 {
-    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
-
     [OWSProfileManager.sharedManager presentAddThreadToProfileWhitelist:self.thread
                                                      fromViewController:self
                                                                 success:^{
@@ -968,8 +966,6 @@ const CGFloat kIconViewLength = 24;
 
 - (void)didTapLeaveGroup
 {
-    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
-
     UIAlertController *alertController =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
                                             message:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body")

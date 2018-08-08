@@ -111,6 +111,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     cell.contentView.backgroundColor = [Theme backgroundColor];
     cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
     cell.textLabel.textColor = [Theme primaryColor];
+    cell.detailTextLabel.textColor = [Theme secondaryColor];
 
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor = [Theme.cellSelectedColor colorWithAlphaComponent:0.08];
@@ -288,7 +289,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
         // Soft color.
         // TODO: Theme, review with design.
-        cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        cell.textLabel.textColor = Theme.middleGrayColor;
         // Centered.
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.userInteractionEnabled = NO;
@@ -705,7 +706,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 #pragma mark - Theme
 
-- (void)themeDidChange:(id)notification
+- (void)themeDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 

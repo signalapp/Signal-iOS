@@ -213,7 +213,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     UILabel *examplePhoneNumberLabel = [UILabel new];
     self.examplePhoneNumberLabel = examplePhoneNumberLabel;
     examplePhoneNumberLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints - 2.f];
-    examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+    examplePhoneNumberLabel.textColor = Theme.middleGrayColor;
     [contentView addSubview:examplePhoneNumberLabel];
     [examplePhoneNumberLabel autoPinTrailingToSuperviewMargin];
     [examplePhoneNumberLabel autoPinEdge:ALEdgeTop

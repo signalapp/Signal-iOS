@@ -71,7 +71,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
 
     override func loadView() {
         self.view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = Theme.backgroundColor
         view.addSubview(pickerView)
 
         pickerView.autoVCenterInSuperview()

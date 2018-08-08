@@ -172,7 +172,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         // This view provides a background "below the fold".
         let bottomView = UIView.container()
-        bottomView.backgroundColor = UIColor.white
+        bottomView.backgroundColor = Theme.backgroundColor
         self.view.addSubview(bottomView)
         bottomView.layoutMargins = .zero
         bottomView.autoPinWidthToSuperview()
@@ -197,7 +197,9 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     private func heroBackgroundColor() -> UIColor {
-        return UIColor(rgbHex: 0xefeff4)
+        return (Theme.isDarkThemeEnabled
+        ? UIColor(rgbHex: 0x272727)
+        : UIColor(rgbHex: 0xefeff4))
     }
 
     private func createTopView() -> UIView {
@@ -226,7 +228,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         }
         let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
         backIconView.contentMode = .scaleAspectFit
-        backIconView.tintColor = UIColor.black.withAlphaComponent(0.6)
+        backIconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
         backButton.addSubview(backIconView)
         backIconView.autoCenterInSuperview()
 
@@ -242,7 +244,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let nameLabel = UILabel()
         nameLabel.text = contactShare.displayName
         nameLabel.font = UIFont.ows_dynamicTypeTitle1
-        nameLabel.textColor = UIColor.black
+        nameLabel.textColor = Theme.primaryColor
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.textAlignment = .center
         topView.addSubview(nameLabel)
@@ -256,7 +258,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             let phoneNumberLabel = UILabel()
             phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
             phoneNumberLabel.font = UIFont.ows_dynamicTypeFootnote
-            phoneNumberLabel.textColor = UIColor.black
+            phoneNumberLabel.textColor = Theme.primaryColor
             phoneNumberLabel.lineBreakMode = .byTruncatingTail
             phoneNumberLabel.textAlignment = .center
             topView.addSubview(phoneNumberLabel)
@@ -427,7 +429,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         button.autoSetDimension(.width, toSize: buttonSize, relation: .greaterThanOrEqual)
 
         let circleView = UIView()
-        circleView.backgroundColor = UIColor.white
+        circleView.backgroundColor = Theme.backgroundColor
         circleView.autoSetDimension(.width, toSize: buttonSize)
         circleView.autoSetDimension(.height, toSize: buttonSize)
         circleView.layer.cornerRadius = buttonSize * 0.5
@@ -439,14 +441,15 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             owsFail("\(logTag) missing image.")
             return button
         }
-        let imageView = UIImageView(image: image)
+        let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
+        imageView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
         circleView.addSubview(imageView)
         imageView.autoCenterInSuperview()
 
         let label = UILabel()
         label.text = text
         label.font = UIFont.ows_dynamicTypeCaption2
-        label.textColor = UIColor.black
+        label.textColor = Theme.primaryColor
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         button.addSubview(label)
@@ -460,7 +463,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     private func createLargePillButton(text: String, actionBlock : @escaping () -> Void) -> UIView {
         let button = TappableView(actionBlock: actionBlock)
-        button.backgroundColor = UIColor.white
+        button.backgroundColor = Theme.backgroundColor
         button.layoutMargins = .zero
         button.autoSetDimension(.height, toSize: 45)
         button.layer.cornerRadius = 5

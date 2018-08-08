@@ -68,9 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
-    UIColor *darkGrey = [UIColor colorWithRGBHex:0x404040];
-
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = UIColor.blackColor;
 
     self.qrScanningController = [OWSQRCodeScanningViewController new];
     self.qrScanningController.scanDelegate = self;
@@ -79,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
 
     UIView *footer = [UIView new];
-    footer.backgroundColor = darkGrey;
+    footer.backgroundColor = [UIColor colorWithWhite:0.25f alpha:1.f];
     [self.view addSubview:footer];
     [footer autoPinWidthToSuperview];
     [footer autoPinEdgeToSuperviewEdge:ALEdgeBottom];
