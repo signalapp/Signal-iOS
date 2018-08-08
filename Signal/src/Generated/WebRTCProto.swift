@@ -8,7 +8,6 @@ import Foundation
 
 public enum WebRTCProtoError: Error {
     case invalidProtobuf(description: String)
-    case unsafeProtobuf(description: String)
 }
 
 // MARK: - WebRTCProtoConnected
@@ -22,6 +21,13 @@ public enum WebRTCProtoError: Error {
         private var proto = WebRTCProtos_Connected()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
 
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
@@ -102,6 +108,13 @@ public enum WebRTCProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
@@ -180,6 +193,13 @@ public enum WebRTCProtoError: Error {
         private var proto = WebRTCProtos_VideoStreamingStatus()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
 
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
@@ -348,17 +368,17 @@ public enum WebRTCProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: WebRTCProtos_Data) throws -> WebRTCProtoData {
-        var connected: WebRTCProtoConnected? = nil
+        var connected: WebRTCProtoConnected?
         if proto.hasConnected {
             connected = try WebRTCProtoConnected.parseProto(proto.connected)
         }
 
-        var hangup: WebRTCProtoHangup? = nil
+        var hangup: WebRTCProtoHangup?
         if proto.hasHangup {
             hangup = try WebRTCProtoHangup.parseProto(proto.hangup)
         }
 
-        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus? = nil
+        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus?
         if proto.hasVideoStreamingStatus {
             videoStreamingStatus = try WebRTCProtoVideoStreamingStatus.parseProto(proto.videoStreamingStatus)
         }

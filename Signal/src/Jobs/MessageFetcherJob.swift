@@ -122,24 +122,29 @@ public class MessageFetcherJob: NSObject {
         do {
             let params = ParamParser(dictionary: messageDict)
 
-            let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder()
-
             let typeInt: Int32 = try params.required(key: "type")
             guard let type: SSKProtoEnvelope.SSKProtoEnvelopeType = SSKProtoEnvelope.SSKProtoEnvelopeType(rawValue: typeInt) else {
-                Logger.error("\(self.logTag) `typeInt` was invalid: \(typeInt)")
+                Logger.error("\(self.logTag) `type` was invalid: \(typeInt)")
                 throw ParamParser.ParseError.invalidFormat("type")
             }
-            builder.setType(type)
 
-            if let timestamp: UInt64 = try params.required(key: "timestamp") {
-                builder.setTimestamp(timestamp)
+            guard let source: String = try params.required(key: "source") else {
+                Logger.error("\(self.logTag) `source` was invalid: \(typeInt)")
+                throw ParamParser.ParseError.invalidFormat("source")
             }
-            if let source: String = try params.required(key: "source") {
-                builder.setSource(source)
+
+            guard let timestamp: UInt64 = try params.required(key: "timestamp") else {
+                Logger.error("\(self.logTag) `timestamp` was invalid: \(typeInt)")
+                throw ParamParser.ParseError.invalidFormat("timestamp")
             }
-            if let sourceDevice: UInt32 = try params.required(key: "sourceDevice") {
-                builder.setSourceDevice(sourceDevice)
+
+            guard let sourceDevice: UInt32 = try params.required(key: "sourceDevice") else {
+                Logger.error("\(self.logTag) `sourceDevice` was invalid: \(typeInt)")
+                throw ParamParser.ParseError.invalidFormat("sourceDevice")
             }
+
+            let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder(type: type, source: source, sourceDevice: sourceDevice, timestamp: timestamp)
+
             if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
                 builder.setLegacyMessage(legacyMessage)
             }

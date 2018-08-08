@@ -3396,11 +3396,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }
     }();
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
-    envelopeBuilder.type = SSKProtoEnvelopeTypeCiphertext;
-    envelopeBuilder.source = source;
-    envelopeBuilder.sourceDevice = 1;
-    envelopeBuilder.timestamp = timestamp;
+    SSKProtoEnvelopeBuilder *envelopeBuilder =
+        [[SSKProtoEnvelopeBuilder alloc] initWithType:SSKProtoEnvelopeTypeCiphertext
+                                               source:source
+                                         sourceDevice:1
+                                            timestamp:timestamp];
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
     if (error || !envelope) {
@@ -3894,9 +3894,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContextBuilder new];
-        [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
-        [groupBuilder setId:groupThread.groupModel.groupId];
+        SSKProtoGroupContextBuilder *groupBuilder =
+            [[SSKProtoGroupContextBuilder alloc] initWithId:groupThread.groupModel.groupId
+                                                       type:SSKProtoGroupContextTypeDeliver];
         [dataMessageBuilder setGroup:groupBuilder.buildIgnoringErrors];
     }
 
@@ -3919,11 +3919,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
-    envelopeBuilder.type = envelopeType;
-    envelopeBuilder.source = source;
-    envelopeBuilder.sourceDevice = sourceDevice;
-    envelopeBuilder.timestamp = timestamp;
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [[SSKProtoEnvelopeBuilder alloc] initWithType:envelopeType
+                                                                                      source:source
+                                                                                sourceDevice:sourceDevice
+                                                                                   timestamp:timestamp];
     envelopeBuilder.content = content;
     NSError *error;
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];

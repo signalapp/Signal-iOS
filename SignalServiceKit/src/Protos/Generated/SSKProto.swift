@@ -8,7 +8,6 @@ import Foundation
 
 public enum SSKProtoError: Error {
     case invalidProtobuf(description: String)
-    case unsafeProtobuf(description: String)
 }
 
 // MARK: - SSKProtoEnvelope
@@ -52,6 +51,16 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_Envelope()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(type: SSKProtoEnvelopeType, source: String, sourceDevice: UInt32, timestamp: UInt64) {
+            super.init()
+
+            setType(type)
+            setSource(source)
+            setSourceDevice(sourceDevice)
+            setTimestamp(timestamp)
+        }
 
         @objc public func setType(_ valueParam: SSKProtoEnvelopeType) {
             proto.type = SSKProtoEnvelopeTypeUnwrap(valueParam)
@@ -366,6 +375,14 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(id: UInt64, sessionDescription: String) {
+            super.init()
+
+            setId(id)
+            setSessionDescription(sessionDescription)
+        }
+
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
@@ -459,6 +476,14 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(id: UInt64, sessionDescription: String) {
+            super.init()
+
+            setId(id)
+            setSessionDescription(sessionDescription)
+        }
+
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
@@ -551,6 +576,16 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_CallMessage.IceUpdate()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: UInt64, sdpMid: String, sdpMlineIndex: UInt32, sdp: String) {
+            super.init()
+
+            setId(id)
+            setSdpMid(sdpMid)
+            setSdpMlineIndex(sdpMlineIndex)
+            setSdp(sdp)
+        }
 
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
@@ -673,6 +708,13 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
@@ -751,6 +793,13 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_CallMessage.Hangup()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
 
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
@@ -1134,6 +1183,14 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_DataMessage.Quote()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: UInt64, author: String) {
+            super.init()
+
+            setId(id)
+            setAuthor(author)
+        }
 
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
@@ -2463,6 +2520,13 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(type: SSKProtoReceiptMessageType) {
+            super.init()
+
+            setType(type)
+        }
+
         @objc public func setType(_ valueParam: SSKProtoReceiptMessageType) {
             proto.type = SSKProtoReceiptMessageTypeUnwrap(valueParam)
         }
@@ -2579,6 +2643,13 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_Verified()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(destination: String) {
+            super.init()
+
+            setDestination(destination)
+        }
 
         @objc public func setDestination(_ valueParam: String) {
             proto.destination = valueParam
@@ -2815,6 +2886,13 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_SyncMessage.Contacts()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(blob: SSKProtoAttachmentPointer) {
+            super.init()
+
+            setBlob(blob)
+        }
 
         @objc public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
             proto.blob = valueParam.proto
@@ -3097,6 +3175,13 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(type: SSKProtoSyncMessageRequestType) {
+            super.init()
+
+            setType(type)
+        }
+
         @objc public func setType(_ valueParam: SSKProtoSyncMessageRequestType) {
             proto.type = SSKProtoSyncMessageRequestTypeUnwrap(valueParam)
         }
@@ -3175,6 +3260,14 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_SyncMessage.Read()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(sender: String, timestamp: UInt64) {
+            super.init()
+
+            setSender(sender)
+            setTimestamp(timestamp)
+        }
 
         @objc public func setSender(_ valueParam: String) {
             proto.sender = valueParam
@@ -3579,6 +3672,13 @@ public enum SSKProtoError: Error {
 
         @objc public override init() {}
 
+        // Initializer for required fields
+        @objc public init(id: UInt64) {
+            super.init()
+
+            setId(id)
+        }
+
         @objc public func setId(_ valueParam: UInt64) {
             proto.id = valueParam
         }
@@ -3801,6 +3901,14 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_GroupContext()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: Data, type: SSKProtoGroupContextType) {
+            super.init()
+
+            setId(id)
+            setType(type)
+        }
 
         @objc public func setId(_ valueParam: Data) {
             proto.id = valueParam
@@ -4029,6 +4137,13 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_ContactDetails()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(number: String) {
+            super.init()
+
+            setNumber(number)
+        }
 
         @objc public func setNumber(_ valueParam: String) {
             proto.number = valueParam
@@ -4296,6 +4411,13 @@ public enum SSKProtoError: Error {
         private var proto = SignalServiceProtos_GroupDetails()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(id: Data) {
+            super.init()
+
+            setId(id)
+        }
 
         @objc public func setId(_ valueParam: Data) {
             proto.id = valueParam

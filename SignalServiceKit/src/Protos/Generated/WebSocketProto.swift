@@ -8,7 +8,6 @@ import Foundation
 
 public enum WebSocketProtoError: Error {
     case invalidProtobuf(description: String)
-    case unsafeProtobuf(description: String)
 }
 
 // MARK: - WebSocketProtoWebSocketRequestMessage
@@ -22,6 +21,15 @@ public enum WebSocketProtoError: Error {
         private var proto = WebSocketProtos_WebSocketRequestMessage()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(verb: String, path: String, requestID: UInt64) {
+            super.init()
+
+            setVerb(verb)
+            setPath(path)
+            setRequestID(requestID)
+        }
 
         @objc public func setVerb(_ valueParam: String) {
             proto.verb = valueParam
@@ -157,6 +165,14 @@ public enum WebSocketProtoError: Error {
         private var proto = WebSocketProtos_WebSocketResponseMessage()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(requestID: UInt64, status: UInt32) {
+            super.init()
+
+            setRequestID(requestID)
+            setStatus(status)
+        }
 
         @objc public func setRequestID(_ valueParam: UInt64) {
             proto.requestID = valueParam
@@ -316,6 +332,13 @@ public enum WebSocketProtoError: Error {
         private var proto = WebSocketProtos_WebSocketMessage()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(type: WebSocketProtoWebSocketMessageType) {
+            super.init()
+
+            setType(type)
+        }
 
         @objc public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
             proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)

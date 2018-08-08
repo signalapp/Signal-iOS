@@ -51,14 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildEncryptedMessageBody
 {
-    ProvisioningProtoProvisionMessageBuilder *messageBuilder = [ProvisioningProtoProvisionMessageBuilder new];
-    messageBuilder.identityKeyPublic = self.myPublicKey;
-    messageBuilder.identityKeyPrivate = self.myPrivateKey;
-    messageBuilder.number = self.accountIdentifier;
-    messageBuilder.provisioningCode = self.provisioningCode;
-    messageBuilder.userAgent = @"OWI";
-    messageBuilder.readReceipts = self.areReadReceiptsEnabled;
-    messageBuilder.profileKey = self.profileKey;
+    ProvisioningProtoProvisionMessageBuilder *messageBuilder =
+        [[ProvisioningProtoProvisionMessageBuilder alloc] initWithIdentityKeyPublic:self.myPublicKey
+                                                                 identityKeyPrivate:self.myPrivateKey
+                                                                             number:self.accountIdentifier
+                                                                   provisioningCode:self.provisioningCode
+                                                                          userAgent:@"OWI"
+                                                                         profileKey:self.profileKey
+                                                                       readReceipts:self.areReadReceiptsEnabled];
 
     NSError *error;
     NSData *_Nullable plainTextProvisionMessage = [messageBuilder buildSerializedDataAndReturnError:&error];
@@ -74,10 +74,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    ProvisioningProtoProvisionEnvelopeBuilder *envelopeBuilder = [ProvisioningProtoProvisionEnvelopeBuilder new];
     // Note that this is a one-time-use *cipher* public key, not our Signal *identity* public key
-    envelopeBuilder.publicKey = [cipher.ourPublicKey prependKeyType];
-    envelopeBuilder.body = encryptedProvisionMessage;
+    ProvisioningProtoProvisionEnvelopeBuilder *envelopeBuilder =
+        [[ProvisioningProtoProvisionEnvelopeBuilder alloc] initWithPublicKey:[cipher.ourPublicKey prependKeyType]
+                                                                        body:encryptedProvisionMessage];
 
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
     if (!envelopeData || error) {

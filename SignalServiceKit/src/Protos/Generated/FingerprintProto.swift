@@ -8,7 +8,6 @@ import Foundation
 
 public enum FingerprintProtoError: Error {
     case invalidProtobuf(description: String)
-    case unsafeProtobuf(description: String)
 }
 
 // MARK: - FingerprintProtoLogicalFingerprint
@@ -22,6 +21,13 @@ public enum FingerprintProtoError: Error {
         private var proto = FingerprintProtos_LogicalFingerprint()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(identityData: Data) {
+            super.init()
+
+            setIdentityData(identityData)
+        }
 
         @objc public func setIdentityData(_ valueParam: Data) {
             proto.identityData = valueParam
@@ -101,6 +107,15 @@ public enum FingerprintProtoError: Error {
         private var proto = FingerprintProtos_LogicalFingerprints()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) {
+            super.init()
+
+            setVersion(version)
+            setLocalFingerprint(localFingerprint)
+            setRemoteFingerprint(remoteFingerprint)
+        }
 
         @objc public func setVersion(_ valueParam: UInt32) {
             proto.version = valueParam

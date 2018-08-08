@@ -126,9 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     SignalIOSProtoBackupSnapshotBackupEntityBuilder *entityBuilder =
-        [SignalIOSProtoBackupSnapshotBackupEntityBuilder new];
-    [entityBuilder setType:entityType];
-    [entityBuilder setEntityData:data];
+        [[SignalIOSProtoBackupSnapshotBackupEntityBuilder alloc] initWithType:entityType entityData:data];
 
     NSError *error;
     SignalIOSProtoBackupSnapshotBackupEntity *_Nullable entity = [entityBuilder buildAndReturnError:&error];

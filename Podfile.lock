@@ -187,7 +187,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 1fbdd114afe5ca981324892f22242d3a7a47794d
+    :commit: 0c9dc8cc0f02fd616fa8e5a4f4184e452de93f1e
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
     :commit: ced146699622ebd3d282bbfce3d492db4456e9aa

@@ -8,7 +8,6 @@ import Foundation
 
 public enum SignalIOSProtoError: Error {
     case invalidProtobuf(description: String)
-    case unsafeProtobuf(description: String)
 }
 
 // MARK: - SignalIOSProtoBackupSnapshotBackupEntity
@@ -52,6 +51,14 @@ public enum SignalIOSProtoError: Error {
         private var proto = IOSProtos_BackupSnapshot.BackupEntity()
 
         @objc public override init() {}
+
+        // Initializer for required fields
+        @objc public init(type: SignalIOSProtoBackupSnapshotBackupEntityType, entityData: Data) {
+            super.init()
+
+            setType(type)
+            setEntityData(entityData)
+        }
 
         @objc public func setType(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntityType) {
             proto.type = SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(valueParam)

@@ -409,11 +409,9 @@ private class SignalCallData: NSObject {
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 do {
-                    let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder()
-                    offerBuilder.setId(call.signalingId)
-                    offerBuilder.setSessionDescription(sessionDescription.sdp)
-                    let offer = try offerBuilder.build()
-                    let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offer)
+                    let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder(id: call.signalingId,
+                                                                                                sessionDescription: sessionDescription.sdp)
+                    let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build())
                     return self.messageSender.sendPromise(message: callMessage)
                 } catch {
                     owsFail("Couldn't build proto in \(#function)")
@@ -547,11 +545,8 @@ private class SignalCallData: NSObject {
         SwiftAssertIsOnMainThread(#function)
 
         do {
-            let busyBuilder = SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder()
-            busyBuilder.setId(call.signalingId)
-            let busyMessage = try busyBuilder.build()
-
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
+            let busyBuilder = SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder(id: call.signalingId)
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: try busyBuilder.build())
             let sendPromise = messageSender.sendPromise(message: callMessage)
             sendPromise.retainUntilComplete()
 
@@ -720,11 +715,9 @@ private class SignalCallData: NSObject {
             }
 
             do {
-                let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder()
-                answerBuilder.setId(newCall.signalingId)
-                answerBuilder.setSessionDescription(negotiatedSessionDescription.sdp)
-                let answer = try answerBuilder.build()
-                let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answer)
+                let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder(id: newCall.signalingId,
+                                                                                               sessionDescription: negotiatedSessionDescription.sdp)
+                let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: try answerBuilder.build())
 
                 return self.messageSender.sendPromise(message: callAnswerMessage)
             } catch {
@@ -866,14 +859,11 @@ private class SignalCallData: NSObject {
                  * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
                  * exchanged, the clients can connect.
                  */
-                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder()
-                iceUpdateBuilder.setId(call.signalingId)
-                iceUpdateBuilder.setSdp(iceCandidate.sdp)
-                iceUpdateBuilder.setSdpMlineIndex(UInt32(iceCandidate.sdpMLineIndex))
-                iceUpdateBuilder.setSdpMid(sdpMid)
-                let iceUpdate = try iceUpdateBuilder.build()
-
-                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdate)
+                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder(id: call.signalingId,
+                                                                                                        sdpMid: sdpMid,
+                                                                                                        sdpMlineIndex: UInt32(iceCandidate.sdpMLineIndex),
+                                                                                                        sdp: iceCandidate.sdp)
+                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: try iceUpdateBuilder.build())
                 let sendPromise = self.messageSender.sendPromise(message: callMessage)
                 sendPromise.retainUntilComplete()
             } catch {
@@ -1049,12 +1039,9 @@ private class SignalCallData: NSObject {
 
         var messageData: Data
         do {
-            let connectedBuilder = WebRTCProtoConnected.WebRTCProtoConnectedBuilder()
-            connectedBuilder.setId(call.signalingId)
-            let connectedProto = try connectedBuilder.build()
-
+            let connectedBuilder = WebRTCProtoConnected.WebRTCProtoConnectedBuilder(id: call.signalingId)
             let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
-            dataBuilder.setConnected(connectedProto)
+            dataBuilder.setConnected(try connectedBuilder.build())
             messageData = try dataBuilder.buildSerializedData()
         } catch {
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto in \(#function)"))
@@ -1190,12 +1177,9 @@ private class SignalCallData: NSObject {
 
             var messageData: Data
             do {
-                let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder()
-                hangupBuilder.setId(call.signalingId)
-                let hangupProto = try hangupBuilder.build()
-
+                let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder(id: call.signalingId)
                 let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
-                dataBuilder.setHangup(hangupProto)
+                dataBuilder.setHangup(try hangupBuilder.build())
                 messageData = try dataBuilder.buildSerializedData()
             } catch {
                 handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto in \(#function)"))
@@ -1209,11 +1193,8 @@ private class SignalCallData: NSObject {
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         do {
-            let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder()
-            hangupBuilder.setId(call.signalingId)
-            let hangupProto = try hangupBuilder.build()
-
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupProto)
+            let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder(id: call.signalingId)
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
             let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
                 Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
                 }.catch { error in
@@ -1704,13 +1685,10 @@ private class SignalCallData: NSObject {
 
         var messageData: Data
         do {
-            let videoStreamingStatusBuilder = WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder()
-            videoStreamingStatusBuilder.setId(call.signalingId)
+            let videoStreamingStatusBuilder = WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder(id: call.signalingId)
             videoStreamingStatusBuilder.setEnabled(shouldHaveLocalVideoTrack)
-            let videoStreamingStatusProto = try videoStreamingStatusBuilder.build()
-
             let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
-            dataBuilder.setVideoStreamingStatus(videoStreamingStatusProto)
+            dataBuilder.setVideoStreamingStatus(try videoStreamingStatusBuilder.build())
             messageData = try dataBuilder.buildSerializedData()
         } catch {
             Logger.error("\(self.logTag) couldn't build proto in \(#function)")
