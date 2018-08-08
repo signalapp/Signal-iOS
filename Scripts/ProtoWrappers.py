@@ -413,7 +413,7 @@ class MessageContext(BaseContext):
                 type_name = field.type_swift_not_optional if field.is_required else field.type_swift
                 writer.add('@objc public let %s: %s' % (field.name_swift, type_name))
                 
-                if (not field.is_required) and field.rules != 'repeated':
+                if (not field.is_required) and field.rules != 'repeated' and (not self.is_field_a_proto(field)):
                     writer.add('@objc public var %s: Bool {' % field.has_accessor_name() )
                     writer.push_indent()
                     writer.add('return proto.%s' % field.has_accessor_name() )

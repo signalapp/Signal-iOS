@@ -375,14 +375,8 @@ public enum WebSocketProtoError: Error {
     @objc public let type: WebSocketProtoWebSocketMessageType
 
     @objc public let request: WebSocketProtoWebSocketRequestMessage?
-    @objc public var hasRequest: Bool {
-        return proto.hasRequest
-    }
 
     @objc public let response: WebSocketProtoWebSocketResponseMessage?
-    @objc public var hasResponse: Bool {
-        return proto.hasResponse
-    }
 
     private init(proto: WebSocketProtos_WebSocketMessage,
                  type: WebSocketProtoWebSocketMessageType,
