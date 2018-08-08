@@ -71,7 +71,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func loadView() {
         super.loadView()
 
-        self.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
+        self.view.backgroundColor = UIColor(white: 0, alpha: 0.25)
         self.view.isOpaque = false
 
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)

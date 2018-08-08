@@ -78,6 +78,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.blackColor);
 }
 
++ (UIColor *)middleGrayColor
+{
+    // TODO: Review with design.
+    return [UIColor colorWithWhite:0.5f alpha:1.f];
+}
+
 #pragma mark - Global App Colors
 
 + (UIColor *)navbarBackgroundColor

@@ -223,8 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         [[DisappearingTimerConfigurationView alloc]
                                             initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
 
-                                    disappearingTimerConfigurationView.tintColor =
-                                        [UIColor colorWithWhite:0.5f alpha:1.f];
+                                    disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
                                     [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
                                     [cell ows_setAccessoryView:disappearingTimerConfigurationView];

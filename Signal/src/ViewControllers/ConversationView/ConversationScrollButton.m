@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.circleView = circleView;
     circleView.userInteractionEnabled = NO;
     circleView.layer.cornerRadius = circleSize * 0.5f;
-    circleView.layer.shadowColor = [UIColor colorWithWhite:0.5f alpha:1.f].CGColor;
+    circleView.layer.shadowColor = Theme.middleGrayColor.CGColor;
     circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
     circleView.layer.shadowRadius = 1.5f;
     circleView.layer.shadowOpacity = 0.35f;

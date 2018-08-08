@@ -491,7 +491,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     self.avatarView.image = (self.avatar
             ?: [[UIImage imageNamed:@"profile_avatar_default"]
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
-    self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithRGBHex:0x888888]);
+    self.avatarView.tintColor = (self.avatar ? nil : Theme.middleGrayColor);
     self.cameraImageView.hidden = self.avatar != nil;
 }
 

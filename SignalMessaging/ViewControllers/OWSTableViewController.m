@@ -289,7 +289,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
         // Soft color.
         // TODO: Theme, review with design.
-        cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        cell.textLabel.textColor = Theme.middleGrayColor;
         // Centered.
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         cell.userInteractionEnabled = NO;
