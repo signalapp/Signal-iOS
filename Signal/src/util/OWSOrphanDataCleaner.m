@@ -590,7 +590,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // We need to avoid cleaning up new attachments and files that are still in the process of
     // being created/written, so we don't clean up anything recent.
     const NSTimeInterval kMinimumOrphanAgeSeconds = CurrentAppContext().isRunningTests ? 0.f : 15 * kMinuteInterval;
-    NSDate *appLaunchTime = AppVersion.sharedInstance.appLaunchTime;
+    NSDate *appLaunchTime = CurrentAppContext().appLaunchTime;
     NSTimeInterval thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - kMinimumOrphanAgeSeconds;
     NSDate *thresholdDate = [NSDate dateWithTimeIntervalSince1970:thresholdTimestamp];
     [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
