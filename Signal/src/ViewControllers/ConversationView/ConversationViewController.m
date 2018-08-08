@@ -54,6 +54,7 @@
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/OWSUserProfile.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
