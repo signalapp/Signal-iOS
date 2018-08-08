@@ -64,7 +64,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     NSError *error;
     SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
     if (error || !verifiedProto) {
-        OWSCFail(@"%@ could not build protobuf: %@", @"[BuildVerifiedProtoWithRecipientId]", error);
+        OWSCFailNoProdLog(@"%@ could not build protobuf: %@", @"[BuildVerifiedProtoWithRecipientId]", error);
         return nil;
     }
     return verifiedProto;

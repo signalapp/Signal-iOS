@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
 
 // OWSAssert() and OWSFail() should be used in Obj-C methods.
-// OWSCAssert() and OWSCFail() should be used in free functions.
+// OWSCAssert() and OWSCFailNoProdLog() should be used in free functions.
 
 #define OWSAssert(X)                                                                                                   \
     if (!(X)) {                                                                                                        \
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSAssert(0, formattedMessage);                                                                                 \
     }
 
-#define OWSCFail(message, ...)                                                                                         \
+#define OWSCFailNoProdLog(message, ...)                                                                                \
     {                                                                                                                  \
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
         DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                   \
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define OWSAssert(X)
 #define OWSCAssert(X)
 #define OWSFailNoProdLog(message, ...)
-#define OWSCFail(message, ...)
+#define OWSCFailNoProdLog(message, ...)
 #define OWSFailNoFormat(X)
 #define OWSCFailNoFormat(X)
 
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     {                                                                                                                  \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
-        OWSCFail(_messageFormat, ##__VA_ARGS__);                                                                       \
+        OWSCFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                              \
     }
 
 
