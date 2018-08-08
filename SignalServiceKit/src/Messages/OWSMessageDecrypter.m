@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     } @catch (NSException *exception) {
-        OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+        OWSFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]

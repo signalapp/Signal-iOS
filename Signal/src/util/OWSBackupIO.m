@@ -53,7 +53,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
 {
     NSString *filePath = [self generateTempFilePath];
     if (![OWSFileSystem ensureFileExists:filePath]) {
-        OWSProdLogAndFail(@"%@ could not create temp file.", self.logTag);
+        OWSFail(@"%@ could not create temp file.", self.logTag);
         return nil;
     }
     return filePath;
@@ -80,7 +80,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         // TODO: Encrypt the file without loading it into memory.
         NSData *_Nullable srcData = [NSData dataWithContentsOfFile:srcFilePath];
         if (srcData.length < 1) {
-            OWSProdLogAndFail(@"%@ could not load file into memory for encryption.", self.logTag);
+            OWSFail(@"%@ could not load file into memory for encryption.", self.logTag);
             return nil;
         }
         return [self encryptDataAsTempFile:srcData encryptionKey:encryptionKey];
@@ -114,7 +114,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         NSError *error;
         BOOL success = [encryptedData writeToFile:dstFilePath options:NSDataWritingAtomic error:&error];
         if (!success || error) {
-            OWSProdLogAndFail(@"%@ error writing encrypted data: %@", self.logTag, error);
+            OWSFail(@"%@ error writing encrypted data: %@", self.logTag, error);
             return nil;
         }
         [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
@@ -146,7 +146,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         NSError *error;
         BOOL success = [data writeToFile:dstFilePath options:NSDataWritingAtomic error:&error];
         if (!success || error) {
-            OWSProdLogAndFail(@"%@ error writing decrypted data: %@", self.logTag, error);
+            OWSFail(@"%@ error writing decrypted data: %@", self.logTag, error);
             return NO;
         }
         [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
@@ -169,7 +169,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
 
         NSData *_Nullable srcData = [NSData dataWithContentsOfFile:srcFilePath];
         if (srcData.length < 1) {
-            OWSProdLogAndFail(@"%@ could not load file into memory for decryption.", self.logTag);
+            OWSFail(@"%@ could not load file into memory for decryption.", self.logTag);
             return nil;
         }
 
@@ -201,7 +201,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     @autoreleasepool {
 
         if (!srcData) {
-            OWSProdLogAndFail(@"%@ missing unencrypted data.", self.logTag);
+            OWSFail(@"%@ missing unencrypted data.", self.logTag);
             return nil;
         }
 
@@ -238,7 +238,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     @autoreleasepool {
 
         if (!srcData) {
-            OWSProdLogAndFail(@"%@ missing unencrypted data.", self.logTag);
+            OWSFail(@"%@ missing unencrypted data.", self.logTag);
             return nil;
         }
 

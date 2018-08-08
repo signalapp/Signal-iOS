@@ -367,16 +367,22 @@ NS_ASSUME_NONNULL_BEGIN
             [contents addSection:section];
         }
         contents.sectionForSectionIndexTitleBlock = ^NSInteger(NSString *_Nonnull title, NSInteger index) {
+            typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return 0;
+            }
+
             // Offset the collation section to account for the noncollated sections.
-            NSInteger sectionIndex = [self.collation sectionForSectionIndexTitleAtIndex:index] + noncollatedSections;
+            NSInteger sectionIndex =
+                [strongSelf.collation sectionForSectionIndexTitleAtIndex:index] + noncollatedSections;
             if (sectionIndex < 0) {
                 // Sentinal in case we change our section ordering in a surprising way.
-                OWSFail(@"Unexpected negative section index");
+                OWSCFail(@"Unexpected negative section index");
                 return 0;
             }
             if (sectionIndex >= (NSInteger)contents.sections.count) {
                 // Sentinal in case we change our section ordering in a surprising way.
-                OWSFail(@"Unexpectedly large index");
+                OWSCFail(@"Unexpectedly large index");
                 return 0;
             }
 
@@ -384,7 +390,12 @@ NS_ASSUME_NONNULL_BEGIN
         };
         contents.sectionIndexTitlesForTableViewBlock = ^NSArray<NSString *> *_Nonnull
         {
-            return self.collation.sectionTitles;
+            typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) {
+                return @[];
+            }
+
+            return strongSelf.collation.sectionTitles;
         };
     }
 

@@ -183,7 +183,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     for (id deviceId in sessionRecords) {
         id object = sessionRecords[deviceId];
         if (![object isKindOfClass:[SessionRecord class]]) {
-            OWSFail(@"Unexpected object in session dict: %@", object);
+            OWSFail(@"Unexpected object in session dict: %@", [object class]);
             continue;
         }
 
@@ -218,8 +218,9 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                          id _Nonnull deviceSessionsObject,
                                          BOOL *_Nonnull stop) {
                                          if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
-                                             OWSFail(
-                                                 @"%@ Unexpected type: %@ in collection.", tag, deviceSessionsObject);
+                                             OWSFail(@"%@ Unexpected type: %@ in collection.",
+                                                 tag,
+                                                 [deviceSessionsObject class]);
                                              return;
                                          }
                                          NSDictionary *deviceSessions = (NSDictionary *)deviceSessionsObject;
@@ -230,7 +231,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                              if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
                                                  OWSFail(@"%@ Unexpected type: %@ in collection.",
                                                      tag,
-                                                     sessionRecordObject);
+                                                     [sessionRecordObject class]);
                                                  return;
                                              }
                                              SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;

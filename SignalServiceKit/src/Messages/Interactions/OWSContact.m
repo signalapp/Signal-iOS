@@ -311,7 +311,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     [self ensureDisplayName];
 
     if (_displayName.length < 1) {
-        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
+        OWSFail(@"%@ could not derive a valid display name.", self.logTag);
         return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
     }
     return _displayName;
@@ -569,7 +569,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
 {
     if (!systemContact) {
-        OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
+        OWSFail(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
@@ -664,7 +664,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 + (nullable CNContact *)systemContactForContact:(OWSContact *)contact imageData:(nullable NSData *)imageData
 {
     if (!contact) {
-        OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
+        OWSFail(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
@@ -921,7 +921,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         return nil;
     }
     if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
-        OWSProdLogAndFail(@"%@ contact has neither phone, email or address.", self.logTag);
+        OWSFail(@"%@ contact has neither phone, email or address.", self.logTag);
         return nil;
     }
     return contactProto;

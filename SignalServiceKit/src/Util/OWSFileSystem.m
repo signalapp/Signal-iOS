@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isDirectory;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory];
     if (!exists) {
-        OWSFail(@"%@ error retrieving file attributes for issing file", self.logTag);
+        OWSFail(@"%@ error retrieving file attributes for missing file", self.logTag);
         return;
     }
 
@@ -137,11 +137,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSProdLogAndFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+        DDLogDebug(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
             self.logTag,
             oldFilePath,
             newFilePath,
             error);
+        OWSFail(@"%@ Could not move file or directory with error: %@", self.logTag, error);
         return error;
     }
     return nil;
@@ -166,10 +167,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSProdLogAndFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
+        DDLogDebug(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
             self.logTag,
             oldFilePath,
             newFilePath);
+        OWSFail(@"%@ Can't move file or directory; destination already exists.", self.logTag);
         return OWSErrorWithCodeDescription(
             OWSErrorCodeMoveFileToSharedDataContainerError, @"Can't move file; destination already exists.");
     }
@@ -179,15 +181,17 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSProdLogAndFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+        DDLogDebug(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
             self.logTag,
             oldFilePath,
             newFilePath,
             error);
+        OWSFail(@"%@ Could not move file or directory with error: %@", self.logTag, error);
         return error;
     }
 
-    DDLogInfo(@"%@ Moved file or directory from: %@ to: %@ in: %f",
+    DDLogInfo(@"%@ Moved file or directory in: %f", self.logTag, fabs([startDate timeIntervalSinceNow]));
+    DDLogDebug(@"%@ Moved file or directory from: %@ to: %@ in: %f",
         self.logTag,
         oldFilePath,
         newFilePath,

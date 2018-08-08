@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoEnvelope *_Nullable result = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
 
     if (error) {
-        OWSProdLogAndFail(@"%@ paring SSKProtoEnvelope failed with error: %@", self.logTag, error);
+        OWSFail(@"%@ paring SSKProtoEnvelope failed with error: %@", self.logTag, error);
         return nil;
     }
     
@@ -405,7 +405,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                               transaction:transaction];
                 }
             } @catch (NSException *exception) {
-                OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                OWSFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
                 reportFailure(transaction);
             }
             [processedJobs addObject:job];

@@ -57,14 +57,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSData *> *_Nullable anchorCertificates = [self anchorCertificates];
     if (anchorCertificates.count < 1) {
-        OWSProdLogAndFail(@"%@ Could not load anchor certificates.", self.logTag);
+        OWSFail(@"%@ Could not load anchor certificates.", self.logTag);
         return nil;
     }
 
     NSArray<NSData *> *_Nullable certificateDerDatas = [self convertPemToDer:certificatePem];
 
     if (certificateDerDatas.count < 1) {
-        OWSProdLogAndFail(@"%@ Could not parse PEM.", self.logTag);
+        OWSFail(@"%@ Could not parse PEM.", self.logTag);
         return nil;
     }
 
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     if (![self verifyDistinguishedNameOfCertificate:leafCertificateData]) {
-        OWSProdLogAndFail(@"%@ Leaf certificate has invalid name.", self.logTag);
+        OWSFail(@"%@ Leaf certificate has invalid name.", self.logTag);
         return nil;
     }
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSData *certificateDerData in certificateDerDatas) {
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateDerData));
         if (!certificate) {
-            OWSProdLogAndFail(@"%@ Could not load DER.", self.logTag);
+            OWSFail(@"%@ Could not load DER.", self.logTag);
             return nil;
         }
         [certificates addObject:(__bridge_transfer id)certificate];
@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSData *certificateData in anchorCertificates) {
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
         if (!certificate) {
-            OWSProdLogAndFail(@"%@ Could not load DER.", self.logTag);
+            OWSFail(@"%@ Could not load DER.", self.logTag);
             return nil;
         }
 
@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
                              options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators
                                error:&error];
     if (!regex || error) {
-        OWSProdLogAndFail(@"%@ could parse regex: %@.", self.logTag, error);
+        OWSFail(@"%@ could parse regex: %@.", self.logTag, error);
         return nil;
     }
 
@@ -184,19 +184,19 @@ NS_ASSUME_NONNULL_BEGIN
                               range:NSMakeRange(0, pemString.length)
                          usingBlock:^(NSTextCheckingResult *_Nullable result, NSMatchingFlags flags, BOOL *stop) {
                              if (result.numberOfRanges != 2) {
-                                 OWSProdLogAndFail(@"%@ invalid PEM regex match.", self.logTag);
+                                 OWSFail(@"%@ invalid PEM regex match.", self.logTag);
                                  return;
                              }
                              NSString *_Nullable derString = [pemString substringWithRange:[result rangeAtIndex:1]];
                              if (derString.length < 1) {
-                                 OWSProdLogAndFail(@"%@ empty PEM match.", self.logTag);
+                                 OWSFail(@"%@ empty PEM match.", self.logTag);
                                  return;
                              }
                              // dataFromBase64String will ignore whitespace, which is
                              // necessary.
                              NSData *_Nullable derData = [NSData dataFromBase64String:derString];
                              if (derData.length < 1) {
-                                 OWSProdLogAndFail(@"%@ could not parse PEM match.", self.logTag);
+                                 OWSFail(@"%@ could not parse PEM match.", self.logTag);
                                  return;
                              }
                              [certificateDatas addObject:derData];
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We need to use an Intel certificate as the anchor for IAS verification.
         NSData *_Nullable anchorCertificate = [self certificateDataForService:@"ias-root"];
         if (!anchorCertificate) {
-            OWSProdLogAndFail(@"%@ could not load anchor certificate.", self.logTag);
+            OWSFail(@"%@ could not load anchor certificate.", self.logTag);
             OWSRaiseException(@"OWSSignalService_CouldNotLoadCertificate", @"%s", __PRETTY_FUNCTION__);
         } else {
             anchorCertificates = @[ anchorCertificate ];
@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *path = [bundle pathForResource:service ofType:@"cer"];
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        OWSProdLogAndFail(@"%@ could not locate certificate file.", self.logTag);
+        OWSFail(@"%@ could not locate certificate file.", self.logTag);
         return nil;
     }
 
@@ -247,7 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable hashData = [Cryptography computeSHA256Digest:bodyData];
     if (hashData.length != CC_SHA256_DIGEST_LENGTH) {
-        OWSProdLogAndFail(@"%@ could not SHA256 for signature verification.", self.logTag);
+        OWSFail(@"%@ could not SHA256 for signature verification.", self.logTag);
         return NO;
     }
     size_t hashBytesSize = CC_SHA256_DIGEST_LENGTH;
@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL isValid = status == errSecSuccess;
     if (!isValid) {
-        OWSProdLogAndFail(@"%@ signatures do not match.", self.logTag);
+        OWSFail(@"%@ signatures do not match.", self.logTag);
         return NO;
     }
     return YES;

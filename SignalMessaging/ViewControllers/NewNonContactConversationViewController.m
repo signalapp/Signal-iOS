@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)contactsSectionTitle
 {
-    OWSFail(@"Method should never be called.");
+    OWSFail(@"%s Method should never be called.", __PRETTY_FUNCTION__);
 
     return nil;
 }
@@ -84,14 +84,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
 {
-    OWSFail(@"Method should never be called.");
+    OWSFail(@"%s Method should never be called.", __PRETTY_FUNCTION__);
 
     return NO;
 }
 
 - (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSFail(@"Method should never be called.");
+    OWSFail(@"%s Method should never be called.", __PRETTY_FUNCTION__);
 
     return nil;
 }

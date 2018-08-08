@@ -330,7 +330,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     SSKProtoEnvelope *_Nullable envelope = job.envelopeProto;
     if (!envelope) {
-        OWSProdLogAndFail(@"%@ Could not parse proto.", self.logTag);
+        OWSFail(@"%@ Could not parse proto.", self.logTag);
         // TODO: Add analytics.
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]

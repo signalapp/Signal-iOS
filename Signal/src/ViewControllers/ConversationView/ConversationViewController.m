@@ -2147,7 +2147,7 @@ typedef enum : NSUInteger {
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, [self.thread class], __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -2167,7 +2167,7 @@ typedef enum : NSUInteger {
 {
     // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, [self.thread class], __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -2865,12 +2865,10 @@ typedef enum : NSUInteger {
     NSError *isDirectoryError;
     [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
     if (isDirectoryError) {
-        OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
-            self.logTag,
-            url,
-            isDirectoryError);
+        OWSFail(
+            @"%@ Determining if picked document was a directory failed with error: %@", self.logTag, isDirectoryError);
     } else if ([isDirectory boolValue]) {
-        DDLogInfo(@"%@ User picked directory at url: %@", self.logTag, url);
+        DDLogInfo(@"%@ User picked directory.", self.logTag);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts
@@ -2886,7 +2884,7 @@ typedef enum : NSUInteger {
 
     NSString *filename = url.lastPathComponent;
     if (!filename) {
-        OWSFail(@"%@ Unable to determine filename from url: %@", self.logTag, url);
+        OWSFail(@"%@ Unable to determine filename", self.logTag);
         filename = NSLocalizedString(
             @"ATTACHMENT_DEFAULT_FILENAME", @"Generic filename for an attachment with no known name");
     }
@@ -2895,7 +2893,7 @@ typedef enum : NSUInteger {
     OWSAssert(filename);
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
     if (!dataSource) {
-        OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.logTag, url);
+        OWSFail(@"%@ attachment data was unexpectedly empty for picked document", self.logTag);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
@@ -3020,7 +3018,7 @@ typedef enum : NSUInteger {
     [assetslibrary assetForURL:referenceURL
                    resultBlock:resultblock
                   failureBlock:^(NSError *error) {
-                      OWSFail(@"Error retrieving filename for asset: %@", error);
+                      OWSCFail(@"Error retrieving filename for asset: %@", error);
                   }];
 }
 
@@ -3378,7 +3376,7 @@ typedef enum : NSUInteger {
     if (hasMalformedRowChange) {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
-        OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
+        OWSFail(@"%@ hasMalformedRowChange", self.logTag);
         [self resetContentAndLayout];
         [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];
@@ -4853,16 +4851,19 @@ typedef enum : NSUInteger {
             TSInteraction *interaction =
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
             if (!interaction) {
-                OWSFail(@"%@ missing interaction in message mappings: %zd / %zd.", self.logTag, row, count);
+                OWSFail(@"%@ missing interaction in message mappings: %lu / %lu.",
+                    self.logTag,
+                    (unsigned long)row,
+                    (unsigned long)count);
                 // TODO: Add analytics.
                 continue;
             }
             if (!interaction.uniqueId) {
-                OWSFail(@"%@ invalid interaction in message mappings: %zd / %zd: %@.",
+                OWSFail(@"%@ invalid interaction in message mappings: %lu / %lu: %@.",
                     self.logTag,
-                    row,
-                    count,
-                    interaction.description);
+                    (unsigned long)row,
+                    (unsigned long)count,
+                    interaction);
                 // TODO: Add analytics.
                 continue;
             }
@@ -5136,7 +5137,7 @@ typedef enum : NSUInteger {
 - (nullable ConversationViewItem *)viewItemForIndex:(NSInteger)index
 {
     if (index < 0 || index >= (NSInteger)self.viewItems.count) {
-        OWSFail(@"%@ Invalid view item index: %zd", self.logTag, index);
+        OWSFail(@"%@ Invalid view item index: %lu", self.logTag, (unsigned long)index);
         return nil;
     }
     return self.viewItems[(NSUInteger)index];

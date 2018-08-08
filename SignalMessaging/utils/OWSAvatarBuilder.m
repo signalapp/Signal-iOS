@@ -3,12 +3,12 @@
 //
 
 #import "OWSAvatarBuilder.h"
+#import "JSQMessagesAvatarImageFactory.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSGroupAvatarBuilder.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
-#import "JSQMessagesAvatarImageFactory.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -89,13 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
     return nil;
 }
 
 - (UIImage *)buildDefaultImage
 {
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
     return [UIImage new];
 }
 

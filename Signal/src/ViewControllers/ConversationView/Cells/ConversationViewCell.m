@@ -21,12 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplay
 {
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
 }
 
 - (CGSize)cellSize
 {
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
 
     return CGSizeZero;
 }

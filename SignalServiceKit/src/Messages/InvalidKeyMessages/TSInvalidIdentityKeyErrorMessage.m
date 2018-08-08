@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -10,18 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)acceptNewIdentityKey
 {
-    OWSFail(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWSAbstractMethod();
 }
 
 - (nullable NSData *)newIdentityKey
 {
-    OWSFail(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWSAbstractMethod();
     return nil;
 }
 
 - (NSString *)theirSignalId
 {
-    OWSFail(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWSAbstractMethod();
     return nil;
 }
 

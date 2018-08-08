@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[self.attachmentUrl path]]) {
-        OWSFail(@"%@ Missing video file: %@", self.logTag, self.attachmentStream.mediaURL);
+        OWSFail(@"%@ Missing video file", self.logTag);
     }
 
     OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];

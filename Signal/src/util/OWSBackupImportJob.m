@@ -175,7 +175,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (![self ensureJobTempDir]) {
-        OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
+        OWSFail(@"%@ Could not create jobTempDirPath.", self.logTag);
         return NO;
     }
 
@@ -310,7 +310,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
     if (!dbConnection) {
-        OWSProdLogAndFail(@"%@ Could not create dbConnection.", self.logTag);
+        OWSFail(@"%@ Could not create dbConnection.", self.logTag);
         return completion(NO);
     }
 

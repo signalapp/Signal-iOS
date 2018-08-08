@@ -3,7 +3,6 @@
 //
 
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
-#import "Cryptography.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
 #import "OWSPrimaryStorage+keyFromIntLong.h"
@@ -176,7 +175,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
                                          if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
                                              OWSFail(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
                                                  tag,
-                                                 signedPreKeyObject);
+                                                 [signedPreKeyObject class]);
                                              return;
                                          }
                                          SignedPreKeyRecord *signedPreKeyRecord
