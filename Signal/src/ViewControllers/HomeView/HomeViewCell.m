@@ -324,14 +324,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
-        OWSFailNoProdLog(@"%@ contactsManager should not be nil", self.logTag);
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
         self.avatarView.image = nil;
         return;
     }
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {
-        OWSFailNoProdLog(@"%@ thread should not be nil", self.logTag);
+        OWSFail(@"%@ thread should not be nil", self.logTag);
         self.avatarView.image = nil;
         return;
     }
@@ -491,14 +491,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {
-        OWSFailNoProdLog(@"%@ thread should not be nil", self.logTag);
+        OWSFail(@"%@ thread should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;
         return;
     }
 
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
-        OWSFailNoProdLog(@"%@ contacts manager should not be nil", self.logTag);
+        OWSFail(@"%@ contacts manager should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;
         return;
     }

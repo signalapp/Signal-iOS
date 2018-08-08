@@ -917,7 +917,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     SSKProtoDataMessageContact *_Nullable contactProto = [contactBuilder buildAndReturnError:&error];
     if (error || !contactProto) {
-        OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
     if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
@@ -1008,7 +1008,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             contact.avatarAttachmentId = attachmentPointer.uniqueId;
             contact.isProfileAvatar = avatarInfo.isProfile;
         } else {
-            OWSFailNoProdLog(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
         }
     }
 

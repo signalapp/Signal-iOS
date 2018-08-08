@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak AddToGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
-        OWSFailNoProdLog(@"%@ Cannot add user to group member if already a member.", self.logTag);
+        OWSFail(@"%@ Cannot add user to group member if already a member.", self.logTag);
         return;
     }
 

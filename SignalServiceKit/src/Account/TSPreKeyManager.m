@@ -263,7 +263,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                     SignedPreKeyRecord *currentRecord =
                         [primaryStorage loadSignedPrekeyOrNil:currentSignedPrekeyId.intValue];
                     if (!currentRecord) {
-                        OWSFailNoProdLog(@"%@ %s Couldn't find signed prekey for id: %@",
+                        OWSFail(@"%@ %s Couldn't find signed prekey for id: %@",
                             self.logTag,
                             __PRETTY_FUNCTION__,
                             currentSignedPrekeyId);
@@ -344,7 +344,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)(void))successHandler
 {
     if (!keyId) {
-        OWSFailNoProdLog(@"%@ Ignoring request to clear signed preKeys since no keyId was specified", self.logTag);
+        OWSFail(@"%@ Ignoring request to clear signed preKeys since no keyId was specified", self.logTag);
         return;
     }
 
@@ -354,7 +354,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         SignedPreKeyRecord *currentRecord = [primaryStorage loadSignedPrekeyOrNil:keyId.intValue];
         if (!currentRecord) {
-            OWSFailNoProdLog(@"%@ %s Couldn't find signed prekey for id: %@", self.logTag, __PRETTY_FUNCTION__, keyId);
+            OWSFail(@"%@ %s Couldn't find signed prekey for id: %@", self.logTag, __PRETTY_FUNCTION__, keyId);
         }
         NSArray *allSignedPrekeys = [primaryStorage loadSignedPreKeys];
         NSArray *oldSignedPrekeys

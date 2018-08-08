@@ -71,7 +71,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Called every retry, this is where the bulk of the operation's work should go.
 - (void)run
 {
-    OWSFailNoProdLog(@"%@ Abstract method", self.logTag);
+    OWS_ABSTRACT_METHOD();
 }
 
 // Called at most one time.

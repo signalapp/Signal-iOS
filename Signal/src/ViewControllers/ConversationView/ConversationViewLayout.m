@@ -78,13 +78,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ConversationViewLayoutDelegate> delegate = self.delegate;
     if (!delegate) {
-        OWSFailNoProdLog(@"%@ Missing delegate", self.logTag);
+        OWSFail(@"%@ Missing delegate", self.logTag);
         [self clearState];
         return;
     }
 
     if (self.collectionView.bounds.size.width <= 0.f || self.collectionView.bounds.size.height <= 0.f) {
-        OWSFailNoProdLog(
+        OWSFail(
             @"%@ Collection view has invalid size: %@", self.logTag, NSStringFromCGRect(self.collectionView.bounds));
         [self clearState];
         return;

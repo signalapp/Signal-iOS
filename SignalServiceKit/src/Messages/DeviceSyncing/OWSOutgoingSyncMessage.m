@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoSyncMessage *_Nullable proto = [builder buildAndReturnError:&error];
     if (error || !proto) {
-        OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
     return proto;
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSData *_Nullable data = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !data) {
-        OWSFailNoProdLog(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return nil;
     }
 

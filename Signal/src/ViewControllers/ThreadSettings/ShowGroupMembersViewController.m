@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (verificationState == OWSVerificationStateNoLongerVerified) {
             NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
             if (identityKey.length < 1) {
-                OWSFailNoProdLog(@"Missing identity key for: %@", recipientId);
+                OWSFail(@"Missing identity key for: %@", recipientId);
                 continue;
             }
             [identityManger setVerificationState:OWSVerificationStateDefault

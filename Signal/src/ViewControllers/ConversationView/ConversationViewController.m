@@ -245,7 +245,7 @@ typedef enum : NSUInteger {
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    OWSFailNoProdLog(@"Do not instantiate this view from coder");
+    OWSFail(@"Do not instantiate this view from coder");
 
     self = [super initWithCoder:aDecoder];
     if (!self) {
@@ -459,7 +459,7 @@ typedef enum : NSUInteger {
         self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
                                                                           view:TSMessageDatabaseViewExtensionName];
     } else {
-        OWSFailNoProdLog(@"uniqueId unexpectedly empty for thread: %@", thread);
+        OWSFail(@"uniqueId unexpectedly empty for thread: %@", thread);
         self.messageMappings =
             [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
         return;
@@ -750,14 +750,14 @@ typedef enum : NSUInteger {
     if (!self.dynamicInteractions.focusMessagePosition) {
         // This might happen if the focus message has disappeared
         // before this view could appear.
-        OWSFailNoProdLog(@"%@ focus message has unknown position.", self.logTag);
+        OWSFail(@"%@ focus message has unknown position.", self.logTag);
         return nil;
     }
     NSUInteger focusMessagePosition = self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue;
     if (focusMessagePosition >= self.viewItems.count) {
         // This might happen if the focus message is outside the maximum
         // valid load window size for this view.
-        OWSFailNoProdLog(@"%@ focus message has invalid position.", self.logTag);
+        OWSFail(@"%@ focus message has invalid position.", self.logTag);
         return nil;
     }
     NSInteger row = (NSInteger)((self.viewItems.count - 1) - focusMessagePosition);
@@ -1953,7 +1953,7 @@ typedef enum : NSUInteger {
     OWSAssert(call);
 
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailNoProdLog(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -2104,7 +2104,7 @@ typedef enum : NSUInteger {
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailNoProdLog(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -2144,11 +2144,11 @@ typedef enum : NSUInteger {
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFailNoProdLog(@"%@ Contact editing not supported", self.logTag);
+        OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailNoProdLog(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -2168,7 +2168,7 @@ typedef enum : NSUInteger {
 {
     // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailNoProdLog(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -2210,7 +2210,7 @@ typedef enum : NSUInteger {
     }
 
     if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
-        OWSFailNoProdLog(@"Unexpected viewItem.interaction");
+        OWSFail(@"Unexpected viewItem.interaction");
         return;
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
@@ -2239,7 +2239,7 @@ typedef enum : NSUInteger {
     }
 
     if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
-        OWSFailNoProdLog(@"Unexpected viewItem.interaction");
+        OWSFail(@"Unexpected viewItem.interaction");
         return;
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
@@ -2260,7 +2260,7 @@ typedef enum : NSUInteger {
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[attachmentStream.mediaURL path]]) {
-        OWSFailNoProdLog(@"%@ Missing video file: %@", self.logTag, attachmentStream.mediaURL);
+        OWSFail(@"%@ Missing video file: %@", self.logTag, attachmentStream.mediaURL);
     }
 
     [self dismissKeyBoard];
@@ -2356,7 +2356,7 @@ typedef enum : NSUInteger {
 
     TSMessage *message = (TSMessage *)viewItem.interaction;
     if (![message isKindOfClass:[TSMessage class]]) {
-        OWSFailNoProdLog(@"%@ in %s message had unexpected class: %@", self.logTag, __PRETTY_FUNCTION__, message.class);
+        OWSFail(@"%@ in %s message had unexpected class: %@", self.logTag, __PRETTY_FUNCTION__, message.class);
         return;
     }
 
@@ -2424,7 +2424,7 @@ typedef enum : NSUInteger {
         YapDatabaseAutoViewTransaction *_Nullable extension =
             [transaction extension:TSMessageDatabaseViewExtensionName];
         if (!extension) {
-            OWSFailNoProdLog(@"%@ Couldn't load view.", self.logTag);
+            OWSFail(@"%@ Couldn't load view.", self.logTag);
             return;
         }
 
@@ -2500,7 +2500,7 @@ typedef enum : NSUInteger {
 
     YapDatabaseAutoViewTransaction *_Nullable extension = [transaction extension:TSMessageDatabaseViewExtensionName];
     if (!extension) {
-        OWSFailNoProdLog(@"%@ Couldn't load view.", self.logTag);
+        OWSFail(@"%@ Couldn't load view.", self.logTag);
         return nil;
     }
 
@@ -2539,7 +2539,7 @@ typedef enum : NSUInteger {
     }];
 
     if (![quotedReply isKindOfClass:[OWSQuotedReplyModel class]]) {
-        OWSFailNoProdLog(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReply.class);
+        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReply.class);
         return;
     }
 
@@ -2854,11 +2854,11 @@ typedef enum : NSUInteger {
     NSError *typeError;
     [url getResourceValue:&type forKey:NSURLTypeIdentifierKey error:&typeError];
     if (typeError) {
-        OWSFailNoProdLog(
+        OWSFail(
             @"%@ Determining type of picked document at url: %@ failed with error: %@", self.logTag, url, typeError);
     }
     if (!type) {
-        OWSFailNoProdLog(@"%@ falling back to default filetype for picked document at url: %@", self.logTag, url);
+        OWSFail(@"%@ falling back to default filetype for picked document at url: %@", self.logTag, url);
         type = (__bridge NSString *)kUTTypeData;
     }
 
@@ -2866,7 +2866,7 @@ typedef enum : NSUInteger {
     NSError *isDirectoryError;
     [url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&isDirectoryError];
     if (isDirectoryError) {
-        OWSFailNoProdLog(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
+        OWSFail(@"%@ Determining if picked document at url: %@ was a directory failed with error: %@",
             self.logTag,
             url,
             isDirectoryError);
@@ -2887,7 +2887,7 @@ typedef enum : NSUInteger {
 
     NSString *filename = url.lastPathComponent;
     if (!filename) {
-        OWSFailNoProdLog(@"%@ Unable to determine filename from url: %@", self.logTag, url);
+        OWSFail(@"%@ Unable to determine filename from url: %@", self.logTag, url);
         filename = NSLocalizedString(
             @"ATTACHMENT_DEFAULT_FILENAME", @"Generic filename for an attachment with no known name");
     }
@@ -2896,7 +2896,7 @@ typedef enum : NSUInteger {
     OWSAssert(filename);
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
     if (!dataSource) {
-        OWSFailNoProdLog(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.logTag, url);
+        OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.logTag, url);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
@@ -3021,7 +3021,7 @@ typedef enum : NSUInteger {
     [assetslibrary assetForURL:referenceURL
                    resultBlock:resultblock
                   failureBlock:^(NSError *error) {
-                      OWSFailNoProdLog(@"Error retrieving filename for asset: %@", error);
+                      OWSFail(@"Error retrieving filename for asset: %@", error);
                   }];
 }
 
@@ -3296,7 +3296,7 @@ typedef enum : NSUInteger {
                 if (updatedThread) {
                     self.thread = updatedThread;
                 } else {
-                    OWSFailNoProdLog(@"%@ Could not reload thread.", self.logTag);
+                    OWSFail(@"%@ Could not reload thread.", self.logTag);
                 }
             }
         }];
@@ -3621,7 +3621,7 @@ typedef enum : NSUInteger {
     // Setup audio session
     BOOL configuredAudio = [OWSAudioSession.shared startRecordingAudioActivity:self.voiceNoteAudioActivity];
     if (!configuredAudio) {
-        OWSFailNoProdLog(@"%@ Couldn't configure audio session", self.logTag);
+        OWSFail(@"%@ Couldn't configure audio session", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
@@ -3637,7 +3637,7 @@ typedef enum : NSUInteger {
                                                      }
                                                         error:&error];
     if (error) {
-        OWSFailNoProdLog(@"%@ Couldn't create audioRecorder: %@", self.logTag, error);
+        OWSFail(@"%@ Couldn't create audioRecorder: %@", self.logTag, error);
         [self cancelVoiceMemo];
         return;
     }
@@ -3645,13 +3645,13 @@ typedef enum : NSUInteger {
     self.audioRecorder.meteringEnabled = YES;
 
     if (![self.audioRecorder prepareToRecord]) {
-        OWSFailNoProdLog(@"%@ audioRecorder couldn't prepareToRecord.", self.logTag);
+        OWSFail(@"%@ audioRecorder couldn't prepareToRecord.", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
 
     if (![self.audioRecorder record]) {
-        OWSFailNoProdLog(@"%@ audioRecorder couldn't record.", self.logTag);
+        OWSFail(@"%@ audioRecorder couldn't record.", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
@@ -3698,7 +3698,7 @@ typedef enum : NSUInteger {
     self.audioRecorder = nil;
 
     if (!dataSource) {
-        OWSFailNoProdLog(@"%@ Couldn't load audioRecorder data", self.logTag);
+        OWSFail(@"%@ Couldn't load audioRecorder data", self.logTag);
         self.audioRecorder = nil;
         return;
     }
@@ -4166,13 +4166,13 @@ typedef enum : NSUInteger {
 
     NSValue *_Nullable keyboardBeginFrameValue = userInfo[UIKeyboardFrameBeginUserInfoKey];
     if (!keyboardBeginFrameValue) {
-        OWSFailNoProdLog(@"%@ Missing keyboard begin frame", self.logTag);
+        OWSFail(@"%@ Missing keyboard begin frame", self.logTag);
         return;
     }
 
     NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
     if (!keyboardEndFrameValue) {
-        OWSFailNoProdLog(@"%@ Missing keyboard end frame", self.logTag);
+        OWSFail(@"%@ Missing keyboard end frame", self.logTag);
         return;
     }
     CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
@@ -4771,7 +4771,7 @@ typedef enum : NSUInteger {
                       BOOL *stop) {
              
              if (![object isKindOfClass:[TSInteraction class]]) {
-                 OWSFailNoProdLog(@"Expected a TSInteraction: %@", [object class]);
+                 OWSFail(@"Expected a TSInteraction: %@", [object class]);
                  return;
              }
              
@@ -4854,16 +4854,19 @@ typedef enum : NSUInteger {
             TSInteraction *interaction =
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
             if (!interaction) {
-                OWSFailNoProdLog(@"%@ missing interaction in message mappings: %zd / %zd.", self.logTag, row, count);
+                OWSFail(@"%@ missing interaction in message mappings: %lu / %lu.",
+                    self.logTag,
+                    (unsigned long)row,
+                    (unsigned long)count);
                 // TODO: Add analytics.
                 continue;
             }
             if (!interaction.uniqueId) {
-                OWSFailNoProdLog(@"%@ invalid interaction in message mappings: %zd / %zd: %@.",
+                OWSFail(@"%@ invalid interaction in message mappings: %lu / %lu: %@.",
                     self.logTag,
-                    row,
-                    count,
-                    interaction.description);
+                    (unsigned long)row,
+                    (unsigned long)count,
+                    interaction);
                 // TODO: Add analytics.
                 continue;
             }
@@ -5127,7 +5130,7 @@ typedef enum : NSUInteger {
         TSInteraction *_Nullable interaction =
             [TSInteraction fetchObjectWithUniqueID:viewItem.interaction.uniqueId transaction:transaction];
         if (!interaction) {
-            OWSFailNoProdLog(@"%@ could not reload interaction", self.logTag);
+            OWSFail(@"%@ could not reload interaction", self.logTag);
         } else {
             [viewItem replaceInteraction:interaction transaction:transaction];
         }
@@ -5137,7 +5140,7 @@ typedef enum : NSUInteger {
 - (nullable ConversationViewItem *)viewItemForIndex:(NSInteger)index
 {
     if (index < 0 || index >= (NSInteger)self.viewItems.count) {
-        OWSFailNoProdLog(@"%@ Invalid view item index: %zd", self.logTag, index);
+        OWSFail(@"%@ Invalid view item index: %lu", self.logTag, (unsigned long)index);
         return nil;
     }
     return self.viewItems[(NSUInteger)index];
@@ -5156,7 +5159,7 @@ typedef enum : NSUInteger {
     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:indexPath.row];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
     if (!cell) {
-        OWSFailNoProdLog(@"%@ Could not dequeue cell.", self.logTag);
+        OWSFail(@"%@ Could not dequeue cell.", self.logTag);
         return cell;
     }
     cell.viewItem = viewItem;
@@ -5216,7 +5219,7 @@ typedef enum : NSUInteger {
 
     CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     if (!cnContact) {
-        OWSFailNoProdLog(@"%@ Could not load system contact.", self.logTag);
+        OWSFail(@"%@ Could not load system contact.", self.logTag);
         return;
     }
 
@@ -5224,7 +5227,7 @@ typedef enum : NSUInteger {
 
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
     if (!contactShareRecord) {
-        OWSFailNoProdLog(@"%@ Could not convert system contact.", self.logTag);
+        OWSFail(@"%@ Could not convert system contact.", self.logTag);
         return;
     }
 
@@ -5255,7 +5258,7 @@ typedef enum : NSUInteger {
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
 {
-    OWSFailNoProdLog(@"%@ in %s with contacts: %@", self.logTag, __PRETTY_FUNCTION__, contacts);
+    OWSFail(@"%@ in %s with contacts: %@", self.logTag, __PRETTY_FUNCTION__, contacts);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

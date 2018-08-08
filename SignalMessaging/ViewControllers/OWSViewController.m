@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
     if (!keyboardEndFrameValue) {
-        OWSFailNoProdLog(@"%@ Missing keyboard end frame", self.logTag);
+        OWSFail(@"%@ Missing keyboard end frame", self.logTag);
         return;
     }
 

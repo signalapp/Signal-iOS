@@ -281,7 +281,7 @@ typedef void (^SystemMessageActionBlock)(void);
                     areDisappearingMessagesEnabled
                         = ((OWSDisappearingConfigurationUpdateInfoMessage *)interaction).configurationIsEnabled;
                 } else {
-                    OWSFailNoProdLog(@"%@ unexpected interaction type: %@", self.logTag, interaction.class);
+                    OWSFail(@"%@ unexpected interaction type: %@", self.logTag, interaction.class);
                 }
                 result = (areDisappearingMessagesEnabled
                         ? [UIImage imageNamed:@"system_message_disappearing_messages"]
@@ -303,7 +303,7 @@ typedef void (^SystemMessageActionBlock)(void);
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [UIImage imageNamed:@"system_message_call"];
     } else {
-        OWSFailNoProdLog(@"Unknown interaction type: %@", [interaction class]);
+        OWSFail(@"Unknown interaction type: %@", [interaction class]);
         return nil;
     }
     OWSAssert(result);
@@ -355,7 +355,7 @@ typedef void (^SystemMessageActionBlock)(void);
         TSCall *call = (TSCall *)interaction;
         label.text = [call previewTextWithTransaction:transaction];
     } else {
-        OWSFailNoProdLog(@"Unknown interaction type: %@", [interaction class]);
+        OWSFail(@"Unknown interaction type: %@", [interaction class]);
         label.text = nil;
     }
 }
@@ -437,7 +437,7 @@ typedef void (^SystemMessageActionBlock)(void);
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         return [self actionForCall:(TSCall *)interaction];
     } else {
-        OWSFailNoProdLog(@"Tap for system messages of unknown type: %@", [interaction class]);
+        OWSFail(@"Tap for system messages of unknown type: %@", [interaction class]);
         return nil;
     }
 }
@@ -477,7 +477,7 @@ typedef void (^SystemMessageActionBlock)(void);
         case TSErrorMessageInvalidVersion:
             return nil;
         case TSErrorMessageUnknownContactBlockOffer:
-            OWSFailNoProdLog(@"TSErrorMessageUnknownContactBlockOffer");
+            OWSFail(@"TSErrorMessageUnknownContactBlockOffer");
             return nil;
         case TSErrorMessageGroupCreationFailed:
             return [SystemMessageAction actionWithTitle:CommonStrings.retryButton
@@ -504,15 +504,15 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSInfoMessageAddToContactsOffer:
             // Unused.
-            OWSFailNoProdLog(@"TSInfoMessageAddToContactsOffer");
+            OWSFail(@"TSInfoMessageAddToContactsOffer");
             return nil;
         case TSInfoMessageAddUserToProfileWhitelistOffer:
             // Unused.
-            OWSFailNoProdLog(@"TSInfoMessageAddUserToProfileWhitelistOffer");
+            OWSFail(@"TSInfoMessageAddUserToProfileWhitelistOffer");
             return nil;
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
             // Unused.
-            OWSFailNoProdLog(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
+            OWSFail(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
             return nil;
         case TSInfoMessageTypeGroupUpdate:
             return nil;
@@ -600,7 +600,7 @@ typedef void (^SystemMessageActionBlock)(void);
 - (void)buttonWasPressed:(id)sender
 {
     if (!self.action.block) {
-        OWSFailNoProdLog(@"%@ Missing action", self.logTag);
+        OWSFail(@"%@ Missing action", self.logTag);
     } else {
         self.action.block();
     }

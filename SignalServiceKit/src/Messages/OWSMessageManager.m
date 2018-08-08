@@ -179,9 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ handling decrypted envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
 
     if (!envelope.source.isValidE164) {
-        DDLogVerbose(
-            @"%@ incoming envelope has invalid source: %@", self.logTag, [self descriptionForEnvelope:envelope]);
-        OWSFailNoProdLog(@"%@ incoming envelope has invalid source", self.logTag);
+        OWSFail(@"%@ incoming envelope has invalid source", self.logTag);
         return;
     }
 
@@ -194,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (plaintextData) {
                 [self handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
             } else {
-                OWSFailNoProdLog(
+                OWSFail(
                     @"%@ missing decrypted data for envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
             }
             break;
@@ -298,7 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
         if (error || !contentProto) {
-            OWSFailNoProdLog(@"%@ could not parse proto: %@", self.logTag, error);
+            OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
             return;
         }
         DDLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:contentProto]);
@@ -324,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoDataMessage *_Nullable dataMessageProto = [SSKProtoDataMessage parseData:plaintextData error:&error];
         if (error || !dataMessageProto) {
-            OWSFailNoProdLog(@"%@ could not parse proto: %@", self.logTag, error);
+            OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
             return;
         }
         DDLogInfo(@"%@ handling message: <DataMessage: %@ />",
@@ -364,7 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (profileKey.length == kAES256_KeyByteLength) {
             [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
         } else {
-            OWSFailNoProdLog(
+            OWSFail(
                 @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
         }
     }
@@ -516,7 +514,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupThread *_Nullable groupThread =
         [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
     if (!groupThread) {
-        OWSFailNoProdLog(@"%@ Missing group for group avatar update", self.logTag);
+        OWSFail(@"%@ Missing group for group avatar update", self.logTag);
         return;
     }
 
@@ -553,7 +551,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailNoProdLog(@"%@ ignoring media message for unknown group.", self.logTag);
+        OWSFail(@"%@ ignoring media message for unknown group.", self.logTag);
         return;
     }
 
@@ -634,7 +632,7 @@ NS_ASSUME_NONNULL_BEGIN
                     TSGroupThread *_Nullable groupThread =
                         [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
                     if (!groupThread) {
-                        OWSFailNoProdLog(@"%@ ignoring sync group avatar update for unknown group.", self.logTag);
+                        OWSFail(@"%@ ignoring sync group avatar update for unknown group.", self.logTag);
                         return;
                     }
 
@@ -666,7 +664,7 @@ NS_ASSUME_NONNULL_BEGIN
                     syncData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
                 }];
                 if (!syncData) {
-                    OWSFailNoProdLog(@"%@ Failed to serialize contacts sync message.", self.logTag);
+                    OWSFail(@"%@ Failed to serialize contacts sync message.", self.logTag);
                     return;
                 }
                 DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
@@ -685,7 +683,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             if (!syncData) {
-                OWSFailNoProdLog(@"%@ Failed to serialize groups sync message.", self.logTag);
+                OWSFail(@"%@ Failed to serialize groups sync message.", self.logTag);
                 return;
             }
             DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
@@ -762,7 +760,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailNoProdLog(@"%@ ignoring expiring messages update for unknown group.", self.logTag);
+        OWSFail(@"%@ ignoring expiring messages update for unknown group.", self.logTag);
         return;
     }
 
@@ -803,13 +801,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *recipientId = envelope.source;
     if (!dataMessage.hasProfileKey) {
-        OWSFailNoProdLog(
+        OWSFail(
             @"%@ received profile key message without profile key from: %@", self.logTag, envelopeAddress(envelope));
         return;
     }
     NSData *profileKey = dataMessage.profileKey;
     if (profileKey.length != kAES256_KeyByteLength) {
-        OWSFailNoProdLog(@"%@ received profile key of unexpected length:%lu from:%@",
+        OWSFail(@"%@ received profile key of unexpected length:%lu from:%@",
             self.logTag,
             (unsigned long)profileKey.length,
             envelopeAddress(envelope));
@@ -871,7 +869,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
     if (!groupId) {
-        OWSFailNoProdLog(@"Group info request is missing group id.");
+        OWSFail(@"Group info request is missing group id.");
         return;
     }
 
@@ -942,7 +940,7 @@ NS_ASSUME_NONNULL_BEGIN
                 DDLogVerbose(@"%@ incoming group update has invalid group member: %@",
                     self.logTag,
                     [self descriptionForEnvelope:envelope]);
-                OWSFailNoProdLog(@"%@ incoming group update has invalid group member", self.logTag);
+                OWSFail(@"%@ incoming group update has invalid group member", self.logTag);
                 return nil;
             }
         }
@@ -1012,7 +1010,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case SSKProtoGroupContextTypeDeliver: {
                 if (!oldGroupThread) {
-                    OWSFailNoProdLog(@"%@ ignoring deliver group message from unknown group.", self.logTag);
+                    OWSFail(@"%@ ignoring deliver group message from unknown group.", self.logTag);
                     return nil;
                 }
 
@@ -1109,11 +1107,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([TSAccountManager isRegistered]);
 
     if (!thread) {
-        OWSFailNoProdLog(@"%@ Can't finalize without thread", self.logTag);
+        OWSFail(@"%@ Can't finalize without thread", self.logTag);
         return;
     }
     if (!incomingMessage) {
-        OWSFailNoProdLog(@"%@ Can't finalize missing message", self.logTag);
+        OWSFail(@"%@ Can't finalize missing message", self.logTag);
         return;
     }
 
@@ -1163,7 +1161,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSAttachmentPointer fetchObjectWithUniqueID:contact.avatarAttachmentId transaction:transaction];
 
         if (![attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSFailNoProdLog(@"%@ in %s avatar attachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s avatar attachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         } else {
             OWSAttachmentsProcessor *attachmentProcessor =
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer

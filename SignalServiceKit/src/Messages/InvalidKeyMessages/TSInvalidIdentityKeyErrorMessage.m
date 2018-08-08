@@ -10,18 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)acceptNewIdentityKey
 {
-    OWSFailNoProdLog(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWS_ABSTRACT_METHOD();
 }
 
 - (nullable NSData *)newIdentityKey
 {
-    OWSFailNoProdLog(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWS_ABSTRACT_METHOD();
     return nil;
 }
 
 - (NSString *)theirSignalId
 {
-    OWSFailNoProdLog(@"Method needs to be implemented in subclasses of TSInvalidIdentityKeyErrorMessage.");
+    OWS_ABSTRACT_METHOD();
     return nil;
 }
 

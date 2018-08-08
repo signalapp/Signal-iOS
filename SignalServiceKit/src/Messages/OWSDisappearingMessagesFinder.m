@@ -55,10 +55,10 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         enumerateKeysAndObjectsMatchingQuery:query
                                   usingBlock:^void(NSString *collection, NSString *key, id object, BOOL *stop) {
                                       if (![object isKindOfClass:[TSMessage class]]) {
-                                          OWSFailNoProdLog(@"%@ in %s object was unexpected class: %@",
+                                          OWSFail(@"%@ in %s object was unexpected class: %@",
                                               self.logTag,
                                               __PRETTY_FUNCTION__,
-                                              object);
+                                              [object class]);
                                           return;
                                       }
                                       

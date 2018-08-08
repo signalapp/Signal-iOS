@@ -213,7 +213,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         size_t dstBufferLength = srcLength + 64 * 1024;
         NSMutableData *dstBufferData = [NSMutableData dataWithLength:dstBufferLength];
         if (!dstBufferData) {
-            OWSFailNoProdLog(@"%@ Failed to allocate buffer.", self.logTag);
+            OWSFail(@"%@ Failed to allocate buffer.", self.logTag);
             return nil;
         }
 
@@ -248,7 +248,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         size_t dstBufferLength = uncompressedDataLength + 1024;
         NSMutableData *dstBufferData = [NSMutableData dataWithLength:dstBufferLength];
         if (!dstBufferData) {
-            OWSFailNoProdLog(@"%@ Failed to allocate buffer.", self.logTag);
+            OWSFail(@"%@ Failed to allocate buffer.", self.logTag);
             return nil;
         }
 

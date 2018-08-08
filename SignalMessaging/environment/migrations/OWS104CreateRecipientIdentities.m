@@ -34,7 +34,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
         enumerateKeysAndObjectsInCollection:OWSPrimaryStorageTrustedKeysCollection
                                  usingBlock:^(NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {
                                      if (![object isKindOfClass:[NSData class]]) {
-                                         OWSFailNoProdLog(@"%@ Unexpected object in trusted keys collection key: %@ object: %@",
+                                         OWSFail(@"%@ Unexpected object in trusted keys collection key: %@ object: %@",
                                              self.logTag,
                                              recipientId,
                                              object);

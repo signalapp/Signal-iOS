@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)statusBarHeight
 {
-    OWSFailNoProdLog(@"%@ in %s unexpected for share extension", self.logTag, __PRETTY_FUNCTION__);
+    OWSFail(@"%@ in %s unexpected for share extension", self.logTag, __PRETTY_FUNCTION__);
     return 20;
 }
 
@@ -177,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
-    OWSFailNoProdLog(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
 - (nullable UIViewController *)frontmostViewController
@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
 {
-    OWSFailNoProdLog(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
 - (BOOL)isRunningTests
@@ -205,7 +205,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
-    OWSFailNoProdLog(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
 }
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block

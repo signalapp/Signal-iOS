@@ -325,7 +325,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
     if (recipientIdentity == nil) {
-        OWSFailNoProdLog(@"Missing expected identity: %@", recipientId);
+        OWSFail(@"Missing expected identity: %@", recipientId);
         return;
     }
 
@@ -457,7 +457,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
             return YES;
         } else {
-            OWSFailNoProdLog(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
+            OWSFail(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
                 self.logTag,
                 identityKey,
                 localIdentityKeyPair.publicKey,
@@ -476,7 +476,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
         }
         default: {
-            OWSFailNoProdLog(@"%@ unexpected message direction: %ld", self.logTag, (long)direction);
+            OWSFail(@"%@ unexpected message direction: %ld", self.logTag, (long)direction);
             return NO;
         }
     }
@@ -592,11 +592,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         for (NSString *recipientId in recipientIds) {
             OWSRecipientIdentity *recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId];
             if (!recipientIdentity) {
-                OWSFailNoProdLog(@"Could not load recipient identity for recipientId: %@", recipientId);
+                OWSFail(@"Could not load recipient identity for recipientId: %@", recipientId);
                 continue;
             }
             if (recipientIdentity.recipientId.length < 1) {
-                OWSFailNoProdLog(@"Invalid recipient identity for recipientId: %@", recipientId);
+                OWSFail(@"Invalid recipient identity for recipientId: %@", recipientId);
                 continue;
             }
 
@@ -604,14 +604,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             // TODO we should just be storing the key type so we don't have to juggle re-adding it.
             NSData *identityKey = [recipientIdentity.identityKey prependKeyType];
             if (identityKey.length != kIdentityKeyLength) {
-                OWSFailNoProdLog(@"Invalid recipient identitykey for recipientId: %@ key: %@", recipientId, identityKey);
+                OWSFail(@"Invalid recipient identitykey for recipientId: %@ key: %@", recipientId, identityKey);
                 continue;
             }
             if (recipientIdentity.verificationState == OWSVerificationStateNoLongerVerified) {
                 // We don't want to sync "no longer verified" state.  Other clients can
                 // figure this out from the /profile/ endpoint, and this can cause data
                 // loss as a user's devices overwrite each other's verification.
-                OWSFailNoProdLog(@"Queue verification state had unexpected value: %@ recipientId: %@",
+                OWSFail(@"Queue verification state had unexpected value: %@ recipientId: %@",
                     OWSVerificationStateToString(recipientIdentity.verificationState),
                     recipientId);
                 continue;
@@ -688,12 +688,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     NSString *recipientId = verified.destination;
     if (recipientId.length < 1) {
-        OWSFailNoProdLog(@"Verification state sync message missing recipientId.");
+        OWSFail(@"Verification state sync message missing recipientId.");
         return;
     }
     NSData *rawIdentityKey = verified.identityKey;
     if (rawIdentityKey.length != kIdentityKeyLength) {
-        OWSFailNoProdLog(@"Verification state sync message for recipient: %@ with malformed identityKey: %@",
+        OWSFail(@"Verification state sync message for recipient: %@ with malformed identityKey: %@",
             recipientId,
             rawIdentityKey);
         return;
@@ -716,7 +716,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                  transaction:transaction];
             break;
         case SSKProtoVerifiedStateUnverified:
-            OWSFailNoProdLog(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
+            OWSFail(@"Verification state sync message for recipientId: %@ has unexpected value: %@.",
                 recipientId,
                 OWSVerificationStateToString(OWSVerificationStateNoLongerVerified));
             return;
@@ -735,12 +735,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(transaction);
 
     if (recipientId.length < 1) {
-        OWSFailNoProdLog(@"Verification state sync message missing recipientId.");
+        OWSFail(@"Verification state sync message missing recipientId.");
         return;
     }
 
     if (identityKey.length != kStoredIdentityKeyLength) {
-        OWSFailNoProdLog(@"Verification state sync message missing identityKey: %@", recipientId);
+        OWSFail(@"Verification state sync message missing identityKey: %@", recipientId);
         return;
     }
     
@@ -764,17 +764,17 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                               transaction:transaction];
         
         if (recipientIdentity == nil) {
-            OWSFailNoProdLog(@"Missing expected identity: %@", recipientId);
+            OWSFail(@"Missing expected identity: %@", recipientId);
             return;
         }
         
         if (![recipientIdentity.recipientId isEqualToString:recipientId]) {
-            OWSFailNoProdLog(@"recipientIdentity has unexpected recipientId: %@", recipientId);
+            OWSFail(@"recipientIdentity has unexpected recipientId: %@", recipientId);
             return;
         }
         
         if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-            OWSFailNoProdLog(@"recipientIdentity has unexpected identityKey: %@", recipientId);
+            OWSFail(@"recipientIdentity has unexpected identityKey: %@", recipientId);
             return;
         }
         
@@ -797,7 +797,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         // There's an existing recipient identity for this recipient.
         // We should update it.
         if (![recipientIdentity.recipientId isEqualToString:recipientId]) {
-            OWSFailNoProdLog(@"recipientIdentity has unexpected recipientId: %@", recipientId);
+            OWSFail(@"recipientIdentity has unexpected recipientId: %@", recipientId);
             return;
         }
         
@@ -817,17 +817,17 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                   transaction:transaction];
             
             if (recipientIdentity == nil) {
-                OWSFailNoProdLog(@"Missing expected identity: %@", recipientId);
+                OWSFail(@"Missing expected identity: %@", recipientId);
                 return;
             }
             
             if (![recipientIdentity.recipientId isEqualToString:recipientId]) {
-                OWSFailNoProdLog(@"recipientIdentity has unexpected recipientId: %@", recipientId);
+                OWSFail(@"recipientIdentity has unexpected recipientId: %@", recipientId);
                 return;
             }
             
             if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-                OWSFailNoProdLog(@"recipientIdentity has unexpected identityKey: %@", recipientId);
+                OWSFail(@"recipientIdentity has unexpected identityKey: %@", recipientId);
                 return;
             }
         }

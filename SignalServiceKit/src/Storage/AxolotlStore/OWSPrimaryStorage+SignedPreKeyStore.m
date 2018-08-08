@@ -173,9 +173,9 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
                                          NSString *_Nonnull key, id _Nonnull signedPreKeyObject, BOOL *_Nonnull stop) {
                                          i++;
                                          if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
-                                             OWSFailNoProdLog(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
+                                             OWSFail(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
                                                  tag,
-                                                 signedPreKeyObject);
+                                                 [signedPreKeyObject class]);
                                              return;
                                          }
                                          SignedPreKeyRecord *signedPreKeyRecord

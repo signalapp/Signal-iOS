@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
     if (!receiptMessage) {
-        OWSFailNoProdLog(@"%@ could not build protobuf.", self.logTag);
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
         return nil;
     }
 
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contentData) {
-        OWSFailNoProdLog(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return nil;
     }
     return contentData;
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoReceiptMessage *_Nullable receiptMessage = [builder buildAndReturnError:&error];
     if (error || !receiptMessage) {
-        OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
     return receiptMessage;

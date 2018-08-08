@@ -506,7 +506,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     WebSocketProtoWebSocketRequestMessage *_Nullable requestProto = [requestBuilder buildAndReturnError:&error];
     if (!requestProto || error) {
-        OWSFailNoProdLog(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
         return;
     }
 
@@ -701,7 +701,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     WebSocketProtoWebSocketMessage *_Nullable wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
     if (!wsMessage || error) {
-        OWSFailNoProdLog(@"%@ could not parse proto: %@", self.logTag, error);
+        OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
         return;
     }
 
@@ -784,7 +784,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     [responseBuilder setMessage:@"OK"];
     WebSocketProtoWebSocketResponseMessage *_Nullable response = [responseBuilder buildAndReturnError:&error];
     if (!response || error) {
-        OWSFailNoProdLog(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
         return;
     }
 
@@ -794,7 +794,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
-        OWSFailNoProdLog(@"%@ could not serialize proto: %@", self.logTag, error);
+        OWSFail(@"%@ could not serialize proto: %@", self.logTag, error);
         return;
     }
 

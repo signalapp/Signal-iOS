@@ -254,17 +254,17 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     if (!self.viewItem.isGroupThread) {
-        OWSFailNoProdLog(@"%@ not a group thread.", self.logTag);
+        OWSFail(@"%@ not a group thread.", self.logTag);
         return NO;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        OWSFailNoProdLog(@"%@ not an incoming message.", self.logTag);
+        OWSFail(@"%@ not an incoming message.", self.logTag);
         return NO;
     }
 
     OWSContactsManager *contactsManager = self.delegate.contactsManager;
     if (contactsManager == nil) {
-        OWSFailNoProdLog(@"%@ contactsManager should not be nil", self.logTag);
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
         return NO;
     }
 
@@ -297,11 +297,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!self.viewItem.isGroupThread) {
-        OWSFailNoProdLog(@"%@ not a group thread.", self.logTag);
+        OWSFail(@"%@ not a group thread.", self.logTag);
         return;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        OWSFailNoProdLog(@"%@ not an incoming message.", self.logTag);
+        OWSFail(@"%@ not an incoming message.", self.logTag);
         return;
     }
 

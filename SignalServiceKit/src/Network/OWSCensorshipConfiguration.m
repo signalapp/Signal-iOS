@@ -140,7 +140,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     } else if ([domain isEqualToString:OWSCensorshipConfiguration_YahooViewFrontingHost]) {
         return [self yahooViewPinningPolicy];
     } else {
-        OWSFailNoProdLog(@"unknown pinning domain.");
+        OWSFail(@"unknown pinning domain.");
         return [self yahooViewPinningPolicy];
     }
 }
@@ -186,12 +186,12 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     NSData *_Nullable certData = [NSData dataWithContentsOfFile:path options:0 error:error];
 
     if (*error != nil) {
-        OWSFailNoProdLog(@"%@ Failed to read cert file with path: %@", self.logTag, path);
+        OWSFail(@"%@ Failed to read cert file with path: %@", self.logTag, path);
         return nil;
     }
 
     if (certData.length == 0) {
-        OWSFailNoProdLog(@"%@ empty certData for name: %@", self.logTag, name);
+        OWSFail(@"%@ empty certData for name: %@", self.logTag, name);
         return nil;
     }
 

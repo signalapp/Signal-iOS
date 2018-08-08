@@ -75,7 +75,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
-    OWSFailNoProdLog(@"%@ subDevicesSessions is deprecated", self.logTag);
+    OWSFail(@"%@ subDevicesSessions is deprecated", self.logTag);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -183,7 +183,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     for (id deviceId in sessionRecords) {
         id object = sessionRecords[deviceId];
         if (![object isKindOfClass:[SessionRecord class]]) {
-            OWSFailNoProdLog(@"Unexpected object in session dict: %@", object);
+            OWSFail(@"Unexpected object in session dict: %@", [object class]);
             continue;
         }
 
@@ -218,8 +218,9 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                          id _Nonnull deviceSessionsObject,
                                          BOOL *_Nonnull stop) {
                                          if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
-                                             OWSFailNoProdLog(
-                                                 @"%@ Unexpected type: %@ in collection.", tag, deviceSessionsObject);
+                                             OWSFail(@"%@ Unexpected type: %@ in collection.",
+                                                 tag,
+                                                 [deviceSessionsObject class]);
                                              return;
                                          }
                                          NSDictionary *deviceSessions = (NSDictionary *)deviceSessionsObject;
@@ -228,9 +229,9 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                          [deviceSessions enumerateKeysAndObjectsUsingBlock:^(
                                              id _Nonnull key, id _Nonnull sessionRecordObject, BOOL *_Nonnull stop) {
                                              if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
-                                                 OWSFailNoProdLog(@"%@ Unexpected type: %@ in collection.",
+                                                 OWSFail(@"%@ Unexpected type: %@ in collection.",
                                                      tag,
-                                                     sessionRecordObject);
+                                                     [sessionRecordObject class]);
                                                  return;
                                              }
                                              SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;

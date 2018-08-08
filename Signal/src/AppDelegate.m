@@ -307,7 +307,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if (error) {
-        OWSFailNoProdLog(@"%@ database conversion failed: %@", self.logTag, error);
+        OWSFail(@"%@ database conversion failed: %@", self.logTag, error);
         [self showLaunchFailureUI:error];
         return NO;
     }
@@ -433,7 +433,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -446,7 +446,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -467,7 +467,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -483,7 +483,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return NO;
     }
 
@@ -512,10 +512,10 @@ static NSTimeInterval launchStartedAt;
                 }
             }
         } else {
-            OWSFailNoProdLog(@"Application opened with an unknown URL action: %@", url.host);
+            OWSFail(@"Application opened with an unknown URL action: %@", url.host);
         }
     } else {
-        OWSFailNoProdLog(@"Application opened with an unknown URL scheme: %@", url.scheme);
+        OWSFail(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
 }
@@ -524,7 +524,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -663,7 +663,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -688,7 +688,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -737,7 +737,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return NO;
     }
 
@@ -881,7 +881,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -895,7 +895,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -909,7 +909,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -927,7 +927,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -956,7 +956,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailNoProdLog(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 

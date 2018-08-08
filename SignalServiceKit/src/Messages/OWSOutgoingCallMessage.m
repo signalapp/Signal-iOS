@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
     if (error || !data) {
-        OWSFailNoProdLog(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return nil;
     }
     return data;
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
     if (error || !result) {
-        OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
     return result;

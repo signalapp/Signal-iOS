@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoSyncMessageBlocked *_Nullable blockedProto = [blockedBuilder buildAndReturnError:&error];
     if (error || !blockedProto) {
-        OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
 

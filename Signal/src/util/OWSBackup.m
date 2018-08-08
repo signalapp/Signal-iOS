@@ -278,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (lastExportFailureDate) {
             backupExportState = OWSBackupState_Failed;
         } else {
-            OWSFailNoProdLog(@"%@ unexpected condition.", self.logTag);
+            OWSFail(@"%@ unexpected condition.", self.logTag);
         }
     }
 

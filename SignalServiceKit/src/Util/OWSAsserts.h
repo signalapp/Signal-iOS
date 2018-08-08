@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define CONVERT_TO_STRING(X) #X
 #define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
 
-// OWSAssert() and OWSFailNoProdLog() should be used in Obj-C methods.
+// OWSAssert() and OWSFail() should be used in Obj-C methods.
 // OWSCAssert() and OWSCFail() should be used in free functions.
 
 #define OWSAssert(X)                                                                                                   \
@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                              \
     }
 
+// In DEBUG we log regardless
 #define OWSFailNoProdLog(message, ...)                                                                                          \
     {                                                                                                                  \
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
@@ -75,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWS_ABSTRACT_METHOD() OWSFailNoProdLog(@"%@ Method needs to be implemented by subclasses.", self.logTag)
+#define OWS_ABSTRACT_METHOD() OWSFail(@"%@ Method needs to be implemented by subclasses.", self.logTag)
 
 #pragma mark - Singleton Asserts
 

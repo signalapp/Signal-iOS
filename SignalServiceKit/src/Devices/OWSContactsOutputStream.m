@@ -91,7 +91,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     NSError *error;
     NSData *_Nullable contactData = [contactBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contactData) {
-        OWSFailNoProdLog(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return;
     }
 

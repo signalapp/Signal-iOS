@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoSyncMessageRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
         if (error || !readProto) {
-            OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
             return nil;
         }
         [syncMessageBuilder addRead:readProto];

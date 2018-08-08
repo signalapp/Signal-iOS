@@ -69,12 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
                 success();
             } else {
-                OWSFailNoProdLog(@"Error write url response [%@]: %@", fileUrl, filePath);
+                OWSFail(@"Error write url response [%@]: %@", fileUrl, filePath);
                 failure();
             }
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-            OWSFailNoProdLog(@"Error downloading url[%@]: %@", fileUrl, requestError);
+            OWSFail(@"Error downloading url[%@]: %@", fileUrl, requestError);
             failure();
         }];
 }

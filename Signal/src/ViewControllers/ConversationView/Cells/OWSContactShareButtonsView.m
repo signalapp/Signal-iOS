@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
         label.text = NSLocalizedString(@"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
             @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");
     } else {
-        OWSFailNoProdLog(@"%@ unexpected button state.", self.logTag);
+        OWSFail(@"%@ unexpected button state.", self.logTag);
     }
     label.font = OWSContactShareButtonsView.buttonFont;
     label.textColor = UIColor.ows_materialBlueColor;
@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ([OWSContactShareButtonsView hasAddToContactsButton:self.contactShare]) {
         [self.delegate didTapShowAddToContactUIForContactShare:self.contactShare];
     } else {
-        OWSFailNoProdLog(@"%@ unexpected button tap.", self.logTag);
+        OWSFail(@"%@ unexpected button tap.", self.logTag);
     }
 
     return YES;

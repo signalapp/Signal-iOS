@@ -26,7 +26,7 @@ static NSString *const OWS101ExistingUsersBlockOnIdentityChangeMigrationId = @"1
 {
     OWSAssert(transaction);
 
-    OWSFailNoProdLog(@"[OWS101ExistingUsersBlockOnIdentityChange] has been obviated.");
+    OWSFail(@"[OWS101ExistingUsersBlockOnIdentityChange] has been obviated.");
 }
 
 @end

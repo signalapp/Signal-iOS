@@ -292,7 +292,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
         // and phone number state.
         NSString *_Nullable phoneNumberE164 = [TSAccountManager sharedInstance].reregisterationPhoneNumber;
         if (!phoneNumberE164) {
-            OWSFailNoProdLog(@"%@ Could not resume re-registration; missing phone number.", self.logTag);
+            OWSFail(@"%@ Could not resume re-registration; missing phone number.", self.logTag);
         } else if ([self tryToApplyPhoneNumberE164:phoneNumberE164]) {
             // Don't let user edit their phone number while re-registering.
             self.phoneNumberTextField.enabled = NO;
@@ -305,34 +305,34 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSAssert(phoneNumberE164);
 
     if (phoneNumberE164.length < 1) {
-        OWSFailNoProdLog(@"%@ Could not resume re-registration; invalid phoneNumberE164.", self.logTag);
+        OWSFail(@"%@ Could not resume re-registration; invalid phoneNumberE164.", self.logTag);
         return NO;
     }
     PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:phoneNumberE164];
     if (!parsedPhoneNumber) {
-        OWSFailNoProdLog(@"%@ Could not resume re-registration; couldn't parse phoneNumberE164.", self.logTag);
+        OWSFail(@"%@ Could not resume re-registration; couldn't parse phoneNumberE164.", self.logTag);
         return NO;
     }
     NSNumber *_Nullable callingCode = parsedPhoneNumber.getCountryCode;
     if (!callingCode) {
-        OWSFailNoProdLog(@"%@ Could not resume re-registration; missing callingCode.", self.logTag);
+        OWSFail(@"%@ Could not resume re-registration; missing callingCode.", self.logTag);
         return NO;
     }
     NSString *callingCodeText = [NSString stringWithFormat:@"+%d", callingCode.intValue];
     NSArray<NSString *> *_Nullable countryCodes =
         [PhoneNumberUtil.sharedThreadLocal countryCodesFromCallingCode:callingCodeText];
     if (countryCodes.count < 1) {
-        OWSFailNoProdLog(@"%@ Could not resume re-registration; unknown countryCode.", self.logTag);
+        OWSFail(@"%@ Could not resume re-registration; unknown countryCode.", self.logTag);
         return NO;
     }
     NSString *countryCode = countryCodes.firstObject;
     NSString *_Nullable countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     if (!countryName) {
-        OWSFailNoProdLog(@"%@ Could not resume re-registration; unknown countryName.", self.logTag);
+        OWSFail(@"%@ Could not resume re-registration; unknown countryName.", self.logTag);
         return NO;
     }
     if (![phoneNumberE164 hasPrefix:callingCodeText]) {
-        OWSFailNoProdLog(@"%@ Could not resume re-registration; non-matching calling code.", self.logTag);
+        OWSFail(@"%@ Could not resume re-registration; non-matching calling code.", self.logTag);
         return NO;
     }
     NSString *phoneNumberWithoutCallingCode = [phoneNumberE164 substringFromIndex:callingCodeText.length];

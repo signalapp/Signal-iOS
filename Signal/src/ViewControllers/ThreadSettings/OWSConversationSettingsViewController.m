@@ -929,11 +929,11 @@ const CGFloat kIconViewLength = 24;
 - (void)presentContactViewController
 {
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFailNoProdLog(@"%@ Contact editing not supported", self.logTag);
+        OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailNoProdLog(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -947,7 +947,7 @@ const CGFloat kIconViewLength = 24;
 {
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
-        OWSFailNoProdLog(@"%@ Contact editing not supported.", self.logTag);
+        OWSFail(@"%@ Contact editing not supported.", self.logTag);
         return;
     }
 
@@ -1022,7 +1022,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssert(!self.isGroupThread);
 
     if (![sender isKindOfClass:[UISwitch class]]) {
-        OWSFailNoProdLog(@"%@ Unexpected sender for block user switch: %@", self.logTag, sender);
+        OWSFail(@"%@ Unexpected sender for block user switch: %@", self.logTag, sender);
     }
     UISwitch *blockUserSwitch = (UISwitch *)sender;
 

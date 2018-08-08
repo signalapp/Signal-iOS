@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(image);
 
     if (image.size.width == 0 || image.size.height == 0) {
-        OWSFailNoProdLog(@"%@ Invalid image dimensions. %@", self.logTag, NSStringFromCGSize(image.size));
+        OWSFail(@"%@ Invalid image dimensions. %@", self.logTag, NSStringFromCGSize(image.size));
         return;
     }
 
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[self.attachmentUrl path]]) {
-        OWSFailNoProdLog(@"%@ Missing video file: %@", self.logTag, self.attachmentStream.mediaURL);
+        OWSFail(@"%@ Missing video file: %@", self.logTag, self.attachmentStream.mediaURL);
     }
 
     OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
@@ -335,7 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@: didPressShare", self.logTag);
     if (!self.viewItem) {
-        OWSFailNoProdLog(@"share should only be available when a viewItem is present");
+        OWSFail(@"share should only be available when a viewItem is present");
         return;
     }
 
@@ -346,7 +346,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@: didPressDelete", self.logTag);
     if (!self.viewItem) {
-        OWSFailNoProdLog(@"delete should only be available when a viewItem is present");
+        OWSFail(@"delete should only be available when a viewItem is present");
         return;
     }
 

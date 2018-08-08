@@ -54,14 +54,14 @@ NS_ASSUME_NONNULL_BEGIN
                 if ([subview isKindOfClass:[MTKView class]]) {
                     [subview autoPinEdgesToSuperviewEdges];
                 } else {
-                    OWSFailNoProdLog(@"New subviews added to MTLVideoView. Reconsider this hack.");
+                    OWSFail(@"New subviews added to MTLVideoView. Reconsider this hack.");
                 }
             }
         }
     }
 #elif defined(__arm64__)
     // Canary incase the upstream RTC_SUPPORTS_METAL macro changes semantics
-    OWSFailNoProdLog(@"should only use legacy video view on 32bit systems");
+    OWSFail(@"should only use legacy video view on 32bit systems");
 #endif
 
     // On 32-bit iOS9+ systems, use the legacy EAGL backed view.
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
     if (remoteVideoSize.height <= 0) {
-        OWSFailNoProdLog(@"Illegal video height: %f", remoteVideoSize.height);
+        OWSFail(@"Illegal video height: %f", remoteVideoSize.height);
         return;
     }
 
@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![self.videoRenderer isKindOfClass:[RTCEAGLVideoView class]]) {
-        OWSFailNoProdLog(@"%@ Unexpected video renderer: %@", self.logTag, self.videoRenderer);
+        OWSFail(@"%@ Unexpected video renderer: %@", self.logTag, self.videoRenderer);
         return;
     }
 

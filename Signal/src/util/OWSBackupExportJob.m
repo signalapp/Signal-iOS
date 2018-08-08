@@ -256,8 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
     if (![self.attachmentFilePath hasPrefix:attachmentsDirPath]) {
-        DDLogError(@"%@ attachment has unexpected path.", self.logTag);
-        OWSFailNoProdLog(@"%@ attachment has unexpected path: %@", self.logTag, self.attachmentFilePath);
+        OWSFail(@"%@ attachment has unexpected path: %@", self.logTag, self.attachmentFilePath);
         return NO;
     }
     NSString *relativeFilePath = [self.attachmentFilePath substringFromIndex:attachmentsDirPath.length];
@@ -269,8 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptFileAsTempFile:self.attachmentFilePath];
     if (!encryptedItem) {
-        DDLogError(@"%@ attachment could not be encrypted.", self.logTag);
-        OWSFailNoProdLog(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
+        OWSFail(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
         return NO;
     }
     self.encryptedItem = encryptedItem;

@@ -63,14 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSData *_Nullable plainTextProvisionMessage = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!plainTextProvisionMessage || error) {
-        OWSFailNoProdLog(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFail(@"%@ could not serialize proto: %@.", self.logTag, error);
         return nil;
     }
 
     OWSProvisioningCipher *cipher = [[OWSProvisioningCipher alloc] initWithTheirPublicKey:self.theirPublicKey];
     NSData *_Nullable encryptedProvisionMessage = [cipher encrypt:plainTextProvisionMessage];
     if (encryptedProvisionMessage == nil) {
-        OWSFailNoProdLog(@"Failed to encrypt provision message");
+        OWSFail(@"Failed to encrypt provision message");
         return nil;
     }
 
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
     if (!envelopeData || error) {
-        OWSFailNoProdLog(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFail(@"%@ could not serialize proto: %@.", self.logTag, error);
         return nil;
     }
 

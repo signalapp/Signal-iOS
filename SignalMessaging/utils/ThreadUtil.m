@@ -290,7 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
                               OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
                               [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
-                              OWSFailNoProdLog(@"Unexpected dynamic interaction type: %@", [object class]);
+                              OWSFail(@"Unexpected dynamic interaction type: %@", [object class]);
                           }
                       }];
 
@@ -534,7 +534,7 @@ NS_ASSUME_NONNULL_BEGIN
                   usingBlock:^(
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
                       if (![object isKindOfClass:[TSInteraction class]]) {
-                          OWSFailNoProdLog(@"Expected a TSInteraction: %@", [object class]);
+                          OWSFail(@"Expected a TSInteraction: %@", [object class]);
                           return;
                       }
 
@@ -590,7 +590,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
             if (newIdentityKey == nil) {
-                OWSFailNoProdLog(@"Safety number change was missing it's new identity key.");
+                OWSFail(@"Safety number change was missing it's new identity key.");
                 continue;
             }
 
@@ -634,16 +634,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (!success) {
         // This might happen if the focus message has disappeared
         // before this view could appear.
-        OWSFailNoProdLog(@"%@ failed to find focus message index.", self.logTag);
+        OWSFail(@"%@ failed to find focus message index.", self.logTag);
         return nil;
     }
     if (![group isEqualToString:thread.uniqueId]) {
-        OWSFailNoProdLog(@"%@ focus message has invalid group.", self.logTag);
+        OWSFail(@"%@ focus message has invalid group.", self.logTag);
         return nil;
     }
     NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
     if (index >= count) {
-        OWSFailNoProdLog(@"%@ focus message has invalid index.", self.logTag);
+        OWSFail(@"%@ focus message has invalid index.", self.logTag);
         return nil;
     }
     NSUInteger position = (count - index) - 1;
@@ -759,7 +759,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *localNumber = [TSAccountManager localNumber];
     if (localNumber.length < 1) {
-        OWSFailNoProdLog(@"%@ missing long number.", self.logTag);
+        OWSFail(@"%@ missing long number.", self.logTag);
         return nil;
     }
 

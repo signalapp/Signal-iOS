@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoAttachmentPointer *_Nullable attachmentProto =
         [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
     if (!attachmentProto) {
-        OWSFailNoProdLog(@"%@ could not build protobuf.", self.logTag);
+        OWSFail(@"%@ could not build protobuf.", self.logTag);
         return nil;
     }
 
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoSyncMessageGroups *_Nullable groupsProto = [groupsBuilder buildAndReturnError:&error];
     if (error || !groupsProto) {
-        OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream close];
 
     if (groupsOutputStream.hasError) {
-        OWSFailNoProdLog(@"%@ Could not write groups sync stream.", self.logTag);
+        OWSFail(@"%@ Could not write groups sync stream.", self.logTag);
         return nil;
     }
 

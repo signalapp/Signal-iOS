@@ -49,11 +49,11 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 {
     // Shouldn't really get here, since we're no longer creating blocking SN changes.
     // But there may still be some old unaccepted SN errors in the wild that need to be accepted.
-    OWSFailNoProdLog(@"accepting new identity key is deprecated.");
+    OWSFail(@"accepting new identity key is deprecated.");
 
     NSData *_Nullable newIdentityKey = self.newIdentityKey;
     if (!newIdentityKey) {
-        OWSFailNoProdLog(@"newIdentityKey is unexpectedly nil. Bad Prekey bundle?: %@", self.preKeyBundle);
+        OWSFail(@"newIdentityKey is unexpectedly nil. Bad Prekey bundle?: %@", self.preKeyBundle);
         return;
     }
 

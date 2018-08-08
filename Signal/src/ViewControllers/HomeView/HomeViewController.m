@@ -131,7 +131,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    OWSFailNoProdLog(@"Do not load this from the storyboard.");
+    OWSFail(@"Do not load this from the storyboard.");
 
     self = [super initWithCoder:aDecoder];
     if (!self) {
@@ -791,7 +791,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
     }
 
-    OWSFailNoProdLog(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
+    OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
     return 0;
 }
 
@@ -828,7 +828,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
     }
 
-    OWSFailNoProdLog(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
+    OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
     return [UITableViewCell new];
 }
 
@@ -1069,7 +1069,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
 {
     if (indexPath.section != HomeViewControllerSectionConversations) {
-        OWSFailNoProdLog(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
+        OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
         return;
     }
 
@@ -1125,7 +1125,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section != HomeViewControllerSectionConversations) {
-        OWSFailNoProdLog(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
+        OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
         return;
     }
 
@@ -1177,7 +1177,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
        focusMessageId:(nullable NSString *)focusMessageId
 {
     if (thread == nil) {
-        OWSFailNoProdLog(@"Thread unexpectedly nil");
+        OWSFail(@"Thread unexpectedly nil");
         return;
     }
 
