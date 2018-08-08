@@ -257,8 +257,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     self.view.backgroundColor = Theme.backgroundColor;
     self.tableView.backgroundColor = Theme.backgroundColor;
-    self.searchBar.backgroundColor = Theme.backgroundColor;
+    self.searchBar.backgroundColor = Theme.searchBarBackgroundColor;
+    self.searchBar.barTintColor = Theme.backgroundColor;
     self.searchBar.barStyle = Theme.barStyle;
+    self.searchBar.searchBarStyle = Theme.searchBarStyle;
 }
 
 #pragma mark - View Life Cycle
@@ -401,7 +403,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     UISearchBar *searchBar = [UISearchBar new];
     _searchBar = searchBar;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     searchBar.delegate = self;

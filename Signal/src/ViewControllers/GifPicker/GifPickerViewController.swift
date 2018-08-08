@@ -164,8 +164,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment: "Placeholder text for the search field in GIF view")
-        searchBar.backgroundColor = Theme.backgroundColor
+        searchBar.backgroundColor = Theme.searchBarBackgroundColor
         searchBar.barStyle = Theme.barStyle
+        searchBar.searchBarStyle = Theme.searchBarStyle
+        searchBar.barTintColor = Theme.backgroundColor
 
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
