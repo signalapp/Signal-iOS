@@ -180,9 +180,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)createViews
 {
-    UIColor *darkGrey = [UIColor colorWithRGBHex:0x404040];
-
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = Theme.backgroundColor;
 
     // Verify/Unverify Button
     UIView *verifyUnverifyButton = [UIView new];
@@ -241,7 +239,7 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *instructionsLabel = [UILabel new];
     instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
     instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
-    instructionsLabel.textColor = darkGrey;
+    instructionsLabel.textColor = Theme.secondaryColor;
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.numberOfLines = 0;
     instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -253,7 +251,7 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *fingerprintLabel = [UILabel new];
     fingerprintLabel.text = self.fingerprint.displayableText;
     fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:ScaleFromIPhone5To7Plus(20.f, 23.f)];
-    fingerprintLabel.textColor = darkGrey;
+    fingerprintLabel.textColor = Theme.secondaryColor;
     fingerprintLabel.numberOfLines = 3;
     fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fingerprintLabel.adjustsFontSizeToFitWidth = YES;
@@ -283,7 +281,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
     [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
-        layer.fillColor = [UIColor colorWithWhite:0.9f alpha:1.f].CGColor;
+        layer.fillColor = Theme.offBackgroundColor.CGColor;
         CGFloat size = MIN(bounds.size.width, bounds.size.height);
         CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);
         layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
@@ -301,7 +299,7 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *scanLabel = [UILabel new];
     scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
     scanLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
-    scanLabel.textColor = [UIColor colorWithWhite:0.15f alpha:1.f];
+    scanLabel.textColor = Theme.secondaryColor;
     [scanLabel sizeToFit];
     [fingerprintView addSubview:scanLabel];
 
@@ -319,7 +317,7 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *verificationStateLabel = [UILabel new];
     self.verificationStateLabel = verificationStateLabel;
     verificationStateLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
-    verificationStateLabel.textColor = darkGrey;
+    verificationStateLabel.textColor = Theme.secondaryColor;
     verificationStateLabel.textAlignment = NSTextAlignmentCenter;
     verificationStateLabel.numberOfLines = 0;
     verificationStateLabel.lineBreakMode = NSLineBreakByWordWrapping;

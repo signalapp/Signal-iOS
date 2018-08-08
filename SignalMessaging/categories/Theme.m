@@ -54,6 +54,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
 }
 
++ (UIColor *)offBackgroundColor
+{
+    return (
+        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.9f alpha:1.f]);
+}
+
 + (UIColor *)primaryColor
 {
     // TODO: Theme, Review with design.

@@ -89,8 +89,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)createViews
 {
-    self.view.backgroundColor
-        = (Theme.isDarkThemeEnabled ? [UIColor colorWithRGBHex:0x202020] : [UIColor colorWithRGBHex:0xefeff4]);
+    self.view.backgroundColor = Theme.offBackgroundColor;
 
     UIView *contentView = [UIView containerView];
     contentView.backgroundColor = Theme.backgroundColor;
@@ -250,7 +249,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
         if (lastRow == nameRow || lastRow == avatarRow) {
             UIView *separator = [UIView containerView];
-            separator.backgroundColor = Theme.secondaryColor [contentView addSubview:separator];
+            separator.backgroundColor = Theme.secondaryColor;
+            [contentView addSubview:separator];
             [separator autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
             [separator autoPinLeadingToSuperviewMarginWithInset:18.f];
             [separator autoPinTrailingToSuperviewMarginWithInset:18.f];

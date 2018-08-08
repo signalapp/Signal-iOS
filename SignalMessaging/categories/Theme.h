@@ -26,6 +26,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *primaryColor;
 @property (class, readonly, nonatomic) UIColor *secondaryColor;
 @property (class, readonly, nonatomic) UIColor *boldColor;
+@property (class, readonly, nonatomic) UIColor *offBackgroundColor;
 
 #pragma mark - Global App Colors
 

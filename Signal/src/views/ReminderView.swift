@@ -67,9 +67,7 @@ class ReminderView: UIView {
             self.backgroundColor = UIColor.ows_reminderYellow
         case .explanation:
             // TODO: Theme, review with design.
-            self.backgroundColor = (Theme.isDarkThemeEnabled
-                    ? UIColor(rgbHex: 0x202020)
-                : UIColor(rgbHex: 0xf5f5f5))
+            self.backgroundColor = Theme.offBackgroundColor
         }
         self.clipsToBounds = true
 
