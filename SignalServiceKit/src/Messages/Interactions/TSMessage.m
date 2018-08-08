@@ -278,7 +278,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
     } else {
-        OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
+        OWSFailNoProdLog(@"%@ message has neither body nor attachment.", self.logTag);
         // TODO: We should do better here.
         return @"";
     }

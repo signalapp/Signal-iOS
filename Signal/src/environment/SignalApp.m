@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
     if (thread == nil) {
-        OWSFail(@"%@ unable to find thread with id: %@", self.logTag, threadId);
+        OWSFailNoProdLog(@"%@ unable to find thread with id: %@", self.logTag, threadId);
         return;
     }
 
@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (!thread) {
-        OWSFail(@"%@ Can't present nil thread.", self.logTag);
+        OWSFailNoProdLog(@"%@ Can't present nil thread.", self.logTag);
         return;
     }
 

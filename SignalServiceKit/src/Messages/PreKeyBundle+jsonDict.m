@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "PreKeyBundle+jsonDict.h"
@@ -15,14 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     id identityKeyObject = [dictionary objectForKey:@"identityKey"];
     if (![identityKeyObject isKindOfClass:[NSString class]]) {
-        OWSFail(@"Unexpected identityKeyObject: %@", identityKeyObject);
+        OWSFailNoProdLog(@"Unexpected identityKeyObject: %@", identityKeyObject);
         return nil;
     }
     NSString *identityKeyString = (NSString *)identityKeyObject;
 
     id devicesObject = [dictionary objectForKey:@"devices"];
     if (![devicesObject isKindOfClass:[NSArray class]]) {
-        OWSFail(@"Unexpected devicesObject: %@", devicesObject);
+        OWSFailNoProdLog(@"Unexpected devicesObject: %@", devicesObject);
         return nil;
     }
     NSArray *devicesArray = (NSArray *)devicesObject;

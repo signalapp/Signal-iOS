@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ re-registering.", self.logTag);
 
     if (![[TSAccountManager sharedInstance] resetForReregistration]) {
-        OWSFail(@"%@ could not reset for re-registration.", self.logTag);
+        OWSFailNoProdLog(@"%@ could not reset for re-registration.", self.logTag);
         return;
     }
 
@@ -222,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               toPath:filePath
                                                                error:&error];
             if (!success || error) {
-                OWSFail(@"%@ Could not copy database file: %@.", self.logTag, error);
+                OWSFailNoProdLog(@"%@ Could not copy database file: %@.", self.logTag, error);
                 success = NO;
             }
         }];
@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
     attachment.captionText = [databasePassword hexadecimalString];
     if (!attachment || [attachment hasError]) {
-        OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
+        OWSFailNoProdLog(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
         return;
     }
     [ThreadUtil sendMessageWithAttachment:attachment
@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *error = [OWSPrimaryStorage.sharedManager.newDatabaseConnection backupToPath:filePath];
     if (error) {
-        OWSFail(@"%@ Could not copy database file: %@.", self.logTag, error);
+        OWSFailNoProdLog(@"%@ Could not copy database file: %@.", self.logTag, error);
         return;
     }
 
@@ -266,7 +266,7 @@ NS_ASSUME_NONNULL_BEGIN
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     if (!attachment || [attachment hasError]) {
-        OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
+        OWSFailNoProdLog(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
         return;
     }
     [ThreadUtil sendMessageWithAttachment:attachment

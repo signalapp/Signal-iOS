@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIView+OWS.h"
+#import "OWSMath.h"
 #import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -137,7 +137,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     // Clamp to ensure view has reasonable aspect ratio.
     CGFloat clampedRatio = CGFloatClamp(ratio, 0.05f, 95.0f);
     if (clampedRatio != ratio) {
-        OWSFail(@"Invalid aspect ratio: %f for view: %@", ratio, self);
+        OWSFailNoProdLog(@"Invalid aspect ratio: %f for view: %@", ratio, self);
     }
 
     self.translatesAutoresizingMaskIntoConstraints = NO;

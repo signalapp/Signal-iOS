@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoGroupDetailsAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
         if (error || !avatarProto) {
-            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            OWSFailNoProdLog(@"%@ could not build protobuf: %@", self.logTag, error);
         } else {
             [groupBuilder setAvatar:avatarProto];
         }
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSData *_Nullable groupData = [groupBuilder buildSerializedDataAndReturnError:&error];
     if (error || !groupData) {
-        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        OWSFailNoProdLog(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return;
     }
 

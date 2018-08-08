@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define CONVERT_TO_STRING(X) #X
 #define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
 
-// OWSAssert() and OWSFail() should be used in Obj-C methods.
+// OWSAssert() and OWSFailNoProdLog() should be used in Obj-C methods.
 // OWSCAssert() and OWSCFail() should be used in free functions.
 
 #define OWSAssert(X)                                                                                                   \
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                              \
     }
 
-#define OWSFail(message, ...)                                                                                          \
+#define OWSFailNoProdLog(message, ...)                                                                                          \
     {                                                                                                                  \
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
         DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                   \
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define OWSAssert(X)
 #define OWSCAssert(X)
-#define OWSFail(message, ...)
+#define OWSFailNoProdLog(message, ...)
 #define OWSCFail(message, ...)
 #define OWSFailNoFormat(X)
 #define OWSCFailNoFormat(X)
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWS_ABSTRACT_METHOD() OWSFail(@"%@ Method needs to be implemented by subclasses.", self.logTag)
+#define OWS_ABSTRACT_METHOD() OWSFailNoProdLog(@"%@ Method needs to be implemented by subclasses.", self.logTag)
 
 #pragma mark - Singleton Asserts
 
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     {                                                                                                                  \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
-        OWSFail(_messageFormat, ##__VA_ARGS__);                                                                        \
+        OWSFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                                        \
     }
 
 #define OWSProdLogAndCFail(_messageFormat, ...)                                                                        \

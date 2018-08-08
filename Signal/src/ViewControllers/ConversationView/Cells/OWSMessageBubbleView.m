@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
         case 5:
             return [UIFont ows_regularFontWithSize:basePointSize + 6.f];
         default:
-            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableBodyText.jumbomojiCount);
+            OWSFailNoProdLog(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableBodyText.jumbomojiCount);
             break;
     }
 
@@ -1511,7 +1511,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (self.viewItem.quotedReply) {
                 [self.delegate didTapConversationItem:self.viewItem quotedReply:self.viewItem.quotedReply];
             } else {
-                OWSFail(@"%@ Missing quoted message.", self.logTag);
+                OWSFailNoProdLog(@"%@ Missing quoted message.", self.logTag);
             }
             break;
     }

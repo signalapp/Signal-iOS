@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     _envelopeData = [envelope serializedDataAndReturnError:&error];
     if (!_envelopeData || error != nil) {
-        OWSFail(@"%@ failure: envelope data failed with error: %@", self.logTag, error);
+        OWSFailNoProdLog(@"%@ failure: envelope data failed with error: %@", self.logTag, error);
         return nil;
     }
     
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable newKey = [self newIdentityKey];
     if (!newKey) {
-        OWSFail(@"Couldn't extract identity key to accept");
+        OWSFailNoProdLog(@"Couldn't extract identity key to accept");
         return;
     }
 

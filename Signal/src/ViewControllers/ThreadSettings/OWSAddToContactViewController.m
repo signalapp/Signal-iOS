@@ -190,12 +190,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.recipientId);
 
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.logTag);
+        OWSFailNoProdLog(@"%@ Contact editing not supported", self.logTag);
         return;
     }
     CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     if (!cnContact) {
-        OWSFail(@"%@ Could not load system contact.", self.logTag);
+        OWSFailNoProdLog(@"%@ Could not load system contact.", self.logTag);
         return;
     }
     [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId

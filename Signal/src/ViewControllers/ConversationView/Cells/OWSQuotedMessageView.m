@@ -285,12 +285,12 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogDebug(@"%@ in didTapFailedThumbnailDownload", self.logTag);
 
     if (!self.quotedMessage.thumbnailDownloadFailed) {
-        OWSFail(@"%@ in %s thumbnailDownloadFailed was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailNoProdLog(@"%@ in %s thumbnailDownloadFailed was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
     if (!self.quotedMessage.thumbnailAttachmentPointer) {
-        OWSFail(@"%@ in %s thumbnailAttachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailNoProdLog(@"%@ in %s thumbnailAttachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 

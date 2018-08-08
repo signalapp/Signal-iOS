@@ -9,10 +9,10 @@
 #import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -331,28 +331,28 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (YapDatabaseConnection *)dbReadConnection
 {
-    OWSFail(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailNoProdLog(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
 
     return TSYapDatabaseObject.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    OWSFail(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailNoProdLog(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
 
     return TSYapDatabaseObject.dbReadConnection;
 }
 
 - (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSFail(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailNoProdLog(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
 
     return TSYapDatabaseObject.dbReadWriteConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSFail(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailNoProdLog(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
 
     return TSYapDatabaseObject.dbReadWriteConnection;
 }

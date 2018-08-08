@@ -171,7 +171,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         count++;
         if (![obj isKindOfClass:[self class]]) {
-            OWSFail(@"%@ unexpected object in collection: %@", self.logTag, obj);
+            OWSFailNoProdLog(@"%@ unexpected object in collection: %@", self.logTag, obj);
             return;
         }
         OWSRecipientIdentity *recipientIdentity = (OWSRecipientIdentity *)obj;

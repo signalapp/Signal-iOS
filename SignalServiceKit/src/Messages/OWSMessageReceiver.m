@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
     if (error || envelope == nil) {
-        OWSFail(@"%@ failed to parase envelope with error: %@", self.logTag, error);
+        OWSFailNoProdLog(@"%@ failed to parase envelope with error: %@", self.logTag, error);
         return nil;
     }
 
@@ -158,13 +158,13 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             id object2) {
 
             if (![object1 isKindOfClass:[OWSMessageDecryptJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
+                OWSFailNoProdLog(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
                 return NSOrderedSame;
             }
             OWSMessageDecryptJob *job1 = (OWSMessageDecryptJob *)object1;
 
             if (![object2 isKindOfClass:[OWSMessageDecryptJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
+                OWSFailNoProdLog(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
                 return NSOrderedSame;
             }
             OWSMessageDecryptJob *job2 = (OWSMessageDecryptJob *)object2;
@@ -178,7 +178,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             NSString *_Nonnull key,
             id _Nonnull object) {
             if (![object isKindOfClass:[OWSMessageDecryptJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", object, collection);
+                OWSFailNoProdLog(@"Unexpected object: %@ in collection: %@", object, collection);
                 return nil;
             }
 
@@ -208,7 +208,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     YapDatabaseView *existingView = [storage registeredExtension:OWSMessageDecryptJobFinderExtensionName];
     if (existingView) {
-        OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
+        OWSFailNoProdLog(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
         // already initialized
         return;
     }

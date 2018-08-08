@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
     // with API available on iOS 9. We use OpenSSL to extract the name.
     NSDictionary<NSString *, NSString *> *_Nullable properties = [self propertiesForCertificate:certificateData];
     if (!properties) {
-        OWSFail(@"%@ Could not retrieve certificate properties.", self.logTag);
+        OWSFailNoProdLog(@"%@ Could not retrieve certificate properties.", self.logTag);
         return NO;
     }
     //    NSString *expectedDistinguishedName
@@ -292,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     if (![properties isEqualToDictionary:expectedProperties]) {
-        OWSFail(@"%@ Unexpected certificate properties. %@ != %@", self.logTag, expectedProperties, properties);
+        OWSFailNoProdLog(@"%@ Unexpected certificate properties. %@ != %@", self.logTag, expectedProperties, properties);
         return NO;
     }
     return YES;
@@ -303,19 +303,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(certificateData);
 
     if (certificateData.length >= UINT32_MAX) {
-        OWSFail(@"%@ certificate data is too long.", self.logTag);
+        OWSFailNoProdLog(@"%@ certificate data is too long.", self.logTag);
         return nil;
     }
     const unsigned char *certificateDataBytes = (const unsigned char *)[certificateData bytes];
     X509 *_Nullable certificateX509 = d2i_X509(NULL, &certificateDataBytes, [certificateData length]);
     if (!certificateX509) {
-        OWSFail(@"%@ could not parse certificate.", self.logTag);
+        OWSFailNoProdLog(@"%@ could not parse certificate.", self.logTag);
         return nil;
     }
 
     X509_NAME *_Nullable subjectName = X509_get_subject_name(certificateX509);
     if (!subjectName) {
-        OWSFail(@"%@ could not extract subject name.", self.logTag);
+        OWSFailNoProdLog(@"%@ could not extract subject name.", self.logTag);
         return nil;
     }
 
@@ -332,24 +332,24 @@ NS_ASSUME_NONNULL_BEGIN
 
         X509_NAME_ENTRY *_Nullable entry = X509_NAME_get_entry(subjectName, index);
         if (!entry) {
-            OWSFail(@"%@ could not extract entry.", self.logTag);
+            OWSFailNoProdLog(@"%@ could not extract entry.", self.logTag);
             return nil;
         }
 
         ASN1_STRING *_Nullable entryData = X509_NAME_ENTRY_get_data(entry);
         if (!entryData) {
-            OWSFail(@"%@ could not extract entry data.", self.logTag);
+            OWSFailNoProdLog(@"%@ could not extract entry data.", self.logTag);
             return nil;
         }
 
         unsigned char *entryName = ASN1_STRING_data(entryData);
         if (entryName == NULL) {
-            OWSFail(@"%@ could not extract entry string.", self.logTag);
+            OWSFailNoProdLog(@"%@ could not extract entry string.", self.logTag);
             return nil;
         }
         NSString *_Nullable entryString = [NSString stringWithUTF8String:(char *)entryName];
         if (!entryString) {
-            OWSFail(@"%@ could not parse entry name data.", self.logTag);
+            OWSFailNoProdLog(@"%@ could not parse entry name data.", self.logTag);
             return nil;
         }
         certificateProperties[oid] = entryString;

@@ -2,9 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
-#import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
@@ -173,7 +173,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
                                          NSString *_Nonnull key, id _Nonnull signedPreKeyObject, BOOL *_Nonnull stop) {
                                          i++;
                                          if (![signedPreKeyObject isKindOfClass:[SignedPreKeyRecord class]]) {
-                                             OWSFail(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
+                                             OWSFailNoProdLog(@"%@ Was expecting SignedPreKeyRecord, but found: %@",
                                                  tag,
                                                  signedPreKeyObject);
                                              return;

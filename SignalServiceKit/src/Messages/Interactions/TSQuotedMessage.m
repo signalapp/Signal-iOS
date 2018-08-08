@@ -116,13 +116,13 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoDataMessageQuote *quoteProto = [dataMessage quote];
 
     if (quoteProto.id == 0) {
-        OWSFail(@"%@ quoted message missing id", self.logTag);
+        OWSFailNoProdLog(@"%@ quoted message missing id", self.logTag);
         return nil;
     }
     uint64_t timestamp = [quoteProto id];
 
     if (quoteProto.author.length == 0) {
-        OWSFail(@"%@ quoted message missing author", self.logTag);
+        OWSFailNoProdLog(@"%@ quoted message missing author", self.logTag);
         return nil;
     }
     // TODO: We could verify that this is a valid e164 value.
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!hasText && !hasAttachment) {
-        OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
+        OWSFailNoProdLog(@"%@ quoted message has neither text nor attachment", self.logTag);
         return nil;
     }
 

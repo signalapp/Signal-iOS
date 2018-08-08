@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIPage.h"
@@ -13,14 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name
 {
-    OWSFail(@"This method should be overriden in subclasses.");
+    OWSFailNoProdLog(@"This method should be overriden in subclasses.");
 
     return nil;
 }
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    OWSFail(@"This method should be overriden in subclasses.");
+    OWSFailNoProdLog(@"This method should be overriden in subclasses.");
 
     return nil;
 }

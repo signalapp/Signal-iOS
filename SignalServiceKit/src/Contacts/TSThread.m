@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFail(@"%@ Unexpected object in unseen messages: %@", self.logTag, object);
+                          OWSFailNoProdLog(@"%@ Unexpected object in unseen messages: %@", self.logTag, object);
                           return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];

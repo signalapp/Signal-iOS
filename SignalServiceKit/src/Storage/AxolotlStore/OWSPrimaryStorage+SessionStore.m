@@ -75,7 +75,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
-    OWSFail(@"%@ subDevicesSessions is deprecated", self.logTag);
+    OWSFailNoProdLog(@"%@ subDevicesSessions is deprecated", self.logTag);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -183,7 +183,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     for (id deviceId in sessionRecords) {
         id object = sessionRecords[deviceId];
         if (![object isKindOfClass:[SessionRecord class]]) {
-            OWSFail(@"Unexpected object in session dict: %@", object);
+            OWSFailNoProdLog(@"Unexpected object in session dict: %@", object);
             continue;
         }
 
@@ -218,7 +218,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                          id _Nonnull deviceSessionsObject,
                                          BOOL *_Nonnull stop) {
                                          if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
-                                             OWSFail(
+                                             OWSFailNoProdLog(
                                                  @"%@ Unexpected type: %@ in collection.", tag, deviceSessionsObject);
                                              return;
                                          }
@@ -228,7 +228,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                          [deviceSessions enumerateKeysAndObjectsUsingBlock:^(
                                              id _Nonnull key, id _Nonnull sessionRecordObject, BOOL *_Nonnull stop) {
                                              if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
-                                                 OWSFail(@"%@ Unexpected type: %@ in collection.",
+                                                 OWSFailNoProdLog(@"%@ Unexpected type: %@ in collection.",
                                                      tag,
                                                      sessionRecordObject);
                                                  return;

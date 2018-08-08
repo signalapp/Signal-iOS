@@ -139,7 +139,7 @@
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
     if (![message isKindOfClass:[TSMessage class]]) {
-        OWSFail(@"%@ unexpected reply message: %@", self.logTag, message);
+        OWSFailNoProdLog(@"%@ unexpected reply message: %@", self.logTag, message);
         return nil;
     }
 
@@ -154,7 +154,7 @@
         } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
             return [(TSIncomingMessage *)message authorId];
         } else {
-            OWSFail(@"%@ Unexpected message type: %@", self.logTag, message.class);
+            OWSFailNoProdLog(@"%@ Unexpected message type: %@", self.logTag, message.class);
             return (NSString * _Nullable) nil;
         }
     }();
@@ -219,7 +219,7 @@
                 if ([truncatedText dataUsingEncoding:NSUTF8StringEncoding].length < kOversizeTextMessageSizeThreshold) {
                     quotedText = truncatedText;
                 } else {
-                    OWSFail(@"%@ Missing valid text snippet.", self.logTag);
+                    OWSFailNoProdLog(@"%@ Missing valid text snippet.", self.logTag);
                 }
             }
         } else {
@@ -229,7 +229,7 @@
     }
 
     if (!hasText && !hasAttachment) {
-        OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
+        OWSFailNoProdLog(@"%@ quoted message has neither text nor attachment", self.logTag);
         quotedText = @"";
         hasText = YES;
     }

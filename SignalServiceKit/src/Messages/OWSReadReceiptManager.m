@@ -424,7 +424,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     NSString *senderId = message.messageAuthorId;
     uint64_t timestamp = message.timestamp;
     if (senderId.length < 1 || timestamp < 1) {
-        OWSFail(@"%@ Invalid incoming message: %@ %llu", self.logTag, senderId, timestamp);
+        OWSFailNoProdLog(@"%@ Invalid incoming message: %@ %llu", self.logTag, senderId, timestamp);
         return;
     }
 
@@ -529,7 +529,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                   BOOL *stop) {
          
          if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-             OWSFail(
+             OWSFailNoProdLog(
                      @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
                      @"key: %@",
                      [object class],

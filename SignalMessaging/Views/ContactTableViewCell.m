@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAccessoryView:(nullable UIView *)accessoryView
 {
-    OWSFail(@"%@ use ows_setAccessoryView instead.", self.logTag);
+    OWSFailNoProdLog(@"%@ use ows_setAccessoryView instead.", self.logTag);
 }
 
 - (void)configure

@@ -123,7 +123,7 @@ void AssertIsOnDisappearingMessagesQueue()
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
-                OWSFail(
+                OWSFailNoProdLog(
                     @"%@ Refusing to remove message which doesn't expire until: %lld", self.logTag, message.expiresAt);
                 return;
             }
@@ -341,7 +341,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
-        OWSFail(@"%@ Disappearing messages job timer fired while main app inactive.", self.logTag);
+        OWSFailNoProdLog(@"%@ Disappearing messages job timer fired while main app inactive.", self.logTag);
         return;
     }
 

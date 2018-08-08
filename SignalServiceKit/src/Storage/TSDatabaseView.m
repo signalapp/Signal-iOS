@@ -67,7 +67,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     YapDatabaseView *existingView = [storage registeredExtension:viewName];
     if (existingView) {
-        OWSFail(@"Registered database view twice: %@", viewName);
+        OWSFailNoProdLog(@"Registered database view twice: %@", viewName);
         return;
     }
 
@@ -190,7 +190,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 {
     YapDatabaseView *threadView = [storage registeredExtension:TSThreadDatabaseViewExtensionName];
     if (threadView) {
-        OWSFail(@"Registered database view twice: %@", TSThreadDatabaseViewExtensionName);
+        OWSFailNoProdLog(@"Registered database view twice: %@", TSThreadDatabaseViewExtensionName);
         return;
     }
 
