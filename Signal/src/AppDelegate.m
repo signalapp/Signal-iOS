@@ -3,7 +3,6 @@
 //
 
 #import "AppDelegate.h"
-#import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
 #import "HomeViewController.h"

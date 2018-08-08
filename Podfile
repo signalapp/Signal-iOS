@@ -32,7 +32,6 @@ end
 
 target 'Signal' do
   shared_pods
-  pod 'ATAppUpdater', :inhibit_warnings => true
   pod 'SSZipArchive', :inhibit_warnings => true
 
   target 'SignalTests' do
