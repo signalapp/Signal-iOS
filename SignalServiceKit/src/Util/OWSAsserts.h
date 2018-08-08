@@ -32,20 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
         NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                              \
     }
 
-// In DEBUG we log regardless
-#define OWSFailNoProdLog(message, ...)                                                                                          \
+#define OWSFailWithoutLogging(message, ...)                                                                            \
     {                                                                                                                  \
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
-        DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                   \
-        [DDLog flushLog];                                                                                              \
         NSAssert(0, formattedMessage);                                                                                 \
     }
 
-#define OWSCFailNoProdLog(message, ...)                                                                                \
+#define OWSCFailWithoutLogging(message, ...)                                                                           \
     {                                                                                                                  \
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
-        DDLogError(@"%s %@", __PRETTY_FUNCTION__, formattedMessage);                                                   \
-        [DDLog flushLog];                                                                                              \
         NSCAssert(0, formattedMessage);                                                                                \
     }
 
@@ -67,8 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define OWSAssert(X)
 #define OWSCAssert(X)
-#define OWSFailNoProdLog(message, ...)
-#define OWSCFailNoProdLog(message, ...)
+#define OWSFailWithoutLogging(message, ...)
+#define OWSCFailWithoutLogging(message, ...)
 #define OWSFailNoFormat(X)
 #define OWSCFailNoFormat(X)
 
@@ -128,14 +123,14 @@ NS_ASSUME_NONNULL_BEGIN
     {                                                                                                                  \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
-        OWSFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                               \
+        OWSFailWithoutLogging(_messageFormat, ##__VA_ARGS__);                                                          \
     }
 
 #define OWSCFail(_messageFormat, ...)                                                                                  \
     {                                                                                                                  \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
-        OWSCFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                              \
+        OWSCFailWithoutLogging(_messageFormat, ##__VA_ARGS__);                                                         \
     }
 
 
