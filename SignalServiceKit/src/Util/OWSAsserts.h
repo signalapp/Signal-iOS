@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
 
 // OWSAssert() and OWSFail() should be used in Obj-C methods.
-// OWSCAssert() and OWSCFailNoProdLog() should be used in free functions.
+// OWSCAssert() and OWSCFail() should be used in free functions.
 
 #define OWSAssert(X)                                                                                                   \
     if (!(X)) {                                                                                                        \

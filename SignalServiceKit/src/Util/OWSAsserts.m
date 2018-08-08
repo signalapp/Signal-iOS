@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 void SwiftAssertIsOnMainThread(NSString *functionName)
 {
     if (![NSThread isMainThread]) {
-        OWSCFailNoProdLog(@"%@ not on main thread", functionName);
+        OWSCFail(@"%@ not on main thread", functionName);
     }
 }
 

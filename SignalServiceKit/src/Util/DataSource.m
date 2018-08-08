@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSError *error;
                 BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
                 if (!success || error) {
-                    OWSCFailNoProdLog(@"DataSourceValue could not delete file: %@, %@", filePath, error);
+                    OWSCFail(@"DataSourceValue could not delete file: %@, %@", filePath, error);
                 }
             });
         }
@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSError *error;
                 BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
                 if (!success || error) {
-                    OWSCFailNoProdLog(@"DataSourcePath could not delete file: %@, %@", filePath, error);
+                    OWSCFail(@"DataSourcePath could not delete file: %@, %@", filePath, error);
                 }
             });
         }
