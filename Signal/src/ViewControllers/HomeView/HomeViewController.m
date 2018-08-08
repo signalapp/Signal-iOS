@@ -29,6 +29,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
+#import <StoreKit/StoreKit.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
@@ -77,7 +78,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
-@property (nonatomic) BOOL hasBeenPresented;
+@property (nonatomic) BOOL hasEverAppeared;
 
 // Mark: Search
 
@@ -463,7 +464,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         self.hasThemeChanged = NO;
     }
 
+    [self requestReviewIfAppropriate];
+
     [self.searchResultsController viewDidAppear:animated];
+
+    self.hasEverAppeared = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -739,13 +744,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         ExperienceUpgradesPageViewController *experienceUpgradeViewController =
             [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
         [self presentViewController:experienceUpgradeViewController animated:YES completion:nil];
-    } else if (!self.hasBeenPresented && [ProfileViewController shouldDisplayProfileViewOnLaunch]) {
+    } else if (!self.hasEverAppeared && [ProfileViewController shouldDisplayProfileViewOnLaunch]) {
         [ProfileViewController presentForUpgradeOrNag:self];
     } else {
         [OWSAlerts showIOSUpgradeNagIfNecessary];
     }
-
-    self.hasBeenPresented = YES;
 }
 
 - (void)tableViewSetUp
@@ -938,7 +941,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                            @"Pressing this button moves a thread from the inbox to the archive")
                                handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
                                    [self archiveIndexPath:tappedIndexPath];
-                                   [Environment.preferences setHasArchivedAMessage:YES];
                                }];
 
             } else {
@@ -1500,24 +1502,23 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     NSString *secondLine = @"";
 
     if (self.homeViewMode == HomeViewMode_Inbox) {
-        if ([Environment.preferences getHasSentAMessage]) {
-            //  FIXME: This doesn't appear to ever show up as the defaults flag is never set (setHasSentAMessage: is never called).
-            firstLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");
+        if ([Environment.preferences hasSentAMessage]) {
+            firstLine = NSLocalizedString(
+                @"EMPTY_INBOX_TITLE", @"Header text an existing user sees when viewing an empty inbox");
+            secondLine = NSLocalizedString(
+                @"EMPTY_INBOX_TEXT", @"Body text an existing user sees when viewing an empty inbox");
         } else {
-            //  FIXME: Misleading localizable string key name.
-            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"First (bolded) part of the label that shows up when there are neither active nor archived conversations");
-            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"Second part of the label that shows up when there are neither active nor archived conversations");
+            firstLine = NSLocalizedString(
+                @"EMPTY_INBOX_NEW_USER_TITLE", @"Header text a new user sees when viewing an empty inbox");
+            secondLine = NSLocalizedString(
+                @"EMPTY_INBOX_NEW_USER_TEXT", @"Body text a new user sees when viewing an empty inbox");
         }
     } else {
-        if ([Environment.preferences getHasArchivedAMessage]) {
-            //  FIXME: Shows up after the archival tab is cleared up completely by the user, the localizable string key is misleading.
-            firstLine = NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_INBOX_TEXT", @"");
-        } else {
-            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_TEXT", @"");
-        }
+        OWSAssert(self.homeViewMode == HomeViewMode_Archive);
+        firstLine = NSLocalizedString(
+            @"EMPTY_ARCHIVE_TITLE", @"Header text an existing user sees when viewing an empty archive");
+        secondLine = NSLocalizedString(
+            @"EMPTY_ARCHIVE_TEXT", @"Body text an existing user sees when viewing an empty archive");
     }
     NSMutableAttributedString *fullLabelString =
         [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@\n%@", firstLine, secondLine]];
@@ -1536,6 +1537,25 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:Theme.secondaryColor
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
+}
+
+// We want to delay asking for a review until an opportune time.
+// If the user has *just* launched Signal they intend to do something, we don't want to interrupt them.
+// If the user hasn't sent a message, we don't want to ask them for a review yet.
+- (void)requestReviewIfAppropriate
+{
+    if (self.hasEverAppeared && Environment.preferences.hasSentAMessage) {
+        DDLogDebug(@"%@ in %s requesting review", self.logTag, __PRETTY_FUNCTION__);
+        if (@available(iOS 10, *)) {
+            // In Debug this pops up *every* time, which is helpful, but annoying.
+            // In Production this will pop up at most 3 times per 365 days.
+#ifndef DEBUG
+            [SKStoreReviewController requestReview];
+#endif
+        }
+    } else {
+        DDLogDebug(@"%@ in %s not requesting review", self.logTag, __PRETTY_FUNCTION__);
+    }
 }
 
 @end

@@ -3,7 +3,6 @@
 //
 
 #import "AppDelegate.h"
-#import "AppStoreRating.h"
 #import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
@@ -605,7 +604,6 @@ static NSTimeInterval launchStartedAt;
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
                     run];
 
-                [AppStoreRating setupRatingLibrary];
             });
         } else {
             DDLogInfo(@"%@ running post launch block for unregistered user.", self.logTag);
@@ -917,8 +915,6 @@ static NSTimeInterval launchStartedAt;
     }
 
     DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
-
-    [AppStoreRating preventPromptAtNextTest];
     [AppReadiness runNowOrWhenAppIsReady:^{
         [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
     }];

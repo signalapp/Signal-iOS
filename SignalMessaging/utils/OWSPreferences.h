@@ -33,11 +33,8 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 + (BOOL)isReadyForAppExtensions;
 + (void)setIsReadyForAppExtensions;
 
-- (BOOL)getHasSentAMessage;
+- (BOOL)hasSentAMessage;
 - (void)setHasSentAMessage:(BOOL)enabled;
-
-- (BOOL)getHasArchivedAMessage;
-- (void)setHasArchivedAMessage:(BOOL)enabled;
 
 + (BOOL)isLoggingEnabled;
 + (void)setIsLoggingEnabled:(BOOL)flag;
