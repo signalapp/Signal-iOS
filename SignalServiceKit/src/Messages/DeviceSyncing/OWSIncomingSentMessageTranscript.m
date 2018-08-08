@@ -33,11 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
     _expirationDuration = sentProto.message.expireTimer;
     _body = _dataMessage.body;
     _groupId = _dataMessage.group.id;
-    _isGroupUpdate = _dataMessage.hasGroup && (_dataMessage.group.type == SSKProtoGroupContextTypeUpdate);
+    _isGroupUpdate = _dataMessage.group != nil && (_dataMessage.group.type == SSKProtoGroupContextTypeUpdate);
     _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
 
-    if (self.dataMessage.hasGroup) {
+    if (self.dataMessage.group) {
         _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
     } else {
         _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SSKProtoAttachmentPointer *> *)attachmentPointerProtos
 {
-    if (self.isGroupUpdate && self.dataMessage.group.hasAvatar) {
+    if (self.isGroupUpdate && self.dataMessage.group.avatar) {
         return @[ self.dataMessage.group.avatar ];
     } else {
         return self.dataMessage.attachments;

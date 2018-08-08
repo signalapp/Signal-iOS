@@ -898,7 +898,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
     }
 
-    if (contact.avatarAttachmentId != nil) {
+    if (contact.avatarAttachmentId) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
             [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
         if (!attachmentProto) {
@@ -941,29 +941,29 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     OWSContact *contact = [OWSContact new];
 
     OWSContactName *contactName = [OWSContactName new];
-    if (contactProto.hasName) {
+    if (contactProto.name) {
         SSKProtoDataMessageContactName *nameProto = contactProto.name;
 
-        if (nameProto.hasGivenName) {
+        if (nameProto.givenName) {
             contactName.givenName = nameProto.givenName.ows_stripped;
         }
-        if (nameProto.hasFamilyName) {
+        if (nameProto.familyName) {
             contactName.familyName = nameProto.familyName.ows_stripped;
         }
-        if (nameProto.hasPrefix) {
+        if (nameProto.prefix) {
             contactName.namePrefix = nameProto.prefix.ows_stripped;
         }
-        if (nameProto.hasSuffix) {
+        if (nameProto.suffix) {
             contactName.nameSuffix = nameProto.suffix.ows_stripped;
         }
-        if (nameProto.hasMiddleName) {
+        if (nameProto.middleName) {
             contactName.middleName = nameProto.middleName.ows_stripped;
         }
-        if (nameProto.hasDisplayName) {
+        if (nameProto.displayName) {
             contactName.displayName = nameProto.displayName.ows_stripped;
         }
     }
-    if (contactProto.hasOrganization) {
+    if (contactProto.organization) {
         contactName.organizationName = contactProto.organization.ows_stripped;
     }
     [contactName ensureDisplayName];
@@ -996,10 +996,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     contact.addresses = [addresses copy];
 
-    if (contactProto.hasAvatar) {
+    if (contactProto.avatar) {
         SSKProtoDataMessageContactAvatar *avatarInfo = contactProto.avatar;
 
-        if (avatarInfo.hasAvatar) {
+        if (avatarInfo.avatar) {
             SSKProtoAttachmentPointer *avatarAttachment = avatarInfo.avatar;
 
             TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment];

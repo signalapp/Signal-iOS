@@ -324,19 +324,10 @@ public enum WebRTCProtoError: Error {
     fileprivate let proto: WebRTCProtos_Data
 
     @objc public let connected: WebRTCProtoConnected?
-    @objc public var hasConnected: Bool {
-        return proto.hasConnected
-    }
 
     @objc public let hangup: WebRTCProtoHangup?
-    @objc public var hasHangup: Bool {
-        return proto.hasHangup
-    }
 
     @objc public let videoStreamingStatus: WebRTCProtoVideoStreamingStatus?
-    @objc public var hasVideoStreamingStatus: Bool {
-        return proto.hasVideoStreamingStatus
-    }
 
     private init(proto: WebRTCProtos_Data,
                  connected: WebRTCProtoConnected?,

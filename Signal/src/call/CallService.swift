@@ -1366,10 +1366,8 @@ private class SignalCallData: NSObject {
         }
         let call = callData.call
 
-        if message.hasConnected {
+        if let connected = message.connected {
             Logger.debug("\(self.logTag) remote participant sent Connected via data channel: \(call.identifiersForLogs).")
-
-            let connected = message.connected!
 
             guard connected.id == call.signalingId else {
                 // This should never happen; return to a known good state.
@@ -1382,10 +1380,8 @@ private class SignalCallData: NSObject {
             self.callUIAdapter.recipientAcceptedCall(call)
             handleConnectedCall(callData)
 
-        } else if message.hasHangup {
+        } else if let hangup = message.hangup {
             Logger.debug("\(self.logTag) remote participant sent Hangup via data channel: \(call.identifiersForLogs).")
-
-            let hangup = message.hangup!
 
             guard hangup.id == call.signalingId else {
                 // This should never happen; return to a known good state.
@@ -1396,13 +1392,8 @@ private class SignalCallData: NSObject {
             }
 
             handleRemoteHangup(thread: call.thread, callId: hangup.id)
-        } else if message.hasVideoStreamingStatus {
+        } else if let videoStreamingStatus = message.videoStreamingStatus {
             Logger.debug("\(self.logTag) remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
-
-            guard let videoStreamingStatus = message.videoStreamingStatus else {
-                owsFail("\(logTag) missing videoStreamingStatus")
-                return
-            }
 
             callData.isRemoteVideoEnabled = videoStreamingStatus.enabled
             self.fireDidUpdateVideoTracks()

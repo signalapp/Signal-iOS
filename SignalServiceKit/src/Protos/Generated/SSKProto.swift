@@ -266,29 +266,14 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_Content
 
     @objc public let dataMessage: SSKProtoDataMessage?
-    @objc public var hasDataMessage: Bool {
-        return proto.hasDataMessage
-    }
 
     @objc public let syncMessage: SSKProtoSyncMessage?
-    @objc public var hasSyncMessage: Bool {
-        return proto.hasSyncMessage
-    }
 
     @objc public let callMessage: SSKProtoCallMessage?
-    @objc public var hasCallMessage: Bool {
-        return proto.hasCallMessage
-    }
 
     @objc public let nullMessage: SSKProtoNullMessage?
-    @objc public var hasNullMessage: Bool {
-        return proto.hasNullMessage
-    }
 
     @objc public let receiptMessage: SSKProtoReceiptMessage?
-    @objc public var hasReceiptMessage: Bool {
-        return proto.hasReceiptMessage
-    }
 
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
@@ -931,26 +916,14 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_CallMessage
 
     @objc public let offer: SSKProtoCallMessageOffer?
-    @objc public var hasOffer: Bool {
-        return proto.hasOffer
-    }
 
     @objc public let answer: SSKProtoCallMessageAnswer?
-    @objc public var hasAnswer: Bool {
-        return proto.hasAnswer
-    }
 
     @objc public let iceUpdate: [SSKProtoCallMessageIceUpdate]
 
     @objc public let hangup: SSKProtoCallMessageHangup?
-    @objc public var hasHangup: Bool {
-        return proto.hasHangup
-    }
 
     @objc public let busy: SSKProtoCallMessageBusy?
-    @objc public var hasBusy: Bool {
-        return proto.hasBusy
-    }
 
     @objc public var profileKey: Data? {
         guard proto.hasProfileKey else {
@@ -1100,9 +1073,6 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment
 
     @objc public let thumbnail: SSKProtoAttachmentPointer?
-    @objc public var hasThumbnail: Bool {
-        return proto.hasThumbnail
-    }
 
     @objc public var contentType: String? {
         guard proto.hasContentType else {
@@ -1969,9 +1939,6 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Avatar
 
     @objc public let avatar: SSKProtoAttachmentPointer?
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
-    }
 
     @objc public var isProfile: Bool {
         return proto.isProfile
@@ -2096,9 +2063,6 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact
 
     @objc public let name: SSKProtoDataMessageContactName?
-    @objc public var hasName: Bool {
-        return proto.hasName
-    }
 
     @objc public let number: [SSKProtoDataMessageContactPhone]
 
@@ -2107,9 +2071,6 @@ public enum SSKProtoError: Error {
     @objc public let address: [SSKProtoDataMessageContactPostalAddress]
 
     @objc public let avatar: SSKProtoDataMessageContactAvatar?
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
-    }
 
     @objc public var organization: String? {
         guard proto.hasOrganization else {
@@ -2295,14 +2256,8 @@ public enum SSKProtoError: Error {
     @objc public let attachments: [SSKProtoAttachmentPointer]
 
     @objc public let group: SSKProtoGroupContext?
-    @objc public var hasGroup: Bool {
-        return proto.hasGroup
-    }
 
     @objc public let quote: SSKProtoDataMessageQuote?
-    @objc public var hasQuote: Bool {
-        return proto.hasQuote
-    }
 
     @objc public let contact: [SSKProtoDataMessageContact]
 
@@ -2806,9 +2761,6 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_SyncMessage.Sent
 
     @objc public let message: SSKProtoDataMessage?
-    @objc public var hasMessage: Bool {
-        return proto.hasMessage
-    }
 
     @objc public var destination: String? {
         guard proto.hasDestination else {
@@ -3009,9 +2961,6 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_SyncMessage.Groups
 
     @objc public let blob: SSKProtoAttachmentPointer?
-    @objc public var hasBlob: Bool {
-        return proto.hasBlob
-    }
 
     private init(proto: SignalServiceProtos_SyncMessage.Groups,
                  blob: SSKProtoAttachmentPointer?) {
@@ -3501,41 +3450,20 @@ public enum SSKProtoError: Error {
     fileprivate let proto: SignalServiceProtos_SyncMessage
 
     @objc public let sent: SSKProtoSyncMessageSent?
-    @objc public var hasSent: Bool {
-        return proto.hasSent
-    }
 
     @objc public let contacts: SSKProtoSyncMessageContacts?
-    @objc public var hasContacts: Bool {
-        return proto.hasContacts
-    }
 
     @objc public let groups: SSKProtoSyncMessageGroups?
-    @objc public var hasGroups: Bool {
-        return proto.hasGroups
-    }
 
     @objc public let request: SSKProtoSyncMessageRequest?
-    @objc public var hasRequest: Bool {
-        return proto.hasRequest
-    }
 
     @objc public let read: [SSKProtoSyncMessageRead]
 
     @objc public let blocked: SSKProtoSyncMessageBlocked?
-    @objc public var hasBlocked: Bool {
-        return proto.hasBlocked
-    }
 
     @objc public let verified: SSKProtoVerified?
-    @objc public var hasVerified: Bool {
-        return proto.hasVerified
-    }
 
     @objc public let configuration: SSKProtoSyncMessageConfiguration?
-    @objc public var hasConfiguration: Bool {
-        return proto.hasConfiguration
-    }
 
     @objc public var padding: Data? {
         guard proto.hasPadding else {
@@ -3961,9 +3889,6 @@ public enum SSKProtoError: Error {
     @objc public let type: SSKProtoGroupContextType
 
     @objc public let avatar: SSKProtoAttachmentPointer?
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
-    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -4200,14 +4125,8 @@ public enum SSKProtoError: Error {
     @objc public let number: String
 
     @objc public let avatar: SSKProtoContactDetailsAvatar?
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
-    }
 
     @objc public let verified: SSKProtoVerified?
-    @objc public var hasVerified: Bool {
-        return proto.hasVerified
-    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -4476,9 +4395,6 @@ public enum SSKProtoError: Error {
     @objc public let id: Data
 
     @objc public let avatar: SSKProtoGroupDetailsAvatar?
-    @objc public var hasAvatar: Bool {
-        return proto.hasAvatar
-    }
 
     @objc public var name: String? {
         guard proto.hasName else {

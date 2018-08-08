@@ -303,17 +303,17 @@ NS_ASSUME_NONNULL_BEGIN
         }
         DDLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:contentProto]);
 
-        if (contentProto.hasSyncMessage) {
+        if (contentProto.syncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:contentProto.syncMessage transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
-        } else if (contentProto.hasDataMessage) {
+        } else if (contentProto.dataMessage) {
             [self handleIncomingEnvelope:envelope withDataMessage:contentProto.dataMessage transaction:transaction];
-        } else if (contentProto.hasCallMessage) {
+        } else if (contentProto.callMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage];
-        } else if (contentProto.hasNullMessage) {
+        } else if (contentProto.nullMessage) {
             DDLogInfo(@"%@ Received null message.", self.logTag);
-        } else if (contentProto.hasReceiptMessage) {
+        } else if (contentProto.receiptMessage) {
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
                              transaction:transaction];
@@ -369,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (dataMessage.hasGroup) {
+    if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
@@ -486,18 +486,18 @@ NS_ASSUME_NONNULL_BEGIN
     // if the app exits before this block is executed.  This is fine, since the call by
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (callMessage.hasOffer) {
+        if (callMessage.offer) {
             [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.source];
-        } else if (callMessage.hasAnswer) {
+        } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.source];
         } else if (callMessage.iceUpdate.count > 0) {
             for (SSKProtoCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
                 [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.source];
             }
-        } else if (callMessage.hasHangup) {
+        } else if (callMessage.hangup) {
             DDLogVerbose(@"%@ Received CallMessage with Hangup.", self.logTag);
             [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.source];
-        } else if (callMessage.hasBusy) {
+        } else if (callMessage.busy) {
             [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.source];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
@@ -607,7 +607,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (syncMessage.hasSent) {
+    if (syncMessage.sent) {
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
                                                         transaction:transaction];
@@ -621,7 +621,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
-            if (dataMessage.hasGroup) {
+            if (dataMessage.group) {
                 [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
             } else {
                 [self.profileManager addUserToProfileWhitelist:destination];
@@ -648,7 +648,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
                                     transaction:transaction];
         }
-    } else if (syncMessage.hasRequest) {
+    } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
             // We respond asynchronously because populating the sync message will
             // create transactions and it's not practical (due to locking in the OWSIdentityManager)
@@ -717,7 +717,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.logTag);
         }
-    } else if (syncMessage.hasBlocked) {
+    } else if (syncMessage.blocked) {
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
@@ -727,7 +727,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
                                                                    readTimestamp:envelope.timestamp
                                                                      transaction:transaction];
-    } else if (syncMessage.hasVerified) {
+    } else if (syncMessage.verified) {
         DDLogInfo(@"%@ Received verification state for %@", self.logTag, syncMessage.verified.destination);
         [self.identityManager processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else {
@@ -869,7 +869,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert(dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo);
 
-    NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
+    NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
     if (!groupId) {
         OWSFail(@"Group info request is missing group id.");
         return;
@@ -927,7 +927,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
-    NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
+    NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
     OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
     if (dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo) {
@@ -1209,8 +1209,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isDataMessageGroupAvatarUpdate:(SSKProtoDataMessage *)dataMessage
 {
-    return dataMessage.hasGroup && dataMessage.group.type == SSKProtoGroupContextTypeUpdate
-        && dataMessage.group.hasAvatar;
+    return (dataMessage.group != nil && dataMessage.group.type == SSKProtoGroupContextTypeUpdate
+        && dataMessage.group.avatar != nil);
 }
 
 /**
@@ -1226,7 +1226,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dataMessage);
     OWSAssert(transaction);
 
-    if (dataMessage.hasGroup) {
+    if (dataMessage.group) {
         NSData *groupId = dataMessage.group.id;
         OWSAssert(groupId.length > 0);
         TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];

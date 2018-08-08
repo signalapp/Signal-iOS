@@ -58,16 +58,16 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
  */
 - (NSString *)descriptionForContent:(SSKProtoContent *)content
 {
-    if (content.hasSyncMessage) {
+    if (content.syncMessage) {
         return [NSString stringWithFormat:@"<SyncMessage: %@ />", [self descriptionForSyncMessage:content.syncMessage]];
-    } else if (content.hasDataMessage) {
+    } else if (content.dataMessage) {
         return [NSString stringWithFormat:@"<DataMessage: %@ />", [self descriptionForDataMessage:content.dataMessage]];
-    } else if (content.hasCallMessage) {
+    } else if (content.callMessage) {
         NSString *callMessageDescription = [self descriptionForCallMessage:content.callMessage];
         return [NSString stringWithFormat:@"<CallMessage %@ />", callMessageDescription];
-    } else if (content.hasNullMessage) {
+    } else if (content.nullMessage) {
         return [NSString stringWithFormat:@"<NullMessage: %@ />", content.nullMessage];
-    } else if (content.hasReceiptMessage) {
+    } else if (content.receiptMessage) {
         return [NSString stringWithFormat:@"<ReceiptMessage: %@ />", content.receiptMessage];
     } else {
         // Don't fire an analytics event; if we ever add a new content type, we'd generate a ton of
@@ -81,17 +81,17 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
     NSString *messageType;
     UInt64 callId;
-    
-    if (callMessage.hasOffer) {
+
+    if (callMessage.offer) {
         messageType = @"Offer";
         callId = callMessage.offer.id;
-    } else if (callMessage.hasBusy) {
+    } else if (callMessage.busy) {
         messageType = @"Busy";
         callId = callMessage.busy.id;
-    } else if (callMessage.hasAnswer) {
+    } else if (callMessage.answer) {
         messageType = @"Answer";
         callId = callMessage.answer.id;
-    } else if (callMessage.hasHangup) {
+    } else if (callMessage.hangup) {
         messageType = @"Hangup";
         callId = callMessage.hangup.id;
     } else if (callMessage.iceUpdate.count > 0) {
@@ -113,7 +113,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
     NSMutableString *description = [NSMutableString new];
 
-    if (dataMessage.hasGroup) {
+    if (dataMessage.group) {
         [description appendString:@"(Group:YES) "];
     }
 
@@ -138,9 +138,9 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 - (NSString *)descriptionForSyncMessage:(SSKProtoSyncMessage *)syncMessage
 {
     NSMutableString *description = [NSMutableString new];
-    if (syncMessage.hasSent) {
+    if (syncMessage.sent) {
         [description appendString:@"SentTranscript"];
-    } else if (syncMessage.hasRequest) {
+    } else if (syncMessage.request) {
         if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
             [description appendString:@"ContactRequest"];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
@@ -154,11 +154,11 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             OWSFail(@"Unknown sync message request type");
             [description appendString:@"UnknownRequest"];
         }
-    } else if (syncMessage.hasBlocked) {
+    } else if (syncMessage.blocked) {
         [description appendString:@"Blocked"];
     } else if (syncMessage.read.count > 0) {
         [description appendString:@"ReadReceipt"];
-    } else if (syncMessage.hasVerified) {
+    } else if (syncMessage.verified) {
         NSString *verifiedString =
             [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
         [description appendString:verifiedString];
