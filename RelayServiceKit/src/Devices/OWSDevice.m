@@ -13,13 +13,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-uint32_t const OWSDevicePrimaryDeviceId = 1;
+//uint32_t const OWSDevicePrimaryDeviceId = 1;
 NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
 NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
+
+NSString *const kFLCurrentDeviceIdKey = @"kFLCurrentDeviceIdKey";
 
 @interface OWSDeviceManager ()
 
 @property (atomic) NSDate *lastReceivedSyncMessage;
+@property (assign) uint32_t cachedDeviceId;
 
 @end
 
@@ -40,6 +43,30 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 - (instancetype)initDefault
 {
     return [super init];
+}
+
+-(uint32_t)currentDeviceId
+{
+    if (self.cachedDeviceId == 0) {
+        NSNumber *numberId = (NSNumber *)[OWSPrimaryStorage.sharedManager.dbReadConnection objectForKey:kFLCurrentDeviceIdKey
+                                                                                           inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
+        if (numberId) {
+            self.cachedDeviceId = [numberId unsignedIntValue];
+        } else {
+            self.cachedDeviceId = 1;
+        }
+    }
+    return self.cachedDeviceId;
+}
+
+-(void)setCurrentDeviceId:(uint32_t)value
+{
+    if (_cachedDeviceId != value && value != 0) {
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setObject:[NSNumber numberWithUnsignedInteger:value]
+                                                                  forKey:kFLCurrentDeviceIdKey
+                                                            inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
+        self.cachedDeviceId = value;
+    }
 }
 
 - (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection
@@ -94,6 +121,8 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
     [self setMayHaveLinkedDevices];
 }
+
+
 
 @end
 
@@ -197,16 +226,16 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     return instance;
 }
 
-+ (uint32_t)currentDeviceId
-{
-    // Someday it may be possible to have a non-primary iOS device, but for now
-    // any iOS device must be the primary device.
-    return OWSDevicePrimaryDeviceId;
-}
+//+ (uint32_t)currentDeviceId
+//{
+//    // Someday it may be possible to have a non-primary iOS device, but for now
+//    // any iOS device must be the primary device.
+//    return OWSDevicePrimaryDeviceId;
+//}
 
 - (BOOL)isPrimaryDevice
 {
-    return self.deviceId == OWSDevicePrimaryDeviceId;
+    return self.deviceId == OWSDeviceManager.sharedManager.currentDeviceId;
 }
 
 - (NSString *)displayName
@@ -215,7 +244,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
         return self.name;
     }
 
-    if (self.deviceId == OWSDevicePrimaryDeviceId) {
+    if (self.deviceId == OWSDeviceManager.sharedManager.currentDeviceId) {
         return @"This Device";
     }
     return NSLocalizedString(@"UNNAMED_DEVICE", @"Label text in device manager for a device with no name");

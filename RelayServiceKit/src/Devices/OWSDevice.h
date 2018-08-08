@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern uint32_t const OWSDevicePrimaryDeviceId;
+//extern uint32_t const OWSDevicePrimaryDeviceId;
 
 @interface OWSDeviceManager : NSObject
 
@@ -21,6 +21,10 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds;
 - (void)setHasReceivedSyncMessage;
+
+-(uint32_t)currentDeviceId;
+-(void)setCurrentDeviceId:(uint32_t)value;
+
 
 @end
 
@@ -46,7 +50,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 /**
  * The id of the device currently running this application
  */
-+ (uint32_t)currentDeviceId;
+//+ (uint32_t)currentDeviceId;
 
 /**
  *

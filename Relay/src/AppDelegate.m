@@ -1160,7 +1160,9 @@ static NSTimeInterval launchStartedAt;
             [[SignalsNavigationController alloc] initWithRootViewController:homeView];
         self.window.rootViewController = navigationController;
     } else {
-        RegistrationViewController *viewController = [RegistrationViewController new];
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:[NSBundle mainBundle]];
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+//        RegistrationViewController *viewController = [RegistrationViewController new];
         OWSNavigationController *navigationController =
             [[OWSNavigationController alloc] initWithRootViewController:viewController];
         navigationController.navigationBarHidden = YES;

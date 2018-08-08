@@ -28,6 +28,8 @@
 #import <Curve25519Kit/Curve25519.h>
 #import <YapDatabase/YapDatabase.h>
 
+#import "Curve25519+keyPairFromPrivateKey.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 // Storing our own identity key
@@ -123,6 +125,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)generateNewIdentityKey
 {
     [self.dbConnection setObject:[Curve25519 generateKeyPair]
+                          forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
+                    inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+}
+
+-(void)generateKeyPairWithPrivateKey:(NSData *)privKey
+{
+    [self.dbConnection setObject:[Curve25519 generateKeyPairWithPrivateKey:privKey]
                           forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
                     inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
 }

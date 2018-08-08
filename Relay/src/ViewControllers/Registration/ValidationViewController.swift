@@ -40,7 +40,7 @@ class ValidationViewController: UITableViewController {
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateInfoLabelWithNotification),
-                                               name: NSNotification.Name(rawValue: FLRegistrationStatusUpdateNotification),
+                                               name: NSNotification.Name.FLRegistrationStatusUpdate,
                                                object: nil)
         self.infoLabel.text = ""
         
@@ -122,9 +122,9 @@ class ValidationViewController: UITableViewController {
             // Save the passwordAuth property
             
             DispatchQueue.main.async {
-                let snc = segue.destination as! NavigationController
+                let snc = segue.destination as! SignalsNavigationController
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.window.rootViewController = snc
+                appDelegate.window?.rootViewController = snc
                 
                 // TODO: Validate this step is necessary
                 appDelegate.applicationDidBecomeActive(UIApplication.shared)
@@ -134,7 +134,7 @@ class ValidationViewController: UITableViewController {
     
     private func proceedToMain() {
         DispatchQueue.global(qos: .default).async {
-            TSSocketManager.becomeActiveFromForeground()
+            TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }
         self.performSegue(withIdentifier: "mainSegue", sender: self)
@@ -173,7 +173,7 @@ class ValidationViewController: UITableViewController {
             if success {
                 self.ccsmValidationSucceeded()
             } else {
-                DDLogInfo("Password Validation failed with error: \(String(describing: error?.localizedDescription))")
+                Logger.info("Password Validation failed with error: \(String(describing: error?.localizedDescription))")
                 self.stopSpinner()
                 self.ccsmValidationFailed()
             }
@@ -197,13 +197,13 @@ class ValidationViewController: UITableViewController {
         CCSMCommManager.requestLogin(CCSMStorage.sharedInstance().getUserName(),
                                      orgName: CCSMStorage.sharedInstance().getOrgName(),
                                      success: {
-                                        DDLogInfo("Request for code resend succeeded.")
+                                        Logger.info("Request for code resend succeeded.")
                                         DispatchQueue.main.async {
                                             self.validationCode1TextField.text = ""
                                         }
         },
                                      failure: { error in
-                                        DDLogDebug("Request for code resend failed.  Error: \(String(describing: error?.localizedDescription))");
+                                        Logger.debug("Request for code resend failed.  Error: \(String(describing: error?.localizedDescription))");
         })
 
     }
@@ -218,10 +218,10 @@ class ValidationViewController: UITableViewController {
                                                      org: CCSMStorage.sharedInstance().getOrgName(),
                                                      completion: { (success, error) in
                                                         if success {
-                                                            DDLogInfo("Password reset request successful sent.")
+                                                            Logger.info("Password reset request successful sent.")
                                                             self.presentAlertWithMessage(message: "Password reset request successful.\nPlease check your email or SMS for instructions.")
                                                         } else {
-                                                            DDLogDebug("Password reset request failed with error:\(String(describing: error?.localizedDescription))")
+                                                            Logger.debug("Password reset request failed with error:\(String(describing: error?.localizedDescription))")
                                                             self.presentAlertWithMessage(message: "Password reset request failed.\n\(String(describing: error?.localizedDescription))")
                                                         }
                 })
@@ -247,7 +247,7 @@ class ValidationViewController: UITableViewController {
                     let err = error! as NSError
                     if err.domain == NSCocoaErrorDomain && err.code == NSUserActivityRemoteApplicationTimedOutError {
                         // Device provision timed out.
-                        DDLogInfo("Device Autoprovisioning timed out.");
+                        Logger.info("Device Autoprovisioning timed out.");
                         let alert = UIAlertController(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                                       message: NSLocalizedString("PROVISION_FAILURE_MESSAGE", comment: ""),
                                                       preferredStyle: .alert)
@@ -271,10 +271,10 @@ class ValidationViewController: UITableViewController {
                                                                                                 self.startSpinner()
                                                                                                 FLDeviceRegistrationService.sharedInstance().forceRegistration(completion: { provisionError in
                                                                                                     if provisionError == nil {
-                                                                                                        DDLogInfo("Force registration successful.")
+                                                                                                        Logger.info("Force registration successful.")
                                                                                                         self.proceedToMain()
                                                                                                     } else {
-                                                                                                        DDLogError("Force registration failed with error: \(String(describing: provisionError?.localizedDescription))");
+                                                                                                        Logger.error("Force registration failed with error: \(String(describing: provisionError?.localizedDescription))");
                                                                                                         self.stopSpinner()
                                                                                                         self.presentAlertWithMessage(message: "Forced provisioning failed.  Please try again.")
                                                                                                     }
@@ -302,7 +302,7 @@ class ValidationViewController: UITableViewController {
                         
                         
                     } else {
-                        DDLogError("TSS Validation error: \(String(describing: error?.localizedDescription))");
+                        Logger.error("TSS Validation error: \(String(describing: error?.localizedDescription))");
                         DispatchQueue.main.async {
                             // TODO: More user-friendly alert here
                             let alert = UIAlertController(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
@@ -327,12 +327,12 @@ class ValidationViewController: UITableViewController {
     }
     
     // MARK: - Notificaton handling
-    func updateInfoLabelWithNotification(notification: Notification) {
+    @objc func updateInfoLabelWithNotification(notification: Notification) {
         let payload = notification.object as! NSDictionary
         let messageString = payload["message"] as! String
         
         if messageString.count == 0 {
-            DDLogWarn("Empty registration status notification received.  Ignoring.")
+            Logger.warn("Empty registration status notification received.  Ignoring.")
         } else {
             self.updateInfoLabel(string: messageString)
         }

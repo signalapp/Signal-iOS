@@ -66,6 +66,10 @@ extern NSString *const kNSNotificationName_LocalUIDDidChange;
 + (nullable NSString *)serverAuthToken;
 - (nullable NSString *)serverAuthToken;
 
+// Exposing for use by the Forsta device provisioning service
++ (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey;
+- (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey;
+
 /**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
  *

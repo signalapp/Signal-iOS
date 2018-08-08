@@ -537,6 +537,11 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
                               inCollection:TSAccountManager_UserAccountCollection];
 }
 
++ (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey
+{
+    [[self sharedInstance] storeServerAuthToken:authToken signalingKey:signalingKey];
+}
+
 - (void)storeServerAuthToken:(NSString *)authToken signalingKey:(NSString *)signalingKey
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

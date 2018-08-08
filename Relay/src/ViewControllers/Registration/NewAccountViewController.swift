@@ -176,13 +176,10 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "mainSegue" {
-            // Save the passwordAuth property
-            Environment.preferences().passwordAuth = true;
-            
             DispatchQueue.main.async {
-                let snc = segue.destination as! NavigationController
+                let snc = segue.destination as! SignalsNavigationController
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.window.rootViewController = snc
+                appDelegate.window?.rootViewController = snc
                 
                 // TODO: Validate this step is necessary
                 appDelegate.applicationDidBecomeActive(UIApplication.shared)
@@ -222,7 +219,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
                             // Success!
                             self.proceedToMain()
                         } else {
-                            DDLogError("TSS Validation error: \(String(describing: error?.localizedDescription))");
+                            Logger.error("TSS Validation error: \(String(describing: error?.localizedDescription))");
                             DispatchQueue.main.async {
                                 // TODO: More user-friendly alert here
                                 let alert = UIAlertController(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
@@ -239,7 +236,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
                         }
                     }
                 } else {
-                    DDLogInfo("Password Validation failed with error: \(String(describing: error?.localizedDescription))")
+                    Logger.info("Password Validation failed with error: \(String(describing: error?.localizedDescription))")
                     self.presentAlertWithMessage(title: "Authentication failed.", message: String(describing: error?.localizedDescription))
                 }
         }
