@@ -58,12 +58,12 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Create Views
 
     private func createViews() {
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = Theme.backgroundColor
 
         let messageTextView = UITextView()
         self.messageTextView = messageTextView
         messageTextView.font = UIFont.ows_dynamicTypeBody
-        messageTextView.backgroundColor = UIColor.white
+        messageTextView.backgroundColor = Theme.backgroundColor
         messageTextView.isOpaque = true
         messageTextView.isEditable = false
         messageTextView.isSelectable = true
@@ -71,7 +71,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsHorizontalScrollIndicator = false
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
-        messageTextView.textColor = UIColor.black
+        messageTextView.textColor = Theme.primaryColor
         messageTextView.text = messageBody
 
         view.addSubview(messageTextView)

@@ -267,7 +267,9 @@ class GifPickerCell: UICollectionViewCell {
 
     private func clearViewState() {
         imageView?.image = nil
-        self.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        self.backgroundColor = (Theme.isDarkThemeEnabled
+            ? UIColor(white: 0.25, alpha: 1.0)
+            : UIColor(white: 0.95, alpha: 1.0))
     }
 
     private func pickBestAsset() -> GiphyAsset? {

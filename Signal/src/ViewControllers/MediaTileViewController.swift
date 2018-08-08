@@ -80,7 +80,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
             return
         }
 
-        collectionView.backgroundColor = UIColor.white
+        collectionView.backgroundColor = Theme.backgroundColor
 
         collectionView.register(MediaGalleryCell.self, forCellWithReuseIdentifier: MediaGalleryCell.reuseIdentifier)
         collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
@@ -877,12 +877,12 @@ private class MediaGalleryCell: UICollectionViewCell {
 
         self.highlightedView = UIView()
         highlightedView.alpha = 0.2
-        highlightedView.backgroundColor = .black
+        highlightedView.backgroundColor = Theme.primaryColor
         highlightedView.isHidden = true
 
         self.selectedView = UIView()
         selectedView.alpha = 0.3
-        selectedView.backgroundColor = .white
+        selectedView.backgroundColor = Theme.backgroundColor
         selectedView.isHidden = true
 
         super.init(frame: frame)

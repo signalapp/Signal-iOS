@@ -288,7 +288,9 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
 
         super.init(frame: frame)
 
-        backgroundColor = UIColor.ows_light10
+        backgroundColor = (Theme.isDarkThemeEnabled
+            ? UIColor.ows_dark85
+            : UIColor.ows_light10)
         addSubview(actionStackView)
         actionStackView.autoPinEdgesToSuperviewEdges()
 
@@ -410,7 +412,9 @@ class MenuActionView: UIButton {
         super.init(frame: CGRect.zero)
 
         isUserInteractionEnabled = true
-        backgroundColor = .white
+        backgroundColor = (Theme.isDarkThemeEnabled
+            ? UIColor.ows_dark60
+            : UIColor.white)
 
         let imageView = UIImageView(image: action.image)
         let imageWidth: CGFloat = 24
@@ -419,13 +423,15 @@ class MenuActionView: UIButton {
 
         let titleLabel = UILabel()
         titleLabel.font = UIFont.ows_dynamicTypeBody
-        titleLabel.textColor = UIColor.ows_light90
+        titleLabel.textColor = Theme.primaryColor
         titleLabel.text = action.title
         titleLabel.isUserInteractionEnabled = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
-        subtitleLabel.textColor = UIColor.ows_light60
+        subtitleLabel.textColor = (Theme.isDarkThemeEnabled
+            ? UIColor.ows_dark30
+            : Theme.secondaryColor)
         subtitleLabel.text = action.subtitle
         subtitleLabel.isUserInteractionEnabled = false
 
@@ -451,7 +457,7 @@ class MenuActionView: UIButton {
 
     override var isHighlighted: Bool {
         didSet {
-            self.backgroundColor = isHighlighted ? UIColor.ows_light10 : UIColor.white
+            self.backgroundColor = isHighlighted ? Theme.backgroundColor.withAlphaComponent(0.9) : Theme.backgroundColor
         }
     }
 

@@ -197,7 +197,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     private func heroBackgroundColor() -> UIColor {
-        return (Theme.isDarkThemeEnabled()
+        return (Theme.isDarkThemeEnabled
         ? UIColor(rgbHex: 0x272727)
         : UIColor(rgbHex: 0xefeff4))
     }
