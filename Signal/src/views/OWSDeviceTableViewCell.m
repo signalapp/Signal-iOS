@@ -1,7 +1,11 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDeviceTableViewCell.h"
 #import "DateUtil.h"
+#import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,6 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithDevice:(OWSDevice *)device
 {
+    OWSAssert(device);
+
+    [OWSTableItem configureCell:self];
+
+    self.nameLabel.textColor = Theme.primaryColor;
+    self.linkedLabel.textColor = Theme.secondaryColor;
+    self.lastSeenLabel.textColor = Theme.secondaryColor;
+
     self.nameLabel.text = device.displayName;
 
     NSString *linkedFormatString

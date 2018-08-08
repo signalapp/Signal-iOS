@@ -18,8 +18,9 @@ import SignalServiceKit
 
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
+        nameLabel.textColor = Theme.primaryColor
         subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
-        subtitleLabel.textColor = UIColor.ows_darkGray
+        subtitleLabel.textColor = Theme.secondaryColor
 
         // Layout
 
@@ -45,6 +46,8 @@ import SignalServiceKit
 
     @objc
     public func configure(thread: TSGroupThread, contactsManager: OWSContactsManager) {
+        OWSTableItem.configureCell(self)
+
         if let groupName = thread.groupModel.groupName, !groupName.isEmpty {
             self.nameLabel.text = groupName
         } else {

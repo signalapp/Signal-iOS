@@ -40,6 +40,9 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.view.backgroundColor = Theme.backgroundColor;
+
     self.title = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
 
     self.isExpectingMoreDevices = NO;
@@ -301,13 +304,13 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice) {
-        UITableViewCell *addNewDeviceCell =
-            [tableView dequeueReusableCellWithIdentifier:@"AddNewDevice" forIndexPath:indexPath];
-        addNewDeviceCell.textLabel.text
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AddNewDevice" forIndexPath:indexPath];
+        [OWSTableItem configureCell:cell];
+        cell.textLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", @"Navigation title when scanning QR code to add new device.");
-        addNewDeviceCell.detailTextLabel.text
+        cell.detailTextLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_SUBTITLE", @"Subheading for 'Link New Device' navigation");
-        return addNewDeviceCell;
+        return cell;
     } else if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
         OWSDeviceTableViewCell *cell =
             [tableView dequeueReusableCellWithIdentifier:@"ExistingDevice" forIndexPath:indexPath];
