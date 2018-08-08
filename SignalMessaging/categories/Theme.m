@@ -109,7 +109,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)conversationButtonBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.3f alpha:1.f] : UIColor.ows_light02Color);
+    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_light02Color);
 }
 
 #pragma mark -

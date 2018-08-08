@@ -53,7 +53,7 @@ class QuotedReplyPreview: UIView {
 
         let buttonImage: UIImage = #imageLiteral(resourceName: "quoted-message-cancel").withRenderingMode(.alwaysTemplate)
         cancelButton.setImage(buttonImage, for: .normal)
-        cancelButton.imageView?.tintColor = .darkGray
+        cancelButton.imageView?.tintColor = Theme.secondaryColor
         cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
 
         self.layoutMargins = .zero
