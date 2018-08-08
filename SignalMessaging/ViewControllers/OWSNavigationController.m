@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)themeDidChange:(id)notification
+- (void)themeDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 

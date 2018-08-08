@@ -412,9 +412,7 @@ class MenuActionView: UIButton {
         super.init(frame: CGRect.zero)
 
         isUserInteractionEnabled = true
-        backgroundColor = (Theme.isDarkThemeEnabled
-            ? UIColor.ows_dark60
-            : UIColor.white)
+        backgroundColor = defaultBackgroundColor
 
         let imageView = UIImageView(image: action.image)
         let imageWidth: CGFloat = 24
@@ -455,9 +453,21 @@ class MenuActionView: UIButton {
         self.isUserInteractionEnabled = false
     }
 
+    private var defaultBackgroundColor: UIColor {
+        return (Theme.isDarkThemeEnabled
+            ? UIColor.ows_dark60
+            : UIColor.white)
+    }
+
+    private var highlightedBackgroundColor: UIColor {
+        return (Theme.isDarkThemeEnabled
+            ? UIColor.ows_dark70
+            : UIColor.ows_light10)
+    }
+
     override var isHighlighted: Bool {
         didSet {
-            self.backgroundColor = isHighlighted ? Theme.backgroundColor.withAlphaComponent(0.9) : Theme.backgroundColor
+            self.backgroundColor = isHighlighted ? highlightedBackgroundColor : defaultBackgroundColor
         }
     }
 

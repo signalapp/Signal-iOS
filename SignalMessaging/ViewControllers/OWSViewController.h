@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // We often want to pin one view to the bottom of a view controller
 // BUT adjust its location upward if the keyboard appears.
-- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view;
+- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch;
 
 @end
 

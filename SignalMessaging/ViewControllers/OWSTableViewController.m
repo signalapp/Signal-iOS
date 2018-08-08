@@ -706,7 +706,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 #pragma mark - Theme
 
-- (void)themeDidChange:(id)notification
+- (void)themeDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 

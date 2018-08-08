@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view
+- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch
 {
     OWSAssert(view);
     OWSAssert(!self.bottomLayoutConstraint);
@@ -93,7 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 
     self.bottomLayoutView = view;
-    self.bottomLayoutConstraint = [view autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
+    if (avoidNotch) {
+        self.bottomLayoutConstraint = [view autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
+    } else {
+        self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
+    }
 }
 
 - (void)observeActivation
