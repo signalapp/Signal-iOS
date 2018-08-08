@@ -448,7 +448,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             enumerateCollectionObjectsWithTransaction:transaction
                                            usingBlock:^(id object, BOOL *stop) {
                                                if (![object isKindOfClass:[OWSUserProfile class]]) {
-                                                   OWSProdLogAndFail(@"%@ unexpected object in user profiles: %@",
+                                                   OWSFail(@"%@ unexpected object in user profiles: %@",
                                                        self.logTag,
                                                        [object class]);
                                                    return;

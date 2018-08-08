@@ -177,7 +177,7 @@ void AssertIsOnSendingQueue()
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
-        OWSProdLogAndFail(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
+        OWSFail(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
     }
 
     self.successHandler();

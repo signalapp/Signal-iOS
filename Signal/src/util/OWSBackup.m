@@ -492,7 +492,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
         if (!ext) {
-            OWSProdLogAndFail(@"%@ Could not load database view.", self.logTag);
+            OWSFail(@"%@ Could not load database view.", self.logTag);
             return;
         }
 
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  usingBlock:^(
                                      NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                      if (![object isKindOfClass:[TSAttachmentStream class]]) {
-                                         OWSProdLogAndFail(@"%@ Unexpected object: %@ in collection:%@",
+                                         OWSFail(@"%@ Unexpected object: %@ in collection:%@",
                                              self.logTag,
                                              [object class],
                                              collection);
@@ -508,7 +508,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      }
                                      TSAttachmentStream *attachmentStream = object;
                                      if (!attachmentStream.lazyRestoreFragment) {
-                                         OWSProdLogAndFail(@"%@ Invalid object: %@ in collection:%@",
+                                         OWSFail(@"%@ Invalid object: %@ in collection:%@",
                                              self.logTag,
                                              [object class],
                                              collection);
@@ -526,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
         if (!ext) {
-            OWSProdLogAndFail(@"%@ Could not load database view.", self.logTag);
+            OWSFail(@"%@ Could not load database view.", self.logTag);
             return;
         }
 

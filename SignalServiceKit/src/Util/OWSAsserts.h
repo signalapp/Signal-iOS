@@ -123,11 +123,11 @@ NS_ASSUME_NONNULL_BEGIN
 // This macro is intended for use in Objective-C.
 #define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])
 
-#define OWSProdLogAndFail(_messageFormat, ...)                                                                         \
+#define OWSFail(_messageFormat, ...)                                                                                   \
     {                                                                                                                  \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
-        OWSFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                                        \
+        OWSFailNoProdLog(_messageFormat, ##__VA_ARGS__);                                                               \
     }
 
 #define OWSProdLogAndCFail(_messageFormat, ...)                                                                        \

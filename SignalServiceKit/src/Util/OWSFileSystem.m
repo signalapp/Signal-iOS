@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSProdLogAndFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+        OWSFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
             self.logTag,
             oldFilePath,
             newFilePath,
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSProdLogAndFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
+        OWSFail(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
             self.logTag,
             oldFilePath,
             newFilePath);
@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSProdLogAndFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+        OWSFail(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
             self.logTag,
             oldFilePath,
             newFilePath,

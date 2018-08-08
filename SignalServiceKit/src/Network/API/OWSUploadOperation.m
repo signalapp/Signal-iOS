@@ -123,7 +123,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     NSData *_Nullable encryptedAttachmentData =
         [Cryptography encryptAttachmentData:attachmentData outKey:&encryptionKey outDigest:&digest];
     if (!encryptedAttachmentData) {
-        OWSProdLogAndFail(@"%@ could not encrypt attachment data.", self.logTag);
+        OWSFail(@"%@ could not encrypt attachment data.", self.logTag);
         error = OWSErrorMakeFailedToSendOutgoingMessageError();
         error.isRetryable = YES;
         [self reportError:error];

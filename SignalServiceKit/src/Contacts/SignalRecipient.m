@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
     // be strict about using persisted SignalRecipients as a cache to
     // reflect "last known registration status".  Forcing our codebase to
     // use those methods helps ensure that we update the cache deliberately.
-    OWSProdLogAndFail(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
+    OWSFail(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
 
     [self saveWithTransaction_internal:transaction];
 }

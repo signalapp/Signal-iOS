@@ -485,7 +485,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                        options:(NSJSONWritingOptions)0
                          error:&error];
         if (!jsonData || error) {
-            OWSProdLogAndFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
+            OWSFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
             [socketMessage didFailBeforeSending];
             return;
         }
@@ -516,7 +516,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
-        OWSProdLogAndFail(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFail(@"%@ could not serialize proto: %@.", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
@@ -529,7 +529,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
     if (!wasScheduled || error) {
-        OWSProdLogAndFail(@"%@ could not send socket request: %@", self.logTag, error);
+        OWSFail(@"%@ could not send socket request: %@", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
@@ -587,7 +587,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         id _Nullable responseJson =
             [NSJSONSerialization JSONObjectWithData:responseData options:(NSJSONReadingOptions)0 error:&error];
         if (!responseJson || error) {
-            OWSProdLogAndFail(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
+            OWSFail(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
             hasValidResponse = NO;
         } else {
             responseObject = responseJson;
@@ -745,7 +745,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
                 [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
             } @catch (NSException *exception) {
-                OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                OWSFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
                 // TODO: Add analytics.
 
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(

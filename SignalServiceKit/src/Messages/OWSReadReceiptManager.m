@@ -452,12 +452,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         uint64_t messageIdTimestamp = readReceiptProto.timestamp;
 
         if (senderId.length == 0) {
-            OWSProdLogAndFail(@"%@ in %s senderId was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s senderId was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 
         if (messageIdTimestamp == 0) {
-            OWSProdLogAndFail(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 

@@ -68,7 +68,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == 260) {
             DDLogWarn(@"%@ can't find size of missing file: %@", self.logTag, filePath);
         } else {
-            OWSProdLogAndFail(@"%@ attributesOfItemAtPath: %@ error: %@", self.logTag, filePath, error);
+            OWSFail(@"%@ attributesOfItemAtPath: %@ error: %@", self.logTag, filePath, error);
         }
         return 0;
     }
@@ -96,7 +96,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
     if (error) {
-        OWSProdLogAndFail(@"%@ contentsOfDirectoryAtPath error: %@", self.logTag, error);
+        OWSFail(@"%@ contentsOfDirectoryAtPath error: %@", self.logTag, error);
         return [NSSet new];
     }
     for (NSString *fileName in fileNames) {
@@ -230,7 +230,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             NSError *error;
             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
             if (!attributes || error) {
-                OWSProdLogAndFail(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
+                OWSFail(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
                 continue;
             }
             DDLogVerbose(@"%@ temp file: %@, %@",
@@ -318,7 +318,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                          if (filePath) {
                                              [allAttachmentFilePaths addObject:filePath];
                                          } else {
-                                             OWSProdLogAndFail(@"%@ attachment has no file path.", self.logTag);
+                                             OWSFail(@"%@ attachment has no file path.", self.logTag);
                                          }
 
                                          NSString *_Nullable thumbnailPath = [attachmentStream thumbnailPath];
@@ -472,11 +472,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssert(databaseConnection);
 
     if (!AppReadiness.isAppReady) {
-        OWSProdLogAndFail(@"%@ can't audit orphan data until app is ready.", self.logTag);
+        OWSFail(@"%@ can't audit orphan data until app is ready.", self.logTag);
         return;
     }
     if (!CurrentAppContext().isMainApp) {
-        OWSProdLogAndFail(@"%@ can't audit orphan data in app extensions.", self.logTag);
+        OWSFail(@"%@ can't audit orphan data in app extensions.", self.logTag);
         return;
     }
 
@@ -674,7 +674,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         NSError *error;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
         if (!attributes || error) {
-            OWSProdLogAndFail(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
+            OWSFail(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
             continue;
         }
         // Don't delete files which were created in the last N minutes.
@@ -692,7 +692,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
         if (error) {
-            OWSProdLogAndFail(@"%@ Could not remove orphan file at: %@", self.logTag, filePath);
+            OWSFail(@"%@ Could not remove orphan file at: %@", self.logTag, filePath);
         }
     }
     DDLogInfo(@"%@ Deleted orphan attachment files: %zu", self.logTag, filesRemoved);

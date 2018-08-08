@@ -138,7 +138,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         if ([message isKindOfClass:[TSMessage class]]) {
             block(message);
         } else {
-            OWSProdLogAndFail(@"%@ unexpected object: %@", self.logTag, message);
+            OWSFail(@"%@ unexpected object: %@", self.logTag, message);
         }
     }
 }
@@ -152,12 +152,12 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 
         TSMessage *_Nullable message = [TSMessage fetchObjectWithUniqueID:expiringMessageId transaction:transaction];
         if (![message isKindOfClass:[TSMessage class]]) {
-            OWSProdLogAndFail(@"%@ unexpected object: %@", self.logTag, message);
+            OWSFail(@"%@ unexpected object: %@", self.logTag, message);
             continue;
         }
 
         if (![message shouldStartExpireTimerWithTransaction:transaction]) {
-            OWSProdLogAndFail(@"%@ object: %@ shouldn't expire.", self.logTag, message);
+            OWSFail(@"%@ object: %@ shouldn't expire.", self.logTag, message);
             continue;
         }
 

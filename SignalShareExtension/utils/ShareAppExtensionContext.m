@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
 {
-    OWSProdLogAndFail(@"%@ cannot run main app active blocks in share extension.", self.logTag);
+    OWSFail(@"%@ cannot run main app active blocks in share extension.", self.logTag);
 }
 
 @end

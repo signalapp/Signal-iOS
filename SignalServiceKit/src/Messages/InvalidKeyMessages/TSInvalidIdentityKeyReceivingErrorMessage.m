@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
         if (error || envelope == nil) {
-            OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, error);
+            OWSFail(@"%@ Could not parse proto: %@", self.logTag, error);
         } else {
             _envelope = envelope;
         }

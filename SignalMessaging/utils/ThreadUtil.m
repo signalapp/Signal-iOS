@@ -728,7 +728,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSString *> *_Nullable uniqueIds = [transaction allKeysInCollection:collection];
     if (!uniqueIds) {
-        OWSProdLogAndFail(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
+        OWSFail(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
         return;
     }
     DDLogInfo(@"%@ Deleting %lu objects from: %@", self.logTag, (unsigned long)uniqueIds.count, collection);
@@ -738,7 +738,7 @@ NS_ASSUME_NONNULL_BEGIN
         // work.
         TSYapDatabaseObject *_Nullable object = [class fetchObjectWithUniqueID:uniqueId transaction:transaction];
         if (!object) {
-            OWSProdLogAndFail(@"%@ couldn't load object for deletion: %@.", self.logTag, collection);
+            OWSFail(@"%@ couldn't load object for deletion: %@.", self.logTag, collection);
             continue;
         }
         [object removeWithTransaction:transaction];

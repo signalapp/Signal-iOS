@@ -3379,7 +3379,7 @@ typedef enum : NSUInteger {
     if (hasMalformedRowChange) {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
-        OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
+        OWSFail(@"%@ hasMalformedRowChange", self.logTag);
         [self resetContentAndLayout];
         [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];

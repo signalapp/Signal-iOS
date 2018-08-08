@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     [interactionsByThread enumerateKeysInGroup:self.uniqueId
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                                         if (![key isKindOfClass:[NSString class]] || key.length < 1) {
-                                            OWSProdLogAndFail(@"%@ invalid key in thread interactions: %@, %@.",
+                                            OWSFail(@"%@ invalid key in thread interactions: %@, %@.",
                                                 self.logTag,
                                                 key,
                                                 [key class]);
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSInteraction *_Nullable interaction =
             [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
         if (!interaction) {
-            OWSProdLogAndFail(@"%@ couldn't load thread's interaction for deletion.", self.logTag);
+            OWSFail(@"%@ couldn't load thread's interaction for deletion.", self.logTag);
             continue;
         }
         [interaction removeWithTransaction:transaction];
@@ -461,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hashData) {
         [hashData getBytes:&hash length:hashingLength];
     } else {
-        OWSProdLogAndFail(@"%@ could not compute hash for color seed.", self.logTag);
+        OWSFail(@"%@ could not compute hash for color seed.", self.logTag);
     }
 
     NSUInteger index = (hash % [self.conversationColorNames count]);

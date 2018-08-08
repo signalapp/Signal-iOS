@@ -207,7 +207,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    OWSProdLogAndFail(@"%@ Tried to save object from unknown collection", self.logTag);
+    OWSFail(@"%@ Tried to save object from unknown collection", self.logTag);
 
     return [super encodeWithCoder:aCoder];
 }
@@ -224,21 +224,21 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSProdLogAndFail(@"%@ Tried to save unknown object", self.logTag);
+    OWSFail(@"%@ Tried to save unknown object", self.logTag);
 
     // No-op.
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSProdLogAndFail(@"%@ Tried to touch unknown object", self.logTag);
+    OWSFail(@"%@ Tried to touch unknown object", self.logTag);
 
     // No-op.
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSProdLogAndFail(@"%@ Tried to remove unknown object", self.logTag);
+    OWSFail(@"%@ Tried to remove unknown object", self.logTag);
 
     // No-op.
 }
@@ -262,7 +262,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     if ([name isEqualToString:@"TSRecipient"]) {
         DDLogError(@"%@ Could not decode object: %@", self.logTag, name);
     } else {
-        OWSProdLogAndFail(@"%@ Could not decode object: %@", self.logTag, name);
+        OWSFail(@"%@ Could not decode object: %@", self.logTag, name);
     }
     OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
@@ -482,7 +482,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
         if (!data || data.length <= 0) {
-            OWSProdLogAndFail(@"%@ can't deserialize null object: %@", self.logTag, collection);
+            OWSFail(@"%@ can't deserialize null object: %@", self.logTag, collection);
             return [OWSUnknownDBObject new];
         }
 
@@ -492,7 +492,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSProdLogAndFail(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
+            OWSFail(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
             OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
@@ -592,7 +592,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // This method needs to be able to update the versionTag of all extensions.
         // If we start using other extension types, we need to modify this method to
         // handle them as well.
-        OWSProdLogAndFail(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
+        OWSFail(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
 
         return extension;
     }
