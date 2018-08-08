@@ -39,7 +39,7 @@ class AppUpdateNag: NSObject {
             self.versionService.fetchLatestVersion(lookupURL: lookupURL)
         }.then { appStoreRecord -> Void in
             guard appStoreRecord.version.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending else {
-                Logger.debug("\(self.logTag) same old version: \(appStoreRecord)")
+                Logger.debug("\(self.logTag) remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
                 return
             }
 
@@ -128,20 +128,25 @@ class AppUpdateNag: NSObject {
     func presentUpgradeNag(appStoreRecord: AppStoreRecord) {
         let title = NSLocalizedString("APP_UPDATE_NAG_ALERT_TITLE", comment: "Title for the 'new app version available' alert.")
 
-        let messageFormat = NSLocalizedString("APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT", comment: "Message format for the 'new app version available' alert. Embeds: {{The latest app version number}}")
-        let message = String(format: messageFormat, appStoreRecord.version)
-        let buttonTitle = NSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
+        let bodyFormat = NSLocalizedString("APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT", comment: "Message format for the 'new app version available' alert. Embeds: {{The latest app version number}}")
+        let bodyText = String(format: bodyFormat, appStoreRecord.version)
+        let updateButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
+        let dismissButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_DISMISS_BUTTON", comment: "Label for the 'dismiss' button in the 'new app version available' alert.")
 
-        OWSAlerts.showAlert(title: title,
-                            message: message,
-                            buttonTitle: buttonTitle,
-                            buttonAction: { [weak self] _ in
-                                guard let strongSelf = self else {
-                                    return
-                                }
+        let alert = UIAlertController(title: title, message: bodyText, preferredStyle: .alert)
 
-                                strongSelf.showAppStore(appStoreURL: appStoreRecord.appStoreURL)
-        })
+        let updateAction = UIAlertAction(title: updateButtonText, style: .default) { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.showAppStore(appStoreURL: appStoreRecord.appStoreURL)
+        }
+
+        alert.addAction(updateAction)
+        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel, handler: nil))
+
+        OWSAlerts.showAlert(alert)
     }
 
     func showAppStore(appStoreURL: URL) {
