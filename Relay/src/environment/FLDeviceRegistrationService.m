@@ -258,7 +258,7 @@ NSString *const FLRegistrationStatusUpdateNotification = @"FLRegistrationStatusU
                                                    completionBlock(err);
                                                }
                                            } else {
-                                               Logger.error(@"Device provison PUT failed with error: %@", error.description);
+                                               DDLogError(@"Device provison PUT failed with error: %@", regerror.description);
                                                completionBlock(regerror);
                                            }
                                        }];
@@ -277,21 +277,21 @@ NSString *const FLRegistrationStatusUpdateNotification = @"FLRegistrationStatusU
 }
 
 
-- (void)sendWebSocketMessageAcknowledgement:(WebSocketRequestMessage *)request
+- (void)sendWebSocketMessageAcknowledgement:(WebSocketResourcesWebSocketRequestMessage *)request
 {
-    WebSocketResponseMessageBuilder *response = [WebSocketResponseMessage builder];
+    WebSocketResourcesWebSocketResponseMessageBuilder *response = [WebSocketResourcesWebSocketResponseMessage builder];
     [response setStatus:200];
     [response setMessage:@"OK"];
-    [response setId:request.id];
+    [response setRequestId:request.requestId];
     
-    WebSocketMessageBuilder *message = [WebSocketMessage builder];
+    WebSocketResourcesWebSocketMessageBuilder *message = [WebSocketResourcesWebSocketMessage builder];
     [message setResponse:response.build];
-    [message setType:WebSocketMessageTypeResponse];
+    [message setType:WebSocketResourcesWebSocketMessageTypeResponse];
     
     NSError *error;
     [self.provisioningSocket sendDataNoCopy:message.build.data error:&error];
     if (error) {
-        Looger.warn(@"Error while trying to write on websocket %@", error);
+        DDLogWarn(@"Error while trying to write on websocket %@", error);
     }
 }
 
@@ -310,38 +310,38 @@ NSString *const FLRegistrationStatusUpdateNotification = @"FLRegistrationStatusU
 {
     DDLogInfo(@"Provisioning socket received data message.");
     
-    WebSocketMessage *message = [WebSocketMessage parseFromData:data];
+    WebSocketResourcesWebSocketMessage *message = [WebSocketResourcesWebSocketMessage parseFromData:data];
     
     NSData *ourPublicKeyData = [self.cipher.ourPublicKey prependKeyType];
     NSString *ourPublicKeyString  = [ourPublicKeyData base64EncodedString];
     
     if (message.hasRequest) {
-        WebSocketRequestMessage *request = message.request;
+        WebSocketResourcesWebSocketRequestMessage *request = message.request;
         
         if ([request.path isEqualToString:@"/v1/address"] && [request.verb isEqualToString:@"PUT"]) {
-            OWSProvisioningProtosProvisioningUuid *proto = [OWSProvisioningProtosProvisioningUuid parseFromData:request.body];
-            [self sendWebSocketMessageAcknowledgement:request];
-            [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
-                                                                object:@{ @"message": @"Requesting device provisioning.  Awaiting response..." }];
-            NSDictionary *payload = @{ @"uuid" : proto.uuid,
-                                       @"key" : ourPublicKeyString };
-            
-            [CCSMCommManager sendDeviceProvisioningRequestWithPayload:payload];
+//            OWSProvisioningProtosProvisioningUuid *proto = [OWSProvisioningProtosProvisioningUuid parseFromData:request.body];
+//            [self sendWebSocketMessageAcknowledgement:request];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
+//                                                                object:@{ @"message": @"Requesting device provisioning.  Awaiting response..." }];
+//            NSDictionary *payload = @{ @"uuid" : proto.uuid,
+//                                       @"key" : ourPublicKeyString };
+//
+//            [CCSMCommManager sendDeviceProvisioningRequestWithPayload:payload];
         } else if ([request.path isEqualToString:@"/v1/message"] && [request.verb isEqualToString:@"PUT"]) {
-            OWSProvisioningProtosProvisionEnvelope *proto = [OWSProvisioningProtosProvisionEnvelope parseFromData:request.body];
-            [self sendWebSocketMessageAcknowledgement:request];
-            [self.provisioningSocket close];
-            [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
-                                                                object:@{ @"message": @"Provisioning response received." }];
-            // Decrypt the things
-            NSData *decryptedData = [self.cipher decrypt:proto];
-            OWSProvisioningProtosProvisionMessage *messageProto = [OWSProvisioningProtosProvisionMessage parseFromData:decryptedData];
-            [self processProvisioningMessage:messageProto withCompletion:^(NSError *error) {
-                dispatch_semaphore_signal(self.provisioningSemaphore);
-            }];
+//            OWSProvisioningProtosProvisionEnvelope *proto = [OWSProvisioningProtosProvisionEnvelope parseFromData:request.body];
+//            [self sendWebSocketMessageAcknowledgement:request];
+//            [self.provisioningSocket close];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
+//                                                                object:@{ @"message": @"Provisioning response received." }];
+//            // Decrypt the things
+//            NSData *decryptedData = [self.cipher decrypt:proto];
+//            OWSProvisioningProtosProvisionMessage *messageProto = [OWSProvisioningProtosProvisionMessage parseFromData:decryptedData];
+//            [self processProvisioningMessage:messageProto withCompletion:^(NSError *error) {
+//                dispatch_semaphore_signal(self.provisioningSemaphore);
+//            }];
             
         } else {
-            Logger.info(@"Unhandled provisioning socket request message.");
+            DDLogInfo(@"Unhandled provisioning socket request message.");
         }
     }
     

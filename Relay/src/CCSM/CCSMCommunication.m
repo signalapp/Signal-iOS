@@ -8,24 +8,25 @@
 
 #import "Environment.h"
 #import "CCSMCommunication.h"
-#import "DeviceTypes.h"
+#import "CCSMStorage.h"
 #import "TSAccountManager.h"
 #import "SignalKeyingStorage.h"
 #import "SecurityUtils.h"
 #import "NSData+Base64.h"
-#import "TSStorageManager.h"
-#import "TSSocketManager.h"
 #import "TSPreKeyManager.h"
-#import "TSStorageManager.h"
 #import "AFNetworking.h"
 #import "FLDeviceRegistrationService.h"
+#import "SignalApp.h"
+
+// TODO: migrate away from this:
 #import "HttpRequest.h"
 
 
 #define FLTagMathPath @"/v1/directory/user/"
 
-@import Fabric;
-@import Crashlytics;
+// TODO: Bring these in
+//@import Fabric;
+//@import Crashlytics;
 
 @interface CCSMCommManager ()
 
@@ -62,8 +63,8 @@
                                            
                                            if (HTTPresponse.statusCode == 200) // SUCCESS!
                                            {
-                                               [Environment.getCurrent.ccsmStorage setOrgName:lowerOrgname];
-                                               [Environment.getCurrent.ccsmStorage setUserName:lowerUsername];
+                                               [CCSMStorage.sharedInstance setOrgName:lowerOrgname];
+                                               [CCSMStorage.sharedInstance setUserName:lowerUsername];
                                                DDLogDebug(@"login result's msg is: %@", [result objectForKey:@"msg"]);
                                                successBlock();
                                            }
@@ -76,8 +77,8 @@
                                                        [errorDescription appendString:[NSString stringWithFormat:@"\n%@", message]];
                                                        
                                                        if ([message isEqualToString:@"password auth required"]) {
-                                                           [Environment.getCurrent.ccsmStorage setOrgName:lowerOrgname];
-                                                           [Environment.getCurrent.ccsmStorage setUserName:lowerUsername];
+                                                           [CCSMStorage.sharedInstance setOrgName:lowerOrgname];
+                                                           [CCSMStorage.sharedInstance setUserName:lowerUsername];
                                                            DDLogDebug(@"Password auth requested.");
                                                        }
                                                    }
@@ -238,7 +239,7 @@
 +(void)refreshSessionTokenAsynchronousSuccess:(void (^)())successBlock
                                       failure:(void (^)(NSError *error))failureBlock
 {
-    NSString *sessionToken = [Environment.getCurrent.ccsmStorage getSessionToken];
+    NSString *sessionToken = [CCSMStorage.sharedInstance getSessionToken];
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/api-token-refresh/", FLHomeURL];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
@@ -386,24 +387,25 @@
         NSDictionary *userDict = [payload objectForKey:@"user"];
         NSString *userID = [userDict objectForKey:@"id"];
         // Check to see if user changed.  If so, wiped the database.
-        if ([TSStorageManager localNumberWithProtocolContext:nil].length > 0 &&
-            ![[TSStorageManager localNumberWithProtocolContext:nil] isEqualToString:userID]) {
-            [Environment wipeCommDatabase];
-            [Environment.getCurrent.ccsmStorage setUsers:@{ }];
-            [Environment.getCurrent.ccsmStorage setOrgInfo:@{ }];
-            [Environment.getCurrent.ccsmStorage setTags:@{ }];
+        if ([TSAccountManager localUID].length > 0 &&
+            ![[TSAccountManager localUID] isEqualToString:userID]) {
+            [SignalApp resetAppData];
+//            [Environment wipeCommDatabase];
+            [CCSMStorage.sharedInstance setUsers:@{ }];
+            [CCSMStorage.sharedInstance setOrgInfo:@{ }];
+            [CCSMStorage.sharedInstance setTags:@{ }];
         }
         
         [TSStorageManager.sharedManager storeLocalNumber:userID withProtocolContext:nil];
         
-        [Environment.getCurrent.ccsmStorage setSessionToken:[payload objectForKey:@"token"]];
+        [CCSMStorage.sharedInstance setSessionToken:[payload objectForKey:@"token"]];
         
-        [Environment.getCurrent.ccsmStorage setUserInfo:userDict];
+        [CCSMStorage.sharedInstance setUserInfo:userDict];
         [SignalRecipient getOrCreateRecipientWithUserDictionary:userDict];
         [TSAccountManager.sharedInstance myself];
         
         NSDictionary *orgDict = [userDict objectForKey:@"org"];
-        [[Environment getCurrent].ccsmStorage setOrgInfo:orgDict];
+        [CCSMStorage.sharedInstance setOrgInfo:orgDict];
         
         NSString *orgUrl = [orgDict objectForKey:@"url"];
         [self processOrgInfoWithURL:orgUrl];
@@ -425,7 +427,7 @@
                   collection:users
                      success:^{
                          DDLogDebug(@"Refreshed all users.");
-                         [[Environment getCurrent].ccsmStorage setUsers:[NSDictionary dictionaryWithDictionary:users]];
+                         [CCSMStorage.sharedInstance setUsers:[NSDictionary dictionaryWithDictionary:users]];
                          [self notifyOfUsersRefresh];
                      }
                      failure:^(NSError *err){
@@ -447,7 +449,7 @@
                                  [holdingDict setObject:dict forKey:key];
                              }
                          }
-                         [[Environment getCurrent].ccsmStorage setTags:[NSDictionary dictionaryWithDictionary:holdingDict]];
+                         [CCSMStorage.sharedInstance setTags:[NSDictionary dictionaryWithDictionary:holdingDict]];
                          [self notifyOfTagsRefresh];
                          DDLogDebug(@"Refreshed all tags.");
                      }
@@ -462,7 +464,7 @@
         [self getThing:urlString
                success:^(NSDictionary *org){
                    DDLogDebug(@"Retrieved org info after login validation");
-                   [[Environment getCurrent].ccsmStorage setOrgInfo:org];
+                   [CCSMStorage.sharedInstance setOrgInfo:org];
                    // Extract and save org prefs
                    NSDictionary *prefsDict = [org objectForKey:@"preferences"];
                    if (prefsDict) {
@@ -542,8 +544,8 @@
      {
          NSString *serverURL = [payload objectForKey:@"serverUrl"];
          NSString *userId = [payload objectForKey:@"userId"];
-         if (![TSAccountManager.sharedInstance.myself.uniqueId isEqualToString:userId]) {
-             DDLogError(@"SECURITY VIOLATION! USERID MISMATCH! IDs: %@, %@", userId, TSAccountManager.sharedInstance.myself.uniqueId);
+         if (![TSAccountManager.sharedInstance.localUID isEqualToString:userId]) {
+             DDLogError(@"SECURITY VIOLATION! USERID MISMATCH! IDs: %@, %@", userId, [TSAccountManager.sharedInstance localUID]);
              // TODO: Make a better error
              NSError *err = [NSError new];
              completionBlock(payload, err);
@@ -761,7 +763,6 @@
                         [CCSMStorage.sharedInstance setOrgName:orgSlug];
                         [CCSMStorage.sharedInstance setUserName:userSlug];
                         [CCSMStorage.sharedInstance setSessionToken:sessionToken];
-                        Environment.preferences.passwordAuth = YES;
                         
                         completionBlock(YES, nil, result);
                     } else { // Connection good, error from server 
@@ -922,7 +923,7 @@
 +(NSMutableURLRequest *)authRequestWithURL:(NSURL *)url
 {
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    NSString *sessionToken = [[Environment getCurrent].ccsmStorage getSessionToken];
+    NSString *sessionToken = [CCSMStorage.sharedInstance getSessionToken];
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
     [request addValue:[NSString stringWithFormat:@"JWT %@", sessionToken] forHTTPHeaderField:@"Authorization"];

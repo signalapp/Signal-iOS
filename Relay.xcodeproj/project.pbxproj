@@ -454,6 +454,10 @@
 		7D7705C52114D8E700B40BB9 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C22114D8E600B40BB9 /* LoginViewController.swift */; };
 		7D7705C62114D8E700B40BB9 /* NewAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C32114D8E600B40BB9 /* NewAccountViewController.swift */; };
 		7D7705C82114E5C300B40BB9 /* forsta_splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D7705C72114E5C300B40BB9 /* forsta_splash.png */; };
+		7DD5A72D211B7B1100965478 /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72C211B7B1000965478 /* HttpRequest.m */; };
+		7DD5A730211B7C7100965478 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */; };
+		7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A732211B7CA500965478 /* HttpResponse.m */; };
+		7DD5A736211B7F8300965478 /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A734211B7F8200965478 /* CryptoTools.m */; };
 		7DD9C9ED2114A60C000A1CDC /* RelayMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* RelayMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1170,6 +1174,14 @@
 		7D7705C22114D8E600B40BB9 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		7D7705C32114D8E600B40BB9 /* NewAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewAccountViewController.swift; sourceTree = "<group>"; };
 		7D7705C72114E5C300B40BB9 /* forsta_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forsta_splash.png; sourceTree = "<group>"; };
+		7DD5A72B211B7B1000965478 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
+		7DD5A72C211B7B1000965478 /* HttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequest.m; sourceTree = "<group>"; };
+		7DD5A72E211B7C7000965478 /* HttpRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestOrResponse.h; sourceTree = "<group>"; };
+		7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestOrResponse.m; sourceTree = "<group>"; };
+		7DD5A731211B7CA500965478 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
+		7DD5A732211B7CA500965478 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
+		7DD5A734211B7F8200965478 /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
+		7DD5A735211B7F8300965478 /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -2226,6 +2238,12 @@
 		76EB041D18170B33006006FC /* network */ = {
 			isa = PBXGroup;
 			children = (
+				7DD5A72B211B7B1000965478 /* HttpRequest.h */,
+				7DD5A72C211B7B1000965478 /* HttpRequest.m */,
+				7DD5A72E211B7C7000965478 /* HttpRequestOrResponse.h */,
+				7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */,
+				7DD5A731211B7CA500965478 /* HttpResponse.h */,
+				7DD5A732211B7CA500965478 /* HttpResponse.m */,
 				3430FE171F7751D4000EC51B /* GiphyAPI.swift */,
 				34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */,
 				B6B9ECFA198B31BA00C620D3 /* PushManager.h */,
@@ -2241,6 +2259,8 @@
 				B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */,
 				34CCAF361F0C0599004084F4 /* AppUpdateNag.h */,
 				34CCAF371F0C0599004084F4 /* AppUpdateNag.m */,
+				7DD5A735211B7F8300965478 /* CryptoTools.h */,
+				7DD5A734211B7F8200965478 /* CryptoTools.m */,
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
 				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
@@ -3358,6 +3378,7 @@
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
+				7DD5A72D211B7B1100965478 /* HttpRequest.m in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				340FC8B8204DAC8D007AEB0F /* AddToGroupViewController.m in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
@@ -3410,6 +3431,7 @@
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				340FC8CD20518C77007AEB0F /* OWSBackupJob.m in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
+				7DD5A730211B7C7100965478 /* HttpRequestOrResponse.m in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				451686AB1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift in Sources */,
@@ -3417,6 +3439,7 @@
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
+				7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
@@ -3528,6 +3551,7 @@
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
+				7DD5A736211B7F8300965478 /* CryptoTools.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
