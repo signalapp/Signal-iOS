@@ -38,7 +38,7 @@ public class AvatarImageView: UIImageView {
     }
 
     override public func layoutSubviews() {
-        self.layer.borderColor = UIColor.black.cgColor.copy(alpha: 0.15)
+        self.layer.borderColor = UIColor(white: 0, alpha: 0.15).cgColor
         self.layer.cornerRadius = self.frame.size.width / 2
     }
 }

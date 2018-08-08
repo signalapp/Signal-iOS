@@ -87,7 +87,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     const CGFloat contentVMargin = 0;
 
     UIView *header = [UIView new];
-    header.backgroundColor = [UIColor whiteColor];
+    header.backgroundColor = Theme.backgroundColor;
 
     UIButton *cancelShareButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [header addSubview:cancelShareButton];

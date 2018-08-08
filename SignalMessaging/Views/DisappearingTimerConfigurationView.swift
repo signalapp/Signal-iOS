@@ -60,7 +60,6 @@ public class DisappearingTimerConfigurationView: UIView {
         self.label = UILabel()
         label.text = NSString.formatDurationSeconds(durationSeconds, useShortFormat: true)
         label.font = UIFont.systemFont(ofSize: 10)
-        label.textColor = UIColor.white
         label.textAlignment = .center
         label.minimumScaleFactor = 0.5
 

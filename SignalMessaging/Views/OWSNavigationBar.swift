@@ -71,9 +71,25 @@ public class OWSNavigationBar: UINavigationBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(themeDidChange),
+                                               name: .ThemeDidChange,
+                                               object: nil)
     }
 
     // MARK: Layout
+
+    @objc
+    public func themeDidChange() {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard self.backgroundImage(for: .default) != nil else {
+            return
+        }
+        let color = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        let backgroundImage = UIImage(color: color)
+        self.setBackgroundImage(backgroundImage, for: .default)
+    }
 
     @objc
     public func callDidChange() {
@@ -143,7 +159,7 @@ public class OWSNavigationBar: UINavigationBar {
     @objc
     public func makeClear() {
         self.backgroundColor = .clear
-        self.setBackgroundImage(UIImage(), for: .default)
+        self.setBackgroundImage(nil, for: .default)
         self.shadowImage = UIImage()
         self.clipsToBounds = true
         self.blurEffectView?.isHidden = true

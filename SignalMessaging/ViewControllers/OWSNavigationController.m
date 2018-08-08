@@ -42,7 +42,26 @@ NS_ASSUME_NONNULL_BEGIN
     navbar.navBarLayoutDelegate = self;
     [self updateLayoutForNavbar:navbar];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)themeDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    self.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
+    self.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationBar.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
 }
 
 - (void)viewDidLoad

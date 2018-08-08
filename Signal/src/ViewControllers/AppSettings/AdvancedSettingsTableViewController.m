@@ -293,8 +293,6 @@ NS_ASSUME_NONNULL_BEGIN
     [Theme setIsDarkThemeEnabled:sender.isOn];
 
     [self updateTableContents];
-
-    // TODO: Notify and refresh.
 }
 #endif
 
