@@ -130,7 +130,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MARK: - Create Views
 
     private func createViews() {
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = Theme.backgroundColor
 
         let scrollView = UIScrollView()
         self.scrollView = scrollView
@@ -222,7 +222,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                 // TODO: It'd be nice to inset these dividers from the edge of the screen.
                 let addDivider = {
                     let divider = UIView()
-                    divider.backgroundColor = UIColor(white: 0.9, alpha: 1.0)
+                    divider.backgroundColor = Theme.secondaryColor
                     divider.autoSetDimension(.height, toSize: 0.5)
                     groupRows.append(divider)
                 }
@@ -458,7 +458,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
-        label.textColor = UIColor.black
+        label.textColor = Theme.primaryColor
         label.font = UIFont.ows_mediumFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalHigh()
@@ -467,7 +467,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     private func valueLabel(text: String) -> UILabel {
         let label = UILabel()
-        label.textColor = UIColor.black
+        label.textColor = Theme.primaryColor
         label.font = UIFont.ows_regularFont(withSize: 14)
         label.text = text
         label.setContentHuggingHorizontalLow()
@@ -488,7 +488,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
-            subtitleLabel.textColor = UIColor.ows_darkGray
+            subtitleLabel.textColor = Theme.secondaryColor
             row.addSubview(subtitleLabel)
             subtitleLabel.autoPinTrailingToSuperviewMargin()
             subtitleLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)
