@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation MainAppContext
 
 @synthesize mainWindow = _mainWindow;
+@synthesize appLaunchTime = _appLaunchTime;
 
 - (instancetype)init
 {
@@ -35,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.reportedApplicationState = UIApplicationStateInactive;
+
+    _appLaunchTime = [NSDate new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)

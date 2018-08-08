@@ -94,6 +94,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block;
 
+@property (atomic, readonly) NSDate *appLaunchTime;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

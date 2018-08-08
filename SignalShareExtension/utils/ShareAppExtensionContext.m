@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ShareAppExtensionContext
 
 @synthesize mainWindow = _mainWindow;
+@synthesize appLaunchTime = _appLaunchTime;
 
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController
 {
@@ -35,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     _rootViewController = rootViewController;
 
     self.reportedApplicationState = UIApplicationStateActive;
+
+    _appLaunchTime = [NSDate new];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(extensionHostDidBecomeActive:)
