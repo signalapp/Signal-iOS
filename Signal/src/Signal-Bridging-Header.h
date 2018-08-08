@@ -38,6 +38,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
+#import "RegistrationViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"

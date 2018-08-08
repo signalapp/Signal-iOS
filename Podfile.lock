@@ -14,7 +14,6 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
-  - ATAppUpdater (2.0)
   - AxolotlKit (0.9.0):
     - CocoaLumberjack
     - Curve25519Kit (~> 2.1.0)
@@ -137,7 +136,6 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - ATAppUpdater
   - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`)
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
@@ -155,7 +153,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
-    - ATAppUpdater
     - CocoaLumberjack
     - libPhoneNumber-iOS
     - Mantle
@@ -213,7 +210,6 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  ATAppUpdater: a9f7027060959d47e58733d3b48f6b9a28cb8de1
   AxolotlKit: 07bd978ea931d113939de88d3d2d354896680ceb
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
@@ -233,6 +229,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 0c3d5978b54712391b5b90835b9554277b07fa23
+PODFILE CHECKSUM: cb4f38eaa6b1bdf86cfe440ef964c628e6d8321d
 
 COCOAPODS: 1.5.3
