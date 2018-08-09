@@ -61,6 +61,42 @@ NS_ASSUME_NONNULL_BEGIN
     self.cachedSize = nil;
 }
 
+- (void)setNumberOfLines:(NSInteger)numberOfLines
+{
+    if (self.numberOfLines == numberOfLines) {
+        return;
+    }
+    [super setNumberOfLines:numberOfLines];
+    self.cachedSize = nil;
+}
+
+- (void)setAdjustsFontSizeToFitWidth:(BOOL)adjustsFontSizeToFitWidth
+{
+    if (self.adjustsFontSizeToFitWidth == adjustsFontSizeToFitWidth) {
+        return;
+    }
+    [super setAdjustsFontSizeToFitWidth:adjustsFontSizeToFitWidth];
+    self.cachedSize = nil;
+}
+
+- (void)setMinimumScaleFactor:(CGFloat)minimumScaleFactor
+{
+    if (self.minimumScaleFactor == minimumScaleFactor) {
+        return;
+    }
+    [super setMinimumScaleFactor:minimumScaleFactor];
+    self.cachedSize = nil;
+}
+
+- (void)setMinimumFontSize:(CGFloat)minimumFontSize
+{
+    if (self.minimumFontSize == minimumFontSize) {
+        return;
+    }
+    [super setMinimumFontSize:minimumFontSize];
+    self.cachedSize = nil;
+}
+
 - (CGSize)sizeThatFits:(CGSize)size
 {
     if (self.cachedSize) {
