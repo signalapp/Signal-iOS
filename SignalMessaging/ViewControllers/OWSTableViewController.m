@@ -572,6 +572,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kOWSTableCellIdentifier];
     OWSAssert(cell);
+    [OWSTableItem configureCell:cell];
 
     cell.textLabel.text = item.title;
 
