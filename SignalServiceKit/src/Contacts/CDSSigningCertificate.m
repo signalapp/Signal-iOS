@@ -4,7 +4,6 @@
 
 #import "CDSSigningCertificate.h"
 #import "Cryptography.h"
-#import "NSData+Base64.h"
 #import "NSData+OWS.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <openssl/x509.h>

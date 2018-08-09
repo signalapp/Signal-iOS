@@ -3,7 +3,7 @@
 //
 
 #import "OWSFingerprint.h"
-#import "NSData+Base64.h"
+#import "NSData+OWS.h"
 #import "OWSError.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <CommonCrypto/CommonDigest.h>

@@ -3,7 +3,6 @@
 //
 
 #import "Cryptography.h"
-#import "NSData+Base64.h"
 #import "NSData+OWS.h"
 #import "OWSError.h"
 #import <CommonCrypto/CommonCryptor.h>
