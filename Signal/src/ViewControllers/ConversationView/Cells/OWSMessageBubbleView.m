@@ -11,6 +11,7 @@
 #import "OWSContactShareButtonsView.h"
 #import "OWSContactShareView.h"
 #import "OWSGenericAttachmentView.h"
+#import "OWSLabel.h"
 #import "OWSMessageFooterView.h"
 #import "OWSMessageTextView.h"
 #import "OWSQuotedMessageView.h"
@@ -85,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
 
-    self.senderNameLabel = [UILabel new];
+    self.senderNameLabel = [OWSLabel new];
     self.senderNameContainer = [UIView new];
     self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
     [self.senderNameContainer addSubview:self.senderNameLabel];
