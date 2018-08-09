@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "NSData+OWS.h"
 #import "PreKeyBundle+jsonDict.h"
-#import "NSData+Base64.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

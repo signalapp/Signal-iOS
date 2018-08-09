@@ -4,7 +4,7 @@
 
 #import "OWSStorage.h"
 #import "AppContext.h"
-#import "NSData+Base64.h"
+#import "NSData+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSUserDefaults+OWS.h"
 #import "OWSBackgroundTask.h"

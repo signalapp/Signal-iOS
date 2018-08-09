@@ -15,6 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)hexadecimalString;
 
+#pragma mark - Base64
+
++ (NSData *)dataFromBase64StringNoPadding:(NSString *)aString;
++ (NSData *)dataFromBase64String:(NSString *)aString;
+
+- (NSString *)base64EncodedString;
+
 @end
 
 NS_ASSUME_NONNULL_END

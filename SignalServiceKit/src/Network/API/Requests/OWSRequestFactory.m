@@ -3,7 +3,7 @@
 //
 
 #import "OWSRequestFactory.h"
-#import "NSData+Base64.h"
+#import "NSData+OWS.h"
 #import "OWS2FAManager.h"
 #import "OWSDevice.h"
 #import "TSAttributes.h"

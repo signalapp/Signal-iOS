@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/CDSSigningCertificate.h>
-#import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSData+OWS.h>
 #import <XCTest/XCTest.h>
 
