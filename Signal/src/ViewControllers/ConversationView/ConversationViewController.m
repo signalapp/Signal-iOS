@@ -569,8 +569,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert(self.conversationStyle);
 
-    _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle
-                                                   uiDatabaseConnection:self.uiDatabaseConnection];
+    _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
     self.conversationStyle.viewWidth = self.view.width;
 
     self.layout.delegate = self;
@@ -5167,9 +5166,7 @@ typedef enum : NSUInteger {
     }
     cell.conversationStyle = self.conversationStyle;
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [cell loadForDisplayWithTransaction:transaction];
-    }];
+    [cell loadForDisplay];
 
     return cell;
 }

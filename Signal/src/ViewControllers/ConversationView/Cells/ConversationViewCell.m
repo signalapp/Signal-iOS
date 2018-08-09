@@ -19,12 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.conversationStyle = nil;
 }
 
-- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)loadForDisplay
 {
     OWS_ABSTRACT_METHOD();
 }
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (CGSize)cellSize
 {
     OWS_ABSTRACT_METHOD();
 

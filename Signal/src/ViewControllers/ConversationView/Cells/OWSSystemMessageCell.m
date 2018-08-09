@@ -161,11 +161,10 @@ typedef void (^SystemMessageActionBlock)(void);
     return NSStringFromClass([self class]);
 }
 
-- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)loadForDisplay
 {
     OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
-    OWSAssert(transaction);
 
     self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
@@ -185,7 +184,7 @@ typedef void (^SystemMessageActionBlock)(void);
     }
 
     self.titleLabel.textColor = [self textColor];
-    [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
+    [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGSize titleSize = [self titleSize];
 
     if (self.action) {
@@ -312,52 +311,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (void)applyTitleForInteraction:(TSInteraction *)interaction
                            label:(UILabel *)label
-                     transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(interaction);
     OWSAssert(label);
-    OWSAssert(transaction);
+    OWSAssert(self.viewItem.systemMessageText.length > 0);
 
     [self configureFonts];
 
-    // TODO: Should we move the copy generation into this view?
-
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        label.text = [errorMessage previewTextWithTransaction:transaction];
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
-        if ([infoMessage isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
-            OWSVerificationStateChangeMessage *verificationMessage = (OWSVerificationStateChangeMessage *)infoMessage;
-            BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
-            NSString *displayName =
-                [[Environment current].contactsManager displayNameForPhoneIdentifier:verificationMessage.recipientId];
-            NSString *titleFormat = (isVerified
-                    ? (verificationMessage.isLocalChange
-                              ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
-                                    @"Format for info message indicating that the verification state was verified on "
-                                    @"this device. Embeds {{user's name or phone number}}.")
-                              : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
-                                    @"Format for info message indicating that the verification state was verified on "
-                                    @"another device. Embeds {{user's name or phone number}}."))
-                    : (verificationMessage.isLocalChange
-                              ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
-                                    @"Format for info message indicating that the verification state was unverified on "
-                                    @"this device. Embeds {{user's name or phone number}}.")
-                              : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
-                                    @"Format for info message indicating that the verification state was unverified on "
-                                    @"another device. Embeds {{user's name or phone number}}.")));
-            label.text = [NSString stringWithFormat:titleFormat, displayName];
-        } else {
-            label.text = [infoMessage previewTextWithTransaction:transaction];
-        }
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        TSCall *call = (TSCall *)interaction;
-        label.text = [call previewTextWithTransaction:transaction];
-    } else {
-        OWSFail(@"Unknown interaction type: %@", [interaction class]);
-        label.text = nil;
-    }
+    label.text = self.viewItem.systemMessageText;
 }
 
 - (CGFloat)topVMargin
@@ -389,7 +350,7 @@ typedef void (^SystemMessageActionBlock)(void);
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (CGSize)cellSize
 {
     OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
@@ -409,7 +370,7 @@ typedef void (^SystemMessageActionBlock)(void);
         result.height += self.iconSize + self.iconVSpacing;
     }
 
-    [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
+    [self applyTitleForInteraction:interaction label:self.titleLabel];
     CGSize titleSize = [self titleSize];
     result.height += titleSize.height;
 

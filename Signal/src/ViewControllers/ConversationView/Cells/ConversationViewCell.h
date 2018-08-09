@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSMessage;
 @class TSOutgoingMessage;
 @class TSQuotedMessage;
-@class YapDatabaseReadTransaction;
 
 @protocol ConversationViewCellDelegate <NSObject>
 
@@ -85,9 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) ConversationStyle *conversationStyle;
 
-- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)loadForDisplay;
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (CGSize)cellSize;
 
 @end
 

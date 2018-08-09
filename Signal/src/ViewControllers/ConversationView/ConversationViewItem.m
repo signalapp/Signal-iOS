@@ -113,6 +113,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.mediaSize = CGSizeZero;
     self.displayableQuotedText = nil;
     self.quotedReply = nil;
+    self.systemMessageText = nil;
 
     [self clearCachedLayoutState];
 
@@ -215,9 +216,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.cachedCellSize = nil;
 }
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (CGSize)cellSize
 {
-    OWSAssert(transaction);
     OWSAssertIsOnMainThread();
     OWSAssert(self.conversationStyle);
 
@@ -225,7 +225,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
         measurementCell.viewItem = self;
         measurementCell.conversationStyle = self.conversationStyle;
-        CGSize cellSize = [measurementCell cellSizeWithTransaction:transaction];
+        CGSize cellSize = [measurementCell cellSize];
         self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
         [measurementCell prepareForReuse];
     }
@@ -438,11 +438,26 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert(transaction);
     OWSAssert(!self.hasViewState);
 
-    if (![self.interaction isKindOfClass:[TSOutgoingMessage class]]
-        && ![self.interaction isKindOfClass:[TSIncomingMessage class]]) {
-        // Only text & attachment messages have "view state".
-        return;
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_Unknown:
+        case OWSInteractionType_Offer:
+            return;
+        case OWSInteractionType_Error:
+        case OWSInteractionType_Info:
+        case OWSInteractionType_Call:
+            self.systemMessageText = [self systemMessageTextWithTransaction:transaction];
+            OWSAssert(self.systemMessageText.length > 0);
+            return;
+        case OWSInteractionType_IncomingMessage:
+        case OWSInteractionType_OutgoingMessage:
+            break;
+        default:
+            OWSFail(@"%@ Unknown interaction type.", self.logTag);
+            return;
     }
+
+    OWSAssert([self.interaction isKindOfClass:[TSOutgoingMessage class]] ||
+        [self.interaction isKindOfClass:[TSIncomingMessage class]]);
 
     self.hasViewState = YES;
 
@@ -530,6 +545,57 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             self.displayableQuotedText =
                 [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
         }
+    }
+}
+
+- (NSString *)systemMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_Error: {
+            TSErrorMessage *errorMessage = (TSErrorMessage *)self.interaction;
+            return [errorMessage previewTextWithTransaction:transaction];
+        }
+        case OWSInteractionType_Info: {
+            TSInfoMessage *infoMessage = (TSInfoMessage *)self.interaction;
+            if ([infoMessage isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
+                OWSVerificationStateChangeMessage *verificationMessage
+                    = (OWSVerificationStateChangeMessage *)infoMessage;
+                BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
+                NSString *displayName = [[Environment current].contactsManager
+                    displayNameForPhoneIdentifier:verificationMessage.recipientId];
+                NSString *titleFormat = (isVerified
+                        ? (verificationMessage.isLocalChange
+                                  ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
+                                        @"Format for info message indicating that the verification state was verified "
+                                        @"on "
+                                        @"this device. Embeds {{user's name or phone number}}.")
+                                  : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
+                                        @"Format for info message indicating that the verification state was verified "
+                                        @"on "
+                                        @"another device. Embeds {{user's name or phone number}}."))
+                        : (verificationMessage.isLocalChange
+                                  ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
+                                        @"Format for info message indicating that the verification state was "
+                                        @"unverified on "
+                                        @"this device. Embeds {{user's name or phone number}}.")
+                                  : NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
+                                        @"Format for info message indicating that the verification state was "
+                                        @"unverified on "
+                                        @"another device. Embeds {{user's name or phone number}}.")));
+                return [NSString stringWithFormat:titleFormat, displayName];
+            } else {
+                return [infoMessage previewTextWithTransaction:transaction];
+            }
+        }
+        case OWSInteractionType_Call: {
+            TSCall *call = (TSCall *)self.interaction;
+            return [call previewTextWithTransaction:transaction];
+        }
+        default:
+            OWSFail(@"%@ not a system message.", self.logTag);
+            return nil;
     }
 }
 

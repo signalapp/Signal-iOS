@@ -5,12 +5,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
-@class YapDatabaseConnection;
-@class YapDatabaseReadTransaction;
 
 @protocol ConversationViewLayoutItem <NSObject>
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (CGSize)cellSize;
 
 - (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewLayoutItem>)previousLayoutItem;
 
@@ -39,8 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
-                     uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
+- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle;
 
 @end
 

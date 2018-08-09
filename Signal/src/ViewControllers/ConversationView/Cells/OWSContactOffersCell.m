@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
-- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)loadForDisplay
 {
     OWSAssert(self.conversationStyle);
     OWSAssert(self.conversationStyle.viewWidth > 0);
@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
     return (24.f + self.addToContactsButton.titleLabel.font.lineHeight);
 }
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (CGSize)cellSize
 {
     OWSAssert(self.conversationStyle);
     OWSAssert(self.conversationStyle.viewWidth > 0);
