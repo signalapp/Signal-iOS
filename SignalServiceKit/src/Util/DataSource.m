@@ -32,31 +32,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)data
 {
-    OWSFail(@"%@ Missing required method: data", self.logTag);
+    OWSAbstractMethod();
     return nil;
 }
 
 - (nullable NSURL *)dataUrl
 {
-    OWSFail(@"%@ Missing required method: dataUrl", self.logTag);
+    OWSAbstractMethod();
     return nil;
 }
 
 - (nullable NSString *)dataPathIfOnDisk
 {
-    OWSFail(@"%@ Missing required method: dataPathIfOnDisk", self.logTag);
+    OWSAbstractMethod();
     return nil;
 }
 
 - (NSUInteger)dataLength
 {
-    OWSFail(@"%@ Missing required method: dataLength", self.logTag);
+    OWSAbstractMethod();
     return 0;
 }
 
 - (BOOL)writeToPath:(NSString *)dstFilePath
 {
-    OWSFail(@"%@ Missing required method: writeToPath:", self.logTag);
+    OWSAbstractMethod();
     return NO;
 }
 
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns the MIME type, if known.
 - (nullable NSString *)mimeType
 {
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
 
     return nil;
 }
@@ -188,7 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
             if ([self writeToPath:filePath]) {
                 self.cachedFilePath = filePath;
             } else {
-                OWSFail(@"%@ Could not write data to disk: %@", self.logTag, self.fileExtension);
+                DDLogDebug(@"%@ Could not write data to disk: %@", self.logTag, self.fileExtension);
+                OWSFail(@"%@ Could not write data to disk.", self.logTag);
             }
         }
 
@@ -219,7 +220,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL success = [dataCopy writeToFile:dstFilePath atomically:YES];
     if (!success) {
-        OWSFail(@"%@ Could not write data to disk: %@", self.logTag, dstFilePath);
+        DDLogDebug(@"%@ Could not write data to disk: %@", self.logTag, dstFilePath);
+        OWSFail(@"%@ Could not write data to disk.", self.logTag);
         return NO;
     } else {
         return YES;
@@ -318,7 +320,8 @@ NS_ASSUME_NONNULL_BEGIN
             self.cachedData = [NSData dataWithContentsOfFile:self.filePath];
         }
         if (!self.cachedData) {
-            OWSFail(@"%@ Could not read data from disk: %@", self.logTag, self.filePath);
+            DDLogDebug(@"%@ Could not read data from disk: %@", self.logTag, self.filePath);
+            OWSFail(@"%@ Could not read data from disk.", self.logTag);
             self.cachedData = [NSData new];
         }
         return self.cachedData;
@@ -357,7 +360,8 @@ NS_ASSUME_NONNULL_BEGIN
             NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
                 [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:&error];
             if (!attributes || error) {
-                OWSFail(@"%@ Could not read data length from disk: %@, %@", self.logTag, self.filePath, error);
+                DDLogDebug(@"%@ Could not read data length from disk: %@, %@", self.logTag, self.filePath, error);
+                OWSFail(@"%@ Could not read data length from disk with error: %@", self.logTag, error);
                 self.cachedDataLength = @(0);
             } else {
                 uint64_t fileSize = [attributes fileSize];
@@ -375,8 +379,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
     if (!success || error) {
-        OWSFail(
+        DDLogDebug(
             @"%@ Could not write data from path: %@, to path: %@, %@", self.logTag, self.filePath, dstFilePath, error);
+        OWSFail(@"%@ Could not write data with error: %@", self.logTag, error);
         return NO;
     } else {
         return YES;

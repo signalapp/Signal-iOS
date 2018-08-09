@@ -177,7 +177,7 @@ void AssertIsOnSendingQueue()
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
-        OWSProdLogAndFail(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
+        OWSFail(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
     }
 
     self.successHandler();
@@ -570,7 +570,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                 failure:failureHandler];
         } else {
             // Neither a group nor contact thread? This should never happen.
-            OWSFail(@"%@ Unknown message type: %@", self.logTag, NSStringFromClass([message class]));
+            OWSFail(@"%@ Unknown message type: %@", self.logTag, [message class]);
 
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             [error setIsRetryable:NO];

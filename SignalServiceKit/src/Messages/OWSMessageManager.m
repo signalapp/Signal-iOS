@@ -179,8 +179,6 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ handling decrypted envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
 
     if (!envelope.source.isValidE164) {
-        DDLogVerbose(
-            @"%@ incoming envelope has invalid source: %@", self.logTag, [self descriptionForEnvelope:envelope]);
         OWSFail(@"%@ incoming envelope has invalid source", self.logTag);
         return;
     }

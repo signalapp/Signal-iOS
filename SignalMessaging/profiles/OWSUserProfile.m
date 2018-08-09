@@ -9,10 +9,10 @@
 #import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -448,7 +448,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             enumerateCollectionObjectsWithTransaction:transaction
                                            usingBlock:^(id object, BOOL *stop) {
                                                if (![object isKindOfClass:[OWSUserProfile class]]) {
-                                                   OWSProdLogAndFail(@"%@ unexpected object in user profiles: %@",
+                                                   OWSFail(@"%@ unexpected object in user profiles: %@",
                                                        self.logTag,
                                                        [object class]);
                                                    return;

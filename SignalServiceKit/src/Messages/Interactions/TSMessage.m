@@ -156,7 +156,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     uint32_t maxExpirationDuration = [OWSDisappearingMessagesConfiguration maxDurationSeconds];
     if (expiresInSeconds > maxExpirationDuration) {
-        OWSProdLogAndFail(@"%@ in %s using `maxExpirationDuration` instead of: %u",
+        OWSFail(@"%@ in %s using `maxExpirationDuration` instead of: %u",
             self.logTag,
             __PRETTY_FUNCTION__,
             maxExpirationDuration);
@@ -293,7 +293,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (!attachment) {
-            OWSProdLogAndFail(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
+            OWSFail(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
             continue;
         }
         [attachment removeWithTransaction:transaction];

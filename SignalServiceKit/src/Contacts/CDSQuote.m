@@ -50,13 +50,13 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 
     uint16_t version = parser.nextShort;
     if (version < 1 || version > 2) {
-        OWSProdLogAndFail(@"%@ unexpected quote version: %d", self.logTag, (int)version);
+        OWSFail(@"%@ unexpected quote version: %d", self.logTag, (int)version);
         return nil;
     }
 
     uint16_t signType = parser.nextShort;
     if ((signType & ~1) != 0) {
-        OWSProdLogAndFail(@"%@ invalid signType: %d", self.logTag, (int)signType);
+        OWSFail(@"%@ invalid signType: %d", self.logTag, (int)signType);
         return nil;
     }
 
@@ -69,19 +69,19 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
         pceSvn = parser.nextShort;
     } else {
         if (![parser readZero:2]) {
-            OWSProdLogAndFail(@"%@ non-zero pceSvn.", self.logTag);
+            OWSFail(@"%@ non-zero pceSvn.", self.logTag);
             return nil;
         }
     }
 
     if (![parser readZero:4]) {
-        OWSProdLogAndFail(@"%@ non-zero xeid.", self.logTag);
+        OWSFail(@"%@ non-zero xeid.", self.logTag);
         return nil;
     }
 
     NSData *_Nullable basename = [parser readBytes:32];
     if (!basename) {
-        OWSProdLogAndFail(@"%@ couldn't read basename.", self.logTag);
+        OWSFail(@"%@ couldn't read basename.", self.logTag);
         return nil;
     }
 
@@ -89,69 +89,69 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 
     NSData *_Nullable cpuSvn = [parser readBytes:16];
     if (!cpuSvn) {
-        OWSProdLogAndFail(@"%@ couldn't read cpuSvn.", self.logTag);
+        OWSFail(@"%@ couldn't read cpuSvn.", self.logTag);
         return nil;
     }
     if (![parser readZero:4]) {
-        OWSProdLogAndFail(@"%@ non-zero misc_select.", self.logTag);
+        OWSFail(@"%@ non-zero misc_select.", self.logTag);
         return nil;
     }
     if (![parser readZero:28]) {
-        OWSProdLogAndFail(@"%@ non-zero reserved1.", self.logTag);
+        OWSFail(@"%@ non-zero reserved1.", self.logTag);
         return nil;
     }
 
     uint64_t flags = parser.nextLong;
     if ((flags & SGX_FLAGS_RESERVED) != 0 || (flags & SGX_FLAGS_INITTED) == 0 || (flags & SGX_FLAGS_MODE64BIT) == 0) {
-        OWSProdLogAndFail(@"%@ invalid flags.", self.logTag);
+        OWSFail(@"%@ invalid flags.", self.logTag);
         return nil;
     }
 
     uint64_t xfrm = parser.nextLong;
     if ((xfrm & SGX_XFRM_RESERVED) != 0) {
-        OWSProdLogAndFail(@"%@ invalid xfrm.", self.logTag);
+        OWSFail(@"%@ invalid xfrm.", self.logTag);
         return nil;
     }
 
     NSData *_Nullable mrenclave = [parser readBytes:32];
     if (!mrenclave) {
-        OWSProdLogAndFail(@"%@ couldn't read mrenclave.", self.logTag);
+        OWSFail(@"%@ couldn't read mrenclave.", self.logTag);
         return nil;
     }
     if (![parser readZero:32]) {
-        OWSProdLogAndFail(@"%@ non-zero reserved2.", self.logTag);
+        OWSFail(@"%@ non-zero reserved2.", self.logTag);
         return nil;
     }
     NSData *_Nullable mrsigner = [parser readBytes:32];
     if (!mrsigner) {
-        OWSProdLogAndFail(@"%@ couldn't read mrsigner.", self.logTag);
+        OWSFail(@"%@ couldn't read mrsigner.", self.logTag);
         return nil;
     }
     if (![parser readZero:96]) {
-        OWSProdLogAndFail(@"%@ non-zero reserved3.", self.logTag);
+        OWSFail(@"%@ non-zero reserved3.", self.logTag);
         return nil;
     }
     uint16_t isvProdId = parser.nextShort;
     uint16_t isvSvn = parser.nextShort;
     if (![parser readZero:60]) {
-        OWSProdLogAndFail(@"%@ non-zero reserved4.", self.logTag);
+        OWSFail(@"%@ non-zero reserved4.", self.logTag);
         return nil;
     }
     NSData *_Nullable reportData = [parser readBytes:64];
     if (!reportData) {
-        OWSProdLogAndFail(@"%@ couldn't read reportData.", self.logTag);
+        OWSFail(@"%@ couldn't read reportData.", self.logTag);
         return nil;
     }
 
     // quote signature
     uint32_t signatureLength = parser.nextInt;
     if (signatureLength != quoteData.length - 436) {
-        OWSProdLogAndFail(@"%@ invalid signatureLength.", self.logTag);
+        OWSFail(@"%@ invalid signatureLength.", self.logTag);
         return nil;
     }
     NSData *_Nullable signature = [parser readBytes:signatureLength];
     if (!signature) {
-        OWSProdLogAndFail(@"%@ couldn't read signature.", self.logTag);
+        OWSFail(@"%@ couldn't read signature.", self.logTag);
         return nil;
     }
 

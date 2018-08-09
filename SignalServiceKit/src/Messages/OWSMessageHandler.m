@@ -150,7 +150,6 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             [description appendString:@"ConfigurationRequest"];
         } else {
-            // Shouldn't happen
             OWSFail(@"Unknown sync message request type");
             [description appendString:@"UnknownRequest"];
         }
@@ -163,7 +162,6 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
         [description appendString:verifiedString];
     } else {
-        // Shouldn't happen
         OWSFail(@"Unknown sync message type");
         [description appendString:@"Unknown"];
     }

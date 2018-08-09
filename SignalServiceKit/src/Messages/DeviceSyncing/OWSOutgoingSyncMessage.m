@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
 
     return [SSKProtoSyncMessageBuilder new];
 }

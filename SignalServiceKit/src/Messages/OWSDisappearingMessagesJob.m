@@ -375,7 +375,7 @@ void AssertIsOnDisappearingMessagesQueue()
         // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
         // is inevitable.
         if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
-            OWSProdLogAndFail(@"%@ unexpectedly deleted disappearing messages via fallback timer.", self.logTag);
+            OWSFail(@"%@ unexpectedly deleted disappearing messages via fallback timer.", self.logTag);
         }
     });
 }
@@ -395,8 +395,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
-            OWSProdLogAndFail(
-                @"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
+            OWSFail(@"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
             uint64_t readTimeBestGuess = message.timestampForSorting;

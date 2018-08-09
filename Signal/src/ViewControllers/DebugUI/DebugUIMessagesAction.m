@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(success);
     OWSAssert(failure);
 
-    OWS_ABSTRACT_METHOD();
+    OWSAbstractMethod();
 
     success();
 }

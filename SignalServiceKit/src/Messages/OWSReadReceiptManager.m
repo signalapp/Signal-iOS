@@ -452,12 +452,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         uint64_t messageIdTimestamp = readReceiptProto.timestamp;
 
         if (senderId.length == 0) {
-            OWSProdLogAndFail(@"%@ in %s senderId was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s senderId was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 
         if (messageIdTimestamp == 0) {
-            OWSProdLogAndFail(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 
@@ -529,12 +529,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                   BOOL *stop) {
          
          if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-             OWSFail(
-                     @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
+             OWSFail(@"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
                      @"key: %@",
-                     [object class],
-                     collection,
-                     key);
+                 [object class],
+                 collection,
+                 key);
              return;
          }
          id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;

@@ -931,7 +931,7 @@ const CGFloat kIconViewLength = 24;
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, [self.thread class], __PRETTY_FUNCTION__);
         return;
     }
 

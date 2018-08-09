@@ -716,7 +716,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             }
             NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream mediaURL]];
             if (!data) {
-                OWSFail(@"%@ Could not load attachment data: %@", self.logTag, [self.attachmentStream mediaURL]);
+                OWSFail(@"%@ Could not load attachment data", self.logTag);
                 return;
             }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
@@ -817,7 +817,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_AnimatedImage: {
             NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream mediaURL]];
             if (!data) {
-                OWSFail(@"%@ Could not load image data: %@", self.logTag, [self.attachmentStream mediaURL]);
+                OWSFail(@"%@ Could not load image data", self.logTag);
                 return;
             }
             ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];

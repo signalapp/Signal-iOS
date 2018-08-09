@@ -37,7 +37,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                          OWSFail(@"%@ Unexpected object in trusted keys collection key: %@ object: %@",
                                              self.logTag,
                                              recipientId,
-                                             object);
+                                             [object class]);
                                          return;
                                      }
                                      NSData *identityKey = (NSData *)object;
