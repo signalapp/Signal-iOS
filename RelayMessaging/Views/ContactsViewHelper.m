@@ -8,12 +8,12 @@
 #import "UIUtil.h"
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <RelayServiceKit/AppContext.h>
+#import <RelayServiceKit/Contact.h>
+#import <RelayServiceKit/OWSBlockingManager.h>
+#import <RelayServiceKit/PhoneNumber.h>
+#import <RelayServiceKit/SignalAccount.h>
+#import <RelayServiceKit/TSAccountManager.h>
 
 @import ContactsUI;
 
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
     if ([signalAccount.recipientId isEqualToString:localNumber]) {
         return YES;
     }
@@ -149,9 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSString *)localNumber
+- (NSString *)localUID
 {
-    return [TSAccountManager localNumber];
+    return [TSAccountManager localUID];
 }
 
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId

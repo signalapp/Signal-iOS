@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)highlightColor
 {
-    BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
+    BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localUID];
     return (isQuotingSelf ? self.conversationStyle.bubbleColorOutgoingSent
                           : [self.conversationStyle quotingSelfHighlightColor]);
 }
@@ -417,9 +417,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.quotedAuthorLabel);
 
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
+    NSString *_Nullable localUID = [TSAccountManager localUID];
     NSString *quotedAuthorText;
-    if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
+    if ([localUID isEqualToString:self.quotedMessage.authorId]) {
 
         if (self.isOutgoing) {
             quotedAuthorText = NSLocalizedString(

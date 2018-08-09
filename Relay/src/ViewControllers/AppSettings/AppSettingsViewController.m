@@ -335,7 +335,7 @@
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
     subtitleLabel.attributedText = [[NSAttributedString alloc]
         initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
-                                                                                                       localNumber]]];
+                                                                                                       localUID]]];
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];

@@ -58,7 +58,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
-    NSString *localContactId = [TSAccountManager localNumber];
+    NSString *localContactId = [TSAccountManager localUID];
     OWSAssert(localContactId.length > 0);
     for (NSString *phoneNumber in phoneNumbers) {
         OWSAssert(phoneNumber.length > 0);

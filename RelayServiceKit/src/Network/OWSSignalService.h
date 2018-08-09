@@ -18,6 +18,9 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 /// For uploading avatar assets.
 @property (nonatomic, readonly) AFHTTPSessionManager *CDNSessionManager;
 
+// Store tss URL
+@property (nonatomic, nullable) NSString *textSecureURL;
+
 + (instancetype)sharedInstance;
 
 - (instancetype)init NS_UNAVAILABLE;

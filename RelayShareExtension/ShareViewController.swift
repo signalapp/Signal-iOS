@@ -178,7 +178,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
                 guard let strongSelf = self else { return }
-                Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localUID)")
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
@@ -197,7 +197,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if TSAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
-                Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localUID)")
 
                 // We don't need to use the TSSocketManager in the SAE.
 
@@ -256,7 +256,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppReadiness.setAppIsReady()
 
         if TSAccountManager.isRegistered() {
-            Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
+            Logger.info("\(self.logTag) localUID: \(TSAccountManager.localUID)")
 
             // We don't need to use messageFetcherJob in the SAE.
 
@@ -291,7 +291,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("\(self.logTag) \(#function)")
 
         if TSAccountManager.isRegistered() {
-            Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
+            Logger.info("\(self.logTag) localUID: \(TSAccountManager.localUID)")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 

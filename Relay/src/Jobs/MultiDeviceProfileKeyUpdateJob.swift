@@ -37,12 +37,12 @@ import RelayMessaging
     }
 
     func run(retryDelay: TimeInterval = 1) {
-        guard let localNumber = TSAccountManager.localNumber() else {
-            owsFail("\(self.TAG) localNumber was unexpectedly nil")
+        guard let localUID = TSAccountManager.localUID() else {
+            owsFail("\(self.TAG) localUID was unexpectedly nil")
             return
         }
 
-        let localSignalAccount = SignalAccount(recipientId: localNumber)
+        let localSignalAccount = SignalAccount(recipientId: localUID)
         localSignalAccount.contact = Contact()
         let syncContactsMessage = OWSSyncContactsMessage(signalAccounts: [localSignalAccount],
                                                         identityManager: self.identityManager,

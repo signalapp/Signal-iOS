@@ -30,6 +30,8 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (void)generateNewIdentityKey;
 
+-(void)generateKeyPairWithPrivateKey:(NSData *)privKey;
+
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId

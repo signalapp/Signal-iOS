@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     }]];
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[contactsViewHelper localNumber]];
+    [memberRecipientIds removeObject:[contactsViewHelper localUID]];
     for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
         [section
             addItem:[OWSTableItem

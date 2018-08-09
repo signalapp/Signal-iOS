@@ -935,7 +935,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<NSString *> *parsedPhoneNumbers = [NSMutableSet new];
     for (PhoneNumber *phoneNumber in
         [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:searchText
-                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
+                                              clientPhoneNumber:[TSAccountManager localUID]]) {
 
         NSString *phoneNumberString = phoneNumber.toE164;
 

@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *theirName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
 
-    NSString *mySignalId = [self.accountManager localNumber];
+    NSString *mySignalId = [self.accountManager localUID];
     NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPair].publicKey;
 
     return [OWSFingerprint fingerprintWithMyStableId:mySignalId

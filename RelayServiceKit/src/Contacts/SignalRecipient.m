@@ -38,8 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssert([TSAccountManager localNumber].length > 0);
-    if ([[TSAccountManager localNumber] isEqualToString:textSecureIdentifier]) {
+    OWSAssert([TSAccountManager localUID].length > 0);
+    if ([[TSAccountManager localUID] isEqualToString:textSecureIdentifier]) {
         // Default to no devices.
         //
         // This instance represents our own account and is used for sending
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
         _devices = [NSOrderedSet new];
     }
 
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [self.devices containsObject:@(1)]) {
+    if ([self.uniqueId isEqual:[TSAccountManager localUID]] && [self.devices containsObject:@(1)]) {
         OWSFail(@"%@ in %s self as recipient device", self.logTag, __PRETTY_FUNCTION__);
     }
 
@@ -100,9 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO This method should probably live on the TSAccountManager rather than grabbing a global singleton.
 + (instancetype)selfRecipient
 {
-    SignalRecipient *myself = [self recipientForRecipientId:[TSAccountManager localNumber]];
+    SignalRecipient *myself = [self recipientForRecipientId:[TSAccountManager localUID]];
     if (!myself) {
-        myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localNumber]];
+        myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localUID]];
     }
     return myself;
 }
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(devices.count > 0);
     
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [devices containsObject:@(1)]) {
+    if ([self.uniqueId isEqual:[TSAccountManager localUID]] && [devices containsObject:@(1)]) {
         OWSFail(@"%@ in %s adding self as recipient device", self.logTag, __PRETTY_FUNCTION__);
         return;
     }

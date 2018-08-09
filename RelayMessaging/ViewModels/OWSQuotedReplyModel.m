@@ -150,7 +150,7 @@
 
     NSString *_Nullable authorId = ^{
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            return [TSAccountManager localNumber];
+            return [TSAccountManager localUID];
         } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
             return [(TSIncomingMessage *)message authorId];
         } else {

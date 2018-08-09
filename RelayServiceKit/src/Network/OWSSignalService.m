@@ -26,6 +26,8 @@ NSString *const kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
 NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
 
+NSString *const kFLTSSURLKey = @"FLTSSURLKey";
+
 @interface OWSSignalService ()
 
 @property (nonatomic, nullable, readonly) OWSCensorshipConfiguration *censorshipConfiguration;
@@ -33,6 +35,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 @property (atomic) BOOL hasCensoredPhoneNumber;
 
 @property (atomic) BOOL isCensorshipCircumventionActive;
+
+@property (nonatomic, nullable) NSString *cachedTSSURL;
 
 @end
 
@@ -77,7 +81,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localNumberDidChange:)
-                                                 name:kNSNotificationName_LocalNumberDidChange
+                                                 name:kNSNotificationName_LocalUIDDidChange
                                                object:nil];
 }
 
@@ -88,7 +92,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (void)updateHasCensoredPhoneNumber
 {
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
 
     if (localNumber) {
         self.hasCensoredPhoneNumber = [OWSCensorshipConfiguration isCensoredPhoneNumber:localNumber];
@@ -273,7 +277,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 
     OWSCensorshipConfiguration *configuration =
-        [OWSCensorshipConfiguration censorshipConfigurationWithPhoneNumber:TSAccountManager.localNumber];
+        [OWSCensorshipConfiguration censorshipConfigurationWithPhoneNumber:TSAccountManager.localUID];
     return configuration;
 }
 
@@ -289,6 +293,20 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     [[OWSPrimaryStorage dbReadWriteConnection] setObject:value
                                                   forKey:kOWSPrimaryStorage_ManualCensorshipCircumventionCountryCode
                                             inCollection:kOWSPrimaryStorage_OWSSignalService];
+}
+
+-(nullable NSString *)textSecureURL
+{
+    if (self.cachedTSSURL == nil) {
+        self.cachedTSSURL = (NSString *)[OWSPrimaryStorage valueForKey:kFLTSSURLKey];
+    }
+    return self.cachedTSSURL;
+}
+
+-(void)setTextSecureURL:(nullable NSString *)value
+{
+    [OWSPrimaryStorage setValue:value forKey:kFLTSSURLKey];
+    self.cachedTSSURL = nil;
 }
 
 @end

@@ -336,10 +336,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
     NSArray<NSString *> *recipientIds;
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        NSString *_Nullable localNumber = [TSAccountManager localNumber];
-        OWSAssert(localNumber);
+        NSString *_Nullable localUID = [TSAccountManager localUID];
+        OWSAssert(localUID);
         recipientIds = @[
-            localNumber,
+            localUID,
         ];
     } else {
         recipientIds = [thread recipientIdentifiers];

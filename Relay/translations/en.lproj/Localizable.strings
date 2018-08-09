@@ -2347,3 +2347,16 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+
+/* Forsta additions */
+"SUBMIT" = "Submit";
+"CREATE_ACCOUNT_BUTTON" = "Create Account";
+"ENTER_USERNAME_LABEL" = "Enter Username";
+"ENTER_ORGANIZATION_LABEL" = "Enter Organization (Optional)";
+"REGISTRATION_VERIFY_DEVICE" = "Verify This Device";
+"ENTER_VALIDATION_CODE" = "Enter Authentication Code";
+"RESEND_CODE" = "Send New Code";
+"ENTER_PASSWORD" = "Enter Password";
+"FORGOT_PASSWORD" = "Forgot Password";
+"ARE_YOU_SURE" = "Are you sure?";
+"RESETTING_PASSWORD" = "Resetting password";

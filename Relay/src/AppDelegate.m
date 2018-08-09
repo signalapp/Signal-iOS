@@ -587,7 +587,7 @@ static NSTimeInterval launchStartedAt;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 DDLogInfo(@"%@ running post launch block for registered user: %@",
                     self.logTag,
-                    [TSAccountManager localNumber]);
+                    [TSAccountManager localUID]);
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
@@ -1046,7 +1046,7 @@ static NSTimeInterval launchStartedAt;
     [AppReadiness setAppIsReady];
 
     if ([TSAccountManager isRegistered]) {
-        DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+        DDLogInfo(@"localNumber: %@", [TSAccountManager localUID]);
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
@@ -1119,7 +1119,7 @@ static NSTimeInterval launchStartedAt;
     [self enableBackgroundRefreshIfNecessary];
 
     if ([TSAccountManager isRegistered]) {
-        DDLogInfo(@"%@ localNumber: %@", [TSAccountManager localNumber], self.logTag);
+        DDLogInfo(@"%@ localUID: %@", [TSAccountManager localUID], self.logTag);
 
         [[OWSPrimaryStorage sharedManager].newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -1160,10 +1160,12 @@ static NSTimeInterval launchStartedAt;
             [[SignalsNavigationController alloc] initWithRootViewController:homeView];
         self.window.rootViewController = navigationController;
     } else {
-        RegistrationViewController *viewController = [RegistrationViewController new];
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:[NSBundle mainBundle]];
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+//        RegistrationViewController *viewController = [RegistrationViewController new];
         OWSNavigationController *navigationController =
             [[OWSNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.navigationBarHidden = YES;
+        navigationController.navigationBarHidden = NO;
         self.window.rootViewController = navigationController;
     }
 

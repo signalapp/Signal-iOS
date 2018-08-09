@@ -251,8 +251,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)phoneNumberText
 {
-    OWSAssert([TSAccountManager localNumber] != nil);
-    return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]];
+    OWSAssert([TSAccountManager localUID] != nil);
+    return [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localUID]];
 }
 
 - (void)updatePhoneNumberLabel

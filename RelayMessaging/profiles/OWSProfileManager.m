@@ -507,11 +507,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
-    if (!localNumber) {
+    NSString *_Nullable localUID = [TSAccountManager sharedInstance].localUID;
+    if (!localUID) {
         return;
     }
-    [ProfileFetcherJob runWithRecipientId:localNumber networkManager:self.networkManager ignoreThrottling:YES];
+    [ProfileFetcherJob runWithRecipientId:localUID networkManager:self.networkManager ignoreThrottling:YES];
 }
 
 #pragma mark - Profile Whitelist
@@ -879,8 +879,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
                 // If we're updating the profile that corresponds to our local number,
                 // update the local profile as well.
-                NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
-                if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
+                NSString *_Nullable localUID = [TSAccountManager sharedInstance].localUID;
+                if (localUID && [localUID isEqualToString:userProfile.recipientId]) {
                     OWSUserProfile *localUserProfile = self.localUserProfile;
                     OWSAssert(localUserProfile);
 
@@ -942,8 +942,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
-        NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
-        if (localNumber && [localNumber isEqualToString:recipientId]) {
+        NSString *_Nullable localUID = [TSAccountManager sharedInstance].localUID;
+        if (localUID && [localUID isEqualToString:recipientId]) {
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssert(localUserProfile);
 

@@ -460,7 +460,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         // TODO: It would be nice to combine the "contact" and "group" send logic here.
         if ([thread isKindOfClass:[TSContactThread class]] &&
-            [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
+            [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localUID]]) {
             // Send to self.
             OWSAssert(message.recipientIds.count == 1);
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -529,7 +529,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             TSContactThread *contactThread = (TSContactThread *)thread;
 
             NSString *recipientContactId
-                = ([message isKindOfClass:[OWSOutgoingSyncMessage class]] ? [TSAccountManager localNumber]
+                = ([message isKindOfClass:[OWSOutgoingSyncMessage class]] ? [TSAccountManager localUID]
                                                                           : contactThread.contactIdentifier);
 
             // If we block a user, don't send 1:1 messages to them. The UI
@@ -594,7 +594,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *recipientId = recipient.recipientId;
 
         // We don't need to send the message to ourselves...
-        if ([recipientId isEqualToString:[TSAccountManager localNumber]]) {
+        if ([recipientId isEqualToString:[TSAccountManager localUID]]) {
             continue;
         }
 
@@ -848,7 +848,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = [TSAccountManager localUID];
     BOOL isLocalNumber = [localNumber isEqualToString:recipient.uniqueId];
     if (isLocalNumber) {
         OWSAssert([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
@@ -1159,7 +1159,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSArray *missingDevices = responseJson[@"missingDevices"];
 
     if (missingDevices.count > 0) {
-        NSString *localNumber = [TSAccountManager localNumber];
+        NSString *localNumber = [TSAccountManager localUID];
         if ([localNumber isEqualToString:recipient.uniqueId]) {
             [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
         }
