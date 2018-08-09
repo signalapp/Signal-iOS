@@ -57,7 +57,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)offBackgroundColor
 {
     return (
-        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.9f alpha:1.f]);
+        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.94f alpha:1.f]);
 }
 
 + (UIColor *)primaryColor
@@ -110,7 +110,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)cellSelectedColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor);
+    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2 alpha:1] : [UIColor colorWithWhite:0.92 alpha:1]);
+}
+
++ (UIColor *)cellSeparatorColor
+{
+    return [UIColor colorWithWhite:0.78f alpha:1];
 }
 
 + (UIColor *)conversationButtonBackgroundColor
