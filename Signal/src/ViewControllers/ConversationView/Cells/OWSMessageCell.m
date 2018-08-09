@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)loadForDisplay
 {
     OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
@@ -320,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (CGSize)cellSize
 {
     OWSAssert(self.conversationStyle);
     OWSAssert(self.conversationStyle.viewWidth > 0);

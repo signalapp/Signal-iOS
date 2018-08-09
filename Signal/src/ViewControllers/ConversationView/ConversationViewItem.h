@@ -109,6 +109,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;
 
+@property (nonatomic, nullable) NSString *systemMessageText;
+
 #pragma mark - MessageActions
 
 @property (nonatomic, readonly) BOOL hasBodyTextActionContent;
