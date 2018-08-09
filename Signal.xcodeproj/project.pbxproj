@@ -207,6 +207,7 @@
 		34AC0A1E211B39EA00997B47 /* ThreadViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC0A0B211B39EA00997B47 /* ThreadViewHelper.m */; };
 		34AC0A1F211B39EA00997B47 /* AvatarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC0A0C211B39EA00997B47 /* AvatarImageView.swift */; };
 		34AC0A20211B39EA00997B47 /* ThreadViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC0A0D211B39EA00997B47 /* ThreadViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34AC0A23211C829F00997B47 /* OWSLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC0A21211C829E00997B47 /* OWSLabel.m */; };
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
@@ -841,6 +842,8 @@
 		34AC0A0B211B39EA00997B47 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
 		34AC0A0C211B39EA00997B47 /* AvatarImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AvatarImageView.swift; sourceTree = "<group>"; };
 		34AC0A0D211B39EA00997B47 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
+		34AC0A21211C829E00997B47 /* OWSLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLabel.m; sourceTree = "<group>"; };
+		34AC0A22211C829E00997B47 /* OWSLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLabel.h; sourceTree = "<group>"; };
 		34B0796B1FCF46B000E248C2 /* MainAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainAppContext.m; sourceTree = "<group>"; };
 		34B0796C1FCF46B000E248C2 /* MainAppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainAppContext.h; sourceTree = "<group>"; };
 		34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalShareExtension.entitlements; sourceTree = "<group>"; };
@@ -1819,6 +1822,8 @@
 				34CA631A2097806E00E526A0 /* OWSContactShareView.m */,
 				34D1F0B51F87F8850066283D /* OWSGenericAttachmentView.h */,
 				34D1F0B61F87F8850066283D /* OWSGenericAttachmentView.m */,
+				34AC0A22211C829E00997B47 /* OWSLabel.h */,
+				34AC0A21211C829E00997B47 /* OWSLabel.m */,
 				3496744B2076768600080B5F /* OWSMessageBubbleView.h */,
 				3496744C2076768700080B5F /* OWSMessageBubbleView.m */,
 				34D1F0A11F867BFC0066283D /* OWSMessageCell.h */,
@@ -3390,6 +3395,7 @@
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				34DBF004206BD5A500025978 /* OWSBubbleView.m in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
+				34AC0A23211C829F00997B47 /* OWSLabel.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				34D1F0831F8678AA0066283D /* ConversationInputTextView.m in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
