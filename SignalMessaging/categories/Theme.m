@@ -123,10 +123,24 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIBarStyle)barStyle
 {
     if (Theme.isDarkThemeEnabled) {
-        return UIBarStyleBlack;
+        return UIBarStyleDefault;
     } else {
         return UIBarStyleDefault;
     }
+}
+
++ (UISearchBarStyle)searchBarStyle
+{
+    if (Theme.isDarkThemeEnabled) {
+        return UISearchBarStyleProminent;
+    } else {
+        return UISearchBarStyleMinimal;
+    }
+}
+
++ (UIColor *)searchBarBackgroundColor
+{
+    return Theme.backgroundColor;
 }
 
 @end

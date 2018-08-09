@@ -101,8 +101,10 @@ NS_ASSUME_NONNULL_BEGIN
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = [Theme backgroundColor];
+    searchBar.backgroundColor = Theme.searchBarBackgroundColor;
     searchBar.barStyle = Theme.barStyle;
+    searchBar.searchBarStyle = Theme.searchBarStyle;
+    searchBar.barTintColor = Theme.backgroundColor;
     [searchBar sizeToFit];
 
     _tableViewController = [OWSTableViewController new];
