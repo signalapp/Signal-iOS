@@ -159,7 +159,8 @@ public class OWSNavigationBar: UINavigationBar {
     @objc
     public func makeClear() {
         self.backgroundColor = .clear
-        self.setBackgroundImage(nil, for: .default)
+        // Making a toolbar transparent requires setting an empty uiimage
+        self.setBackgroundImage(UIImage(), for: .default)
         self.shadowImage = UIImage()
         self.clipsToBounds = true
         self.blurEffectView?.isHidden = true
