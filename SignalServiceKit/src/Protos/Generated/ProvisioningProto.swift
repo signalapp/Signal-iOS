@@ -40,11 +40,11 @@ public enum ProvisioningProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionEnvelope? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> ProvisioningProtoProvisionEnvelope {
@@ -72,11 +72,11 @@ public enum ProvisioningProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
@@ -166,11 +166,11 @@ public enum ProvisioningProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> ProvisioningProtoProvisionMessage {
@@ -218,11 +218,11 @@ public enum ProvisioningProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc

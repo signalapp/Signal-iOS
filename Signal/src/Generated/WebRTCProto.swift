@@ -35,11 +35,11 @@ public enum WebRTCProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebRTCProtoConnected? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebRTCProtoConnected {
@@ -63,11 +63,11 @@ public enum WebRTCProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
@@ -121,11 +121,11 @@ public enum WebRTCProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebRTCProtoHangup? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebRTCProtoHangup {
@@ -149,11 +149,11 @@ public enum WebRTCProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
@@ -211,11 +211,11 @@ public enum WebRTCProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebRTCProtoVideoStreamingStatus? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebRTCProtoVideoStreamingStatus {
@@ -246,11 +246,11 @@ public enum WebRTCProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
@@ -305,11 +305,11 @@ public enum WebRTCProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebRTCProtoData? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebRTCProtoData {
@@ -341,11 +341,11 @@ public enum WebRTCProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
