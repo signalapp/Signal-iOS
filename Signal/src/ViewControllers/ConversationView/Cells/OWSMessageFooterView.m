@@ -4,6 +4,7 @@
 
 #import "OWSMessageFooterView.h"
 #import "DateUtil.h"
+#import "OWSLabel.h"
 #import "OWSMessageTimerView.h"
 #import "Signal-Swift.h"
 #import <QuartzCore/QuartzCore.h>
@@ -48,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self addArrangedSubview:leftStackView];
     [leftStackView setContentHuggingHigh];
 
-    self.timestampLabel = [UILabel new];
+    self.timestampLabel = [OWSLabel new];
     [leftStackView addArrangedSubview:self.timestampLabel];
 
     self.messageTimerView = [OWSMessageTimerView new];
