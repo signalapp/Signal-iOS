@@ -128,20 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark To be subclassed.
-
-- (BOOL)isGroupThread {
-    OWS_ABSTRACT_METHOD();
-
-    return NO;
-}
-
-// Override in ContactThread
-- (nullable NSString *)contactIdentifier
-{
-    return nil;
-}
-
 - (NSString *)name {
     OWS_ABSTRACT_METHOD();
 
