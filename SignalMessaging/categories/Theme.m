@@ -46,7 +46,9 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
     [UIUtil setupSignalAppearence];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:ThemeDidChangeNotification object:nil userInfo:nil];
+    [UIView performWithoutAnimation:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil userInfo:nil];
+    }];
 }
 
 + (UIColor *)backgroundColor
