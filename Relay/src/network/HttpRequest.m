@@ -74,55 +74,55 @@
     s->_headers      = headers;
     return s;
 }
-+ (HttpRequest *)httpRequestWithOtpAuthenticationAndMethod:(NSString *)method
-                                               andLocation:(NSString *)location
-                                           andOptionalBody:(NSString *)optionalBody
-                                            andLocalNumber:(NSString *)localNumber
-                                               andPassword:(NSString *)password
-                                                andCounter:(int64_t)counter {
-    ows_require(method != nil);
-    ows_require(location != nil);
-    ows_require(password != nil);
+//+ (HttpRequest *)httpRequestWithOtpAuthenticationAndMethod:(NSString *)method
+//                                               andLocation:(NSString *)location
+//                                           andOptionalBody:(NSString *)optionalBody
+//                                            andLocalNumber:(NSString *)localNumber
+//                                               andPassword:(NSString *)password
+//                                                andCounter:(int64_t)counter {
+//    ows_require(method != nil);
+//    ows_require(location != nil);
+//    ows_require(password != nil);
+//
+//    NSMutableDictionary *headers = [NSMutableDictionary dictionary];
+//    if (optionalBody != nil) {
+//        headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
+//    }
+//    headers[@"Authorization"] = [HttpRequest computeOtpAuthorizationTokenForLocalNumber:localNumber
+//                                                                        andCounterValue:counter
+//                                                                            andPassword:password];
+//
+//    HttpRequest *s   = [HttpRequest new];
+//    s->_method       = method;
+//    s->_location     = location;
+//    s->_optionalBody = optionalBody;
+//    s->_headers      = headers;
+//    return s;
+//}
 
-    NSMutableDictionary *headers = [NSMutableDictionary dictionary];
-    if (optionalBody != nil) {
-        headers[@"Content-Length"] = [@(optionalBody.length) stringValue];
-    }
-    headers[@"Authorization"] = [HttpRequest computeOtpAuthorizationTokenForLocalNumber:localNumber
-                                                                        andCounterValue:counter
-                                                                            andPassword:password];
+//+ (HttpRequest *)httpRequestFromData:(NSData *)data {
+//    ows_require(data != nil);
+//    NSUInteger requestSize;
+//    HttpRequestOrResponse *http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&requestSize];
+//    checkOperation(http.isRequest && requestSize == data.length);
+//    return [http request];
+//}
 
-    HttpRequest *s   = [HttpRequest new];
-    s->_method       = method;
-    s->_location     = location;
-    s->_optionalBody = optionalBody;
-    s->_headers      = headers;
-    return s;
-}
-
-+ (HttpRequest *)httpRequestFromData:(NSData *)data {
-    ows_require(data != nil);
-    NSUInteger requestSize;
-    HttpRequestOrResponse *http = [HttpRequestOrResponse tryExtractFromPartialData:data usedLengthOut:&requestSize];
-    checkOperation(http.isRequest && requestSize == data.length);
-    return [http request];
-}
-
-+ (NSString *)computeOtpAuthorizationTokenForLocalNumber:(PhoneNumber *)localNumber
-                                         andCounterValue:(int64_t)counterValue
-                                             andPassword:(NSString *)password {
-    ows_require(localNumber != nil);
-    ows_require(password != nil);
-
-    NSString *rawToken =
-        [NSString stringWithFormat:@"%@:%@:%lld",
-                                   localNumber,
-                                   [CryptoTools computeOtpWithPassword:password andCounter:counterValue],
-                                   counterValue];
-    NSData *encodedToken = [rawToken dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *tokenString = [encodedToken base64EncodedString];
-    return [@"OTP " stringByAppendingString:tokenString];
-}
+//+ (NSString *)computeOtpAuthorizationTokenForLocalNumber:(PhoneNumber *)localNumber
+//                                         andCounterValue:(int64_t)counterValue
+//                                             andPassword:(NSString *)password {
+//    ows_require(localNumber != nil);
+//    ows_require(password != nil);
+//
+//    NSString *rawToken =
+//        [NSString stringWithFormat:@"%@:%@:%lld",
+//                                   localNumber,
+//                                   [CryptoTools computeOtpWithPassword:password andCounter:counterValue],
+//                                   counterValue];
+//    NSData *encodedToken = [rawToken dataUsingEncoding:NSUTF8StringEncoding];
+//    NSString *tokenString = [encodedToken base64EncodedString];
+//    return [@"OTP " stringByAppendingString:tokenString];
+//}
 + (NSString *)computeBasicAuthorizationTokenForLocalNumber:(NSString *)localNumber andPassword:(NSString *)password {
     NSString *rawToken = [NSString stringWithFormat:@"%@:%@", localNumber, password];
     NSData *encodedToken = [rawToken dataUsingEncoding:NSUTF8StringEncoding];

@@ -396,13 +396,14 @@
             [CCSMStorage.sharedInstance setTags:@{ }];
         }
         
-        [TSStorageManager.sharedManager storeLocalNumber:userID withProtocolContext:nil];
+        [TSAccountManager.sharedInstance didRegister];
         
         [CCSMStorage.sharedInstance setSessionToken:[payload objectForKey:@"token"]];
         
         [CCSMStorage.sharedInstance setUserInfo:userDict];
-        [SignalRecipient getOrCreateRecipientWithUserDictionary:userDict];
-        [TSAccountManager.sharedInstance myself];
+        // TODO: Bring this in
+//        [SignalRecipient getOrCreateRecipientWithUserDictionary:userDict];
+//        [TSAccountManager.sharedInstance myself];
         
         NSDictionary *orgDict = [userDict objectForKey:@"org"];
         [CCSMStorage.sharedInstance setOrgInfo:orgDict];

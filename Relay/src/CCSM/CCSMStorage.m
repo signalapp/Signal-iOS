@@ -51,8 +51,8 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
 -(instancetype)init
 {
     if (self = [super init]) {
-        _readConnection = [TSStorageManager.sharedManager newDatabaseConnection];
-        _writeConnection =  [TSStorageManager.sharedManager newDatabaseConnection];
+        _readConnection = [OWSPrimaryStorage.sharedManager dbReadConnection];
+        _writeConnection =  [OWSPrimaryStorage.sharedManager dbReadWriteConnection];
     }
     return self;
 }

@@ -12,7 +12,7 @@
     NSMutableData *d = [NSMutableData dataWithLength:length];
     OSStatus status  = SecRandomCopyBytes(kSecRandomDefault, length, [d mutableBytes]);
     if (status != noErr) {
-        [SecurityFailure raise:@"SecRandomCopyBytes failed"];
+//        [SecurityFailure raise:@"SecRandomCopyBytes failed"];
     }
     return [d copy];
 }

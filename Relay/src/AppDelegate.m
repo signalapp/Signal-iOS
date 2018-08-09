@@ -1165,7 +1165,7 @@ static NSTimeInterval launchStartedAt;
 //        RegistrationViewController *viewController = [RegistrationViewController new];
         OWSNavigationController *navigationController =
             [[OWSNavigationController alloc] initWithRootViewController:viewController];
-        navigationController.navigationBarHidden = YES;
+        navigationController.navigationBarHidden = NO;
         self.window.rootViewController = navigationController;
     }
 

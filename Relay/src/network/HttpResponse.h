@@ -16,7 +16,7 @@
                               andStatusText:(NSString*)statusText
                                  andHeaders:(NSDictionary*)headers
                         andOptionalBodyData:(NSData*)optionalBody;
-+(HttpResponse*) httpResponseFromData:(NSData*)data;
+//+(HttpResponse*) httpResponseFromData:(NSData*)data;
 +(HttpResponse*) httpResponse200Ok;
 +(HttpResponse*) httpResponse200OkWithOptionalBody:(NSString*)optionalBody;
 +(HttpResponse*) httpResponse501NotImplemented;

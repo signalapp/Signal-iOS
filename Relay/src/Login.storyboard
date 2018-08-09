@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Ir9-Se-0YC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="wV2-px-y1G">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -16,7 +16,7 @@
             <objects>
                 <tableViewController id="Iur-Gf-eJN" customClass="NewAccountViewController" customModule="Relay" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="0oC-eW-WAb">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
@@ -347,7 +347,7 @@
                         <outlet property="submitButton" destination="l09-Ir-zlb" id="ERt-sD-DKq"/>
                         <outlet property="usernameTextField" destination="87r-j5-vyj" id="QCF-j9-WVj"/>
                         <segue destination="Szf-PP-DHq" kind="show" identifier="validationViewSegue" id="rsV-WK-HqB"/>
-                        <segue destination="lHa-vW-cYk" kind="presentation" identifier="mainSegue" id="Pda-Xi-qnU"/>
+                        <segue destination="2UZ-DJ-tLC" kind="presentation" identifier="mainSegue" id="dPw-SD-pmc"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zWF-oh-3Np" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -393,7 +393,7 @@
             <objects>
                 <tableViewController id="wV2-px-y1G" customClass="LoginViewController" customModule="Relay" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="gQV-Nm-KHG">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
@@ -597,20 +597,30 @@
             </objects>
             <point key="canvasLocation" x="-1215.2" y="207.34632683658174"/>
         </scene>
-        <!--Main_v2-->
-        <scene sceneID="30S-pw-aQx">
+        <!--View Controller-->
+        <scene sceneID="oqC-r7-FLp">
             <objects>
-                <viewControllerPlaceholder storyboardName="Main_v2" id="lHa-vW-cYk" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="lxn-3l-bHY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="2UZ-DJ-tLC" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="KkS-yz-KtL"/>
+                        <viewControllerLayoutGuide type="bottom" id="LLq-VO-Mlf"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="uhO-ur-rmV">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wfi-uc-Dxd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="609" y="629"/>
+            <point key="canvasLocation" x="1057" y="629"/>
         </scene>
         <!--Validation View Controller-->
         <scene sceneID="IiD-V5-MpH">
             <objects>
                 <tableViewController id="Szf-PP-DHq" customClass="ValidationViewController" customModule="Relay" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="onDrag" dataMode="static" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="OZk-Xv-zGh">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
@@ -798,44 +808,19 @@
                         <outlet property="submitButton" destination="aZY-cX-jkb" id="x1W-JT-E68"/>
                         <outlet property="validationCode1TextField" destination="d1v-K2-QuZ" id="qXr-Tm-FTQ"/>
                         <outlet property="validationCode2TextField" destination="Ndq-6v-QII" id="jUp-hy-fLK"/>
-                        <segue destination="lHa-vW-cYk" kind="presentation" identifier="mainSegue" id="YmK-Xi-HW3"/>
+                        <segue destination="2UZ-DJ-tLC" kind="presentation" identifier="mainSegue" id="LA8-CK-uap"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="biu-lp-u4R" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-279" y="630"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="Rua-rS-UBS">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Ir9-Se-0YC" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" clipsSubviews="YES" contentMode="scaleToFill" translucent="NO" id="JDd-kL-2wa">
-                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        </textAttributes>
-                        <textAttributes key="largeTitleTextAttributes">
-                            <color key="textColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        </textAttributes>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="wV2-px-y1G" kind="relationship" relationship="rootViewController" id="sAw-4v-cgL"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="PDh-2a-Mvz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-2154" y="209"/>
-        </scene>
     </scenes>
     <resources>
         <image name="Forsta_logo_blk_horiz" width="1510" height="525"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Vks-BD-c8d"/>
-        <segue reference="YmK-Xi-HW3"/>
+        <segue reference="rTy-kv-9p5"/>
+        <segue reference="LA8-CK-uap"/>
     </inferredMetricsTieBreakers>
 </document>

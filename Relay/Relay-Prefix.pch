@@ -52,9 +52,9 @@
 #define FLSMSInvitationURL @"https://www.forsta.io"
 
 // TODO:  Flesh this for dev environment
-#define FLHomeURL FLForstaProdURL
-#define FLDomainCreateURL FLDomainCreateProdURL
-#define FLSupermanID FLSupermanProdID
+#define FLHomeURL FLForstaDevURL
+#define FLDomainCreateURL FLDomainCreateDevURL
+#define FLSupermanID FLSupermanDevID
 
 
 #endif

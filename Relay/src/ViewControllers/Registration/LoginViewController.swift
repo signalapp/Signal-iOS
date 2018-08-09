@@ -38,6 +38,9 @@ class LoginViewController: UITableViewController {
         super.viewWillAppear(animated)
         
 //        self.navigationController?.navigationBar.isHidden = true
+        
+        self.createAccountButton.isEnabled = false
+        self.createAccountButton.alpha = 0.5
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -151,8 +154,10 @@ class LoginViewController: UITableViewController {
             self.spinner.stopAnimating()
             self.loginButton.isEnabled = true
             self.loginButton.alpha = 1.0
-            self.createAccountButton.isEnabled = true
-            self.createAccountButton.alpha = 1.0
+            
+            // TODO: uncomment after implementation
+//            self.createAccountButton.isEnabled = true
+//            self.createAccountButton.alpha = 1.0
         }
     }
 }
