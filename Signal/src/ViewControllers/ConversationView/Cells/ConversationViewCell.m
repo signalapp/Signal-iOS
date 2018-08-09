@@ -40,6 +40,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// For perf reasons, skip the default implementation which is only relevant for self-sizing cells.
+- (UICollectionViewLayoutAttributes *)preferredLayoutAttributesFittingAttributes:
+    (UICollectionViewLayoutAttributes *)layoutAttributes
+{
+    return layoutAttributes;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
