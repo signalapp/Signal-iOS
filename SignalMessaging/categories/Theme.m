@@ -123,6 +123,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_light02Color);
 }
 
++ (UIBlurEffect *)barBlurEffect
+{
+    return Theme.isDarkThemeEnabled ? [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark]
+                                    : [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+}
+
 #pragma mark -
 
 + (UIBarStyle)barStyle
