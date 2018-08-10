@@ -249,12 +249,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
         if (lastRow == nameRow || lastRow == avatarRow) {
             UIView *separator = [UIView containerView];
-            separator.backgroundColor = Theme.secondaryColor;
+            separator.backgroundColor = Theme.cellSeparatorColor;
             [contentView addSubview:separator];
             [separator autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
             [separator autoPinLeadingToSuperviewMarginWithInset:18.f];
             [separator autoPinTrailingToSuperviewMarginWithInset:18.f];
-            [separator autoSetDimension:ALDimensionHeight toSize:1.f];
+            [separator autoSetDimension:ALDimensionHeight toSize:CGHairlineWidth()];
             lastRow = separator;
         }
     }

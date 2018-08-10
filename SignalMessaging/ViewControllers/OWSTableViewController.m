@@ -114,7 +114,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     cell.detailTextLabel.textColor = [Theme secondaryColor];
 
     UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = [Theme.cellSelectedColor colorWithAlphaComponent:0.08];
+    selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
     cell.selectedBackgroundView = selectedBackgroundView;
 }
 
