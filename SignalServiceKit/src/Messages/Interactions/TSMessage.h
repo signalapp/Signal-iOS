@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
+- (nullable NSString *)bodyTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
 

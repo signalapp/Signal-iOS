@@ -154,6 +154,18 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.backgroundColor;
 }
 
+#pragma mark -
+
++ (UIColor *)toastForegroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_whiteColor);
+}
+
++ (UIColor *)toastBackgroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

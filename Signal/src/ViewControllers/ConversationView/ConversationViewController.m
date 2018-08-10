@@ -2433,7 +2433,7 @@ typedef enum : NSUInteger {
     }];
 
     if (!quotedInteraction || !groupIndex) {
-        DDLogError(@"%@ Couldn't find message quoted in quoted reply.", self.logTag);
+        [self presentMissingQuotedReplyToast];
         return;
     }
 
@@ -2534,7 +2534,8 @@ typedef enum : NSUInteger {
 
     __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        quotedReply = [OWSQuotedReplyModel quotedReplyForConversationViewItem:conversationItem transaction:transaction];
+        quotedReply = [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:conversationItem
+                                                                             transaction:transaction];
     }];
 
     if (![quotedReply isKindOfClass:[OWSQuotedReplyModel class]]) {
@@ -5290,6 +5291,23 @@ typedef enum : NSUInteger {
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Toast
+
+- (void)presentMissingQuotedReplyToast
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE",
+        @"Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of "
+        @"the message doesn't exist.");
+
+    ToastController *toastController = [[ToastController alloc] initWithText:toastText];
+
+    CGFloat bottomInset = 10 + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
+
+    [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
 }
 
 #pragma mark -

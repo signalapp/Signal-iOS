@@ -1995,7 +1995,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                      isGroupThread:thread.isGroupThread
                                                                                        transaction:transaction
                                                                                  conversationStyle:conversationStyle];
-                quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
+                quotedMessage = [
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                    buildQuotedMessageForSending];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBodyWIndex
@@ -2012,7 +2014,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                      isGroupThread:thread.isGroupThread
                                                                                        transaction:transaction
                                                                                  conversationStyle:conversationStyle];
-                quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
+                quotedMessage = [
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                    buildQuotedMessageForSending];
             }
             OWSAssert(quotedMessage);
 

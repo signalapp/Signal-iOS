@@ -539,7 +539,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     if (message.quotedMessage) {
         self.quotedReply =
-            [[OWSQuotedReplyModel alloc] initWithQuotedMessage:message.quotedMessage transaction:transaction];
+            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage transaction:transaction];
 
         if (self.quotedReply.body.length > 0) {
             self.displayableQuotedText =
