@@ -84,11 +84,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                messageBody:text
-                                                               attachmentId:nil
-                                                           expiresInSeconds:expiresInSeconds
-                                                              quotedMessage:[quotedReplyModel buildQuotedMessage]];
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread
+                                       messageBody:text
+                                      attachmentId:nil
+                                  expiresInSeconds:expiresInSeconds
+                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 
@@ -136,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     expireStartedAt:0
                                                      isVoiceMessage:[attachment isVoiceMessage]
                                                    groupMetaMessage:TSGroupMessageUnspecified
-                                                      quotedMessage:[quotedReplyModel buildQuotedMessage]
+                                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil];
 
     [messageSender enqueueAttachment:attachment.dataSource

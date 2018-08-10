@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
+                       bodySource:(TSQuotedMessageContentSource)bodySource
     receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
 {
     OWSAssert(timestamp > 0);
@@ -72,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     _timestamp = timestamp;
     _authorId = authorId;
     _body = body;
+    _bodySource = bodySource;
     _quotedAttachments = attachmentInfos;
 
     return self;
@@ -93,7 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
     _timestamp = timestamp;
     _authorId = authorId;
     _body = body;
-    
+    _bodySource = TSQuotedMessageContentSourceLocal;
+
     NSMutableArray *attachmentInfos = [NSMutableArray new];
     for (TSAttachmentStream *attachmentStream in attachments) {
         [attachmentInfos addObject:[[OWSAttachmentInfo alloc] initWithAttachmentStream:attachmentStream]];
@@ -129,12 +132,31 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *authorId = [quoteProto author];
 
     NSString *_Nullable body = nil;
-    BOOL hasText = NO;
     BOOL hasAttachment = NO;
-    if ([quoteProto hasText] && [quoteProto text].length > 0) {
-        body = [quoteProto text];
-        hasText = YES;
+    TSQuotedMessageContentSource bodySource = TSQuotedMessageContentSourceUnknown;
+
+    // Prefer to generate the text snippet locally if available.
+    TSMessage *_Nullable localRecord = (TSMessage *)[
+        [TSInteraction interactionsWithTimestamp:quoteProto.id ofClass:TSMessage.class withTransaction:transaction]
+        firstObject];
+
+    if (localRecord) {
+        bodySource = TSQuotedMessageContentSourceLocal;
+
+        NSString *localText = [localRecord bodyTextWithTransaction:transaction];
+        if (localText.length > 0) {
+            body = localText;
+        }
     }
+
+    if (body.length == 0) {
+        if (quoteProto.text.length > 0) {
+            bodySource = TSQuotedMessageContentSourceRemote;
+            body = quoteProto.text;
+        }
+    }
+
+    OWSAssert(bodySource != TSQuotedMessageContentSourceUnknown);
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
@@ -180,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
         [attachmentInfos addObject:attachmentInfo];
     }
 
-    if (!hasText && !hasAttachment) {
+    if (body.length == 0 && !hasAttachment) {
         OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
         return nil;
     }
@@ -188,6 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                              authorId:authorId
                                                  body:body
+                                           bodySource:bodySource
                         receivedQuotedAttachmentInfos:attachmentInfos];
 }
 

@@ -1607,6 +1607,12 @@
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
 
+/* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
+"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
 

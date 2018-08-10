@@ -49,6 +49,11 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *searchBarBackgroundColor;
 @property (class, readonly, nonatomic) UIBlurEffect *barBlurEffect;
 
+#pragma mark -
+
+@property (class, readonly, nonatomic) UIColor *toastForegroundColor;
+@property (class, readonly, nonatomic) UIColor *toastBackgroundColor;
+
 @end
 
 NS_ASSUME_NONNULL_END

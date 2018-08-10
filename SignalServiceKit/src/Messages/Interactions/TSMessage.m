@@ -226,6 +226,32 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+- (nullable NSString *)bodyTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if (self.hasAttachments) {
+        TSAttachment *_Nullable attachment = [self attachmentWithTransaction:transaction];
+
+        if ([OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType] &&
+            [attachment isKindOfClass:TSAttachmentStream.class]) {
+            TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+
+            NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+            if (data) {
+                NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                if (text) {
+                    return text.filterStringForDisplay;
+                }
+            }
+        }
+    }
+
+    if (self.body.length > 0) {
+        return self.body.filterStringForDisplay;
+    }
+
+    return nil;
+}
+
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {    

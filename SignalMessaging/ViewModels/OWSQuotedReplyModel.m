@@ -16,43 +16,64 @@
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSQuotedReplyModel ()
+
+@property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(nullable NSString *)body
+                       bodySource:(TSQuotedMessageContentSource)bodySource
+                   thumbnailImage:(nullable UIImage *)thumbnailImage
+                      contentType:(nullable NSString *)contentType
+                   sourceFilename:(nullable NSString *)sourceFilename
+                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
+          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed NS_DESIGNATED_INITIALIZER;
+
+@end
+
 // View Model which has already fetched any thumbnail attachment.
 @implementation OWSQuotedReplyModel
 
+#pragma mark - Initializers
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
-                             body:(NSString *_Nullable)body
+                             body:(nullable NSString *)body
+                       bodySource:(TSQuotedMessageContentSource)bodySource
+                   thumbnailImage:(nullable UIImage *)thumbnailImage
+                      contentType:(nullable NSString *)contentType
+                   sourceFilename:(nullable NSString *)sourceFilename
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
+          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
 {
-    return [self initWithTimestamp:timestamp
-                          authorId:authorId
-                              body:body
-                    thumbnailImage:attachmentStream.thumbnailImage
-                       contentType:attachmentStream.contentType
-                    sourceFilename:attachmentStream.sourceFilename
-                  attachmentStream:attachmentStream
-        thumbnailAttachmentPointer:nil
-           thumbnailDownloadFailed:NO];
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _timestamp = timestamp;
+    _authorId = authorId;
+    _body = body;
+    _bodySource = bodySource;
+    _thumbnailImage = thumbnailImage;
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+    _attachmentStream = attachmentStream;
+    _thumbnailAttachmentPointer = thumbnailAttachmentPointer;
+    _thumbnailDownloadFailed = thumbnailDownloadFailed;
+
+    return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
-                             body:(NSString *_Nullable)body
-                   thumbnailImage:(nullable UIImage *)thumbnailImage;
-{
-    return [self initWithTimestamp:timestamp
-                          authorId:authorId
-                              body:body
-                    thumbnailImage:thumbnailImage
-                       contentType:nil
-                    sourceFilename:nil
-                  attachmentStream:nil
-        thumbnailAttachmentPointer:nil
-           thumbnailDownloadFailed:NO];
-}
+#pragma mark - Factory Methods
 
-- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                          transaction:(YapDatabaseReadTransaction *)transaction
++ (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                                 transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(quotedMessage.quotedAttachments.count <= 1);
     OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
@@ -82,57 +103,20 @@
         }
     }
 
-    return [self initWithTimestamp:quotedMessage.timestamp
-                          authorId:quotedMessage.authorId
-                              body:quotedMessage.body
-                    thumbnailImage:thumbnailImage
-                       contentType:attachmentInfo.contentType
-                    sourceFilename:attachmentInfo.sourceFilename
-                  attachmentStream:nil
-        thumbnailAttachmentPointer:attachmentPointer
-           thumbnailDownloadFailed:thumbnailDownloadFailed];
+    return [[self alloc] initWithTimestamp:quotedMessage.timestamp
+                                  authorId:quotedMessage.authorId
+                                      body:quotedMessage.body
+                                bodySource:quotedMessage.bodySource
+                            thumbnailImage:thumbnailImage
+                               contentType:attachmentInfo.contentType
+                            sourceFilename:attachmentInfo.sourceFilename
+                          attachmentStream:nil
+                thumbnailAttachmentPointer:attachmentPointer
+                   thumbnailDownloadFailed:thumbnailDownloadFailed];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
-                             body:(nullable NSString *)body
-                   thumbnailImage:(nullable UIImage *)thumbnailImage
-                      contentType:(nullable NSString *)contentType
-                   sourceFilename:(nullable NSString *)sourceFilename
-                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _timestamp = timestamp;
-    _authorId = authorId;
-    _body = body;
-    _thumbnailImage = thumbnailImage;
-    _contentType = contentType;
-    _sourceFilename = sourceFilename;
-    _attachmentStream = attachmentStream;
-    _thumbnailAttachmentPointer = thumbnailAttachmentPointer;
-    _thumbnailDownloadFailed = thumbnailDownloadFailed;
-
-    return self;
-}
-
-- (TSQuotedMessage *)buildQuotedMessage
-{
-    NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
-
-    return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
-                                             authorId:self.authorId
-                                                 body:self.body
-                          quotedAttachmentsForSending:attachments];
-}
-
-+ (nullable instancetype)quotedReplyForConversationViewItem:(ConversationViewItem *)conversationItem
-                                                transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(ConversationViewItem *)conversationItem
+                                                           transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssert(conversationItem);
     OWSAssert(transaction);
@@ -167,11 +151,16 @@
         // because the QuotedReplyViewModel has some hardcoded assumptions that only quoted attachments have
         // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
         // contactShare avatar in the quoted reply.
-        return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp
-                                                     authorId:authorId
-                                                         body:[@"👤 " stringByAppendingString:contactShare.displayName]
-                                               thumbnailImage:nil];
-        
+        return [[self alloc] initWithTimestamp:timestamp
+                                      authorId:authorId
+                                          body:[@"👤 " stringByAppendingString:contactShare.displayName]
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:nil
+                                   contentType:nil
+                                sourceFilename:nil
+                              attachmentStream:nil
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
     }
 
     NSString *_Nullable quotedText = message.body;
@@ -234,11 +223,35 @@
         hasText = YES;
     }
 
-    return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp
-                                                 authorId:authorId
-                                                     body:quotedText
-                                         attachmentStream:quotedAttachment];
+    return [[self alloc] initWithTimestamp:timestamp
+                                  authorId:authorId
+                                      body:quotedText
+                                bodySource:TSQuotedMessageContentSourceLocal
+                            thumbnailImage:quotedAttachment.thumbnailImage
+                               contentType:quotedAttachment.contentType
+                            sourceFilename:quotedAttachment.sourceFilename
+                          attachmentStream:quotedAttachment
+                thumbnailAttachmentPointer:nil
+                   thumbnailDownloadFailed:NO];
 }
 
+#pragma mark - Instance Methods
+
+- (TSQuotedMessage *)buildQuotedMessageForSending
+{
+    NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
+
+    return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
+                                             authorId:self.authorId
+                                                 body:self.body
+                          quotedAttachmentsForSending:attachments];
+}
+
+- (BOOL)isRemotelySourced
+{
+    return self.bodySource == TSQuotedMessageContentSourceRemote;
+}
 
 @end
+
+NS_ASSUME_NONNULL_END
