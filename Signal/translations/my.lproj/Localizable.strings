@@ -77,7 +77,10 @@
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "အမည်ထည့်ပါ ";
 
-/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ဗားရှင်း %@ကို  App Store တွင်ရရှိနိုင်ပါသည်။ ";
 
 /* Title for the 'new app version available' alert. */
@@ -162,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "စာရွက်စာတမ်းကို ရွေးချယ်၍ မရပါ။ ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ယင်းဖိုင်ကို Signal ကမချိတ်နိုင်ပါ။ ယင်းကို ဇစ်ဖိုင်အဖြစ်ချုံ့၍ ပြန်ပို့ကြည့်ပါ။ ";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ဖွင့်မရသောဖိုင် ";
@@ -444,7 +447,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "စာတိုက်ပုံး";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "စာတိုက်အမှတ်";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "ဒေသ";
@@ -747,16 +750,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal ကိုပြောင်းသုံးကြပါစို့ ";
 
-/* Second part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "စာရေးရန် ခလုပ်ကိုနှိပ်ပါ။ ";
-
-/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "သင်၏ပထမဆုံး Signal စကားဝိုင်းကို စတင်လိုက်ပါ!";
-
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TEXT" = "သင်၏စာတိုက်ပုံးထဲမှ တိတ်ဆိတ်နေသော ပြောစကားများကို နောက်နောင်အတွက် မှတ်တမ်း archive ပြုထားနိုင်ပါသည်။ ";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "သင်၏ပြောစကားများကို ရှင်းလင်းမည် ";
 
 /* Full width label displayed when attempting to compose message */
@@ -765,16 +762,16 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "သူများတွေကို ဖိတ်ရအောင်နော် ";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TEXT" = "မှတ်ချက် - စကားဝိုင်းတစ်ခုကို သတိပေးရန်ထည့်ပါ!";
+/* Body text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TITLE" = "ပြီးပြီ၊ ပြီးပြီ၊ ပြီးပြီ ";
+/* Header text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
 
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "ဘာမှမရှိ၊ သုည၊ ဟင့်အင်း၊ မဟုတ်ဘူး ";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TITLE" = "လုံးဝဥဿုံအရှင်းကြီးပဲ  ";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
@@ -811,7 +808,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "မှတ်ပုံတင်ခြင်း lock";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "အလုပ်ရှုပ် ";
+"END_CALL_RESPONDER_IS_BUSY" = "Busy";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ခေါ်ဆိုမှု မအောင်မြင်ပါ ";
@@ -1322,11 +1319,11 @@
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "%@ထံမှ အဝင်ခေါ်ဆိုလွဲသွားသည်။";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "ဖုန်းအသစ်များဖြင့် ထပ်မံ ချိတ်ဆက်၍ မရနိုင်တော့ပါ";
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "အများဆုံးချိတ်ဆက်လို့ရနိုင်သော ဖုန်းအရေအတွက်ပြည့်သွားပြီဖြစ်သည်။ ကိုယ်ပိုင်စာရင်း တစ်ခုလောက်ကို ဖြုတ်လိုက်ပါ။ သို့မဟုတ်နောက်မှ ပြန်ချိတ်ကြည့်ပါ။";
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "အသံပိတ်ထားသော စကားဝိုင်းများအတွက် အသိပေးချက်များ တတ်လာမည်မဟုတ်ပါ။";
@@ -1610,6 +1607,12 @@
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "သင့်ကိုသင် ပြန်လည်ဖြေကြားနေသည်";
 
+/* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
+"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "ပူးတွဲဖိုင်";
 
@@ -1624,15 +1627,6 @@
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "ရုပ်မြင်သံကြား";
-
-/* No comment provided by engineer. */
-"RATING_MSG" = "လုံခြုံတဲ့ စကားဝိုင်း​တွေအတွက် Signal ကို အသုံးပြုရတာ ကြိုက်တယ်ဆိုရင် ကိုယ်တို့ရဲ့ စီမံကိန်းကို အမှတ်ပေးပြီ:တော့ အထောက်အပံ့လုပ်လိုက်ပါ။ တစ်မိနစ်တောင် မကြာပါဘူး။ ပြီးတော့ သူများတွေကိုလည်း လုံခြုံမှုရှာတဲ့နေရာမှာ အကူအညီဖြစ်မှာပါ။";
-
-/* No comment provided by engineer. */
-"RATING_RATE" = "Signal ကိုအမှတ်ပေး";
-
-/* No comment provided by engineer. */
-"RATING_TITLE" = "Signal ကိုကူညီပါ";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "PIN ကို မေ့သွားပြီ။";
@@ -1889,14 +1883,14 @@
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "ဆင်ဆာဖြတ်တောက်မှုရှောင်ကွင်းခြင်း";
 
+/* Label for setting that enables dark theme. */
+"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Debug Log ကို လုပ်ဆောင်ပါ";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Debug Log တင်ပါ";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "အဆင်မြင့်သော";
@@ -1985,7 +1979,7 @@
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "သင့်ရဲ့ သူငယ်ချင်းတွေကို ဖိတ်လိုက်ပါ";
 
-/* content of tweet when inviting via twitter */
+/* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "ကျွနု်ပ်ကို @signalapp သုံးပြီးဆက်သွယ်နိုင်ပါပြီ။ ဒီမှာရယူပါ https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
@@ -2347,20 +2341,3 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "သင်သည် စာများအား %@ အတောအတွင်းပျက်သွားစေရန် ချိန်ထားသည်။";
-
-// Strings Copied in from JSQMessagesViewController
-
-
-"load_earlier_messages" = "အပေါ်က စာများကို ဖွင့်ပါ";
-
-"send" = "ပို့သည်";
-
-"new_message" = "စာအသစ်";
-
-"text_message_accessibility_label" = "%@:%@";
-
-"media_message_accessibility_label" = "%@: ရုပ်/သံ/ပုံ စာများ";
-
-"accessory_button_accessibility_label" = "ရုပ်/သံ/ပုံကို မျှဝေပါ";
-
-"new_message_received_accessibility_announcement" = "စာအသစ်ကို လက်ခံရရှိပါသည်";

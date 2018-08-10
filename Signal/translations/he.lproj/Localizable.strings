@@ -77,7 +77,10 @@
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "הכנס את שמך";
 
-/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "גרסה %@ זמינה כעת להורדה מחנות האפליקציות";
 
 /* Title for the 'new app version available' alert. */
@@ -162,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "נכשל בבחירת מסמך.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal לא יכול לטפל בקובץ כמו שהוא. נסה לכווץ אותו אל zip לפני שליחה.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "קובץ בלתי נתמך";
@@ -444,7 +447,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "תיבת דואר";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "מיקוד";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "אזור";
@@ -747,16 +750,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Signal";
 
-/* Second part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "הקש על הכפתור חַבֵּר";
-
-/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "התחל את שיחת Signal הראשונה שלך!";
-
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TEXT" = "אתה יכול לארכב שיחות בלתי־פעילות למועד מאוחר יותר מתיבת הדואר הנכנס שלך.";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "נקה את השיחות שלך.";
 
 /* Full width label displayed when attempting to compose message */
@@ -765,16 +762,16 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "למה אינך מזמין מישהו?";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TEXT" = "עצה: הוסף שיחה בתור תזכורת!";
+/* Body text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TITLE" = "בוצע. בוצע. בוצע.";
+/* Header text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
 
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "כלום. אפס. שום דבר.";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TITLE" = "ריק ונקי לגמרי.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
@@ -811,7 +808,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "נעילת הרשמה";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "תפוס.";
+"END_CALL_RESPONDER_IS_BUSY" = "Busy";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "שיחה נכשלה.";
@@ -1322,11 +1319,11 @@
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "שיחה לא נענתה מאת %@.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "אינך יכול לצמד עוד מכשירים כלשהם.";
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "הגעת למספר המרבי של מכשירים שאתה יכול לצמד אל החשבון שלך. אנא הסר מכשיר או נסה שוב לצמד מאוחר יותר.";
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "לא תקבל התראות עבור שיחות מושתקות.";
@@ -1610,6 +1607,12 @@
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "משיב אל עצמך";
 
+/* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
+"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "צרופה";
 
@@ -1624,15 +1627,6 @@
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "וידיאו";
-
-/* No comment provided by engineer. */
-"RATING_MSG" = "אם אתה נהנה להשתמש ב-Signal כדי לקיים שיחות פרטיות, אתה יכול לתמוך במיזם שלנו ע\"י דירוגו. זה לא יקח יותר מדקה, ויעזור לאחרים להשיג קצת פרטיות.";
-
-/* No comment provided by engineer. */
-"RATING_RATE" = "דרג את Signal";
-
-/* No comment provided by engineer. */
-"RATING_TITLE" = "תמוך ב-Signal!";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "שכחתי את ה־PIN שלי.";
@@ -1889,14 +1883,14 @@
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "עקיפת צנזורה";
 
+/* Label for setting that enables dark theme. */
+"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "אפשר יומן ניפוי תקלים";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "הגש יומן ניפוי תקלים";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "ערכת נושא";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "מתקדם";
@@ -1985,7 +1979,7 @@
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "הזמן את חבריך";
 
-/* content of tweet when inviting via twitter */
+/* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "את/ה יכול/ה להשיג אותי באמצעות @signalapp. השג/י את זה עכשיו: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
@@ -2347,20 +2341,3 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִגְדַּרְתָּ את זמן ההודעות הנעלמות אל %@.";
-
-// Strings Copied in from JSQMessagesViewController
-
-
-"load_earlier_messages" = "טען הודעות מוקדמות יותר";
-
-"send" = "שלח";
-
-"new_message" = "הודעה חדשה";
-
-"text_message_accessibility_label" = "%@: %@";
-
-"media_message_accessibility_label" = "%@: הודעת מדיה";
-
-"accessory_button_accessibility_label" = "שתף מדיה";
-
-"new_message_received_accessibility_announcement" = "הודעה חדשה התקבלה";

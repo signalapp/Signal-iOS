@@ -36,7 +36,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "คุณต้องการแบ่งปันโปรไฟล์ของคุณให้กับกลุ่มนี้หรือไม่";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "คุณต้องการเพิ่มผู้ใช้นี้ไปยังรายชื่อผู้ติดต่อของคุณหรือไม่";
+"ADD_TO_CONTACTS_OFFER" = "คุณต้องการเพิ่มผู้ใช้นี้ไปยังผู้ติดต่อของคุณหรือไม่";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "คุณต้องการแบ่งปันโปรไฟล์ของคุณให้กับผู้ใช้คนนี้หรือไม่";
@@ -77,7 +77,10 @@
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ป้อนชื่อของคุณ";
 
-/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
+/* Label for the 'dismiss' button in the 'new app version available' alert. */
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+
+/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "พบกับรุ่น %@ ได้แล้วที่ App Store";
 
 /* Title for the 'new app version available' alert. */
@@ -162,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "เลือกเอกสารไม่สำเร็จ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ไม่สามารถจัดการกับไฟล์ประเภทนี้ได้ ลองซิปไฟล์ก่อนที่จะส่ง";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ไฟล์ที่ไม่รองรับ";
@@ -444,7 +447,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Post Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "Region";
@@ -747,16 +750,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
 
-/* Second part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "แตะบนปุ่มเขียน";
-
-/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "เริ่มการสนทนาแรกของคุณบน Signal!";
-
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TEXT" = "คุณสามารถนำการสนทนาในกล่องขาเข้าที่ไม่ได้คุยแล้ว เข้าเก็บในที่เก็บถาวรไว้ดูภายหลังได้";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "ล้างการสนทนาของคุณ";
 
 /* Full width label displayed when attempting to compose message */
@@ -765,16 +762,16 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญใครสักคนล่ะ";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TEXT" = "เคล็ดลับ: เพิ่มการสนทนาเป็นการเตือนความจำ!";
+/* Body text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
 
-/* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TITLE" = "สำเร็จ เสร็จ เรียบร้อย";
+/* Header text a new user sees when viewing an empty inbox */
+"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
 
-/* No comment provided by engineer. */
+/* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "ไม่ ไม่มี ไม่มี ไม่มีอะไร";
 
-/* No comment provided by engineer. */
+/* Header text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TITLE" = "เวิ้งว้างว่างเปล่า";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
@@ -811,7 +808,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "ล็อกการลงทะเบียน ";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "ไม่ว่าง";
+"END_CALL_RESPONDER_IS_BUSY" = "Busy";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "การโทรไม่สำเร็จ";
@@ -1204,7 +1201,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "กำลังส่ง";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ส่งไปแล้ว";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ส่งแล้ว";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
@@ -1222,7 +1219,7 @@
 "MESSAGE_METADATA_VIEW_SENDER" = "ผู้ส่ง";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "ส่งไปแล้ว";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "ส่งแล้ว";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "ชื่อไฟล์";
@@ -1252,7 +1249,7 @@
 "MESSAGE_STATUS_SENDING" = "กำลังส่ง...";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "ส่งไปแล้ว";
+"MESSAGE_STATUS_SENT" = "ส่งแล้ว";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด…";
@@ -1322,11 +1319,11 @@
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "สายที่ไม่ได้รับจาก %@";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "คุณไม่สามารถจับคู่อุปกรณ์ใด ๆ เพิ่มเติมได้อีก";
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "คุณได้มาถึงขีดจำกัดจำนวนอุปกรณ์สูงสุดที่คุณสามารถจับคู่กับบัญชีของคุณได้ในขณะนี้ โปรดลบอุปกรณ์ออกหรือลองอีกครั้งเพื่อจับคู่ในภายหลัง";
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับการแจ้งเตือนสำหรับการสนทนาที่ปิดเสียง";
@@ -1610,6 +1607,12 @@
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "ตอบกลับหาคุณเอง";
 
+/* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
+"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "แฟ้มแนบ";
 
@@ -1625,15 +1628,6 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "วิดีโอ";
 
-/* No comment provided by engineer. */
-"RATING_MSG" = "หากคุณเพลิดเพลินกับการใช้ Signal เพื่อสนทนาแบบส่วนตัว คุณสามารถสนับสนุนโครงการของเราโดยการให้คะแนน ใช้เวลาแค่ไม่ถึงนาทีและยังได้ช่วยให้ผู้อื่นพบความเป็นส่วนตัว";
-
-/* No comment provided by engineer. */
-"RATING_RATE" = "ให้คะแนน Signal";
-
-/* No comment provided by engineer. */
-"RATING_TITLE" = "สนับสนุน Signal!";
-
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ฉันลืมรหัส PIN";
 
@@ -1641,7 +1635,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "การลงทะเบียนหมายเลขโทรศัพท์นี้โดยไม่มีรหัส PIN ล็อกการลงทะเบียนของคุณสามารถทำได้หลังพ้นระยะเวลา 7 วันนับจากการใช้งานหมายเลขโทรศัพท์นี้บน Signal ครั้งหลังสุด";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "เปิดใช้งานล็อกการลงทะเบียนสำหรับหมายเลขโทรศัพท์นี้แล้ว โปรดป้อนรหัส PIN ล็อกการลงทะเบียน\n\nรหัส PIN ล็อกการลงทะเบียนของคุณนั้นแตกต่างจากรหัสการตรวจยืนยันอัตโนมัติที่ถูกส่งไปที่โทรศัพท์ของคุณในระหว่างขั้นตอนสุดท้าย";
+"REGISTER_2FA_INSTRUCTIONS" = "เปิดใช้งานล็อกการลงทะเบียนสำหรับหมายเลขโทรศัพท์นี้แล้ว โปรดป้อนรหัส PIN ล็อกการลงทะเบียน\n\nรหัส PIN ล็อกการลงทะเบียนของคุณนั้นแตกต่างจากรหัสยืนยันอัตโนมัติที่ถูกส่งไปที่โทรศัพท์ของคุณในระหว่างขั้นตอนสุดท้าย";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "ลงทะเบียนไม่สำเร็จ";
@@ -1889,14 +1883,14 @@
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "การหลบเลี่ยงการปิดกั้นข้อมูล";
 
+/* Label for setting that enables dark theme. */
+"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "เปิดใช้งานบันทึกดีบัก";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "ส่งบันทึกดีบัก";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "ขั้นสูง";
@@ -1985,7 +1979,7 @@
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "ชวนเพื่อนของคุณ";
 
-/* content of tweet when inviting via twitter */
+/* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "คุณสามารถติดต่อฉันได้ที่ @signalapp โหลดเลยที่: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
@@ -2292,7 +2286,7 @@
 "VERIFICATION_BACK_BUTTON" = "ย้อนกลับ";
 
 /* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "รหัสตรวจยืนยัน";
+"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "รหัสยืนยัน";
 
 /* button text during registration to request phone number verification be done via phone call */
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "โทรหาฉันแทน";
@@ -2304,7 +2298,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "ส่ง";
 
 /* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "ป้อนรหัสตรวจยืนยันที่เราส่งไปที่ %@";
+"VERIFICATION_PHONE_NUMBER_FORMAT" = "ป้อนรหัสยืนยันที่เราส่งไปที่ %@";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "คุณทำเครื่องหมายว่า %@ ยังไม่ถูกตรวจยืนยัน";
@@ -2347,20 +2341,3 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ตั้งเวลาข้อความที่ลบตัวเองได้ไว้ที่ %@";
-
-// Strings Copied in from JSQMessagesViewController
-
-
-"load_earlier_messages" = "โหลดข้อความก่อนหน้านี้";
-
-"send" = "ส่ง";
-
-"new_message" = "ข้อความใหม่";
-
-"text_message_accessibility_label" = "%@: %@";
-
-"media_message_accessibility_label" = "%@: ข้อความสื่อข้อมูล";
-
-"accessory_button_accessibility_label" = "แบ่งปันสื่อข้อมูล";
-
-"new_message_received_accessibility_announcement" = "ได้รับข้อความใหม่";
