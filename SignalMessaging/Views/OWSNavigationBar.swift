@@ -40,34 +40,12 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public static let backgroundBlurMutingFactor: CGFloat = 0.5
-    var blurEffectView: UIView?
+    var blurEffectView: UIVisualEffectView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        if !UIAccessibilityIsReduceTransparencyEnabled() {
-            // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
-            // to achieve transparency, we have to assign a transparent image.
-            let color = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-            let backgroundImage = UIImage(color: color)
-            self.setBackgroundImage(backgroundImage, for: .default)
-            let blurEffect = UIBlurEffect(style: .light)
-            let blurEffectView = UIVisualEffectView(effect: blurEffect)
-            blurEffectView.isUserInteractionEnabled = false
-            self.blurEffectView = blurEffectView
-
-            // remove hairline below bar.
-            self.shadowImage = UIImage()
-
-            self.insertSubview(blurEffectView, at: 0)
-            // On iOS11, despite inserting the blur at 0, other views are later inserted into the navbar behind the blur,
-            // so we have to set a zindex to avoid obscuring navbar title/buttons.
-            blurEffectView.layer.zPosition = -1
-
-            // navbar frame doesn't account for statusBar, so, same as the built-in navbar background, we need to exceed
-            // the navbar bounds to have the blur extend up and behind the status bar.
-            blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -statusBarHeight, left: 0, bottom: 0, right: 0))
-        }
+        applyTheme()
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
@@ -77,19 +55,60 @@ public class OWSNavigationBar: UINavigationBar {
                                                object: nil)
     }
 
-    // MARK: Layout
+    // MARK: Theme
+
+    private func applyTheme() {
+        if UIAccessibilityIsReduceTransparencyEnabled() {
+            self.blurEffectView?.removeFromSuperview()
+            let color = Theme.navbarBackgroundColor
+            let backgroundImage = UIImage(color: color)
+            self.setBackgroundImage(backgroundImage, for: .default)
+        } else {
+            // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
+            // to achieve transparency, we have to assign a transparent image.
+            let color = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+            let backgroundImage = UIImage(color: color)
+            self.setBackgroundImage(backgroundImage, for: .default)
+
+            let blurEffect = Theme.barBlurEffect
+
+            let blurEffectView: UIVisualEffectView = {
+                if let existingBlurEffectView = self.blurEffectView {
+                    return existingBlurEffectView
+                }
+
+                let blurEffectView = UIVisualEffectView()
+                blurEffectView.isUserInteractionEnabled = false
+
+                self.blurEffectView = blurEffectView
+                self.insertSubview(blurEffectView, at: 0)
+
+                // navbar frame doesn't account for statusBar, so, same as the built-in navbar background, we need to exceed
+                // the navbar bounds to have the blur extend up and behind the status bar.
+                blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -statusBarHeight, left: 0, bottom: 0, right: 0))
+
+                return blurEffectView
+            }()
+
+            blurEffectView.effect = blurEffect
+
+            // remove hairline below bar.
+            self.shadowImage = UIImage()
+
+            // On iOS11, despite inserting the blur at 0, other views are later inserted into the navbar behind the blur,
+            // so we have to set a zindex to avoid obscuring navbar title/buttons.
+            blurEffectView.layer.zPosition = -1
+
+        }
+    }
 
     @objc
     public func themeDidChange() {
         Logger.debug("\(self.logTag) in \(#function)")
-
-        guard self.backgroundImage(for: .default) != nil else {
-            return
-        }
-        let color = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-        let backgroundImage = UIImage(color: color)
-        self.setBackgroundImage(backgroundImage, for: .default)
+        applyTheme()
     }
+
+    // MARK: Layout
 
     @objc
     public func callDidChange() {
