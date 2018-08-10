@@ -124,13 +124,13 @@ NS_ASSUME_NONNULL_BEGIN
         case 0:
             break;
         case 1:
-            return [UIFont ows_regularFontWithSize:basePointSize + 18.f];
+            return [UIFont ows_regularFontWithSize:basePointSize + 30.f];
         case 2:
-            return [UIFont ows_regularFontWithSize:basePointSize + 12.f];
+            return [UIFont ows_regularFontWithSize:basePointSize + 24.f];
         case 3:
         case 4:
         case 5:
-            return [UIFont ows_regularFontWithSize:basePointSize + 6.f];
+            return [UIFont ows_regularFontWithSize:basePointSize + 18.f];
         default:
             OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableBodyText.jumbomojiCount);
             break;
