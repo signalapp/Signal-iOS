@@ -470,7 +470,7 @@ private class SignalCallData: NSObject {
     /**
      * Called by the call initiator after receiving a CallAnswer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
+    public func handleReceivedAnswer(thread: TSThread, callId: UInt64, sessionDescription: String) {
         Logger.info("\(self.logTag) received call answer for call: \(callId) thread: \(thread.contactIdentifier())")
         SwiftAssertIsOnMainThread(#function)
 
@@ -548,7 +548,7 @@ private class SignalCallData: NSObject {
     /**
      * The callee was already in another call.
      */
-    public func handleRemoteBusy(thread: TSContactThread, callId: UInt64) {
+    public func handleRemoteBusy(thread: TSThread, callId: UInt64) {
         Logger.info("\(self.logTag) \(#function) for thread: \(thread.contactIdentifier())")
         SwiftAssertIsOnMainThread(#function)
 
@@ -576,7 +576,7 @@ private class SignalCallData: NSObject {
      * Received an incoming call offer. We still have to complete setting up the Signaling channel before we notify
      * the user of an incoming call.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
+    public func handleReceivedOffer(thread: TSThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
@@ -754,7 +754,7 @@ private class SignalCallData: NSObject {
     /**
      * Remote client (could be caller or callee) sent us a connectivity update
      */
-    public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
+    public func handleRemoteAddedIceCandidate(thread: TSThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
         SwiftAssertIsOnMainThread(#function)
         Logger.verbose("\(logTag) \(#function) callId: \(callId)")
 
@@ -898,7 +898,7 @@ private class SignalCallData: NSObject {
     /**
      * The remote client (caller or callee) ended the call.
      */
-    public func handleRemoteHangup(thread: TSContactThread, callId: UInt64) {
+    public func handleRemoteHangup(thread: TSThread, callId: UInt64) {
         Logger.debug("\(self.logTag) in \(#function)")
         SwiftAssertIsOnMainThread(#function)
 

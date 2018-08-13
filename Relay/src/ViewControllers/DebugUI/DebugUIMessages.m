@@ -269,8 +269,8 @@ NS_ASSUME_NONNULL_BEGIN
                         }],
     ]];
 
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
+    if ([thread isKindOfClass:[TSThread class]]) {
+        TSThread *contactThread = (TSThread *)thread;
         NSString *recipientId = contactThread.contactIdentifier;
         [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
                                          actionBlock:^{
@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
     for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        TSThread *contactThread = [TSThread getOrCreateThreadWithContactId:recipientId];
         [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
@@ -3381,8 +3381,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *gThread = (TSGroupThread *)thread;
             return gThread.groupModel.groupMemberIds[0];
-        } else if ([thread isKindOfClass:[TSContactThread class]]) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
+        } else if ([thread isKindOfClass:[TSThread class]]) {
+            TSThread *contactThread = (TSThread *)thread;
             return contactThread.contactIdentifier;
         } else {
             OWSFail(@"%@ failure: unknown thread type", self.logTag);
@@ -3407,8 +3407,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSMutableArray<TSInteraction *> *result = [NSMutableArray new];
 
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        if ([thread isKindOfClass:[TSContactThread class]]) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
+        if ([thread isKindOfClass:[TSThread class]]) {
+            TSThread *contactThread = (TSThread *)thread;
 
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
@@ -3657,7 +3657,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                   OWSAssert(phoneNumber);
                   OWSAssert(phoneNumber.toE164);
 
-                  TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
+                  TSThread *contactThread = [TSThread getOrCreateThreadWithContactId:phoneNumber.toE164];
                   [self sendFakeMessages:messageCount thread:contactThread];
                   DDLogError(@"Create fake thread: %@, interactions: %lu",
                       phoneNumber.toE164,

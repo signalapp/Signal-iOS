@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContactsManager;
-@class TSContactThread;
+@class TSThread;
 
 @interface OWSContactAvatarBuilder : OWSAvatarBuilder
 

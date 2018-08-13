@@ -19,7 +19,6 @@
 #import <RelayServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <RelayServiceKit/TSAccountManager.h>
 #import <RelayServiceKit/TSCall.h>
-#import <RelayServiceKit/TSContactThread.h>
 #import <RelayServiceKit/TSDatabaseView.h>
 #import <RelayServiceKit/TSIncomingMessage.h>
 #import <RelayServiceKit/TSInvalidIdentityKeyErrorMessage.h>
@@ -340,7 +339,7 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL shouldHaveAddToContactsOffer = YES;
         BOOL shouldHaveAddToProfileWhitelistOffer = YES;
 
-        BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
+        BOOL isContactThread = [thread isKindOfClass:[TSThread class]];
         if (!isContactThread) {
             // Only create "add to contacts" offers in 1:1 conversations.
             shouldHaveAddToContactsOffer = NO;
@@ -349,7 +348,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Only create profile whitelist offers in 1:1 conversations.
             shouldHaveAddToProfileWhitelistOffer = NO;
         } else {
-            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+            NSString *recipientId = ((TSThread *)thread).contactIdentifier;
 
             if ([recipientId isEqualToString:localNumber]) {
                 // Don't add self to contacts.
@@ -415,7 +414,7 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL shouldHaveContactOffers
             = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
         if (isContactThread) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
+            TSThread *contactThread = (TSThread *)thread;
             if (contactThread.hasDismissedOffers) {
                 shouldHaveContactOffers = NO;
             }
@@ -452,7 +451,7 @@ NS_ASSUME_NONNULL_BEGIN
                 existingContactOffers.timestampForSorting);
             [existingContactOffers removeWithTransaction:transaction];
         } else if (!existingContactOffers && shouldHaveContactOffers) {
-            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+            NSString *recipientId = ((TSThread *)thread).contactIdentifier;
 
             TSInteraction *offersMessage =
                 [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp

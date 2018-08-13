@@ -116,9 +116,7 @@
 #import <RelayServiceKit/TSAttachmentPointer.h>
 #import <RelayServiceKit/TSAttachmentStream.h>
 #import <RelayServiceKit/TSCall.h>
-#import <RelayServiceKit/TSContactThread.h>
 #import <RelayServiceKit/TSErrorMessage.h>
-#import <RelayServiceKit/TSGroupThread.h>
 #import <RelayServiceKit/TSIncomingMessage.h>
 #import <RelayServiceKit/TSInfoMessage.h>
 #import <RelayServiceKit/TSNetworkManager.h>

@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSContactThread;
+@class TSThread;
 
 typedef enum {
     RPRecentCallTypeIncoming = 1,
@@ -32,7 +32,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
-                         inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
+                         inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

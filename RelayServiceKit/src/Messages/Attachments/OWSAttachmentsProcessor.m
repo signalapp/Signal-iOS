@@ -14,8 +14,6 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
 #import "TSInfoMessage.h"
 #import "TSMessage.h"
 #import "TSNetworkManager.h"

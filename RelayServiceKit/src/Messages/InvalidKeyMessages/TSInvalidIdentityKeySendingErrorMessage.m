@@ -8,7 +8,7 @@
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "PreKeyBundle+jsonDict.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>

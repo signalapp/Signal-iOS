@@ -159,7 +159,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
             return recipientRow
         }
-        guard let contactThread = self.thread as? TSContactThread else {
+        guard let contactThread = self.thread as? TSThread else {
             owsFail("Unexpected thread type")
             return recipientRow
         }
@@ -188,7 +188,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         return recipientRow
     }
 
-    private func profileName(contactThread: TSContactThread) -> String? {
+    private func profileName(contactThread: TSThread) -> String? {
         let recipientId = contactThread.contactIdentifier()
 
         if contactsManager.hasNameInSystemContacts(forRecipientId: recipientId) {

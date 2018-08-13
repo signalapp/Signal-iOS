@@ -16,7 +16,7 @@
 #import "SignalApp.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
-#import "TSGroupThread.h"
+#import "TSThread.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
 #import <RelayMessaging/OWSContactsManager.h>
@@ -29,9 +29,8 @@
 #import <RelayServiceKit/TSAccountManager.h>
 #import <RelayServiceKit/TSOutgoingMessage.h>
 #import <RelayServiceKit/Threading.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
+
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 

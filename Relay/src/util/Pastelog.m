@@ -15,7 +15,7 @@
 #import <RelayServiceKit/MimeTypeUtil.h>
 #import <RelayServiceKit/OWSPrimaryStorage.h>
 #import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -525,7 +525,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+            thread = [TSThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
         }];
         [ThreadUtil sendMessageWithText:url.absoluteString
                                inThread:thread

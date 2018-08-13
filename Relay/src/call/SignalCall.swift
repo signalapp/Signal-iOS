@@ -64,7 +64,7 @@ protocol CallObserver: class {
     @objc
     let localId: UUID
 
-    let thread: TSContactThread
+    let thread: TSThread
 
     var callRecord: TSCall? {
         didSet {
@@ -162,7 +162,7 @@ protocol CallObserver: class {
         self.signalingId = signalingId
         self.state = state
         self.remotePhoneNumber = remotePhoneNumber
-        self.thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        self.thread = TSThread.getOrCreateThread(Id: remotePhoneNumber)
         self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remotePhoneNumber)")
     }
 

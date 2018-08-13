@@ -21,7 +21,7 @@ class DebugUICalling: DebugUIPage {
     }
 
     override func section(thread aThread: TSThread?) -> OWSTableSection? {
-        guard let thread = aThread as? TSContactThread else {
+        guard let thread = aThread as? TSThread else {
             owsFail("Calling is only valid for contact thread, got thread: \(String(describing: aThread))")
             return nil
         }

@@ -808,7 +808,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)newConversationWithRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    TSThread *thread = [TSThread getOrCreateThreadWithContactId:recipientId];
     [self newConversationWithThread:thread];
 }
 

@@ -7,7 +7,7 @@
 #import "NSDate+OWS.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingNullMessage
 
-- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+- (instancetype)initWithContactThread:(TSThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
 {
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]

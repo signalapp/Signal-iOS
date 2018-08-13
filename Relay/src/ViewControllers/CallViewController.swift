@@ -26,7 +26,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Properties
 
-    let thread: TSContactThread
+    let thread: TSThread
     let call: SignalCall
     var hasDismissed = false
 
@@ -144,7 +144,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     required init(call: SignalCall) {
         contactsManager = Environment.current().contactsManager
         self.call = call
-        self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
+        self.thread = TSThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)

@@ -6,7 +6,7 @@
 #import "ContactsManagerProtocol.h"
 #import "NSDate+OWS.h"
 #import "OWSMessageManager.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TextSecureKitEnv.h"
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
@@ -88,8 +88,8 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSThread *contactThread =
+        [TSThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }

@@ -8,9 +8,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
-#import "TSContactThread.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -59,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         enumerateCollectionObjectsWithTransaction:transaction
                                        usingBlock:^(id obj, BOOL *stop) {
                                            if (![obj isKindOfClass:[TSGroupThread class]]) {
-                                               if (![obj isKindOfClass:[TSContactThread class]]) {
+                                               if (![obj isKindOfClass:[TSThread class]]) {
                                                    DDLogWarn(
                                                        @"Ignoring non group thread in thread collection: %@", obj);
                                                }

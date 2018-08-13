@@ -31,10 +31,9 @@
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
-#import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -75,16 +74,16 @@
 #import <RelayServiceKit/OWSReadReceiptManager.h>
 #import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
 #import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSGroupModel.h>
 #import <RelayServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <RelayServiceKit/TSNetworkManager.h>
 #import <RelayServiceKit/TSQuotedMessage.h>
 #import <RelayServiceKit/Threading.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
+//#import <YapDatabase/YapDatabase.h>
+//#import <YapDatabase/YapDatabaseAutoView.h>
+//#import <YapDatabase/YapDatabaseViewChange.h>
+//#import <YapDatabase/YapDatabaseViewConnection.h>
 
+@import YapDatabase;
 @import Photos;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -375,7 +374,7 @@ typedef enum : NSUInteger {
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        if ([self.thread isKindOfClass:[TSThread class]]) {
             // update title with profile name
             [self updateNavigationTitle];
         }
@@ -1063,7 +1062,7 @@ typedef enum : NSUInteger {
 
 - (void)showUnblockContactUI:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
 
     self.userHasScrolled = NO;
 
@@ -1075,7 +1074,7 @@ typedef enum : NSUInteger {
     // hidden.
     [self dismissKeyBoard];
 
-    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+    NSString *contactIdentifier = ((TSThread *)self.thread).contactIdentifier;
     [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
                                      fromViewController:self
                                         blockingManager:_blockingManager
@@ -1085,10 +1084,10 @@ typedef enum : NSUInteger {
 
 - (BOOL)isBlockedContactConversation
 {
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         return NO;
     }
-    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
+    NSString *contactIdentifier = ((TSThread *)self.thread).contactIdentifier;
     return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
 }
 
@@ -1509,7 +1508,7 @@ typedef enum : NSUInteger {
 
 - (void)callWithVideo:(BOOL)isVideo
 {
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
 
     if (![self canCall]) {
         DDLogWarn(@"Tried to initiate a call but thread is not callable.");
@@ -1543,7 +1542,7 @@ typedef enum : NSUInteger {
 - (BOOL)canCall
 {
     return !(self.isGroupConversation ||
-        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localUID]]);
+        [((TSThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localUID]]);
 }
 
 #pragma mark - Dynamic Text
@@ -1884,12 +1883,12 @@ typedef enum : NSUInteger {
         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *action) {
-                    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+                    if (![self.thread isKindOfClass:[TSThread class]]) {
                         // Corrupt Message errors only appear in contact threads.
                         DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
                         return;
                     }
-                    TSContactThread *contactThread = (TSContactThread *)self.thread;
+                    TSThread *contactThread = (TSThread *)self.thread;
                     [OWSSessionResetJob runWithContactThread:contactThread
                                                messageSender:self.messageSender
                                               primaryStorage:self.primaryStorage];
@@ -1945,12 +1944,12 @@ typedef enum : NSUInteger {
 {
     OWSAssert(call);
 
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    TSThread *contactThread = (TSThread *)self.thread;
     NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:contactThread.contactIdentifier];
 
     UIAlertController *alertController = [UIAlertController
@@ -2096,11 +2095,11 @@ typedef enum : NSUInteger {
 
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
 {
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    TSThread *contactThread = (TSThread *)self.thread;
 
     NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.recipientId];
     NSString *title =
@@ -2140,11 +2139,11 @@ typedef enum : NSUInteger {
         OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    TSThread *contactThread = (TSThread *)self.thread;
     [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
                                                      fromViewController:self
                                                         editImmediately:YES];
@@ -2160,11 +2159,11 @@ typedef enum : NSUInteger {
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    TSThread *contactThread = (TSThread *)self.thread;
 
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
         // Delete the offers.
@@ -3914,59 +3913,61 @@ typedef enum : NSUInteger {
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeTimestamp:lastVisibleTimestamp thread:self.thread];
 }
 
-- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
-{
-    __block TSGroupThread *groupThread;
-    __block TSOutgoingMessage *message;
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
-
-        NSString *updateGroupInfo =
-            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
-
-        groupThread.groupModel = newGroupModel;
-        [groupThread saveWithTransaction:transaction];
-
-        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
-        message = [TSOutgoingMessage outgoingMessageInThread:groupThread
-                                            groupMetaMessage:TSGroupMessageUpdate
-                                            expiresInSeconds:expiresInSeconds];
-        [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
-    }];
-
-    [groupThread fireAvatarChangedNotification];
-
-    if (newGroupModel.groupImage) {
-        NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueTemporaryAttachment:dataSource
-            contentType:OWSMimeTypeImagePng
-            inMessage:message
-            success:^{
-                DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);
-                if (successCompletion) {
-                    successCompletion();
-                }
-            }
-            failure:^(NSError *error) {
-                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
-            }];
-    } else {
-        [self.messageSender enqueueMessage:message
-            success:^{
-                DDLogDebug(@"%@ Successfully sent group update", self.logTag);
-                if (successCompletion) {
-                    successCompletion();
-                }
-            }
-            failure:^(NSError *error) {
-                DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
-            }];
-    }
-
-    self.thread = groupThread;
-}
+// TODO: Replace this with our methodology
+//- (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
+//{
+//    __block TSGroupThread *groupThread;
+//    __block TSOutgoingMessage *message;
+//
+//    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+//
+//        NSString *updateGroupInfo =
+//            [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
+//
+//        groupThread.groupModel = newGroupModel;
+//        [groupThread saveWithTransaction:transaction];
+//
+//        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
+//        message = [TSOutgoingMessage outgoingMessageInThread:groupThread
+//                                            groupMetaMessage:TSGroupMessageUpdate
+//                                            expiresInSeconds:expiresInSeconds];
+//        [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
+//    }];
+//
+//    [groupThread fireAvatarChangedNotification];
+//
+//    if (newGroupModel.groupImage) {
+//        NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
+//        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+//        [self.messageSender enqueueTemporaryAttachment:dataSource
+//            contentType:OWSMimeTypeImagePng
+//            inMessage:message
+//            success:^{
+//                DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);
+//                if (successCompletion) {
+//                    successCompletion();
+//                }
+//            }
+//            failure:^(NSError *error) {
+//                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
+//            }];
+//    } else {
+//        [self.messageSender enqueueMessage:message
+//            success:^{
+//                DDLogDebug(@"%@ Successfully sent group update", self.logTag);
+//                if (successCompletion) {
+//                    successCompletion();
+//                }
+//            }
+//            failure:^(NSError *error) {
+//                DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
+//            }];
+//    }
+//
+//    self.thread = groupThread;
+//}
 
 - (void)popKeyBoard
 {

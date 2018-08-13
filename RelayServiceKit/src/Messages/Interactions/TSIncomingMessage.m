@@ -9,9 +9,8 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSReadReceiptManager.h"
 #import "TSAttachmentPointer.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
-#import "TSGroupThread.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -107,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
         messageAuthorId = self.authorId;
     } else {
         // Contact Thread
-        messageAuthorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+        messageAuthorId = [TSThread contactIdFromThreadId:self.uniqueThreadId];
     }
     OWSAssert(messageAuthorId.length > 0);
     return messageAuthorId;

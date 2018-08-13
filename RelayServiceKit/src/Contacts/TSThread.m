@@ -478,6 +478,12 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
++(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction
+{
+    // Not yet implemented
+    return [NSArray new]
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

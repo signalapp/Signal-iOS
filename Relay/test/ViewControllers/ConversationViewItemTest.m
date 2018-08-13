@@ -8,7 +8,7 @@
 #import <RelayServiceKit/MIMETypeUtil.h>
 #import <RelayServiceKit/SecurityUtils.h>
 #import <RelayServiceKit/TSAttachmentStream.h>
-#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/TSOutgoingMessage.h>
 #import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -25,7 +25,7 @@
 - (void)setUp
 {
     [super setUp];
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"+15555555"];
+    self.thread = [TSThread getOrCreateThreadWithContactId:@"+15555555"];
     self.conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
 }
 

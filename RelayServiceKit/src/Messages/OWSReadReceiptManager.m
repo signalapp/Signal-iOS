@@ -15,7 +15,7 @@
 #import "OWSStorage.h"
 #import "OWSSyncConfigurationMessage.h"
 #import "TSAccountManager.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "TextSecureKitEnv.h"
@@ -242,8 +242,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             for (NSString *recipientId in toSenderReadReceiptMap) {
                 NSSet<NSNumber *> *timestamps = toSenderReadReceiptMap[recipientId];
                 OWSAssert(timestamps.count > 0);
+                
+                // TODO: Modify to use passed threadId
+                __block TSThread *thread = nil;
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
+                    thread = [TSThread getOrCreateThreadWithId:recipientId transaction:transaction];
+                }];
 
-                TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
                 OWSReadReceiptsForSenderMessage *message =
                     [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread
                                                           messageTimestamps:timestamps.allObjects];

@@ -66,7 +66,7 @@ class DebugUINotifications: DebugUIPage {
             }
         ]
 
-        if let contactThread = thread as? TSContactThread {
+        if let contactThread = thread as? TSThread {
             sectionItems += [
                 OWSTableItem(title: "Call Missed") { [weak self] in
                     guard let strongSelf = self else {
@@ -123,7 +123,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
-    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) {
+    func delayedNotificationDispatchWithFakeCall(thread: TSThread, callBlock: @escaping (SignalCall) -> Void) {
         let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: 0)
 
         delayedNotificationDispatch {

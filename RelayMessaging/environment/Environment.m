@@ -9,8 +9,7 @@
 #import <RelayServiceKit/ContactsUpdater.h>
 #import <RelayServiceKit/OWSMessageReceiver.h>
 #import <RelayServiceKit/OWSSignalService.h>
-#import <RelayServiceKit/TSContactThread.h>
-#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/Threading.h>
 
 static Environment *sharedEnvironment = nil;

@@ -9,7 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageSender;
 @class OWSUnreadIndicator;
 @class SignalAttachment;
-@class TSContactThread;
 @class TSInteraction;
 @class TSThread;
 @class YapDatabaseConnection;

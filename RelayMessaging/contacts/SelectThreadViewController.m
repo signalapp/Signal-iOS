@@ -19,7 +19,6 @@
 #import <RelayServiceKit/PhoneNumber.h>
 #import <RelayServiceKit/SignalAccount.h>
 #import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSContactThread.h>
 #import <RelayServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -198,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
                             // instead of HomeViewCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                            if ([thread isKindOfClass:[TSContactThread class]]) {
+                            if ([thread isKindOfClass:[TSThread class]]) {
                                 BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
                                 if (isBlocked) {
                                     cell.accessoryMessage = NSLocalizedString(
@@ -240,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 return;
                             }
 
-                            if ([thread isKindOfClass:[TSContactThread class]]) {
+                            if ([thread isKindOfClass:[TSThread class]]) {
                                 BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
                                 if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
                                     [BlockListUIUtils showUnblockPhoneNumberActionSheet:thread.contactIdentifier
@@ -334,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSThread *thread = nil;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+        thread = [TSThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
     }];
     OWSAssert(thread);
 
@@ -357,8 +356,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<TSThread *> *threads = self.threadViewHelper.threads;
     NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
     for (TSThread *thread in threads) {
-        if ([thread isKindOfClass:[TSContactThread class]]) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
+        if ([thread isKindOfClass:[TSThread class]]) {
+            TSThread *contactThread = (TSThread *)thread;
             [contactIdsToIgnore addObject:contactThread.contactIdentifier];
         }
     }

@@ -9,13 +9,13 @@
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/PreKeyWhisperMessage.h>
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+
+@import AxolotlKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKEnvelope *)envelope
                          withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSContactThread *contactThread =
-    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSThread *contactThread =
+    [TSThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
     [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
                                                 inThread:contactThread

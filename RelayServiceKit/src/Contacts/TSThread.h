@@ -20,21 +20,28 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL hasEverHadMessage;
 
 /**
- *  Whether the object is a group thread or not.
+ *  Returns the title of the thread.
  *
- *  @return YES if is a group thread, NO otherwise.
+ *  @return The title of the thread.
  */
-- (BOOL)isGroupThread;
+//- (NSString *)name;
+@property (nullable) NSString *title;
 
 /**
- *  Returns the name of the thread.
- *
- *  @return The name of the thread.
+ * Type of thread/conversation
+ * "conversation" or "announcement"
  */
-- (NSString *)name;
+@property (nonnull) NSString *type;
+
+/**
+ *  Returns the image representing the thread. Nil if not available.
+ *
+ *  @return UIImage of the thread, or nil.
+ */
+@property (nullable) UIImage *image;
 
 @property (readonly, nullable) NSString *conversationColorName;
-- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateConversationColorName:(NSString *)colorName transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 + (NSString *)stableConversationColorNameForString:(NSString *)colorSeed;
 
 /**
@@ -52,14 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Get all messages in the thread we weren't able to decrypt
  */
-- (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
+- (nonnull NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
 
-- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSUInteger)unreadMessageCountWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markAllAsReadWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  *  Returns the latest date of a message in the thread or the thread creation date if there are no messages in that
@@ -67,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return The date of the last message or thread creation date.
  */
-- (NSDate *)lastMessageDate;
+- (nullable NSDate *)lastMessageDate;
 
 /**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
@@ -75,10 +82,10 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Thread preview string.
  */
-- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSString *)lastMessageTextWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(lastMessageText(transaction:));
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 
 /**
@@ -87,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param lastMessage Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark Archival
 
@@ -104,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @param transaction Database transaction.
  */
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)archiveThreadWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  *  Archives a thread with the reference date. This is currently only used for migrating older data that has already
@@ -113,23 +120,22 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param transaction Database transaction.
  *  @param date        Date at which the thread was archived.
  */
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction referenceDate:(NSDate *)date;
+- (void)archiveThreadWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction referenceDate:(nonnull NSDate *)date;
 
 /**
  *  Unarchives a thread that was archived previously.
  *
  *  @param transaction Database transaction.
  */
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)unarchiveThreadWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeAllThreadInteractionsWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 
 #pragma mark Disappearing Messages
 
-- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction;
-- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction;
+- (uint32_t)disappearingMessagesDurationWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction;
 
 #pragma mark Drafts
 
@@ -148,14 +154,56 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param draftString Draft string to be saved.
  *  @param transaction Database transaction.
  */
-- (void)setDraft:(NSString *)draftString transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)setDraft:(NSString *)draftString transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 @property (atomic, readonly) BOOL isMuted;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
+
+// MARK: Forsta additions
+@property (nonnull) NSArray<NSString *> *participantIds;
+@property (nullable) NSString *universalExpression;
+@property (nullable) NSString *prettyExpression;
+@property (readonly, nonnull) NSString *displayName;
+@property (nonnull) NSCountedSet *monitorIds;
+@property (nullable) NSNumber *pinPosition;
+
+/**
+ *  Get or create thread with array of participant UUIDs
+ */
++(instancetype)getOrCreateThreadWithParticipants:(nonnull NSArray <NSString *> *)participantIDs
+                                     transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
+/**
+ *  Get or create thread with thread UUID
+ */
++(instancetype)getOrCreateThreadWithId:(nonnull NSString *)threadId
+                           transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
+
+/**
+ *  Remove participant from thread
+ */
+-(void)removeMembers:(nonnull NSSet *)leavingMemberIds
+         transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
+
+/**
+ *  Update avatar/image wiht attachment stream
+ */
+-(void)updateImageWithAttachmentStream:(NSString *)attachmentStream;
+
+/**
+ *  Validate and update a thread
+ */
+-(void)validateWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
+
+-(void)updateWithPayload:(nonnull NSDictionary *)payload;
+
+/**
+ * thread containing participant id
+ */
++(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction;
 
 @end
 

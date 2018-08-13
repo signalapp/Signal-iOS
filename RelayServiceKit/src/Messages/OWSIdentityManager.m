@@ -18,9 +18,8 @@
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSAccountManager.h"
-#import "TSContactThread.h"
 #import "TSErrorMessage.h"
-#import "TSGroupThread.h"
+#import "TSThread.h"
 #import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
@@ -530,6 +529,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 }
 
+// TODO: Auto identity change will make this unnecessary
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
                                           transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -538,16 +538,16 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+    TSThread *contactThread =
+        [TSThread getOrCreateThreadWithId:recipientId transaction:transaction];
     OWSAssert(contactThread != nil);
 
     TSErrorMessage *errorMessage =
         [TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId];
     [messages addObject:errorMessage];
 
-    for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithRecipientId:recipientId transaction:transaction]) {
-        [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
+    for (TSThread *thread in [TSThread threadsContainingParticipant:recipientId transaction:transaction]) {
+        [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:thread recipientId:recipientId]];
     }
 
     for (TSMessage *message in messages) {
@@ -643,11 +643,15 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssert(message);
     OWSAssert(message.verificationForRecipientId.length > 0);
 
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
+    __block TSThread *thread = nil;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
+        thread = [TSThread getOrCreateThreadWithId:message.thread.uniqueId transaction:transaction];
+    }];
+
     
     // Send null message to appear as though we're sending a normal message to cover the sync messsage sent
     // subsequently
-    OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
+    OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:thread
                                                                    verificationStateSyncMessage:message];
     [self.messageSender enqueueMessage:nullMessage
         success:^{
@@ -866,8 +870,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+    TSThread *contactThread =
+        [TSThread getOrCreateThreadWithId:recipientId transaction:transaction];
     OWSAssert(contactThread);
     [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                               thread:contactThread
@@ -875,11 +879,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                    verificationState:verificationState
                                                                        isLocalChange:isLocalChange]];
 
-    for (TSGroupThread *groupThread in
-        [TSGroupThread groupThreadsWithRecipientId:recipientId transaction:transaction]) {
+    for (TSThread *thread in
+        [TSThread threadsContainingParticipant:recipientId transaction:transaction]) {
         [messages
             addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:groupThread
+                                                                            thread:thread
                                                                        recipientId:recipientId
                                                                  verificationState:verificationState
                                                                      isLocalChange:isLocalChange]];

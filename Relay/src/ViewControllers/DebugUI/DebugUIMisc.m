@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
+            NSMutableArray<TSThread *> *contactThreads = [NSMutableArray new];
             [transaction
                 enumerateKeysAndObjectsInCollection:[TSThread collection]
                                          usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
@@ -197,10 +197,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              if (thread.isGroupThread) {
                                                  return;
                                              }
-                                             TSContactThread *contactThread = object;
+                                             TSThread *contactThread = object;
                                              [contactThreads addObject:contactThread];
                                          }];
-            for (TSContactThread *contactThread in contactThreads) {
+            for (TSThread *contactThread in contactThreads) {
                 if (contactThread.hasDismissedOffers) {
                     contactThread.hasDismissedOffers = NO;
                     [contactThread saveWithTransaction:transaction];

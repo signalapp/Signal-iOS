@@ -42,8 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _message = message;
-    // This will be nil for groups.
-    _sentRecipientId = message.thread.contactIdentifier;
+//    // This will be nil for groups.
+//    _sentRecipientId = message.thread.contactIdentifier;
 
     return self;
 }

@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSVerificationStateSyncMessage;
-@class TSContactThread;
+@class TSThread;
 
 @interface OWSOutgoingNullMessage : TSOutgoingMessage
 
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
-- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+- (instancetype)initWithContactThread:(TSThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage;
 
 @end

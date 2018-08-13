@@ -3,9 +3,9 @@
 //
 
 #import "TSCall.h"
-#import "TSContactThread.h"
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
+#import "TSThread.h"
+
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +48,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                    withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
-                         inThread:(TSContactThread *)thread
+                         inThread:(TSThread *)thread
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 

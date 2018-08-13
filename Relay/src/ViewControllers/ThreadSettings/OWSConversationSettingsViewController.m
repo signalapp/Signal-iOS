@@ -157,7 +157,7 @@ const CGFloat kIconViewLength = 24;
     self.thread = thread;
     self.uiDatabaseConnection = uiDatabaseConnection;
 
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+    if ([self.thread isKindOfClass:[TSThread class]]) {
         self.title = NSLocalizedString(
             @"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", @"Navbar title when viewing settings for a 1-on-1 thread");
     } else {
@@ -172,7 +172,7 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssert(self.thread);
 
-    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
+    if ([self.thread isKindOfClass:[TSThread class]] && self.contactsManager.supportsContactEditing
         && self.hasExistingContact) {
         self.navigationItem.rightBarButtonItem =
             [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
@@ -184,8 +184,8 @@ const CGFloat kIconViewLength = 24;
 
 - (BOOL)hasExistingContact
 {
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
+    TSThread *contactThread = (TSThread *)self.thread;
     NSString *recipientId = contactThread.contactIdentifier;
     return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
 }
@@ -299,7 +299,7 @@ const CGFloat kIconViewLength = 24;
                              }]];
 #endif
 
-    if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
+    if ([self.thread isKindOfClass:[TSThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return
@@ -319,7 +319,7 @@ const CGFloat kIconViewLength = 24;
                                  actionBlock:^{
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssert(strongSelf);
-                                     TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
+                                     TSThread *contactThread = (TSThread *)strongSelf.thread;
                                      NSString *recipientId = contactThread.contactIdentifier;
                                      [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
@@ -932,12 +932,12 @@ const CGFloat kIconViewLength = 24;
         OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
         return;
     }
 
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    TSThread *contactThread = (TSThread *)self.thread;
     [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
                                                      fromViewController:self
                                                         editImmediately:YES];
@@ -1249,7 +1249,7 @@ const CGFloat kIconViewLength = 24;
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
 
-    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
+    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSThread class]] &&
         [self.thread.contactIdentifier isEqualToString:recipientId]) {
         [self updateTableContents];
     }

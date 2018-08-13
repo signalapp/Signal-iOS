@@ -12,7 +12,7 @@
 #import "DebugUIStress.h"
 #import "DebugUISyncMessages.h"
 #import "Relay-Swift.h"
-#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
         addObject:[self itemForSubsection:[DebugUIDiskUsage new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:thread]];
-    if ([thread isKindOfClass:[TSContactThread class]]) {
+    if ([thread isKindOfClass:[TSThread class]]) {
         [subsectionItems
             addObject:[self itemForSubsection:[DebugUICalling new] viewController:viewController thread:thread]];
     }

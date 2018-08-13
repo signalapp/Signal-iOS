@@ -14,8 +14,7 @@
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
+#import "TSThread.h"
 #import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>

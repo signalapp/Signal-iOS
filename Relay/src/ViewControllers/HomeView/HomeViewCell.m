@@ -10,8 +10,7 @@
 #import <RelayMessaging/OWSUserProfile.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayServiceKit/OWSMessageManager.h>
-#import <RelayServiceKit/TSContactThread.h>
-#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -470,7 +469,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+    if (![self.thread isKindOfClass:[TSThread class]]) {
         return;
     }
 

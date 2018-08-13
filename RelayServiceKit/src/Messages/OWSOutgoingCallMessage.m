@@ -12,7 +12,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

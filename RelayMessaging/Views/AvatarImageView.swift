@@ -63,7 +63,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         self.contactsManager = contactsManager
 
         switch thread {
-        case let contactThread as TSContactThread:
+        case let contactThread as TSThread:
             self.recipientId = contactThread.contactIdentifier()
             self.groupThreadId = nil
         case let groupThread as TSGroupThread:

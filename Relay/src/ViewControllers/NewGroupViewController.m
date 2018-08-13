@@ -23,8 +23,7 @@
 #import <RelayServiceKit/OWSMessageSender.h>
 #import <RelayServiceKit/SecurityUtils.h>
 #import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSGroupModel.h>
-#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN

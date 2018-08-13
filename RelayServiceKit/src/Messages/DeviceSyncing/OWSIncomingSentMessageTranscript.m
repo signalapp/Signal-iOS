@@ -7,9 +7,6 @@
 #import "OWSMessageManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
-#import "TSContactThread.h"
-#import "TSGroupModel.h"
-#import "TSGroupThread.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
@@ -32,16 +29,16 @@ NS_ASSUME_NONNULL_BEGIN
     _expirationStartedAt = sentProto.expirationStartTimestamp;
     _expirationDuration = sentProto.message.expireTimer;
     _body = _dataMessage.body;
-    _groupId = _dataMessage.group.id;
-    _isGroupUpdate = _dataMessage.hasGroup && (_dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate);
+//    _groupId = _dataMessage.group.id;
+//    _isGroupUpdate = _dataMessage.hasGroup && (_dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeUpdate);
     _isExpirationTimerUpdate = (_dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0;
 
-    if (self.dataMessage.hasGroup) {
-        _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
-    } else {
-        _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
-    }
+//    if (self.dataMessage.hasGroup) {
+//        _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+//    } else {
+        _thread = [TSThread getOrCreateThreadWithId:_recipientId transaction:transaction];
+//    }
 
     _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
     _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];

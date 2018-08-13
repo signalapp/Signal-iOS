@@ -9,8 +9,7 @@
 #import <RelayMessaging/DebugLogger.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayServiceKit/OWSPrimaryStorage.h>
-#import <RelayServiceKit/TSContactThread.h>
-#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -152,22 +151,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Convenience Methods
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-{
-    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone];
-}
+//- (void)presentConversationForRecipientId:(NSString *)recipientId
+//{
+//    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone];
+//}
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action
-{
-    DispatchMainThreadSafe(^{
-        __block TSThread *thread = nil;
-        [OWSPrimaryStorage.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-            }];
-        [self presentConversationForThread:thread action:action];
-    });
-}
+//- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action
+//{
+//    DispatchMainThreadSafe(^{
+//        __block TSThread *thread = nil;
+//        [OWSPrimaryStorage.dbReadWriteConnection
+//            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+//                thread = [TSThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+//            }];
+//        [self presentConversationForThread:thread action:action];
+//    });
+//}
 
 - (void)presentConversationForThreadId:(NSString *)threadId
 {

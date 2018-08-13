@@ -7,8 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSContactThread;
-@class TSGroupThread;
+@class TSThread;
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 

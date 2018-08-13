@@ -32,7 +32,7 @@ public class ThreadViewModel: NSObject {
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
 
-        if let contactThread = thread as? TSContactThread {
+        if let contactThread = thread as? TSThread {
             self.contactIdentifier = contactThread.contactIdentifier()
         } else {
             self.contactIdentifier = nil

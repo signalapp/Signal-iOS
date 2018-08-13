@@ -114,7 +114,7 @@ public class ConversationSearcher: NSObject {
                 let sortKey = NSDate.ows_millisecondsSince1970(for: threadViewModel.lastMessageDate)
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
-                if let contactThread = thread as? TSContactThread {
+                if let contactThread = thread as? TSThread {
                     let recipientId = contactThread.contactIdentifier()
                     existingConversationRecipientIds.insert(recipientId)
                 }
@@ -163,7 +163,7 @@ public class ConversationSearcher: NSObject {
             switch thread {
             case let groupThread as TSGroupThread:
                 return self.groupThreadSearcher.matches(item: groupThread, query: searchText)
-            case let contactThread as TSContactThread:
+            case let contactThread as TSThread:
                 return self.contactThreadSearcher.matches(item: contactThread, query: searchText)
             default:
                 owsFail("Unexpected thread type: \(thread)")
@@ -205,7 +205,7 @@ public class ConversationSearcher: NSObject {
         return "\(memberStrings) \(groupName ?? "")"
     }
 
-    private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
+    private lazy var contactThreadSearcher: Searcher<TSThread> = Searcher { (contactThread: TSThread) in
         let recipientId = contactThread.contactIdentifier()
         return self.indexingString(recipientId: recipientId)
     }

@@ -40,10 +40,10 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     override public func run() {
-        if let contactThread = thread as? TSContactThread {
+        if let contactThread = thread as? TSThread {
             sync(contactThread: contactThread)
-        } else if let groupThread = thread as? TSGroupThread {
-            sync(groupThread: groupThread)
+//        } else if let groupThread = thread as? TSGroupThread {
+//            sync(groupThread: groupThread)
         } else {
             self.reportAssertionError(description: "unknown thread type")
         }
@@ -54,7 +54,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         self.reportError(error)
     }
 
-    private func sync(contactThread: TSContactThread) {
+    private func sync(contactThread: TSThread) {
         guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(forRecipientId: contactThread.contactIdentifier()) else {
             reportAssertionError(description: "unable to find signalAccount")
             return
@@ -78,26 +78,26 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
     }
 
-    private func sync(groupThread: TSGroupThread) {
-        // TODO sync only the affected group
-        // The current implementation works, but seems wasteful.
-        // Does desktop handle single group sync correctly?
-        // What does Android do?
-        let syncMessage: OWSSyncGroupsMessage = OWSSyncGroupsMessage()
-
-        var dataSource: DataSource? = nil
-        self.dbConnection.read { transaction in
-            let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-        }
-
-        guard let attachmentDataSource = dataSource else {
-            self.reportAssertionError(description: "unable to build attachment data source")
-            return
-        }
-
-        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
-    }
+//    private func sync(groupThread: TSGroupThread) {
+//        // TODO sync only the affected group
+//        // The current implementation works, but seems wasteful.
+//        // Does desktop handle single group sync correctly?
+//        // What does Android do?
+//        let syncMessage: OWSSyncGroupsMessage = OWSSyncGroupsMessage()
+//
+//        var dataSource: DataSource? = nil
+//        self.dbConnection.read { transaction in
+//            let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
+//            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
+//        }
+//
+//        guard let attachmentDataSource = dataSource else {
+//            self.reportAssertionError(description: "unable to build attachment data source")
+//            return
+//        }
+//
+//        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+//    }
 
     private func sendConfiguration(attachmentDataSource: DataSource, syncMessage: OWSOutgoingSyncMessage) {
         self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,

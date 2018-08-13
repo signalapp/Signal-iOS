@@ -29,8 +29,6 @@
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
@@ -41,13 +39,10 @@
 #import "TSSocketManager.h"
 #import "TSThread.h"
 #import "Threading.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/CipherMessage.h>
-#import <AxolotlKit/PreKeyBundle.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <AxolotlKit/SessionCipher.h>
-#import <PromiseKit/AnyPromise.h>
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
+
+@import PromiseKit;
+@import AxolotlKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -458,9 +453,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     dispatch_async([OWSDispatch sendingQueue], ^{
         TSThread *_Nullable thread = message.thread;
 
-        // TODO: It would be nice to combine the "contact" and "group" send logic here.
-        if ([thread isKindOfClass:[TSContactThread class]] &&
-            [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localUID]]) {
+        if ([thread.participantIds containsObject:[TSAccountManager localUID]] && thread.participantIds.count == 1)
+        {
             // Send to self.
             OWSAssert(message.recipientIds.count == 1);
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -475,9 +469,48 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             successHandler();
             return;
-        } else if ([thread isKindOfClass:[TSGroupThread class]]) {
-
-            TSGroupThread *gThread = (TSGroupThread *)thread;
+        } else if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+            
+            // Sync message send
+            NSString *recipientContactId = [TSAccountManager localUID];
+            
+            // If we block a user, don't send 1:1 messages to them. The UI
+            // should prevent this from occurring, but in some edge cases
+            // you might, for example, have a pending outgoing message when
+            // you block them.
+            OWSAssert(recipientContactId.length > 0);
+            if ([self.blockingManager isRecipientIdBlocked:recipientContactId]) {
+                DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.logTag, recipientContactId);
+                NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
+                // No need to retry - the user will continue to be blocked.
+                [error setIsRetryable:NO];
+                failureHandler(error);
+                return;
+            }
+            
+            NSArray<SignalRecipient *> *recipients =
+            [self signalRecipientsForRecipientIds:@[recipientContactId] message:message];
+            OWSAssert(recipients.count == 1);
+            SignalRecipient *recipient = recipients.firstObject;
+            
+            if (!recipient) {
+                NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                DDLogWarn(@"recipient contact still not found after attempting lookup.");
+                // No need to repeat trying to find a failure. Apart from repeatedly failing, it would also cause us to
+                // print redundant error messages.
+                [error setIsRetryable:NO];
+                failureHandler(error);
+                return;
+            }
+            
+            [self sendMessageToService:message
+                             recipient:recipient
+                                thread:thread
+                              attempts:OWSMessageSenderRetryAttempts
+               useWebsocketIfAvailable:YES
+                               success:successHandler
+                               failure:failureHandler];
+        } else  {
 
             // Send to the intersection of:
             //
@@ -491,7 +524,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // * The recipient is in the "sending" state.
 
             NSMutableSet<NSString *> *sendingRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
-            [sendingRecipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+            [sendingRecipientIds intersectSet:[NSSet setWithArray:thread.participantIds]];
             [sendingRecipientIds minusSet:[NSSet setWithArray:self.blockingManager.blockedPhoneNumbers]];
 
             // Mark skipped recipients as such.  We skip because:
@@ -521,60 +554,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [self signalRecipientsForRecipientIds:sendingRecipientIds.allObjects message:message];
             OWSAssert(recipients.count == sendingRecipientIds.count);
 
-            [self groupSend:recipients message:message thread:gThread success:successHandler failure:failureHandler];
-
-        } else if ([thread isKindOfClass:[TSContactThread class]]
-            || [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-
-            TSContactThread *contactThread = (TSContactThread *)thread;
-
-            NSString *recipientContactId
-                = ([message isKindOfClass:[OWSOutgoingSyncMessage class]] ? [TSAccountManager localUID]
-                                                                          : contactThread.contactIdentifier);
-
-            // If we block a user, don't send 1:1 messages to them. The UI
-            // should prevent this from occurring, but in some edge cases
-            // you might, for example, have a pending outgoing message when
-            // you block them.
-            OWSAssert(recipientContactId.length > 0);
-            if ([self.blockingManager isRecipientIdBlocked:recipientContactId]) {
-                DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.logTag, recipientContactId);
-                NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
-                // No need to retry - the user will continue to be blocked.
-                [error setIsRetryable:NO];
-                failureHandler(error);
-                return;
-            }
-
-            NSArray<SignalRecipient *> *recipients =
-            [self signalRecipientsForRecipientIds:@[recipientContactId] message:message];
-            OWSAssert(recipients.count == 1);
-            SignalRecipient *recipient = recipients.firstObject;
-
-            if (!recipient) {
-                NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-                DDLogWarn(@"recipient contact still not found after attempting lookup.");
-                // No need to repeat trying to find a failure. Apart from repeatedly failing, it would also cause us to
-                // print redundant error messages.
-                [error setIsRetryable:NO];
-                failureHandler(error);
-                return;
-            }
-
-            [self sendMessageToService:message
-                              recipient:recipient
-                                 thread:thread
-                               attempts:OWSMessageSenderRetryAttempts
-                useWebsocketIfAvailable:YES
-                                success:successHandler
-                                failure:failureHandler];
-        } else {
-            // Neither a group nor contact thread? This should never happen.
-            OWSFail(@"%@ Unknown message type: %@", self.logTag, NSStringFromClass([message class]));
-
-            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-            [error setIsRetryable:NO];
-            failureHandler(error);
+            [self groupSend:recipients message:message thread:thread success:successHandler failure:failureHandler];
         }
     });
 }
@@ -692,14 +672,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                        thread:(TSThread *)thread
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        if (thread.isGroupThread) {
             // Mark as "skipped" group members who no longer have signal accounts.
             [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
-        }
-
-        if (![SignalRecipient isRegisteredRecipient:recipient.recipientId transaction:transaction]) {
-            return;
-        }
 
         [SignalRecipient removeUnregisteredRecipient:recipient.recipientId transaction:transaction];
 

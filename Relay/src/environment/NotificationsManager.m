@@ -13,7 +13,7 @@
 #import <RelayMessaging/OWSSounds.h>
 #import <RelayServiceKit/NSString+SSK.h>
 #import <RelayServiceKit/TSCall.h>
-#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/TSErrorMessage.h>
 #import <RelayServiceKit/TSIncomingMessage.h>
 #import <RelayServiceKit/TextSecureKitEnv.h>
@@ -89,7 +89,7 @@
  */
 - (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName
 {
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    TSThread *thread = [TSThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
@@ -127,7 +127,7 @@
 
 - (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call callerName:(NSString *)callerName
 {
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    TSThread *thread = [TSThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
@@ -164,7 +164,7 @@
 
 - (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call callerName:(NSString *)callerName
 {
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
+    TSThread *thread = [TSThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];

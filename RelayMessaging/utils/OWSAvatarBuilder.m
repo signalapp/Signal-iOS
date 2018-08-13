@@ -5,8 +5,7 @@
 #import "OWSAvatarBuilder.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSGroupAvatarBuilder.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
+#import "TSThread.h"
 #import "UIColor+OWS.h"
 #import "JSQMessagesAvatarImageFactory.h"
 
@@ -22,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contactsManager);
 
     OWSAvatarBuilder *avatarBuilder;
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
+    if ([thread isKindOfClass:[TSThread class]]) {
+        TSThread *contactThread = (TSThread *)thread;
         NSString *colorName = thread.conversationColorName;
         UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier

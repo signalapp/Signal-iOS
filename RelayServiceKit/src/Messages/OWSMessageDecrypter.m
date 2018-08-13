@@ -16,7 +16,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TSErrorMessage.h"
 #import "TSPreKeyManager.h"
 #import "TextSecureKitEnv.h"
@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
                          envelope:(SSKEnvelope *)envelope
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSThread *contactThread = [TSThread getOrCreateThreadWithId:envelope.source transaction:transaction];
     [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
                                                                           thread:contactThread
                                                                      transaction:transaction];

@@ -114,8 +114,7 @@ class ConversationSearcherTest: XCTestCase {
 
         FullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
 
-        TSContactThread.removeAllObjectsInCollection()
-        TSGroupThread.removeAllObjectsInCollection()
+        TSThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
         originalEnvironment = TextSecureKitEnv.shared()
@@ -134,10 +133,10 @@ class ConversationSearcherTest: XCTestCase {
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
+            let aliceContactThread = TSThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
             self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
+            let bobContactThread = TSThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
             self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)

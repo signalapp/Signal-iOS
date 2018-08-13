@@ -9,8 +9,6 @@
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSContactThread.h>
-#import <RelayServiceKit/TSGroupThread.h>
 #import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -155,7 +153,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                         }];
     self.nameLabel.attributedText = attributedText;
 
-    if ([thread isKindOfClass:[TSContactThread class]]) {
+    if ([thread isKindOfClass:[TSThread class]]) {
         self.recipientId = thread.contactIdentifier;
 
         [[NSNotificationCenter defaultCenter] addObserver:self

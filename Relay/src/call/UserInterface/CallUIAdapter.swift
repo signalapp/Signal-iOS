@@ -130,7 +130,7 @@ extension CallUIAdaptee {
         callService.addObserverAndSyncState(observer: self)
     }
 
-    internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
+    internal func reportIncomingCall(_ call: SignalCall, thread: TSThread) {
         SwiftAssertIsOnMainThread(#function)
 
         // make sure we don't terminate audio session during call

@@ -13,7 +13,7 @@
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
-#import "TSContactThread.h"
+#import "TSThread.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
         NSString *conversationColorName;
         
-        TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId transaction:transaction];
+        TSThread *_Nullable contactThread = [TSThread getThreadWithContactId:signalAccount.recipientId transaction:transaction];
         if (contactThread) {
             conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];

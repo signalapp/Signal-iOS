@@ -156,21 +156,23 @@ public class FullTextSearchFinder: NSObject {
     private class var contactsManager: ContactsManagerProtocol {
         return TextSecureKitEnv.shared().contactsManager
     }
+    
+    private static let threadIndexer: SearchIndexer<TSThread> = SearchIndexer { (thread: TSThread) in
 
-    private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread) in
-        let groupName = groupThread.groupModel.groupName ?? ""
+//    private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread) in
+        let title = thread.title ?? ""
 
-        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
+        let memberStrings = thread.participantIds.map { recipientId in
             recipientIndexer.index(recipientId)
         }.joined(separator: " ")
 
-        return "\(groupName) \(memberStrings)"
+        return "\(title) \(memberStrings)"
     }
 
-    private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread) in
-        let recipientId =  contactThread.contactIdentifier()
-        return recipientIndexer.index(recipientId)
-    }
+//    private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread) in
+//        let recipientId =  contactThread.contactIdentifier()
+//        return recipientIndexer.index(recipientId)
+//    }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
         let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
@@ -231,16 +233,16 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private class func indexContent(object: Any) -> String? {
-        if let groupThread = object as? TSGroupThread {
-            return self.groupThreadIndexer.index(groupThread)
-        } else if let contactThread = object as? TSContactThread {
-            guard contactThread.hasEverHadMessage else {
-                // If we've never sent/received a message in a TSContactThread,
-                // then we want it to appear in the "Other Contacts" section rather
-                // than in the "Conversations" section.
-                return nil
-            }
-            return self.contactThreadIndexer.index(contactThread)
+        if let thread = object as? TSThread {
+            return self.threadIndexer.index(thread)
+//        } else if let contactThread = object as? TSContactThread {
+//            guard contactThread.hasEverHadMessage else {
+//                // If we've never sent/received a message in a TSContactThread,
+//                // then we want it to appear in the "Other Contacts" section rather
+//                // than in the "Conversations" section.
+//                return nil
+//            }
+//            return self.contactThreadIndexer.index(contactThread)
         } else if let message = object as? TSMessage {
             return self.messageIndexer.index(message)
         } else if let signalAccount = object as? SignalAccount {

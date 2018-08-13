@@ -7,7 +7,7 @@
 #import "Relay-Swift.h"
 #import <RelayServiceKit/OWSIdentityManager.h>
 #import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <RelayServiceKit/TSContactThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-    if ([threadParameter isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *thread = (TSContactThread *)threadParameter;
+    if ([threadParameter isKindOfClass:[TSThread class]]) {
+        TSThread *thread = (TSThread *)threadParameter;
         [items addObjectsFromArray:@[
             [OWSTableItem itemWithTitle:@"Log All Recipient Identities"
                             actionBlock:^{
