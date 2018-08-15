@@ -82,7 +82,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         recipientRow.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         // Text View
-        textView = UITextView()
+        textView = OWSTextView()
         textView.delegate = self
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryColor

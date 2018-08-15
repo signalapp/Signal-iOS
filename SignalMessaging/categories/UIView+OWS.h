@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^UIViewVisitorBlock)(UIView *view);
+
 // A convenience method for doing responsive layout. Scales between two
 // reference values (for iPhone 5 and iPhone 7 Plus) to the current device
 // based on screen width, linearly interpolating.
@@ -105,6 +107,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)setHLayoutMargins:(CGFloat)value;
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
+
+- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor;
 
 #pragma mark - Containers
 

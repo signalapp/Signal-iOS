@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createPinTextfield
 {
-    self.pinTextfield = [UITextField new];
+    self.pinTextfield = [OWSTextField new];
     self.pinTextfield.textColor = [Theme primaryColor];
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;

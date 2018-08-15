@@ -512,6 +512,18 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
+- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(visitor);
+
+    visitor(self);
+
+    for (UIView *subview in self.subviews) {
+        [subview traverseViewHierarchyWithVisitor:visitor];
+    }
+}
+
 @end
 
 #pragma mark -

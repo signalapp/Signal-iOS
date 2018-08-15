@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (UIDevice.currentDevice.isShorterThanIPhone5) {
         self.pinTextfield = [DismissableTextField new];
     } else {
-        self.pinTextfield = [UITextField new];
+        self.pinTextfield = [OWSTextField new];
     }
 
     self.pinTextfield.textColor = [Theme primaryColor];

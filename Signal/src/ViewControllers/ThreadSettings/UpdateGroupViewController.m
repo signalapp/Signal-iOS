@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     _groupAvatar = self.thread.groupModel.groupImage;
     [self updateAvatarView];
 
-    UITextField *groupNameTextField = [UITextField new];
+    UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
     self.groupNameTextField.text = [self.thread.groupModel.groupName ows_stripped];
     groupNameTextField.textColor = [Theme primaryColor];

@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalMessaging/OWSTextView.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalAttachment;
@@ -24,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface ConversationInputTextView : UITextView
+@interface ConversationInputTextView : OWSTextView
 
 @property (weak, nonatomic) id<ConversationInputTextViewDelegate> inputTextViewDelegate;
 

@@ -3,6 +3,7 @@
 //
 
 #import "CountryCodeViewController.h"
+#import "OWSSearchBar.h"
 #import "PhoneNumberUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -45,15 +46,10 @@
 - (void)createViews
 {
     // Search
-    UISearchBar *searchBar = [UISearchBar new];
+    UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = Theme.searchBarBackgroundColor;
-    searchBar.barStyle = Theme.barStyle;
-    searchBar.searchBarStyle = Theme.searchBarStyle;
-    searchBar.barTintColor = Theme.backgroundColor;
     [searchBar sizeToFit];
 
     self.tableView.tableHeaderView = searchBar;

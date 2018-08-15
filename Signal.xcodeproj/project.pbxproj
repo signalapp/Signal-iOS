@@ -55,6 +55,12 @@
 		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
 		3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
+		342950822124C9750000B063 /* OWSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 3429507E2124C9740000B063 /* OWSTextField.m */; };
+		342950832124C9750000B063 /* OWSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3429507F2124C9740000B063 /* OWSTextView.m */; };
+		342950842124C9750000B063 /* OWSTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 342950802124C9740000B063 /* OWSTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		342950852124C9750000B063 /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 342950812124C9750000B063 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 342950862124CB0A0000B063 /* OWSSearchBar.m */; };
+		342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 342950872124CB0A0000B063 /* OWSSearchBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
@@ -670,6 +676,12 @@
 		34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedMessageView.h; sourceTree = "<group>"; };
 		3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageTimerView.h; sourceTree = "<group>"; };
 		3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageTimerView.m; sourceTree = "<group>"; };
+		3429507E2124C9740000B063 /* OWSTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTextField.m; sourceTree = "<group>"; };
+		3429507F2124C9740000B063 /* OWSTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTextView.m; sourceTree = "<group>"; };
+		342950802124C9740000B063 /* OWSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTextView.h; sourceTree = "<group>"; };
+		342950812124C9750000B063 /* OWSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTextField.h; sourceTree = "<group>"; };
+		342950862124CB0A0000B063 /* OWSSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSearchBar.m; sourceTree = "<group>"; };
+		342950872124CB0A0000B063 /* OWSSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSearchBar.h; sourceTree = "<group>"; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dripicons-v2.ttf"; sourceTree = "<group>"; };
@@ -1698,6 +1710,12 @@
 				34AC0A09211B39E900997B47 /* OWSFlatButton.swift */,
 				34AC09FE211B39E700997B47 /* OWSLayerView.swift */,
 				34AC0A03211B39E800997B47 /* OWSNavigationBar.swift */,
+				342950872124CB0A0000B063 /* OWSSearchBar.h */,
+				342950862124CB0A0000B063 /* OWSSearchBar.m */,
+				342950812124C9750000B063 /* OWSTextField.h */,
+				3429507E2124C9740000B063 /* OWSTextField.m */,
+				342950802124C9740000B063 /* OWSTextView.h */,
+				3429507F2124C9740000B063 /* OWSTextView.m */,
 				34AC0A05211B39E900997B47 /* TappableStackView.swift */,
 				34AC09FD211B39E700997B47 /* TappableView.swift */,
 				34AC0A0D211B39EA00997B47 /* ThreadViewHelper.h */,
@@ -2520,6 +2538,7 @@
 				34AC09F1211B39B100997B47 /* LockInteractionController.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				3421981521061A0700C57195 /* UIColor+JSQMessages.h in Headers */,
+				342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */,
 				346129FA1FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
 				34AC09E8211B39B100997B47 /* NewNonContactConversationViewController.h in Headers */,
@@ -2542,12 +2561,14 @@
 				451F8A4A1FD715D9005CB9DA /* OWSContactAvatarBuilder.h in Headers */,
 				34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */,
 				45194F921FD7215600333B2C /* OWSContactOffersInteraction.h in Headers */,
+				342950842124C9750000B063 /* OWSTextView.h in Headers */,
 				3478506A1FD9B78A007B8332 /* AppSetup.h in Headers */,
 				346129A51FD1F09100532771 /* OWSContactsManager.h in Headers */,
 				34480B681FD0AA9400BC14EF /* UIFont+OWS.h in Headers */,
 				45194F941FD7216000333B2C /* TSUnreadIndicatorInteraction.h in Headers */,
 				34AC09F5211B39B100997B47 /* SharingThreadPickerViewController.h in Headers */,
 				34AC09E0211B39B100997B47 /* SelectRecipientViewController.h in Headers */,
+				342950852124C9750000B063 /* OWSTextField.h in Headers */,
 				45194F901FD7200000333B2C /* ThreadUtil.h in Headers */,
 				346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */,
 				346129FD1FD5F31400532771 /* OWS102MoveLoggingPreferenceToUserDefaults.h in Headers */,
@@ -3159,8 +3180,11 @@
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				346129701FD1D74C00532771 /* Release.m in Sources */,
+				342950832124C9750000B063 /* OWSTextView.m in Sources */,
 				3421981321061A0700C57195 /* JSQMessagesAvatarImageFactory.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
+				342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */,
+				342950822124C9750000B063 /* OWSTextField.m in Sources */,
 				34AC0A13211B39EA00997B47 /* DisappearingTimerConfigurationView.swift in Sources */,
 				3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */,
 				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,

@@ -155,7 +155,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [avatarView autoSetDimension:ALDimensionHeight toSize:kNewGroupViewControllerAvatarWidth];
     [self updateAvatarView];
 
-    UITextField *groupNameTextField = [UITextField new];
+    UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
     groupNameTextField.textColor = Theme.primaryColor;
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
