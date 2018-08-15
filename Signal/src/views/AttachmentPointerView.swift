@@ -8,8 +8,6 @@ import SignalMessaging
 
 class AttachmentPointerView: UIStackView {
 
-    let TAG = "[AttachmentPointerView]"
-
     let isIncoming: Bool
     let attachmentPointer: TSAttachmentPointer
     let conversationStyle: ConversationStyle

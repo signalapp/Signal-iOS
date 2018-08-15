@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *logTag;
 
-+ (NSString *)logTag;
+@property (class, nonatomic, readonly) NSString *logTag;
 
 + (BOOL)isNullableObject:(nullable NSObject *)left equalTo:(nullable NSObject *)right;
 

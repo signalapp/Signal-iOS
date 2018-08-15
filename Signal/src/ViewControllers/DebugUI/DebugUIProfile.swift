@@ -8,8 +8,6 @@ import SignalMessaging
 
 class DebugUIProfile: DebugUIPage {
 
-    let TAG = "[DebugUIProfile]"
-
     // MARK: Dependencies
 
     var messageSender: MessageSender {

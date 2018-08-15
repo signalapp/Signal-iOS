@@ -8,8 +8,6 @@ import SignalServiceKit
 @objc
 public class SafetyNumberConfirmationAlert: NSObject {
 
-    let TAG = "[SafetyNumberConfirmationAlert]"
-
     private let contactsManager: OWSContactsManager
     private let primaryStorage: OWSPrimaryStorage
 
@@ -67,7 +65,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
         let actionSheetController = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)
 
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
-            Logger.info("\(self.TAG) Confirmed identity: \(untrustedIdentity)")
+            Logger.info("\(self.logTag) Confirmed identity: \(untrustedIdentity)")
 
         self.primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, transaction: transaction)
@@ -79,7 +77,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
         actionSheetController.addAction(confirmAction)
 
         let showSafetyNumberAction = UIAlertAction(title: NSLocalizedString("VERIFY_PRIVACY", comment: "Label for button or row which allows users to verify the safety number of another user."), style: .default) { _ in
-            Logger.info("\(self.TAG) Opted to show Safety Number for identity: \(untrustedIdentity)")
+            Logger.info("\(self.logTag) Opted to show Safety Number for identity: \(untrustedIdentity)")
 
             self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
                                                    theirRecipientId: untrustedIdentity.recipientId,
@@ -105,7 +103,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
 
     public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
         guard let fromViewController = UIApplication.shared.frontmostViewController else {
-            Logger.info("\(self.TAG) Missing frontmostViewController")
+            Logger.info("\(self.logTag) Missing frontmostViewController")
             return
         }
         FingerprintViewController.present(from: fromViewController, recipientId: theirRecipientId)

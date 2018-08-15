@@ -573,7 +573,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("\(self.logTag) \(#function)")
 
         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
-            owsFail("\(ContactViewController.logTag) could not open phone number.")
+            owsFail("\(ContactViewController.logTag()) could not open phone number.")
             return
         }
         UIApplication.shared.openURL(url as URL)
@@ -601,7 +601,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("\(self.logTag) \(#function)")
 
         guard let url = NSURL(string: "mailto:\(email.email)") else {
-            owsFail("\(ContactViewController.logTag) could not open email.")
+            owsFail("\(ContactViewController.logTag()) could not open email.")
             return
         }
         UIApplication.shared.openURL(url as URL)
@@ -632,13 +632,13 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let mapAddress = formatAddressForQuery(address: address)
         guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            owsFail("\(ContactViewController.logTag) could not open address.")
+            owsFail("\(ContactViewController.logTag()) could not open address.")
             return
         }
         // Note that we use "q" (i.e. query) rather than "address" since we can't assume
         // this is a well-formed address.
         guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
-            owsFail("\(ContactViewController.logTag) could not open address.")
+            owsFail("\(ContactViewController.logTag()) could not open address.")
             return
         }
 

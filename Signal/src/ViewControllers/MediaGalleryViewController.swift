@@ -62,7 +62,6 @@ public struct MediaGalleryItem: Equatable, Hashable {
     public var hashValue: Int {
         return message.hashValue
     }
-
 }
 
 public struct GalleryDate: Hashable, Comparable, Equatable {

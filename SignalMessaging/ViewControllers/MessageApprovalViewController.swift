@@ -13,7 +13,6 @@ public protocol MessageApprovalViewControllerDelegate: class {
 @objc
 public class MessageApprovalViewController: OWSViewController, UITextViewDelegate {
 
-    let TAG = "[MessageApprovalViewController]"
     weak var delegate: MessageApprovalViewControllerDelegate?
 
     // MARK: Properties

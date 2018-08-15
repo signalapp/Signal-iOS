@@ -27,8 +27,6 @@ import SignalMessaging
 //   appropriate cropping.
 @objc class CropScaleImageViewController: OWSViewController {
 
-    let TAG = "[CropScaleImageViewController]"
-
     // MARK: Properties
 
     let srcImage: UIImage
@@ -501,7 +499,7 @@ import SignalMessaging
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
         if scaledImage == nil {
-            owsFail("\(TAG) could not generate dst image.")
+            owsFail("\(logTag) could not generate dst image.")
         }
         UIGraphicsEndImageContext()
         return scaledImage

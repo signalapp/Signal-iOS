@@ -11,8 +11,6 @@ import SignalServiceKit
 @objc
 public class ModalActivityIndicatorViewController: OWSViewController {
 
-    let TAG = "[ModalActivityIndicatorViewController]"
-
     let canCancel: Bool
 
     @objc

@@ -83,7 +83,6 @@ extension CallUIAdaptee {
  */
 @objc public class CallUIAdapter: NSObject, CallServiceObserver {
 
-    let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
     internal let audioService: CallAudioService
@@ -99,16 +98,16 @@ extension CallUIAdaptee {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
             // So we use the non-CallKit call UI.
-            Logger.info("\(TAG) choosing non-callkit adaptee for simulator.")
+            Logger.info("\(CallUIAdapter.logTag()) choosing non-callkit adaptee for simulator.")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         } else if #available(iOS 11, *) {
-            Logger.info("\(TAG) choosing callkit adaptee for iOS11+")
+            Logger.info("\(CallUIAdapter.logTag()) choosing callkit adaptee for iOS11+")
             let showNames = Environment.preferences().notificationPreviewType() != .noNameNoPreview
             let useSystemCallLog = Environment.preferences().isSystemCallLogEnabled()
 
             adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else if #available(iOS 10.0, *), Environment.current().preferences.isCallKitEnabled() {
-            Logger.info("\(TAG) choosing callkit adaptee for iOS10")
+            Logger.info("\(CallUIAdapter.logTag()) choosing callkit adaptee for iOS10")
             let hideNames = Environment.preferences().isCallKitPrivacyEnabled() || Environment.preferences().notificationPreviewType() == .noNameNoPreview
             let showNames = !hideNames
 
@@ -117,7 +116,7 @@ extension CallUIAdaptee {
 
             adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else {
-            Logger.info("\(TAG) choosing non-callkit adaptee")
+            Logger.info("\(CallUIAdapter.logTag()) choosing non-callkit adaptee")
             adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
         }
 

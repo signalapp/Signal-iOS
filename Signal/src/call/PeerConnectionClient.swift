@@ -259,10 +259,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         configuration.bundlePolicy = .maxBundle
         configuration.rtcpMuxPolicy = .require
         if useTurnOnly {
-            Logger.debug("\(PeerConnectionClient.logTag) using iceTransportPolicy: relay")
+            Logger.debug("\(PeerConnectionClient.logTag()) using iceTransportPolicy: relay")
             configuration.iceTransportPolicy = .relay
         } else {
-            Logger.debug("\(PeerConnectionClient.logTag) using iceTransportPolicy: default")
+            Logger.debug("\(PeerConnectionClient.logTag()) using iceTransportPolicy: default")
         }
 
         let connectionConstraintsDict = ["DtlsSrtpKeyAgreement": "true"]
@@ -1053,7 +1053,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func peerConnectionForTests() -> RTCPeerConnection {
         SwiftAssertIsOnMainThread(#function)
 
-        var result: RTCPeerConnection? = nil
+        var result: RTCPeerConnection?
         PeerConnectionClient.signalingQueue.sync {
             result = peerConnection
             Logger.info("\(self.logTag) called \(#function)")
@@ -1064,7 +1064,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func dataChannelForTests() -> RTCDataChannel {
         SwiftAssertIsOnMainThread(#function)
 
-        var result: RTCDataChannel? = nil
+        var result: RTCDataChannel?
         PeerConnectionClient.signalingQueue.sync {
             result = dataChannel
             Logger.info("\(self.logTag) called \(#function)")

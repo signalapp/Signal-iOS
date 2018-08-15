@@ -19,8 +19,7 @@ enum GiphyAssetSegmentState: UInt {
     case failed
 }
 
-class GiphyAssetSegment {
-    let TAG = "[GiphyAssetSegment]"
+class GiphyAssetSegment: NSObject {
 
     public let index: UInt
     public let segmentStart: UInt
@@ -61,7 +60,7 @@ class GiphyAssetSegment {
 
     public func append(data: Data) {
         guard state == .downloading else {
-            owsFail("\(TAG) appending data in invalid state: \(state)")
+            owsFail("\(logTag) appending data in invalid state: \(state)")
             return
         }
 
@@ -70,11 +69,11 @@ class GiphyAssetSegment {
 
     public func mergeData(assetData: inout Data) -> Bool {
         guard state == .complete else {
-            owsFail("\(TAG) merging data in invalid state: \(state)")
+            owsFail("\(logTag) merging data in invalid state: \(state)")
             return false
         }
         guard UInt(segmentData.count) == segmentLength else {
-            owsFail("\(TAG) segment data length: \(segmentData.count) doesn't match expected length: \(segmentLength)")
+            owsFail("\(logTag) segment data length: \(segmentData.count) doesn't match expected length: \(segmentLength)")
             return false
         }
 
@@ -109,8 +108,6 @@ enum GiphyAssetRequestState: UInt {
 //
 // Should be cancelled if no longer necessary.
 @objc class GiphyAssetRequest: NSObject {
-    static let TAG = "[GiphyAssetRequest]"
-    let TAG = "[GiphyAssetRequest]"
 
     let rendition: GiphyRendition
     let priority: GiphyRequestPriority
@@ -155,7 +152,7 @@ enum GiphyAssetRequestState: UInt {
 
         let contentLength = UInt(self.contentLength)
         guard contentLength > 0 else {
-            owsFail("\(TAG) rendition missing contentLength")
+            owsFail("\(logTag) rendition missing contentLength")
             requestDidFail()
             return 0
         }
@@ -209,7 +206,7 @@ enum GiphyAssetRequestState: UInt {
 
         for segment in segments {
             guard segment.state != .failed else {
-                owsFail("\(TAG) unexpected failed segment.")
+                owsFail("\(logTag) unexpected failed segment.")
                 continue
             }
             if segment.state == state {
@@ -231,7 +228,7 @@ enum GiphyAssetRequestState: UInt {
         var result: UInt = 0
         for segment in segments {
             guard segment.state != .failed else {
-                owsFail("\(TAG) unexpected failed segment.")
+                owsFail("\(logTag) unexpected failed segment.")
                 continue
             }
             if segment.state == .downloading {
@@ -257,26 +254,26 @@ enum GiphyAssetRequestState: UInt {
         var assetData = Data()
         for segment in segments {
             guard segment.state == .complete else {
-                owsFail("\(TAG) unexpected incomplete segment.")
+                owsFail("\(logTag) unexpected incomplete segment.")
                 return nil
             }
             guard segment.totalDataSize() > 0 else {
-                owsFail("\(TAG) could not merge empty segment.")
+                owsFail("\(logTag) could not merge empty segment.")
                 return nil
             }
             guard segment.mergeData(assetData: &assetData) else {
-                owsFail("\(TAG) failed to merge segment data.")
+                owsFail("\(logTag) failed to merge segment data.")
                 return nil
             }
         }
 
         guard assetData.count == contentLength else {
-            owsFail("\(TAG) asset data has unexpected length.")
+            owsFail("\(logTag) asset data has unexpected length.")
             return nil
         }
 
         guard assetData.count > 0 else {
-            owsFail("\(TAG) could not write empty asset to disk.")
+            owsFail("\(logTag) could not write empty asset to disk.")
             return nil
         }
 
@@ -284,14 +281,14 @@ enum GiphyAssetRequestState: UInt {
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (gifFolderPath as NSString).appendingPathComponent(fileName)
 
-        Logger.verbose("\(TAG) filePath: \(filePath).")
+        Logger.verbose("\(logTag) filePath: \(filePath).")
 
         do {
             try assetData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
             let asset = GiphyAsset(rendition: rendition, filePath: filePath)
             return asset
         } catch let error as NSError {
-            owsFail("\(GiphyAsset.TAG) file write failed: \(filePath), \(error)")
+            owsFail("\(GiphyAsset.logTag()) file write failed: \(filePath), \(error)")
             return nil
         }
     }
@@ -343,7 +340,6 @@ enum GiphyAssetRequestState: UInt {
 // so consumers of this resource should retain a strong reference to
 // this instance as long as they are using the asset.
 @objc class GiphyAsset: NSObject {
-    static let TAG = "[GiphyAsset]"
 
     let rendition: GiphyRendition
     let filePath: String
@@ -362,7 +358,7 @@ enum GiphyAssetRequestState: UInt {
                 let fileManager = FileManager.default
                 try fileManager.removeItem(atPath: filePathCopy)
             } catch let error as NSError {
-                owsFail("\(GiphyAsset.TAG) file cleanup failed: \(filePathCopy), \(error)")
+                owsFail("\(GiphyAsset.logTag()) file cleanup failed: \(filePathCopy), \(error)")
             }
         }
     }
@@ -394,8 +390,6 @@ extension URLSessionTask {
 @objc class GiphyDownloader: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate {
 
     // MARK: - Properties
-
-    let TAG = "[GiphyDownloader]"
 
     static let sharedInstance = GiphyDownloader()
 
@@ -455,7 +449,7 @@ extension URLSessionTask {
 
         if let asset = assetMap.get(key: rendition.url) {
             // Synchronous cache hit.
-            Logger.verbose("\(self.TAG) asset cache hit: \(rendition.url)")
+            Logger.verbose("\(self.logTag) asset cache hit: \(rendition.url)")
             success(nil, asset)
             return nil
         }
@@ -463,7 +457,7 @@ extension URLSessionTask {
         // Cache miss.
         //
         // Asset requests are done queued and performed asynchronously.
-        Logger.verbose("\(self.TAG) asset cache miss: \(rendition.url)")
+        Logger.verbose("\(self.logTag) asset cache miss: \(rendition.url)")
         let assetRequest = GiphyAssetRequest(rendition: rendition,
                                              priority: priority,
                                              success: success,
@@ -480,7 +474,7 @@ extension URLSessionTask {
     public func cancelAllRequests() {
         SwiftAssertIsOnMainThread(#function)
 
-        Logger.verbose("\(self.TAG) cancelAllRequests")
+        Logger.verbose("\(self.logTag) cancelAllRequests")
 
         self.assetRequestQueue.forEach { $0.cancel() }
         self.assetRequestQueue = []
@@ -540,7 +534,7 @@ extension URLSessionTask {
         SwiftAssertIsOnMainThread(#function)
 
         guard assetRequestQueue.contains(assetRequest) else {
-            Logger.warn("\(TAG) could not remove asset request from queue: \(assetRequest.rendition.url)")
+            Logger.warn("\(logTag) could not remove asset request from queue: \(assetRequest.rendition.url)")
             return
         }
 
@@ -598,7 +592,7 @@ extension URLSessionTask {
 
             let task = giphyDownloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
                 if let data = data, data.count > 0 {
-                    owsFail("\(self.TAG) HEAD request has unexpected body: \(data.count).")
+                    owsFail("\(self.logTag) HEAD request has unexpected body: \(data.count).")
                 }
                 self.handleAssetSizeResponse(assetRequest: assetRequest, response: response, error: error)
             })
@@ -608,7 +602,7 @@ extension URLSessionTask {
             // Start a download task.
 
             guard let assetSegment = assetRequest.firstWaitingSegment() else {
-                owsFail("\(TAG) queued asset request does not have a waiting segment.")
+                owsFail("\(logTag) queued asset request does not have a waiting segment.")
                 return
             }
             assetSegment.state = .downloading
@@ -635,25 +629,25 @@ extension URLSessionTask {
             return
         }
         guard let httpResponse = response as? HTTPURLResponse else {
-            owsFail("\(self.TAG) Asset size response is invalid.")
+            owsFail("\(self.logTag) Asset size response is invalid.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard let contentLengthString = httpResponse.allHeaderFields["Content-Length"] as? String else {
-            owsFail("\(self.TAG) Asset size response is missing content length.")
+            owsFail("\(self.logTag) Asset size response is missing content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard let contentLength = Int(contentLengthString) else {
-            owsFail("\(self.TAG) Asset size response has unparsable content length.")
+            owsFail("\(self.logTag) Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard contentLength > 0 else {
-            owsFail("\(self.TAG) Asset size response has invalid content length.")
+            owsFail("\(self.logTag) Asset size response has invalid content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -756,23 +750,23 @@ extension URLSessionTask {
             return
         }
         if let error = error {
-            Logger.error("\(TAG) download failed with error: \(error)")
+            Logger.error("\(logTag) download failed with error: \(error)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
-            Logger.error("\(TAG) missing or unexpected response: \(String(describing: task.response))")
+            Logger.error("\(logTag) missing or unexpected response: \(String(describing: task.response))")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         let statusCode = httpResponse.statusCode
         guard statusCode >= 200 && statusCode < 400 else {
-            Logger.error("\(TAG) response has invalid status code: \(statusCode)")
+            Logger.error("\(logTag) response has invalid status code: \(statusCode)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         guard assetSegment.totalDataSize() == assetSegment.segmentLength else {
-            Logger.error("\(TAG) segment is missing data: \(statusCode)")
+            Logger.error("\(logTag) segment is missing data: \(statusCode)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
@@ -807,7 +801,7 @@ extension URLSessionTask {
             // Don't back up Giphy downloads.
             OWSFileSystem.protectFileOrFolder(atPath: dirPath)
         } catch let error as NSError {
-            owsFail("\(GiphyAsset.TAG) ensureTempFolder failed: \(dirPath), \(error)")
+            owsFail("\(GiphyAsset.logTag()) ensureTempFolder failed: \(dirPath), \(error)")
             gifFolderPath = tempDirPath
         }
     }

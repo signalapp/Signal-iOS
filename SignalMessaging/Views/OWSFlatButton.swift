@@ -7,7 +7,6 @@ import SignalServiceKit
 
 @objc
 public class OWSFlatButton: UIView {
-    let TAG = "[OWSFlatButton]"
 
     private let button: UIButton
 

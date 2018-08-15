@@ -7,14 +7,12 @@ import SignalServiceKit
 
 @objc class GroupTableViewCell: UITableViewCell {
 
-    let TAG = "[GroupTableViewCell]"
-
     private let avatarView = AvatarImageView()
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
 
     init() {
-        super.init(style: .default, reuseIdentifier: TAG)
+        super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())
 
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
