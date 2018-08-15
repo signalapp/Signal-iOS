@@ -3311,9 +3311,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-
-    DDLogInfo(@"%@ uiDatabaseDidUpdate notifications: %@", self.logTag, notifications);
-
     NSArray<YapDatabaseViewSectionChange *> *sectionChanges = nil;
     NSArray<YapDatabaseViewRowChange *> *rowChanges = nil;
     [[self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName] getSectionChanges:&sectionChanges
@@ -3405,8 +3402,7 @@ typedef enum : NSUInteger {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3416,8 +3412,7 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3434,9 +3429,8 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
-                              @"finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
+                                 @"finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath,
@@ -3445,8 +3439,7 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3457,7 +3450,7 @@ typedef enum : NSUInteger {
         }
     };
 
-    DDLogInfo(@"%@ viewItems.count: %zd -> %zd", self.logTag, oldViewItemCount, self.viewItems.count);
+    DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
