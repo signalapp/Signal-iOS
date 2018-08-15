@@ -50,7 +50,10 @@
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = [UIColor whiteColor];
+    searchBar.backgroundColor = Theme.searchBarBackgroundColor;
+    searchBar.barStyle = Theme.barStyle;
+    searchBar.searchBarStyle = Theme.searchBarStyle;
+    searchBar.barTintColor = Theme.backgroundColor;
     [searchBar sizeToFit];
 
     self.tableView.tableHeaderView = searchBar;
@@ -76,14 +79,13 @@
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
+                                 [OWSTableItem configureCell:cell];
                                  cell.textLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-                                 cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-                                 cell.textLabel.textColor = [UIColor blackColor];
 
                                  UILabel *countryCodeLabel = [UILabel new];
                                  countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
                                  countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
-                                 countryCodeLabel.textColor = [UIColor ows_darkGrayColor];
+                                 countryCodeLabel.textColor = Theme.secondaryColor;
                                  [countryCodeLabel sizeToFit];
                                  cell.accessoryView = countryCodeLabel;
 

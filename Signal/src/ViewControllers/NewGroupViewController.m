@@ -157,10 +157,14 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     UITextField *groupNameTextField = [UITextField new];
     _groupNameTextField = groupNameTextField;
-    groupNameTextField.textColor = [Theme primaryColor];
+    groupNameTextField.textColor = Theme.primaryColor;
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
-    groupNameTextField.placeholder
-        = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"Placeholder text for group name field");
+    groupNameTextField.attributedPlaceholder =
+        [[NSAttributedString alloc] initWithString:NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT",
+                                                       @"Placeholder text for group name field")
+                                        attributes:@{
+                                            NSForegroundColorAttributeName : Theme.secondaryColor,
+                                        }];
     groupNameTextField.delegate = self;
     [groupNameTextField addTarget:self
                            action:@selector(groupNameDidChange:)
