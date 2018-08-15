@@ -37,7 +37,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 @interface TSAccountManager ()
 
-@property (nonatomic, readonly) BOOL isRegistered;
+@property (atomic, readonly) BOOL isRegistered;
 
 // This property is exposed publicly for testing purposes only.
 #ifndef DEBUG
@@ -120,8 +120,8 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             // Cache this once it's true since it's called alot, involves a dbLookup, and once set - it doesn't change.
             _isRegistered = [self storedLocalNumber] != nil;
         }
+        return _isRegistered;
     }
-    return _isRegistered;
 }
 
 - (void)didRegister
