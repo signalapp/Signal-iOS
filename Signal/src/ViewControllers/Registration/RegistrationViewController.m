@@ -195,7 +195,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     if (UIDevice.currentDevice.isShorterThanIPhone5) {
         phoneNumberTextField = [DismissableTextField new];
     } else {
-        phoneNumberTextField = [UITextField new];
+        phoneNumberTextField = [OWSTextField new];
     }
 
     phoneNumberTextField.textAlignment = NSTextAlignmentRight;

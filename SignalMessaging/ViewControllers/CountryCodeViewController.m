@@ -3,6 +3,7 @@
 //
 
 #import "CountryCodeViewController.h"
+#import "OWSSearchBar.h"
 #import "PhoneNumberUtil.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -45,12 +46,10 @@
 - (void)createViews
 {
     // Search
-    UISearchBar *searchBar = [UISearchBar new];
+    UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = [UIColor whiteColor];
     [searchBar sizeToFit];
 
     self.tableView.tableHeaderView = searchBar;
@@ -76,14 +75,13 @@
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
+                                 [OWSTableItem configureCell:cell];
                                  cell.textLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-                                 cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-                                 cell.textLabel.textColor = [UIColor blackColor];
 
                                  UILabel *countryCodeLabel = [UILabel new];
                                  countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
                                  countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
-                                 countryCodeLabel.textColor = [UIColor ows_darkGrayColor];
+                                 countryCodeLabel.textColor = Theme.secondaryColor;
                                  [countryCodeLabel sizeToFit];
                                  cell.accessoryView = countryCodeLabel;
 

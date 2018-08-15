@@ -102,9 +102,8 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         tableView.delegate = self
         tableView.dataSource = self
 
-        let searchBar = UISearchBar()
+        let searchBar = OWSSearchBar()
         self.searchBar = searchBar
-        searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
         searchBar.sizeToFit()
 
@@ -117,10 +116,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.view.backgroundColor = Theme.backgroundColor
         self.tableView.backgroundColor = Theme.backgroundColor
 
-        self.searchBar.backgroundColor = Theme.searchBarBackgroundColor
-        self.searchBar.barStyle = Theme.barStyle
-        self.searchBar.searchBarStyle = Theme.searchBarStyle
-        self.searchBar.barTintColor = Theme.backgroundColor
         searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
 
         // Auto size cells for dynamic type

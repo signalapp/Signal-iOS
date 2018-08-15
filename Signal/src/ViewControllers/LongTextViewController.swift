@@ -60,7 +60,7 @@ public class LongTextViewController: OWSViewController {
     private func createViews() {
         view.backgroundColor = Theme.backgroundColor
 
-        let messageTextView = UITextView()
+        let messageTextView = OWSTextView()
         self.messageTextView = messageTextView
         messageTextView.font = UIFont.ows_dynamicTypeBody
         messageTextView.backgroundColor = Theme.backgroundColor

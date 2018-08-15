@@ -121,7 +121,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     if (UIDevice.currentDevice.isShorterThanIPhone5) {
         nameTextField = [DismissableTextField new];
     } else {
-        nameTextField = [UITextField new];
+        nameTextField = [OWSTextField new];
     }
     _nameTextField = nameTextField;
     nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];

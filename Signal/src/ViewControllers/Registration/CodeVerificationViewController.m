@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (UIDevice.currentDevice.isShorterThanIPhone5) {
         _challengeTextField = [DismissableTextField new];
     } else {
-        _challengeTextField = [UITextField new];
+        _challengeTextField = [OWSTextField new];
     }
 
     _challengeTextField.textColor = [UIColor blackColor];

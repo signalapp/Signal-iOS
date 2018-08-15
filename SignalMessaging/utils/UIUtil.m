@@ -33,6 +33,14 @@
 
     UIBarButtonItem.appearance.tintColor = Theme.navbarIconColor;
 
+    // Using the keyboardAppearance causes crashes due to a bug in UIKit.
+    //    UITextField.appearance.keyboardAppearance = (Theme.isDarkThemeEnabled
+    //                                                 ? UIKeyboardAppearanceDark
+    //                                                 : UIKeyboardAppearanceDefault);
+    //    UITextView.appearance.keyboardAppearance = (Theme.isDarkThemeEnabled
+    //                                                 ? UIKeyboardAppearanceDark
+    //                                                 : UIKeyboardAppearanceDefault);
+
     //    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor
     //    ows_materialBlueColor]];
 

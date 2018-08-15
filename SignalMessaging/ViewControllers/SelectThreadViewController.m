@@ -10,6 +10,7 @@
 #import "NSString+OWS.h"
 #import "NewNonContactConversationViewController.h"
 #import "OWSContactsManager.h"
+#import "OWSSearchBar.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"
@@ -86,15 +87,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.selectThreadViewDelegate);
 
     // Search
-    UISearchBar *searchBar = [UISearchBar new];
+    UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = Theme.searchBarBackgroundColor;
-    searchBar.barStyle = Theme.barStyle;
-    searchBar.searchBarStyle = Theme.searchBarStyle;
-    searchBar.barTintColor = Theme.backgroundColor;
     [searchBar sizeToFit];
 
     UIView *header = [self.selectThreadViewDelegate createHeaderWithSearchBar:searchBar];

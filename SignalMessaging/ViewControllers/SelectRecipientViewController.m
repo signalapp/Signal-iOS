@@ -158,7 +158,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 - (UITextField *)phoneNumberTextField
 {
     if (!_phoneNumberTextField) {
-        _phoneNumberTextField = [UITextField new];
+        _phoneNumberTextField = [OWSTextField new];
         _phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:18.f];
         _phoneNumberTextField.textAlignment = _phoneNumberTextField.textAlignmentUnnatural;
         _phoneNumberTextField.textColor = [UIColor ows_materialBlueColor];

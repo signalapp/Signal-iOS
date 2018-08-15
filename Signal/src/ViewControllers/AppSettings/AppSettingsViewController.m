@@ -143,7 +143,6 @@
                                  cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                  UILabel *accessoryLabel = [UILabel new];
-                                 accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
                                  if (TSAccountManager.sharedInstance.isDeregistered) {
                                      accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
                                          @"Error indicating that this device is no longer registered.");
