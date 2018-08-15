@@ -136,7 +136,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.scrollView = scrollView
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperview(withMargin: 0)
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+
+        if (scrollView.applyInsetsFix()) {
+            scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        } else {
+            scrollView.autoPinEdge(toSuperviewEdge: .top)
+        }
 
         let contentView = UIView.container()
         self.contentView = contentView
@@ -160,8 +165,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ]
         } else {
-            scrollView.applyInsetsFix()
-
             scrollView.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
