@@ -150,8 +150,6 @@ extension String {
 
 @objc public class DisplayableText: NSObject {
 
-    static let TAG = "[DisplayableText]"
-
     @objc public let fullText: String
     @objc public let displayText: String
     @objc public let isTextTruncated: Bool

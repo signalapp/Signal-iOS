@@ -5,7 +5,6 @@
 import Foundation
 
 @objc public class OWSAlerts: NSObject {
-    let TAG = "[OWSAlerts]"
 
     /// Cleanup and present alert for no permissions
     @objc

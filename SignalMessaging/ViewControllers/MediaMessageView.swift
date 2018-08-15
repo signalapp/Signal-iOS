@@ -17,8 +17,6 @@ public enum MediaMessageViewMode: UInt {
 @objc
 public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
-    let TAG = "[MediaMessageView]"
-
     // MARK: Properties
 
     @objc

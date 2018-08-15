@@ -6,7 +6,6 @@ import Foundation
 
 class ReminderView: UIView {
 
-    let TAG = "[ReminderView]"
     let label = UILabel()
 
     typealias Action = () -> Void

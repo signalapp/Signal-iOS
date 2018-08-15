@@ -16,7 +16,6 @@ protocol CompareSafetyNumbersActivityDelegate {
 @objc (OWSCompareSafetyNumbersActivity)
 class CompareSafetyNumbersActivity: UIActivity {
 
-    let TAG = "[CompareSafetyNumbersActivity]"
     var mySafetyNumbers: String?
     let delegate: CompareSafetyNumbersActivityDelegate
 
@@ -62,7 +61,7 @@ class CompareSafetyNumbersActivity: UIActivity {
 
         let pasteboardString = numericOnly(string: UIPasteboard.general.string)
         guard (pasteboardString != nil && pasteboardString!.count == 60) else {
-            Logger.warn("\(TAG) no valid safety numbers found in pasteboard: \(String(describing: pasteboardString))")
+            Logger.warn("\(logTag) no valid safety numbers found in pasteboard: \(String(describing: pasteboardString))")
             let error = OWSErrorWithCodeDescription(OWSErrorCode.userError,
                                                     NSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error"))
 
@@ -73,10 +72,10 @@ class CompareSafetyNumbersActivity: UIActivity {
         let pasteboardSafetyNumbers = pasteboardString!
 
         if pasteboardSafetyNumbers == mySafetyNumbers {
-            Logger.info("\(TAG) successfully matched safety numbers. local numbers: \(String(describing: mySafetyNumbers)) pasteboard:\(pasteboardSafetyNumbers)")
+            Logger.info("\(logTag) successfully matched safety numbers. local numbers: \(String(describing: mySafetyNumbers)) pasteboard:\(pasteboardSafetyNumbers)")
             delegate.compareSafetyNumbersActivitySucceeded(activity: self)
         } else {
-            Logger.warn("\(TAG) local numbers: \(String(describing: mySafetyNumbers)) didn't match pasteboard:\(pasteboardSafetyNumbers)")
+            Logger.warn("\(logTag) local numbers: \(String(describing: mySafetyNumbers)) didn't match pasteboard:\(pasteboardSafetyNumbers)")
             let error = OWSErrorWithCodeDescription(OWSErrorCode.privacyVerificationFailure,
                                                     NSLocalizedString("PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body"))
             delegate.compareSafetyNumbersActivity(self, failedWithError: error)

@@ -53,7 +53,6 @@ class TrackingSlider: UISlider {
 
 @objc
 public class PlayerProgressBar: UIView {
-    public let TAG = "[PlayerProgressBar]"
 
     @objc
     public weak var delegate: PlayerProgressBarDelegate?
@@ -185,12 +184,12 @@ public class PlayerProgressBar: UIView {
 
     private func updateState() {
         guard let player = player else {
-            owsFail("\(TAG) player isn't set.")
+            owsFail("\(logTag) player isn't set.")
             return
         }
 
         guard let item = player.currentItem else {
-            owsFail("\(TAG) player has no item.")
+            owsFail("\(logTag) player has no item.")
             return
         }
 

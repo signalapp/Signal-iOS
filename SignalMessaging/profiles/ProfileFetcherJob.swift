@@ -9,8 +9,6 @@ import SignalServiceKit
 @objc
 public class ProfileFetcherJob: NSObject {
 
-    let TAG = "[ProfileFetcherJob]"
-
     let networkManager: TSNetworkManager
     let socketManager: TSSocketManager
     let primaryStorage: OWSPrimaryStorage
@@ -79,14 +77,14 @@ public class ProfileFetcherJob: NSObject {
         }.catch { error in
             switch error {
             case ProfileFetcherJobError.throttled(let lastTimeInterval):
-                Logger.info("\(self.TAG) skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+                Logger.info("\(self.logTag) skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
             case let error as SignalServiceProfile.ValidationError:
-                Logger.warn("\(self.TAG) skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
+                Logger.warn("\(self.logTag) skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
             default:
                 if remainingRetries > 0 {
                     self.updateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
                 } else {
-                    Logger.error("\(self.TAG) in \(#function) failed to get profile with error: \(error)")
+                    Logger.error("\(self.logTag) in \(#function) failed to get profile with error: \(error)")
                 }
             }
         }.retainUntilComplete()
@@ -109,7 +107,7 @@ public class ProfileFetcherJob: NSObject {
         }
         ProfileFetcherJob.fetchDateMap[recipientId] = Date()
 
-        Logger.error("\(self.TAG) getProfile: \(recipientId)")
+        Logger.error("\(self.logTag) getProfile: \(recipientId)")
 
         let request = OWSRequestFactory.getProfileRequest(withRecipientId: recipientId)
 
@@ -162,7 +160,7 @@ public class ProfileFetcherJob: NSObject {
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
-                Logger.info("\(self.TAG) updated identity key with fetched profile for recipient: \(recipientId)")
+                Logger.info("\(self.logTag) updated identity key with fetched profile for recipient: \(recipientId)")
                 self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
             } else {
                 // no change in identity.
@@ -173,7 +171,6 @@ public class ProfileFetcherJob: NSObject {
 
 @objc
 public class SignalServiceProfile: NSObject {
-    let TAG = "[SignalServiceProfile]"
 
     public enum ValidationError: Error {
         case invalid(description: String)
@@ -190,23 +187,23 @@ public class SignalServiceProfile: NSObject {
         self.recipientId = recipientId
 
         guard let responseDict = rawResponse as? [String: Any?] else {
-            throw ValidationError.invalid(description: "\(TAG) unexpected type: \(String(describing: rawResponse))")
+            throw ValidationError.invalid(description: "\(SignalServiceProfile.logTag()) unexpected type: \(String(describing: rawResponse))")
         }
 
         guard let identityKeyString = responseDict["identityKey"] as? String else {
-            throw ValidationError.invalidIdentityKey(description: "\(TAG) missing identity key: \(String(describing: rawResponse))")
+            throw ValidationError.invalidIdentityKey(description: "\(SignalServiceProfile.logTag()) missing identity key: \(String(describing: rawResponse))")
         }
         guard let identityKeyWithType = Data(base64Encoded: identityKeyString) else {
-            throw ValidationError.invalidIdentityKey(description: "\(TAG) unable to parse identity key: \(identityKeyString)")
+            throw ValidationError.invalidIdentityKey(description: "\(SignalServiceProfile.logTag()) unable to parse identity key: \(identityKeyString)")
         }
         let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
-            throw ValidationError.invalidIdentityKey(description: "\(TAG) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
+            throw ValidationError.invalidIdentityKey(description: "\(SignalServiceProfile.logTag()) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
         }
 
         if let profileNameString = responseDict["name"] as? String {
             guard let data = Data(base64Encoded: profileNameString) else {
-                throw ValidationError.invalidProfileName(description: "\(TAG) unable to parse profile name: \(profileNameString)")
+                throw ValidationError.invalidProfileName(description: "\(SignalServiceProfile.logTag()) unable to parse profile name: \(profileNameString)")
             }
             self.profileNameEncrypted = data
         } else {

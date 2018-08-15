@@ -10,7 +10,6 @@ import SignalMessaging
  * Creates an outbound call via WebRTC.
  */
 @objc public class OutboundCallInitiator: NSObject {
-    let TAG = "[OutboundCallInitiator]"
 
     let contactsManager: OWSContactsManager
     let contactsUpdater: ContactsUpdater
@@ -28,10 +27,10 @@ import SignalMessaging
      * |handle| is a user formatted phone number, e.g. from a system contacts entry
      */
     @discardableResult @objc public func initiateCall(handle: String) -> Bool {
-        Logger.info("\(TAG) in \(#function) with handle: \(handle)")
+        Logger.info("\(logTag) in \(#function) with handle: \(handle)")
 
         guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
-            Logger.warn("\(TAG) unable to parse signalId from phone number: \(handle)")
+            Logger.warn("\(logTag) unable to parse signalId from phone number: \(handle)")
             return false
         }
 
@@ -47,7 +46,7 @@ import SignalMessaging
         // because it can change after app launch due to user settings
         let callUIAdapter = SignalApp.shared().callUIAdapter
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("\(TAG) could not identify frontmostViewController in \(#function)")
+            owsFail("\(logTag) could not identify frontmostViewController in \(#function)")
             return false
         }
 
@@ -75,7 +74,7 @@ import SignalMessaging
 
             // Here the permissions are either granted or denied
             guard granted == true else {
-                Logger.warn("\(strongSelf.TAG) aborting due to missing microphone permissions.")
+                Logger.warn("\(strongSelf.logTag) aborting due to missing microphone permissions.")
                 OWSAlerts.showNoMicrophonePermissionAlert()
                 return
             }

@@ -14,8 +14,6 @@ import SignalMessaging
  */
 @objc public class MultiDeviceProfileKeyUpdateJob: NSObject {
 
-    let TAG = "[MultiDeviceProfileKeyUpdateJob]"
-
     private let profileKey: OWSAES256Key
     private let identityManager: OWSIdentityManager
     private let messageSender: MessageSender
@@ -38,7 +36,7 @@ import SignalMessaging
 
     func run(retryDelay: TimeInterval = 1) {
         guard let localNumber = TSAccountManager.localNumber() else {
-            owsFail("\(self.TAG) localNumber was unexpectedly nil")
+            owsFail("\(self.logTag) localNumber was unexpectedly nil")
             return
         }
 
@@ -66,10 +64,10 @@ import SignalMessaging
             contentType: OWSMimeTypeApplicationOctetStream,
             in: syncContactsMessage,
             success: {
-                Logger.info("\(self.TAG) Successfully synced profile key")
+                Logger.info("\(self.logTag) Successfully synced profile key")
             },
             failure: { error in
-                Logger.error("\(self.TAG) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
+                Logger.error("\(self.logTag) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
                 after(interval: retryDelay).then {
                     self.run(retryDelay: retryDelay * 2)
                 }.retainUntilComplete()

@@ -18,8 +18,6 @@ import SignalServiceKit
 @objc
 public class DeviceSleepManager: NSObject {
 
-    let TAG = "[DeviceSleepManager]"
-
     @objc
     public static let sharedInstance = DeviceSleepManager()
 

@@ -11,8 +11,6 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Properties
 
-    let TAG = "[WebRTCCallMessageHandler]"
-
     // MARK: Dependencies
 
     let accountManager: AccountManager

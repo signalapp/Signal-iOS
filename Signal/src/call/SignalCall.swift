@@ -39,8 +39,6 @@ protocol CallObserver: class {
  */
 @objc public class SignalCall: NSObject {
 
-    let TAG = "[SignalCall]"
-
     var observers = [Weak<CallObserver>]()
 
     @objc
@@ -88,7 +86,7 @@ protocol CallObserver: class {
     var state: CallState {
         didSet {
             SwiftAssertIsOnMainThread(#function)
-            Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
+            Logger.debug("\(logTag) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
 
             // Update connectedDate
             if case .connected = self.state {
@@ -110,7 +108,7 @@ protocol CallObserver: class {
         didSet {
             SwiftAssertIsOnMainThread(#function)
 
-            Logger.debug("\(TAG) muted changed: \(oldValue) -> \(self.isMuted)")
+            Logger.debug("\(logTag) muted changed: \(oldValue) -> \(self.isMuted)")
 
             for observer in observers {
                 observer.value?.muteDidChange(call: self, isMuted: isMuted)
@@ -123,7 +121,7 @@ protocol CallObserver: class {
     var audioSource: AudioSource? = nil {
         didSet {
             SwiftAssertIsOnMainThread(#function)
-            Logger.debug("\(TAG) audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
+            Logger.debug("\(logTag) audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
 
             for observer in observers {
                 observer.value?.audioSourceDidChange(call: self, audioSource: audioSource)
@@ -142,7 +140,7 @@ protocol CallObserver: class {
     var isOnHold = false {
         didSet {
             SwiftAssertIsOnMainThread(#function)
-            Logger.debug("\(TAG) isOnHold changed: \(oldValue) -> \(self.isOnHold)")
+            Logger.debug("\(logTag) isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
             for observer in observers {
                 observer.value?.holdDidChange(call: self, isOnHold: isOnHold)

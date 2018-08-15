@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,6 @@ protocol GifPickerLayoutDelegate: class {
 
 // A Pinterest-style waterfall layout.
 class GifPickerLayout: UICollectionViewLayout {
-    let TAG = "[GifPickerLayout]"
 
     public weak var delegate: GifPickerLayoutDelegate?
 
@@ -38,7 +37,7 @@ class GifPickerLayout: UICollectionViewLayout {
     }
 
     override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
-        super.invalidateLayout(with:context)
+        super.invalidateLayout(with: context)
 
         itemAttributesMap.removeAll()
     }
@@ -108,8 +107,8 @@ class GifPickerLayout: UICollectionViewLayout {
             let cellHeight = UInt(columnWidth * imageInfo.originalRendition.height / imageInfo.originalRendition.width)
 
             let indexPath = NSIndexPath(row: cellIndex, section: 0)
-            let itemAttributes = UICollectionViewLayoutAttributes(forCellWith:indexPath as IndexPath)
-            let itemFrame = CGRect(x:CGFloat(cellX), y:CGFloat(cellY), width:CGFloat(cellWidth), height:CGFloat(cellHeight))
+            let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath as IndexPath)
+            let itemFrame = CGRect(x: CGFloat(cellX), y: CGFloat(cellY), width: CGFloat(cellWidth), height: CGFloat(cellHeight))
             itemAttributes.frame = itemFrame
             itemAttributesMap[UInt(cellIndex)] = itemAttributes
 
@@ -119,7 +118,7 @@ class GifPickerLayout: UICollectionViewLayout {
 
         // Add bottom margin.
         let contentHeight = contentBottom + vInset
-        contentSize = CGSize(width:CGFloat(totalViewWidth), height:CGFloat(contentHeight))
+        contentSize = CGSize(width: CGFloat(totalViewWidth), height: CGFloat(contentHeight))
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {

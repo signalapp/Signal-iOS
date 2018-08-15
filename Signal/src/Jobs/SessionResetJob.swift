@@ -9,8 +9,6 @@ import SignalServiceKit
 @objc(OWSSessionResetJob)
 public class SessionResetJob: NSObject {
 
-    let TAG = "SessionResetJob"
-
     let recipientId: String
     let thread: TSThread
     let primaryStorage: OWSPrimaryStorage
@@ -24,11 +22,11 @@ public class SessionResetJob: NSObject {
     }
 
     func run() {
-        Logger.info("\(TAG) Local user reset session.")
+        Logger.info("\(logTag) Local user reset session.")
 
         let dbConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         dbConnection.asyncReadWrite { (transaction) in
-            Logger.info("\(self.TAG) deleting sessions for recipient: \(self.recipientId)")
+            Logger.info("\(self.logTag) deleting sessions for recipient: \(self.recipientId)")
             self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
 
             DispatchQueue.main.async {
@@ -41,7 +39,7 @@ public class SessionResetJob: NSObject {
                         // Otherwise if we send another message before them, they wont have the session to decrypt it.
                         self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
                     }
-                    Logger.info("\(self.TAG) successfully sent EndSessionMessage.")
+                    Logger.info("\(self.logTag) successfully sent EndSessionMessage.")
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,
                                                 messageType: TSInfoMessageType.typeSessionDidEnd)
@@ -58,7 +56,7 @@ public class SessionResetJob: NSObject {
                         // Otherwise if we send another message before them, they wont have the session to decrypt it.
                         self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
                     }
-                    Logger.error("\(self.TAG) failed to send EndSessionMessage with error: \(error.localizedDescription)")
+                    Logger.error("\(self.logTag) failed to send EndSessionMessage with error: \(error.localizedDescription)")
                 })
             }
             }

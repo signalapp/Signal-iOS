@@ -245,7 +245,7 @@ class ConversationSearchViewController: UITableViewController {
                 if let messageDate = searchResult.messageDate {
                     overrideDate = messageDate
                 } else {
-                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing message timestamp")
+                    owsFail("\(ConversationSearchViewController.logTag()) message search result is missing message timestamp")
                 }
 
                 // Note that we only use the snippet for message results,
@@ -258,7 +258,7 @@ class ConversationSearchViewController: UITableViewController {
                                                             NSAttributedStringKey.foregroundColor: Theme.primaryColor
                     ])
                 } else {
-                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing message snippet")
+                    owsFail("\(ConversationSearchViewController.logTag()) message search result is missing message snippet")
                 }
             }
 

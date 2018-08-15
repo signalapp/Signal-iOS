@@ -10,7 +10,6 @@ import Foundation
 @objc(OWSCallNotificationsAdapter)
 public class CallNotificationsAdapter: NSObject {
 
-    let TAG = "[CallNotificationsAdapter]"
     let adaptee: OWSCallNotificationsAdaptee
 
     override init() {
@@ -31,12 +30,12 @@ public class CallNotificationsAdapter: NSObject {
     }
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
-        Logger.debug("\(TAG) in \(#function)")
+        Logger.debug("\(logTag) in \(#function)")
         adaptee.presentIncomingCall(call, callerName: callerName)
     }
 
     func presentMissedCall(_ call: SignalCall, callerName: String) {
-        Logger.debug("\(TAG) in \(#function)")
+        Logger.debug("\(logTag) in \(#function)")
         adaptee.presentMissedCall(call, callerName: callerName)
     }
 

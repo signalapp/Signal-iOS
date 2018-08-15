@@ -9,8 +9,6 @@ import SignalServiceKit
 @objc
 public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
-    let TAG = "[OWS106EnsureProfileComplete]"
-
     private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
 
     // increment a similar constant for each migration.
@@ -25,10 +23,10 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         let job = CompleteRegistrationFixerJob(completionHandler: { (didSucceed) in
 
             if (didSucceed) {
-                Logger.info("\(self.TAG) Completed. Saving.")
+                Logger.info("\(self.logTag) Completed. Saving.")
                 self.save()
             } else {
-                Logger.error("\(self.TAG) Failed.")
+                Logger.error("\(self.logTag) Failed.")
             }
 
             completion()
@@ -44,9 +42,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
      * but never upload new pre-keys. The symptom is that there will be accounts with no uploaded
      * identity key. We detect that here and fix the situation
      */
-    private class CompleteRegistrationFixerJob {
-
-        let TAG = "[CompleteRegistrationFixerJob]"
+    private class CompleteRegistrationFixerJob: NSObject {
 
         // Duration between retries if update fails.
         let kRetryInterval: TimeInterval = 5
@@ -64,7 +60,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             }
 
             self.ensureProfileComplete().then { _ -> Void in
-                Logger.info("\(self.TAG) complete. Canceling timer and saving.")
+                Logger.info("\(self.logTag) complete. Canceling timer and saving.")
                 self.completionHandler(true)
             }.catch { error in
                 let nserror = error as NSError
@@ -73,13 +69,13 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                     // In particular, 401 (invalid auth) is unrecoverable.
                     let isUnrecoverableError = nserror.code == 401
                     if isUnrecoverableError {
-                        Logger.error("\(self.TAG) failed due to unrecoverable error: \(error). Aborting.")
+                        Logger.error("\(self.logTag) failed due to unrecoverable error: \(error). Aborting.")
                         self.completionHandler(true)
                         return
                     }
                 }
 
-                Logger.error("\(self.TAG) failed with \(error).")
+                Logger.error("\(self.logTag) failed with \(error).")
                 self.completionHandler(false)
             }.retainUntilComplete()
         }
@@ -93,25 +89,25 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             let (promise, fulfill, reject) = Promise<Void>.pending()
 
             guard let networkManager = Environment.current().networkManager else {
-                return Promise(error: OWSErrorMakeAssertionError("\(TAG) network manager was unexpectedly not set"))
+                return Promise(error: OWSErrorMakeAssertionError("\(logTag) network manager was unexpectedly not set"))
             }
 
             ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
-                Logger.info("\(self.TAG) verified recipient profile is in good shape: \(localRecipientId)")
+                Logger.info("\(self.logTag) verified recipient profile is in good shape: \(localRecipientId)")
 
                 fulfill(())
             }.catch { error in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
-                    Logger.warn("\(self.TAG) detected incomplete profile for \(localRecipientId) error: \(description)")
+                    Logger.warn("\(self.logTag) detected incomplete profile for \(localRecipientId) error: \(description)")
                     // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.
                     TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
                                                     success: {
-                                                        Logger.info("\(self.TAG) successfully uploaded pre-keys. Profile should be fixed.")
+                                                        Logger.info("\(self.logTag) successfully uploaded pre-keys. Profile should be fixed.")
                                                         fulfill(())
                     },
                                                     failure: { _ in
-                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.TAG) Unknown error in \(#function)"))
+                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error in \(#function)"))
                     })
                 default:
                     reject(error)

@@ -1,11 +1,11 @@
-//  Created by Michael Kirk on 12/18/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
 struct TurnServerInfo {
 
-    let TAG = "[TurnServerInfo]"
     let password: String
     let username: String
     let urls: [String]

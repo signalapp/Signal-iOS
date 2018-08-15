@@ -911,9 +911,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 }
 
 // Exposes a Progress object, whose progress is updated by polling the return of a given block
-private class ProgressPoller {
-
-    let TAG = "[ProgressPoller]"
+private class ProgressPoller: NSObject {
 
     let progress: Progress
     private(set) var timer: Timer?
@@ -948,7 +946,7 @@ private class ProgressPoller {
             strongSelf.progress.completedUnitCount = completedUnitCount
 
             if completedUnitCount == strongSelf.progressTotalUnitCount {
-                Logger.debug("\(strongSelf.TAG) progress complete")
+                Logger.debug("\(strongSelf.logTag) progress complete")
                 timer.invalidate()
             }
         }
