@@ -441,6 +441,8 @@ typedef enum : NSUInteger {
 {
     OWSAssert(thread);
 
+    DDLogInfo(@"%@ configureForThread.", self.logTag);
+
     _thread = thread;
     self.actionOnOpen = action;
     self.focusMessageIdOnOpen = focusMessageId;
@@ -3224,7 +3226,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -3233,14 +3235,12 @@ typedef enum : NSUInteger {
         //
         // We don't need to do this if we're not observing db modifications since we'll
         // do it when we resume.
-        [self hardResetMappings];
+        [self resetMappings];
     }
 }
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
     // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
@@ -3257,10 +3257,12 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    DDLogInfo(@"%@ uiDatabaseDidUpdate, connection snapshot: %llu, mappings snapshot: %llu.",
+        self.logTag,
+        self.uiDatabaseConnection.snapshot,
+        self.messageMappings.snapshotOfLastUpdate);
 
     if (!self.shouldObserveDBModifications) {
-        DDLogInfo(@"%@ %s ignoring", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
     
@@ -3298,9 +3300,6 @@ typedef enum : NSUInteger {
         }];
         return;
     }
-
-
-    DDLogInfo(@"%@ uiDatabaseDidUpdate notifications: %@", self.logTag, notifications);
 
     NSArray<YapDatabaseViewSectionChange *> *sectionChanges = nil;
     NSArray<YapDatabaseViewRowChange *> *rowChanges = nil;
@@ -3369,7 +3368,7 @@ typedef enum : NSUInteger {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
         OWSFail(@"%@ hasMalformedRowChange", self.logTag);
-        [self hardResetMappings];
+        [self resetMappings];
         [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];
         return;
@@ -3379,7 +3378,7 @@ typedef enum : NSUInteger {
     if (![self reloadViewItems]) {
         // These errors are rare.
         OWSFail(@"%@ could not reload view items; hard resetting message mappings.", self.logTag);
-        [self hardResetMappings];
+        [self resetMappings];
         [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];
         return;
@@ -3400,8 +3399,7 @@ typedef enum : NSUInteger {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3411,8 +3409,7 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3429,9 +3426,8 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
-                              @"finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
+                                 @"finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath,
@@ -3440,8 +3436,7 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogInfo(@"%@ YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
-                        self.logTag,
+                    DDLogVerbose(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3452,7 +3447,7 @@ typedef enum : NSUInteger {
         }
     };
 
-    DDLogInfo(@"%@ viewItems.count: %zd -> %zd", self.logTag, oldViewItemCount, self.viewItems.count);
+    DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
@@ -4828,14 +4823,6 @@ typedef enum : NSUInteger {
     [self updateMessageMappingRangeOptions];
 }
 
-- (void)hardResetMappings
-{
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self createNewMessageMappings];
-    [self resetMappings];
-}
-
 - (void)resetMappings
 {
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
@@ -4888,6 +4875,11 @@ typedef enum : NSUInteger {
 // Returns NO on error.
 - (BOOL)reloadViewItems
 {
+    DDLogInfo(@"%@ reloadViewItems, connection snapshot: %llu, mappings snapshot: %llu.",
+        self.logTag,
+        self.uiDatabaseConnection.snapshot,
+        self.messageMappings.snapshotOfLastUpdate);
+
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
@@ -4933,6 +4925,14 @@ typedef enum : NSUInteger {
             viewItemCache[interaction.uniqueId] = viewItem;
         }
     }];
+
+    // Flag to ensure that we only increment once per launch.
+    static BOOL hasIncrementedDatabaseView = NO;
+    if (hasError && !hasIncrementedDatabaseView) {
+        DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
+        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+        hasIncrementedDatabaseView = YES;
+    }
 
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
     BOOL shouldShowDateOnNextViewItem = YES;
