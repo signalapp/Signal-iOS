@@ -3226,7 +3226,8 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    //    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    DDLogInfo(@"%@ uiDatabaseDidUpdateExternally: %zd", self.logTag, self.viewItems.count);
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -3241,6 +3242,8 @@ typedef enum : NSUInteger {
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
+    DDLogInfo(@"%@ uiDatabaseWillUpdate: %zd", self.logTag, self.viewItems.count);
+
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
     // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
@@ -3258,10 +3261,13 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     if (!self.shouldObserveDBModifications) {
+        DDLogInfo(@"%@ uiDatabaseDidUpdate (ignoring): %zd", self.logTag, self.viewItems.count);
+
         return;
     }
-    
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    DDLogInfo(@"%@ uiDatabaseDidUpdate (ignoring): %zd", self.logTag, self.viewItems.count);
+    //    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
     OWSAssert([notifications isKindOfClass:[NSArray class]]);
@@ -3394,7 +3400,8 @@ typedef enum : NSUInteger {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogVerbose(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                    DDLogInfo(@"%@ YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                        self.logTag,
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3404,7 +3411,8 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogVerbose(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
+                    DDLogInfo(@"%@ YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
+                        self.logTag,
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3421,8 +3429,9 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogVerbose(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
-                                 @"finalIndex: %lu",
+                    DDLogInfo(@"%@ YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
+                              @"finalIndex: %lu",
+                        self.logTag,
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath,
@@ -3431,7 +3440,8 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogVerbose(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                    DDLogInfo(@"%@ YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                        self.logTag,
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3442,7 +3452,7 @@ typedef enum : NSUInteger {
         }
     };
 
-    DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
+    DDLogInfo(@"%@ self.viewItems.count: %zd -> %zd", self.logTag, oldViewItemCount, self.viewItems.count);
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
@@ -5192,6 +5202,8 @@ typedef enum : NSUInteger {
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    DDLogInfo(@"%@ collectionView:numberOfItemsInSection: %zd", self.logTag, self.viewItems.count);
+
     return (NSInteger)self.viewItems.count;
 }
 
