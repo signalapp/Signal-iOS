@@ -407,6 +407,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
     OWSAssert(self.tableView.tableHeaderView == nil);
     self.tableView.tableHeaderView = self.searchBar;
+    // Hide search bar by default.  User can pull down to search.
+    self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(searchBar.frame));
 
     ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
     searchResultsController.delegate = self;
