@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ unexpected button state.", self.logTag);
     }
     label.font = OWSContactShareButtonsView.buttonFont;
-    label.textColor = UIColor.ows_materialBlueColor;
+    label.textColor = (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor);
     label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:label];
     [label ows_autoPinToSuperviewEdges];

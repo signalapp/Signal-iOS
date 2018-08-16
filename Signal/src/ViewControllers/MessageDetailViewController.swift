@@ -225,8 +225,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                 // TODO: It'd be nice to inset these dividers from the edge of the screen.
                 let addDivider = {
                     let divider = UIView()
-                    divider.backgroundColor = Theme.secondaryColor
-                    divider.autoSetDimension(.height, toSize: 0.5)
+                    divider.backgroundColor = Theme.hairlineColor
+                    divider.autoSetDimension(.height, toSize: CGHairlineWidth())
                     groupRows.append(divider)
                 }
 

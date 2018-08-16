@@ -93,6 +93,7 @@ const CGFloat kMaxTextViewHeight = 98;
         self.backgroundColor = [Theme.toolbarBackgroundColor colorWithAlphaComponent:alpha];
 
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
+        blurEffectView.layer.zPosition = -1;
         [self addSubview:blurEffectView];
         [blurEffectView autoPinEdgesToSuperviewEdges];
     }
@@ -379,7 +380,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.voiceMemoUI = [UIView new];
     self.voiceMemoUI.userInteractionEnabled = NO;
-    self.voiceMemoUI.backgroundColor = [UIColor whiteColor];
+    self.voiceMemoUI.backgroundColor = Theme.toolbarBackgroundColor;
     [self addSubview:self.voiceMemoUI];
     self.voiceMemoUI.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
 

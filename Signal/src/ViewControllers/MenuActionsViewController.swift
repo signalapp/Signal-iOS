@@ -414,7 +414,14 @@ class MenuActionView: UIButton {
         isUserInteractionEnabled = true
         backgroundColor = defaultBackgroundColor
 
-        let imageView = UIImageView(image: action.image)
+        var image = action.image
+        if Theme.isDarkThemeEnabled {
+            image = image.withRenderingMode(.alwaysTemplate)
+        }
+        let imageView = UIImageView(image: image)
+        if Theme.isDarkThemeEnabled {
+            imageView.tintColor = UIColor.ows_dark30
+        }
         let imageWidth: CGFloat = 24
         imageView.autoSetDimensions(to: CGSize(width: imageWidth, height: imageWidth))
         imageView.isUserInteractionEnabled = false

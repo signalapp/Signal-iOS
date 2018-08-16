@@ -116,9 +116,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssert(viewItem);
 
     if (viewItem.unreadIndicator) {
-        return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+        return Theme.secondaryColor;
     } else {
-        return (Theme.isDarkThemeEnabled ? UIColor.ows_dark30Color : UIColor.ows_light45Color);
+        return Theme.hairlineColor;
     }
 }
 

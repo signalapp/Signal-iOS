@@ -28,6 +28,8 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *boldColor;
 @property (class, readonly, nonatomic) UIColor *offBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *middleGrayColor;
+@property (class, readonly, nonatomic) UIColor *placeholderColor;
+@property (class, readonly, nonatomic) UIColor *hairlineColor;
 
 #pragma mark - Global App Colors
 
