@@ -15,8 +15,16 @@ import UIKit
     @objc required public init(thread: TSThread, controlType: String) {
 
         self.controlMessageType = controlType
-
-        super.init(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageBody: nil, attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0)
+        
+        super.init(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
+                   in: thread,
+                   messageBody: nil,
+                   attachmentIds: [],
+                   expiresInSeconds: 0,
+                   expireStartedAt: 0,
+                   isVoiceMessage: false,
+                   quotedMessage: nil,
+                   contactShare: nil)
         
         self.messageType = "control"
         self.body = FLCCSMJSONService.blob(from: self)

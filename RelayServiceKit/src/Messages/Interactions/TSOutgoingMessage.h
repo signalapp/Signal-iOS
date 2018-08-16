@@ -84,7 +84,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                  expireStartedAt:(uint64_t)expireStartedAt
                                   isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
 

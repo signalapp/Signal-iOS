@@ -446,9 +446,6 @@
 		7D65651A2113CB3E00365A19 /* OWSContactsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D6565182113CB3E00365A19 /* OWSContactsManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7D7121022118D7E900C56034 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D7121012118D7E800C56034 /* Login.storyboard */; };
 		7D7121052118E1D400C56034 /* ForstaColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7121042118E1D400C56034 /* ForstaColors.m */; };
-		7D71210B2118E2FE00C56034 /* CCSMStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7121082118E2FD00C56034 /* CCSMStorage.m */; };
-		7D71210C2118E2FE00C56034 /* CCSMCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D71210A2118E2FE00C56034 /* CCSMCommunication.m */; };
-		7D71211C211929CB00C56034 /* FLDeviceRegistrationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D71211A211929CA00C56034 /* FLDeviceRegistrationService.m */; };
 		7D7705C02114CD4B00B40BB9 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
 		7D7705C42114D8E700B40BB9 /* ValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */; };
 		7D7705C52114D8E700B40BB9 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C22114D8E600B40BB9 /* LoginViewController.swift */; };
@@ -467,6 +464,7 @@
 		7DD5A730211B7C7100965478 /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */; };
 		7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A732211B7CA500965478 /* HttpResponse.m */; };
 		7DD9C9ED2114A60C000A1CDC /* RelayMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* RelayMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7DF2E98F212360B400855424 /* FLContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF2E98E212360B400855424 /* FLContactsManager.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -1172,12 +1170,6 @@
 		7D7121012118D7E800C56034 /* Login.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
 		7D7121032118E1D400C56034 /* ForstaColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForstaColors.h; sourceTree = "<group>"; };
 		7D7121042118E1D400C56034 /* ForstaColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForstaColors.m; sourceTree = "<group>"; };
-		7D7121072118E2FD00C56034 /* CCSMCommunication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSMCommunication.h; sourceTree = "<group>"; };
-		7D7121082118E2FD00C56034 /* CCSMStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSMStorage.m; sourceTree = "<group>"; };
-		7D7121092118E2FE00C56034 /* CCSMStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSMStorage.h; sourceTree = "<group>"; };
-		7D71210A2118E2FE00C56034 /* CCSMCommunication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSMCommunication.m; sourceTree = "<group>"; };
-		7D71211A211929CA00C56034 /* FLDeviceRegistrationService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLDeviceRegistrationService.m; sourceTree = "<group>"; };
-		7D71211B211929CB00C56034 /* FLDeviceRegistrationService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLDeviceRegistrationService.h; sourceTree = "<group>"; };
 		7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationViewController.swift; sourceTree = "<group>"; };
 		7D7705C22114D8E600B40BB9 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		7D7705C72114E5C300B40BB9 /* forsta_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forsta_splash.png; sourceTree = "<group>"; };
@@ -1209,6 +1201,7 @@
 		7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequestOrResponse.m; sourceTree = "<group>"; };
 		7DD5A731211B7CA500965478 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
 		7DD5A732211B7CA500965478 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
+		7DF2E98E212360B400855424 /* FLContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLContactsManager.swift; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -1764,6 +1757,7 @@
 				7D6564ED2113BD8A00365A19 /* SystemContactsFetcher.swift */,
 				7D6564EA2113BD8900365A19 /* ViewControllerUtils.h */,
 				7D6564E82113BD8900365A19 /* ViewControllerUtils.m */,
+				7DF2E98E212360B400855424 /* FLContactsManager.swift */,
 			);
 			path = contacts;
 			sourceTree = "<group>";
@@ -2219,7 +2213,6 @@
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				76EB03FE18170B33006006FC /* call */,
-				7D7121062118E2ED00C56034 /* CCSM */,
 				76EB041118170B33006006FC /* environment */,
 				45D231751DC7E8C50034FA89 /* Jobs */,
 				457F3AC01D14A0F700C51351 /* Models */,
@@ -2249,8 +2242,6 @@
 		76EB041118170B33006006FC /* environment */ = {
 			isa = PBXGroup;
 			children = (
-				7D71211B211929CB00C56034 /* FLDeviceRegistrationService.h */,
-				7D71211A211929CA00C56034 /* FLDeviceRegistrationService.m */,
 				4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */,
 				3461299A1FD1EA9E00532771 /* NotificationsManager.h */,
 				3461299B1FD1EA9E00532771 /* NotificationsManager.m */,
@@ -2360,17 +2351,6 @@
 			);
 			name = Views;
 			path = views;
-			sourceTree = "<group>";
-		};
-		7D7121062118E2ED00C56034 /* CCSM */ = {
-			isa = PBXGroup;
-			children = (
-				7D7121072118E2FD00C56034 /* CCSMCommunication.h */,
-				7D71210A2118E2FE00C56034 /* CCSMCommunication.m */,
-				7D7121092118E2FE00C56034 /* CCSMStorage.h */,
-				7D7121082118E2FD00C56034 /* CCSMStorage.m */,
-			);
-			path = CCSM;
 			sourceTree = "<group>";
 		};
 		7D8517E6211CB18400F9EF53 /* crypto */ = {
@@ -3341,6 +3321,7 @@
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				7D6564FD2113BD8B00365A19 /* SystemContactsFetcher.swift in Sources */,
 				7D6565042113BDF500365A19 /* MessageApprovalViewController.swift in Sources */,
+				7DF2E98F212360B400855424 /* FLContactsManager.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
 				7D6565012113BD8B00365A19 /* CountryCodeViewController.m in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
@@ -3421,7 +3402,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D71211C211929CB00C56034 /* FLDeviceRegistrationService.m in Sources */,
 				7D8517E5211CB08500F9EF53 /* Conversions.m in Sources */,
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
@@ -3465,7 +3445,6 @@
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				B6B9ECFC198B31BA00C620D3 /* PushManager.m in Sources */,
-				7D71210C2118E2FE00C56034 /* CCSMCommunication.m in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				7D8517EC211CB19C00F9EF53 /* EvpMessageDigest.m in Sources */,
@@ -3488,7 +3467,6 @@
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
 				3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
-				7D71210B2118E2FE00C56034 /* CCSMStorage.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				340FC8CD20518C77007AEB0F /* OWSBackupJob.m in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,

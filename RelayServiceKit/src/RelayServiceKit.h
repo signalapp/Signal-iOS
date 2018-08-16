@@ -4,3 +4,9 @@
 
 // ObjC classes from which Swift classes inherit must be included in this framework header.
 #import "OWSOperation.h"
+#import "FLCCSMJSONService.h"
+#import "FLTag.h"
+#import "CCSMStorage.h"
+#import "CCSMCommunication.h"
+#import "TSThread.h"
+#import "FLDeviceRegistrationService.h"

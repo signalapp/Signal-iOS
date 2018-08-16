@@ -58,6 +58,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 - (uint64_t)timestampForSorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
+@property (nonatomic, strong) NSMutableDictionary *forstaPayload;
+
 // "Dynamic" interactions are not messages or static events (like
 // info messages, error messages, etc.).  They are interactions
 // created, updated and deleted by the views.

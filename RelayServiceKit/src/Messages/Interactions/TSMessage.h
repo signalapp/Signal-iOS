@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
-@property (nonatomic, readonly, nullable) NSString *body;
+@property (nonatomic, nullable) NSString *body;
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
@@ -46,6 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+// JSON body handlers
+@property (nullable, nonatomic, strong) NSString *plainTextBody;
+@property (nullable, nonatomic, strong) NSAttributedString *attributedTextBody;
+@property (nonatomic, strong) NSString *messageType;
+@property BOOL hasAnnotation;
+@property (nonatomic, readonly) BOOL isGiphy;
+@property (nonatomic) NSString *giphyURLString;
+
 
 #pragma mark - Update With... Methods
 

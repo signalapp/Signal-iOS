@@ -47,6 +47,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 
+@property (strong) NSCache *recipientCache;
+@property (strong) NSCache *tagCache;
+
 @end
 
 #pragma mark -
@@ -76,6 +79,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _cnContactCache.countLimit = 50;
     _cnContactAvatarCache = [NSCache new];
     _cnContactAvatarCache.countLimit = 25;
+    
+    // Forsta additions
+    _recipientCache = [NSCache new];
+    _tagCache = [NSCache new];
+    ////
 
     OWSSingletonAssert();
 

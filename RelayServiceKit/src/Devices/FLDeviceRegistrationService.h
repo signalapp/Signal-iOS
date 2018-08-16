@@ -8,9 +8,6 @@
 
 //#import <SocketRocket/SocketRocket.h>
 
-extern NSString *const FLRegistrationStatusUpdateNotification;
-//#define FLRegistrationStatusUpdateNotification @"FLRegistrationStatusUpdateNotification"
-
 @import Foundation;
 
 @interface FLDeviceRegistrationService : NSObject

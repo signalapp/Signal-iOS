@@ -19,6 +19,9 @@
 #define FLControlMessageThreadSnoozeKey @"snooze"
 #define FLControlMessageProvisionRequestKey @"provisionRequest"
 #define FLControlMessageSyncRequestKey @"syncRequest"
+#define FLControlMessageCallOfferKey @"callOffer"
+#define FLControlMessageCallLeaveKey @"callLeave"
+#define FLControlMessageCallICECandidates @"callICECandidates"
 
 // Thread keys
 #define FLThreadTitleKey @"threadTitle"

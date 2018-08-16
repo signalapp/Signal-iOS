@@ -17,7 +17,10 @@
 #import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
-#import <YapDatabase/YapDatabase.h>
+//#import <YapDatabase/YapDatabase.h>
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
+
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -56,6 +59,7 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
 @property (nonatomic, nullable) NSString *cachedLocalUID;
 @property (nonatomic, nullable) NSString *cachedUsername;
 @property (nonatomic, nullable) NSString *cachedOrgName;
+@property (nonatomic, nonnull) RelayRecipient *cachedSelfRecipient;
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
@@ -219,6 +223,24 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
     return self.cachedLocalUID;
 }
 
++(nonnull RelayRecipient *)selfRecipient
+{
+    return [[self sharedInstance] selfRecipient];
+}
+
+-(nonnull RelayRecipient *)selfRecipient
+{
+    if (self.cachedSelfRecipient == nil) {
+        // TODO:  Update from CCSM
+        RelayRecipient *recipient = [RelayRecipient fetchObjectWithUniqueID:[self localUID]];
+        if (recipient == nil) {
+            recipient = [[RelayRecipient alloc] initWithUniqueId:[self localUID]];
+            [recipient save];
+        }
+        self.cachedSelfRecipient = recipient
+    }
+    return self.cachedSelfRecipient;
+}
 
 - (nullable NSString *)storedLocalUID
 {

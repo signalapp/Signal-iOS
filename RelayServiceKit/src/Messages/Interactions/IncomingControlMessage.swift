@@ -23,19 +23,19 @@ import UIKit
         let messageType = payload.object(forKey: "messageType") as! String
         
         if (messageType.count == 0) {
-            DDLogError("Attempted to create control message with invalid payload.");
+            Logger.error("Attempted to create control message with invalid payload.");
             return nil
         }
         
         let dataBlob = payload.object(forKey: "data") as! NSDictionary
         if dataBlob.allKeys.count == 0 {
-            DDLogError("Attempted to create control message without data object.")
+            Logger.error("Attempted to create control message without data object.")
             return nil
         }
         
         let controlType = dataBlob.object(forKey: "control") as! String
         if controlType.count == 0 {
-            DDLogError("Attempted to create control message without a type.")
+            Logger.error("Attempted to create control message without a type.")
             return nil
         }
         
@@ -48,12 +48,16 @@ import UIKit
             attachmentIds = dataBlob.object(forKey: "attachments") as! [String]
         }
 
-        super.init(timestamp: NSDate.ows_millisecondTimeStamp(),
+        super.init(incomingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
                    in: thread,
-                   authorId: author, messageBody: nil,
+                   authorId: author,
+                   sourceDeviceId: OWSDeviceManager.shared().currentDeviceId(),
+                   messageBody: nil,
                    attachmentIds: attachmentIds,
-                   expiresInSeconds: 0)
-        
+                   expiresInSeconds: 0,
+                   quotedMessage: nil,
+                   contactShare: nil)
+                
         self.messageType = "control"
         self.forstaPayload = payload.mutableCopy() as! NSMutableDictionary
     }

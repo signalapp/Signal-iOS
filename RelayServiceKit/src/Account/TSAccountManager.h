@@ -15,6 +15,7 @@ extern NSString *const kNSNotificationName_LocalUIDDidChange;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
 @class YapDatabaseReadWriteTransaction;
+@class RelayRecipient;
 
 @interface TSAccountManager : NSObject
 
@@ -49,6 +50,12 @@ extern NSString *const kNSNotificationName_LocalUIDDidChange;
  */
 + (nullable NSString *)localUID;
 - (nullable NSString *)localUID;
+
+/**
+ * Returns recipient for self
+ */
++(nonnull RelayRecipient *)selfRecipient;
+-(nonnull RelayRecipient *)selfRecipient;
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,

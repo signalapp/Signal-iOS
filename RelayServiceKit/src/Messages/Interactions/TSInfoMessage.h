@@ -14,8 +14,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageUserNotRegistered,
     // TSInfoMessageTypeUnsupportedMessage appears to be obsolete.
     TSInfoMessageTypeUnsupportedMessage,
-    TSInfoMessageTypeGroupUpdate,
-    TSInfoMessageTypeGroupQuit,
+    TSInfoMessageTypeConversationUpdate,
+    TSInfoMessageTypeConversationQuit,
     TSInfoMessageTypeDisappearingMessagesUpdate,
     TSInfoMessageAddToContactsOffer,
     TSInfoMessageVerificationStateChange,

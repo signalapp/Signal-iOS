@@ -597,10 +597,10 @@
             </objects>
             <point key="canvasLocation" x="-1215.2" y="207.34632683658174"/>
         </scene>
-        <!--View Controller-->
+        <!--Home View Controller-->
         <scene sceneID="oqC-r7-FLp">
             <objects>
-                <viewController id="2UZ-DJ-tLC" sceneMemberID="viewController">
+                <viewController id="2UZ-DJ-tLC" customClass="HomeViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="KkS-yz-KtL"/>
                         <viewControllerLayoutGuide type="bottom" id="LLq-VO-Mlf"/>
