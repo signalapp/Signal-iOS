@@ -357,46 +357,50 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
     NSCalendar *calendar = [NSCalendar currentCalendar];
 
+    NSDateComponents *relativeDiffComponents =
+        [calendar components:NSCalendarUnitMinute | NSCalendarUnitHour fromDate:date toDate:nowDate options:0];
+
+    NSInteger minutesDiff = MAX(0, [relativeDiffComponents minute]);
+    if (minutesDiff < 1) {
+        return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
+    }
+
+    NSInteger hoursDiff = MAX(0, [relativeDiffComponents hour]);
+    if (hoursDiff < 1) {
+        NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
+        return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
+                                              @"Format string for a relative time, expressed as a certain number of "
+                                              @"minutes in the past. Embeds {{The number of minutes}}."),
+                         minutesString];
+    }
+
     // Note: we are careful to treat "future" dates as "now".
     NSInteger yearsDiff = [self yearsFromFirstDate:date toSecondDate:nowDate];
-    NSInteger daysDiff = [self daysFromFirstDate:date toSecondDate:nowDate];
-    NSInteger minutesDiff
-        = MAX(0, [[calendar components:NSCalendarUnitMinute fromDate:date toDate:nowDate options:0] minute]);
-    NSInteger hoursDiff
-        = MAX(0, [[calendar components:NSCalendarUnitHour fromDate:date toDate:nowDate options:0] hour]);
-
-    NSString *result;
     if (yearsDiff > 0) {
         // "Long date" + locale-specific "short" time format.
         NSString *dayOfWeek = [self.otherYearMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        result = [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
-    } else if (daysDiff >= 7) {
+        return [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+    }
+
+    NSInteger daysDiff = [self daysFromFirstDate:date toSecondDate:nowDate];
+    if (daysDiff >= 7) {
         // "Short date" + locale-specific "short" time format.
         NSString *dayOfWeek = [self.thisYearMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        result = [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+        return [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
     } else if (daysDiff > 0) {
         // "Day of week" + locale-specific "short" time format.
         NSString *dayOfWeek = [self.thisWeekMessageFormatter stringFromDate:date];
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        result = [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
-    } else if (minutesDiff < 1) {
-        result = NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
-    } else if (hoursDiff < 1) {
-        NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
-        result = [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
-                                                @"Format string for a relative time, expressed as a certain number of "
-                                                @"minutes in the past. Embeds {{The number of minutes}}."),
-                           minutesString];
+        return [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
     } else {
         NSString *hoursString = [OWSFormat formatInt:(int)hoursDiff];
-        result = [NSString stringWithFormat:NSLocalizedString(@"DATE_HOURS_AGO_FORMAT",
-                                                @"Format string for a relative time, expressed as a certain number of "
-                                                @"hours in the past. Embeds {{The number of hours}}."),
-                           hoursString];
+        return [NSString stringWithFormat:NSLocalizedString(@"DATE_HOURS_AGO_FORMAT",
+                                              @"Format string for a relative time, expressed as a certain number of "
+                                              @"hours in the past. Embeds {{The number of hours}}."),
+                         hoursString];
     }
-    return result;
 }
 
 + (BOOL)isTimestampFromLastHour:(uint64_t)timestamp
