@@ -441,6 +441,8 @@ typedef enum : NSUInteger {
 {
     OWSAssert(thread);
 
+    DDLogInfo(@"%@ configureForThread.", self.logTag);
+
     _thread = thread;
     self.actionOnOpen = action;
     self.focusMessageIdOnOpen = focusMessageId;
@@ -455,29 +457,11 @@ typedef enum : NSUInteger {
     [self ensureDynamicInteractions];
     [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
 
-    if (thread.uniqueId.length > 0) {
-        self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
-                                                                          view:TSMessageDatabaseViewExtensionName];
-    } else {
-        OWSFail(@"uniqueId unexpectedly empty for thread: %@", thread);
-        self.messageMappings =
-            [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
-        return;
+    [self createNewMessageMappings];
+    if (![self reloadViewItems]) {
+        OWSFail(@"%@ failed to reload view items in configureForThread.", self.logTag);
     }
 
-    // Cells' appearance can depend on adjacent cells in both directions.
-    [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
-        @(-1),
-        @(+1),
-    ]]
-                                                 forGroup:self.thread.uniqueId];
-
-    // We need to impose the range restrictions on the mappings immediately to avoid
-    // doing a great deal of unnecessary work and causing a perf hotspot.
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.messageMappings updateWithTransaction:transaction];
-    }];
-    [self updateMessageMappingRangeOptions];
     [self updateShouldObserveDBModifications];
 
     self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
@@ -814,7 +798,9 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     self.collapseCutoffDate = [NSDate new];
-    [self reloadViewItems];
+    if (![self reloadViewItems]) {
+        OWSFail(@"%@ failed to reload view items in resetContentAndLayout.", self.logTag);
+    }
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 }
@@ -1771,7 +1757,6 @@ typedef enum : NSUInteger {
     [self.messageMappings setRangeOptions:rangeOptions forGroup:self.thread.uniqueId];
     [self updateShowLoadMoreHeader];
     self.collapseCutoffDate = [NSDate new];
-    [self reloadViewItems];
 }
 
 #pragma mark Bubble User Actions
@@ -3378,14 +3363,21 @@ typedef enum : NSUInteger {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
         OWSFail(@"%@ hasMalformedRowChange", self.logTag);
-        [self resetContentAndLayout];
+        [self resetMappings];
         [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];
         return;
     }
 
     NSUInteger oldViewItemCount = self.viewItems.count;
-    [self reloadViewItems];
+    if (![self reloadViewItems]) {
+        // These errors are rare.
+        OWSFail(@"%@ could not reload view items; hard resetting message mappings.", self.logTag);
+        [self resetMappings];
+        [self updateLastVisibleTimestamp];
+        [self scrollToBottomAnimated:NO];
+        return;
+    }
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
@@ -4800,6 +4792,32 @@ typedef enum : NSUInteger {
     self.previousLastTimestamp = nil;
 }
 
+- (void)createNewMessageMappings
+{
+    if (self.thread.uniqueId.length > 0) {
+        self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.thread.uniqueId ]
+                                                                          view:TSMessageDatabaseViewExtensionName];
+    } else {
+        OWSFail(@"uniqueId unexpectedly empty for thread: %@", self.thread);
+        self.messageMappings =
+            [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
+    }
+
+    // Cells' appearance can depend on adjacent cells in both directions.
+    [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
+        @(-1),
+        @(+1),
+    ]]
+                                                 forGroup:self.thread.uniqueId];
+
+    // We need to impose the range restrictions on the mappings immediately to avoid
+    // doing a great deal of unnecessary work and causing a perf hotspot.
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.messageMappings updateWithTransaction:transaction];
+    }];
+    [self updateMessageMappingRangeOptions];
+}
+
 - (void)resetMappings
 {
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
@@ -4814,7 +4832,6 @@ typedef enum : NSUInteger {
         [self updateMessageMappingRangeOptions];
     }
     self.collapseCutoffDate = [NSDate new];
-    [self reloadViewItems];
 
     [self resetContentAndLayout];
     [self ensureDynamicInteractions];
@@ -4849,7 +4866,9 @@ typedef enum : NSUInteger {
 
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
-- (void)reloadViewItems
+//
+// Returns NO on error.
+- (BOOL)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
@@ -4857,6 +4876,7 @@ typedef enum : NSUInteger {
     NSUInteger count = [self.messageMappings numberOfItemsInSection:0];
     BOOL isGroupThread = self.isGroupConversation;
 
+    __block BOOL hasError = NO;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
         OWSAssert(viewTransaction);
@@ -4869,6 +4889,7 @@ typedef enum : NSUInteger {
                     (unsigned long)row,
                     (unsigned long)count);
                 // TODO: Add analytics.
+                hasError = YES;
                 continue;
             }
             if (!interaction.uniqueId) {
@@ -4878,6 +4899,7 @@ typedef enum : NSUInteger {
                     (unsigned long)count,
                     interaction);
                 // TODO: Add analytics.
+                hasError = YES;
                 continue;
             }
 
@@ -4893,6 +4915,14 @@ typedef enum : NSUInteger {
             viewItemCache[interaction.uniqueId] = viewItem;
         }
     }];
+
+    // Flag to ensure that we only increment once per launch.
+    static BOOL hasIncrementedDatabaseView = NO;
+    if (hasError && !hasIncrementedDatabaseView) {
+        DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
+        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+        hasIncrementedDatabaseView = YES;
+    }
 
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
     BOOL shouldShowDateOnNextViewItem = YES;
@@ -5122,6 +5152,8 @@ typedef enum : NSUInteger {
 
     self.viewItems = viewItems;
     self.viewItemCache = viewItemCache;
+
+    return !hasError;
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB
