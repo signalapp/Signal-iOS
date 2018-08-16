@@ -90,9 +90,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
         // Increase object cache limit. Default is 250.
         _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
-        ((OWSDatabaseConnection *)_uiDatabaseConnection).isReadOnly = YES;
-        ((OWSDatabaseConnection *)_uiDatabaseConnection).shouldLogLongLived = YES;
-
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
@@ -136,8 +133,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 - (void)updateUIDatabaseConnectionToLatest
 {
     OWSAssertIsOnMainThread();
-
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // Notify observers we're about to update the database connection
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateNotification object:self.dbNotificationObject];

@@ -21,8 +21,6 @@ extern NSString *const StorageIsReadyNotification;
 @interface OWSDatabaseConnection : YapDatabaseConnection
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
-@property (atomic) BOOL isReadOnly;
-@property (atomic) BOOL shouldLogLongLived;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
