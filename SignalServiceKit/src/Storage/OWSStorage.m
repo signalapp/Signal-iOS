@@ -513,7 +513,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)incrementVersionOfDatabaseExtension:(NSString *)extensionName
 {
-    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    DDLogError(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, extensionName);
 
     NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
     OWSAssert(appUserDefaults);

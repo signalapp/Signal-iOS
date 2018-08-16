@@ -3250,17 +3250,12 @@ typedef enum : NSUInteger {
     //       We want to relayout our contents using the old message mappings and
     //       view items before they are updated.
     [self.collectionView layoutIfNeeded];
-    // ENDHACK to work around radar #28167779)
+    // ENDHACK to work around radar #28167779
 }
 
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
-    DDLogInfo(@"%@ uiDatabaseDidUpdate, connection snapshot: %llu, mappings snapshot: %llu.",
-        self.logTag,
-        self.uiDatabaseConnection.snapshot,
-        self.messageMappings.snapshotOfLastUpdate);
 
     if (!self.shouldObserveDBModifications) {
         return;
@@ -4875,11 +4870,6 @@ typedef enum : NSUInteger {
 // Returns NO on error.
 - (BOOL)reloadViewItems
 {
-    DDLogInfo(@"%@ reloadViewItems, connection snapshot: %llu, mappings snapshot: %llu.",
-        self.logTag,
-        self.uiDatabaseConnection.snapshot,
-        self.messageMappings.snapshotOfLastUpdate);
-
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
