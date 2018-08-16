@@ -132,6 +132,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)updateUIDatabaseConnectionToLatest
 {
+    OWSAssertIsOnMainThread();
 
     // Notify observers we're about to update the database connection
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateNotification object:self.dbNotificationObject];
