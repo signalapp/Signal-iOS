@@ -284,9 +284,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             }
         }
 
-        rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
-                                                     comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
+        let sentRow = valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
+                                                       comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
+                               value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp))
+        sentRow.isUserInteractionEnabled = true
+        sentRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapSent)))
+        rows.append(sentRow)
 
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
@@ -701,6 +704,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     func didTapConversationItem(_ viewItem: ConversationViewItem, quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // no - op
+    }
+
+    @objc func didTapSent(sender: UIGestureRecognizer) {
+        let messageTimestamp = "\(message.timestamp)"
+        UIPasteboard.general.string = messageTimestamp
     }
 
     // MediaGalleryDataSourceDelegate
