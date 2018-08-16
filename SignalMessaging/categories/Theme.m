@@ -86,12 +86,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)placeholderColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_light35Color : UIColor.ows_dark55Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark55Color : UIColor.ows_light35Color);
 }
 
 + (UIColor *)hairlineColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_light45Color : UIColor.ows_dark60Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light45Color);
 }
 
 #pragma mark - Global App Colors
