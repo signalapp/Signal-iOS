@@ -530,11 +530,15 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         self.backgroundColor = UIColor.clear
 
         textView.delegate = self
-        textView.backgroundColor = UIColor.white
+        textView.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_dark85 : UIColor.ows_light02)
+        textView.layer.borderColor = (Theme.isDarkThemeEnabled
+            ? Theme.primaryColor.withAlphaComponent(0.06).cgColor
+            : Theme.primaryColor.withAlphaComponent(0.12).cgColor)
+        textView.layer.borderWidth = 0.5
         textView.layer.cornerRadius = kMinTextViewHeight / 2
 
-        textView.addBorder(with: UIColor.lightGray)
         textView.font = UIFont.ows_dynamicTypeBody
+        textView.textColor = Theme.primaryColor
         textView.returnKeyType = .done
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)

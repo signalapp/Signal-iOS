@@ -3170,7 +3170,7 @@ typedef enum : NSUInteger {
 }
 
 - (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL
-                                     filename:(NSString *)filename
+                                     filename:(nullable NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
 {
     OWSAssertIsOnMainThread();

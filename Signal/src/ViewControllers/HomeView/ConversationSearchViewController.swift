@@ -256,7 +256,7 @@ class ConversationSearchViewController: UITableViewController {
                 if let messageSnippet = searchResult.snippet {
                     overrideSnippet = NSAttributedString(string: messageSnippet,
                                                          attributes: [
-                                                            NSAttributedStringKey.foregroundColor: Theme.primaryColor
+                                                            NSAttributedStringKey.foregroundColor: Theme.secondaryColor
                     ])
                 } else {
                     owsFail("\(ConversationSearchViewController.logTag()) message search result is missing message snippet")
@@ -275,6 +275,37 @@ class ConversationSearchViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 4
+    }
+
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let view = self.tableView(tableView, viewForHeaderInSection: section) else {
+            return 0
+        }
+        return view.height()
+    }
+
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = self.tableView(tableView, titleForHeaderInSection: section) else {
+            return nil
+        }
+
+        let label = UILabel()
+        label.textColor = Theme.secondaryColor
+        label.text = title
+        label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        label.tag = section
+        label.sizeToFit()
+
+        let hMargin: CGFloat = 15
+        let vMargin: CGFloat = 4
+        let wrapper = UIView()
+        wrapper.backgroundColor = Theme.offBackgroundColor
+        wrapper.addSubview(label)
+        label.autoPinWidthToSuperview(withMargin: hMargin)
+        label.autoPinHeightToSuperview(withMargin: vMargin)
+        wrapper.frame = CGRect(x: 0, y: 0, width: label.width() + 2 * hMargin, height: label.height() + 2 * vMargin)
+
+        return wrapper
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
