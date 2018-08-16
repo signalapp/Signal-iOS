@@ -81,6 +81,13 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
+    if (self.isReadOnly) {
+        OWSFail(@"%@ write transaction on read-only connection.", self.logTag);
+        @throw [NSException exceptionWithName:NSGenericException
+                                       reason:@"write transaction on read-only connection."
+                                     userInfo:nil];
+    }
+
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
     OWSAssert(delegate.areAllRegistrationsComplete);
@@ -112,6 +119,13 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAssert(delegate);
     OWSAssert(delegate.areAllRegistrationsComplete);
 
+    if (self.isReadOnly) {
+        OWSFail(@"%@ write transaction on read-only connection.", self.logTag);
+        @throw [NSException exceptionWithName:NSGenericException
+                                       reason:@"write transaction on read-only connection."
+                                     userInfo:nil];
+    }
+
     __block OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
         backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -122,6 +136,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         }
         backgroundTask = nil;
     }];
+}
+
+- (NSArray<NSNotification *> *)beginLongLivedReadTransaction
+{
+    if (self.shouldLogLongLived) {
+        DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    }
+
+    return [super beginLongLivedReadTransaction];
 }
 
 @end

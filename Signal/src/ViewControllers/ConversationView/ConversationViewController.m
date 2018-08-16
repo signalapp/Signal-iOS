@@ -458,6 +458,7 @@ typedef enum : NSUInteger {
     [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
 
     [self createNewMessageMappings];
+    DDLogInfo(@"%@ reload view items in configureForThread.", self.logTag);
     if (![self reloadViewItems]) {
         OWSFail(@"%@ failed to reload view items in configureForThread.", self.logTag);
     }
@@ -798,6 +799,7 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
     self.collapseCutoffDate = [NSDate new];
+    DDLogInfo(@"%@ reload view items in resetContentAndLayout.", self.logTag);
     if (![self reloadViewItems]) {
         OWSFail(@"%@ failed to reload view items in resetContentAndLayout.", self.logTag);
     }
@@ -3227,7 +3229,10 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     //    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    DDLogInfo(@"%@ uiDatabaseDidUpdateExternally: %zd", self.logTag, self.viewItems.count);
+    DDLogInfo(@"%@ uiDatabaseDidUpdateExternally: %zd, %d",
+        self.logTag,
+        self.viewItems.count,
+        self.shouldObserveDBModifications);
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -3259,6 +3264,11 @@ typedef enum : NSUInteger {
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ uiDatabaseDidUpdate, connection snapshot: %llu, mappings snapshot: %llu.",
+        self.logTag,
+        self.uiDatabaseConnection.snapshot,
+        self.messageMappings.snapshotOfLastUpdate);
 
     if (!self.shouldObserveDBModifications) {
         DDLogInfo(@"%@ uiDatabaseDidUpdate (ignoring): %zd", self.logTag, self.viewItems.count);
@@ -3376,6 +3386,7 @@ typedef enum : NSUInteger {
     }
 
     NSUInteger oldViewItemCount = self.viewItems.count;
+    DDLogInfo(@"%@ reload view items in uiDatabaseDidUpdate.", self.logTag);
     if (![self reloadViewItems]) {
         // These errors are rare.
         OWSFail(@"%@ could not reload view items; hard resetting message mappings.", self.logTag);
@@ -4611,6 +4622,12 @@ typedef enum : NSUInteger {
         return;
     }
 
+    DDLogInfo(@"%@ in %s, %d -> %d",
+        self.logTag,
+        __PRETTY_FUNCTION__,
+        _shouldObserveDBModifications,
+        shouldObserveDBModifications);
+
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
     if (self.shouldObserveDBModifications) {
@@ -4880,6 +4897,11 @@ typedef enum : NSUInteger {
 // Returns NO on error.
 - (BOOL)reloadViewItems
 {
+    DDLogInfo(@"%@ reloadViewItems, connection snapshot: %llu, mappings snapshot: %llu.",
+        self.logTag,
+        self.uiDatabaseConnection.snapshot,
+        self.messageMappings.snapshotOfLastUpdate);
+
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
 
