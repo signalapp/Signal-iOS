@@ -143,7 +143,10 @@ public class ConversationStyle: NSObject {
         return color
     }
 
-    private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
+    @objc
+    private static var defaultBubbleColorIncoming: UIColor {
+        return Theme.isDarkThemeEnabled ? UIColor.ows_dark70 : UIColor.ows_messageBubbleLightGray
+    }
 
     @objc
     public let bubbleColorOutgoingFailed = UIColor.ows_darkSkyBlue
@@ -189,7 +192,11 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public static var bubbleTextColorIncoming = UIColor.ows_light90
+    public static var bubbleTextColorIncoming: UIColor {
+        return Theme.isDarkThemeEnabled ? UIColor.ows_white : UIColor.ows_light90
+    }
+
+    @objc
     public static var bubbleTextColorOutgoing = UIColor.ows_white
 
     @objc

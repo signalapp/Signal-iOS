@@ -721,6 +721,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     self.view.backgroundColor = Theme.backgroundColor;
     self.tableView.backgroundColor = Theme.backgroundColor;
+    self.tableView.separatorColor = Theme.hairlineColor;
 }
 
 @end

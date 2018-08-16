@@ -64,14 +64,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)primaryColor
 {
-    // TODO: Theme, Review with design.
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_light90Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark05Color : UIColor.ows_light90Color);
 }
 
 + (UIColor *)secondaryColor
 {
-    // TODO: Theme, Review with design.
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark30Color : UIColor.ows_light60Color);
 }
 
 + (UIColor *)boldColor
@@ -84,6 +82,16 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     // TODO: Review with design.
     return [UIColor colorWithWhite:0.5f alpha:1.f];
+}
+
++ (UIColor *)placeholderColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_light35Color : UIColor.ows_dark55Color);
+}
+
++ (UIColor *)hairlineColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_light45Color : UIColor.ows_dark60Color);
 }
 
 #pragma mark - Global App Colors
@@ -101,8 +109,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)navbarTitleColor
 {
-    // TODO: Theme, Review with design.
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+    return Theme.primaryColor;
 }
 
 + (UIColor *)toolbarBackgroundColor
