@@ -4,6 +4,7 @@
 
 #import <SignalMessaging/OWSViewController.h>
 
+@class OWSSearchBar;
 @class TSThread;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSelectBlockedContact;
 
-- (nullable UIView *)createHeaderWithSearchBar:(UISearchBar *)searchBar;
+- (nullable UIView *)createHeaderWithSearchBar:(OWSSearchBar *)searchBar;
 
 @end
 

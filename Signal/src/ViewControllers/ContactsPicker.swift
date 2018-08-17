@@ -26,10 +26,10 @@ public enum SubtitleCellValue: Int {
 }
 
 @objc
-public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, OWSSearchBarDelegate {
 
     var tableView: UITableView!
-    var searchBar: UISearchBar!
+    var searchBar: OWSSearchBar!
 
     // MARK: - Properties
 
@@ -336,7 +336,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     // MARK: - Search Actions
-    open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    open func searchBar(_ searchBar: OWSSearchBar, textDidChange searchText: String) {
+        updateSearchResults(searchText: searchText)
+    }
+
+    open func searchBar(_ searchBar: OWSSearchBar, returnWasPressed searchText: String) {
         updateSearchResults(searchText: searchText)
     }
 
