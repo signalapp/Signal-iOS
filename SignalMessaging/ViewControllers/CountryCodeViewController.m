@@ -10,9 +10,9 @@
 #import "UIView+OWS.h"
 #import <SignalMessaging/NSString+OWS.h>
 
-@interface CountryCodeViewController () <OWSTableViewControllerDelegate, UISearchBarDelegate>
+@interface CountryCodeViewController () <OWSTableViewControllerDelegate, OWSSearchBarDelegate>
 
-@property (nonatomic, readonly) UISearchBar *searchBar;
+@property (nonatomic, readonly) OWSSearchBar *searchBar;
 
 @property (nonatomic) NSArray<NSString *> *countryCodes;
 
@@ -46,7 +46,7 @@
 - (void)createViews
 {
     // Search
-    UISearchBar *searchBar = [OWSSearchBar new];
+    OWSSearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
@@ -117,29 +117,14 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - UISearchBarDelegate
+#pragma mark - OWSSearchBarDelegate
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)searchBar:(OWSSearchBar *)searchBar textDidChange:(NSString *)text
 {
     [self searchTextDidChange];
 }
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [self searchTextDidChange];
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [self searchTextDidChange];
-}
-
-- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
-{
-    [self searchTextDidChange];
-}
-
-- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
+- (void)searchBar:(OWSSearchBar *)searchBar returnWasPressed:(NSString *)text
 {
     [self searchTextDidChange];
 }
