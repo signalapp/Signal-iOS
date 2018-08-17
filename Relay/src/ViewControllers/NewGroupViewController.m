@@ -15,7 +15,7 @@
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSTableViewController.h>
-#import <RelayMessaging/SignalKeyingStorage.h>
+//#import <RelayMessaging/SignalKeyingStorage.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayMessaging/UIViewController+OWS.h>

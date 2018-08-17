@@ -237,7 +237,7 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
             recipient = [[RelayRecipient alloc] initWithUniqueId:[self localUID]];
             [recipient save];
         }
-        self.cachedSelfRecipient = recipient
+        self.cachedSelfRecipient = recipient;
     }
     return self.cachedSelfRecipient;
 }

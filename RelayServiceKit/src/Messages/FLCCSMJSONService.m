@@ -8,18 +8,16 @@
 
 #define FLBlobShapeRevision 1
 
-#import "Environment.h"
 #import "FLCCSMJSONService.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
 #import "CCSMStorage.h"
-#import "DeviceTypes.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
-#import "OWSReadReceiptsMessage.h"
+#import "OWSReadReceiptsForSenderMessage.h"
 
-#import "Relay-Swift.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 @interface FLCCSMJSONService()
 
@@ -43,7 +41,7 @@
         holdingArray = [self arrayForTypeContentFromMessage:message];
     } else {
         // TODO: add addition messageType handlers
-        if ([message isKindOfClass:[OWSReadReceiptsMessage class]]) {
+        if ([message isKindOfClass:[OWSReadReceiptsForSenderMessage class]]) {
             message.messageType = @"receipt";
         }
         holdingArray = [self arrayForTypeContentFromMessage:message];

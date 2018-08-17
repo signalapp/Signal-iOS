@@ -10,7 +10,7 @@ import Foundation
 import YapDatabase
 import RelayServiceKit
 
-class FLContactsManager: NSObject, NSCacheDelegate {
+class FLContactsManager: NSObject {
     
     public static let shared = FLContactsManager()
     
@@ -60,7 +60,7 @@ class FLContactsManager: NSObject, NSCacheDelegate {
     }
     
     func selfRecipient() -> RelayRecipient {
-        var RelayRecipient = self.recipientCache.object
+        var RelayRecipient = recipientCache.object(forKey: TSAccountManager.localId()) as RelayRecipient
 //        var RelayRecipient = self.recipient(userId: TSAccountManager.sharedInstance.localUID)
     }
     
@@ -120,4 +120,8 @@ class FLContactsManager: NSObject, NSCacheDelegate {
     
     func nukeAndPave() {
     }
+}
+
+extension FLContactsManager : NSCacheDelegate {
+    
 }

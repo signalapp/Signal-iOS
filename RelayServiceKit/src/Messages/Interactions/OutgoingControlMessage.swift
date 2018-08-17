@@ -54,7 +54,7 @@ import UIKit
         return      // never save control messages
     }
 
-    @objc override public func save(with transaction: YapDatabaseReadWriteTransaction!) {
+    @objc override public func save(with transaction: YapDatabaseReadWriteTransaction) {
         return      // never save control messages
     }
 }

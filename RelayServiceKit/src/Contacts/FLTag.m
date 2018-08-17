@@ -7,6 +7,9 @@
 //
 
 #import "FLTag.h"
+#import "OWSPrimaryStorage.h"
+#import "TSAccountManager.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 #define FLTagDescriptionKey @"description"
 #define FLTagIdKey @"id"
@@ -26,7 +29,7 @@
 +(instancetype _Nullable)getOrCreateTagWithDictionary:(NSDictionary *_Nonnull)tagDictionary;
 {
     __block FLTag *aTag = nil;
-    [Environment.shared.contactsManager.mainConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         aTag = [self getOrCreateTagWithDictionary:tagDictionary transaction:transaction];
     }];
     return aTag;
@@ -87,7 +90,7 @@
 +(instancetype _Nonnull)getOrCreateTagWithId:(NSString *_Nonnull)tagId
 {
     __block FLTag *aTag = nil;
-    [Environment.shared.contactsManager.mainConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         [self getOrCreateTagWithId:tagId transaction:transaction];
     }];
     return aTag;
@@ -107,7 +110,7 @@
 -(NSString *)displaySlug
 {
     NSString *slugDisplayString = [NSString stringWithFormat:@"@%@", self.slug];
-    if (![SignalRecipient.selfRecipient.flTag.orgSlug isEqualToString:self.orgSlug]) {
+    if (![TSAccountManager.sharedInstance.selfRecipient.flTag.orgSlug isEqualToString:self.orgSlug]) {
         slugDisplayString = [slugDisplayString stringByAppendingString:[NSString stringWithFormat:@":%@", self.orgSlug]];
     }
     return slugDisplayString;

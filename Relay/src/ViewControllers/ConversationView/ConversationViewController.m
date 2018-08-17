@@ -28,7 +28,7 @@
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "Relay-Swift.h"
-#import "SignalKeyingStorage.h"
+//#import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
 #import "TSThread.h"

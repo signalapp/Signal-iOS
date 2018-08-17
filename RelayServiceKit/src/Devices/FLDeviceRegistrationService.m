@@ -24,7 +24,6 @@
 #import "Curve25519+keyPairFromPrivateKey.h"
 #import "SignalKeyingStorage.h"
 #import "SecurityUtils.h"
-#import "DeviceTypes.h"
 #import "TSPreKeyManager.h"
 
 @import AxolotlKit;

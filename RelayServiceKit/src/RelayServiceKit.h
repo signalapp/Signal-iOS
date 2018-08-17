@@ -10,3 +10,5 @@
 #import "CCSMCommunication.h"
 #import "TSThread.h"
 #import "FLDeviceRegistrationService.h"
+#import "TSIncomingMessage.h"
+#import "TSOutgoingMessage.h"

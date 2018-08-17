@@ -10,9 +10,9 @@ import UIKit
 
 @objc public class IncomingControlMessage: TSIncomingMessage {
     
-    let controlMessageType: String
-    let attachmentPointers: Array<OWSSignalServiceProtosAttachmentPointer>?
-    let relay: String
+    @objc let controlMessageType: String
+    @objc let attachmentPointers: Array<OWSSignalServiceProtosAttachmentPointer>?
+    @objc let relay: String
     
     @objc required public init?(thread: TSThread,
                                 author: String,
