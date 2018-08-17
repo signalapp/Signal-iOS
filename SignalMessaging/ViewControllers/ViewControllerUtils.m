@@ -48,6 +48,20 @@ const NSUInteger kMax2FAPinLength = 16;
     NSString *right = [oldText substringFromIndex:range.location + range.length].digitsOnly;
     // 3. Determining the "center" substring: the contents of the new insertion text.
     NSString *center = insertionText.digitsOnly;
+
+    // 3a. If user hits backspace, they should always delete a _digit_ to the
+    //     left of the cursor, even if the text _immediately_ to the left of
+    //     cursor is "formatting text" (e.g. whitespace, a hyphen or a
+    //     parentheses).
+    bool isJustDeletion = insertionText.length == 0;
+    if (isJustDeletion) {
+        NSString *deletedText = [oldText substringWithRange:range];
+        BOOL didDeleteFormatting = (deletedText.length == 1 && deletedText.digitsOnly.length < 1);
+        if (didDeleteFormatting && left.length > 0) {
+            left = [left substringToIndex:left.length - 1];
+        }
+    }
+
     // 4. Construct the "raw" new text by concatenating left, center and right.
     NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
     // 4a. Ensure we don't exceed the maximum length for a e164 phone number,
@@ -61,7 +75,6 @@ const NSUInteger kMax2FAPinLength = 16;
     }
     // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
-    bool isJustDeletion = insertionText.length == 0;
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
     NSString *textAfterReformat =
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
