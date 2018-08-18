@@ -12,19 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HomeViewController : OWSViewController
 
-- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action;
+- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
+
 - (void)presentThread:(TSThread *)thread
                action:(ConversationViewAction)action
-       focusMessageId:(nullable NSString *)focusMessageId;
+       focusMessageId:(nullable NSString *)focusMessageId
+             animated:(BOOL)isAnimated;
 
+// Used by force-touch Springboard icon shortcut
 - (void)showNewConversationView;
-
-- (void)presentTopLevelModalViewController:(UIViewController *)viewController
-                          animateDismissal:(BOOL)animateDismissal
-                       animatePresentation:(BOOL)animatePresentation;
-- (void)pushTopLevelViewController:(UIViewController *)viewController
-                  animateDismissal:(BOOL)animateDismissal
-               animatePresentation:(BOOL)animatePresentation;
 
 @end
 

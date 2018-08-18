@@ -35,16 +35,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedApp;
 
-#pragma mark - View Convenience Methods
+#pragma mark - Conversation Presentation
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId;
-- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action;
-- (void)presentConversationForThreadId:(NSString *)threadId;
-- (void)presentConversationForThread:(TSThread *)thread;
-- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action;
+- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated;
+
+- (void)presentConversationForRecipientId:(NSString *)recipientId
+                                   action:(ConversationViewAction)action
+                                 animated:(BOOL)isAnimated;
+
+- (void)presentConversationForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
+
+- (void)presentConversationForThread:(TSThread *)thread animated:(BOOL)isAnimated;
+
+- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
+
 - (void)presentConversationForThread:(TSThread *)thread
                               action:(ConversationViewAction)action
-                      focusMessageId:(nullable NSString *)focusMessageId;
+                      focusMessageId:(nullable NSString *)focusMessageId
+                            animated:(BOOL)isAnimated;
 
 #pragma mark - Methods
 

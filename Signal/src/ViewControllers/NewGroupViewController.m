@@ -452,30 +452,24 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
         DDLogError(@"Group creation successful.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES
-                                     completion:^{
-                                         // Pop to new group thread.
-                                         [SignalApp.sharedApp presentConversationForThread:thread];
-                                     }];
-
+            [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         });
     };
 
     void (^failureHandler)(NSError *error) = ^(NSError *error) {
         DDLogError(@"Group creation failed: %@", error);
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES
-                                     completion:^{
-                                         // Add an error message to the new group indicating
-                                         // that group creation didn't succeed.
-                                         [[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                           inThread:thread
-                                                                  failedMessageType:TSErrorMessageGroupCreationFailed]
-                                             save];
+        // Add an error message to the new group indicating
+        // that group creation didn't succeed.
+        TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                        inThread:thread
+                                                               failedMessageType:TSErrorMessageGroupCreationFailed];
+        [errorMessage save];
 
-                                         [SignalApp.sharedApp presentConversationForThread:thread];
-                                     }];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         });
     };
 

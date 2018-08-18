@@ -1338,7 +1338,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *recipientId = [self unregisteredRecipientId];
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-    [SignalApp.sharedApp presentConversationForThread:thread];
+    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
 + (void)createUnregisteredGroupThread
@@ -1356,7 +1356,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *model =
         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
     TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
-    [SignalApp.sharedApp presentConversationForThread:thread];
+
+    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
 @end
