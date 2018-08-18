@@ -770,13 +770,16 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
 
     override init(frame: CGRect) {
         label = UILabel()
+        label.textColor = Theme.primaryColor
 
-        let blurEffect = UIBlurEffect(style: .extraLight)
+        let blurEffect = Theme.barBlurEffect
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
 
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         super.init(frame: frame)
+
+        self.backgroundColor = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
         self.addSubview(blurEffectView)
         self.addSubview(label)
@@ -814,6 +817,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
         addSubview(label)
 
+        label.textColor = Theme.primaryColor
         label.textAlignment = .center
         label.numberOfLines = 0
         label.autoPinEdgesToSuperviewMargins()
