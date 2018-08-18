@@ -138,6 +138,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
                                     : [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
 }
 
++ (UIKeyboardAppearance)keyboardAppearance
+{
+    return Theme.isDarkThemeEnabled ? UIKeyboardAppearanceDark : UIKeyboardAppearanceDefault;
+}
+
 #pragma mark -
 
 + (UIColor *)toastForegroundColor
