@@ -376,12 +376,19 @@ class ConversationSearchViewController: UITableViewController {
             return
         }
 
-        self.uiDatabaseConnection.read { transaction in
-            self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
-        }
+        var searchResults: SearchResultSet?
+        self.uiDatabaseConnection.asyncRead({ transaction in
+            searchResults = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
+        },
+                                             completionBlock: {
+                                                guard let results = searchResults else {
+                                                    owsFail("\(self.logTag) in \(#function) searchResults was unexpectedly nil")
+                                                    return
+                                                }
 
-        // TODO: more performant way to do this?
-        self.tableView.reloadData()
+                                                self.searchResultSet = results
+                                                self.tableView.reloadData()
+        })
     }
 
     // MARK: - UIScrollViewDelegate
