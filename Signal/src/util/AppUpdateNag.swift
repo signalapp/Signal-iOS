@@ -205,7 +205,7 @@ class AppStoreVersionService: NSObject {
 
         let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, error) in
             guard let data = data else {
-                owsFail("\(self.logTag) in \(#function) data was unexpectedly nil")
+                Logger.warn("\(self.logTag) in \(#function) data was unexpectedly nil")
                 reject(OWSErrorMakeUnableToProcessServerResponseError())
                 return
             }
@@ -214,7 +214,7 @@ class AppStoreVersionService: NSObject {
                 let decoder = JSONDecoder()
                 let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
                 guard let appStoreRecord = resultSet.results.first else {
-                    owsFail("\(self.logTag) in \(#function) record was unexpectedly nil")
+                    Logger.warn("\(self.logTag) in \(#function) record was unexpectedly nil")
                     reject(OWSErrorMakeUnableToProcessServerResponseError())
                     return
                 }
