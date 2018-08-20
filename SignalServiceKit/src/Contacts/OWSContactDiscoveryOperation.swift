@@ -85,15 +85,16 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     // Called at most one time.
     override func didSucceed() {
-        if isCDSEnabled {
-            // Compare against new CDS service
-            let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
-            let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
-            cdsFeedbackOperation.addDependency(modernCDSOperation)
-
-            let operations = modernCDSOperation.dependencies + [modernCDSOperation, cdsFeedbackOperation]
-            CDSOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
+        guard isCDSEnabled else {
+            return
         }
+        // Compare against new CDS service
+        let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
+        let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
+        cdsFeedbackOperation.addDependency(modernCDSOperation)
+
+        let operations = modernCDSOperation.dependencies + [modernCDSOperation, cdsFeedbackOperation]
+        CDSOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     // MARK: Private Helpers
