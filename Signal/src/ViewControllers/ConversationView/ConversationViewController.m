@@ -2370,6 +2370,11 @@ typedef enum : NSUInteger {
     __block NSUInteger threadInteractionCount = 0;
     __block NSNumber *_Nullable groupIndex = nil;
 
+    if (quotedReply.isRemotelySourced) {
+        [self presentRemotelySourcedQuotedReplyToast];
+        return;
+    }
+
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
                                                                   authorId:quotedReply.authorId
@@ -5317,9 +5322,24 @@ typedef enum : NSUInteger {
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
-    NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE",
-        @"Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of "
-        @"the message doesn't exist.");
+    NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
+        @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "
+        @"the message was since deleted.");
+
+    ToastController *toastController = [[ToastController alloc] initWithText:toastText];
+
+    CGFloat bottomInset = 10 + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
+
+    [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
+}
+
+- (void)presentRemotelySourcedQuotedReplyToast
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
+        @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "
+        @"the message didn't exist when the quote was received.");
 
     ToastController *toastController = [[ToastController alloc] initWithText:toastText];
 
