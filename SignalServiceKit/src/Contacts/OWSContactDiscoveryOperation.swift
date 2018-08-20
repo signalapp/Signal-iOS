@@ -7,6 +7,8 @@ import Foundation
 @objc(OWSLegacyContactDiscoveryOperation)
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
+    private let isCDSEnabled = false
+
     @objc
     var registeredRecipientIds: Set<String>
 
@@ -83,13 +85,15 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     // Called at most one time.
     override func didSucceed() {
-        // Compare against new CDS service
-        let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
-        let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
-        cdsFeedbackOperation.addDependency(modernCDSOperation)
+        if isCDSEnabled {
+            // Compare against new CDS service
+            let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
+            let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
+            cdsFeedbackOperation.addDependency(modernCDSOperation)
 
-        let operations = modernCDSOperation.dependencies + [modernCDSOperation, cdsFeedbackOperation]
-        CDSOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
+            let operations = modernCDSOperation.dependencies + [modernCDSOperation, cdsFeedbackOperation]
+            CDSOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
+        }
     }
 
     // MARK: Private Helpers
@@ -362,7 +366,7 @@ class CDSBatchOperation: OWSOperation {
     }
 
     class func boolArray(data: Data) -> [Bool]? {
-        var bools: [Bool]? = nil
+        var bools: [Bool]?
         data.withUnsafeBytes { (bytes: UnsafePointer<Bool>) -> Void in
             let buffer = UnsafeBufferPointer(start: bytes, count: data.count)
             bools = Array(buffer)
