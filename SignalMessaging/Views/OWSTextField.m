@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_applyTheme
 {
-    self.keyboardAppearance = (Theme.isDarkThemeEnabled ? UIKeyboardAppearanceDark : UIKeyboardAppearanceDefault);
+    self.keyboardAppearance = Theme.keyboardAppearance;
 }
 
 - (BOOL)becomeFirstResponder

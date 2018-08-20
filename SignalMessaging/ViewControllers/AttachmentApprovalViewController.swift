@@ -530,6 +530,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         self.backgroundColor = UIColor.clear
 
         textView.delegate = self
+        textView.keyboardAppearance = Theme.keyboardAppearance
         textView.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_dark85 : UIColor.ows_light02)
         textView.layer.borderColor = (Theme.isDarkThemeEnabled
             ? Theme.primaryColor.withAlphaComponent(0.06).cgColor
