@@ -56,6 +56,7 @@
 
 @import WebRTC;
 @import Intents;
+@import RelayServiceKit;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 

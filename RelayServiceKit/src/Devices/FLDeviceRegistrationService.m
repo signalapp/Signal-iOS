@@ -14,7 +14,6 @@
 //#import <AxolotlKit/NSData+keyVersionByte.h>
 #import "Cryptography.h"
 #import "SRWebSocket.h"
-//#import "CCSMStorage.h"
 //#import "SubProtocol.pb.h"
 #import "WebSocketResources.pb.h"
 #import "OWSProvisioningCipher.h"
@@ -25,6 +24,14 @@
 #import "SignalKeyingStorage.h"
 #import "SecurityUtils.h"
 #import "TSPreKeyManager.h"
+#import "CCSMStorage.h"
+#import "CCSMCommunication.h"
+#import "TSAccountManager.h"
+#import "TSStorageHeaders.h"
+#import "OWSDevice.h"
+#import "ProfileManagerProtocol.h"
+#import "TextSecureKitEnv.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 @import AxolotlKit;
 @import SocketRocket;
@@ -63,16 +70,16 @@
     [CCSMCommManager checkAccountRegistrationWithCompletion:^(NSDictionary *payload, NSError *checkError) {
         if (checkError == nil) {
             NSString *serverURL = [payload objectForKey:@"serverUrl"];
-            OWSSig
+            [CCSMStorage.sharedInstance setTextSecureURL:serverURL];
             NSArray *devices = [payload objectForKey:@"devices"];
             DDLogInfo(@"Provisioning found %d other registered devices.", (int)devices.count);
-
+            
             // Found some, request provisioning
             if (devices.count > 0) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
                                                                     object:@{ @"message": @"Other registered devices found." }];
                 [self provisionThisDeviceWithCompletion:^(NSError *deviceError) {
-                        completionBlock(deviceError);
+                    completionBlock(deviceError);
                 }];
             } else { // no other devices, register the account
                 [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
@@ -98,27 +105,41 @@
     NSData *signalingKeyToken = [SecurityUtils generateRandomBytes:(32 + 20)];
     NSString *signalingKey = [[NSData dataWithData:signalingKeyToken] base64EncodedString];
     
-    NSString *name = [NSString stringWithFormat:@"%@ (%@)", [DeviceTypes deviceModelName], [[UIDevice currentDevice] name]];
+    NSString *name = [NSString stringWithFormat:@"%@ (%@)", UIDevice.currentDevice.localizedModel, [[UIDevice currentDevice] name]];
     [SignalKeyingStorage generateServerAuthPassword];
     NSString *password = [SignalKeyingStorage serverAuthPassword];
+    NSNumber *registrationId =  [NSNumber numberWithUnsignedInteger:[TSAccountManager getOrGenerateRegistrationId]];
     
     NSDictionary *jsonBody = @{ @"signalingKey": signalingKey,
                                 @"supportSms" : @NO,
                                 @"fetchesMessages" : @YES,
-                                @"registrationId" :[NSNumber numberWithUnsignedInteger:[TSAccountManager getOrGenerateRegistrationIdWithProtocolContext:nil]],
+                                @"registrationId" : registrationId,
                                 @"name" : name,
                                 @"password" : password
                                 };
-
+    
     NSDictionary *parameters = @{ @"jsonBody" : jsonBody };
     
     [CCSMCommManager registerAccountWithParameters:parameters
                                         completion:^(NSDictionary *result, NSError *error) {
                                             if (error == nil) {
-                                                NSNumber *deviceID = [result objectForKey:@"deviceId"];
-                                                [[TSStorageManager sharedManager] storeDeviceId:deviceID withProtocolContext:nil];
-                                                [TSStorageManager storeServerToken:password signalingKey:signalingKey withProtocolContext:nil];
-                                                [TSPreKeyManager registerPreKeysWithSuccess:completionBlock failure:completionBlock];
+                                                NSNumber *deviceId = [result objectForKey:@"deviceId"];
+                                                if (deviceId) {
+                                                    [OWSDeviceManager.sharedManager setCurrentDeviceId:[deviceId unsignedIntValue]];
+                                                    [TSAccountManager.sharedInstance storeServerAuthToken:password signalingKey:signalingKey];
+                                                    [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
+                                                                                     success:^{
+                                                                                         completionBlock(nil);
+                                                                                     }
+                                                                                     failure:^(NSError *error) {
+                                                                                         completionBlock(error);
+                                                                                     }];
+                                                } else {
+                                                    DDLogError(@"No device provided by TSS!");
+                                                    // FIX: throw meaningful error here.
+                                                    NSError *err = [NSError new];
+                                                    completionBlock(err);
+                                                }
                                             }
                                             completionBlock(error);
                                         }];
@@ -133,7 +154,7 @@
         
         // Wait 15 seconds then close the socket and call completion.
         dispatch_time_t waittime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15);
-       long result = dispatch_semaphore_wait(self.provisioningSemaphore, waittime);
+        long result = dispatch_semaphore_wait(self.provisioningSemaphore, waittime);
         
         [self.provisioningSocket close];
         if (result == 0) {  // Another device provisioned us!  We're good to go.
@@ -147,7 +168,7 @@
             NSError *timeoutError = [NSError errorWithDomain:NSCocoaErrorDomain
                                                         code:NSUserActivityRemoteApplicationTimedOutError
                                                     userInfo:@{ NSLocalizedDescriptionKey : @"No other devices responded to your provisioning request." }];
-                completionBlock(timeoutError);
+            completionBlock(timeoutError);
         }
     });
 }
@@ -155,30 +176,28 @@
 -(void)provisionOtherDeviceWithPublicKey:(NSString *_Nonnull)keyString andUUID:(NSString *_Nonnull)uuidString
 {
     NSData *theirPublicKey = [[NSData dataFromBase64String:keyString] removeKeyType];
-    NSString *accountIdentifier = TSAccountManager.sharedInstance.myself.uniqueId;
-    __block NSData *myPublicKey = nil;
-    __block NSData *myPrivateKey = nil;
-
-    [TSStorageManager.sharedManager.writeDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        myPublicKey = [TSStorageManager.sharedManager identityKeyPair:transaction].publicKey;
-        myPrivateKey = [TSStorageManager.sharedManager identityKeyPair:transaction].ows_privateKey;
-    }];
+    NSString *accountIdentifier = [TSAccountManager localUID];
+    ECKeyPair *myKeyPair =[OWSIdentityManager.sharedManager identityKeyPair];
+    NSData *profileKey = TextSecureKitEnv.sharedEnv.profileManager.localProfileKey.keyData;;
     
-    OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey
-                                                                             myPrivateKey:myPrivateKey
+    OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myKeyPair.publicKey
+                                                                             myPrivateKey:myKeyPair.ows_privateKey
                                                                            theirPublicKey:theirPublicKey
                                                                    theirEphemeralDeviceId:uuidString
-                                                                        accountIdentifier:accountIdentifier];
+                                                                        accountIdentifier:accountIdentifier
+                                                                               profileKey:profileKey
+                                                                      readReceiptsEnabled:NO];
+    
     [provisioner provisionWithSuccess:^{
         DDLogInfo(@"Successfully provisioned other device.");
         // TODO: Notification UI here perhaps?
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//        });
+        //        dispatch_async(dispatch_get_main_queue(), ^{
+        //        });
     }
                               failure:^(NSError *error) {
                                   DDLogError(@"Failed to provision other device with error: %@", error);
-//                                  dispatch_async(dispatch_get_main_queue(), ^{
-//                                  });
+                                  //                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                  //                                  });
                               }];
 }
 
@@ -187,7 +206,7 @@
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
                                                         object:@{ @"message": @"Provisioning device." }];
-    NSString *accountIdentifier = TSAccountManager.sharedInstance.myself.uniqueId;
+    NSString *accountIdentifier = [TSAccountManager localUID];
     
     // Validate other device is valid
     if (![accountIdentifier isEqualToString:messageProto.number]) {
@@ -197,9 +216,10 @@
     }
     
     // PUT the things to TSS
-    NSString *name = [NSString stringWithFormat:@"%@ (%@)", [DeviceTypes deviceModelName], [[UIDevice currentDevice] name]];
-    __block ECKeyPair *keyPair = [Curve25519 generateKeyPairWithPrivateKey:messageProto.identityKeyPrivate];
-    NSNumber *registrationId = [NSNumber numberWithUnsignedInteger:[TSAccountManager getOrGenerateRegistrationIdWithProtocolContext:nil]];
+    NSString *name = [NSString stringWithFormat:@"%@ (%@)", UIDevice.currentDevice.localizedModel, UIDevice.currentDevice.name];
+    [OWSIdentityManager.sharedManager generateNewIdentityKey];
+//    __block ECKeyPair *keyPair = [Curve25519 generateKeyPairWithPrivateKey:messageProto.identityKeyPrivate];
+    NSNumber *registrationId = [NSNumber numberWithUnsignedInteger:[TSAccountManager getOrGenerateRegistrationId]];
     [SignalKeyingStorage generateServerAuthPassword];
     __block NSString *password = [SignalKeyingStorage serverAuthPassword];
     __block NSData *signalingKeyToken = [SecurityUtils generateRandomBytes:(32 + 20)];
@@ -221,14 +241,20 @@
                                   };
     [CCSMCommManager registerDeviceWithParameters:parameters
                                        completion:^(NSDictionary *response, NSError *error) {
-                                            if (!error) {
+                                           if (!error) {
                                                DDLogDebug(@"Device provision PUT response: %@", response);
                                                NSNumber *deviceId = [response objectForKey:@"deviceId"];
                                                if (deviceId) {
-                                                   [TSStorageManager.sharedManager setIdentityKey:keyPair withProtocolContext:nil];
-                                                   [TSStorageManager.sharedManager storeDeviceId:deviceId withProtocolContext:nil];
-                                                   [TSStorageManager storeServerToken:password signalingKey:signalingKey withProtocolContext:nil];
-                                                   [TSPreKeyManager registerPreKeysWithSuccess:completionBlock failure:completionBlock];
+//                                                   [TSStorageManager.sharedManager setIdentityKey:keyPair withProtocolContext:nil];
+                                                   [OWSDeviceManager.sharedManager setCurrentDeviceId:[deviceId unsignedIntValue]];
+                                                   [TSAccountManager.sharedInstance storeServerAuthToken:password signalingKey:signalingKey];
+                                                   [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
+                                                                                    success:^{
+                                                                                        completionBlock(nil);
+                                                                                    }
+                                                                                    failure:^(NSError *error) {
+                                                                                        completionBlock(error);
+                                                                                    }];
                                                } else {
                                                    DDLogError(@"No device provided by TSS!");
                                                    // FIX: throw meaningful error here.
@@ -245,7 +271,7 @@
 // MARK: - Helpers
 -(NSURL *)provisioningURL
 {
-    NSString *tssURLString = [[[CCSMStorage alloc] init] textSecureURL];
+    NSString *tssURLString = [CCSMStorage.sharedInstance textSecureURL];
     NSString *socketString = [tssURLString stringByReplacingOccurrencesOfString:@"http"
                                                                      withString:@"ws"];
     NSString *urlString = [socketString stringByAppendingString:@"/v1/websocket/provisioning/"];
@@ -254,15 +280,15 @@
     return url;
 }
 
-- (void)sendWebSocketMessageAcknowledgement:(WebSocketRequestMessage *)request {
-    WebSocketResponseMessageBuilder *response = [WebSocketResponseMessage builder];
+- (void)sendWebSocketMessageAcknowledgement:(WebSocketResourcesWebSocketRequestMessage *)request {
+    WebSocketResourcesWebSocketResponseMessageBuilder *response = [WebSocketResourcesWebSocketResponseMessage builder];
     [response setStatus:200];
     [response setMessage:@"OK"];
-    [response setId:request.id];
+    [response setRequestId:request.requestId];
     
-    WebSocketMessageBuilder *message = [WebSocketMessage builder];
+    WebSocketResourcesWebSocketMessageBuilder *message = [WebSocketResourcesWebSocketMessage builder];
     [message setResponse:response.build];
-    [message setType:WebSocketMessageTypeResponse];
+    [message setType:WebSocketResourcesWebSocketMessageTypeResponse];
     
     NSError *error;
     [self.provisioningSocket sendDataNoCopy:message.build.data error:&error];
@@ -286,13 +312,13 @@
 {
     DDLogInfo(@"Provisioning socket received data message.");
     
-    WebSocketMessage *message = [WebSocketMessage parseFromData:data];
+    WebSocketResourcesWebSocketMessage *message = [WebSocketResourcesWebSocketMessage parseFromData:data];
     
     NSData *ourPublicKeyData = [self.cipher.ourPublicKey prependKeyType];
     NSString *ourPublicKeyString  = [ourPublicKeyData base64EncodedString];
     
     if (message.hasRequest) {
-        WebSocketRequestMessage *request = message.request;
+        WebSocketResourcesWebSocketRequestMessage *request = message.request;
         
         if ([request.path isEqualToString:@"/v1/address"] && [request.verb isEqualToString:@"PUT"]) {
             OWSProvisioningProtosProvisioningUuid *proto = [OWSProvisioningProtosProvisioningUuid parseFromData:request.body];

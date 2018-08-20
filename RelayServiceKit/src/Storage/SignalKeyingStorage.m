@@ -12,15 +12,10 @@
 #define SIGNALING_MAC_KEY_LENGTH 20
 #define SIGNALING_CIPHER_KEY_LENGTH 16
 #define SIGNALING_EXTRA_KEY_LENGTH 4
+#define SAVED_PASSWORD_LENGTH 18
 
 @implementation SignalKeyingStorage
 
-+ (void)generateSignaling
-{
-    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_MAC_KEY_LENGTH] forKey:SIGNALING_MAC_KEY];
-    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_CIPHER_KEY_LENGTH] forKey:SIGNALING_CIPHER_KEY];
-    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_EXTRA_KEY_LENGTH] forKey:SIGNALING_EXTRA_KEY];
-}
 
 + (int64_t)getAndIncrementOneTimeCounter
 {
@@ -45,6 +40,22 @@
 {
     return [self dataForKey:SIGNALING_EXTRA_KEY andVerifyLength:SIGNALING_EXTRA_KEY_LENGTH];
 }
+
++ (void)generateServerAuthPassword {
+    [self storeString:[[SecurityUtils generateRandomBytes:SAVED_PASSWORD_LENGTH] forKey:SAVED_PASSWORD_KEY] encodedAsBase64];
+}
+
++ (NSString *)serverAuthPassword {
+    return [self stringForKey:SAVED_PASSWORD_KEY];
+}
+
++ (void)generateSignaling
+{
+    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_MAC_KEY_LENGTH] forKey:SIGNALING_MAC_KEY];
+    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_CIPHER_KEY_LENGTH] forKey:SIGNALING_CIPHER_KEY];
+    [self storeData:[SecurityUtils generateRandomBytes:SIGNALING_EXTRA_KEY_LENGTH] forKey:SIGNALING_EXTRA_KEY];
+}
+
 
 #pragma mark Keychain wrapper methods
 

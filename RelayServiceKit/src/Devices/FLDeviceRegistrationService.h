@@ -6,7 +6,7 @@
 //  Copyright © 2018 Forsta. All rights reserved.
 //
 
-//#import <SocketRocket/SocketRocket.h>
+#define FLRegistrationStatusUpdateNotification @"FLRegistrationStatusUpdateNotification"
 
 @import Foundation;
 

@@ -82,8 +82,9 @@
         aTag.orgSlug = [orgDict objectForKey:FLTagSlugKey];
         aTag.orgUrl = [orgDict objectForKey:FLTagURLKey];
     }
-    [Environment.shared.contactsManager saveTag:aTag withTransaction:transaction];
-
+    
+    [aTag saveWithTransaction:transaction];
+    
     return aTag;
 }
 

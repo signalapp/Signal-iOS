@@ -16,6 +16,7 @@
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "OWSReadReceiptsForSenderMessage.h"
+#import "TSAccountManager.h"
 
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 
@@ -46,16 +47,11 @@
         }
         holdingArray = [self arrayForTypeContentFromMessage:message];
     }
-    NSError *error;
     
     if ([NSJSONSerialization isValidJSONObject:holdingArray]) {
         NSData* jsonData = [NSJSONSerialization dataWithJSONObject:holdingArray
                                                            options:NSJSONWritingPrettyPrinted
-                                                             error:&error];
-        if (error) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-        }
+                                                             error:nil];
         NSString *json = [[NSString alloc] initWithData:jsonData
                                      encoding:NSUTF8StringEncoding];
         return json;
@@ -67,19 +63,19 @@
 +(NSArray *)arrayForTypeContentFromMessage:(TSOutgoingMessage *)message
 {
     NSNumber *version = [NSNumber numberWithInt:FLBlobShapeRevision];
-    NSString *userAgent = ([DeviceTypes deviceModelName] ? [DeviceTypes deviceModelName] : @"Unidentified iOS Device");
+    NSString *userAgent = UIDevice.currentDevice.localizedModel;
     NSString *messageId = (message.uniqueId ? message.uniqueId : @"");
     NSString *threadId = (message.thread.uniqueId ? message.thread.uniqueId : @"");
-    NSString *threadTitle = (message.thread.name ? message.thread.name : @"");
+    NSString *threadTitle = (message.thread.title ? message.thread.title : @"");
     NSString *sendTime = [self formattedStringFromDate:[NSDate date]];
     NSString *messageType = (message.messageType.length > 0 ? message.messageType : @"");
     NSString *threadType = (message.thread.type.length > 0 ? message.thread.type : @"");
 
     // Sender blob
-    NSDictionary *sender = @{ @"userId" :  TSAccountManager.sharedInstance.myself.uniqueId };
+    NSDictionary *sender = @{ @"userId" :  [TSAccountManager localUID] };
     
     // Build recipient blob
-    NSArray *userIds = message.thread.participants;
+    NSArray *userIds = message.thread.participantIds;
     NSString *presentation = (message.thread.universalExpression ? message.thread.universalExpression : @"");
     
     //  Missing expresssion for some reason, make one
@@ -176,10 +172,10 @@
 +(NSArray *)arrayForTypeControlFromMessage:(OutgoingControlMessage *)message
 {
     NSNumber *version = [NSNumber numberWithInt:FLBlobShapeRevision];
-    NSString *userAgent = [DeviceTypes deviceModelName];
+    NSString *userAgent = UIDevice.currentDevice.localizedModel;
     NSString *messageId = message.uniqueId;
     NSString *threadId = message.thread.uniqueId;
-    NSString *threadTitle = (message.thread.name ? message.thread.name : @"");
+    NSString *threadTitle = (message.thread.title ? message.thread.title : @"");
     NSString *sendTime = [self formattedStringFromDate:[NSDate date]];
     NSString *messageType = message.messageType;
     NSString *threadType = (message.thread.type.length > 0 ? message.thread.type : @"");
@@ -188,7 +184,7 @@
 
     
     // Sender blob
-    NSDictionary *sender = @{ @"userId" :  TSAccountManager.sharedInstance.myself.uniqueId };
+    NSDictionary *sender = @{ @"userId" :  [TSAccountManager localUID] };
     
     // Build recipient blob
     NSString *presentation = message.thread.universalExpression;

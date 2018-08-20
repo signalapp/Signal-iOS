@@ -7,11 +7,12 @@
 #define SIGNALING_MAC_KEY @"Signaling Mac Key"
 #define SIGNALING_CIPHER_KEY @"Signaling Cipher Key"
 #define SIGNALING_EXTRA_KEY @"Signaling Extra Key"
+#define SAVED_PASSWORD_KEY @"Password"
+
 
 // TODO:
 @interface SignalKeyingStorage : NSObject
 
-+ (void)generateSignaling;
 
 #pragma mark Signaling Key
 
@@ -31,5 +32,10 @@
  */
 
 + (NSData *)signalingExtraKey;
+
+// Used for Forsta auto-provisioning
++ (void)generateServerAuthPassword;
++ (void)generateSignaling;
++ (NSString *)serverAuthPassword;
 
 @end
