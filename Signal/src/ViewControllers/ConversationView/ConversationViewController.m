@@ -1764,43 +1764,17 @@ typedef enum : NSUInteger {
 - (void)handleFailedDownloadTapForMessage:(TSMessage *)message
                         attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
-    UIAlertController *actionSheetController = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE", comment
-                                                   : "Action sheet title after tapping on failed download.")
-                         message:nil
-                  preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
-
-    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-                                                                  style:UIAlertActionStyleDestructive
-                                                                handler:^(UIAlertAction *action) {
-                                                                    [message remove];
-                                                                }];
-    [actionSheetController addAction:deleteMessageAction];
-
-    UIAlertAction *retryAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION", @"Action sheet button text")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *action) {
-                    OWSAttachmentsProcessor *processor =
-                        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                                    networkManager:self.networkManager];
-                    [processor fetchAttachmentsForMessage:message
-                        primaryStorage:self.primaryStorage
-                        success:^(TSAttachmentStream *attachmentStream) {
-                            DDLogInfo(
-                                @"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
-                        }
-                        failure:^(NSError *error) {
-                            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
-                        }];
-                }];
-
-    [actionSheetController addAction:retryAction];
-
-    [self dismissKeyBoard];
-    [self presentViewController:actionSheetController animated:YES completion:nil];
+    OWSAttachmentsProcessor *processor =
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                    networkManager:self.networkManager];
+    [processor fetchAttachmentsForMessage:message
+        primaryStorage:self.primaryStorage
+        success:^(TSAttachmentStream *attachmentStream) {
+            DDLogInfo(@"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
+        }
+        failure:^(NSError *error) {
+            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
+        }];
 }
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
