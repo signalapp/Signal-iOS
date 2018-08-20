@@ -81,10 +81,10 @@ NS_ASSUME_NONNULL_BEGIN
                            success:(void (^)(NSSet<SignalRecipient *> *recipients))success
                            failure:(void (^)(NSError *error))failure
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSLegacyContactDiscoveryOperation *operation =
-            [[OWSLegacyContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
+    OWSLegacyContactDiscoveryOperation *operation =
+        [[OWSLegacyContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
 
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
         [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
 
