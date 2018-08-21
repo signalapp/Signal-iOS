@@ -233,7 +233,7 @@ public class ConversationStyle: NSObject {
         } else if isIncoming {
             return bubbleColorOutgoingSent.withAlphaComponent(0.25)
         } else {
-            return UIColor.white.withAlphaComponent(0.75)
+            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
         }
     }
 
