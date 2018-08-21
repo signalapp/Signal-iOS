@@ -110,6 +110,8 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 static const CGFloat kLoadMoreHeaderHeight = 60.f;
 
+static const CGFloat kToastInset = 10;
+
 typedef enum : NSUInteger {
     kMediaTypePicture,
     kMediaTypeVideo,
@@ -5328,7 +5330,7 @@ typedef enum : NSUInteger {
 
     ToastController *toastController = [[ToastController alloc] initWithText:toastText];
 
-    CGFloat bottomInset = 10 + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
+    CGFloat bottomInset = kToastInset + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
 
     [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
 }
@@ -5343,7 +5345,7 @@ typedef enum : NSUInteger {
 
     ToastController *toastController = [[ToastController alloc] initWithText:toastText];
 
-    CGFloat bottomInset = 10 + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
+    CGFloat bottomInset = kToastInset + self.collectionView.contentInset.bottom + self.view.layoutMargins.bottom;
 
     [toastController presentToastViewFromBottomOfView:self.view inset:bottomInset];
 }
