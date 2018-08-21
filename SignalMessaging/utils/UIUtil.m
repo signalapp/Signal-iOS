@@ -41,6 +41,9 @@
     //                                                 ? UIKeyboardAppearanceDark
     //                                                 : UIKeyboardAppearanceDefault);
 
+    //    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor
+    //    ows_materialBlueColor]];
+
     [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     

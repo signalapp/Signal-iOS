@@ -32,24 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.keyboardAppearance = Theme.keyboardAppearance;
 }
 
-- (BOOL)becomeFirstResponder
-{
-    BOOL result = [super becomeFirstResponder];
-
-    [self.ows_delegate textFieldDidBecomeFirstResponder:self];
-
-    return result;
-}
-
-- (BOOL)resignFirstResponder
-{
-    BOOL result = [super resignFirstResponder];
-
-    [self.ows_delegate textFieldDidResignFirstResponder:self];
-
-    return result;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

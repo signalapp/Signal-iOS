@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SelectThreadViewController () <OWSTableViewControllerDelegate,
     ThreadViewHelperDelegate,
     ContactsViewHelperDelegate,
-    OWSSearchBarDelegate,
+    UISearchBarDelegate,
     NewNonContactConversationViewControllerDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
-@property (nonatomic, readonly) OWSSearchBar *searchBar;
+@property (nonatomic, readonly) UISearchBar *searchBar;
 
 @end
 
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.selectThreadViewDelegate);
 
     // Search
-    OWSSearchBar *searchBar = [OWSSearchBar new];
+    UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
@@ -132,14 +132,29 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-#pragma mark - OWSSearchBarDelegate
+#pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(OWSSearchBar *)searchBar textDidChange:(NSString *)text
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self updateTableContents];
 }
 
-- (void)searchBar:(OWSSearchBar *)searchBar returnWasPressed:(NSString *)text
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self updateTableContents];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self updateTableContents];
+}
+
+- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
+{
+    [self updateTableContents];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
 {
     [self updateTableContents];
 }

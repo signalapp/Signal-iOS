@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface NewContactThreadViewController () <OWSSearchBarDelegate,
+@interface NewContactThreadViewController () <UISearchBarDelegate,
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
     NewNonContactConversationViewControllerDelegate,
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
-@property (nonatomic, readonly) OWSSearchBar *searchBar;
+@property (nonatomic, readonly) UISearchBar *searchBar;
 
 // A list of possible phone numbers parsed from the search text as
 // E164 values.
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.navigationItem.rightBarButtonItem = newGroupButton;
 
     // Search
-    OWSSearchBar *searchBar = [OWSSearchBar new];
+    UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
@@ -866,14 +866,29 @@ NS_ASSUME_NONNULL_BEGIN
     [self newConversationWithRecipientId:recipientId];
 }
 
-#pragma mark - OWSSearchBarDelegate
+#pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(OWSSearchBar *)searchBar textDidChange:(NSString *)text
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self searchTextDidChange];
 }
 
-- (void)searchBar:(OWSSearchBar *)searchBar returnWasPressed:(NSString *)text
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchTextDidChange];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchTextDidChange];
+}
+
+- (void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar
+{
+    [self searchTextDidChange];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar selectedScopeButtonIndexDidChange:(NSInteger)selectedScope
 {
     [self searchTextDidChange];
 }

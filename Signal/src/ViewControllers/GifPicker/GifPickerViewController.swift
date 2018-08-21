@@ -12,7 +12,7 @@ protocol GifPickerViewControllerDelegate: class {
     func gifPickerDidSelect(attachment: SignalAttachment)
 }
 
-class GifPickerViewController: OWSViewController, OWSSearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
+class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
 
     // MARK: Properties
 
@@ -36,7 +36,7 @@ class GifPickerViewController: OWSViewController, OWSSearchBarDelegate, UICollec
     let thread: TSThread
     let messageSender: MessageSender
 
-    let searchBar: OWSSearchBar
+    let searchBar: UISearchBar
     let layout: GifPickerLayout
     let collectionView: UICollectionView
     var noResultsView: UILabel?
@@ -423,9 +423,9 @@ class GifPickerViewController: OWSViewController, OWSSearchBarDelegate, UICollec
         dismiss(animated: true, completion: nil)
     }
 
-    // MARK: - OWSSearchBarDelegate
+    // MARK: - UISearchBarDelegate
 
-    public func searchBar(_ searchBar: OWSSearchBar, textDidChange searchText: String) {
+    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Clear error messages immediately.
         if viewMode == .error || viewMode == .noResults {
             viewMode = .idle
@@ -444,7 +444,7 @@ class GifPickerViewController: OWSViewController, OWSSearchBarDelegate, UICollec
         }
     }
 
-    public func searchBar(_ searchBar: OWSSearchBar, returnWasPressed searchText: String) {
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.searchBar.resignFirstResponder()
 
         tryToSearch()

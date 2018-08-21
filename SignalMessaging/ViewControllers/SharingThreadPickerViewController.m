@@ -80,7 +80,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     return NO;
 }
 
-- (nullable UIView *)createHeaderWithSearchBar:(OWSSearchBar *)searchBar
+- (nullable UIView *)createHeaderWithSearchBar:(UISearchBar *)searchBar
 {
     OWSAssert(searchBar);
 
