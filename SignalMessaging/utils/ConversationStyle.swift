@@ -228,7 +228,7 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
-            let alpha: CGFloat = (isIncoming ?0.6 :0.5)
+            let alpha: CGFloat = (isIncoming ? gi0.6 :0.5)
             return UIColor.white.blend(with: bubbleColorOutgoingSent, alpha: alpha)
         } else if isIncoming {
             return bubbleColorOutgoingSent.withAlphaComponent(0.25)
