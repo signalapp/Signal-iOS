@@ -67,6 +67,8 @@ class ToastView: UIView {
 @objc
 class ToastController: NSObject, ToastViewDelegate {
 
+    static var currentToastController: ToastController?
+
     private let toastView: ToastView
     private var isDismissing: Bool
 
@@ -97,6 +99,12 @@ class ToastController: NSObject, ToastViewDelegate {
         toastView.setCompressionResistanceHigh()
         toastView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -inset)
         toastView.autoPinWidthToSuperview(withMargin: 24)
+
+        if let currentToastController = type(of: self).currentToastController {
+            currentToastController.dismissToastView()
+            type(of: self).currentToastController = nil
+        }
+        type(of: self).currentToastController = self
 
         UIView.animate(withDuration: 0.1) {
             self.toastView.alpha = 1
@@ -131,6 +139,11 @@ class ToastController: NSObject, ToastViewDelegate {
             return
         }
         isDismissing = true
+
+        if type(of: self).currentToastController == self {
+            type(of: self).currentToastController = nil
+        }
+
         UIView.animate(withDuration: 0.1,
                        animations: {
             self.toastView.alpha = 0
