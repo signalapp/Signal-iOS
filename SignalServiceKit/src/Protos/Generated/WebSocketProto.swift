@@ -59,11 +59,11 @@ public enum WebSocketProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketRequestMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketRequestMessage {
@@ -109,11 +109,11 @@ public enum WebSocketProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
@@ -202,11 +202,11 @@ public enum WebSocketProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketResponseMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketResponseMessage {
@@ -258,11 +258,11 @@ public enum WebSocketProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
@@ -354,11 +354,11 @@ public enum WebSocketProtoError: Error {
 
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
+            #if DEBUG
             return try! self.build()
+            #else
+            return nil
+            #endif
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketMessage {
@@ -390,11 +390,11 @@ public enum WebSocketProtoError: Error {
 
     // NOTE: This method is intended for debugging purposes only.
     @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
+        #if DEBUG
         return try! self.serializedData()
+        #else
+        return nil
+        #endif
     }
 
     @objc
