@@ -166,6 +166,212 @@ static OWSProvisioningProtosProvisionEnvelope* defaultOWSProvisioningProtosProvi
 }
 @end
 
+@interface OWSProvisioningProtosProvisioningUuid ()
+@property (strong) NSString* uuid;
+@end
+
+@implementation OWSProvisioningProtosProvisioningUuid
+
+- (BOOL) hasUuid {
+    return !!hasUuid_;
+}
+- (void) setHasUuid:(BOOL) _value_ {
+    hasUuid_ = !!_value_;
+}
+@synthesize uuid;
+- (instancetype) init {
+    if ((self = [super init])) {
+        self.uuid = @"";
+    }
+    return self;
+}
+static OWSProvisioningProtosProvisioningUuid* defaultOWSProvisioningProtosProvisioningUuidInstance = nil;
++ (void) initialize {
+    if (self == [OWSProvisioningProtosProvisioningUuid class]) {
+        defaultOWSProvisioningProtosProvisioningUuidInstance = [[OWSProvisioningProtosProvisioningUuid alloc] init];
+    }
+}
++ (instancetype) defaultInstance {
+    return defaultOWSProvisioningProtosProvisioningUuidInstance;
+}
+- (instancetype) defaultInstance {
+    return defaultOWSProvisioningProtosProvisioningUuidInstance;
+}
+- (BOOL) isInitialized {
+    return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+    if (self.hasUuid) {
+        [output writeString:1 value:self.uuid];
+    }
+    [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+    __block SInt32 size_ = memoizedSerializedSize;
+    if (size_ != -1) {
+        return size_;
+    }
+    
+    size_ = 0;
+    if (self.hasUuid) {
+        size_ += computeStringSize(1, self.uuid);
+    }
+    size_ += self.unknownFields.serializedSize;
+    memoizedSerializedSize = size_;
+    return size_;
+}
++ (OWSProvisioningProtosProvisioningUuid*) parseFromData:(NSData*) data {
+    return (OWSProvisioningProtosProvisioningUuid*)[[[OWSProvisioningProtosProvisioningUuid builder] mergeFromData:data] build];
+}
++ (OWSProvisioningProtosProvisioningUuid*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+    return (OWSProvisioningProtosProvisioningUuid*)[[[OWSProvisioningProtosProvisioningUuid builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSProvisioningProtosProvisioningUuid*) parseFromInputStream:(NSInputStream*) input {
+    return (OWSProvisioningProtosProvisioningUuid*)[[[OWSProvisioningProtosProvisioningUuid builder] mergeFromInputStream:input] build];
+}
++ (OWSProvisioningProtosProvisioningUuid*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+    return (OWSProvisioningProtosProvisioningUuid*)[[[OWSProvisioningProtosProvisioningUuid builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSProvisioningProtosProvisioningUuid*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+    return (OWSProvisioningProtosProvisioningUuid*)[[[OWSProvisioningProtosProvisioningUuid builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSProvisioningProtosProvisioningUuid*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+    return (OWSProvisioningProtosProvisioningUuid*)[[[OWSProvisioningProtosProvisioningUuid builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSProvisioningProtosProvisioningUuidBuilder*) builder {
+    return [[OWSProvisioningProtosProvisioningUuidBuilder alloc] init];
+}
++ (OWSProvisioningProtosProvisioningUuidBuilder*) builderWithPrototype:(OWSProvisioningProtosProvisioningUuid*) prototype {
+    return [[OWSProvisioningProtosProvisioningUuid builder] mergeFrom:prototype];
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) builder {
+    return [OWSProvisioningProtosProvisioningUuid builder];
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) toBuilder {
+    return [OWSProvisioningProtosProvisioningUuid builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+    if (self.hasUuid) {
+        [output appendFormat:@"%@%@: %@\n", indent, @"uuid", self.uuid];
+    }
+    [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+    if (self.hasUuid) {
+        [dictionary setObject: self.uuid forKey: @"uuid"];
+    }
+    [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+    if (other == self) {
+        return YES;
+    }
+    if (![other isKindOfClass:[OWSProvisioningProtosProvisioningUuid class]]) {
+        return NO;
+    }
+    OWSProvisioningProtosProvisioningUuid *otherMessage = other;
+    return
+    self.hasUuid == otherMessage.hasUuid &&
+    (!self.hasUuid || [self.uuid isEqual:otherMessage.uuid]) &&
+    (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+    __block NSUInteger hashCode = 7;
+    if (self.hasUuid) {
+        hashCode = hashCode * 31 + [self.uuid hash];
+    }
+    hashCode = hashCode * 31 + [self.unknownFields hash];
+    return hashCode;
+}
+@end
+
+@interface OWSProvisioningProtosProvisioningUuidBuilder()
+@property (strong) OWSProvisioningProtosProvisioningUuid* resultProvisioningUuid;
+@end
+
+@implementation OWSProvisioningProtosProvisioningUuidBuilder
+@synthesize resultProvisioningUuid;
+- (instancetype) init {
+    if ((self = [super init])) {
+        self.resultProvisioningUuid = [[OWSProvisioningProtosProvisioningUuid alloc] init];
+    }
+    return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+    return resultProvisioningUuid;
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) clear {
+    self.resultProvisioningUuid = [[OWSProvisioningProtosProvisioningUuid alloc] init];
+    return self;
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) clone {
+    return [OWSProvisioningProtosProvisioningUuid builderWithPrototype:resultProvisioningUuid];
+}
+- (OWSProvisioningProtosProvisioningUuid*) defaultInstance {
+    return [OWSProvisioningProtosProvisioningUuid defaultInstance];
+}
+- (OWSProvisioningProtosProvisioningUuid*) build {
+    [self checkInitialized];
+    return [self buildPartial];
+}
+- (OWSProvisioningProtosProvisioningUuid*) buildPartial {
+    OWSProvisioningProtosProvisioningUuid* returnMe = resultProvisioningUuid;
+    self.resultProvisioningUuid = nil;
+    return returnMe;
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) mergeFrom:(OWSProvisioningProtosProvisioningUuid*) other {
+    if (other == [OWSProvisioningProtosProvisioningUuid defaultInstance]) {
+        return self;
+    }
+    if (other.hasUuid) {
+        [self setUuid:other.uuid];
+    }
+    [self mergeUnknownFields:other.unknownFields];
+    return self;
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+    return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+    PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+    while (YES) {
+        SInt32 tag = [input readTag];
+        switch (tag) {
+            case 0:
+                [self setUnknownFields:[unknownFields build]];
+                return self;
+            default: {
+                if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+                    [self setUnknownFields:[unknownFields build]];
+                    return self;
+                }
+                break;
+            }
+            case 10: {
+                [self setUuid:[input readString]];
+                break;
+            }
+        }
+    }
+}
+- (BOOL) hasUuid {
+    return resultProvisioningUuid.hasUuid;
+}
+- (NSString*) uuid {
+    return resultProvisioningUuid.uuid;
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) setUuid:(NSString*) value {
+    resultProvisioningUuid.hasUuid = YES;
+    resultProvisioningUuid.uuid = value;
+    return self;
+}
+- (OWSProvisioningProtosProvisioningUuidBuilder*) clearUuid {
+    resultProvisioningUuid.hasUuid = NO;
+    resultProvisioningUuid.uuid = @"";
+    return self;
+}
+@end
+
 @interface OWSProvisioningProtosProvisionEnvelopeBuilder()
 @property (strong) OWSProvisioningProtosProvisionEnvelope* resultProvisionEnvelope;
 @end

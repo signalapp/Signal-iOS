@@ -26,15 +26,50 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define CONTACT_DISCOVERY_SERVICE
 #endif
 
+// Notification strings
+#define FLSettingsUpdatedNotification @"FLSettingsUpdatedNotification"
+#define FLUserSelectedFromPopoverDirectoryNotification @"FLUserSelectedFromPopoverDirectoryNotification"
+#define FLMarkAllReadNotification @"FLMarkAllReadNotification"
+#define FLCCSMUsersUpdated @"FLCCSMUsersUpdated"
+#define FLCCSMTagsUpdated @"FLCCSMTagsUpdated"
+#define FLRegistrationStatusUpdateNotification @"FLRegistrationStatusUpdateNotification"
+
+// Superman IDs - used for provisioning.
+#define FLSupermanDevID @"1e1116aa-31b3-4fb2-a4db-21e8136d4f3a"
+#define FLSupermanStageID @"88e7165e-d2da-4c3f-a14a-bb802bb0cefb"
+#define FLSupermanProdID @"cf40fca2-dfa8-4356-8ae7-45f56f7551ca"
+
+// Forsta home URLs
+#define FLForstaDevURL @"https://ccsm-dev-api.forsta.io"
+#define FLForstaStageURL @"https://ccsm-stage-api.forsta.io"
+#define FLForstaProdURL @"https://api.forsta.io"
+
+// Domain creation URLs
+#define FLDomainCreateDevURL @"https://ccsm-dev.forsta.io/create"
+#define FLDomainCreateStageURL @"https://ccsm-stage.forsta.io/create"
+#define FLDomainCreateProdURL @"https://console.forsta.io/create"
+
+// Forsta support URL
+#define FLForstaSupportURL @"https://support.forsta.io"
+
+// Forsta SMS invitation URL
+#define FLSMSInvitationURL @"https://www.forsta.io"
+
+// TODO:  Flesh this for dev environment
+#define FLHomeURL FLForstaDevURL
+#define FLDomainCreateURL FLDomainCreateDevURL
+#define FLSupermanID FLSupermanDevID
+
+
 //#ifndef DEBUG
 
 // Production
-#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
-#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
-#define textSecureCDNServerURL @"https://cdn.signal.org"
+#define textSecureWebSocketAPI @"wss://api.forsta.io/v1/websocket/"
+#define textSecureServerURL "https://api.forsta.io"
+//#define textSecureCDNServerURL @"https://cdn.signal.org"
 // Use same reflector for service and CDN
-#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
-#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
+//#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
+//#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
 
 //#else
 //

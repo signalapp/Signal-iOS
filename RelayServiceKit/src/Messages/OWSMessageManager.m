@@ -1132,6 +1132,92 @@ NS_ASSUME_NONNULL_BEGIN
 //    }
 }
 
+#pragma mark - message handlers by type
+-(TSIncomingMessage *)handleThreadContentMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                             withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                               attachmentIds:(NSArray<NSString *> *)attachmentIds
+{
+    NSDictionary *jsonPayload = [FLCCSMJSONService payloadDictionaryFromMessageBody:dataMessage.body];
+    NSString *threadId = [jsonPayload objectForKey:@"threadId"];
+    
+    // getOrCreate a thread and an incomingMessage
+    __block TSThread *thread = nil;
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
+    }];
+    
+    // Check to see if we already have this message
+    
+    __block TSIncomingMessage *incomingMessage = nil;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWriteWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        incomingMessage = [TSIncomingMessage fetchObjectWithUniqueID:[jsonPayload objectForKey:@"messageId"]];
+    }];
+    
+    if (incomingMessage == nil) {
+        incomingMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:envelope.timestamp
+                                                                             inThread:thread
+                                                                             authorId:envelope.source
+                                                                       sourceDeviceId:envelope.sourceDevice
+                                                                          messageBody:dataMessage.body
+                                                                        attachmentIds:attachmentIds
+                                                                     expiresInSeconds:dataMessage.expireTimer
+                                                                        quotedMessage:nil
+                                                                         contactShare:nil];
+        
+        incomingMessage.uniqueId = [jsonPayload objectForKey:@"messageId"];
+        incomingMessage.messageType = [jsonPayload objectForKey:@"messageType"];
+    }
+    incomingMessage.forstaPayload = [jsonPayload mutableCopy];
+    
+    // This SHOULD no longer be necessary
+    // Android & web client allow attachments to be sent with body.
+//    if (attachmentIds.count > 0 && incomingMessage.plainTextBody.length > 0) {
+//        incomingMessage.hasAnnotation = YES;
+//        // We want the text to be displayed under the attachment
+//        uint64_t textMessageTimestamp = envelope.timestamp + 1;
+//        TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
+//                                                                             inThread:thread
+//                                                                             authorId:envelope.source
+//                                                                          messageBody:@""];
+//        textMessage.plainTextBody = incomingMessage.plainTextBody;
+//        textMessage.attributedTextBody = incomingMessage.attributedTextBody;
+//        textMessage.expiresInSeconds = dataMessage.expireTimer;
+//        textMessage.messageType = @"content";
+//        [textMessage save];
+//    }
+    [incomingMessage save];
+    
+    // Ensure the thread is updated in background
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [thread updateWithPayload:jsonPayload];
+        [thread touch];
+    });
+    
+    if (incomingMessage && thread) {
+        // In case we already have a read receipt for this new message (happens sometimes).
+        OWSReadReceiptsProcessor *readReceiptsProcessor =
+        [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage
+                                                   storageManager:self.storageManager];
+        [readReceiptsProcessor process];
+        
+        [self.disappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                                  contactsManager:self.contactsManager];
+        
+        // TODO Delay notification by 100ms?
+        // It's pretty annoying when you're phone keeps buzzing while you're having a conversation on Desktop.
+        
+        NSString *senderName = [Environment.shared.contactsManager nameStringForContactId:envelope.source];
+        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                                   from:senderName
+                                                                               inThread:thread];
+        return incomingMessage;
+    } else {
+        DDLogDebug(@"Unable to process incoming message.");
+        return nil;
+    }
+}
+
+
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
                          thread:(TSThread *)thread
                        envelope:(SSKEnvelope *)envelope
@@ -1262,17 +1348,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dataMessage);
     OWSAssert(transaction);
 
-    if (dataMessage.hasGroup) {
-        NSData *groupId = dataMessage.group.id;
-        OWSAssert(groupId.length > 0);
-        TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
-        // This method should only be called from a code path that has already verified
-        // that this is a "known" group.
-        OWSAssert(groupThread);
-        return groupThread;
-    } else {
-        return [TSThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-    }
+    NSDictionary *jsonPayload = [FLCCSMJSONService payloadDictionaryFromMessageBody:dataMessage.body];
+    NSString *threadId = [jsonPayload objectForKey:@"threadId"];
+    
+    TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
+
+
+    return thread;
 }
 
 @end

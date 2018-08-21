@@ -26,9 +26,18 @@ NS_ASSUME_NONNULL_BEGIN
                                   expiresInSeconds:0
                                    expireStartedAt:0
                                     isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMessageUnspecified
                                      quotedMessage:nil
                                       contactShare:nil];
+//    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+//                                          inThread:nil
+//                                       messageBody:nil
+//                                     attachmentIds:[NSMutableArray new]
+//                                  expiresInSeconds:0
+//                                   expireStartedAt:0
+//                                    isVoiceMessage:NO
+//                                  groupMetaMessage:TSGroupMessageUnspecified
+//                                     quotedMessage:nil
+//                                      contactShare:nil];
 
     if (!self) {
         return self;

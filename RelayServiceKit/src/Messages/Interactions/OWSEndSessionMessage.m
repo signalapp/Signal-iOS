@@ -23,9 +23,19 @@ NS_ASSUME_NONNULL_BEGIN
                                   expiresInSeconds:0
                                    expireStartedAt:0
                                     isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMessageUnspecified
                                      quotedMessage:nil
                                       contactShare:nil];
+
+//    return [super initOutgoingMessageWithTimestamp:timestamp
+//                                          inThread:thread
+//                                       messageBody:nil
+//                                     attachmentIds:[NSMutableArray new]
+//                                  expiresInSeconds:0
+//                                   expireStartedAt:0
+//                                    isVoiceMessage:NO
+//                                  groupMetaMessage:TSGroupMessageUnspecified
+//                                     quotedMessage:nil
+//                                      contactShare:nil];
 }
 
 - (BOOL)shouldBeSaved

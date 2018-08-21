@@ -78,12 +78,16 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
 
 - (NSString *)signalServiceReflectorHost
 {
-    return textSecureServiceReflectorHost;
+    DDLogDebug(@"Attempt to access unimplemented functin: signalServiceReflectorHost");
+    return @"";
+//    return textSecureServiceReflectorHost;
 }
 
 - (NSString *)CDNReflectorHost
 {
-    return textSecureCDNReflectorHost;
+    DDLogDebug(@"Attempt to access unimplemented functin: CDNReflectorHost");
+    return @"";
+//    return textSecureCDNReflectorHost;
 }
 
 // MARK: Util

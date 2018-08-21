@@ -8,6 +8,8 @@
 @class OWSProvisioningProtosProvisionEnvelopeBuilder;
 @class OWSProvisioningProtosProvisionMessage;
 @class OWSProvisioningProtosProvisionMessageBuilder;
+@class OWSProvisioningProtosProvisioningUuid;
+@class OWSProvisioningProtosProvisioningUuidBuilder;
 @class ObjectiveCFileOptions;
 @class ObjectiveCFileOptionsBuilder;
 @class PBDescriptorProto;
@@ -119,6 +121,56 @@
 - (NSData*) body;
 - (OWSProvisioningProtosProvisionEnvelopeBuilder*) setBody:(NSData*) value;
 - (OWSProvisioningProtosProvisionEnvelopeBuilder*) clearBody;
+@end
+
+#define ProvisioningUuid_uuid @"uuid"
+@interface OWSProvisioningProtosProvisioningUuid : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+    BOOL hasUuid_:1;
+    NSString* uuid;
+}
+- (BOOL) hasUuid;
+@property (readonly, strong) NSString* uuid;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) builder;
++ (OWSProvisioningProtosProvisioningUuidBuilder*) builder;
++ (OWSProvisioningProtosProvisioningUuidBuilder*) builderWithPrototype:(OWSProvisioningProtosProvisioningUuid*) prototype;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) toBuilder;
+
++ (OWSProvisioningProtosProvisioningUuid*) parseFromData:(NSData*) data;
++ (OWSProvisioningProtosProvisioningUuid*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSProvisioningProtosProvisioningUuid*) parseFromInputStream:(NSInputStream*) input;
++ (OWSProvisioningProtosProvisioningUuid*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSProvisioningProtosProvisioningUuid*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSProvisioningProtosProvisioningUuid*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSProvisioningProtosProvisioningUuidBuilder : PBGeneratedMessageBuilder {
+@private
+    OWSProvisioningProtosProvisioningUuid* resultProvisioningUuid;
+}
+
+- (OWSProvisioningProtosProvisioningUuid*) defaultInstance;
+
+- (OWSProvisioningProtosProvisioningUuidBuilder*) clear;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) clone;
+
+- (OWSProvisioningProtosProvisioningUuid*) build;
+- (OWSProvisioningProtosProvisioningUuid*) buildPartial;
+
+- (OWSProvisioningProtosProvisioningUuidBuilder*) mergeFrom:(OWSProvisioningProtosProvisioningUuid*) other;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasUuid;
+- (NSString*) uuid;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) setUuid:(NSString*) value;
+- (OWSProvisioningProtosProvisioningUuidBuilder*) clearUuid;
 @end
 
 #define ProvisionMessage_identityKeyPublic @"identityKeyPublic"

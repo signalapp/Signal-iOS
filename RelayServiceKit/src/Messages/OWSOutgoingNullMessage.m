@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
                                   expiresInSeconds:0
                                    expireStartedAt:0
                                     isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMessageUnspecified
                                      quotedMessage:nil
                                       contactShare:nil];
     if (!self) {

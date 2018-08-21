@@ -1390,20 +1390,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)saveGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
 {
-    if (message.groupMetaMessage == TSGroupMessageDeliver) {
-        // TODO: Why is this necessary?
-        [message save];
-    } else if (message.groupMetaMessage == TSGroupMessageQuit) {
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeGroupQuit
-                                    customMessage:message.customMessage] save];
-    } else {
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeGroupUpdate
-                                    customMessage:message.customMessage] save];
-    }
+    // TODO: Modify this to respond to Control Messages
+//    if (message.groupMetaMessage == TSGroupMessageDeliver) {
+//        // TODO: Why is this necessary?
+//        [message save];
+//    } else if (message.groupMetaMessage == TSGroupMessageQuit) {
+//        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+//                                         inThread:thread
+//                                      messageType:TSInfoMessageTypeGroupQuit
+//                                    customMessage:message.customMessage] save];
+//    } else {
+//        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+//                                         inThread:thread
+//                                      messageType:TSInfoMessageTypeGroupUpdate
+//                                    customMessage:message.customMessage] save];
+//    }
 }
 
 // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.

@@ -11,9 +11,10 @@ let FLSupermanID:String = "cf40fca2-dfa8-4356-8ae7-45f56f7551ca"
 
 import Foundation
 
+@objc
 class ControlMessageManager : NSObject
 {
-    static func processIncomingControlMessage(message: IncomingControlMessage)
+    @objc static func processIncomingControlMessage(message: IncomingControlMessage)
     {
         switch message.controlMessageType {
         case FLControlMessageSyncRequestKey:
