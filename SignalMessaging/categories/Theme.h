@@ -47,8 +47,7 @@ extern NSString *const ThemeDidChangeNotification;
 #pragma mark -
 
 @property (class, readonly, nonatomic) UIBarStyle barStyle;
-@property (class, readonly, nonatomic) UISearchBarStyle searchBarStyle;
-@property (class, readonly, nonatomic) UIColor *searchBarBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *searchFieldBackgroundColor;
 @property (class, readonly, nonatomic) UIBlurEffect *barBlurEffect;
 @property (class, readonly, nonatomic) UIKeyboardAppearance keyboardAppearance;
 

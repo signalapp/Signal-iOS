@@ -143,29 +143,16 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.isDarkThemeEnabled ? UIKeyboardAppearanceDark : UIKeyboardAppearanceDefault;
 }
 
-#pragma mark -
+#pragma mark - Search Bar
 
 + (UIBarStyle)barStyle
 {
-    if (Theme.isDarkThemeEnabled) {
-        return UIBarStyleDefault;
-    } else {
-        return UIBarStyleDefault;
-    }
+    return Theme.isDarkThemeEnabled ? UIBarStyleBlack : UIBarStyleDefault;
 }
 
-+ (UISearchBarStyle)searchBarStyle
++ (UIColor *)searchFieldBackgroundColor
 {
-    if (Theme.isDarkThemeEnabled) {
-        return UISearchBarStyleProminent;
-    } else {
-        return UISearchBarStyleMinimal;
-    }
-}
-
-+ (UIColor *)searchBarBackgroundColor
-{
-    return Theme.backgroundColor;
+    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_light10Color;
 }
 
 #pragma mark -

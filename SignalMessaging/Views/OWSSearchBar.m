@@ -56,17 +56,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    self.searchBarStyle = UISearchBarStyleMinimal;
-    self.backgroundColor = Theme.searchBarBackgroundColor;
     self.barTintColor = Theme.backgroundColor;
     self.barStyle = Theme.barStyle;
-    self.searchBarStyle = Theme.searchBarStyle;
+
+    // Hide searchBar border.
+    // Alternatively we could hide the border by using `UISearchBarStyleMinimal`, but that causes an issue when toggling
+    // from light -> dark -> light theme wherein the textField background color appears darker than it should
+    // (regardless of our re-setting textfield.backgroundColor below).
+    self.backgroundImage = [UIImage new];
 
     [self traverseViewHierarchyWithVisitor:^(UIView *view) {
         if ([view isKindOfClass:[UITextField class]]) {
             UITextField *textField = (UITextField *)view;
-            textField.keyboardAppearance
-                = (Theme.isDarkThemeEnabled ? UIKeyboardAppearanceDark : UIKeyboardAppearanceDefault);
+            textField.backgroundColor = Theme.searchFieldBackgroundColor;
+            textField.textColor = Theme.primaryColor;
+            textField.keyboardAppearance = Theme.keyboardAppearance;
         }
     }];
 }
