@@ -137,7 +137,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperview(withMargin: 0)
 
-        if (scrollView.applyInsetsFix()) {
+        if scrollView.applyInsetsFix() {
             scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         } else {
             scrollView.autoPinEdge(toSuperviewEdge: .top)
@@ -663,7 +663,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         if let audioAttachmentPlayer = self.audioAttachmentPlayer {
             // Is this player associated with this media adapter?
-            if (audioAttachmentPlayer.owner as? ConversationViewItem == viewItem) {
+            if audioAttachmentPlayer.owner as? ConversationViewItem == viewItem {
                 // Tap to pause & unpause.
                 audioAttachmentPlayer.togglePlayState()
                 return

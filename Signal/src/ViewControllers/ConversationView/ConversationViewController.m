@@ -4791,11 +4791,11 @@ typedef enum : NSUInteger {
     ]]
                                                  forGroup:self.thread.uniqueId];
 
-    // We need to impose the range restrictions on the mappings immediately to avoid
-    // doing a great deal of unnecessary work and causing a perf hotspot.
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.messageMappings updateWithTransaction:transaction];
     }];
+    // We need to impose the range restrictions on the mappings immediately to avoid
+    // doing a great deal of unnecessary work and causing a perf hotspot.
     [self updateMessageMappingRangeOptions];
 }
 
