@@ -20,7 +20,7 @@ extension UIImage {
     }
 
     @objc
-    public func templated(color: UIColor) -> UIImage? {
+    public func asTintedImage(color: UIColor) -> UIImage? {
         let template = self.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: template)
         imageView.tintColor = color

@@ -69,12 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (Theme.isDarkThemeEnabled) {
         UIImage *clearImage = [UIImage imageNamed:@"searchbar_clear"];
-        [self setImage:[clearImage templatedWithColor:foregroundColor]
+        [self setImage:[clearImage asTintedImageWithColor:foregroundColor]
             forSearchBarIcon:UISearchBarIconClear
                        state:UIControlStateNormal];
 
         UIImage *searchImage = [UIImage imageNamed:@"searchbar_search"];
-        [self setImage:[searchImage templatedWithColor:foregroundColor]
+        [self setImage:[searchImage asTintedImageWithColor:foregroundColor]
             forSearchBarIcon:UISearchBarIconSearch
                        state:UIControlStateNormal];
     } else {
