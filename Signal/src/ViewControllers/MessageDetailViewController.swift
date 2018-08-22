@@ -288,7 +288,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                                                        comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
                                value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp))
         sentRow.isUserInteractionEnabled = true
-        sentRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapSent)))
+        sentRow.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressSent)))
         rows.append(sentRow)
 
         if message as? TSIncomingMessage != nil {
@@ -706,7 +706,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         // no - op
     }
 
-    @objc func didTapSent(sender: UIGestureRecognizer) {
+    @objc func didLongPressSent(sender: UIGestureRecognizer) {
+        guard sender.state == .began else {
+            return
+        }
         let messageTimestamp = "\(message.timestamp)"
         UIPasteboard.general.string = messageTimestamp
     }
