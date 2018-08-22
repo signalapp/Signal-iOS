@@ -816,6 +816,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 + (void)seedRandom
 {
+    // We should never use rand(), but seed it just in case it's used by 3rd-party code
     unsigned seed = [Cryptography randomUnsigned];
     srand(seed);
 }
