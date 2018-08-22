@@ -92,6 +92,9 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     override public func viewDidAppear(_ animated: Bool) {
         Logger.debug("\(logTag) in \(#function)")
+        DispatchQueue.global().async {
+            AssertIsOnMainThread()
+        }
         super.viewDidAppear(animated)
     }
 

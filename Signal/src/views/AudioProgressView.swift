@@ -62,7 +62,7 @@ import SignalServiceKit
     }
 
     internal func updateSubviews() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         self.horizontalBarLayer.frame = self.bounds
         self.progressLayer.frame = self.bounds
@@ -71,7 +71,7 @@ import SignalServiceKit
     }
 
     internal func updateContent() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         // Prevent the shape layer from animating changes.
         CATransaction.begin()

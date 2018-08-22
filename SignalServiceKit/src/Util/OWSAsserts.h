@@ -151,9 +151,6 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
     return s;
 }
 
-// This function is intended for use in Swift.
-void SwiftAssertIsOnMainThread(NSString *functionName);
-
 #define OWSRaiseException(name, formatParam, ...)                                                                      \
     do {                                                                                                               \
         DDLogError(@"Exception: %@ %@", name, [NSString stringWithFormat:formatParam, ##__VA_ARGS__]);                 \

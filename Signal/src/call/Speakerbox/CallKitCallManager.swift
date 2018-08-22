@@ -24,7 +24,7 @@ final class CallKitCallManager: NSObject {
     static let kAnonymousCallHandlePrefix = "Signal:"
 
     required init(showNamesOnCallScreen: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         self.showNamesOnCallScreen = showNamesOnCallScreen
         super.init()

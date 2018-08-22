@@ -419,7 +419,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func presentAudioSourcePicker() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
@@ -955,41 +955,41 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         Logger.info("\(self.logTag) new call status: \(state)")
         self.updateCallUI(callState: state)
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }
 
     func holdDidChange(call: SignalCall, isOnHold: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }
 
     internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         self.updateCallUI(callState: call.state)
     }
 
     // MARK: - CallAudioServiceDelegate
 
     func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isSpeakerphoneEnabled: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         updateAudioSourceButtonIsSelected()
     }
 
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         // Which sources are available depends on the state of your Session.
         // When the audio session is not yet in PlayAndRecord none are available
@@ -1007,7 +1007,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func updateLocalVideo(captureSession: AVCaptureSession?) {
 
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         localVideoView.captureSession = captureSession
         let isHidden = captureSession == nil
@@ -1029,7 +1029,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         guard self.remoteVideoTrack != remoteVideoTrack else {
             return
         }
@@ -1119,7 +1119,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     internal func didUpdateVideoTracks(call: SignalCall?,
                                        localCaptureSession: AVCaptureSession?,
                                        remoteVideoTrack: RTCVideoTrack?) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         updateLocalVideo(captureSession: localCaptureSession)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)

@@ -20,3 +20,15 @@ public func owsFail(_ message: String) {
     Logger.flush()
     assertionFailure(message)
 }
+
+// Once we're on Swift4.2 we can mark this as inlineable
+// @inlinable
+public func AssertIsOnMainThread(file: String = #file,
+                                 function: String = #function,
+                                 line: Int = #line) {
+    guard Thread.isMainThread else {
+        let filename = (file as NSString).lastPathComponent
+        owsFail("\(filename):\(line) in \(function): Must be on main thread.")
+        return
+    }
+}

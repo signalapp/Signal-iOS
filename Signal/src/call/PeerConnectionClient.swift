@@ -249,7 +249,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private static var expiredProxies = [PeerConnectionProxy]()
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callDirection: CallDirection, useTurnOnly: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         self.iceServers = iceServers
         self.delegate = delegate
@@ -297,7 +297,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: - Media Streams
 
     private func createSignalingDataChannel() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         guard let peerConnection = peerConnection else {
             Logger.debug("\(logTag) \(#function) Ignoring obsolete event in terminated client")
             return
@@ -323,7 +323,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: - Video
 
     fileprivate func createVideoSender() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         Logger.debug("\(logTag) in \(#function)")
         assert(self.videoSender == nil, "\(#function) should only be called once.")
 
@@ -355,7 +355,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setCameraSource(isUsingFrontCamera: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let proxyCopy = self.proxy
         PeerConnectionClient.signalingQueue.async {
@@ -371,7 +371,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setLocalVideoEnabled(enabled: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         let completion = {
             guard let strongSelf = proxyCopy.get() else { return }
@@ -436,7 +436,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: - Audio
 
     fileprivate func createAudioSender() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         Logger.debug("\(logTag) in \(#function)")
         assert(self.audioSender == nil, "\(#function) should only be called once.")
 
@@ -462,7 +462,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setAudioEnabled(enabled: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else { return }
@@ -490,7 +490,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
         let completion: ((RTCSessionDescription?, Error?) -> Void) = { (sdp, error) in
@@ -570,7 +570,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         let (promise, fulfill, reject) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async {
@@ -600,7 +600,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func negotiateSessionDescription(remoteDescription: RTCSessionDescription, constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         return setRemoteSessionDescription(remoteDescription)
             .then(on: PeerConnectionClient.signalingQueue) {
@@ -612,7 +612,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setRemoteSessionDescription(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         let (promise, fulfill, reject) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async {
@@ -714,7 +714,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func terminate() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         Logger.debug("\(logTag) in \(#function)")
 
         // Clear the delegate immediately so that we can guarantee that
@@ -782,7 +782,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         let proxyCopy = self.proxy
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else { return }
@@ -829,7 +829,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
         let proxyCopy = self.proxy
         let completion: (WebRTCProtoData) -> Void = { (dataChannelMessage) in
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClient(strongSelf, received: dataChannelMessage)
@@ -873,7 +873,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         let proxyCopy = self.proxy
         let completion: (RTCVideoTrack) -> Void = { (remoteVideoTrack) in
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
 
@@ -921,19 +921,19 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         let proxyCopy = self.proxy
         let connectedCompletion : () -> Void = {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClientIceConnected(strongSelf)
         }
         let failedCompletion : () -> Void = {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClientIceFailed(strongSelf)
         }
         let disconnectedCompletion : () -> Void = {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClientIceDisconnected(strongSelf)
@@ -975,7 +975,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         let proxyCopy = self.proxy
         let completion: (RTCIceCandidate) -> Void = { (candidate) in
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClient(strongSelf, addedLocalIceCandidate: candidate)
@@ -1007,7 +1007,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         let proxyCopy = self.proxy
         let completion: ([PendingDataChannelMessage]) -> Void = { (pendingMessages) in
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             guard let strongSelf = proxyCopy.get() else { return }
             pendingMessages.forEach { message in
                 strongSelf.sendDataChannelMessage(data: message.data, description: message.description, isCritical: message.isCritical)
@@ -1051,7 +1051,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: Test-only accessors
 
     internal func peerConnectionForTests() -> RTCPeerConnection {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         var result: RTCPeerConnection?
         PeerConnectionClient.signalingQueue.sync {
@@ -1062,7 +1062,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     internal func dataChannelForTests() -> RTCDataChannel {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         var result: RTCDataChannel?
         PeerConnectionClient.signalingQueue.sync {
@@ -1073,7 +1073,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     internal func flushSignalingQueueForTests() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         PeerConnectionClient.signalingQueue.sync {
             // Noop.

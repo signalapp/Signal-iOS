@@ -50,7 +50,7 @@ import LocalAuthentication
     // MARK: - Properties
 
     @objc public func isScreenLockEnabled() -> Bool {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         if !OWSStorage.isStorageReady() {
             owsFail("\(logTag) accessed screen lock state before storage is ready.")
@@ -62,7 +62,7 @@ import LocalAuthentication
 
     @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         assert(OWSStorage.isStorageReady())
 
         self.dbConnection.setBool(value, forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection)
@@ -71,7 +71,7 @@ import LocalAuthentication
     }
 
     @objc public func screenLockTimeout() -> TimeInterval {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         if !OWSStorage.isStorageReady() {
             owsFail("\(logTag) accessed screen lock state before storage is ready.")
@@ -82,7 +82,7 @@ import LocalAuthentication
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         assert(OWSStorage.isStorageReady())
 
         self.dbConnection.setDouble(value, forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection)
@@ -104,12 +104,12 @@ import LocalAuthentication
                                             failure: @escaping ((Error) -> Void),
                                             unexpectedFailure: @escaping ((Error) -> Void),
                                             cancel: @escaping (() -> Void)) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                                                                           comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
                                        completion: { (outcome: OWSScreenLockOutcome) in
-                                        SwiftAssertIsOnMainThread(#function)
+                                        AssertIsOnMainThread()
 
                                         switch outcome {
                                         case .failure(let error):
@@ -138,7 +138,7 @@ import LocalAuthentication
     // * On the main thread.
     private func tryToVerifyLocalAuthentication(localizedReason: String,
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let defaultErrorDescription = NSLocalizedString("SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
                                                         comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")

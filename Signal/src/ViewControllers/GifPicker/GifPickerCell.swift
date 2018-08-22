@@ -14,7 +14,7 @@ class GifPickerCell: UICollectionViewCell {
 
     var imageInfo: GiphyImageInfo? {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             ensureCellState()
         }
@@ -24,7 +24,7 @@ class GifPickerCell: UICollectionViewCell {
     // Here's a bit of logic to not preload offscreen cells that are prefetched.
     var isCellVisible = false {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             ensureCellState()
         }
@@ -41,7 +41,7 @@ class GifPickerCell: UICollectionViewCell {
 
     var isCellSelected: Bool = false {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             ensureCellState()
         }
     }

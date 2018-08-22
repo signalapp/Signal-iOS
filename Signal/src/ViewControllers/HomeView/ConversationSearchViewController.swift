@@ -18,7 +18,7 @@ class ConversationSearchViewController: UITableViewController {
     @objc
     public var searchText = "" {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             // Use a slight delay to debounce updates.
             refreshSearchResults()
@@ -95,13 +95,13 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     @objc internal func yapDatabaseModified(notification: NSNotification) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         refreshSearchResults()
     }
 
     @objc internal func themeDidChange(notification: NSNotification) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         applyTheme()
         self.tableView.reloadData()
@@ -110,7 +110,7 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     private func applyTheme() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         self.view.backgroundColor = Theme.backgroundColor
         self.tableView.backgroundColor = Theme.backgroundColor
@@ -341,7 +341,7 @@ class ConversationSearchViewController: UITableViewController {
     var refreshTimer: Timer?
 
     private func refreshSearchResults() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard !searchResultSet.isEmpty else {
             // To avoid incorrectly showing the "no results" state,
@@ -382,7 +382,7 @@ class ConversationSearchViewController: UITableViewController {
             searchResults = strongSelf.searcher.results(searchText: searchText, transaction: transaction, contactsManager: strongSelf.contactsManager)
         },
                                             completionBlock: { [weak self] in
-                                                SwiftAssertIsOnMainThread(#function)
+                                                AssertIsOnMainThread()
                                                 guard let strongSelf = self else { return }
 
                                                 guard let results = searchResults else {

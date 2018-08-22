@@ -51,14 +51,14 @@ public class DeviceSleepManager: NSObject {
 
     @objc
     private func didEnterBackground() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         ensureSleepBlocking()
     }
 
     @objc
     public func addBlock(blockObject: NSObject) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         blocks.append(SleepBlock(blockObject: blockObject))
 
@@ -67,7 +67,7 @@ public class DeviceSleepManager: NSObject {
 
     @objc
     public func removeBlock(blockObject: NSObject) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         blocks = blocks.filter {
             $0.blockObject != nil && $0.blockObject != blockObject
@@ -77,7 +77,7 @@ public class DeviceSleepManager: NSObject {
     }
 
     private func ensureSleepBlocking() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         // Cull expired blocks.
         blocks = blocks.filter {

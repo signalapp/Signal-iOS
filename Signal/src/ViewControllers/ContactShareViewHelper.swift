@@ -22,7 +22,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     @objc
     public required init(contactsManager: OWSContactsManager) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         self.contactsManager = contactsManager
 

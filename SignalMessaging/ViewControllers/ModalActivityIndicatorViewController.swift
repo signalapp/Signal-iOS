@@ -37,7 +37,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool, backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let view = ModalActivityIndicatorViewController(canCancel: canCancel)
         // Present this modal _over_ the current view contents.
@@ -52,7 +52,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     @objc
     public func dismiss(completion : @escaping () -> Void) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         if !wasDimissed {
             // Only dismiss once.
@@ -136,7 +136,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc func presentTimerFired() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         clearTimer()
 
@@ -147,7 +147,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc func cancelPressed() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         wasCancelled = true
 
