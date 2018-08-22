@@ -401,7 +401,6 @@ class EmptySearchResultCell: UITableViewCell {
         self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        messageLabel.font = UIFont.ows_dynamicTypeBody
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 3
 
@@ -429,5 +428,8 @@ class EmptySearchResultCell: UITableViewCell {
         let format = NSLocalizedString("HOME_VIEW_SEARCH_NO_RESULTS_FORMAT", comment: "Format string when search returns no results. Embeds {{search term}}")
         let messageText: String = NSString(format: format as NSString, searchText) as String
         self.messageLabel.text = messageText
+
+        messageLabel.textColor = Theme.primaryColor
+        messageLabel.font = UIFont.ows_dynamicTypeBody
     }
 }
