@@ -377,17 +377,21 @@ class ConversationSearchViewController: UITableViewController {
         }
 
         var searchResults: SearchResultSet?
-        self.uiDatabaseConnection.asyncRead({ transaction in
-            searchResults = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
+        self.uiDatabaseConnection.asyncRead({[weak self] transaction in
+            guard let strongSelf = self else { return }
+            searchResults = strongSelf.searcher.results(searchText: searchText, transaction: transaction, contactsManager: strongSelf.contactsManager)
         },
-                                             completionBlock: {
+                                            completionBlock: { [weak self] in
+                                                SwiftAssertIsOnMainThread(#function)
+                                                guard let strongSelf = self else { return }
+
                                                 guard let results = searchResults else {
-                                                    owsFail("\(self.logTag) in \(#function) searchResults was unexpectedly nil")
+                                                    owsFail("\(strongSelf.logTag) in \(#function) searchResults was unexpectedly nil")
                                                     return
                                                 }
 
-                                                self.searchResultSet = results
-                                                self.tableView.reloadData()
+                                                strongSelf.searchResultSet = results
+                                                strongSelf.tableView.reloadData()
         })
     }
 
