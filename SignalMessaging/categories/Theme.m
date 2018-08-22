@@ -143,6 +143,18 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.isDarkThemeEnabled ? UIKeyboardAppearanceDark : UIKeyboardAppearanceDefault;
 }
 
+#pragma mark - Search Bar
+
++ (UIBarStyle)barStyle
+{
+    return Theme.isDarkThemeEnabled ? UIBarStyleBlack : UIBarStyleDefault;
+}
+
++ (UIColor *)searchFieldBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_light10Color;
+}
+
 #pragma mark -
 
 + (UIColor *)toastForegroundColor

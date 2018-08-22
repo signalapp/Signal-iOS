@@ -63,7 +63,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
-    OWSSearchBarDelegate,
+    UISearchBarDelegate,
     ConversationSearchViewDelegate>
 
 @property (nonatomic) UITableView *tableView;
@@ -82,7 +82,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Mark: Search
 
-@property (nonatomic, readonly) OWSSearchBar *searchBar;
+@property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic) ConversationSearchViewController *searchResultsController;
 
 // Dependencies
@@ -398,7 +398,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     
     // Search
 
-    OWSSearchBar *searchBar = [OWSSearchBar new];
+    UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
@@ -978,23 +978,51 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 }
 
-#pragma mark - OWSSearchBarDelegate
+#pragma mark - UISearchBarDelegate
 
-- (void)searchBar:(OWSSearchBar *)searchBar textDidChange:(NSString *)text
-{
-    [self updateSearchResultsVisibility];
-}
-
-- (void)searchBar:(OWSSearchBar *)searchBar returnWasPressed:(NSString *)text
-{
-    [self updateSearchResultsVisibility];
-}
-
-- (void)searchBarDidBeginEditing:(OWSSearchBar *)searchBar
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     [self scrollSearchBarToTopAnimated:NO];
 
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    self.searchBar.text = nil;
+
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
+
+    [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
+}
+
+- (void)ensureSearchBarCancelButton
+{
+    self.searchBar.showsCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
 }
 
 - (void)updateSearchResultsVisibility
