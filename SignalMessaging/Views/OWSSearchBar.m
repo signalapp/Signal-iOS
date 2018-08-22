@@ -5,6 +5,7 @@
 #import "OWSSearchBar.h"
 #import "Theme.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -56,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    UIColor *foregroundColor = Theme.placeholderColor;
     self.barTintColor = Theme.backgroundColor;
     self.barStyle = Theme.barStyle;
 
@@ -64,6 +66,22 @@ NS_ASSUME_NONNULL_BEGIN
     // from light -> dark -> light theme wherein the textField background color appears darker than it should
     // (regardless of our re-setting textfield.backgroundColor below).
     self.backgroundImage = [UIImage new];
+
+    if (Theme.isDarkThemeEnabled) {
+        UIImage *clearImage = [UIImage imageNamed:@"searchbar_clear"];
+        [self setImage:[clearImage templatedWithColor:foregroundColor]
+            forSearchBarIcon:UISearchBarIconClear
+                       state:UIControlStateNormal];
+
+        UIImage *searchImage = [UIImage imageNamed:@"searchbar_search"];
+        [self setImage:[searchImage templatedWithColor:foregroundColor]
+            forSearchBarIcon:UISearchBarIconSearch
+                       state:UIControlStateNormal];
+    } else {
+        [self setImage:nil forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
+
+        [self setImage:nil forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+    }
 
     [self traverseViewHierarchyWithVisitor:^(UIView *view) {
         if ([view isKindOfClass:[UITextField class]]) {
