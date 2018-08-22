@@ -135,7 +135,8 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
         let backgroundDuration: TimeInterval = 0.1
         UIView.animate(withDuration: backgroundDuration) {
-            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+            let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.4
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
         }
 
         self.actionSheetView.superview?.layoutIfNeeded()
