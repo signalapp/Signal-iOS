@@ -33,15 +33,6 @@ public enum WebRTCProtoError: Error {
             proto.id = valueParam
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebRTCProtoConnected? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> WebRTCProtoConnected {
             return try WebRTCProtoConnected.parseProto(proto)
         }
@@ -59,15 +50,6 @@ public enum WebRTCProtoError: Error {
                  id: UInt64) {
         self.proto = proto
         self.id = id
-    }
-
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
     }
 
     @objc
@@ -96,6 +78,22 @@ public enum WebRTCProtoError: Error {
     }
 }
 
+#if DEBUG
+
+extension WebRTCProtoConnected {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebRTCProtoConnected.WebRTCProtoConnectedBuilder {
+    @objc public func buildIgnoringErrors() -> WebRTCProtoConnected? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - WebRTCProtoHangup
 
 @objc public class WebRTCProtoHangup: NSObject {
@@ -119,15 +117,6 @@ public enum WebRTCProtoError: Error {
             proto.id = valueParam
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebRTCProtoHangup? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> WebRTCProtoHangup {
             return try WebRTCProtoHangup.parseProto(proto)
         }
@@ -145,15 +134,6 @@ public enum WebRTCProtoError: Error {
                  id: UInt64) {
         self.proto = proto
         self.id = id
-    }
-
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
     }
 
     @objc
@@ -182,6 +162,22 @@ public enum WebRTCProtoError: Error {
     }
 }
 
+#if DEBUG
+
+extension WebRTCProtoHangup {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebRTCProtoHangup.WebRTCProtoHangupBuilder {
+    @objc public func buildIgnoringErrors() -> WebRTCProtoHangup? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - WebRTCProtoVideoStreamingStatus
 
 @objc public class WebRTCProtoVideoStreamingStatus: NSObject {
@@ -207,15 +203,6 @@ public enum WebRTCProtoError: Error {
 
         @objc public func setEnabled(_ valueParam: Bool) {
             proto.enabled = valueParam
-        }
-
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebRTCProtoVideoStreamingStatus? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
         }
 
         @objc public func build() throws -> WebRTCProtoVideoStreamingStatus {
@@ -244,15 +231,6 @@ public enum WebRTCProtoError: Error {
         self.id = id
     }
 
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
-    }
-
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -279,6 +257,22 @@ public enum WebRTCProtoError: Error {
     }
 }
 
+#if DEBUG
+
+extension WebRTCProtoVideoStreamingStatus {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder {
+    @objc public func buildIgnoringErrors() -> WebRTCProtoVideoStreamingStatus? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - WebRTCProtoData
 
 @objc public class WebRTCProtoData: NSObject {
@@ -301,15 +295,6 @@ public enum WebRTCProtoError: Error {
 
         @objc public func setVideoStreamingStatus(_ valueParam: WebRTCProtoVideoStreamingStatus) {
             proto.videoStreamingStatus = valueParam.proto
-        }
-
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebRTCProtoData? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
         }
 
         @objc public func build() throws -> WebRTCProtoData {
@@ -339,15 +324,6 @@ public enum WebRTCProtoError: Error {
         self.videoStreamingStatus = videoStreamingStatus
     }
 
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
-    }
-
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -359,17 +335,17 @@ public enum WebRTCProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: WebRTCProtos_Data) throws -> WebRTCProtoData {
-        var connected: WebRTCProtoConnected?
+        var connected: WebRTCProtoConnected? = nil
         if proto.hasConnected {
             connected = try WebRTCProtoConnected.parseProto(proto.connected)
         }
 
-        var hangup: WebRTCProtoHangup?
+        var hangup: WebRTCProtoHangup? = nil
         if proto.hasHangup {
             hangup = try WebRTCProtoHangup.parseProto(proto.hangup)
         }
 
-        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus?
+        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus? = nil
         if proto.hasVideoStreamingStatus {
             videoStreamingStatus = try WebRTCProtoVideoStreamingStatus.parseProto(proto.videoStreamingStatus)
         }
@@ -385,3 +361,19 @@ public enum WebRTCProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension WebRTCProtoData {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebRTCProtoData.WebRTCProtoDataBuilder {
+    @objc public func buildIgnoringErrors() -> WebRTCProtoData? {
+        return try! self.build()
+    }
+}
+
+#endif

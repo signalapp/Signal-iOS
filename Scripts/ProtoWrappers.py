@@ -35,6 +35,34 @@ def lowerCamlCaseForUnderscoredText_wrapped(name):
         result = result[:-2] + 'ID'
     return result
 
+# Provides conext for writing an indented block surrounded by braces.
+#
+# e.g.
+#
+#     with BracedContext('class Foo', writer) as writer:
+#         with BracedContext('func bar() -> Bool', writer) as writer:
+#             return true
+#
+# Produces:
+#
+#    class Foo {
+#        func bar() -> Bool {
+#            return true
+#        }
+#    }
+#
+class BracedContext:
+    def __init__(self, line, writer):
+        self.writer = writer
+        writer.add('%s {' % line)
+
+    def __enter__(self):
+        self.writer.push_indent()
+        return self.writer
+
+    def __exit__(self, *args):
+        self.writer.pop_indent()
+        self.writer.add('}')
 
 class WriterContext:
     def __init__(self, proto_name, swift_name, parent=None):
@@ -43,7 +71,6 @@ class WriterContext:
         self.parent = parent
         self.name_map = {}
 
-
 class LineWriter:
     def __init__(self, args):
         self.contexts = []
@@ -51,6 +78,9 @@ class LineWriter:
         self.lines = []
         self.args = args
         self.current_indent = 0
+
+    def braced(self, line):
+        return BracedContext(line, self)
         
     def push_indent(self):
         self.current_indent = self.current_indent + 1
@@ -358,6 +388,7 @@ class MessageContext(BaseContext):
         
     def prepare(self):
         self.swift_name = self.derive_swift_name()
+        self.swift_builder_name = "%sBuilder" % self.swift_name
         
         for child in self.children():
             child.prepare()
@@ -495,22 +526,7 @@ class MessageContext(BaseContext):
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-
-        # serializedDataIgnoringErrors() func
-        writer.add('// NOTE: This method is intended for debugging purposes only.')
-        writer.add('@objc public func serializedDataIgnoringErrors() -> Data? {')
-        writer.push_indent()
-        writer.add('guard _isDebugAssertConfiguration() else {')
-        writer.push_indent()
-        writer.add('return nil')
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-        writer.add('return try! self.serializedData()')
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-
+ 
         # serializedData() func
         writer.extend(('''
 @objc
@@ -628,15 +644,33 @@ public func serializedData() throws -> Data {
         writer.rstrip()
         writer.add('}')
         writer.newline()
+        self.generate_debug_extension(writer)
+
+    def generate_debug_extension(self, writer):
+        writer.add('#if DEBUG') 
+        writer.newline() 
+        with writer.braced('extension %s' % self.swift_name) as writer:
+            with writer.braced('@objc public func serializedDataIgnoringErrors() -> Data?') as writer:
+                writer.add('return try! self.serializedData()')
+
+        writer.newline()
+ 
+        with writer.braced('extension %s.%s' % ( self.swift_name, self.swift_builder_name )) as writer:
+            with writer.braced('@objc public func buildIgnoringErrors() -> %s?' % self.swift_name) as writer:
+                writer.add('return try! self.build()')
+
+        writer.newline()
+        writer.add('#endif')
+        writer.newline()
         
     def generate_builder(self, writer):
     
         wrapped_swift_name = self.derive_wrapped_swift_name()
         
-        writer.add('// MARK: - %sBuilder' % self.swift_name)
+        writer.add('// MARK: - %s' % self.swift_builder_name)
         writer.newline()
         
-        writer.add('@objc public class %sBuilder: NSObject {' % self.swift_name)
+        writer.add('@objc public class %s: NSObject {' % self.swift_builder_name)
         writer.newline()
         
         writer.push_context(self.proto_name, self.swift_name)
@@ -750,22 +784,7 @@ public func serializedData() throws -> Data {
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()
-
-        # buildIgnoringErrors() func
-        writer.add('// NOTE: This method is intended for debugging purposes only.')
-        writer.add('@objc public func buildIgnoringErrors() -> %s? {' % self.swift_name)
-        writer.push_indent()
-        writer.add('guard _isDebugAssertConfiguration() else {')
-        writer.push_indent()
-        writer.add('return nil')
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-        writer.add('return try! self.build()')
-        writer.pop_indent()
-        writer.add('}')
-        writer.newline()
-
+ 
         # build() func
         writer.add('@objc public func build() throws -> %s {' % self.swift_name)
         writer.push_indent()

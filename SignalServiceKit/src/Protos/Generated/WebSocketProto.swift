@@ -57,15 +57,6 @@ public enum WebSocketProtoError: Error {
             proto.requestID = valueParam
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketRequestMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> WebSocketProtoWebSocketRequestMessage {
             return try WebSocketProtoWebSocketRequestMessage.parseProto(proto)
         }
@@ -107,15 +98,6 @@ public enum WebSocketProtoError: Error {
         self.requestID = requestID
     }
 
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
-    }
-
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -153,6 +135,22 @@ public enum WebSocketProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension WebSocketProtoWebSocketRequestMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMessageBuilder {
+    @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketRequestMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
 
 // MARK: - WebSocketProtoWebSocketResponseMessage
 
@@ -198,15 +196,6 @@ public enum WebSocketProtoError: Error {
 
         @objc public func setBody(_ valueParam: Data) {
             proto.body = valueParam
-        }
-
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketResponseMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
         }
 
         @objc public func build() throws -> WebSocketProtoWebSocketResponseMessage {
@@ -256,15 +245,6 @@ public enum WebSocketProtoError: Error {
         self.status = status
     }
 
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
-    }
-
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -296,6 +276,22 @@ public enum WebSocketProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension WebSocketProtoWebSocketResponseMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponseMessageBuilder {
+    @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketResponseMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
 
 // MARK: - WebSocketProtoWebSocketMessage
 
@@ -352,15 +348,6 @@ public enum WebSocketProtoError: Error {
             proto.response = valueParam.proto
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> WebSocketProtoWebSocketMessage {
             return try WebSocketProtoWebSocketMessage.parseProto(proto)
         }
@@ -388,15 +375,6 @@ public enum WebSocketProtoError: Error {
         self.response = response
     }
 
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
-    }
-
     @objc
     public func serializedData() throws -> Data {
         return try self.proto.serializedData()
@@ -413,12 +391,12 @@ public enum WebSocketProtoError: Error {
         }
         let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
 
-        var request: WebSocketProtoWebSocketRequestMessage?
+        var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
         }
 
-        var response: WebSocketProtoWebSocketResponseMessage?
+        var response: WebSocketProtoWebSocketResponseMessage? = nil
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage.parseProto(proto.response)
         }
@@ -434,3 +412,19 @@ public enum WebSocketProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension WebSocketProtoWebSocketMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageBuilder {
+    @objc public func buildIgnoringErrors() -> WebSocketProtoWebSocketMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
