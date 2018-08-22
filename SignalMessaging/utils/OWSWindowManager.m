@@ -412,8 +412,12 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         [self ensureRootWindowShown];
         [self ensureReturnToCallWindowShown];
         [self ensureCallViewWindowHidden];
-        [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
+        if (self.menuActionsViewController) {
+            [self ensureMessageActionsWindowShown];
+        } else {
+            [self ensureMessageActionsWindowHidden];
+        }
     } else if (self.menuActionsViewController) {
         // Show Message Actions
 
