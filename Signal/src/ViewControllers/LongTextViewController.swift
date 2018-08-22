@@ -77,6 +77,17 @@ public class LongTextViewController: OWSViewController {
         messageTextView.dataDetectorTypes = OWSAllowedDataDetectorTypes
         messageTextView.text = messageBody
 
+        // RADAR #18669
+        // https://github.com/lionheart/openradar-mirror/issues/18669
+        //
+        // UITextView’s linkTextAttributes property has type [String : Any]! but should be [NSAttributedStringKey : Any]! in Swift 4.
+        let linkTextAttributes: [String: Any] = [
+            NSAttributedStringKey.foregroundColor.rawValue: Theme.primaryColor,
+            NSAttributedStringKey.underlineColor.rawValue: Theme.primaryColor,
+            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+        ]
+        messageTextView.linkTextAttributes = linkTextAttributes
+
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
         messageTextView.autoPinEdge(toSuperviewMargin: .leading)
