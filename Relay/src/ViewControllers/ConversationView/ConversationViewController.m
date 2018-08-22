@@ -357,7 +357,8 @@ typedef enum : NSUInteger {
 {
     OWSAssert(self.thread);
 
-    return self.thread.isGroupThread;
+//    return self.thread.isGroupThread;
+    
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
@@ -390,19 +391,10 @@ typedef enum : NSUInteger {
 - (void)profileWhitelistDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
+    
     // If profile whitelist just changed, we may want to hide a profile whitelist offer.
-    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
-    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        [self ensureDynamicInteractions];
-    } else if (groupId.length > 0 && self.thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
-            [self ensureDynamicInteractions];
-            [self ensureBannerState];
-        }
-    }
+    [self ensureDynamicInteractions];
+    [self ensureBannerState];
 }
 
 - (void)blockedPhoneNumbersDidChange:(id)notification
@@ -1219,19 +1211,11 @@ typedef enum : NSUInteger {
 - (void)updateNavigationTitle
 {
     NSAttributedString *name;
-    if (self.thread.isGroupThread) {
-        if (self.thread.name.length == 0) {
+        if (self.thread.title.length == 0) {
             name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
         } else {
-            name = [[NSAttributedString alloc] initWithString:self.thread.name];
+            name = [[NSAttributedString alloc] initWithString:self.thread.title];
         }
-    } else {
-        OWSAssert(self.thread.contactIdentifier);
-        name =
-            [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
-                                                                       primaryFont:self.headerView.titlePrimaryFont
-                                                                     secondaryFont:self.headerView.titleSecondaryFont];
-    }
     self.title = nil;
 
     if ([name isEqual:self.headerView.attributedTitle]) {
@@ -1849,17 +1833,9 @@ typedef enum : NSUInteger {
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalIdParam
 {
     if (signalIdParam == nil) {
-        if (self.thread.isGroupThread) {
-            // Before 2.13 we didn't track the recipient id in the identity change error.
-            DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
-            return;
-            
-        } else {
-            DDLogInfo(
-                @"%@ Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
-                self.logTag,
-                self.thread.contactIdentifier);
-            signalIdParam = self.thread.contactIdentifier;
+        DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
+        return;
+        
         }
     }
     

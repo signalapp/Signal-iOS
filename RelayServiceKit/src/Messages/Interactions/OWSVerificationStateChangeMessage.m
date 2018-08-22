@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageVerificationStateChange];
+    self = [super initWithTimestamp:timestamp inThread:thread infoMessageType:TSInfoMessageVerificationStateChange];
     if (!self) {
         return self;
     }

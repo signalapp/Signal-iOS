@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
               createdByRemoteName:(nullable NSString *)remoteName
            createdInExistingGroup:(BOOL)createdInExistingGroup
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
+    self = [super initWithTimestamp:timestamp inThread:thread infoMessageType:TSInfoMessageTypeDisappearingMessagesUpdate];
     if (!self) {
         return self;
     }

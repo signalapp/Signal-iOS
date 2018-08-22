@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:transcript.thread
-                                      messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+                                      infoMessageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
         return;
@@ -93,7 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:transcript.expirationDuration
                                                     expireStartedAt:transcript.expirationStartedAt
                                                      isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact];
 

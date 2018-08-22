@@ -13,7 +13,6 @@
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
-#import "OWSSyncConfigurationMessage.h"
 #import "TSAccountManager.h"
 #import "TSThread.h"
 #import "TSDatabaseView.h"
@@ -610,15 +609,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
                   inCollection:OWSReadReceiptManagerCollection];
 
-    OWSSyncConfigurationMessage *syncConfigurationMessage =
-        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:value];
-    [self.messageSender enqueueMessage:syncConfigurationMessage
-        success:^{
-            DDLogInfo(@"%@ Successfully sent Configuration syncMessage.", self.logTag);
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send Configuration syncMessage with error: %@", self.logTag, error);
-        }];
+    // TODO: Send control message to other devices to sync the setting change.
 
     self.areReadReceiptsEnabledCached = @(value);
 }

@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
     for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-        TSThread *contactThread = [TSThread getOrCreateThreadWithContactId:recipientId];
+        TSThread *contactThread = [TSThread getOrCreateThreadWithId:recipientId];
         [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
@@ -3657,7 +3657,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                   OWSAssert(phoneNumber);
                   OWSAssert(phoneNumber.toE164);
 
-                  TSThread *contactThread = [TSThread getOrCreateThreadWithContactId:phoneNumber.toE164];
+                  TSThread *contactThread = [TSThread getOrCreateThreadWithId:phoneNumber.toE164];
                   [self sendFakeMessages:messageCount thread:contactThread];
                   DDLogError(@"Create fake thread: %@, interactions: %lu",
                       phoneNumber.toE164,
@@ -4150,7 +4150,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                             expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
                                                                       : 0)expireStartedAt:0
                               isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMessageUnspecified
                                quotedMessage:nil
                                 contactShare:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
@@ -4230,7 +4229,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                 expireStartedAt:0
                                                                  isVoiceMessage:NO
-                                                               groupMetaMessage:TSGroupMessageUnspecified
                                                                   quotedMessage:nil
                                                                    contactShare:nil];
                 [message saveWithTransaction:transaction];
@@ -4489,7 +4487,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    expiresInSeconds:0
                                                     expireStartedAt:0
                                                      isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:quotedMessage
                                                        contactShare:contactShare];
 

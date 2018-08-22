@@ -28,10 +28,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
-#import "OWSSyncConfigurationMessage.h"
-#import "OWSSyncContactsMessage.h"
-#import "OWSSyncGroupsMessage.h"
-#import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
@@ -395,7 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 //    NSString *recipientId = envelope.source;
 //
-//    TSThread *thread = [TSThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+//    TSThread *thread = [TSThread getOrCreateThreadWithId:recipientId transaction:transaction];
 //
 //    OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
 //        [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
@@ -630,62 +626,9 @@ NS_ASSUME_NONNULL_BEGIN
                                     transaction:transaction];
         }
     } else if (syncMessage.hasRequest) {
-        if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeContacts) {
-            // We respond asynchronously because populating the sync message will
-            // create transactions and it's not practical (due to locking in the OWSIdentityManager)
-            // to plumb our transaction through.
-            //
-            // In rare cases this means we won't respond to the sync request, but that's
-            // acceptable.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSSyncContactsMessage *syncContactsMessage =
-                    [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
-                                                           identityManager:self.identityManager
-                                                            profileManager:self.profileManager];
-                DataSource *dataSource = [DataSourceValue
-                    dataSourceWithSyncMessageData:[syncContactsMessage
-                                                      buildPlainTextAttachmentDataWithTransaction:transaction]];
-                [self.messageSender enqueueTemporaryAttachment:dataSource
-                    contentType:OWSMimeTypeApplicationOctetStream
-                    inMessage:syncContactsMessage
-                    success:^{
-                        DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.logTag);
-                    }
-                    failure:^(NSError *error) {
-                        DDLogError(
-                            @"%@ Failed to send Contacts response syncMessage with error: %@", self.logTag, error);
-                    }];
-            });
-        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
-            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            DataSource *dataSource = [DataSourceValue
-                dataSourceWithSyncMessageData:[syncGroupsMessage
-                                                  buildPlainTextAttachmentDataWithTransaction:transaction]];
-            [self.messageSender enqueueTemporaryAttachment:dataSource
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncGroupsMessage
-                success:^{
-                    DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.logTag);
-                }
-                failure:^(NSError *error) {
-                    DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.logTag, error);
-                }];
-        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
+        if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
             DDLogInfo(@"%@ Received request for block list", self.logTag);
             [_blockingManager syncBlockedPhoneNumbers];
-        } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeConfiguration) {
-            BOOL areReadReceiptsEnabled =
-                [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
-            OWSSyncConfigurationMessage *syncConfigurationMessage =
-                [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
-            [self.messageSender enqueueMessage:syncConfigurationMessage
-                success:^{
-                    DDLogInfo(@"%@ Successfully sent Configuration response syncMessage.", self.logTag);
-                }
-                failure:^(NSError *error) {
-                    DDLogError(
-                        @"%@ Failed to send Configuration response syncMessage with error: %@", self.logTag, error);
-                }];
         } else {
             DDLogWarn(@"%@ ignoring unsupported sync request message", self.logTag);
         }
@@ -725,13 +668,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // Process per messageType
-        NSString *threadId = [jsonPayload objectForKey:@"threadId"];
+    NSString *threadId = [jsonPayload objectForKey:@"threadId"];
 
     TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
 
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+                                  infoMessageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
     [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
 }
@@ -953,6 +896,9 @@ NS_ASSUME_NONNULL_BEGIN
             return [self handleThreadContentMessageWithEnvelope:envelope
                                                 withDataMessage:dataMessage
                                                   attachmentIds:attachmentIds];
+//            return [self handleThreadContentMessageWithEnvelope:envelope
+//                                                withDataMessage:dataMessage
+//                                                  attachmentIds:attachmentIds];
         } else {
             DDLogDebug(@"Unhandled thread type: %@", [jsonPayload objectForKey:@"threadType"]);
             return nil;
@@ -1106,7 +1052,7 @@ NS_ASSUME_NONNULL_BEGIN
 //            envelopeAddress(envelope),
 //            (unsigned long)timestamp);
 //        TSThread *thread =
-//            [TSThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+//            [TSThread getOrCreateThreadWithId:envelope.source transaction:transaction];
 //
 //        TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
 //                                                                                         thread:thread
@@ -1133,7 +1079,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - message handlers by type
--(TSIncomingMessage *)handleThreadContentMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+-(TSIncomingMessage *)handleThreadContentMessageWithEnvelope:(SSKEnvelope *)envelope
                                              withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                                attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
@@ -1195,22 +1141,29 @@ NS_ASSUME_NONNULL_BEGIN
     
     if (incomingMessage && thread) {
         // In case we already have a read receipt for this new message (happens sometimes).
-        OWSReadReceiptsProcessor *readReceiptsProcessor =
-        [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage
-                                                   storageManager:self.storageManager];
-        [readReceiptsProcessor process];
-        
-        [self.disappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
-                                                                  contactsManager:self.contactsManager];
-        
-        // TODO Delay notification by 100ms?
-        // It's pretty annoying when you're phone keeps buzzing while you're having a conversation on Desktop.
-        
-        NSString *senderName = [Environment.shared.contactsManager nameStringForContactId:envelope.source];
-        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                                   from:senderName
-                                                                               inThread:thread];
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+            [self finalizeIncomingMessage:incomingMessage
+                                   thread:thread
+                                 envelope:envelope
+                              transaction:transaction];
+        }];
         return incomingMessage;
+//        OWSReadReceiptsProcessor *readReceiptsProcessor =
+//        [[OWSReadReceiptsProcessor alloc] initWithIncomingMessage:incomingMessage
+//                                                   storageManager:self.storageManager];
+//        [readReceiptsProcessor process];
+//
+//        [self.disappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
+//                                                                  contactsManager:self.contactsManager];
+//
+//        // TODO Delay notification by 100ms?
+//        // It's pretty annoying when you're phone keeps buzzing while you're having a conversation on Desktop.
+//
+//        NSString *senderName = [Environment.shared.contactsManager nameStringForContactId:envelope.source];
+//        [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
+//                                                                                   from:senderName
+//                                                                               inThread:thread];
+//        return incomingMessage;
     } else {
         DDLogDebug(@"Unable to process incoming message.");
         return nil;

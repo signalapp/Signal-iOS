@@ -17,6 +17,7 @@
 #import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
+#import "CCSMStorage.h"
 //#import <YapDatabase/YapDatabase.h>
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 
@@ -40,11 +41,11 @@ NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
 NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 
 // CCSM Additions
-NSString *const CCSMStorageDatabaseCollection = @"CCSMInformation";
-NSString *const CCSMStorageKeyOrgName = @"CCSMOrganizationName";
-NSString *const CCSMStorageKeyUserName = @"CCSMUserName";
-NSString *const CCSMStorageKeySessionToken = @"CCSMSessionToken";
-NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
+//NSString *const CCSMStorageDatabaseCollection = @"CCSMInformation";
+//NSString *const CCSMStorageKeyOrgName = @"CCSMOrganizationName";
+//NSString *const CCSMStorageKeyUserName = @"CCSMUserName";
+//NSString *const CCSMStorageKeySessionToken = @"CCSMSessionToken";
+//NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
 
 
 @interface TSAccountManager ()

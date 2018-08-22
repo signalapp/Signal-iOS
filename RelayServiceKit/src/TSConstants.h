@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 // Production
 #define textSecureWebSocketAPI @"wss://api.forsta.io/v1/websocket/"
-#define textSecureServerURL "https://api.forsta.io"
+#define textSecureServerURL @"https://api.forsta.io"
 //#define textSecureCDNServerURL @"https://cdn.signal.org"
 // Use same reflector for service and CDN
 //#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"

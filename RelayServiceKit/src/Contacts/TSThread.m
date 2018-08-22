@@ -41,22 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];
-
+    
     if (self) {
         _archivalDate    = nil;
         _lastMessageDate = nil;
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
-
-        NSString *_Nullable contactId = self.contactIdentifier;
-        if (contactId.length > 0) {
-            // To be consistent with colors synced to desktop
-            _conversationColorName = [self.class stableConversationColorNameForString:contactId];
-        } else {
-            _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
-        }
+        
+        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
     }
-
+    
     return self;
 }
 
@@ -68,13 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if (_conversationColorName.length == 0) {
-        NSString *_Nullable contactId = self.contactIdentifier;
-        if (contactId.length > 0) {
-            // To be consistent with colors synced to desktop
-            _conversationColorName = [self.class stableConversationColorNameForString:contactId];
-        } else {
-            _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
-        }
+        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
     }
     
     return self;
@@ -83,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self removeAllThreadInteractionsWithTransaction:transaction];
-
+    
     [super removeWithTransaction:transaction];
 }
 
@@ -102,24 +90,24 @@ NS_ASSUME_NONNULL_BEGIN
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                                         if (![key isKindOfClass:[NSString class]] || key.length < 1) {
                                             OWSProdLogAndFail(@"%@ invalid key in thread interactions: %@, %@.",
-                                                self.logTag,
-                                                key,
-                                                [key class]);
+                                                              self.logTag,
+                                                              key,
+                                                              [key class]);
                                             didDetectCorruption = YES;
                                             return;
                                         }
                                         [interactionIds addObject:key];
                                     }];
-
+    
     if (didDetectCorruption) {
         DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
         [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
     }
-
+    
     for (NSString *interactionId in interactionIds) {
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
         TSInteraction *_Nullable interaction =
-            [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
+        [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
         if (!interaction) {
             OWSProdLogAndFail(@"%@ couldn't load thread's interaction for deletion.", self.logTag);
             continue;
@@ -130,14 +118,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name {
     OWS_ABSTRACT_METHOD();
-
+    
     return nil;
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
     OWS_ABSTRACT_METHOD();
-
+    
     return @[];
 }
 
@@ -153,14 +141,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)enumerateInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
                                   usingBlock:(void (^)(TSInteraction *interaction,
-                                                 YapDatabaseReadTransaction *transaction))block
+                                                       YapDatabaseReadTransaction *transaction))block
 {
     void (^interactionBlock)(NSString *, NSString *, id, id, NSUInteger, BOOL *) = ^void(
-        NSString *collection, NSString *key, id _Nonnull object, id _Nonnull metadata, NSUInteger index, BOOL *stop) {
+                                                                                         NSString *collection, NSString *key, id _Nonnull object, id _Nonnull metadata, NSUInteger index, BOOL *stop) {
         TSInteraction *interaction = object;
         block(interaction, transaction);
     };
-
+    
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     [interactionsByThread enumerateRowsInGroup:self.uniqueId usingBlock:interactionBlock];
 }
@@ -174,8 +162,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
                                         usingBlock:^(
-                                            TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
-
+                                                     TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+                                            
                                             block(interaction);
                                         }];
     }];
@@ -190,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
         [interactions addObject:interaction];
     }];
-
+    
     return [interactions copy];
 }
 
@@ -205,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }];
-
+    
     return [errorMessages copy];
 }
 
@@ -223,17 +211,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
     [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-        enumerateRowsInGroup:self.uniqueId
-                  usingBlock:^(
-                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                      if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFail(@"%@ Unexpected object in unseen messages: %@", self.logTag, object);
-                          return;
-                      }
-                      [messages addObject:(id<OWSReadTracking>)object];
-                  }];
-
+     enumerateRowsInGroup:self.uniqueId
+     usingBlock:^(
+                  NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+         
+         if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+             OWSFail(@"%@ Unexpected object in unseen messages: %@", self.logTag, object);
+             return;
+         }
+         [messages addObject:(id<OWSReadTracking>)object];
+     }];
+    
     return [messages copy];
 }
 
@@ -247,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
         [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
     }
-
+    
     // Just to be defensive, we'll also check for unread messages.
     OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
 }
@@ -255,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
-
+    
     __block NSUInteger missedCount = 0;
     __block TSInteraction *last = nil;
     [[transaction ext:TSMessageDatabaseViewExtensionName]
@@ -265,21 +253,21 @@ NS_ASSUME_NONNULL_BEGIN
                   NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
          
          OWSAssert([object isKindOfClass:[TSInteraction class]]);
-
+         
          missedCount++;
          TSInteraction *interaction = (TSInteraction *)object;
          
          if ([TSThread shouldInteractionAppearInInbox:interaction]) {
              last = interaction;
-
+             
              // For long ignored threads, with lots of SN changes this can get really slow.
              // I see this in development because I have a lot of long forgotten threads with members
              // who's test devices are constantly reinstalled. We could add a purpose-built DB view,
              // but I think in the real world this is rare to be a hotspot.
              if (missedCount > 50) {
                  DDLogWarn(@"%@ found last interaction for inbox after skipping %lu items",
-                     self.logTag,
-                     (unsigned long)missedCount);
+                           self.logTag,
+                           (unsigned long)missedCount);
              }
              *stop = YES;
          }
@@ -287,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
     return last;
 }
 
-- (NSDate *)lastMessageDate {
+- (nonnull NSDate *)lastMessageDate {
     if (_lastMessageDate) {
         return _lastMessageDate;
     } else {
@@ -295,7 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nonnull NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
     if ([interaction conformsToProtocol:@protocol(OWSPreviewText)]) {
@@ -310,11 +298,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
 {
     OWSAssert(interaction);
-
+    
     if (interaction.isDynamicInteraction) {
         return NO;
     }
-
+    
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
         if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
@@ -328,24 +316,24 @@ NS_ASSUME_NONNULL_BEGIN
             return NO;
         }
     }
-
+    
     return YES;
 }
 
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssert(lastMessage);
     OWSAssert(transaction);
-
+    
     if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
         return;
     }
-
+    
     self.hasEverHadMessage = YES;
-
+    
     NSDate *lastMessageDate = [lastMessage dateForSorting];
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;
-
+        
         [self saveWithTransaction:transaction];
     }
 }
@@ -353,16 +341,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction
+(YapDatabaseReadTransaction *)transaction
 {
     return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
 }
 
 - (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-
+    
     OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
-
+    
     if (!config.isEnabled) {
         return 0;
     } else {
@@ -384,7 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction referenceDate:(NSDate *)date {
     [self markAllAsReadWithTransaction:transaction];
     _archivalDate = date;
-
+    
     [self saveWithTransaction:transaction];
 }
 
@@ -440,7 +428,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)stableConversationColorNameForString:(NSString *)colorSeed
 {
     NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
-
+    
     unsigned long long hash = 0;
     NSUInteger hashingLength = sizeof(hash);
     NSData *_Nullable hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
@@ -449,7 +437,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         OWSProdLogAndFail(@"%@ could not compute hash for color seed.", self.logTag);
     }
-
+    
     NSUInteger index = (hash % [self.conversationColorNames count]);
     return [self.conversationColorNames objectAtIndex:index];
 }
@@ -467,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
              @"green",
              @"deep_orange",
              @"grey"
-    ];
+             ];
 }
 
 - (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -480,8 +468,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 +(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction
 {
-    // Not yet implemented
-    return [NSArray new]
+    // FIXME: Not yet implemented
+    return [NSArray new];
 }
 
 @end

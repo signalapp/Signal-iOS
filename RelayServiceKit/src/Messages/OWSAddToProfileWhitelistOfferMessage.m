@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[OWSAddToProfileWhitelistOfferMessage alloc]
         initWithTimestamp:timestamp
                  inThread:thread
-              messageType:TSInfoMessageAddUserToProfileWhitelistOffer];
+              infoMessageType:TSInfoMessageAddUserToProfileWhitelistOffer];
 }
 
 - (BOOL)shouldUseReceiptDateForSorting

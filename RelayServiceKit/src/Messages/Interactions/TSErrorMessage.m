@@ -89,7 +89,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
     TSThread *contactThread =
-        [TSThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+        [TSThread getOrCreateThreadWithId:envelope.source transaction:transaction];
 
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }

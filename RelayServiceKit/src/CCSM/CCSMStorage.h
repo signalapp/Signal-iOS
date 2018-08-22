@@ -9,6 +9,17 @@
 #ifndef CCSMStorage_h
 #define CCSMStorage_h
 
+extern NSString *const CCSMStorageDatabaseCollection;
+extern NSString *const CCSMStorageKeyOrgName;
+extern NSString *const CCSMStorageKeyUserName;
+extern NSString *const CCSMStorageKeySessionToken;
+extern NSString *const CCSMStorageKeyUserInfo;
+extern NSString *const CCSMStorageKeyOrgInfo;
+extern NSString *const CCSMStorageKeyUsers;
+extern NSString *const CCSMStorageKeyTags;
+extern NSString *const CCSMStorageKeyTSServerURL;
+
+
 @interface CCSMStorage : NSObject
 
 @property (strong) NSString *textSecureURL;

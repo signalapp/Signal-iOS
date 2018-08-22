@@ -200,31 +200,35 @@ NSString *const kFLTSSURLKey = @"FLTSSURLKey";
 
 - (AFHTTPSessionManager *)CDNSessionManager
 {
-    if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@",
-            self.logTag,
-            self.censorshipConfiguration.domainFrontBaseURL);
-        return self.reflectorCDNSessionManager;
-    } else {
-        return self.defaultCDNSessionManager;
-    }
+    DDLogDebug(@"Cencorshipt circumvention not implemented.");
+    return nil;
+//    if (self.isCensorshipCircumventionActive) {
+//        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@",
+//            self.logTag,
+//            self.censorshipConfiguration.domainFrontBaseURL);
+//        return self.reflectorCDNSessionManager;
+//    } else {
+//        return self.defaultCDNSessionManager;
+//    }
 }
 
 - (AFHTTPSessionManager *)defaultCDNSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
-    OWSAssert(baseURL);
-    
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
-
-    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
-    
-    // Default acceptable content headers are rejected by AWS
-    sessionManager.responseSerializer.acceptableContentTypes = nil;
-
-    return sessionManager;
+    DDLogDebug(@"Cencorship circumvention not implemented.");
+    return nil;
+//    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
+//    OWSAssert(baseURL);
+//
+//    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+//    AFHTTPSessionManager *sessionManager =
+//        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+//
+//    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+//
+//    // Default acceptable content headers are rejected by AWS
+//    sessionManager.responseSerializer.acceptableContentTypes = nil;
+//
+//    return sessionManager;
 }
 
 - (AFHTTPSessionManager *)reflectorCDNSessionManager

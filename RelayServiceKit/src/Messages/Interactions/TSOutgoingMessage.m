@@ -145,7 +145,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     NSArray<NSString *> *_Nullable sentRecipients = [coder decodeObjectForKey:@"sentRecipients"];
 
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
-    __block BOOL isGroupThread = NO;
     // Our default recipient list is the current thread members.
     __block NSArray<NSString *> *recipientIds = @[];
     // To avoid deadlock while migrating these records, we use a dedicated
@@ -157,21 +156,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     [TSOutgoingMessage.dbMigrationConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         TSThread *thread = [self threadWithTransaction:transaction];
         recipientIds = [thread recipientIdentifiers];
-        isGroupThread = [thread isGroupThread];
     }];
 
     NSNumber *_Nullable wasDelivered = [coder decodeObjectForKey:@"wasDelivered"];
     _legacyWasDelivered = wasDelivered && wasDelivered.boolValue;
     BOOL wasDeliveredToContact = NO;
-    if (isGroupThread) {
-        // If we have a `sentRecipients` list, prefer that as it is more accurate.
-        if (sentRecipients) {
-            recipientIds = sentRecipients;
-        }
-    } else {
-        // Special-case messages in contact threads; if "was delivered", we know
-        // it was delivered to the contact.
-        wasDeliveredToContact = _legacyWasDelivered;
+    if (sentRecipients) {
+        recipientIds = sentRecipients;
     }
 
     NSString *_Nullable singleGroupRecipient = [coder decodeObjectForKey:@"singleGroupRecipient"];
@@ -198,11 +189,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             // If we have a delivery timestamp for this recipient, mark it as delivered.
             recipientState.state = OWSOutgoingMessageRecipientStateSent;
             recipientState.deliveryTimestamp = deliveryTimestamp;
-        } else if (wasDeliveredToContact) {
-            OWSAssert(!isGroupThread);
-            recipientState.state = OWSOutgoingMessageRecipientStateSent;
-            // Use message time as an estimate of delivery time.
-            recipientState.deliveryTimestamp = @(self.timestamp);
         } else if ([sentRecipients containsObject:recipientId]) {
             // If this recipient is in `sentRecipients`, mark it as sent.
             recipientState.state = OWSOutgoingMessageRecipientStateSent;
@@ -267,7 +253,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                       expiresInSeconds:expiresInSeconds
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
-                                                      groupMetaMessage:TSGroupMessageUnspecified
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil];
 }
@@ -283,7 +268,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                       expiresInSeconds:expiresInSeconds
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
-                                                      groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
                                                           contactShare:nil];
 }
@@ -295,7 +279,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                  expireStartedAt:(uint64_t)expireStartedAt
                                   isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
 {
@@ -312,19 +295,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     _hasSyncedTranscript = NO;
-
-    if ([thread isKindOfClass:TSGroupThread.class]) {
-        // Unless specified, we assume group messages are "Delivery" i.e. normal messages.
-        if (groupMetaMessage == TSGroupMessageUnspecified) {
-            _groupMetaMessage = TSGroupMessageDeliver;
-        } else {
-            _groupMetaMessage = groupMetaMessage;
-        }
-    } else {
-        OWSAssert(groupMetaMessage == TSGroupMessageUnspecified);
-        // Specifying a group meta message only makes sense for Group threads
-        _groupMetaMessage = TSGroupMessageUnspecified;
-    }
 
     _isVoiceMessage = isVoiceMessage;
 
@@ -825,44 +795,44 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
     [builder setExpireTimer:self.expiresInSeconds];
     
-    // Group Messages
-    BOOL attachmentWasGroupAvatar = NO;
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread = (TSGroupThread *)thread;
-        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-
-        switch (self.groupMetaMessage) {
-            case TSGroupMessageQuit:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeQuit];
-                break;
-            case TSGroupMessageUpdate:
-            case TSGroupMessageNew: {
-                if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
-                    attachmentWasGroupAvatar = YES;
-                    [groupBuilder setAvatar:[TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject]];
-                }
-
-                [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
-                [groupBuilder setName:gThread.groupModel.groupName];
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
-                break;
-            }
-            default:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
-                break;
-        }
-        [groupBuilder setId:gThread.groupModel.groupId];
-        [builder setGroup:groupBuilder.build];
-    }
+//    // Group Messages
+//    BOOL attachmentWasGroupAvatar = NO;
+//    if ([thread isKindOfClass:[TSGroupThread class]]) {
+//        TSGroupThread *gThread = (TSGroupThread *)thread;
+//        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+//
+//        switch (self.groupMetaMessage) {
+//            case TSGroupMessageQuit:
+//                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeQuit];
+//                break;
+//            case TSGroupMessageUpdate:
+//            case TSGroupMessageNew: {
+//                if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
+//                    attachmentWasGroupAvatar = YES;
+//                    [groupBuilder setAvatar:[TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject]];
+//                }
+//
+//                [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
+//                [groupBuilder setName:gThread.groupModel.groupName];
+//                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
+//                break;
+//            }
+//            default:
+//                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+//                break;
+//        }
+//        [groupBuilder setId:gThread.groupModel.groupId];
+//        [builder setGroup:groupBuilder.build];
+//    }
     
-    // Message Attachments
-    if (!attachmentWasGroupAvatar) {
-        NSMutableArray *attachments = [NSMutableArray new];
-        for (NSString *attachmentId in self.attachmentIds) {
-            [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
-        }
-        [builder setAttachmentsArray:attachments];
-    }
+//    // Message Attachments
+//    if (!attachmentWasGroupAvatar) {
+//        NSMutableArray *attachments = [NSMutableArray new];
+//        for (NSString *attachmentId in self.attachmentIds) {
+//            [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
+//        }
+//        [builder setAttachmentsArray:attachments];
+//    }
 
     // Quoted Reply
     OWSSignalServiceProtosDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;

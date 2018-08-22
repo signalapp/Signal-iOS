@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return The date of the last message or thread creation date.
  */
-- (nullable NSDate *)lastMessageDate;
+- (nonnull NSDate *)lastMessageDate;
 
 /**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Thread preview string.
  */
-- (nullable NSString *)lastMessageTextWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction
+- (nonnull NSString *)lastMessageTextWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(lastMessageText(transaction:));
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(nonnull YapDatabaseReadTransaction *)transaction

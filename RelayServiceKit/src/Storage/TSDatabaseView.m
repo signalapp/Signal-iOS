@@ -202,18 +202,18 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSThread *thread = (TSThread *)object;
 
-        if (thread.isGroupThread) {
-            // Do nothing; we never hide group threads.
-        } else if (thread.hasEverHadMessage) {
-            // Do nothing; we never hide threads that have ever had a message.
-        } else {
-            YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-            OWSAssert(viewTransaction);
-            NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
-            if (threadMessageCount < 1) {
-                return nil;
-            }
-        }
+//        if (thread.isGroupThread) {
+//            // Do nothing; we never hide group threads.
+//        } else if (thread.hasEverHadMessage) {
+//            // Do nothing; we never hide threads that have ever had a message.
+//        } else {
+//            YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+//            OWSAssert(viewTransaction);
+//            NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
+//            if (threadMessageCount < 1) {
+//                return nil;
+//            }
+//        }
 
         if (thread.archivalDate) {
             return ([self threadShouldBeInInbox:thread]) ? TSInboxGroup : TSArchiveGroup;

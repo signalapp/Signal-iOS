@@ -253,10 +253,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.viewItem.shouldShowSenderAvatar) {
         return NO;
     }
-    if (!self.viewItem.isGroupThread) {
-        OWSFail(@"%@ not a group thread.", self.logTag);
-        return NO;
-    }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
         OWSFail(@"%@ not an incoming message.", self.logTag);
         return NO;
@@ -294,10 +290,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     if (!self.viewItem.shouldShowSenderAvatar) {
-        return;
-    }
-    if (!self.viewItem.isGroupThread) {
-        OWSFail(@"%@ not a group thread.", self.logTag);
         return;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {

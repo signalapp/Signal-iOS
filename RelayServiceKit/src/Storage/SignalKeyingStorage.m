@@ -42,7 +42,8 @@
 }
 
 + (void)generateServerAuthPassword {
-    [self storeString:[[SecurityUtils generateRandomBytes:SAVED_PASSWORD_LENGTH] forKey:SAVED_PASSWORD_KEY] encodedAsBase64];
+    [self storeString:[[SecurityUtils generateRandomBytes:SAVED_PASSWORD_LENGTH] base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength]
+                forKey:SAVED_PASSWORD_KEY] ;
 }
 
 + (NSString *)serverAuthPassword {

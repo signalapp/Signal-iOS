@@ -40,7 +40,6 @@ FOUNDATION_EXPORT const unsigned char RelayMessagingVersionString[];
 #import <RelayMessaging/Release.h>
 #import <RelayMessaging/ScreenLockViewController.h>
 #import <RelayMessaging/SharingThreadPickerViewController.h>
-#import <RelayMessaging/SignalKeyingStorage.h>
 #import <RelayMessaging/TSUnreadIndicatorInteraction.h>
 #import <RelayMessaging/Theme.h>
 #import <RelayMessaging/ThreadUtil.h>

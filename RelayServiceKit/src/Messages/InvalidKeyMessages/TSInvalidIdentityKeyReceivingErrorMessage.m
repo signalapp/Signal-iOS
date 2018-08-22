@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                          withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSThread *contactThread =
-    [TSThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    [TSThread getOrCreateThreadWithId:envelope.source transaction:transaction];
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
     [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
                                                 inThread:contactThread

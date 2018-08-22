@@ -27,7 +27,6 @@
 
 
 NSString *const CCSMStorageDatabaseCollection = @"CCSMInformation";
-
 NSString *const CCSMStorageKeyOrgName = @"Organization Name";
 NSString *const CCSMStorageKeyUserName = @"User Name";
 NSString *const CCSMStorageKeySessionToken = @"Session Token";

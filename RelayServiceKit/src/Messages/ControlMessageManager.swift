@@ -159,13 +159,13 @@ class ControlMessageManager : NSObject
                                 
                                 infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
                                                                  in: thread,
-                                                                 messageType: TSInfoMessageType.typeConversationUpdate,
+                                                                 infoMessageType: TSInfoMessageType.typeConversationUpdate,
                                                                  customMessage: customMessage!)
                                 
                             } else {
                                 infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
                                                                  in: thread,
-                                                                 messageType: TSInfoMessageType.typeConversationUpdate)
+                                                                 infoMessageType: TSInfoMessageType.typeConversationUpdate)
                             }
                             
                             infoMessage?.save(with: transaction)
@@ -199,7 +199,7 @@ class ControlMessageManager : NSObject
                                                                 }
                                                                 let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
                                                                                                      in: thread,
-                                                                                                     messageType: TSInfoMessageType.typeConversationUpdate,
+                                                                                                     infoMessageType: TSInfoMessageType.typeConversationUpdate,
                                                                                                      customMessage: customMessage!)
                                                                 infoMessage.save(with: transaction)
                                                             }
@@ -219,7 +219,7 @@ class ControlMessageManager : NSObject
                                                                 }
                                                                 let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
                                                                                                      in: thread,
-                                                                                                     messageType: TSInfoMessageType.typeConversationUpdate,
+                                                                                                     infoMessageType: TSInfoMessageType.typeConversationUpdate,
                                                                                                      customMessage: customMessage!)
                                                                 infoMessage.save(with: transaction)
                                                             }
@@ -268,7 +268,7 @@ class ControlMessageManager : NSObject
                                                                         }
                                                                         let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
                                                                                                              in: thread,
-                                                                                                             messageType: TSInfoMessageType.typeConversationUpdate,
+                                                                                                             infoMessageType: TSInfoMessageType.typeConversationUpdate,
                                                                                                              customMessage: messageString!)
                                                                         infoMessage.save(with: transaction)
                                 }) { (error) in

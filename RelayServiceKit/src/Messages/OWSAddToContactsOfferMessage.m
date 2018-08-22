@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread contactId:(NSString *)contactId
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageAddToContactsOffer];
+    self = [super initWithTimestamp:timestamp inThread:thread infoMessageType:TSInfoMessageAddToContactsOffer];
 
     if (self) {
         _contactId = contactId;
