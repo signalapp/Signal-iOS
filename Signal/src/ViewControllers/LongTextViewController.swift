@@ -15,7 +15,7 @@ public class LongTextViewController: OWSViewController {
 
     let messageBody: String
 
-    var messageTextView: UITextView?
+    var messageTextView: UITextView!
 
     // MARK: Initializers
 
@@ -53,6 +53,8 @@ public class LongTextViewController: OWSViewController {
                                                       comment: "Title for the 'long text message' view.")
 
         createViews()
+
+        self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
     }
 
     // MARK: - Create Views
@@ -72,17 +74,17 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryColor
+        messageTextView.dataDetectorTypes = OWSAllowedDataDetectorTypes
         messageTextView.text = messageBody
 
         view.addSubview(messageTextView)
-        messageTextView.autoPinEdge(toSuperviewEdge: .leading)
-        messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
-        messageTextView.textContainerInset = UIEdgeInsets(top: 0, left: view.layoutMargins.left, bottom: 0, right: view.layoutMargins.right)
-        messageTextView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        messageTextView.autoPinEdge(toSuperviewEdge: .top)
+        messageTextView.autoPinEdge(toSuperviewMargin: .leading)
+        messageTextView.autoPinEdge(toSuperviewMargin: .trailing)
 
         let footer = UIToolbar()
         view.addSubview(footer)
-        footer.autoPinWidthToSuperview(withMargin: 0)
+        footer.autoPinWidthToSuperview()
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
         footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
