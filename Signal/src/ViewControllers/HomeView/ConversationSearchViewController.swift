@@ -60,7 +60,7 @@ class ConversationSearchViewController: UITableViewController {
 
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
-        tableView.separatorColor = Theme.hairlineColor
+        tableView.separatorColor = Theme.cellSeparatorColor
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())
@@ -278,10 +278,10 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard let view = self.tableView(tableView, viewForHeaderInSection: section) else {
+        guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
             return 0
         }
-        return view.height()
+        return UITableViewAutomaticDimension
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -294,7 +294,6 @@ class ConversationSearchViewController: UITableViewController {
         label.text = title
         label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         label.tag = section
-        label.sizeToFit()
 
         let hMargin: CGFloat = 15
         let vMargin: CGFloat = 4
@@ -303,7 +302,6 @@ class ConversationSearchViewController: UITableViewController {
         wrapper.addSubview(label)
         label.autoPinWidthToSuperview(withMargin: hMargin)
         label.autoPinHeightToSuperview(withMargin: vMargin)
-        wrapper.frame = CGRect(x: 0, y: 0, width: label.width() + 2 * hMargin, height: label.height() + 2 * vMargin)
 
         return wrapper
     }

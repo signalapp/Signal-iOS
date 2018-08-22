@@ -96,7 +96,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.view = UIView()
         let tableView = UITableView()
         self.tableView = tableView
-        self.tableView.separatorColor = Theme.hairlineColor
+        self.tableView.separatorColor = Theme.cellSeparatorColor
 
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()

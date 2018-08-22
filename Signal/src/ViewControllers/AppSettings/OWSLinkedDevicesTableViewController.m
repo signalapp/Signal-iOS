@@ -48,7 +48,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
-    self.tableView.separatorColor = Theme.hairlineColor;
+    self.tableView.separatorColor = Theme.cellSeparatorColor;
 
     [self.tableView applyScrollViewInsetsFix];
 

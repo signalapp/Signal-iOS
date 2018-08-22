@@ -124,7 +124,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)cellSeparatorColor
 {
-    return [UIColor colorWithWhite:0.78f alpha:1];
+    return Theme.hairlineColor;
 }
 
 + (UIColor *)conversationButtonBackgroundColor
