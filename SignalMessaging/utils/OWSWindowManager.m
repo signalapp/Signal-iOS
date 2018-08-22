@@ -406,37 +406,31 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         [self ensureCallViewWindowShown];
         [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
-    } else if (self.callViewController) {
-        // Show Root Window + "Return to Call".
-
-        [self ensureRootWindowShown];
-        [self ensureReturnToCallWindowShown];
-        [self ensureCallViewWindowHidden];
-        [self ensureScreenBlockWindowHidden];
-        if (self.menuActionsViewController) {
-            [self ensureMessageActionsWindowShown];
-        } else {
-            [self ensureMessageActionsWindowHidden];
-        }
-    } else if (self.menuActionsViewController) {
-        // Show Message Actions
-
-        [self ensureRootWindowShown];
-        [self ensureReturnToCallWindowHidden];
-        [self ensureCallViewWindowHidden];
-        [self ensureMessageActionsWindowShown];
-        [self ensureScreenBlockWindowHidden];
-
-        // Don't hide rootWindow so as not to dismiss keyboard.
-        OWSAssert(!self.rootWindow.isHidden);
     } else {
         // Show Root Window
 
         [self ensureRootWindowShown];
-        [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
-        [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
+
+        if (self.callViewController) {
+            // Add "Return to Call" banner
+
+            [self ensureReturnToCallWindowShown];
+        } else {
+            [self ensureReturnToCallWindowHidden];
+        }
+
+        if (self.menuActionsViewController) {
+            // Add "Message Actions" action sheet
+
+            [self ensureMessageActionsWindowShown];
+
+            // Don't hide rootWindow so as not to dismiss keyboard.
+            OWSAssert(!self.rootWindow.isHidden);
+        } else {
+            [self ensureMessageActionsWindowHidden];
+        }
     }
 }
 
