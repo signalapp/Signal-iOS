@@ -7,7 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * A minimal DDLog wrapper for swift.
  */
-NS_SWIFT_NAME(Logger)
 @interface OWSLogger : NSObject
 
 + (void)verbose:(NSString *)logString;
