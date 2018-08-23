@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSRegularExpression *)phoneRegex
 {
-    NSString *key = @"OWSScrubbingLogFormatter.phoneRegex";
-    NSRegularExpression *_Nullable regex = NSThread.currentThread.threadDictionary[key];
-    if (!regex) {
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         NSError *error;
         regex = [NSRegularExpression regularExpressionWithPattern:@"\\+\\d{7,12}(\\d{3})"
                                                           options:NSRegularExpressionCaseInsensitive
@@ -20,16 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
         if (error || !regex) {
             OWSFail(@"%@ could not compile regular expression: %@", self.logTag, error);
         }
-        NSThread.currentThread.threadDictionary[key] = regex;
-    }
+    });
     return regex;
 }
 
 - (NSRegularExpression *)dataRegex
 {
-    NSString *key = @"OWSScrubbingLogFormatter.dataRegex";
-    NSRegularExpression *_Nullable regex = NSThread.currentThread.threadDictionary[key];
-    if (!regex) {
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         NSError *error;
         regex = [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{6}( [\\da-f]{8})*>"
                                                           options:NSRegularExpressionCaseInsensitive
@@ -37,16 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
         if (error || !regex) {
             OWSFail(@"%@ could not compile regular expression: %@", self.logTag, error);
         }
-        NSThread.currentThread.threadDictionary[key] = regex;
-    }
+    });
     return regex;
 }
 
 - (NSRegularExpression *)ipAddressRegex
 {
-    NSString *key = @"OWSScrubbingLogFormatter.ipAddressRegex";
-    NSRegularExpression *_Nullable regex = NSThread.currentThread.threadDictionary[key];
-    if (!regex) {
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         // Match IPv4 and IPv6 addresses.
         //
         // NOTE: the second group matches the last "quad/hex?" of the IPv4/IPv6 address.
@@ -57,8 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (error || !regex) {
             OWSFail(@"%@ could not compile regular expression: %@", self.logTag, error);
         }
-        NSThread.currentThread.threadDictionary[key] = regex;
-    }
+    });
     return regex;
 }
 
