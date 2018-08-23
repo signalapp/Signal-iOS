@@ -90,9 +90,9 @@ final class CallKitCallManager: NSObject {
     private func requestTransaction(_ transaction: CXTransaction) {
         callController.request(transaction) { error in
             if let error = error {
-                Logger.error("\(self.logTag) Error requesting transaction: \(error)")
+                Logger.error("Error requesting transaction: \(error)")
             } else {
-                Logger.debug("\(self.logTag) Requested transaction successfully")
+                Logger.debug("Requested transaction successfully")
             }
         }
     }

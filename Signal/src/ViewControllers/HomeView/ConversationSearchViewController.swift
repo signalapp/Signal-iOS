@@ -122,17 +122,17 @@ class ConversationSearchViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: false)
 
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
-            owsFail("\(logTag) unknown section selected.")
+            owsFail("unknown section selected.")
             return
         }
 
         switch searchSection {
         case .noResults:
-            owsFail("\(logTag) shouldn't be able to tap 'no results' section")
+            owsFail("shouldn't be able to tap 'no results' section")
         case .conversations:
             let sectionResults = searchResultSet.conversations
             guard let searchResult = sectionResults[safe: indexPath.row] else {
-                owsFail("\(logTag) unknown row selected.")
+                owsFail("unknown row selected.")
                 return
             }
 
@@ -142,7 +142,7 @@ class ConversationSearchViewController: UITableViewController {
         case .contacts:
             let sectionResults = searchResultSet.contacts
             guard let searchResult = sectionResults[safe: indexPath.row] else {
-                owsFail("\(logTag) unknown row selected.")
+                owsFail("unknown row selected.")
                 return
             }
 
@@ -151,7 +151,7 @@ class ConversationSearchViewController: UITableViewController {
         case .messages:
             let sectionResults = searchResultSet.messages
             guard let searchResult = sectionResults[safe: indexPath.row] else {
-                owsFail("\(logTag) unknown row selected.")
+                owsFail("unknown row selected.")
                 return
             }
 
@@ -247,7 +247,7 @@ class ConversationSearchViewController: UITableViewController {
                 if let messageDate = searchResult.messageDate {
                     overrideDate = messageDate
                 } else {
-                    owsFail("\(ConversationSearchViewController.logTag()) message search result is missing message timestamp")
+                    owsFail("message search result is missing message timestamp")
                 }
 
                 // Note that we only use the snippet for message results,
@@ -260,7 +260,7 @@ class ConversationSearchViewController: UITableViewController {
                                                             NSAttributedStringKey.foregroundColor: Theme.secondaryColor
                     ])
                 } else {
-                    owsFail("\(ConversationSearchViewController.logTag()) message search result is missing message snippet")
+                    owsFail("message search result is missing message snippet")
                 }
             }
 

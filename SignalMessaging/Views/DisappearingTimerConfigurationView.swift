@@ -28,20 +28,20 @@ public class DisappearingTimerConfigurationView: UIView {
 
     override public var frame: CGRect {
         didSet {
-            Logger.verbose("\(logTag) in \(#function): \(oldValue) -> \(frame)")
+            Logger.verbose("\(oldValue) -> \(frame)")
         }
     }
 
     override public var bounds: CGRect {
         didSet {
-            Logger.verbose("\(logTag) in \(#function): \(oldValue) -> \(bounds)")
+            Logger.verbose("\(oldValue) -> \(bounds)")
         }
     }
 
     override public func layoutSubviews() {
         let oldFrame = self.frame
         super.layoutSubviews()
-        Logger.verbose("\(logTag) in \(#function). Frame: \(oldFrame) -> \(self.frame)")
+        Logger.verbose("Frame: \(oldFrame) -> \(self.frame)")
     }
 
     private let imageView: UIImageView
@@ -97,7 +97,7 @@ public class DisappearingTimerConfigurationView: UIView {
 
     @objc
     func pressHandler(_ gestureRecognizer: UILongPressGestureRecognizer) {
-        Logger.verbose("\(self.logTag) in \(#function)")
+        Logger.verbose("")
 
         // handle touch down and touch up events separately
         if gestureRecognizer.state == .began {

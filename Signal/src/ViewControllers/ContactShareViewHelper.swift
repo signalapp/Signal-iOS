@@ -33,21 +33,21 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     @objc
     public func sendMessage(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         presentThreadAndPeform(action: .compose, contactShare: contactShare, fromViewController: fromViewController)
     }
 
     @objc
     public func audioCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         presentThreadAndPeform(action: .audioCall, contactShare: contactShare, fromViewController: fromViewController)
     }
 
     @objc
     public func videoCall(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         presentThreadAndPeform(action: .videoCall, contactShare: contactShare, fromViewController: fromViewController)
     }
@@ -57,7 +57,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         // want to let the user select if there's more than one.
         let phoneNumbers = contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
         guard phoneNumbers.count > 0 else {
-            owsFail("\(logTag) missing Signal recipient id.")
+            owsFail("missing Signal recipient id.")
             return
         }
         guard phoneNumbers.count > 1 else {
@@ -73,16 +73,16 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     @objc
     public func showInviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard MFMessageComposeViewController.canSendText() else {
-            Logger.info("\(logTag) Device cannot send text")
+            Logger.info("Device cannot send text")
             OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
             return
         }
         let phoneNumbers = contactShare.e164PhoneNumbers()
         guard phoneNumbers.count > 0 else {
-            owsFail("\(logTag) no phone numbers.")
+            owsFail("no phone numbers.")
             return
         }
 
@@ -93,7 +93,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     @objc
     func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
@@ -128,13 +128,13 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     func didPressCreateNewContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         presentNewContactView(contactShare: contactShare, fromViewController: fromViewController)
     }
 
     func didPressAddToExistingContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         presentSelectAddToExistingContactView(contactShare: contactShare, fromViewController: fromViewController)
     }
@@ -143,12 +143,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         guard contactsManager.supportsContactEditing else {
-            owsFail("\(logTag) Contact editing not supported")
+            owsFail("Contact editing not supported")
             return
         }
 
         guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
-            owsFail("\(logTag) Could not derive system contact.")
+            owsFail("Could not derive system contact.")
             return
         }
 
@@ -172,7 +172,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         guard contactsManager.supportsContactEditing else {
-            owsFail("\(logTag) Contact editing not supported")
+            owsFail("Contact editing not supported")
             return
         }
 
@@ -182,7 +182,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         }
 
         guard let navigationController = fromViewController.navigationController else {
-            owsFail("\(logTag) missing navigationController")
+            owsFail("missing navigationController")
             return
         }
 
@@ -193,10 +193,10 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     // MARK: - CNContactViewControllerDelegate
 
     @objc public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard let delegate = delegate else {
-            owsFail("\(logTag) missing delegate")
+            owsFail("missing delegate")
             return
         }
 
@@ -204,10 +204,10 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     @objc public func didFinishEditingContact() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard let delegate = delegate else {
-            owsFail("\(logTag) missing delegate")
+            owsFail("missing delegate")
             return
         }
 

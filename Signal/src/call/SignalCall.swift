@@ -86,7 +86,7 @@ protocol CallObserver: class {
     var state: CallState {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("\(logTag) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
+            Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
 
             // Update connectedDate
             if case .connected = self.state {
@@ -108,7 +108,7 @@ protocol CallObserver: class {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.debug("\(logTag) muted changed: \(oldValue) -> \(self.isMuted)")
+            Logger.debug("muted changed: \(oldValue) -> \(self.isMuted)")
 
             for observer in observers {
                 observer.value?.muteDidChange(call: self, isMuted: isMuted)
@@ -121,7 +121,7 @@ protocol CallObserver: class {
     var audioSource: AudioSource? = nil {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("\(logTag) audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
+            Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
 
             for observer in observers {
                 observer.value?.audioSourceDidChange(call: self, audioSource: audioSource)
@@ -140,7 +140,7 @@ protocol CallObserver: class {
     var isOnHold = false {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("\(logTag) isOnHold changed: \(oldValue) -> \(self.isOnHold)")
+            Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
             for observer in observers {
                 observer.value?.holdDidChange(call: self, isOnHold: isOnHold)

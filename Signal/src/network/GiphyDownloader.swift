@@ -60,7 +60,7 @@ class GiphyAssetSegment: NSObject {
 
     public func append(data: Data) {
         guard state == .downloading else {
-            owsFail("\(logTag) appending data in invalid state: \(state)")
+            owsFail("appending data in invalid state: \(state)")
             return
         }
 
@@ -69,11 +69,11 @@ class GiphyAssetSegment: NSObject {
 
     public func mergeData(assetData: inout Data) -> Bool {
         guard state == .complete else {
-            owsFail("\(logTag) merging data in invalid state: \(state)")
+            owsFail("merging data in invalid state: \(state)")
             return false
         }
         guard UInt(segmentData.count) == segmentLength else {
-            owsFail("\(logTag) segment data length: \(segmentData.count) doesn't match expected length: \(segmentLength)")
+            owsFail("segment data length: \(segmentData.count) doesn't match expected length: \(segmentLength)")
             return false
         }
 
@@ -152,7 +152,7 @@ enum GiphyAssetRequestState: UInt {
 
         let contentLength = UInt(self.contentLength)
         guard contentLength > 0 else {
-            owsFail("\(logTag) rendition missing contentLength")
+            owsFail("rendition missing contentLength")
             requestDidFail()
             return 0
         }
@@ -206,7 +206,7 @@ enum GiphyAssetRequestState: UInt {
 
         for segment in segments {
             guard segment.state != .failed else {
-                owsFail("\(logTag) unexpected failed segment.")
+                owsFail("unexpected failed segment.")
                 continue
             }
             if segment.state == state {
@@ -228,7 +228,7 @@ enum GiphyAssetRequestState: UInt {
         var result: UInt = 0
         for segment in segments {
             guard segment.state != .failed else {
-                owsFail("\(logTag) unexpected failed segment.")
+                owsFail("unexpected failed segment.")
                 continue
             }
             if segment.state == .downloading {
@@ -254,26 +254,26 @@ enum GiphyAssetRequestState: UInt {
         var assetData = Data()
         for segment in segments {
             guard segment.state == .complete else {
-                owsFail("\(logTag) unexpected incomplete segment.")
+                owsFail("unexpected incomplete segment.")
                 return nil
             }
             guard segment.totalDataSize() > 0 else {
-                owsFail("\(logTag) could not merge empty segment.")
+                owsFail("could not merge empty segment.")
                 return nil
             }
             guard segment.mergeData(assetData: &assetData) else {
-                owsFail("\(logTag) failed to merge segment data.")
+                owsFail("failed to merge segment data.")
                 return nil
             }
         }
 
         guard assetData.count == contentLength else {
-            owsFail("\(logTag) asset data has unexpected length.")
+            owsFail("asset data has unexpected length.")
             return nil
         }
 
         guard assetData.count > 0 else {
-            owsFail("\(logTag) could not write empty asset to disk.")
+            owsFail("could not write empty asset to disk.")
             return nil
         }
 
@@ -281,14 +281,14 @@ enum GiphyAssetRequestState: UInt {
         let fileName = (NSUUID().uuidString as NSString).appendingPathExtension(fileExtension)!
         let filePath = (gifFolderPath as NSString).appendingPathComponent(fileName)
 
-        Logger.verbose("\(logTag) filePath: \(filePath).")
+        Logger.verbose("filePath: \(filePath).")
 
         do {
             try assetData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
             let asset = GiphyAsset(rendition: rendition, filePath: filePath)
             return asset
         } catch let error as NSError {
-            owsFail("\(GiphyAsset.logTag()) file write failed: \(filePath), \(error)")
+            owsFail("file write failed: \(filePath), \(error)")
             return nil
         }
     }
@@ -358,7 +358,7 @@ enum GiphyAssetRequestState: UInt {
                 let fileManager = FileManager.default
                 try fileManager.removeItem(atPath: filePathCopy)
             } catch let error as NSError {
-                owsFail("\(GiphyAsset.logTag()) file cleanup failed: \(filePathCopy), \(error)")
+                owsFail("file cleanup failed: \(filePathCopy), \(error)")
             }
         }
     }
@@ -449,7 +449,7 @@ extension URLSessionTask {
 
         if let asset = assetMap.get(key: rendition.url) {
             // Synchronous cache hit.
-            Logger.verbose("\(self.logTag) asset cache hit: \(rendition.url)")
+            Logger.verbose("asset cache hit: \(rendition.url)")
             success(nil, asset)
             return nil
         }
@@ -457,7 +457,7 @@ extension URLSessionTask {
         // Cache miss.
         //
         // Asset requests are done queued and performed asynchronously.
-        Logger.verbose("\(self.logTag) asset cache miss: \(rendition.url)")
+        Logger.verbose("asset cache miss: \(rendition.url)")
         let assetRequest = GiphyAssetRequest(rendition: rendition,
                                              priority: priority,
                                              success: success,
@@ -474,7 +474,7 @@ extension URLSessionTask {
     public func cancelAllRequests() {
         AssertIsOnMainThread()
 
-        Logger.verbose("\(self.logTag) cancelAllRequests")
+        Logger.verbose("cancelAllRequests")
 
         self.assetRequestQueue.forEach { $0.cancel() }
         self.assetRequestQueue = []
@@ -534,7 +534,7 @@ extension URLSessionTask {
         AssertIsOnMainThread()
 
         guard assetRequestQueue.contains(assetRequest) else {
-            Logger.warn("\(logTag) could not remove asset request from queue: \(assetRequest.rendition.url)")
+            Logger.warn("could not remove asset request from queue: \(assetRequest.rendition.url)")
             return
         }
 
@@ -592,7 +592,7 @@ extension URLSessionTask {
 
             let task = giphyDownloadSession.dataTask(with: request, completionHandler: { data, response, error -> Void in
                 if let data = data, data.count > 0 {
-                    owsFail("\(self.logTag) HEAD request has unexpected body: \(data.count).")
+                    owsFail("HEAD request has unexpected body: \(data.count).")
                 }
                 self.handleAssetSizeResponse(assetRequest: assetRequest, response: response, error: error)
             })
@@ -602,7 +602,7 @@ extension URLSessionTask {
             // Start a download task.
 
             guard let assetSegment = assetRequest.firstWaitingSegment() else {
-                owsFail("\(logTag) queued asset request does not have a waiting segment.")
+                owsFail("queued asset request does not have a waiting segment.")
                 return
             }
             assetSegment.state = .downloading
@@ -629,25 +629,25 @@ extension URLSessionTask {
             return
         }
         guard let httpResponse = response as? HTTPURLResponse else {
-            owsFail("\(self.logTag) Asset size response is invalid.")
+            owsFail("Asset size response is invalid.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard let contentLengthString = httpResponse.allHeaderFields["Content-Length"] as? String else {
-            owsFail("\(self.logTag) Asset size response is missing content length.")
+            owsFail("Asset size response is missing content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard let contentLength = Int(contentLengthString) else {
-            owsFail("\(self.logTag) Asset size response has unparsable content length.")
+            owsFail("Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
         }
         guard contentLength > 0 else {
-            owsFail("\(self.logTag) Asset size response has invalid content length.")
+            owsFail("Asset size response has invalid content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)
             return
@@ -750,23 +750,23 @@ extension URLSessionTask {
             return
         }
         if let error = error {
-            Logger.error("\(logTag) download failed with error: \(error)")
+            Logger.error("download failed with error: \(error)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         guard let httpResponse = task.response as? HTTPURLResponse else {
-            Logger.error("\(logTag) missing or unexpected response: \(String(describing: task.response))")
+            Logger.error("missing or unexpected response: \(String(describing: task.response))")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         let statusCode = httpResponse.statusCode
         guard statusCode >= 200 && statusCode < 400 else {
-            Logger.error("\(logTag) response has invalid status code: \(statusCode)")
+            Logger.error("response has invalid status code: \(statusCode)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
         guard assetSegment.totalDataSize() == assetSegment.segmentLength else {
-            Logger.error("\(logTag) segment is missing data: \(statusCode)")
+            Logger.error("segment is missing data: \(statusCode)")
             segmentRequestDidFail(assetRequest: assetRequest, assetSegment: assetSegment)
             return
         }
@@ -801,7 +801,7 @@ extension URLSessionTask {
             // Don't back up Giphy downloads.
             OWSFileSystem.protectFileOrFolder(atPath: dirPath)
         } catch let error as NSError {
-            owsFail("\(GiphyAsset.logTag()) ensureTempFolder failed: \(dirPath), \(error)")
+            owsFail("ensureTempFolder failed: \(dirPath), \(error)")
             gifFolderPath = tempDirPath
         }
     }

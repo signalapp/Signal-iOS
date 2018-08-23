@@ -65,7 +65,7 @@
                     return try fileManager.contentsOfDirectory(at: fileURL,
                                                                includingPropertiesForKeys: resourceKeys)
                 } catch {
-                    owsFail("\(self.logTag) contentsOfDirectory(\(fileURL) failed with error: \(error)")
+                    owsFail("contentsOfDirectory(\(fileURL) failed with error: \(error)")
                     return []
                 }
             }()
@@ -74,13 +74,13 @@
                 let fileIcon: String = {
                     do {
                         guard let isDirectory = try fileInDirectory.resourceValues(forKeys: Set(resourceKeys)).isDirectory else {
-                            owsFail("\(logTag) unable to check isDirectory for file: \(fileInDirectory)")
+                            owsFail("unable to check isDirectory for file: \(fileInDirectory)")
                             return ""
                         }
 
                         return isDirectory ? "📁 " : ""
                     } catch {
-                        owsFail("\(logTag) failed to check isDirectory for file: \(fileInDirectory) with error: \(error)")
+                        owsFail("failed to check isDirectory for file: \(fileInDirectory) with error: \(error)")
                         return ""
                     }
                 }()
@@ -107,7 +107,7 @@
                     }
                 }
             } catch {
-                owsFail("\(logTag) failed getting attributes for file at path: \(fileURL)")
+                owsFail("failed getting attributes for file at path: \(fileURL)")
                 return []
             }
         }()
@@ -207,12 +207,12 @@
                 }
 
                 OWSAlerts.showConfirmationAlert(title: "Delete \(strongSelf.fileURL.path)?") { _ in
-                    Logger.debug("\(strongSelf.logTag) deleting file at \(strongSelf.fileURL.path)")
+                    Logger.debug("deleting file at \(strongSelf.fileURL.path)")
                     do {
                         try strongSelf.fileManager.removeItem(atPath: strongSelf.fileURL.path)
                         strongSelf.navigationController?.popViewController(animated: true)
                     } catch {
-                        owsFail("\(strongSelf.logTag) failed to remove item: \(strongSelf.fileURL) with error: \(error)")
+                        owsFail("failed to remove item: \(strongSelf.fileURL) with error: \(error)")
                     }
                 }
             },
@@ -248,7 +248,7 @@
                         let attributes = try strongSelf.fileManager.attributesOfItem(atPath: fileURL.path)
                         return attributes[FileAttributeKey.protectionKey] as? FileProtectionType
                     } catch {
-                        owsFail("\(strongSelf.logTag) failed to get current file protection for file: \(fileURL)")
+                        owsFail("failed to get current file protection for file: \(fileURL)")
                         return nil
                     }
                 }()
@@ -260,14 +260,14 @@
                 let protections: [FileProtectionType] = [.none, .complete, .completeUnlessOpen, .completeUntilFirstUserAuthentication]
                 protections.forEach { (protection: FileProtectionType) in
                     actionSheet.addAction(UIAlertAction(title: "\(protection.rawValue.replacingOccurrences(of: "NSFile", with: ""))", style: .default) { (_: UIAlertAction) in
-                        Logger.debug("\(strongSelf.logTag) chose protection: \(protection) for file: \(fileURL)")
+                        Logger.debug("chose protection: \(protection) for file: \(fileURL)")
                         let fileAttributes: [FileAttributeKey: Any] = [.protectionKey: protection]
                         do {
                             try strongSelf.fileManager.setAttributes(fileAttributes, ofItemAtPath: strongSelf.fileURL.path)
-                            Logger.debug("\(strongSelf.logTag) updated file protection at path:\(fileURL.path) to: \(protection.rawValue)")
+                            Logger.debug("updated file protection at path:\(fileURL.path) to: \(protection.rawValue)")
                             strongSelf.updateContents()
                         } catch {
-                            owsFail("\(strongSelf.logTag) failed to update file protection at path:\(fileURL.path) with error: \(error)")
+                            owsFail("failed to update file protection at path:\(fileURL.path) with error: \(error)")
                         }
                     })
                 }
@@ -301,7 +301,7 @@
 
                     let newPath = strongSelf.fileURL.appendingPathComponent(inputString).path
 
-                    Logger.debug("\(strongSelf.logTag) creating file at \(newPath)")
+                    Logger.debug("creating file at \(newPath)")
                     strongSelf.fileManager.createFile(atPath: newPath, contents: nil)
 
                     strongSelf.updateContents()
@@ -339,12 +339,12 @@
 
                     let newPath = strongSelf.fileURL.appendingPathComponent(inputString).path
 
-                    Logger.debug("\(strongSelf.logTag) creating dir at \(newPath)")
+                    Logger.debug("creating dir at \(newPath)")
                     do {
                         try strongSelf.fileManager.createDirectory(atPath: newPath, withIntermediateDirectories: false)
                         strongSelf.updateContents()
                     } catch {
-                        owsFail("\(strongSelf.logTag) Failed to create dir: \(newPath) with error: \(error)")
+                        owsFail("Failed to create dir: \(newPath) with error: \(error)")
                     }
                 })
 

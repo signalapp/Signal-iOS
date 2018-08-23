@@ -37,7 +37,7 @@ public class OWSAudioSession: NSObject {
     // appropriate for foreground sound effects.
     @objc
     public func startAmbientAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
@@ -45,21 +45,21 @@ public class OWSAudioSession: NSObject {
         startAudioActivity(audioActivity)
         guard currentActivities.count == 1 else {
             // We don't want to clobber the audio capabilities configured by (e.g.) media playback or an in-progress call
-            Logger.info("\(logTag) in \(#function) not touching audio session since another currentActivity exists.")
+            Logger.info("not touching audio session since another currentActivity exists.")
             return
         }
 
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryAmbient)
         } catch {
-            owsFail("\(logTag) in \(#function) failed with error: \(error)")
+            owsFail("failed with error: \(error)")
         }
     }
 
     // Ignores hardware mute switch, plays through external speaker
     @objc
     public func startPlaybackAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
@@ -69,13 +69,13 @@ public class OWSAudioSession: NSObject {
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
-            owsFail("\(logTag) in \(#function) failed with error: \(error)")
+            owsFail("failed with error: \(error)")
         }
     }
 
     @objc
     public func startRecordingAudioActivity(_ audioActivity: AudioActivity) -> Bool {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
@@ -88,14 +88,14 @@ public class OWSAudioSession: NSObject {
             try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
             return true
         } catch {
-            owsFail("\(logTag) in \(#function) failed with error: \(error)")
+            owsFail("failed with error: \(error)")
             return false
         }
     }
 
     @objc
     public func startAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("\(logTag) in \(#function) with \(audioActivity)")
+        Logger.debug("with \(audioActivity)")
 
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
@@ -105,7 +105,7 @@ public class OWSAudioSession: NSObject {
 
     @objc
     public func endAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("\(logTag) in \(#function) with audioActivity: \(audioActivity)")
+        Logger.debug("with audioActivity: \(audioActivity)")
 
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
@@ -133,7 +133,7 @@ public class OWSAudioSession: NSObject {
                 // Normally we should be explicitly stopping an audio activity, but this allows
                 // for recovery if the owner of the AudioAcivity was GC'd without ending it's
                 // audio activity
-                Logger.warn("\(logTag) an old activity has been gc'd")
+                Logger.warn("an old activity has been gc'd")
                 return nil
             }
 
@@ -142,7 +142,7 @@ public class OWSAudioSession: NSObject {
         }
 
         guard currentActivities.isEmpty else {
-            Logger.debug("\(logTag) not deactivating due to currentActivities: \(currentActivities)")
+            Logger.debug("not deactivating due to currentActivities: \(currentActivities)")
             return
         }
 
@@ -151,7 +151,7 @@ public class OWSAudioSession: NSObject {
             // By notifying when we deactivate, the other app can resume playback.
             try avAudioSession.setActive(false, with: [.notifyOthersOnDeactivation])
         } catch {
-            owsFail("\(logTag) in \(#function) failed with error: \(error)")
+            owsFail("failed with error: \(error)")
         }
     }
 
@@ -178,7 +178,7 @@ public class OWSAudioSession: NSObject {
      */
     @objc
     public func configureRTCAudio() {
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
         rtcAudioSession.useManualAudio = true
     }
 

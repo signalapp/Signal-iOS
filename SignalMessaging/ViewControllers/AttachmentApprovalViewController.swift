@@ -67,7 +67,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         let navController = OWSNavigationController(rootViewController: vc)
 
         guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
-            owsFail("\(self.logTag) in \(#function) navigationBar was nil or unexpected class")
+            owsFail("navigationBar was nil or unexpected class")
             return navController
         }
         navigationBar.makeClear()
@@ -76,7 +76,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     override public func viewWillLayoutSubviews() {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         super.viewWillLayoutSubviews()
 
         // e.g. if flipping to/from landscape
@@ -84,22 +84,20 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     override public func viewWillAppear(_ animated: Bool) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         super.viewWillAppear(animated)
 
         CurrentAppContext().setStatusBarHidden(true, animated: animated)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
-        Logger.debug("\(logTag) in \(#function)")
-        DispatchQueue.global().async {
-            AssertIsOnMainThread()
-        }
+        Logger.debug("")
+
         super.viewDidAppear(animated)
     }
 
     override public func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         super.viewWillDisappear(animated)
 
         // Since this VC is being dismissed, the "show status bar" animation would feel like
@@ -273,15 +271,15 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     // MARK: Video
 
     private func playVideo() {
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
 
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("\(logTag) video player was unexpectedly nil")
+            owsFail("video player was unexpectedly nil")
             return
         }
 
         guard let playVideoButton = self.playVideoButton else {
-            owsFail("\(logTag) playVideoButton was unexpectedly nil")
+            owsFail("playVideoButton was unexpectedly nil")
             return
         }
         UIView.animate(withDuration: 0.1) {
@@ -292,13 +290,13 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     private func pauseVideo() {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("\(logTag) video player was unexpectedly nil")
+            owsFail("video player was unexpectedly nil")
             return
         }
 
         videoPlayer.pause()
         guard let playVideoButton = self.playVideoButton else {
-            owsFail("\(logTag) playVideoButton was unexpectedly nil")
+            owsFail("playVideoButton was unexpectedly nil")
             return
         }
         UIView.animate(withDuration: 0.1) {
@@ -309,7 +307,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     @objc
     public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
         guard let playVideoButton = self.playVideoButton else {
-            owsFail("\(logTag) playVideoButton was unexpectedly nil")
+            owsFail("playVideoButton was unexpectedly nil")
             return
         }
 
@@ -320,7 +318,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("\(logTag) video player was unexpectedly nil")
+            owsFail("video player was unexpectedly nil")
             return
         }
         videoPlayer.pause()
@@ -328,7 +326,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("\(logTag) video player was unexpectedly nil")
+            owsFail("video player was unexpectedly nil")
             return
         }
 
@@ -337,7 +335,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("\(logTag) video player was unexpectedly nil")
+            owsFail("video player was unexpectedly nil")
             return
         }
 
@@ -414,12 +412,12 @@ extension AttachmentApprovalViewController: UIScrollViewDelegate {
     }
 
     fileprivate func updateMinZoomScaleForSize(_ size: CGSize) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         // Ensure bounds have been computed
         mediaMessageView.layoutIfNeeded()
         guard mediaMessageView.bounds.width > 0, mediaMessageView.bounds.height > 0 else {
-            Logger.warn("\(logTag) bad bounds in \(#function)")
+            Logger.warn("bad bounds")
             return
         }
 
@@ -644,7 +642,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
 
         guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
-            Logger.debug("\(self.logTag) in \(#function) long text was truncated")
+            Logger.debug("long text was truncated")
             self.lengthLimitLabel.isHidden = false
 
             // `range` represents the section of the existing text we will replace. We can re-use that space.
@@ -689,7 +687,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
 
         if newHeight != self.textViewHeight {
-            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
+            Logger.debug("TextView height changed: \(self.textViewHeight) -> \(newHeight)")
             self.textViewHeight = newHeight
             self.textViewHeightConstraint?.constant = textViewHeight
             self.invalidateIntrinsicContentSize()

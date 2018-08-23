@@ -35,7 +35,7 @@ public struct MediaGalleryItem: Equatable, Hashable {
 
     var thumbnailImage: UIImage {
         guard let image = attachmentStream.thumbnailImage() else {
-            owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment thumbnail")
+            owsFail("unexpectedly unable to build attachment thumbnail")
             return UIImage()
         }
 
@@ -44,7 +44,7 @@ public struct MediaGalleryItem: Equatable, Hashable {
 
     var fullSizedImage: UIImage {
         guard let image = attachmentStream.image() else {
-            owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment image")
+            owsFail("unexpectedly unable to build attachment image")
             return UIImage()
         }
 
@@ -199,7 +199,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     private let fetchRangeSize: UInt = 10
 
     deinit {
-        Logger.debug("\(logTag) deinit")
+        Logger.debug("deinit")
     }
 
     @objc
@@ -224,17 +224,17 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
     // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
     override public var canBecomeFirstResponder: Bool {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         return true
     }
 
     override public func becomeFirstResponder() -> Bool {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         return super.becomeFirstResponder()
     }
 
     override public func resignFirstResponder() -> Bool {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         return super.resignFirstResponder()
     }
 
@@ -282,7 +282,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         }
 
         guard let initialDetailItem = galleryItem else {
-            owsFail("\(logTag) in \(#function) unexpectedly failed to build initialDetailItem.")
+            owsFail("unexpectedly failed to build initialDetailItem.")
             return
         }
 
@@ -329,7 +329,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         self.view.alpha = 0.0
 
         guard let detailView = pageViewController.view else {
-            owsFail("\(logTag) in \(#function) detailView was unexpectedly nil")
+            owsFail("detailView was unexpectedly nil")
             return
         }
 
@@ -454,7 +454,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
             //
 
             guard let pageViewController = self.pageViewController else {
-                owsFail("\(logTag) in \(#function) pageViewController was unexpectedly nil")
+                owsFail("pageViewController was unexpectedly nil")
                 self.dismiss(animated: true)
 
                 return
@@ -473,7 +473,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         UIApplication.shared.isStatusBarHidden = false
 
         guard let detailView = mediaPageViewController.view else {
-            owsFail("\(logTag) in \(#function) detailView was unexpectedly nil")
+            owsFail("detailView was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: false, completion: completion)
             return
         }
@@ -520,7 +520,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                            options: .curveEaseInOut,
                            animations: {
                             guard let replacingView = self.replacingView else {
-                                owsFail("\(self.logTag) in \(#function) replacingView was unexpectedly nil")
+                                owsFail("replacingView was unexpectedly nil")
                                 self.presentingViewController?.dismiss(animated: false, completion: completion)
                                 return
                             }
@@ -533,7 +533,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
             })
         } else {
             guard let replacingView = self.replacingView else {
-                owsFail("\(self.logTag) in \(#function) replacingView was unexpectedly nil")
+                owsFail("replacingView was unexpectedly nil")
                 self.presentingViewController?.dismiss(animated: false, completion: completion)
                 return
             }
@@ -549,12 +549,12 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         }
 
         guard let originRect = self.originRect else {
-            owsFail("\(logTag) in \(#function) originRect was unexpectedly nil")
+            owsFail("originRect was unexpectedly nil")
             return
         }
 
         guard let presentationSuperview = self.presentationView.superview else {
-            owsFail("\(logTag) in \(#function) presentationView.superview was unexpectedly nil")
+            owsFail("presentationView.superview was unexpectedly nil")
             return
         }
 
@@ -613,7 +613,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
     func buildGalleryItem(message: TSMessage, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = message.attachment(with: transaction) as? TSAttachmentStream else {
-            owsFail("\(self.logTag) in \(#function) attachment was unexpectedly empty")
+            owsFail("attachment was unexpectedly empty")
             return nil
         }
 
@@ -623,7 +623,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     // Range instead of indexSet since it's contiguous?
     var fetchedIndexSet = IndexSet() {
         didSet {
-            Logger.debug("\(logTag) in \(#function) \(oldValue) -> \(fetchedIndexSet)")
+            Logger.debug("\(oldValue) -> \(fetchedIndexSet)")
         }
     }
 
@@ -670,7 +670,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
                 let requestSet = IndexSet(integersIn: requestRange)
                 guard !self.fetchedIndexSet.contains(integersIn: requestSet) else {
-                    Logger.debug("\(self.logTag) in \(#function) all requested messages have already been loaded.")
+                    Logger.debug("all requested messages have already been loaded.")
                     return
                 }
 
@@ -682,21 +682,21 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                 let isFetchingEdgeOfGallery = (self.fetchedIndexSet.count - unfetchedSet.count) < requestSet.count
 
                 guard isSubstantialRequest || isFetchingEdgeOfGallery else {
-                    Logger.debug("\(self.logTag) in \(#function) ignoring small fetch request: \(unfetchedSet.count)")
+                    Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
                     return
                 }
 
-                Logger.debug("\(self.logTag) in \(#function) fetching set: \(unfetchedSet)")
+                Logger.debug("fetching set: \(unfetchedSet)")
                 let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
                 self.mediaGalleryFinder.enumerateMediaMessages(range: nsRange, transaction: transaction) { (message: TSMessage) in
 
                     guard !self.deletedMessages.contains(message) else {
-                        Logger.debug("\(self.logTag) skipping \(message) which has been deleted.")
+                        Logger.debug("skipping \(message) which has been deleted.")
                         return
                     }
 
                     guard let item: MediaGalleryItem = self.buildGalleryItem(message: message, transaction: transaction) else {
-                        owsFail("\(self.logTag) in \(#function) unexpectedly failed to buildGalleryItem")
+                        owsFail("unexpectedly failed to buildGalleryItem")
                         return
                     }
 
@@ -775,7 +775,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
         AssertIsOnMainThread()
 
-        Logger.info("\(logTag) in \(#function) with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
+        Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 
         deletedGalleryItems.formUnion(items)
         dataSourceDelegates.forEach { $0.value?.mediaGalleryDataSource(self, willDelete: items, initiatedBy: initiatedBy) }
@@ -795,40 +795,40 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         for item in items {
             guard let itemIndex = galleryItems.index(of: item) else {
-                owsFail("\(logTag) in \(#function) removing unknown item.")
+                owsFail("removing unknown item.")
                 return
             }
 
             self.galleryItems.remove(at: itemIndex)
 
             guard let sectionIndex = sectionDates.index(where: { $0 == item.galleryDate }) else {
-                owsFail("\(logTag) in \(#function) item with unknown date.")
+                owsFail("item with unknown date.")
                 return
             }
 
             guard var sectionItems = self.sections[item.galleryDate] else {
-                owsFail("\(logTag) in \(#function) item with unknown section")
+                owsFail("item with unknown section")
                 return
             }
 
             guard let sectionRowIndex = sectionItems.index(of: item) else {
-                owsFail("\(logTag) in \(#function) item with unknown sectionRowIndex")
+                owsFail("item with unknown sectionRowIndex")
                 return
             }
 
             // We need to calculate the index of the deleted item with respect to it's original position.
             guard let originalSectionIndex = originalSectionDates.index(where: { $0 == item.galleryDate }) else {
-                owsFail("\(logTag) in \(#function) item with unknown date.")
+                owsFail("item with unknown date.")
                 return
             }
 
             guard let originalSectionItems = originalSections[item.galleryDate] else {
-                owsFail("\(logTag) in \(#function) item with unknown section")
+                owsFail("item with unknown section")
                 return
             }
 
             guard let originalSectionRowIndex = originalSectionItems.index(of: item) else {
-                owsFail("\(logTag) in \(#function) item with unknown sectionRowIndex")
+                owsFail("item with unknown sectionRowIndex")
                 return
             }
 
@@ -853,12 +853,12 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     let kGallerySwipeLoadBatchSize: UInt = 5
 
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         self.ensureGalleryItemsLoaded(.after, item: currentItem, amount: kGallerySwipeLoadBatchSize)
 
         guard let currentIndex = galleryItems.index(of: currentItem) else {
-            owsFail("currentIndex was unexpectedly nil in \(#function)")
+            owsFail("currentIndex was unexpectedly nil")
             return nil
         }
 
@@ -869,7 +869,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         }
 
         guard !deletedGalleryItems.contains(nextItem) else {
-            Logger.debug("\(self.logTag) in \(#function) nextItem was deleted - Recursing.")
+            Logger.debug("nextItem was deleted - Recursing.")
             return galleryItem(after: nextItem)
         }
 
@@ -877,12 +877,12 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     }
 
     internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         self.ensureGalleryItemsLoaded(.before, item: currentItem, amount: kGallerySwipeLoadBatchSize)
 
         guard let currentIndex = galleryItems.index(of: currentItem) else {
-            owsFail("currentIndex was unexpectedly nil in \(#function)")
+            owsFail("currentIndex was unexpectedly nil")
             return nil
         }
 
@@ -893,7 +893,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         }
 
         guard !deletedGalleryItems.contains(previousItem) else {
-            Logger.debug("\(self.logTag) in \(#function) previousItem was deleted - Recursing.")
+            Logger.debug("previousItem was deleted - Recursing.")
             return galleryItem(before: previousItem)
         }
 

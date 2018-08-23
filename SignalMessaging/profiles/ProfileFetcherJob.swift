@@ -77,14 +77,14 @@ public class ProfileFetcherJob: NSObject {
         }.catch { error in
             switch error {
             case ProfileFetcherJobError.throttled(let lastTimeInterval):
-                Logger.info("\(self.logTag) skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+                Logger.info("skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
             case let error as SignalServiceProfile.ValidationError:
-                Logger.warn("\(self.logTag) skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
+                Logger.warn("skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
             default:
                 if remainingRetries > 0 {
                     self.updateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
                 } else {
-                    Logger.error("\(self.logTag) in \(#function) failed to get profile with error: \(error)")
+                    Logger.error("failed to get profile with error: \(error)")
                 }
             }
         }.retainUntilComplete()
@@ -107,7 +107,7 @@ public class ProfileFetcherJob: NSObject {
         }
         ProfileFetcherJob.fetchDateMap[recipientId] = Date()
 
-        Logger.error("\(self.logTag) getProfile: \(recipientId)")
+        Logger.error("getProfile: \(recipientId)")
 
         let request = OWSRequestFactory.getProfileRequest(withRecipientId: recipientId)
 
@@ -160,7 +160,7 @@ public class ProfileFetcherJob: NSObject {
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
-                Logger.info("\(self.logTag) updated identity key with fetched profile for recipient: \(recipientId)")
+                Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
                 self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
             } else {
                 // no change in identity.

@@ -79,7 +79,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         super.viewWillAppear(animated)
 
         guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            owsFail("navigationController was unexpectedly nil")
             return
         }
 
@@ -103,7 +103,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             // animation glitch where the navigation bar for this view controller starts to appear while
             // the whole nav stack is about to be obscured by the modal we are presenting.
             guard let postDismissNavigationController = self.postDismissNavigationController else {
-                owsFail("\(logTag) in \(#function) postDismissNavigationController was unexpectedly nil")
+                owsFail("postDismissNavigationController was unexpectedly nil")
                 return
             }
 
@@ -157,7 +157,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         AssertIsOnMainThread()
 
         guard let rootView = self.view else {
-            owsFail("\(logTag) missing root view.")
+            owsFail("missing root view.")
             return
         }
 
@@ -223,7 +223,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let backIconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
         guard let backIconImage = UIImage(named: backIconName) else {
-            owsFail("\(logTag) missing icon.")
+            owsFail("missing icon.")
             return topView
         }
         let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
@@ -438,7 +438,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         circleView.autoHCenterInSuperview()
 
         guard let image = UIImage(named: imageName) else {
-            owsFail("\(logTag) missing image.")
+            owsFail("missing image.")
             return button
         }
         let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
@@ -485,7 +485,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func didPressShareContact(sender: UIGestureRecognizer) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard sender.state == .recognized else {
             return
@@ -494,40 +494,40 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func didPressSendMessage() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         self.contactShareViewHelper.sendMessage(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressAudioCall() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         self.contactShareViewHelper.audioCall(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressVideoCall() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         self.contactShareViewHelper.videoCall(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressInvite() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         self.contactShareViewHelper.showInviteContact(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressAddToContacts() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         self.contactShareViewHelper.showAddToContacts(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressDismiss() {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            owsFail("navigationController was unexpectedly nil")
             return
         }
 
@@ -535,7 +535,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func didPressPhoneNumber(phoneNumber: OWSContactPhoneNumber) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
@@ -570,17 +570,17 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func callPhoneNumberWithSystemCall(phoneNumber: OWSContactPhoneNumber) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
-            owsFail("\(ContactViewController.logTag()) could not open phone number.")
+            owsFail("could not open phone number.")
             return
         }
         UIApplication.shared.openURL(url as URL)
     }
 
     func didPressEmail(email: OWSContactEmail) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
@@ -598,17 +598,17 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func openEmailInEmailApp(email: OWSContactEmail) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         guard let url = NSURL(string: "mailto:\(email.email)") else {
-            owsFail("\(ContactViewController.logTag()) could not open email.")
+            owsFail("could not open email.")
             return
         }
         UIApplication.shared.openURL(url as URL)
     }
 
     func didPressAddress(address: OWSContactAddress) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
@@ -628,17 +628,17 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func openAddressInMaps(address: OWSContactAddress) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         let mapAddress = formatAddressForQuery(address: address)
         guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            owsFail("\(ContactViewController.logTag()) could not open address.")
+            owsFail("could not open address.")
             return
         }
         // Note that we use "q" (i.e. query) rather than "address" since we can't assume
         // this is a well-formed address.
         guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
-            owsFail("\(ContactViewController.logTag()) could not open address.")
+            owsFail("could not open address.")
             return
         }
 
@@ -646,7 +646,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     func formatAddressForQuery(address: OWSContactAddress) -> String {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         // Open address in Apple Maps app.
         var addressParts = [String]()
@@ -671,7 +671,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     // MARK: - ContactShareViewHelperDelegate
 
     public func didCreateOrEditContact() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
         updateContent()
 
         self.dismiss(animated: true)

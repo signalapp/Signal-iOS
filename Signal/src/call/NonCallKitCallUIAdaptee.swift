@@ -35,9 +35,9 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)
 
         self.callService.handleOutgoingCall(call).then {
-            Logger.debug("\(self.logTag) handleOutgoingCall succeeded")
+            Logger.debug("handleOutgoingCall succeeded")
         }.catch { error in
-            Logger.error("\(self.logTag) handleOutgoingCall failed with error: \(error)")
+            Logger.error("handleOutgoingCall failed with error: \(error)")
         }.retainUntilComplete()
 
         return call
@@ -46,13 +46,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(logTag) \(#function)")
+        Logger.debug("")
 
         self.showCall(call)
 
         // present lock screen notification
         if UIApplication.shared.applicationState == .active {
-            Logger.debug("\(logTag) skipping notification since app is already active.")
+            Logger.debug("skipping notification since app is already active.")
         } else {
             notificationsAdapter.presentIncomingCall(call, callerName: callerName)
         }
@@ -68,12 +68,12 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard let call = self.callService.call else {
-            owsFail("\(self.logTag) in \(#function) No current call.")
+            owsFail("No current call.")
             return
         }
 
         guard call.localId == localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 
@@ -84,7 +84,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 
@@ -96,12 +96,12 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard let call = self.callService.call else {
-            owsFail("\(self.logTag) in \(#function) No current call.")
+            owsFail("No current call.")
             return
         }
 
         guard call.localId == localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 
@@ -112,7 +112,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 
@@ -131,7 +131,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         // If both parties hang up at the same moment,
         // call might already be nil.
         guard self.callService.call == nil || call.localId == self.callService.call?.localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 
@@ -141,26 +141,26 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     internal func remoteDidHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(logTag) in \(#function) is no-op")
+        Logger.debug("is no-op")
     }
 
     internal func remoteBusy(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(logTag) in \(#function) is no-op")
+        Logger.debug("is no-op")
     }
 
     internal func failCall(_ call: SignalCall, error: CallError) {
         AssertIsOnMainThread()
 
-        Logger.debug("\(logTag) in \(#function) is no-op")
+        Logger.debug("is no-op")
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 
@@ -171,7 +171,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         AssertIsOnMainThread()
 
         guard call.localId == self.callService.call?.localId else {
-            owsFail("\(self.logTag) in \(#function) localId does not match current call")
+            owsFail("localId does not match current call")
             return
         }
 

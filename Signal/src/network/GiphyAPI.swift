@@ -297,7 +297,7 @@ extension GiphyError: LocalizedError {
 
     private func giphyAPISessionManager() -> AFHTTPSessionManager? {
         guard let baseUrl = NSURL(string: kGiphyBaseURL) else {
-            Logger.error("\(logTag) Invalid base URL.")
+            Logger.error("Invalid base URL.")
             return nil
         }
         let sessionManager = AFHTTPSessionManager(baseURL: baseUrl as URL,
@@ -312,12 +312,12 @@ extension GiphyError: LocalizedError {
 
     public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping ((NSError?) -> Void)) {
         guard let sessionManager = giphyAPISessionManager() else {
-            Logger.error("\(logTag) Couldn't create session manager.")
+            Logger.error("Couldn't create session manager.")
             failure(nil)
             return
         }
         guard NSURL(string: kGiphyBaseURL) != nil else {
-            Logger.error("\(logTag) Invalid base URL.")
+            Logger.error("Invalid base URL.")
             failure(nil)
             return
         }
@@ -327,7 +327,7 @@ extension GiphyError: LocalizedError {
         let kGiphyPageSize = 100
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            Logger.error("\(logTag) Could not URL encode query: \(query).")
+            Logger.error("Could not URL encode query: \(query).")
             failure(nil)
             return
         }
@@ -337,7 +337,7 @@ extension GiphyError: LocalizedError {
                            parameters: {},
                            progress: nil,
                            success: { _, value in
-                            Logger.error("\(GiphyAPI.logTag()) search request succeeded")
+                            Logger.error("search request succeeded")
                             guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
                                 failure(nil)
                                 return
@@ -345,7 +345,7 @@ extension GiphyError: LocalizedError {
                             success(imageInfos)
         },
                            failure: { _, error in
-                            Logger.error("\(GiphyAPI.logTag()) search request failed: \(error)")
+                            Logger.error("search request failed: \(error)")
                             failure(error as NSError)
         })
     }
@@ -354,15 +354,15 @@ extension GiphyError: LocalizedError {
 
     private func parseGiphyImages(responseJson: Any?) -> [GiphyImageInfo]? {
         guard let responseJson = responseJson else {
-            Logger.error("\(logTag) Missing response.")
+            Logger.error("Missing response.")
             return nil
         }
         guard let responseDict = responseJson as? [String: Any] else {
-            Logger.error("\(logTag) Invalid response.")
+            Logger.error("Invalid response.")
             return nil
         }
         guard let imageDicts = responseDict["data"] as? [[String: Any]] else {
-            Logger.error("\(logTag) Invalid response data.")
+            Logger.error("Invalid response data.")
             return nil
         }
         return imageDicts.compactMap { imageDict in
@@ -373,21 +373,21 @@ extension GiphyError: LocalizedError {
     // Giphy API results are often incomplete or malformed, so we need to be defensive.
     private func parseGiphyImage(imageDict: [String: Any]) -> GiphyImageInfo? {
         guard let giphyId = imageDict["id"] as? String else {
-            Logger.warn("\(logTag) Image dict missing id.")
+            Logger.warn("Image dict missing id.")
             return nil
         }
         guard giphyId.count > 0 else {
-            Logger.warn("\(logTag) Image dict has invalid id.")
+            Logger.warn("Image dict has invalid id.")
             return nil
         }
         guard let renditionDicts = imageDict["images"] as? [String: Any] else {
-            Logger.warn("\(logTag) Image dict missing renditions.")
+            Logger.warn("Image dict missing renditions.")
             return nil
         }
         var renditions = [GiphyRendition]()
         for (renditionName, renditionDict) in renditionDicts {
             guard let renditionDict = renditionDict as? [String: Any] else {
-                Logger.warn("\(logTag) Invalid rendition dict.")
+                Logger.warn("Invalid rendition dict.")
                 continue
             }
             guard let rendition = parseGiphyRendition(renditionName: renditionName,
@@ -397,12 +397,12 @@ extension GiphyError: LocalizedError {
             renditions.append(rendition)
         }
         guard renditions.count > 0 else {
-            Logger.warn("\(logTag) Image has no valid renditions.")
+            Logger.warn("Image has no valid renditions.")
             return nil
         }
 
         guard let originalRendition = findOriginalRendition(renditions: renditions) else {
-            Logger.warn("\(logTag) Image has no original rendition.")
+            Logger.warn("Image has no original rendition.")
             return nil
         }
 
@@ -435,15 +435,15 @@ extension GiphyError: LocalizedError {
             return nil
         }
         guard urlString.count > 0 else {
-            Logger.warn("\(logTag) Rendition has invalid url.")
+            Logger.warn("Rendition has invalid url.")
             return nil
         }
         guard let url = NSURL(string: urlString) else {
-            Logger.warn("\(logTag) Rendition url could not be parsed.")
+            Logger.warn("Rendition url could not be parsed.")
             return nil
         }
         guard let fileExtension = url.pathExtension?.lowercased() else {
-            Logger.warn("\(logTag) Rendition url missing file extension.")
+            Logger.warn("Rendition url missing file extension.")
             return nil
         }
         var format = GiphyFormat.gif
@@ -456,7 +456,7 @@ extension GiphyError: LocalizedError {
         } else if fileExtension == "webp" {
             return nil
         } else {
-            Logger.warn("\(logTag) Invalid file extension: \(fileExtension).")
+            Logger.warn("Invalid file extension: \(fileExtension).")
             return nil
         }
 
@@ -481,7 +481,7 @@ extension GiphyError: LocalizedError {
             return nil
         }
         guard parsedValue > 0 else {
-            Logger.verbose("\(logTag) \(typeName) has non-positive \(key): \(parsedValue).")
+            Logger.verbose("\(typeName) has non-positive \(key): \(parsedValue).")
             return nil
         }
         return parsedValue

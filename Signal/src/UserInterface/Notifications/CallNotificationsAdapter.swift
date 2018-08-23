@@ -30,12 +30,12 @@ public class CallNotificationsAdapter: NSObject {
     }
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         adaptee.presentIncomingCall(call, callerName: callerName)
     }
 
     func presentMissedCall(_ call: SignalCall, callerName: String) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         adaptee.presentMissedCall(call, callerName: callerName)
     }
 

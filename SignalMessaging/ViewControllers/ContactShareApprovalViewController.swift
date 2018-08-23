@@ -204,7 +204,7 @@ class ContactShareFieldView: UIStackView {
     }
 
     @objc func wasTapped(sender: UIGestureRecognizer) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         guard sender.state == .recognized else {
             return
@@ -264,7 +264,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
                                                       delegate: self)
                 fieldViews.append(fieldView)
             } else {
-                owsFail("\(logTag) could not load avatar image.")
+                owsFail("could not load avatar image.")
             }
         }
 
@@ -354,7 +354,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         AssertIsOnMainThread()
 
         guard let rootView = self.view else {
-            owsFail("\(logTag) missing root view.")
+            owsFail("missing root view.")
             return
         }
 
@@ -461,10 +461,10 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
             return
         }
 
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard let delegate = self.delegate else {
-            owsFail("\(logTag) missing delegate.")
+            owsFail("missing delegate.")
             return
         }
 
@@ -476,10 +476,10 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     @objc func didPressCancel() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard let delegate = self.delegate else {
-            owsFail("\(logTag) missing delegate.")
+            owsFail("missing delegate.")
             return
         }
 
@@ -487,7 +487,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     func didPressEditName() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         let view = EditContactShareNameViewController(contactShare: contactShare, delegate: self)
         self.navigationController?.pushViewController(view, animated: true)

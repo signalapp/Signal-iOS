@@ -43,17 +43,17 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
     // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
     override public var canBecomeFirstResponder: Bool {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         return true
     }
 
     override public func becomeFirstResponder() -> Bool {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         return super.becomeFirstResponder()
     }
 
     override public func resignFirstResponder() -> Bool {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         return super.resignFirstResponder()
     }
 
@@ -159,7 +159,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     private func reloadContacts() {
         getContacts( onError: { error in
-            Logger.error("\(self.logTag) failed to reload contacts with error:\(error)")
+            Logger.error("failed to reload contacts with error:\(error)")
         })
     }
 
@@ -211,7 +211,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                     }
                     self.sections = collatedContacts(contacts)
                 } catch let error as NSError {
-                    Logger.error("\(self.logTag) Failed to fetch contacts with error:\(error)")
+                    Logger.error("Failed to fetch contacts with error:\(error)")
                 }
         }
     }
@@ -247,7 +247,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as? ContactCell else {
-            owsFail("\(logTag) in \(#function) cell had unexpected type")
+            owsFail("cell had unexpected type")
             return UITableViewCell()
         }
 
@@ -280,7 +280,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        Logger.verbose("\(logTag) \(#function)")
+        Logger.verbose("")
 
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let selectedContact = cell.contact!
@@ -350,7 +350,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 let filteredContacts = try contactStore.unifiedContacts(matching: predicate, keysToFetch: allowedContactKeys)
                     filteredSections = collatedContacts(filteredContacts)
             } catch let error as NSError {
-                Logger.error("\(self.logTag) updating search results failed with error: \(error)")
+                Logger.error("updating search results failed with error: \(error)")
             }
         }
         self.tableView.reloadData()

@@ -184,12 +184,12 @@ public class PlayerProgressBar: UIView {
 
     private func updateState() {
         guard let player = player else {
-            owsFail("\(logTag) player isn't set.")
+            owsFail("player isn't set.")
             return
         }
 
         guard let item = player.currentItem else {
-            owsFail("\(logTag) player has no item.")
+            owsFail("player has no item.")
             return
         }
 

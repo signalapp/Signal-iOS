@@ -31,7 +31,7 @@ class DebugUINotifications: DebugUIPage {
 
     override func section(thread aThread: TSThread?) -> OWSTableSection? {
         guard let thread = aThread else {
-            owsFail("\(logTag) Notifications must specify thread.")
+            owsFail("Notifications must specify thread.")
             return nil
         }
 
@@ -41,9 +41,9 @@ class DebugUINotifications: DebugUIPage {
                     return
                 }
 
-                Logger.info("\(strongSelf.logTag) scheduling notification for incoming message.")
+                Logger.info("scheduling notification for incoming message.")
                 strongSelf.delayedNotificationDispatch {
-                    Logger.info("\(strongSelf.logTag) dispatching")
+                    Logger.info("dispatching")
                     OWSPrimaryStorage.shared().newDatabaseConnection().read { (transaction) in
                         guard let viewTransaction = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseViewTransaction  else {
                             owsFail("unable to build view transaction")
@@ -59,7 +59,7 @@ class DebugUINotifications: DebugUIPage {
                             owsFail("last message was not an incoming message.")
                             return
                         }
-                        Logger.info("\(strongSelf.logTag) notifying user of incoming message")
+                        Logger.info("notifying user of incoming message")
                         strongSelf.notificationsManager.notifyUser(for: incomingMessage, in: thread, contactsManager: strongSelf.contactsManager, transaction: transaction)
                     }
                 }

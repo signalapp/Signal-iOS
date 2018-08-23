@@ -36,7 +36,7 @@ import SignalMessaging
 
     func run(retryDelay: TimeInterval = 1) {
         guard let localNumber = TSAccountManager.localNumber() else {
-            owsFail("\(self.logTag) localNumber was unexpectedly nil")
+            owsFail("localNumber was unexpectedly nil")
             return
         }
 
@@ -49,14 +49,14 @@ import SignalMessaging
         var dataSource: DataSource?
         self.editingDatabaseConnection.readWrite { transaction in
             guard let messageData: Data = syncContactsMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFail("\(self.logTag) could not serialize sync contacts data")
+                owsFail("could not serialize sync contacts data")
                 return
             }
             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
         }
 
         guard let attachmentDataSource = dataSource else {
-            owsFail("\(self.logTag) in \(#function) dataSource was unexpectedly nil")
+            owsFail("dataSource was unexpectedly nil")
             return
         }
 
@@ -64,10 +64,10 @@ import SignalMessaging
             contentType: OWSMimeTypeApplicationOctetStream,
             in: syncContactsMessage,
             success: {
-                Logger.info("\(self.logTag) Successfully synced profile key")
+                Logger.info("Successfully synced profile key")
             },
             failure: { error in
-                Logger.error("\(self.logTag) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
+                Logger.error("failed with error: \(error) retrying in \(retryDelay)s.")
                 after(interval: retryDelay).then {
                     self.run(retryDelay: retryDelay * 2)
                 }.retainUntilComplete()

@@ -160,7 +160,7 @@ public class SignalAttachment: NSObject {
             AssertIsOnMainThread()
 
             assert(oldValue == nil)
-            Logger.verbose("\(logTag) Attachment has error: \(String(describing: error))")
+            Logger.verbose("Attachment has error: \(String(describing: error))")
         }
     }
 
@@ -208,7 +208,7 @@ public class SignalAttachment: NSObject {
     public var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            owsFail("\(logTag) Missing error")
+            owsFail("Missing error")
             return nil
         }
 
@@ -219,11 +219,11 @@ public class SignalAttachment: NSObject {
     public var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            owsFail("\(logTag) Missing error")
+            owsFail("Missing error")
             return nil
         }
         guard let errorDescription = error.errorDescription else {
-            owsFail("\(logTag) Missing error description")
+            owsFail("Missing error description")
             return nil
         }
 
@@ -233,7 +233,7 @@ public class SignalAttachment: NSObject {
     @objc
     public class var missingDataErrorMessage: String {
         guard let errorDescription = SignalAttachmentError.missingData.errorDescription else {
-            owsFail("\(logTag) Missing error description")
+            owsFail("Missing error description")
             return ""
         }
         return errorDescription
@@ -278,7 +278,7 @@ public class SignalAttachment: NSObject {
             return image
 
         } catch let error {
-            Logger.verbose("\(logTag) Could not generate video thumbnail: \(error.localizedDescription)")
+            Logger.verbose("Could not generate video thumbnail: \(error.localizedDescription)")
             return nil
         }
     }
@@ -516,7 +516,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -527,7 +527,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -537,7 +537,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -547,7 +547,7 @@ public class SignalAttachment: NSObject {
 
         let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
         guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -559,15 +559,15 @@ public class SignalAttachment: NSObject {
     private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
         let itemSet = IndexSet(integer: 0)
         guard let datas = UIPasteboard.general.data(forPasteboardType: dataUTI, inItemSet: itemSet) else {
-            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard datas.count > 0 else {
-            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard let data = datas[0] as? Data else {
-            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         return data
@@ -597,7 +597,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("\(self.logTag) in \(#function) imageData was empty")
+            owsFail("imageData was empty")
             attachment.error = .invalidData
             return attachment
         }
@@ -609,7 +609,7 @@ public class SignalAttachment: NSObject {
             }
 
             // Never re-encode animated images (i.e. GIFs) as JPEGs.
-            Logger.verbose("\(logTag) Sending raw \(attachment.mimeType) to retain any animation")
+            Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
             return attachment
         } else {
             guard let image = UIImage(data: dataSource.data()) else {
@@ -633,17 +633,17 @@ public class SignalAttachment: NSObject {
                 // However the problem comes in when you edit an HEIC image in Photos.app - the image is saved
                 // in the Photos.app as a JPEG, but retains the (now incongruous) HEIC extension in the filename.
                 assert(dataUTI == kUTTypeJPEG as String || !isValidOutput)
-                Logger.verbose("\(self.logTag) changing extension: \(sourceFileExtension) to match jpg uti type")
+                Logger.verbose("changing extension: \(sourceFileExtension) to match jpg uti type")
 
                 let baseFilename = sourceFilename.filenameWithoutExtension
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
             if isValidOutput {
-                Logger.verbose("\(logTag) Rewriting attachment with metadata removed \(attachment.mimeType)")
+                Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("\(logTag) Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
+                Logger.verbose("Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
                 return compressImageAsJPEG(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
@@ -690,7 +690,7 @@ public class SignalAttachment: NSObject {
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
         attachment.cachedImage = image
 
-        Logger.verbose("\(logTag) Writing \(attachment.mimeType) as image/jpeg")
+        Logger.verbose("Writing \(attachment.mimeType) as image/jpeg")
         return compressImageAsJPEG(image: image, attachment: attachment, filename: filename, imageQuality: imageQuality)
     }
 
@@ -736,7 +736,7 @@ public class SignalAttachment: NSObject {
                 dataSource.dataLength() <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
                 recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("\(logTag) Converted \(attachment.mimeType) to image/jpeg, \(jpgImageData.count) bytes")
+                Logger.verbose("Converted \(attachment.mimeType) to image/jpeg, \(jpgImageData.count) bytes")
                 return recompressedAttachment
             }
 
@@ -766,7 +766,7 @@ public class SignalAttachment: NSObject {
     // Resizing using a CGContext seems to work fine.
     private class func imageScaled(_ uiImage: UIImage, toMaxSize maxSize: CGFloat) -> UIImage? {
         guard let cgImage = uiImage.cgImage else {
-            owsFail("\(logTag) UIImage missing cgImage.")
+            owsFail("UIImage missing cgImage.")
             return nil
         }
 
@@ -791,7 +791,7 @@ public class SignalAttachment: NSObject {
                                            bytesPerRow: 0,
                                            space: colorSpace,
                                            bitmapInfo: bitmapInfo.rawValue) else {
-                                            owsFail("\(logTag) could not create CGContext.")
+                                            owsFail("could not create CGContext.")
             return nil
         }
         context.interpolationQuality = .high
@@ -801,7 +801,7 @@ public class SignalAttachment: NSObject {
         context.draw(cgImage, in: drawRect)
 
         guard let newCGImage = context.makeImage() else {
-            owsFail("\(logTag) could not create new CGImage.")
+            owsFail("could not create new CGImage.")
             return nil
         }
         return UIImage(cgImage: newCGImage,
@@ -901,7 +901,7 @@ public class SignalAttachment: NSObject {
             return strippedAttachment
 
         } else {
-            Logger.verbose("\(logTag) CGImageDestinationFinalize failed")
+            Logger.verbose("CGImageDestinationFinalize failed")
             attachment.error = .couldNotRemoveMetadata
             return attachment
         }
@@ -936,7 +936,7 @@ public class SignalAttachment: NSObject {
         OWSFileSystem.ensureDirectoryExists(baseDir.path)
         let toUrl = baseDir.appendingPathComponent(fromUrl.lastPathComponent)
 
-        Logger.debug("\(self.logTag) moving \(fromUrl) -> \(toUrl)")
+        Logger.debug("moving \(fromUrl) -> \(toUrl)")
         try FileManager.default.copyItem(at: fromUrl, to: toUrl)
 
         return toUrl
@@ -949,7 +949,7 @@ public class SignalAttachment: NSObject {
     }
 
     public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         guard let url = dataSource.dataUrl() else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
@@ -974,9 +974,9 @@ public class SignalAttachment: NSObject {
 
         let (promise, fulfill, _) = Promise<SignalAttachment>.pending()
 
-        Logger.debug("\(self.logTag) starting video export")
+        Logger.debug("starting video export")
         exportSession.exportAsynchronously {
-            Logger.debug("\(self.logTag) Completed video export")
+            Logger.debug("Completed video export")
             let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
@@ -1108,7 +1108,7 @@ public class SignalAttachment: NSObject {
     @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
-            owsFail("\(logTag) must specify image quality type")
+            owsFail("must specify image quality type")
         }
         return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
     }
@@ -1162,7 +1162,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("\(logTag) Empty attachment")
+            owsFail("Empty attachment")
             assert(dataSource.dataLength() > 0)
             attachment.error = .invalidData
             return attachment

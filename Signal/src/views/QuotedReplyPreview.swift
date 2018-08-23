@@ -81,7 +81,7 @@ class QuotedReplyPreview: UIView {
 
     func updateHeight() {
         guard let quotedMessageView = quotedMessageView else {
-            owsFail("\(logTag) missing quotedMessageView")
+            owsFail("missing quotedMessageView")
             return
         }
         let size = quotedMessageView.size(forMaxWidth: CGFloat.infinity)
@@ -89,7 +89,7 @@ class QuotedReplyPreview: UIView {
     }
 
     @objc func contentSizeCategoryDidChange(_ notification: Notification) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         updateContents()
     }

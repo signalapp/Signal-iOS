@@ -26,17 +26,17 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
         super.init()
 
-        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+        Logger.debug("with recipientIdsToLookup: \(recipientIdsToLookup.count)")
     }
 
     // MARK: OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
     override func run() {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard !isCancelled else {
-            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            Logger.info("no work to do, since we were canceled")
             self.reportCancelled()
             return
         }
@@ -45,7 +45,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
         for recipientId in recipientIdsToLookup {
             guard let hash = Cryptography.truncatedSHA1Base64EncodedWithoutPadding(recipientId) else {
-                owsFail("\(logTag) could not hash recipient id: \(recipientId)")
+                owsFail("could not hash recipient id: \(recipientId)")
                 continue
             }
             assert(phoneNumbersByHashes[hash] == nil)
@@ -119,17 +119,17 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
         for contactDict in contactDicts {
             guard let hash = contactDict["token"] as? String, hash.count > 0 else {
-                owsFail("\(self.logTag) in \(#function) hash was unexpectedly nil")
+                owsFail("hash was unexpectedly nil")
                 continue
             }
 
             guard let recipientId = phoneNumbersByHashes[hash], recipientId.count > 0 else {
-                owsFail("\(self.logTag) in \(#function) recipientId was unexpectedly nil")
+                owsFail("recipientId was unexpectedly nil")
                 continue
             }
 
             guard recipientIdsToLookup.contains(recipientId) else {
-                owsFail("\(self.logTag) in \(#function) unexpected recipientId")
+                owsFail("unexpected recipientId")
                 continue
             }
 
@@ -172,7 +172,7 @@ class CDSOperation: OWSOperation {
 
         super.init()
 
-        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+        Logger.debug("with recipientIdsToLookup: \(recipientIdsToLookup.count)")
         for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
             let batchOperation = CDSBatchOperation(recipientIdsToLookup: batchIds)
             self.addDependency(batchOperation)
@@ -183,11 +183,11 @@ class CDSOperation: OWSOperation {
 
     // Called every retry, this is where the bulk of the operation's work should go.
     override func run() {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         for dependency in self.dependencies {
             guard let batchOperation = dependency as? CDSBatchOperation else {
-                owsFail("\(self.logTag) in \(#function) unexpected dependency: \(dependency)")
+                owsFail("unexpected dependency: \(dependency)")
                 continue
             }
 
@@ -221,17 +221,17 @@ class CDSBatchOperation: OWSOperation {
 
         super.init()
 
-        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+        Logger.debug("with recipientIdsToLookup: \(recipientIdsToLookup.count)")
     }
 
     // MARK: OWSOperationOverrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
     override public func run() {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard !isCancelled else {
-            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            Logger.info("no work to do, since we were canceled")
             self.reportCancelled()
             return
         }
@@ -251,7 +251,7 @@ class CDSBatchOperation: OWSOperation {
     private func makeContactDiscoveryRequest(remoteAttestation: RemoteAttestation) {
 
         guard !isCancelled else {
-            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            Logger.info("no work to do, since we were canceled")
             self.reportCancelled()
             return
         }
@@ -434,7 +434,7 @@ class CDSFeedbackOperation: OWSOperation {
 
         super.init()
 
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
     }
 
     // MARK: OWSOperation Overrides
@@ -450,13 +450,13 @@ class CDSFeedbackOperation: OWSOperation {
     override func run() {
 
         guard !isCancelled else {
-            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            Logger.info("no work to do, since we were canceled")
             self.reportCancelled()
             return
         }
 
         guard let cdsOperation = dependencies.first as? CDSOperation else {
-            let error = OWSErrorMakeAssertionError("\(self.logTag) in \(#function) cdsOperation was unexpectedly nil")
+            let error = OWSErrorMakeAssertionError("cdsOperation was unexpectedly nil")
             self.reportError(error)
             return
         }

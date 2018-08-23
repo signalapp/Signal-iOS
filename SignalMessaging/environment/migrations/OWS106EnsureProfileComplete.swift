@@ -23,10 +23,10 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         let job = CompleteRegistrationFixerJob(completionHandler: { (didSucceed) in
 
             if (didSucceed) {
-                Logger.info("\(self.logTag) Completed. Saving.")
+                Logger.info("Completed. Saving.")
                 self.save()
             } else {
-                Logger.error("\(self.logTag) Failed.")
+                Logger.error("Failed.")
             }
 
             completion()
@@ -60,7 +60,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             }
 
             self.ensureProfileComplete().then { _ -> Void in
-                Logger.info("\(self.logTag) complete. Canceling timer and saving.")
+                Logger.info("complete. Canceling timer and saving.")
                 self.completionHandler(true)
             }.catch { error in
                 let nserror = error as NSError
@@ -69,13 +69,13 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                     // In particular, 401 (invalid auth) is unrecoverable.
                     let isUnrecoverableError = nserror.code == 401
                     if isUnrecoverableError {
-                        Logger.error("\(self.logTag) failed due to unrecoverable error: \(error). Aborting.")
+                        Logger.error("failed due to unrecoverable error: \(error). Aborting.")
                         self.completionHandler(true)
                         return
                     }
                 }
 
-                Logger.error("\(self.logTag) failed with \(error).")
+                Logger.error("failed with \(error).")
                 self.completionHandler(false)
             }.retainUntilComplete()
         }
@@ -89,25 +89,25 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             let (promise, fulfill, reject) = Promise<Void>.pending()
 
             guard let networkManager = Environment.current().networkManager else {
-                return Promise(error: OWSErrorMakeAssertionError("\(logTag) network manager was unexpectedly not set"))
+                return Promise(error: OWSErrorMakeAssertionError("network manager was unexpectedly not set"))
             }
 
             ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
-                Logger.info("\(self.logTag) verified recipient profile is in good shape: \(localRecipientId)")
+                Logger.info("verified recipient profile is in good shape: \(localRecipientId)")
 
                 fulfill(())
             }.catch { error in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
-                    Logger.warn("\(self.logTag) detected incomplete profile for \(localRecipientId) error: \(description)")
+                    Logger.warn("detected incomplete profile for \(localRecipientId) error: \(description)")
                     // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.
                     TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
                                                     success: {
-                                                        Logger.info("\(self.logTag) successfully uploaded pre-keys. Profile should be fixed.")
+                                                        Logger.info("successfully uploaded pre-keys. Profile should be fixed.")
                                                         fulfill(())
                     },
                                                     failure: { _ in
-                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error in \(#function)"))
+                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error"))
                     })
                 default:
                     reject(error)

@@ -8,22 +8,22 @@ import SignalServiceKit
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from callerId: String) {
-        owsFail("\(self.logTag) in \(#function).")
+        owsFail("")
     }
 
     public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from callerId: String) {
-        owsFail("\(self.logTag) in \(#function).")
+        owsFail("")
     }
 
     public func receivedIceUpdate(_ iceUpdate: SSKProtoCallMessageIceUpdate, from callerId: String) {
-        owsFail("\(self.logTag) in \(#function).")
+        owsFail("")
     }
 
     public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from callerId: String) {
-        owsFail("\(self.logTag) in \(#function).")
+        owsFail("")
     }
 
     public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from callerId: String) {
-        owsFail("\(self.logTag) in \(#function).")
+        owsFail("")
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,12 +20,12 @@ public class SwiftSingletons: NSObject {
         guard _isDebugAssertConfiguration() else {
             return
         }
-        let singletonClassName = String(describing:type(of:singleton))
+        let singletonClassName = String(describing: type(of: singleton))
         guard !classSet.contains(singletonClassName) else {
-            owsFail("\(self.logTag) in \(#function) Duplicate singleton: \(singletonClassName).")
+            owsFail("Duplicate singleton: \(singletonClassName).")
             return
         }
-        Logger.verbose("\(self.logTag) in \(#function) Registering singleton: \(singletonClassName).")
+        Logger.verbose("Registering singleton: \(singletonClassName).")
         classSet.insert(singletonClassName)
     }
 

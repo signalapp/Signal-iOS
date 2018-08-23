@@ -19,7 +19,7 @@ public class OutageDetection: NSObject {
             AssertIsOnMainThread()
 
             if hasOutage != oldValue {
-                Logger.info("\(self.logTag) hasOutage: \(hasOutage).")
+                Logger.info("hasOutage: \(hasOutage).")
 
                 NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
             }
@@ -40,11 +40,11 @@ public class OutageDetection: NSObject {
         CFHostStartInfoResolution(host, .addresses, nil)
         var success: DarwinBoolean = false
         guard let addresses = CFHostGetAddressing(host, &success)?.takeUnretainedValue() as NSArray? else {
-            Logger.error("\(logTag) CFHostGetAddressing failed: no addresses.")
+            Logger.error("CFHostGetAddressing failed: no addresses.")
             return false
         }
         guard success.boolValue else {
-            Logger.error("\(logTag) CFHostGetAddressing failed.")
+            Logger.error("CFHostGetAddressing failed.")
             return false
         }
         var isOutageDetected = false
@@ -60,7 +60,7 @@ public class OutageDetection: NSObject {
                 } else if addressString == kOutageAddress {
                     isOutageDetected = true
                 } else {
-                    owsFail("\(logTag) unexpected address: \(addressString)")
+                    owsFail("unexpected address: \(addressString)")
                 }
             }
         }
@@ -68,7 +68,7 @@ public class OutageDetection: NSObject {
     }
 
     private func checkForOutageAsync() {
-        Logger.info("\(self.logTag) \(#function).")
+        Logger.info("")
 
         DispatchQueue.global().async {
             let isOutageDetected = self.checkForOutageSync()
