@@ -21,6 +21,8 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     OWSMessageGestureLocation_QuotedReply,
 };
 
+extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
+
 @protocol OWSMessageBubbleViewDelegate
 
 - (void)didTapImageViewItem:(ConversationViewItem *)viewItem
