@@ -1109,17 +1109,6 @@ class HardenedRTCSessionDescription {
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
     }
-
-    var logSafeDescription: String {
-        do {
-            let pattern = "\\d+\\.\\d+\\.\\d+\\.\\d+"
-            let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpression.Options.caseInsensitive)
-            let range = NSRange(location: 0, length: sdp.count)
-            return regex.stringByReplacingMatches(in: sdp, options: [], range: range, withTemplate: "<ip address>")
-        } catch {
-            return "<Could not filter session description>"
-        }
-    }
 }
 
 protocol VideoCaptureSettingsDelegate: class {
