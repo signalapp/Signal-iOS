@@ -15,12 +15,6 @@ public func assertOnQueue(_ queue: DispatchQueue) {
     }
 }
 
-public func owsFail(_ message: String) {
-    Logger.error(message)
-    Logger.flush()
-    assertionFailure(message)
-}
-
 // Once we're on Swift4.2 we can mark this as inlineable
 // @inlinable
 public func AssertIsOnMainThread(file: String = #file,
@@ -31,4 +25,28 @@ public func AssertIsOnMainThread(file: String = #file,
         owsFail("\(filename):\(line) in \(function): Must be on main thread.")
         return
     }
+}
+
+// Once we're on Swift4.2 we can mark this as inlineable
+// @inlinable
+public func owsFail(_ rawMessage: String,
+                    file: String = #file,
+                    function: String = #function,
+                    line: Int = #line) {
+    // TODO: Format using owsFormatLogMessage() once it is merged.
+    let message = "\(file) \(function) \(line): \(rawMessage)"
+    Logger.error(message)
+    Logger.flush()
+    assertionFailure(message)
+}
+
+// Once we're on Swift4.2 we can mark this as inlineable
+// @inlinable
+public func owsProdExit(_ rawMessage: String,
+                        file: String = #file,
+                        function: String = #function,
+                        line: Int = #line) {
+
+    owsFail(rawMessage, file: file, function: function, line: line)
+    fatalError()
 }

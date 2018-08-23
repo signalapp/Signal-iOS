@@ -139,6 +139,18 @@ NS_ASSUME_NONNULL_BEGIN
     } while (NO)
 
 
+#define OWSProdExit(_messageFormat, ...)                                                                               \
+    do {                                                                                                               \
+        OWSFail(_messageFormat, ##__VA_ARGS__);                                                                        \
+        exit(0);                                                                                                       \
+    } while (0)
+
+#define OWSCProdExit(_messageFormat, ...)                                                                              \
+    do {                                                                                                               \
+        OWSCFail(_messageFormat, ##__VA_ARGS__);                                                                       \
+        exit(0);                                                                                                       \
+    } while (NO)
+
 // Avoids Clang analyzer warning:
 //   Value stored to 'x' during it's initialization is never read
 #define SUPPRESS_DEADSTORE_WARNING(x)                                                                                  \
