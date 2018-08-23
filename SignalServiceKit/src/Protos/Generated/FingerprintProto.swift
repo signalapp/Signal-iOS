@@ -33,15 +33,6 @@ public enum FingerprintProtoError: Error {
             proto.identityData = valueParam
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprint? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> FingerprintProtoLogicalFingerprint {
             return try FingerprintProtoLogicalFingerprint.parseProto(proto)
         }
@@ -59,15 +50,6 @@ public enum FingerprintProtoError: Error {
                  identityData: Data) {
         self.proto = proto
         self.identityData = identityData
-    }
-
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
     }
 
     @objc
@@ -95,6 +77,22 @@ public enum FingerprintProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension FingerprintProtoLogicalFingerprint {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintBuilder {
+    @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprint? {
+        return try! self.build()
+    }
+}
+
+#endif
 
 // MARK: - FingerprintProtoLogicalFingerprints
 
@@ -129,15 +127,6 @@ public enum FingerprintProtoError: Error {
             proto.remoteFingerprint = valueParam.proto
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprints? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> FingerprintProtoLogicalFingerprints {
             return try FingerprintProtoLogicalFingerprints.parseProto(proto)
         }
@@ -163,15 +152,6 @@ public enum FingerprintProtoError: Error {
         self.version = version
         self.localFingerprint = localFingerprint
         self.remoteFingerprint = remoteFingerprint
-    }
-
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
     }
 
     @objc
@@ -211,3 +191,19 @@ public enum FingerprintProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension FingerprintProtoLogicalFingerprints {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension FingerprintProtoLogicalFingerprints.FingerprintProtoLogicalFingerprintsBuilder {
+    @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprints? {
+        return try! self.build()
+    }
+}
+
+#endif

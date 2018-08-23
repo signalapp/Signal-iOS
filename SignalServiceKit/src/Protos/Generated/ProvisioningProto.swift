@@ -38,15 +38,6 @@ public enum ProvisioningProtoError: Error {
             proto.body = valueParam
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionEnvelope? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> ProvisioningProtoProvisionEnvelope {
             return try ProvisioningProtoProvisionEnvelope.parseProto(proto)
         }
@@ -68,15 +59,6 @@ public enum ProvisioningProtoError: Error {
         self.proto = proto
         self.publicKey = publicKey
         self.body = body
-    }
-
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
     }
 
     @objc
@@ -110,6 +92,22 @@ public enum ProvisioningProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension ProvisioningProtoProvisionEnvelope {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeBuilder {
+    @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionEnvelope? {
+        return try! self.build()
+    }
+}
+
+#endif
 
 // MARK: - ProvisioningProtoProvisionMessage
 
@@ -164,15 +162,6 @@ public enum ProvisioningProtoError: Error {
             proto.readReceipts = valueParam
         }
 
-        // NOTE: This method is intended for debugging purposes only.
-        @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionMessage? {
-            guard _isDebugAssertConfiguration() else {
-                return nil
-            }
-
-            return try! self.build()
-        }
-
         @objc public func build() throws -> ProvisioningProtoProvisionMessage {
             return try ProvisioningProtoProvisionMessage.parseProto(proto)
         }
@@ -214,15 +203,6 @@ public enum ProvisioningProtoError: Error {
         self.userAgent = userAgent
         self.profileKey = profileKey
         self.readReceipts = readReceipts
-    }
-
-    // NOTE: This method is intended for debugging purposes only.
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        guard _isDebugAssertConfiguration() else {
-            return nil
-        }
-
-        return try! self.serializedData()
     }
 
     @objc
@@ -286,3 +266,19 @@ public enum ProvisioningProtoError: Error {
         return result
     }
 }
+
+#if DEBUG
+
+extension ProvisioningProtoProvisionMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension ProvisioningProtoProvisionMessage.ProvisioningProtoProvisionMessageBuilder {
+    @objc public func buildIgnoringErrors() -> ProvisioningProtoProvisionMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
