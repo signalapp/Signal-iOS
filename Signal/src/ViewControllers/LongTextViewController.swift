@@ -74,7 +74,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryColor
-        messageTextView.dataDetectorTypes = OWSAllowedDataDetectorTypes
+        messageTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes
         messageTextView.text = messageBody
 
         // RADAR #18669

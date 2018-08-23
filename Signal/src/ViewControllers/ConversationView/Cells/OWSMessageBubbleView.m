@@ -21,7 +21,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const UIDataDetectorTypes OWSAllowedDataDetectorTypes
+const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     = UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent;
 
 @interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
@@ -97,7 +97,7 @@ const UIDataDetectorTypes OWSAllowedDataDetectorTypes
 
     self.bodyTextView = [self newTextView];
     // Setting dataDetectorTypes is expensive.  Do it just once.
-    self.bodyTextView.dataDetectorTypes = OWSAllowedDataDetectorTypes;
+    self.bodyTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes;
     self.bodyTextView.hidden = YES;
 
     self.footerView = [OWSMessageFooterView new];
