@@ -32,21 +32,21 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     // MARK: - Call Handlers
 
     public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
         self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
     }
 
     public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
         self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
     }
 
     public func receivedIceUpdate(_ iceUpdate: SSKProtoCallMessageIceUpdate, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
 
@@ -58,14 +58,14 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
         self.callService.handleRemoteHangup(thread: thread, callId: hangup.id)
     }
 
     public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactId: callerId)
         self.callService.handleRemoteBusy(thread: thread, callId: busy.id)

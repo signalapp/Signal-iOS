@@ -351,7 +351,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     private func updateContent() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard let rootView = self.view else {
             owsFail("\(logTag) missing root view.")
@@ -383,7 +383,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     private func createFieldsView() -> UIView {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         var rows = [UIView]()
 
@@ -448,7 +448,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     // MARK: -
 
     @objc func didPressSendButton() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard isAtLeastOneFieldSelected() else {
             OWSAlerts.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_NO_FIELDS_SELECTED",

@@ -193,7 +193,7 @@ public class SystemContactsFetcher: NSObject {
     }
 
     private func setupObservationIfNecessary() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         guard !hasSetupObservation else {
             return
         }
@@ -214,7 +214,7 @@ public class SystemContactsFetcher: NSObject {
      */
     @objc
     public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         // Ensure completion is invoked on main thread.
         let completion = { error in
@@ -265,7 +265,7 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func fetchOnceIfAlreadyAuthorized() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         guard authorizationStatus == .authorized else {
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             return
@@ -279,7 +279,7 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard authorizationStatus == .authorized else {
             owsFail("should have already requested contact access")
@@ -293,7 +293,7 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func refreshAfterContactsChange() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard authorizationStatus == .authorized else {
             Logger.info("\(logTag) ignoring contacts change; no access.")
@@ -305,10 +305,10 @@ public class SystemContactsFetcher: NSObject {
     }
 
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             guard status == .expired else {
                 return

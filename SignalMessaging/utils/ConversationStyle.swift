@@ -12,7 +12,7 @@ public class ConversationStyle: NSObject {
     // The width of the collection view.
     @objc public var viewWidth: CGFloat = 0 {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             updateProperties()
         }
@@ -81,7 +81,7 @@ public class ConversationStyle: NSObject {
     }
 
     @objc func uiContentSizeCategoryDidChange() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         updateProperties()
     }

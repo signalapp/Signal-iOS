@@ -272,7 +272,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private class var dbExtensionConfig: YapDatabaseFullTextSearch {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let contentColumnName = "content"
 

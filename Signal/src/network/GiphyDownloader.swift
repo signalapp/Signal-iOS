@@ -31,7 +31,7 @@ class GiphyAssetSegment: NSObject {
     // This state should only be accessed on the main thread.
     public var state: GiphyAssetSegmentState = .waiting {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
         }
     }
 
@@ -126,7 +126,7 @@ enum GiphyAssetRequestState: UInt {
     public var state: GiphyAssetRequestState = .waiting
     public var contentLength: Int = 0 {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
             assert(oldValue == 0)
             assert(contentLength > 0)
 
@@ -148,7 +148,7 @@ enum GiphyAssetRequestState: UInt {
     }
 
     private func segmentSize() -> UInt {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let contentLength = UInt(self.contentLength)
         guard contentLength > 0 else {
@@ -172,7 +172,7 @@ enum GiphyAssetRequestState: UInt {
     }
 
     private func createSegments() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let segmentLength = segmentSize()
         guard segmentLength > 0 else {
@@ -202,7 +202,7 @@ enum GiphyAssetRequestState: UInt {
     }
 
     private func firstSegmentWithState(state: GiphyAssetSegmentState) -> GiphyAssetSegment? {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         for segment in segments {
             guard segment.state != .failed else {
@@ -217,13 +217,13 @@ enum GiphyAssetRequestState: UInt {
     }
 
     public func firstWaitingSegment() -> GiphyAssetSegment? {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         return firstSegmentWithState(state: .waiting)
     }
 
     public func downloadingSegmentsCount() -> UInt {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         var result: UInt = 0
         for segment in segments {
@@ -239,7 +239,7 @@ enum GiphyAssetRequestState: UInt {
     }
 
     public func areAllSegmentsComplete() -> Bool {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         for segment in segments {
             guard segment.state == .complete else {
@@ -294,7 +294,7 @@ enum GiphyAssetRequestState: UInt {
     }
 
     public func cancel() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         wasCancelled = true
         contentLengthTask?.cancel()
@@ -309,14 +309,14 @@ enum GiphyAssetRequestState: UInt {
     }
 
     private func clearCallbacks() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         success = nil
         failure = nil
     }
 
     public func requestDidSucceed(asset: GiphyAsset) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         success?(self, asset)
 
@@ -325,7 +325,7 @@ enum GiphyAssetRequestState: UInt {
     }
 
     public func requestDidFail() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         failure?(self)
 
@@ -397,7 +397,7 @@ extension URLSessionTask {
 
     // Force usage as a singleton
     override private init() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         super.init()
 
@@ -413,7 +413,7 @@ extension URLSessionTask {
     private let kGiphyBaseURL = "https://api.giphy.com/"
 
     private lazy var giphyDownloadSession: URLSession = {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let configuration = GiphyAPI.giphySessionConfiguration()
         configuration.urlCache = nil
@@ -445,7 +445,7 @@ extension URLSessionTask {
                              priority: GiphyRequestPriority,
                              success:@escaping ((GiphyAssetRequest?, GiphyAsset) -> Void),
                              failure:@escaping ((GiphyAssetRequest) -> Void)) -> GiphyAssetRequest? {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         if let asset = assetMap.get(key: rendition.url) {
             // Synchronous cache hit.
@@ -472,7 +472,7 @@ extension URLSessionTask {
     }
 
     public func cancelAllRequests() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         Logger.verbose("\(self.logTag) cancelAllRequests")
 
@@ -531,7 +531,7 @@ extension URLSessionTask {
     }
 
     private func removeAssetRequestFromQueue(assetRequest: GiphyAssetRequest) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard assetRequestQueue.contains(assetRequest) else {
             Logger.warn("\(logTag) could not remove asset request from queue: \(assetRequest.rendition.url)")
@@ -554,7 +554,7 @@ extension URLSessionTask {
     // * Complete/cancel asset requests if possible.
     //
     private func processRequestQueueSync() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard let assetRequest = popNextAssetRequest() else {
             return
@@ -665,7 +665,7 @@ extension URLSessionTask {
     // * Need to download the content length.
     // * Need to download at least one of its segments.
     private func popNextAssetRequest() -> GiphyAssetRequest? {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         let kMaxAssetRequestCount: UInt = 3
         let kMaxAssetRequestsPerAssetCount: UInt = kMaxAssetRequestCount - 1

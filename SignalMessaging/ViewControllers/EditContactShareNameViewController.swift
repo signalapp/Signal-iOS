@@ -241,7 +241,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     }
 
     private func updateContent() {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard let rootView = self.view else {
             owsFail("\(logTag) missing root view.")
@@ -270,7 +270,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     }
 
     private func createFieldsView() -> UIView {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         var rows = [UIView]()
 

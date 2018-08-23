@@ -19,7 +19,7 @@ enum PushNotificationRequestResult: String {
 
 class FailingTSAccountManager: TSAccountManager {
     override public init(networkManager: TSNetworkManager, primaryStorage: OWSPrimaryStorage) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         super.init(networkManager: networkManager, primaryStorage: primaryStorage)
 

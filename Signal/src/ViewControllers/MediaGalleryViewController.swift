@@ -773,7 +773,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
     func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         Logger.info("\(logTag) in \(#function) with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 

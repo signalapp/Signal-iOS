@@ -135,7 +135,7 @@ public enum PushRegistrationError: Error {
     // return any requested push tokens. We don't consider the notifications settings registration
     // *complete*  until AppDelegate#didRegisterUserNotificationSettings is called.
     private func registerUserNotificationSettings() -> Promise<Void> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard self.userNotificationSettingsPromise == nil else {
             let promise = self.userNotificationSettingsPromise!
@@ -183,7 +183,7 @@ public enum PushRegistrationError: Error {
 
     private func registerForVanillaPushToken() -> Promise<String> {
         Logger.info("\(self.logTag) in \(#function)")
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
@@ -233,7 +233,7 @@ public enum PushRegistrationError: Error {
     }
 
     private func registerForVoipPushToken() -> Promise<String> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         Logger.info("\(self.logTag) in \(#function)")
 
         guard self.voipTokenPromise == nil else {

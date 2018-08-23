@@ -38,10 +38,10 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func run(recipientIds: [String]) {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
 
         backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             guard status == .expired else {
                 return
@@ -91,7 +91,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func getProfile(recipientId: String) -> Promise<SignalServiceProfile> {
-        SwiftAssertIsOnMainThread(#function)
+        AssertIsOnMainThread()
         if !ignoreThrottling {
             if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)

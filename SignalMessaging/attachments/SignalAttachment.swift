@@ -157,7 +157,7 @@ public class SignalAttachment: NSObject {
 
     var error: SignalAttachmentError? {
         didSet {
-            SwiftAssertIsOnMainThread(#function)
+            AssertIsOnMainThread()
 
             assert(oldValue == nil)
             Logger.verbose("\(logTag) Attachment has error: \(String(describing: error))")
