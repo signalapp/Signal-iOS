@@ -1111,6 +1111,7 @@ class HardenedRTCSessionDescription {
     }
 
     var logSafeDescription: String {
+        #if DEBUG
         var text = sdp
         text = text.replacingOccurrences(of: "\r", with: "\n")
         text = text.replacingOccurrences(of: "\n\n", with: "\n")
@@ -1123,6 +1124,9 @@ class HardenedRTCSessionDescription {
         }
         let filteredText = filteredLines.joined(separator: "\n")
         return filteredText
+        #else
+        return sdp
+        #endif
     }
 }
 
