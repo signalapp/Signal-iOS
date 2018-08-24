@@ -512,7 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
     OWSAssert(thread);
 
-    [SignalApp.sharedApp presentConversationForThread:thread];
+    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
 @end

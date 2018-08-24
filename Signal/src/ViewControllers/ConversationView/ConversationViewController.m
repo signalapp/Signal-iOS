@@ -1133,22 +1133,6 @@ typedef enum : NSUInteger {
     [self updateBackButtonUnreadCount];
     [self autoLoadMoreIfNecessary];
 
-    switch (self.actionOnOpen) {
-        case ConversationViewActionNone:
-            break;
-        case ConversationViewActionCompose:
-            [self popKeyBoard];
-            break;
-        case ConversationViewActionAudioCall:
-            [self startAudioCall];
-            break;
-        case ConversationViewActionVideoCall:
-            [self startVideoCall];
-            break;
-    }
-
-    // Clear the "on open" state after the view has been presented.
-    self.actionOnOpen = ConversationViewActionNone;
     self.focusMessageIdOnOpen = nil;
 
     self.isViewCompletelyAppeared = YES;
@@ -1173,6 +1157,23 @@ typedef enum : NSUInteger {
             [self becomeFirstResponder];
         }
     }
+
+    switch (self.actionOnOpen) {
+        case ConversationViewActionNone:
+            break;
+        case ConversationViewActionCompose:
+            [self popKeyBoard];
+            break;
+        case ConversationViewActionAudioCall:
+            [self startAudioCall];
+            break;
+        case ConversationViewActionVideoCall:
+            [self startVideoCall];
+            break;
+    }
+
+    // Clear the "on open" state after the view has been presented.
+    self.actionOnOpen = ConversationViewActionNone;
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,

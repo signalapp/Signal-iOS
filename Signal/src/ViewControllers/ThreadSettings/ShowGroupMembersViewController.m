@@ -403,12 +403,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId action:ConversationViewActionCompose];
+    [SignalApp.sharedApp presentConversationForRecipientId:recipientId
+                                                    action:ConversationViewActionCompose
+                                                  animated:YES];
 }
 
 - (void)callMember:(NSString *)recipientId
 {
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId action:ConversationViewActionAudioCall];
+    [SignalApp.sharedApp presentConversationForRecipientId:recipientId
+                                                    action:ConversationViewActionAudioCall
+                                                  animated:YES];
 }
 
 - (void)showSafetyNumberView:(NSString *)recipientId

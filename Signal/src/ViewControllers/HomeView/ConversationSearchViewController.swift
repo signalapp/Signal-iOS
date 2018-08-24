@@ -137,7 +137,7 @@ class ConversationSearchViewController: UITableViewController {
             }
 
             let thread = searchResult.thread
-            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
+            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose, animated: true)
 
         case .contacts:
             let sectionResults = searchResultSet.contacts
@@ -146,7 +146,7 @@ class ConversationSearchViewController: UITableViewController {
                 return
             }
 
-            SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose)
+            SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose, animated: true)
 
         case .messages:
             let sectionResults = searchResultSet.messages
@@ -157,8 +157,9 @@ class ConversationSearchViewController: UITableViewController {
 
             let thread = searchResult.thread
             SignalApp.shared().presentConversation(for: thread.threadRecord,
-                                                   action: .compose,
-                                                   focusMessageId: searchResult.messageId)
+                                                   action: .none,
+                                                   focusMessageId: searchResult.messageId,
+                                                   animated: true)
         }
     }
 

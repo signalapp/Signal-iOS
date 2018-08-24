@@ -558,15 +558,13 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [navigationController pushViewController:vc animated:YES];
 }
 
-+ (void)presentForUpgradeOrNag:(HomeViewController *)presentingController
++ (void)presentForUpgradeOrNag:(HomeViewController *)fromViewController
 {
-    OWSAssert(presentingController);
+    OWSAssert(fromViewController);
 
     ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_UpgradeOrNag];
     OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
-    [presentingController presentTopLevelModalViewController:navigationController
-                                            animateDismissal:YES
-                                         animatePresentation:YES];
+    [fromViewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark - AvatarViewHelperDelegate

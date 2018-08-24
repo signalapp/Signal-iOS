@@ -823,11 +823,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)newConversationWithThread:(TSThread *)thread
 {
     OWSAssert(thread != nil);
-    [self dismissViewControllerAnimated:YES
-                             completion:^() {
-                                 [SignalApp.sharedApp presentConversationForThread:thread
-                                                                            action:ConversationViewActionCompose];
-                             }];
+    [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)showNewGroupView:(id)sender

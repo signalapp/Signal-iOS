@@ -554,9 +554,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         //
         // We just want to make sure contact access is *complete* before showing the compose
         // screen to avoid flicker.
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:viewController];
-        [self presentTopLevelModalViewController:navigationController animateDismissal:YES animatePresentation:YES];
+        OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+        [self.navigationController presentViewController:modal animated:YES completion:nil];
     }];
 }
 
@@ -744,8 +743,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         ExperienceUpgradesPageViewController *experienceUpgradeViewController =
             [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
         [self presentViewController:experienceUpgradeViewController animated:YES completion:nil];
-    } else if (!self.hasEverAppeared && [ProfileViewController shouldDisplayProfileViewOnLaunch]) {
-        [ProfileViewController presentForUpgradeOrNag:self];
     } else {
         [OWSAlerts showIOSUpgradeNagIfNecessary];
     }
@@ -1156,7 +1153,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
         case HomeViewControllerSectionConversations: {
             TSThread *thread = [self threadForIndexPath:indexPath];
-            [self presentThread:thread action:ConversationViewActionNone];
+            [self presentThread:thread action:ConversationViewActionNone animated:YES];
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
         }
@@ -1167,14 +1164,15 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 }
 
-- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action
+- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
 {
-    [self presentThread:thread action:action focusMessageId:nil];
+    [self presentThread:thread action:action focusMessageId:nil animated:isAnimated];
 }
 
 - (void)presentThread:(TSThread *)thread
                action:(ConversationViewAction)action
        focusMessageId:(nullable NSString *)focusMessageId
+             animated:(BOOL)isAnimated
 {
     if (thread == nil) {
         OWSFail(@"Thread unexpectedly nil");
@@ -1183,77 +1181,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        ConversationViewController *viewController = [ConversationViewController new];
-        [viewController configureForThread:thread action:action focusMessageId:focusMessageId];
+        ConversationViewController *conversationVC = [ConversationViewController new];
+        [conversationVC configureForThread:thread action:action focusMessageId:focusMessageId];
         self.lastThread = thread;
 
-        [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
+        [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
     });
-}
-
-- (void)presentTopLevelModalViewController:(UIViewController *)viewController
-                          animateDismissal:(BOOL)animateDismissal
-                       animatePresentation:(BOOL)animatePresentation
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(viewController);
-
-    [self presentViewControllerWithBlock:^{
-        [self presentViewController:viewController animated:animatePresentation completion:nil];
-    }
-                        animateDismissal:animateDismissal];
-}
-
-- (void)pushTopLevelViewController:(UIViewController *)viewController
-                  animateDismissal:(BOOL)animateDismissal
-               animatePresentation:(BOOL)animatePresentation
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(viewController);
-
-    [self presentViewControllerWithBlock:^{
-        [self.navigationController pushViewController:viewController animated:animatePresentation];
-    }
-                        animateDismissal:animateDismissal];
-}
-
-- (void)presentViewControllerWithBlock:(void (^)(void))presentationBlock animateDismissal:(BOOL)animateDismissal
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(presentationBlock);
-
-    // Presenting a "top level" view controller has three steps:
-    //
-    // First, dismiss any presented modal.
-    // Second, pop to the root view controller if necessary.
-    // Third present the new view controller using presentationBlock.
-
-    // Define a block to perform the second step.
-    void (^dismissNavigationBlock)(void) = ^{
-        if (self.navigationController.viewControllers.lastObject != self) {
-            [CATransaction begin];
-            [CATransaction setCompletionBlock:^{
-                presentationBlock();
-            }];
-
-            [self.navigationController popToViewController:self animated:animateDismissal];
-
-            [CATransaction commit];
-        } else {
-            presentationBlock();
-        }
-    };
-
-    // Perform the first step.
-    if (self.presentedViewController) {
-        if ([self.presentedViewController isKindOfClass:[CallViewController class]]) {
-            OWSProdInfo([OWSAnalyticsEvents errorCouldNotPresentViewDueToCall]);
-            return;
-        }
-        [self.presentedViewController dismissViewControllerAnimated:animateDismissal completion:dismissNavigationBlock];
-    } else {
-        dismissNavigationBlock();
-    }
 }
 
 #pragma mark - Groupings

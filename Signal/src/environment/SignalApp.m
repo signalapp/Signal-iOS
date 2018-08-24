@@ -152,24 +152,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Convenience Methods
 
+- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated
+{
+    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone animated:(BOOL)isAnimated];
+}
+
 - (void)presentConversationForRecipientId:(NSString *)recipientId
+                                   action:(ConversationViewAction)action
+                                 animated:(BOOL)isAnimated
 {
-    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone];
+    __block TSThread *thread = nil;
+    [OWSPrimaryStorage.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+        }];
+    [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action
-{
-    DispatchMainThreadSafe(^{
-        __block TSThread *thread = nil;
-        [OWSPrimaryStorage.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-            }];
-        [self presentConversationForThread:thread action:action];
-    });
-}
-
-- (void)presentConversationForThreadId:(NSString *)threadId
+- (void)presentConversationForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
 {
     OWSAssert(threadId.length > 0);
 
@@ -179,22 +179,23 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self presentConversationForThread:thread];
+    [self presentConversationForThread:thread animated:isAnimated];
 }
 
-- (void)presentConversationForThread:(TSThread *)thread
+- (void)presentConversationForThread:(TSThread *)thread animated:(BOOL)isAnimated
 {
-    [self presentConversationForThread:thread action:ConversationViewActionNone];
+    [self presentConversationForThread:thread action:ConversationViewActionNone animated:isAnimated];
 }
 
-- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action
+- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
 {
-    [self presentConversationForThread:thread action:action focusMessageId:nil];
+    [self presentConversationForThread:thread action:action focusMessageId:nil animated:isAnimated];
 }
 
 - (void)presentConversationForThread:(TSThread *)thread
                               action:(ConversationViewAction)action
                       focusMessageId:(nullable NSString *)focusMessageId
+                            animated:(BOOL)isAnimated
 {
     OWSAssertIsOnMainThread();
 
@@ -216,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId];
+        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
     });
 }
 

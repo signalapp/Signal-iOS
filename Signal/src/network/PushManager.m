@@ -154,7 +154,11 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     }
 
     self.hasPresentedConversationSinceLastDeactivation = YES;
-    [SignalApp.sharedApp presentConversationForThreadId:threadId];
+
+    // This will happen before the app is visible. By making this animated:NO, the conversation screen
+    // will be visible to the user immediately upon opening the app, rather than having to watch it animate
+    // in from the homescreen.
+    [SignalApp.sharedApp presentConversationForThreadId:threadId animated:NO];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
