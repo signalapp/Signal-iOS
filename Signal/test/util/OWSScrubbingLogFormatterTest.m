@@ -105,18 +105,20 @@ NS_ASSUME_NONNULL_BEGIN
     id<DDLogFormatter> defaultFormatter = [DDLogFileFormatterDefault new];
 
     NSDictionary<NSString *, NSString *> *valueMap = @{
-        @"0.0.0.0" : @"[ REDACTED_IP_ADDRESS:...0 ]",
-        @"127.0.0.1" : @"[ REDACTED_IP_ADDRESS:...1 ]",
-        @"255.255.255.255" : @"[ REDACTED_IP_ADDRESS:...255 ]",
-        @"1.2.3.4" : @"[ REDACTED_IP_ADDRESS:...4 ]",
-        @"0.0.0.0.0.0" : @"[ REDACTED_IP_ADDRESS:...0 ]",
-        @"255.255.255.255.255.255" : @"[ REDACTED_IP_ADDRESS:...255 ]",
+        @"0.0.0.0" : @"[ REDACTED_IPV4_ADDRESS:...0 ]",
+        @"127.0.0.1" : @"[ REDACTED_IPV4_ADDRESS:...1 ]",
+        @"255.255.255.255" : @"[ REDACTED_IPV4_ADDRESS:...255 ]",
+        @"1.2.3.4" : @"[ REDACTED_IPV4_ADDRESS:...4 ]",
     };
     NSArray<NSString *> *messageFormats = @[
         @"a%@b",
         @"http://%@",
+        @"http://%@/",
         @"%@ and %@ and %@",
         @"%@",
+        @"%@ %@",
+        @"no ip address!",
+        @"",
     ];
 
     for (NSString *ipAddress in valueMap) {
@@ -125,16 +127,18 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSString *messageFormat in messageFormats) {
             NSString *message = [messageFormat stringByReplacingOccurrencesOfString:@"%@" withString:ipAddress];
 
+            NSString *unredactedMessage = [defaultFormatter formatLogMessage:[self messageWithString:messageFormat]];
             NSString *expectedRedactedMessage = [defaultFormatter
                 formatLogMessage:[self messageWithString:[messageFormat
                                                              stringByReplacingOccurrencesOfString:@"%@"
                                                                                        withString:redactedIPAddress]]];
             NSString *redactedMessage = [scrubbingFormatter formatLogMessage:[self messageWithString:message]];
 
-            XCTAssertEqualObjects(expectedRedactedMessage, redactedMessage);
+            XCTAssertEqualObjects(
+                expectedRedactedMessage, redactedMessage, @"Scrubbing failed for message: %@", unredactedMessage);
 
             NSRange ipAddressRange = [redactedMessage rangeOfString:ipAddress];
-            XCTAssertEqual(NSNotFound, ipAddressRange.location, "Failed to redact IP address: %@", redactedMessage);
+            XCTAssertEqual(NSNotFound, ipAddressRange.location, "Failed to redact IP address: %@", unredactedMessage);
         }
     }
 }

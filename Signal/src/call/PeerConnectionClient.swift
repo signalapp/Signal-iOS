@@ -1112,6 +1112,16 @@ class HardenedRTCSessionDescription {
 
     var logSafeDescription: String {
         #if DEBUG
+        return sdp
+        #else
+        return redactIPV6(sdp: redactIcePwd(sdp: sdp))
+        #endif
+    }
+
+    private func redactIcePwd(sdp: String) -> String {
+        #if DEBUG
+        return sdp
+        #else
         var text = sdp
         text = text.replacingOccurrences(of: "\r", with: "\n")
         text = text.replacingOccurrences(of: "\n\n", with: "\n")
@@ -1124,8 +1134,31 @@ class HardenedRTCSessionDescription {
         }
         let filteredText = filteredLines.joined(separator: "\n")
         return filteredText
-        #else
+        #endif
+    }
+
+    private func redactIPV6(sdp: String) -> String {
+        #if DEBUG
         return sdp
+        #else
+
+        // Example values to match:
+        //
+        // * 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+        // * 2001:db8:85a3::8a2e:370:7334
+        // * ::1
+        // * ::
+        // * ::ffff:192.0.2.128
+        //
+        // See: https://en.wikipedia.org/wiki/IPv6_addresshttps://en.wikipedia.org/wiki/IPv6_address
+        do {
+            let regex = try NSRegularExpression(pattern: "[\\da-f]*:[\\da-f]*:[\\da-f:\\.]*",
+                options: .caseInsensitive)
+            return regex.stringByReplacingMatches(in: sdp, options: [], range: NSRange(location: 0, length: sdp.count), withTemplate: "[ REDACTED_IPV6_ADDRESS ]")
+        } catch {
+            owsFail("Could not redact IPv6 addresses.")
+            return "[Could not redact IPv6 addresses.]"
+        }
         #endif
     }
 }

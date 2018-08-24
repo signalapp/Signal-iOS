@@ -40,16 +40,14 @@ NS_ASSUME_NONNULL_BEGIN
     return regex;
 }
 
-- (NSRegularExpression *)ipAddressRegex
+- (NSRegularExpression *)ipV4AddressRegex
 {
     static NSRegularExpression *regex = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        // Match IPv4 and IPv6 addresses.
-        //
-        // NOTE: the second group matches the last "quad/hex?" of the IPv4/IPv6 address.
+        // NOTE: The group matches the last quad of the IPv4 address.
         NSError *error;
-        regex = [NSRegularExpression regularExpressionWithPattern:@"(\\d+\\.\\d+\\.)?\\d+\\.\\d+\\.\\d+\\.(\\d+)"
+        regex = [NSRegularExpression regularExpressionWithPattern:@"\\d+\\.\\d+\\.\\d+\\.(\\d+)"
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
@@ -79,11 +77,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                       range:NSMakeRange(0, [logString length])
                                                withTemplate:@"[ REDACTED_DATA:$1... ]"];
 
-    NSRegularExpression *ipAddressRegex = self.ipAddressRegex;
-    logString = [ipAddressRegex stringByReplacingMatchesInString:logString
-                                                         options:0
-                                                           range:NSMakeRange(0, [logString length])
-                                                    withTemplate:@"[ REDACTED_IP_ADDRESS:...$2 ]"];
+    NSRegularExpression *ipV4AddressRegex = self.ipV4AddressRegex;
+    logString = [ipV4AddressRegex stringByReplacingMatchesInString:logString
+                                                           options:0
+                                                             range:NSMakeRange(0, [logString length])
+                                                      withTemplate:@"[ REDACTED_IPV4_ADDRESS:...$1 ]"];
 
     return logString;
 }
