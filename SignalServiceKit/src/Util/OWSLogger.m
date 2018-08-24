@@ -8,29 +8,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSLogger
 
-+ (void)verbose:(OWSLogBlock)logBlock;
++ (void)verbose:(NSString *)logString;
 {
-    DDLogVerbose(@"%@", logBlock());
+    DDLogVerbose(@"%@", logString);
 }
 
-+ (void)debug:(OWSLogBlock)logBlock;
++ (void)debug:(NSString *)logString;
 {
-    DDLogDebug(@"%@", logBlock());
+    DDLogDebug(@"%@", logString);
 }
 
-+ (void)info:(OWSLogBlock)logBlock;
++ (void)info:(NSString *)logString;
 {
-    DDLogInfo(@"%@", logBlock());
+    DDLogInfo(@"%@", logString);
 }
 
-+ (void)warn:(OWSLogBlock)logBlock;
++ (void)warn:(NSString *)logString;
 {
-    DDLogWarn(@"%@", logBlock());
+    DDLogWarn(@"%@", logString);
 }
 
-+ (void)error:(OWSLogBlock)logBlock;
++ (void)error:(NSString *)logString;
 {
-    DDLogError(@"%@", logBlock());
+    DDLogError(@"%@", logString);
 }
 
 + (void)flush

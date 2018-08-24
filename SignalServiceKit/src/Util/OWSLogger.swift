@@ -7,9 +7,9 @@ import Foundation
 // Once we're on Swift4.2 we can mark this as inlineable
 // @inlinable
 public func owsFormatLogMessage(_ logString: String,
-                    file: String = #file,
-                    function: String = #function,
-                    line: Int = #line) -> String {
+                                file: String = #file,
+                                function: String = #function,
+                                line: Int = #line) -> String {
     let filename = (file as NSString).lastPathComponent
     // We format the filename & line number in a format compatible
     // with XCode's "Open Quickly..." feature.
@@ -25,49 +25,50 @@ open class Logger: NSObject {
                             file: String = #file,
                             function: String = #function,
                             line: Int = #line) {
-        #if DEBUG
-        OWSLogger.verbose({
-            return owsFormatLogMessage(logString(), file: file, function: function, line: line)
-        })
-        #endif
+        guard ShouldLogVerbose() else {
+            return
+        }
+        OWSLogger.verbose(owsFormatLogMessage(logString(), file: file, function: function, line: line))
     }
 
     open class func debug(_ logString: @escaping @autoclosure () -> String,
                           file: String = #file,
                           function: String = #function,
                           line: Int = #line) {
-        #if DEBUG
-        OWSLogger.debug({
-            return owsFormatLogMessage(logString(), file: file, function: function, line: line)
-        })
-        #endif
+        guard ShouldLogDebug() else {
+            return
+        }
+        OWSLogger.debug(owsFormatLogMessage(logString(), file: file, function: function, line: line))
     }
 
     open class func info(_ logString: String,
                          file: String = #file,
                          function: String = #function,
                          line: Int = #line) {
-        OWSLogger.info({
-            return owsFormatLogMessage(logString, file: file, function: function, line: line)
-        })
+        guard ShouldLogInfo() else {
+            return
+        }
+        OWSLogger.info(owsFormatLogMessage(logString, file: file, function: function, line: line))
     }
 
     open class func warn(_ logString: String,
                          file: String = #file,
                          function: String = #function,
                          line: Int = #line) {
-        OWSLogger.warn({
-            return owsFormatLogMessage(logString, file: file, function: function, line: line)
-        })
+        guard ShouldLogWarning() else {
+            return
+        }
+        OWSLogger.warn(owsFormatLogMessage(logString, file: file, function: function, line: line))
     }
 
     open class func error(_ logString: String,
                           file: String = #file,
                           function: String = #function,
                           line: Int = #line) {
-        OWSLogger.error({
-            return owsFormatLogMessage(logString, file: file, function: function, line: line)
-        })
+        guard ShouldLogError() else {
+            return
+        }
+        OWSLogger.error(owsFormatLogMessage(logString, file: file, function: function, line: line))
     }
 
     open class func flush() {

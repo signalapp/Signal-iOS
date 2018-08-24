@@ -4,18 +4,42 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NSString * (^OWSLogBlock)(void);
+static inline BOOL ShouldLogVerbose()
+{
+    return ddLogLevel >= DDLogLevelVerbose;
+}
+
+static inline BOOL ShouldLogDebug()
+{
+    return ddLogLevel >= DDLogLevelDebug;
+}
+
+static inline BOOL ShouldLogInfo()
+{
+    return ddLogLevel >= DDLogLevelInfo;
+}
+
+static inline BOOL ShouldLogWarning()
+{
+    return ddLogLevel >= DDLogLevelWarning;
+}
+
+static inline BOOL ShouldLogError()
+{
+    return ddLogLevel >= DDLogLevelError;
+}
 
 /**
  * A minimal DDLog wrapper for swift.
  */
 @interface OWSLogger : NSObject
 
-+ (void)verbose:(OWSLogBlock)logBlock;
-+ (void)debug:(OWSLogBlock)logBlock;
-+ (void)info:(OWSLogBlock)logBlock;
-+ (void)warn:(OWSLogBlock)logBlock;
-+ (void)error:(OWSLogBlock)logBlock;
++ (void)verbose:(NSString *)logString;
++ (void)debug:(NSString *)logString;
++ (void)info:(NSString *)logString;
++ (void)warn:(NSString *)logString;
++ (void)error:(NSString *)logString;
+
 + (void)flush;
 
 @end
