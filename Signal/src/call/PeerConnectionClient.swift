@@ -1109,6 +1109,21 @@ class HardenedRTCSessionDescription {
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
     }
+
+    var logSafeDescription: String {
+        var text = sdp
+        text = text.replacingOccurrences(of: "\r", with: "\n")
+        text = text.replacingOccurrences(of: "\n\n", with: "\n")
+        let lines = text.components(separatedBy: "\n")
+        let filteredLines: [String] = lines.map { line in
+            guard !line.contains("ice-pwd") else {
+                return "[ REDACTED ice-pwd ]"
+            }
+            return line
+        }
+        let filteredText = filteredLines.joined(separator: "\n")
+        return filteredText
+    }
 }
 
 protocol VideoCaptureSettingsDelegate: class {

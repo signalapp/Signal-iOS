@@ -407,7 +407,7 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "Missing peerConnectionClient")
             }
 
-            Logger.info("session description for outgoing call: \(call.identifiersForLogs), sdp: \(sessionDescription.sdp).")
+            Logger.info("session description for outgoing call: \(call.identifiersForLogs), sdp: \(sessionDescription.logSafeDescription).")
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 do {
@@ -714,7 +714,7 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
 
-            Logger.info("session description for incoming call: \(newCall.identifiersForLogs), sdp: \(negotiatedSessionDescription.sdp).")
+            Logger.info("session description for incoming call: \(newCall.identifiersForLogs), sdp: \(negotiatedSessionDescription.logSafeDescription).")
 
             do {
                 let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder(id: newCall.signalingId,
