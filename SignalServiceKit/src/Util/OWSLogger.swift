@@ -21,20 +21,24 @@ public func owsFormatLogMessage(_ logString: String,
  */
 open class Logger: NSObject {
 
-    open class func verbose(_ logString: String,
+    open class func verbose(_ logString: @autoclosure () -> String,
                             file: String = #file,
                             function: String = #function,
                             line: Int = #line) {
-        let message = owsFormatLogMessage(logString, file: file, function: function, line: line)
+        #if DEBUG
+        let message = owsFormatLogMessage(logString(), file: file, function: function, line: line)
         OWSLogger.verbose(message)
+        #endif
     }
 
-    open class func debug(_ logString: String,
+    open class func debug(_ logString: @autoclosure () -> String,
                           file: String = #file,
                           function: String = #function,
                           line: Int = #line) {
-        let message = owsFormatLogMessage(logString, file: file, function: function, line: line)
+        #if DEBUG
+        let message = owsFormatLogMessage(logString(), file: file, function: function, line: line)
         OWSLogger.debug(message)
+        #endif
     }
 
     open class func info(_ logString: String,
