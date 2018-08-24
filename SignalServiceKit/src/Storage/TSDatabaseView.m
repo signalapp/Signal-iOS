@@ -24,7 +24,18 @@ NSString *const TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 // YAPDB BUG: when changing from non-persistent to persistent view, we had to rename TSThreadDatabaseViewExtensionName
 // -> TSThreadDatabaseViewExtensionName2 to work around https://github.com/yapstudios/YapDatabase/issues/324
 NSString *const TSThreadDatabaseViewExtensionName = @"TSThreadDatabaseViewExtensionName2";
-NSString *const TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName";
+
+// We sort interactions by a monotonically increasing counter.
+//
+// Previously we sorted the interactions database by local timestamp, which was problematic if the local clock changed.
+// We need to maintain the legacy extension for purposes of migration.
+//
+// The "Legacy" sorting extension name constant has the same value as always, so that it won't need to be rebuilt, while
+// the "Modern" sorting extension name constant has the same symbol name as we've always used for sorting interactions,
+// so that the callsites won't need to change.
+NSString *const TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExtensionName_Monotonic";
+NSString *const TSMessageDatabaseViewExtensionName_Legacy = @"TSMessageDatabaseViewExtensionName";
+
 NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *const TSUnreadDatabaseViewExtensionName = @"TSUnreadDatabaseViewExtensionName";
 NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
@@ -149,6 +160,71 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
                                  viewGrouping:viewGrouping
                                       version:@"1"
                                       storage:storage];
+}
+
++ (void)asyncRegisterLegacyThreadInteractionsDatabaseView:(OWSStorage *)storage
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(storage);
+
+    YapDatabaseView *existingView = [storage registeredExtension:TSMessageDatabaseViewExtensionName_Legacy];
+    if (existingView) {
+        OWSFailDebug(@"Registered database view twice: %@", TSMessageDatabaseViewExtensionName_Legacy);
+        return;
+    }
+
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if (![object isKindOfClass:[TSInteraction class]]) {
+            OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
+            return nil;
+        }
+        TSInteraction *interaction = (TSInteraction *)object;
+
+        return interaction.uniqueThreadId;
+    }];
+
+    YapDatabaseViewSorting *viewSorting =
+        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
+            NSString *group,
+            NSString *collection1,
+            NSString *key1,
+            id object1,
+            NSString *collection2,
+            NSString *key2,
+            id object2) {
+            if (![object1 isKindOfClass:[TSInteraction class]]) {
+                OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
+                return NSOrderedSame;
+            }
+            if (![object2 isKindOfClass:[TSInteraction class]]) {
+                OWSFailDebug(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
+                return NSOrderedSame;
+            }
+            TSInteraction *interaction1 = (TSInteraction *)object1;
+            TSInteraction *interaction2 = (TSInteraction *)object2;
+
+            uint64_t timestamp1 = interaction1.timestampForSorting;
+            uint64_t timestamp2 = interaction2.timestampForSorting;
+
+            if (timestamp1 > timestamp2) {
+                return NSOrderedDescending;
+            } else if (timestamp1 < timestamp2) {
+                return NSOrderedAscending;
+            } else {
+                return NSOrderedSame;
+            }
+        }];
+
+    YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
+    options.isPersistent = YES;
+    options.allowedCollections =
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
+
+    YapDatabaseView *view =
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"1" options:options];
+
+    [storage asyncRegisterExtension:view withName:TSMessageDatabaseViewExtensionName_Legacy];
 }
 
 + (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage
@@ -427,6 +503,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     return result;
 }
 
+// MJK TODO - dynamic interactions
 + (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);

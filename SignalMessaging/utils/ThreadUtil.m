@@ -255,6 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dynamic Interactions
 
+// MJK TODO - dynamic interactions
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager

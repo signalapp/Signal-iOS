@@ -190,6 +190,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     //
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
+    [TSDatabaseView asyncRegisterLegacyThreadInteractionsDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadDatabaseView:self];
     [TSDatabaseView asyncRegisterUnreadDatabaseView:self];

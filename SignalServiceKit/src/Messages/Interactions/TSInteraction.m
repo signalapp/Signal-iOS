@@ -7,6 +7,7 @@
 #import "OWSPrimaryStorage+messageIDs.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +30,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_Offer";
     }
 }
+
+@interface TSInteraction ()
+
+@property (nonatomic) uint64_t sortId;
+
+@end
 
 @implementation TSInteraction
 
@@ -124,12 +131,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(other);
 
-    uint64_t timestamp1 = self.timestampForSorting;
-    uint64_t timestamp2 = other.timestampForSorting;
+    uint64_t sortId1 = self.sortId;
+    uint64_t sortId2 = self.sortId;
 
-    if (timestamp1 > timestamp2) {
+    if (sortId1 > sortId2) {
         return NSOrderedDescending;
-    } else if (timestamp1 < timestamp2) {
+    } else if (sortId1 < sortId2) {
         return NSOrderedAscending;
     } else {
         return NSOrderedSame;
@@ -151,9 +158,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      (unsigned long)self.timestamp];
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    // MJK can we remove this? We can't trust the legacy order of this id field. Any reason not to use UUID like for
+    // other objects?
     if (!self.uniqueId) {
         self.uniqueId = [OWSPrimaryStorage getAndIncrementMessageIdWithTransaction:transaction];
+    }
+    if (self.sortId == 0) {
+        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
     }
 
     [super saveWithTransaction:transaction];
@@ -173,6 +186,20 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (BOOL)isDynamicInteraction
 {
     return NO;
+}
+
+#pragma mark - sorting migration
+
+- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (self.sortId != 0) {
+        // This could happen if something else in our startup process saved the interaction
+        // e.g. another migration ran.
+        // During the migration, since we're enumerating the interactions in the proper order,
+        // we want to ignore any previously assigned sortId
+        self.sortId = 0;
+    }
+    [self saveWithTransaction:transaction];
 }
 
 @end
