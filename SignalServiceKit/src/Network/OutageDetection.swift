@@ -19,7 +19,7 @@ public class OutageDetection: NSObject {
             AssertIsOnMainThread()
 
             if hasOutage != oldValue {
-                Logger.info("hasOutage: \(hasOutage).")
+                Logger.info("hasOutage: \(self.hasOutage).")
 
                 NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
             }

@@ -138,7 +138,7 @@ private class SignalCallData: NSObject {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.info("\(isRemoteVideoEnabled)")
+            Logger.info("\(self.isRemoteVideoEnabled)")
         }
     }
 

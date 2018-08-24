@@ -102,7 +102,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Audio Source
 
     var hasAlternateAudioSources: Bool {
-        Logger.info("available audio sources: \(allAudioSources)")
+        Logger.info("available audio sources: \(self.allAudioSources)")
         // internal mic and speakerphone will be the first two, any more than one indicates e.g. an attached bluetooth device.
 
         // TODO is this sufficient? Are their devices w/ bluetooth but no external speaker? e.g. ipod?
