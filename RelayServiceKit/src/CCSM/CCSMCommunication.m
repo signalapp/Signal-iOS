@@ -301,7 +301,7 @@
 
 +(void)updateAllTheThings:(NSString *)urlString
                collection:(NSMutableDictionary *)collection
-                  success:(void (^)())successBlock
+                  success:(void (^)(void))successBlock
                   failure:(void (^)(NSError *error))failureBlock
 {
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];

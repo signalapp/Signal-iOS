@@ -51,8 +51,8 @@ public class ConversationAvatarImageView: AvatarImageView {
     let diameter: UInt
     let contactsManager: OWSContactsManager
 
-    // nil if group avatar
-    let recipientId: String?
+//    // nil if group avatar
+//    let recipientId: String?
 
     // nil if contact avatar
     let groupThreadId: String?
@@ -62,29 +62,18 @@ public class ConversationAvatarImageView: AvatarImageView {
         self.diameter = diameter
         self.contactsManager = contactsManager
 
-        switch thread {
-        case let contactThread as TSThread:
-            self.recipientId = contactThread.contactIdentifier()
-            self.groupThreadId = nil
-        case let groupThread as TSGroupThread:
-            self.recipientId = nil
-            self.groupThreadId = groupThread.uniqueId
-        default:
-            owsFail("in \(#function) unexpected thread type: \(thread)")
-            self.recipientId = nil
-            self.groupThreadId = nil
-        }
+        self.groupThreadId = thread.uniqueId
 
         super.init(frame: .zero)
 
-        if recipientId != nil {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
-
-            NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: NSNotification.Name.OWSContactsManagerSignalAccountsDidChange, object: nil)
-        }
+//        if recipientId != nil {
+//            NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
+//
+//            NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: NSNotification.Name.OWSContactsManagerSignalAccountsDidChange, object: nil)
+//        }
 
         if groupThreadId != nil {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleGroupAvatarChanged(notification:)), name: .TSGroupThreadAvatarChanged, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleGroupAvatarChanged(notification:)), name: .TSThreadAvatarChanged, object: nil)
         }
 
         // TODO group avatar changed
@@ -112,16 +101,16 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        guard let recipientId = self.recipientId else {
-            // shouldn't call this for group threads
-            owsFail("\(logTag) in \(#function) contactId was unexpectedly nil")
-            return
-        }
+//        guard let recipientId = self.recipientId else {
+//            // shouldn't call this for group threads
+//            owsFail("\(logTag) in \(#function) contactId was unexpectedly nil")
+//            return
+//        }
 
-        guard recipientId == changedRecipientId else {
-            // not this avatar
-            return
-        }
+//        guard recipientId == changedRecipientId else {
+//            // not this avatar
+//            return
+//        }
 
         self.updateImage()
     }
@@ -129,7 +118,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     @objc func handleGroupAvatarChanged(notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificationKey_UniqueId] as? String else {
+        guard let changedGroupThreadId = notification.userInfo?[TSThread_NotificationKey_UniqueId] as? String else {
             owsFail("\(logTag) in \(#function) groupThreadId was unexpectedly nil")
             return
         }

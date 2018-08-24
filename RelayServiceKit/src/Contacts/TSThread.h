@@ -6,6 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const TSThreadAvatarChangedNotification;
+extern NSString *const TSThread_NotificationKey_UniqueId;
+
 @class OWSDisappearingMessagesConfiguration;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;

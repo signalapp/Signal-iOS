@@ -90,13 +90,14 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func updateProperties() {
-        if thread.isGroupThread() {
+        // TODO: Pick one of these
+//        if thread.isGroupThread() {
             gutterLeading = 52
             gutterTrailing = 16
-        } else {
-            gutterLeading = 16
-            gutterTrailing = 16
-        }
+//        } else {
+//            gutterLeading = 16
+//            gutterTrailing = 16
+//        }
         fullWidthGutterLeading = 16
         fullWidthGutterTrailing = 16
         headerGutterLeading = 28

@@ -8,8 +8,7 @@
 import Foundation
 import YapDatabase
 
-@objc
-class RelayRecipient: TSYapDatabaseObject {
+@objc public class RelayRecipient: TSYapDatabaseObject {
     
     // Forsta additions - departure from Contact usage
     @objc var firstName = ""
@@ -29,7 +28,7 @@ class RelayRecipient: TSYapDatabaseObject {
     
     fileprivate(set) var devices: NSOrderedSet?
 
-    func fullName() -> String {
+    @objc func fullName() -> String {
         if firstName != "" && lastName != "" {
             return "\(firstName) \(lastName)"
         } else if lastName != "" {
@@ -41,7 +40,7 @@ class RelayRecipient: TSYapDatabaseObject {
         }
     }
     
-    class func registeredRecipient(forRecipientId recipientId: String, transaction: YapDatabaseReadTransaction?) -> RelayRecipient? {
+    @objc class func registeredRecipient(forRecipientId recipientId: String, transaction: YapDatabaseReadTransaction?) -> RelayRecipient? {
         assert((recipientId.count) > 0)
 
         if transaction != nil {
@@ -51,7 +50,7 @@ class RelayRecipient: TSYapDatabaseObject {
         }
     }
     
-    class func getOrCreateRecipient(withUserDictionary userDict: NSDictionary, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
+    @objc public class func getOrCreateRecipient(withUserDictionary userDict: NSDictionary, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
 
         if let uid = userDict["id"] as? String {
             
@@ -104,7 +103,7 @@ class RelayRecipient: TSYapDatabaseObject {
         }
     }
     
-    class func getOrBuildUnsavedRecipient(forRecipientId recipientId: String, transaction: YapDatabaseReadTransaction?) -> RelayRecipient {
+    @objc class func getOrBuildUnsavedRecipient(forRecipientId recipientId: String, transaction: YapDatabaseReadTransaction?) -> RelayRecipient {
         assert((transaction != nil))
         assert((recipientId.count) > 0)
         
@@ -115,12 +114,12 @@ class RelayRecipient: TSYapDatabaseObject {
         }
     }
     
-    class func isRegisteredRecipient(_ recipientId: String, transaction: YapDatabaseReadTransaction) -> Bool {
+    @objc class func isRegisteredRecipient(_ recipientId: String, transaction: YapDatabaseReadTransaction) -> Bool {
         let recipient = RelayRecipient.registeredRecipient(forRecipientId: recipientId, transaction: transaction)
         return (recipient != nil)
     }
     
-    class func mark(asRegisteredAndGet recipientId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
+    @objc class func mark(asRegisteredAndGet recipientId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
 
         if let recipient = RelayRecipient.registeredRecipient(forRecipientId: recipientId, transaction: transaction) {
             return recipient
@@ -132,21 +131,21 @@ class RelayRecipient: TSYapDatabaseObject {
         }
     }
     
-    class func mark(asRegistered recipientId: String, deviceId: UInt32, transaction: YapDatabaseReadWriteTransaction) {
+    @objc class func mark(asRegistered recipientId: String, deviceId: UInt32, transaction: YapDatabaseReadWriteTransaction) {
         if let recipient = RelayRecipient.fetch(uniqueId: recipientId, transaction: transaction) {
             Logger.debug("\(self.logTag()) in \(#function) adding \(deviceId) to existing recipient.")
             recipient.addDevices(NSOrderedSet.init(array: [ NSNumber.init(value: deviceId) ]))
         }
     }
     
-    class func removeUnregisteredRecipient(_ recipientId: String, transaction: YapDatabaseReadWriteTransaction) {
+    @objc class func removeUnregisteredRecipient(_ recipientId: String, transaction: YapDatabaseReadWriteTransaction) {
         if let recipient = RelayRecipient.registeredRecipient(forRecipientId: recipientId, transaction: transaction) {
             Logger.debug("\(self.logTag()) removing recipient: \(recipientId)")
             recipient.remove(with: transaction)
         }
     }
         
-    func addDevices(toRegisteredRecipient devices: NSOrderedSet, transaction: YapDatabaseReadWriteTransaction) {
+    @objc func addDevices(toRegisteredRecipient devices: NSOrderedSet, transaction: YapDatabaseReadWriteTransaction) {
         self.addDevices(devices)
         
         let latest = RelayRecipient.mark(asRegisteredAndGet: self.uniqueId!, transaction: transaction)
@@ -159,7 +158,7 @@ class RelayRecipient: TSYapDatabaseObject {
         latest?.save(with: transaction)
     }
     
-    func removeDevices(fromRecipient devices: NSOrderedSet, transaction: YapDatabaseReadWriteTransaction) {
+    @objc func removeDevices(fromRecipient devices: NSOrderedSet, transaction: YapDatabaseReadWriteTransaction) {
         self.removeDevices(devices)
         
         let latest = RelayRecipient.mark(asRegisteredAndGet: self.uniqueId!, transaction: transaction)
@@ -215,7 +214,7 @@ class RelayRecipient: TSYapDatabaseObject {
     }
 
     
-    class func recipientComparator() -> Comparator {
+    @objc class func recipientComparator() -> Comparator {
         return { obj1, obj2 in
             let contact1 = obj1 as? RelayRecipient
             let contact2 = obj2 as? RelayRecipient

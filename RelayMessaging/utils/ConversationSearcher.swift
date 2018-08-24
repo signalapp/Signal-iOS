@@ -114,10 +114,10 @@ public class ConversationSearcher: NSObject {
                 let sortKey = NSDate.ows_millisecondsSince1970(for: threadViewModel.lastMessageDate)
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
-                if let contactThread = thread as? TSThread {
-                    let recipientId = contactThread.contactIdentifier()
-                    existingConversationRecipientIds.insert(recipientId)
-                }
+//                if let contactThread = thread as? TSThread {
+//                    let recipientId = contactThread.contactIdentifier()
+//                    existingConversationRecipientIds.insert(recipientId)
+//                }
 
                 conversations.append(searchResult)
             } else if let message = match as? TSMessage {
@@ -160,20 +160,20 @@ public class ConversationSearcher: NSObject {
         }
 
         return threads.filter { thread in
-            switch thread {
-            case let groupThread as TSGroupThread:
-                return self.groupThreadSearcher.matches(item: groupThread, query: searchText)
-            case let contactThread as TSThread:
-                return self.contactThreadSearcher.matches(item: contactThread, query: searchText)
-            default:
-                owsFail("Unexpected thread type: \(thread)")
-                return false
-            }
+//            switch thread {
+//            case let groupThread as TSGroupThread:
+                return self.groupThreadSearcher.matches(item: thread, query: searchText)
+//            case let contactThread as TSThread:
+//                return self.contactThreadSearcher.matches(item: contactThread, query: searchText)
+//            default:
+//                owsFail("Unexpected thread type: \(thread)")
+//                return false
+//            }
         }
     }
 
     @objc(filterGroupThreads:withSearchText:)
-    public func filterGroupThreads(_ groupThreads: [TSGroupThread], searchText: String) -> [TSGroupThread] {
+    public func filterGroupThreads(_ groupThreads: [ TSThread ], searchText: String) -> [ TSThread ] {
         guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
             return groupThreads
         }
@@ -196,19 +196,19 @@ public class ConversationSearcher: NSObject {
 
     // MARK: Searchers
 
-    private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
-        let groupName = groupThread.groupModel.groupName
-        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
+    private lazy var groupThreadSearcher: Searcher<TSThread> = Searcher { (groupThread: TSThread) in
+        let groupName = groupThread.title
+        let memberStrings = groupThread.participantIds.map { recipientId in
             self.indexingString(recipientId: recipientId)
             }.joined(separator: " ")
 
         return "\(memberStrings) \(groupName ?? "")"
     }
 
-    private lazy var contactThreadSearcher: Searcher<TSThread> = Searcher { (contactThread: TSThread) in
-        let recipientId = contactThread.contactIdentifier()
-        return self.indexingString(recipientId: recipientId)
-    }
+//    private lazy var contactThreadSearcher: Searcher<TSThread> = Searcher { (contactThread: TSThread) in
+//        let recipientId = contactThread.contactIdentifier()
+//        return self.indexingString(recipientId: recipientId)
+//    }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
         let recipientId = signalAccount.recipientId

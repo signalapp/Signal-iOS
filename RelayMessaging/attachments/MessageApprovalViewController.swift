@@ -148,55 +148,55 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.setContentHuggingHorizontalLow()
         nameLabel.setCompressionResistanceHorizontalLow()
         nameLabel.autoPinTopToSuperviewMargin(withInset: vMargin)
-
-        if let groupThread = self.thread as? TSGroupThread {
-            let groupName = (groupThread.name().count > 0
-            ? groupThread.name()
-                : MessageStrings.newGroupDefaultTitle)
-
-            nameLabel.text = groupName
-            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
-
-            return recipientRow
-        }
-        guard let contactThread = self.thread as? TSThread else {
-            owsFail("Unexpected thread type")
-            return recipientRow
-        }
-
-        nameLabel.attributedText = contactsManager.formattedFullName(forRecipientId: contactThread.contactIdentifier(), font: font)
-        nameLabel.textColor = UIColor.black
-
-        if let profileName = self.profileName(contactThread: contactThread) {
-            // If there's a profile name worth showing, add it as a second line below the name.
-            let profileNameLabel = UILabel()
-            profileNameLabel.textColor = UIColor.ows_darkGray
-            profileNameLabel.font = font
-            profileNameLabel.text = profileName
-            profileNameLabel.lineBreakMode = .byTruncatingTail
-            recipientRow.addSubview(profileNameLabel)
-            profileNameLabel.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: vSpacing)
-            profileNameLabel.autoPinLeading(toTrailingEdgeOf: toLabel, offset: hSpacing)
-            profileNameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
-            profileNameLabel.setContentHuggingHorizontalLow()
-            profileNameLabel.setCompressionResistanceHorizontalLow()
-            profileNameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
-        } else {
-            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
-        }
-
+        
+        //        if let groupThread = self.thread as? TSGroupThread {
+        let groupName = ((thread.title?.count)! > 0
+            ? thread.title
+            : MessageStrings.newGroupDefaultTitle)
+        
+        nameLabel.text = groupName
+        nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
+        
         return recipientRow
+        //        }
+        //        guard let contactThread = self.thread as? TSThread else {
+        //            owsFail("Unexpected thread type")
+        //            return recipientRow
+        //        }
+        //
+        //        nameLabel.attributedText = contactsManager.formattedFullName(forRecipientId: contactThread.contactIdentifier(), font: font)
+        //        nameLabel.textColor = UIColor.black
+        //
+        //        if let profileName = self.profileName(contactThread: contactThread) {
+        //            // If there's a profile name worth showing, add it as a second line below the name.
+//            let profileNameLabel = UILabel()
+//            profileNameLabel.textColor = UIColor.ows_darkGray
+//            profileNameLabel.font = font
+//            profileNameLabel.text = profileName
+//            profileNameLabel.lineBreakMode = .byTruncatingTail
+//            recipientRow.addSubview(profileNameLabel)
+//            profileNameLabel.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: vSpacing)
+//            profileNameLabel.autoPinLeading(toTrailingEdgeOf: toLabel, offset: hSpacing)
+//            profileNameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+//            profileNameLabel.setContentHuggingHorizontalLow()
+//            profileNameLabel.setCompressionResistanceHorizontalLow()
+//            profileNameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
+//        } else {
+//            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
+//        }
+//
+//        return recipientRow
     }
 
-    private func profileName(contactThread: TSThread) -> String? {
-        let recipientId = contactThread.contactIdentifier()
-
-        if contactsManager.hasNameInSystemContacts(forRecipientId: recipientId) {
-            // Don't display profile name when we have a veritas name in system Contacts
-            return nil
-        }
-        return contactsManager.formattedProfileName(forRecipientId: recipientId)
-    }
+//    private func profileName(contactThread: TSThread) -> String? {
+//        let recipientId = contactThread.contactIdentifier()
+//
+//        if contactsManager.hasNameInSystemContacts(forRecipientId: recipientId) {
+//            // Don't display profile name when we have a veritas name in system Contacts
+//            return nil
+//        }
+//        return contactsManager.formattedProfileName(forRecipientId: recipientId)
+//    }
 
     // MARK: - Event Handlers
 

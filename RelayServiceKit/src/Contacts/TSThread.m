@@ -19,6 +19,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+NSString *const TSThreadAvatarChangedNotification = @"TSThreadAvatarChangedNotification";
+NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_UniqueId";
+
 @interface TSThread ()
 
 @property (nonatomic) NSDate *creationDate;
@@ -66,6 +70,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     return self;
+}
+
++(instancetype)getOrCreateThreadWithId:(NSString *)threadId transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSThread *thread = [self fetchObjectWithUniqueID:threadId transaction:transaction];
+    if (thread == nil) {
+        thread = [[self alloc] initWithUniqueId:threadId];
+    }
+    return thread;
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
