@@ -96,7 +96,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     }
 
     private func didSubmitCorrectPin() {
-        Logger.info("noWrongGuesses: \(self.noWrongGuesses)")
+        Logger.info("noWrongGuesses: \(noWrongGuesses)")
 
         self.dismiss(animated: true)
 

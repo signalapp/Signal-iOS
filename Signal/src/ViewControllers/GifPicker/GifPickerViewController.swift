@@ -22,7 +22,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private var viewMode = ViewMode.idle {
         didSet {
-            Logger.info("viewMode: \(self.viewMode)")
+            Logger.info("viewMode: \(viewMode)")
 
             updateContents()
         }
@@ -301,7 +301,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
 
         guard indexPath.row < imageInfos.count else {
-            Logger.warn("indexPath: \(indexPath.row) out of range for imageInfo count: \(self.imageInfos.count) ")
+            Logger.warn("indexPath: \(indexPath.row) out of range for imageInfo count: \(imageInfos.count) ")
             return cell
         }
         let imageInfo = imageInfos[indexPath.row]

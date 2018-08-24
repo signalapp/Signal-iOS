@@ -623,7 +623,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     // Range instead of indexSet since it's contiguous?
     var fetchedIndexSet = IndexSet() {
         didSet {
-            Logger.debug("\(oldValue) -> \(self.fetchedIndexSet)")
+            Logger.debug("\(oldValue) -> \(fetchedIndexSet)")
         }
     }
 
