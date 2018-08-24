@@ -10,12 +10,12 @@ import Foundation
 import YapDatabase
 import RelayServiceKit
 
-class FLContactsManager: NSObject, NSCacheDelegate {
+@objc public class FLContactsManager: NSObject, NSCacheDelegate {
     
-    public static let shared = FLContactsManager()
+    @objc public static let shared = FLContactsManager()
     
-    var allRecipients: [RelayRecipient] = []
-    var activeRecipients: [RelayRecipient] = []
+    @objc public var allRecipients: [RelayRecipient] = []
+    @objc public var activeRecipients: [RelayRecipient] = []
     
     private let avatarCache: NSCache<NSString, UIImage>
 
@@ -28,9 +28,10 @@ class FLContactsManager: NSObject, NSCacheDelegate {
     private let recipientCache: NSCache<NSString, RelayRecipient>
     private let tagCache: NSCache<NSString, FLTag>
 
-    private var prefs: PropertyListPreferences?
+    // TODO: require for gravatar implementation
+//    private var prefs: PropertyListPreferences?
 
-    required override init() {
+    required override public init() {
         
         avatarCache = NSCache<NSString, UIImage>()
         avatarCache.delegate = self
@@ -65,7 +66,7 @@ class FLContactsManager: NSObject, NSCacheDelegate {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func selfRecipient() -> RelayRecipient {
+    @objc public func selfRecipient() -> RelayRecipient {
         let selfId = TSAccountManager.localUID()! as NSString
         var recipient:RelayRecipient? = recipientCache.object(forKey: selfId)
         
@@ -76,22 +77,22 @@ class FLContactsManager: NSObject, NSCacheDelegate {
         return recipient!
     }
     
-    class func recipientComparator() -> Comparator {
+    @objc public class func recipientComparator() -> Comparator {
     }
     
-    func getObservableContacts() -> ObservableValue? {
+    @objc public func getObservableContacts() -> ObservableValue? {
     }
     
-    func doAfterEnvironmentInitSetup() {
+    @objc public func doAfterEnvironmentInitSetup() {
     }
     
-    func updateRecipient(_ userId: String) {
+    @objc public func updateRecipient(_ userId: String) {
     }
     
-    func updateRecipient(_ userId: String, with transaction: YapDatabaseReadWriteTransaction) {
+    @objc public func updateRecipient(_ userId: String, with transaction: YapDatabaseReadWriteTransaction) {
     }
     
-    func recipient(withUserId userId: String) -> RelayRecipient? {
+    @objc public func recipient(withId userId: String) -> RelayRecipient? {
         var recipient:RelayRecipient? = recipientCache.object(forKey: userId as NSString)
         
         if recipient == nil {
@@ -101,7 +102,7 @@ class FLContactsManager: NSObject, NSCacheDelegate {
         return recipient!
     }
     
-    func recipient(withUserId userId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
+    @objc public func recipient(withId userId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
         var recipient:RelayRecipient? = recipientCache.object(forKey: userId as NSString)
         
         if recipient == nil {
@@ -112,13 +113,38 @@ class FLContactsManager: NSObject, NSCacheDelegate {
         
     }
     
-    func refreshCCSMRecipients() {
+    @objc public func refreshCCSMRecipients() {
     }
     
-    func image(forRecipientId uid: String) -> UIImage? {
+    @objc public func image(forRecipientId uid: String) -> UIImage? {
+        // TODO: implement gravatars here
+        var image: UIImage? = nil
+        var cacheKey: NSString? = nil
+        
+        // if using gravatars
+        // cacheKey = "gravatar:\(uid)"
+        // else
+        cacheKey = "avatar:\(uid)" as NSString
+        image = self.avatarCache.object(forKey: cacheKey!)
+        
+        if image == nil {
+            image = self.recipient(withId: uid)?.avatar
+            if image != nil {
+                self.avatarCache.setObject(image!, forKey: cacheKey!)
+            }
+        }
+        return image
     }
     
-    func nameString(forContactId uid: String) -> String? {
+    @objc public func nameString(forRecipientId uid: String) -> String? {
+        if let recipient:RelayRecipient = self.recipient(withId: uid) {
+            if recipient.fullName().count > 0 {
+                return recipient.fullName()
+            } else if (recipient.flTag?.displaySlug.count)! > 0 {
+                return recipient.flTag?.displaySlug
+            }
+        }
+        return NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: "Displayed if for some reason we can't determine a contacts ID *or* name");
     }
     
     // MARK: - Recipient management
@@ -128,31 +154,31 @@ class FLContactsManager: NSObject, NSCacheDelegate {
             for recipientDict in recipientsBlob.allValues {
                 self.readWriteConnection.asyncReadWrite({ (transaction) in
                     if let recipient: RelayRecipient = RelayRecipient.getOrCreateRecipient(withUserDictionary: recipientDict as! NSDictionary, transaction: transaction) {
-                        self.save(recipient, with: transaction)
+                        self.save(recipient: recipient, with: transaction)
                     }
                 })
             }
         }
     }
 
-    public func save(_ recipient: RelayRecipient) {
+    @objc public func save(recipient: RelayRecipient) {
         self.readWriteConnection .readWrite { (transaction) in
-            self.save(recipient, with: transaction)
+            self.save(recipient: recipient, with: transaction)
         }
     }
     
-    public func save(_ recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
+    @objc public func save(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
         recipient.save(with: transaction)
         self.recipientCache.setObject(recipient, forKey: recipient.uniqueId! as NSString)
     }
     
-    public func remove(_ recipient: RelayRecipient) {
+    @objc public func remove(recipient: RelayRecipient) {
         self.readWriteConnection .readWrite { (transaction) in
-            self.remove(recipient, with: transaction)
+            self.remove(recipient: recipient, with: transaction)
         }
     }
     
-    public func remove(_ recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
+    @objc public func remove(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
         self.recipientCache.removeObject(forKey: recipient.uniqueId! as NSString)
         recipient.remove(with: transaction)
     }
@@ -165,45 +191,49 @@ class FLContactsManager: NSObject, NSCacheDelegate {
                 self.readWriteConnection.asyncReadWrite({ (transaction) in
                     let aTag:FLTag = FLTag.getOrCreateTag(with: tagDict as! [AnyHashable : Any], transaction: transaction)!
                     if aTag.recipientIds?.count == 0 {
-                        self.remove(aTag, with: transaction)
+                        self.remove(tag: aTag, with: transaction)
                     } else {
-                        self.save(aTag, with: transaction)
+                        self.save(tag: aTag, with: transaction)
                     }
                 })
             }
         }
     }
 
-    public func save(_ tag: FLTag) {
+    @objc public func save(tag: FLTag) {
         self.readWriteConnection.readWrite { (transaction) in
-            self.save(tag, with: transaction)
+            self.save(tag: tag, with: transaction)
         }
     }
     
-    public func save(_ tag: FLTag, with transaction: YapDatabaseReadWriteTransaction) {
+    @objc public func save(tag: FLTag, with transaction: YapDatabaseReadWriteTransaction) {
         tag.save(with: transaction)
         self.tagCache.setObject(tag, forKey: tag.uniqueId! as NSString)
     }
     
-    public func remove(_ tag: FLTag) {
+    @objc public func remove(tag: FLTag) {
         self.readWriteConnection.readWrite { (transaction) in
-            self.remove(tag, with: transaction)
+            self.remove(tag: tag, with: transaction)
         }
     }
     
-    public func remove(_ tag: FLTag, with transaction: YapDatabaseReadWriteTransaction) {
+    @objc public func remove(tag: FLTag, with transaction: YapDatabaseReadWriteTransaction) {
         self.tagCache.removeObject(forKey: tag.uniqueId! as NSString)
         tag.remove(with: transaction)
     }
     
 
-    func nukeAndPave() {
+    @objc func nukeAndPave() {
         self.tagCache.removeAllObjects()
         self.recipientCache.removeAllObjects()
         RelayRecipient.removeAllObjectsInCollection()
         FLTag.removeAllObjectsInCollection()
     }
+    
+    // MARK: - Helpers
 }
+
+
 
 //extension FLContactsManager : NSCacheDelegate {
 //
