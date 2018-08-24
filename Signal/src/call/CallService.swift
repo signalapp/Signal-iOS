@@ -146,7 +146,7 @@ private class SignalCallData: NSObject {
         didSet {
             AssertIsOnMainThread()
 
-            Logger.debug(".peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(String(describing: peerConnectionClient))")
+            Logger.debug(".peerConnectionClient setter: \(oldValue != nil) -> \(self.peerConnectionClient != nil) \(String(describing: self.peerConnectionClient))")
         }
     }
 
@@ -253,7 +253,7 @@ private class SignalCallData: NSObject {
                 }
             }
 
-            Logger.debug(".callData setter: \(oldValue?.call.identifiersForLogs as Optional) -> \(callData?.call.identifiersForLogs as Optional)")
+            Logger.debug(".callData setter: \(oldValue?.call.identifiersForLogs as Optional) -> \(self.callData?.call.identifiersForLogs as Optional)")
 
             for observer in observers {
                 observer.value?.didUpdateCall(call: callData?.call)

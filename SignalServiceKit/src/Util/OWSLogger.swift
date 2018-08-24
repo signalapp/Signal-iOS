@@ -21,23 +21,25 @@ public func owsFormatLogMessage(_ logString: String,
  */
 open class Logger: NSObject {
 
-    open class func verbose(_ logString: @autoclosure () -> String,
+    open class func verbose(_ logString: @escaping @autoclosure () -> String,
                             file: String = #file,
                             function: String = #function,
                             line: Int = #line) {
         #if DEBUG
-        let message = owsFormatLogMessage(logString(), file: file, function: function, line: line)
-        OWSLogger.verbose(message)
+        OWSLogger.verbose({
+            return owsFormatLogMessage(logString(), file: file, function: function, line: line)
+        })
         #endif
     }
 
-    open class func debug(_ logString: @autoclosure () -> String,
+    open class func debug(_ logString: @escaping @autoclosure () -> String,
                           file: String = #file,
                           function: String = #function,
                           line: Int = #line) {
         #if DEBUG
-        let message = owsFormatLogMessage(logString(), file: file, function: function, line: line)
-        OWSLogger.debug(message)
+        OWSLogger.debug({
+            return owsFormatLogMessage(logString(), file: file, function: function, line: line)
+        })
         #endif
     }
 
@@ -45,24 +47,27 @@ open class Logger: NSObject {
                          file: String = #file,
                          function: String = #function,
                          line: Int = #line) {
-        let message = owsFormatLogMessage(logString, file: file, function: function, line: line)
-        OWSLogger.info(message)
+        OWSLogger.info({
+            return owsFormatLogMessage(logString, file: file, function: function, line: line)
+        })
     }
 
     open class func warn(_ logString: String,
                          file: String = #file,
                          function: String = #function,
                          line: Int = #line) {
-        let message = owsFormatLogMessage(logString, file: file, function: function, line: line)
-        OWSLogger.warn(message)
+        OWSLogger.warn({
+            return owsFormatLogMessage(logString, file: file, function: function, line: line)
+        })
     }
 
     open class func error(_ logString: String,
                           file: String = #file,
                           function: String = #function,
                           line: Int = #line) {
-        let message = owsFormatLogMessage(logString, file: file, function: function, line: line)
-        OWSLogger.error(message)
+        OWSLogger.error({
+            return owsFormatLogMessage(logString, file: file, function: function, line: line)
+        })
     }
 
     open class func flush() {

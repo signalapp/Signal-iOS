@@ -82,7 +82,7 @@ extension GiphyError: LocalizedError {
     }
 
     public func log() {
-        Logger.verbose("\t \(format), \(name), \(width), \(height), \(fileSize)")
+        Logger.verbose("\t \(self.format), \(self.name), \(self.width), \(self.height), \(self.fileSize)")
     }
 }
 
@@ -114,7 +114,7 @@ extension GiphyError: LocalizedError {
     }
 
     public func log() {
-        Logger.verbose("giphyId: \(giphyId), \(renditions.count)")
+        Logger.verbose("giphyId: \(self.giphyId), \(self.renditions.count)")
         for rendition in renditions {
             rendition.log()
         }

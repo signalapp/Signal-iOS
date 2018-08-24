@@ -28,13 +28,13 @@ public class DisappearingTimerConfigurationView: UIView {
 
     override public var frame: CGRect {
         didSet {
-            Logger.verbose("\(oldValue) -> \(frame)")
+            Logger.verbose("\(oldValue) -> \(self.frame)")
         }
     }
 
     override public var bounds: CGRect {
         didSet {
-            Logger.verbose("\(oldValue) -> \(bounds)")
+            Logger.verbose("\(oldValue) -> \(self.bounds)")
         }
     }
 

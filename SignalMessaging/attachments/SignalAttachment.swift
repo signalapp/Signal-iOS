@@ -160,7 +160,7 @@ public class SignalAttachment: NSObject {
             AssertIsOnMainThread()
 
             assert(oldValue == nil)
-            Logger.verbose("Attachment has error: \(String(describing: error))")
+            Logger.verbose("Attachment has error: \(String(describing: self.error))")
         }
     }
 

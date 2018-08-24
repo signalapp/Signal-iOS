@@ -142,7 +142,7 @@ public class OWSAudioSession: NSObject {
         }
 
         guard currentActivities.isEmpty else {
-            Logger.debug("not deactivating due to currentActivities: \(currentActivities)")
+            Logger.debug("not deactivating due to currentActivities: \(self.currentActivities)")
             return
         }
 

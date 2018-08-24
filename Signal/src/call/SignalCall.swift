@@ -121,7 +121,7 @@ protocol CallObserver: class {
     var audioSource: AudioSource? = nil {
         didSet {
             AssertIsOnMainThread()
-            Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
+            Logger.debug("audioSource changed: \(String(describing: oldValue)) -> \(String(describing: self.audioSource))")
 
             for observer in observers {
                 observer.value?.audioSourceDidChange(call: self, audioSource: audioSource)
