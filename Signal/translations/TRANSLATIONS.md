@@ -52,7 +52,7 @@ little longer?
 
 ## For Maintainers (Signal Staff)
 
-Translations are solicited on Transifex[https://www.transifex.com/]. We
+Translations are solicited on Transifex[https://www.transifex.com/signalapp/signal-ios/]. We
 upload our source language (US English) to Transifex, where our
 translators can submit their translations. Before the app is released,
 we pull their latest work into the code base.

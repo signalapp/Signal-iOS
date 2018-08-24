@@ -5,9 +5,11 @@ Signal is a messaging app for simple private communication with friends.
 [![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8)
 
 ## Translation
-Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/open-whisper-systems/signal-ios/)
+
+Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/signalapp/signal-ios/)
 
 ## Contributing Code
+
 Instructions on how to set up your development environment and build Signal-iOS can be found in [BUILDING.md](https://github.com/signalapp/Signal-iOS/blob/master/BUILDING.md). Other useful instructions for development can be found on the [Development Guide wiki page](https://github.com/signalapp/Signal-iOS/wiki/Development-Guide). We also recommend reading the [contribution guidelines](https://github.com/signalapp/Signal-iOS/blob/master/CONTRIBUTING.md).
 
 ## Contributing Ideas
