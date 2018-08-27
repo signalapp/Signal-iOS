@@ -354,11 +354,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)validStillImageData
 {
     if ([self isVideo]) {
-        OWSFailDebug(@"%@ in %s isVideo was unexpectedly true", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"isVideo was unexpectedly true");
         return nil;
     }
     if ([self isAnimated]) {
-        OWSFailDebug(@"%@ in %s isAnimated was unexpectedly true", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"isAnimated was unexpectedly true");
         return nil;
     }
 

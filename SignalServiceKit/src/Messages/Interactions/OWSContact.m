@@ -1008,7 +1008,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             contact.avatarAttachmentId = attachmentPointer.uniqueId;
             contact.isProfileAvatar = avatarInfo.isProfile;
         } else {
-            OWSFailDebug(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"avatarInfo.hasAvatar was unexpectedly false");
         }
     }
 

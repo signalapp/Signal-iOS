@@ -169,13 +169,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)setExpireStartedAt:(uint64_t)expireStartedAt
 {
     if (_expireStartedAt != 0 && _expireStartedAt < expireStartedAt) {
-        OWSLogDebug(@"%@ in %s ignoring later startedAt time", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogDebug(@"ignoring later startedAt time");
         return;
     }
 
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     if (expireStartedAt > now) {
-        OWSLogWarn(@"%@ in %s using `now` instead of future time", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogWarn(@"using `now` instead of future time");
     }
 
     _expireStartedAt = MIN(now, expireStartedAt);

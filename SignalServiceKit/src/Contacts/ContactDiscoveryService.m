@@ -244,10 +244,10 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self
             performRemoteAttestationWithSuccess:^(RemoteAttestation *_Nonnull remoteAttestation) {
-                OWSLogDebug(@"%@ in %s succeeded", self.logTag, __PRETTY_FUNCTION__);
+                OWSLogDebug(@"succeeded");
             }
             failure:^(NSError *_Nonnull error) {
-                OWSLogDebug(@"%@ in %s failed with error: %@", self.logTag, __PRETTY_FUNCTION__, error);
+                OWSLogDebug(@"failed with error: %@", error);
             }];
     });
 }

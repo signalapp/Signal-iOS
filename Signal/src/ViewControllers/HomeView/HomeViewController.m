@@ -1478,7 +1478,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)requestReviewIfAppropriate
 {
     if (self.hasEverAppeared && Environment.preferences.hasSentAMessage) {
-        OWSLogDebug(@"%@ in %s requesting review", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogDebug(@"requesting review");
         if (@available(iOS 10, *)) {
             // In Debug this pops up *every* time, which is helpful, but annoying.
             // In Production this will pop up at most 3 times per 365 days.
@@ -1487,7 +1487,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 #endif
         }
     } else {
-        OWSLogDebug(@"%@ in %s not requesting review", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogDebug(@"not requesting review");
     }
 }
 

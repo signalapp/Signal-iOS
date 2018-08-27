@@ -332,7 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CNMutableContact *_Nullable mergedCNContact = [oldCNContact mutableCopy];
     if (!mergedCNContact) {
-        OWSFailDebug(@"%@ in %s mergedCNContact was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"mergedCNContact was unexpectedly nil");
         return [CNContact new];
     }
     

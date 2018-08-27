@@ -121,7 +121,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 {
 #ifdef DEBUG
     if (![self.primaryStorage registeredExtension:OWSIncomingMessageFinderExtensionName]) {
-        OWSFailDebug(@"%@ in %s but extension is not registered", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"but extension is not registered");
 
         // we should be initializing this at startup rather than have an unexpectedly slow lazy setup at random.
         [self registerExtension];

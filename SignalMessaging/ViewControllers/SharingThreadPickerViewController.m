@@ -296,7 +296,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)approveContactShare:(ContactShareApprovalViewController *)approvalViewController
      didApproveContactShare:(ContactShareViewModel *)contactShare
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
@@ -326,7 +326,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)approveContactShare:(ContactShareApprovalViewController *)approvalViewController
       didCancelContactShare:(ContactShareViewModel *)contactShare
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [self cancelShareExperience];
 }

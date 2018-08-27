@@ -1162,7 +1162,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSAttachmentPointer fetchObjectWithUniqueID:contact.avatarAttachmentId transaction:transaction];
 
         if (![attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSFailDebug(@"%@ in %s avatar attachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"avatar attachmentPointer was unexpectedly nil");
         } else {
             OWSAttachmentsProcessor *attachmentProcessor =
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer

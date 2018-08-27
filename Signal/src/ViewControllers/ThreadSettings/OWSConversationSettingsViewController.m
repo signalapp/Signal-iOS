@@ -1264,7 +1264,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)colorPicker:(ColorPickerViewController *)colorPicker didPickColorName:(NSString *)colorName
 {
-    OWSLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
+    OWSLogDebug(@"picked color: %@", colorName);
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.thread updateConversationColorName:colorName transaction:transaction];
     }];

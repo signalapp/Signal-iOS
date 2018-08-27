@@ -337,7 +337,7 @@ void AssertIsOnDisappearingMessagesQueue()
 - (void)disappearanceTimerDidFire
 {
     OWSAssertIsOnMainThread();
-    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
@@ -355,7 +355,7 @@ void AssertIsOnDisappearingMessagesQueue()
 - (void)fallbackTimerDidFire
 {
     OWSAssertIsOnMainThread();
-    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
 
     BOOL recentlyScheduledDisappearanceTimer = NO;
     if (fabs(self.nextDisappearanceDate.timeIntervalSinceNow) < 1.0) {

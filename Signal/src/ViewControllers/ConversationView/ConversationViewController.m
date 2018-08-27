@@ -592,13 +592,13 @@ typedef enum : NSUInteger {
 
 - (BOOL)becomeFirstResponder
 {
-    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     return [super becomeFirstResponder];
 }
 
 - (BOOL)resignFirstResponder
 {
-    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     return [super resignFirstResponder];
 }
 
@@ -2317,7 +2317,7 @@ typedef enum : NSUInteger {
 
     TSMessage *message = (TSMessage *)viewItem.interaction;
     if (![message isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"%@ in %s message had unexpected class: %@", self.logTag, __PRETTY_FUNCTION__, message.class);
+        OWSFailDebug(@"message had unexpected class: %@", message.class);
         return;
     }
 
@@ -5225,13 +5225,13 @@ typedef enum : NSUInteger {
 
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
 {
-    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker contactFetchDidFail:(NSError *)error
 {
-    OWSLogDebug(@"%@ in %s with error %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSLogDebug(@"with error %@", error);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -5245,7 +5245,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
+    OWSLogDebug(@"with contact: %@", contact);
 
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
     if (!contactShareRecord) {
@@ -5280,7 +5280,7 @@ typedef enum : NSUInteger {
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
 {
-    OWSFailDebug(@"%@ in %s with contacts: %@", self.logTag, __PRETTY_FUNCTION__, contacts);
+    OWSFailDebug(@"with contacts: %@", contacts);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -5295,7 +5295,7 @@ typedef enum : NSUInteger {
 - (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
      didApproveContactShare:(ContactShareViewModel *)contactShare
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
@@ -5306,7 +5306,7 @@ typedef enum : NSUInteger {
 - (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
       didCancelContactShare:(ContactShareViewModel *)contactShare
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -5315,7 +5315,7 @@ typedef enum : NSUInteger {
 
 - (void)didCreateOrEditContact
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -5323,7 +5323,7 @@ typedef enum : NSUInteger {
 
 - (void)presentMissingQuotedReplyToast
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
         @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "
@@ -5338,7 +5338,7 @@ typedef enum : NSUInteger {
 
 - (void)presentRemotelySourcedQuotedReplyToast
 {
-    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
         @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "

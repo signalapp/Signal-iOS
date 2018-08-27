@@ -176,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
-    OWSFailDebug(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFailDebug(@"");
 }
 
 - (nullable UIViewController *)frontmostViewController
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
 {
-    OWSFailDebug(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFailDebug(@"");
 }
 
 - (BOOL)isRunningTests
@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
-    OWSFailDebug(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFailDebug(@"");
 }
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block

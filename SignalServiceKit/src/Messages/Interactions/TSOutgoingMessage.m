@@ -477,7 +477,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             // no longer be considered sent.
             // So here we take extra care not to stop any expiration that had previously started.
             // This can also happen under normal cirumstances with an outgoing group message.
-            OWSLogWarn(@"%@ in %s expiration previously started", self.logTag, __PRETTY_FUNCTION__);
+            OWSLogWarn(@"expiration previously started");
 
             return YES;
         }
@@ -904,7 +904,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         if (contactProto) {
             [builder addContact:contactProto];
         } else {
-            OWSFailDebug(@"%@ in %s contactProto was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"contactProto was unexpectedly nil");
         }
     }
 

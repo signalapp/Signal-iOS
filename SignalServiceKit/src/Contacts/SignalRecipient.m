@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [self.devices containsObject:@(1)]) {
-        OWSFailDebug(@"%@ in %s self as recipient device", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"self as recipient device");
     }
 
     return self;
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(devices.count > 0);
     
     if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [devices containsObject:@(1)]) {
-        OWSFailDebug(@"%@ in %s adding self as recipient device", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"adding self as recipient device");
         return;
     }
 
