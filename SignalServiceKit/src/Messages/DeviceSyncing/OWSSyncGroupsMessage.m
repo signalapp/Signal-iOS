@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
-        DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
+        OWSLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        usingBlock:^(id obj, BOOL *stop) {
                                            if (![obj isKindOfClass:[TSGroupThread class]]) {
                                                if (![obj isKindOfClass:[TSContactThread class]]) {
-                                                   DDLogWarn(
+                                                   OWSLogWarn(
                                                        @"Ignoring non group thread in thread collection: %@", obj);
                                                }
                                                return;

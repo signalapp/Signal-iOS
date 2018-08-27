@@ -42,7 +42,7 @@ NSString *const OWSDeviceProvisioningCodeServiceProvisioningCodeKey = @"verifica
     TSRequest *request = [OWSRequestFactory deviceProvisioningCodeRequest];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-            DDLogVerbose(@"ProvisioningCode request succeeded");
+            OWSLogVerbose(@"ProvisioningCode request succeeded");
             if ([(NSObject *)responseObject isKindOfClass:[NSDictionary class]]) {
                 NSDictionary *responseDict = (NSDictionary *)responseObject;
                 NSString *provisioningCode =
@@ -54,7 +54,7 @@ NSString *const OWSDeviceProvisioningCodeServiceProvisioningCodeKey = @"verifica
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents errorProvisioningCodeRequestFailed]);
             }
-            DDLogVerbose(@"ProvisioningCode request failed with error: %@", error);
+            OWSLogVerbose(@"ProvisioningCode request failed with error: %@", error);
             failureCallback(error);
         }];
 }

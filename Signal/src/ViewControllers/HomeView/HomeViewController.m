@@ -541,13 +541,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NewContactThreadViewController *viewController = [NewContactThreadViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
-            DDLogError(@"%@ Error when requesting contacts: %@", self.logTag, error);
+            OWSLogError(@"%@ Error when requesting contacts: %@", self.logTag, error);
         }
         // Even if there is an error fetching contacts we proceed to the next screen.
         // As the compose view will present the proper thing depending on contact access.
@@ -899,9 +899,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
-    DDLogInfo(@"%@ beggining refreshing.", self.logTag);
+    OWSLogInfo(@"%@ beggining refreshing.", self.logTag);
     [SignalApp.sharedApp.messageFetcherJob run].always(^{
-        DDLogInfo(@"%@ ending refreshing.", self.logTag);
+        OWSLogInfo(@"%@ ending refreshing.", self.logTag);
         [refreshControl endRefreshing];
     });
 }
@@ -1143,7 +1143,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DDLogInfo(@"%@ %s %ld %ld", self.logTag, __PRETTY_FUNCTION__, (long)indexPath.row, (long)indexPath.section);
+    OWSLogInfo(@"%@ %s %ld %ld", self.logTag, __PRETTY_FUNCTION__, (long)indexPath.row, (long)indexPath.section);
 
     [self.searchBar resignFirstResponder];
     HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
@@ -1263,7 +1263,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -1284,7 +1284,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
@@ -1478,7 +1478,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)requestReviewIfAppropriate
 {
     if (self.hasEverAppeared && Environment.preferences.hasSentAMessage) {
-        DDLogDebug(@"%@ in %s requesting review", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogDebug(@"%@ in %s requesting review", self.logTag, __PRETTY_FUNCTION__);
         if (@available(iOS 10, *)) {
             // In Debug this pops up *every* time, which is helpful, but annoying.
             // In Production this will pop up at most 3 times per 365 days.
@@ -1487,7 +1487,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 #endif
         }
     } else {
-        DDLogDebug(@"%@ in %s not requesting review", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogDebug(@"%@ in %s not requesting review", self.logTag, __PRETTY_FUNCTION__);
     }
 }
 

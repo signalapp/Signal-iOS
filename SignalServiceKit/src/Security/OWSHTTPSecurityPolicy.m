@@ -56,7 +56,7 @@
     [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
 
     if (SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies) != errSecSuccess) {
-        DDLogError(@"The trust policy couldn't be set.");
+        OWSLogError(@"The trust policy couldn't be set.");
         return NO;
     }
 
@@ -67,7 +67,7 @@
     }
 
     if (SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates) != errSecSuccess) {
-        DDLogError(@"The anchor certificates couldn't be set.");
+        OWSLogError(@"The anchor certificates couldn't be set.");
         return NO;
     }
 

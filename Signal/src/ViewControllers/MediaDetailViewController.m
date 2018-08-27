@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didDoubleTapImage:(UITapGestureRecognizer *)gesture
 {
-    DDLogVerbose(@"%@ did double tap image.", self.logTag);
+    OWSLogVerbose(@"%@ did double tap image.", self.logTag);
     if (self.scrollView.zoomScale == self.scrollView.minimumZoomScale) {
         CGFloat kDoubleTapZoomScale = 2;
 
@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressShare:(id)sender
 {
-    DDLogInfo(@"%@: didPressShare", self.logTag);
+    OWSLogInfo(@"%@: didPressShare", self.logTag);
     if (!self.viewItem) {
         OWSFailDebug(@"share should only be available when a viewItem is present");
         return;
@@ -344,7 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressDelete:(id)sender
 {
-    DDLogInfo(@"%@: didPressDelete", self.logTag);
+    OWSLogInfo(@"%@: didPressDelete", self.logTag);
     if (!self.viewItem) {
         OWSFailDebug(@"delete should only be available when a viewItem is present");
         return;
@@ -455,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.isVideo);
     OWSAssert(self.videoPlayer);
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self stopVideo];
 }
@@ -491,7 +491,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error) {
-        DDLogWarn(@"There was a problem saving <%@> to camera roll from %s ",
+        OWSLogWarn(@"There was a problem saving <%@> to camera roll from %s ",
             error.localizedDescription,
             __PRETTY_FUNCTION__);
     }

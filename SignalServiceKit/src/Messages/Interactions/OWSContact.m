@@ -52,7 +52,7 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
 - (BOOL)ows_isValid
 {
     if (self.phoneNumber.ows_stripped.length < 1) {
-        DDLogWarn(@"%@ invalid phone number: %@.", self.logTag, self.phoneNumber);
+        OWSLogWarn(@"%@ invalid phone number: %@.", self.logTag, self.phoneNumber);
         return NO;
     }
     return YES;
@@ -138,7 +138,7 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
 - (BOOL)ows_isValid
 {
     if (self.email.ows_stripped.length < 1) {
-        DDLogWarn(@"%@ invalid email: %@.", self.logTag, self.email);
+        OWSLogWarn(@"%@ invalid email: %@.", self.logTag, self.email);
         return NO;
     }
     return YES;
@@ -217,7 +217,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         && self.neighborhood.ows_stripped.length < 1 && self.city.ows_stripped.length < 1
         && self.region.ows_stripped.length < 1 && self.postcode.ows_stripped.length < 1
         && self.country.ows_stripped.length < 1) {
-        DDLogWarn(@"%@ invalid address; empty.", self.logTag);
+        OWSLogWarn(@"%@ invalid address; empty.", self.logTag);
         return NO;
     }
     return YES;
@@ -410,7 +410,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (BOOL)ows_isValid
 {
     if (self.name.displayName.ows_stripped.length < 1) {
-        DDLogWarn(@"%@ invalid contact; no display name.", self.logTag);
+        OWSLogWarn(@"%@ invalid contact; no display name.", self.logTag);
         return NO;
     }
     BOOL hasValue = NO;
@@ -800,7 +800,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     NSError *error;
     SSKProtoDataMessageContactName *_Nullable nameProto = [nameBuilder buildAndReturnError:&error];
     if (error || !nameProto) {
-        DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
     } else {
         [contactBuilder setName:nameProto];
     }
@@ -828,7 +828,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
         SSKProtoDataMessageContactPhone *_Nullable numberProto = [phoneBuilder buildAndReturnError:&error];
         if (error || !numberProto) {
-            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+            OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
         } else {
             [contactBuilder addNumber:numberProto];
         }
@@ -857,7 +857,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
         SSKProtoDataMessageContactEmail *_Nullable emailProto = [emailBuilder buildAndReturnError:&error];
         if (error || !emailProto) {
-            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+            OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
         } else {
             [contactBuilder addEmail:emailProto];
         }
@@ -892,7 +892,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
         SSKProtoDataMessageContactPostalAddress *_Nullable addressProto = [addressBuilder buildAndReturnError:&error];
         if (error || !addressProto) {
-            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+            OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
         } else {
             [contactBuilder addAddress:addressProto];
         }
@@ -902,13 +902,13 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
             [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
         if (!attachmentProto) {
-            DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+            OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
         } else {
             SSKProtoDataMessageContactAvatarBuilder *avatarBuilder = [SSKProtoDataMessageContactAvatarBuilder new];
             avatarBuilder.avatar = attachmentProto;
             SSKProtoDataMessageContactAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
             if (error || !avatarProto) {
-                DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+                OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
             } else {
                 contactBuilder.avatar = avatarProto;
             }

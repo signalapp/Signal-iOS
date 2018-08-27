@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     self.reportedApplicationState = UIApplicationStateActive;
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
     self.reportedApplicationState = UIApplicationStateBackground;
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
 {
-    DDLogInfo(@"Ignoring request to show/hide status bar since we're in an app extension");
+    OWSLogInfo(@"Ignoring request to show/hide status bar since we're in an app extension");
 }
 
 - (CGFloat)statusBarHeight
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
 {
-    DDLogDebug(@"%@ Ignoring request to block sleep.", self.logTag);
+    OWSLogDebug(@"%@ Ignoring request to block sleep.", self.logTag);
 }
 
 - (void)setMainAppBadgeNumber:(NSInteger)value

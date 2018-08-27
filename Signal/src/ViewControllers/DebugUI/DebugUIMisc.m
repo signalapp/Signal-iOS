@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)reregister
 {
-    DDLogInfo(@"%@ re-registering.", self.logTag);
+    OWSLogInfo(@"%@ re-registering.", self.logTag);
 
     if (![[TSAccountManager sharedInstance] resetForReregistration]) {
         OWSFailDebug(@"%@ could not reset for re-registration.", self.logTag);

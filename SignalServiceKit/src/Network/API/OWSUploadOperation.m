@@ -70,19 +70,19 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     }
 
     if (attachmentStream.isUploaded) {
-        DDLogDebug(@"%@ Attachment previously uploaded.", self.logTag);
+        OWSLogDebug(@"%@ Attachment previously uploaded.", self.logTag);
         [self reportSuccess];
         return;
     }
     
     [self fireNotificationWithProgress:0];
 
-    DDLogDebug(@"%@ alloc attachment: %@", self.logTag, self.attachmentId);
+    OWSLogDebug(@"%@ alloc attachment: %@", self.logTag, self.attachmentId);
     TSRequest *request = [OWSRequestFactory allocAttachmentRequest];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
             if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                DDLogError(@"%@ unexpected response from server: %@", self.logTag, responseObject);
+                OWSLogError(@"%@ unexpected response from server: %@", self.logTag, responseObject);
                 NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                 error.isRetryable = YES;
                 [self reportError:error];
@@ -98,7 +98,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            DDLogError(@"%@ Failed to allocate attachment with error: %@", self.logTag, error);
+            OWSLogError(@"%@ Failed to allocate attachment with error: %@", self.logTag, error);
             error.isRetryable = YES;
             [self reportError:error];
         }];
@@ -108,11 +108,11 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                   location:(NSString *)location
           attachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    DDLogDebug(@"%@ started uploading data for attachment: %@", self.logTag, self.attachmentId);
+    OWSLogDebug(@"%@ started uploading data for attachment: %@", self.logTag, self.attachmentId);
     NSError *error;
     NSData *attachmentData = [attachmentStream readDataFromFileWithError:&error];
     if (error) {
-        DDLogError(@"%@ Failed to read attachment data with error: %@", self.logTag, error);
+        OWSLogError(@"%@ Failed to read attachment data with error: %@", self.logTag, error);
         error.isRetryable = YES;
         [self reportError:error];
         return;
@@ -156,14 +156,14 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
             NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
             BOOL isValidResponse = (statusCode >= 200) && (statusCode < 400);
             if (!isValidResponse) {
-                DDLogError(@"%@ Unexpected server response: %d", self.logTag, (int)statusCode);
+                OWSLogError(@"%@ Unexpected server response: %d", self.logTag, (int)statusCode);
                 NSError *invalidResponseError = OWSErrorMakeUnableToProcessServerResponseError();
                 invalidResponseError.isRetryable = YES;
                 [self reportError:invalidResponseError];
                 return;
             }
 
-            DDLogInfo(@"%@ Uploaded attachment: %p.", self.logTag, attachmentStream.uniqueId);
+            OWSLogInfo(@"%@ Uploaded attachment: %p.", self.logTag, attachmentStream.uniqueId);
             attachmentStream.serverId = serverId;
             attachmentStream.isUploaded = YES;
             [attachmentStream saveAsyncWithCompletionBlock:^{

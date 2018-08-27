@@ -42,7 +42,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
             recipientIdentity.verificationState,
             0);
         if (!verified) {
-            DDLogError(@"%@ could not build protobuf.", self.logTag);
+            OWSLogError(@"%@ could not build protobuf.", self.logTag);
             return;
         }
         contactBuilder.verified = verified;
@@ -61,7 +61,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
             NSError *error;
             SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
             if (error || !avatar) {
-                DDLogError(@"%@ could not build protobuf: %@", self.logTag, error);
+                OWSLogError(@"%@ could not build protobuf: %@", self.logTag, error);
                 return;
             }
             [contactBuilder setAvatar:avatar];

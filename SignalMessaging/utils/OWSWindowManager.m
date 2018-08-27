@@ -177,7 +177,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     CGRect newFrame = self.returnToCallWindow.frame;
     newFrame.size.height = OWSWindowManagerCallBannerHeight();
 
-    DDLogDebug(@"%@ StatusBar changed frames - updating returnToCallWindowFrame: %@",
+    OWSLogDebug(@"%@ StatusBar changed frames - updating returnToCallWindowFrame: %@",
         self.logTag,
         NSStringFromCGRect(newFrame));
     self.returnToCallWindow.frame = newFrame;
@@ -333,7 +333,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssert(self.callViewController);
 
     if (self.callViewController != callViewController) {
-        DDLogWarn(@"%@ Ignoring end call request from obsolete call view controller.", self.logTag);
+        OWSLogWarn(@"%@ Ignoring end call request from obsolete call view controller.", self.logTag);
         return;
     }
 
@@ -439,7 +439,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (self.rootWindow.hidden) {
-        DDLogInfo(@"%@ showing root window.", self.logTag);
+        OWSLogInfo(@"%@ showing root window.", self.logTag);
     }
 
     // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
@@ -453,7 +453,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (!self.rootWindow.hidden) {
-        DDLogInfo(@"%@ hiding root window.", self.logTag);
+        OWSLogInfo(@"%@ hiding root window.", self.logTag);
     }
 
     self.rootWindow.hidden = YES;
@@ -467,7 +467,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         return;
     }
 
-    DDLogInfo(@"%@ showing 'return to call' window.", self.logTag);
+    OWSLogInfo(@"%@ showing 'return to call' window.", self.logTag);
     self.returnToCallWindow.hidden = NO;
     [self.returnToCallViewController startAnimating];
 }
@@ -480,7 +480,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         return;
     }
 
-    DDLogInfo(@"%@ hiding 'return to call' window.", self.logTag);
+    OWSLogInfo(@"%@ hiding 'return to call' window.", self.logTag);
     self.returnToCallWindow.hidden = YES;
     [self.returnToCallViewController stopAnimating];
 }
@@ -490,7 +490,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (self.callViewWindow.hidden) {
-        DDLogInfo(@"%@ showing call window.", self.logTag);
+        OWSLogInfo(@"%@ showing call window.", self.logTag);
     }
 
     [self.callViewWindow makeKeyAndVisible];
@@ -501,7 +501,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (!self.callViewWindow.hidden) {
-        DDLogInfo(@"%@ hiding call window.", self.logTag);
+        OWSLogInfo(@"%@ hiding call window.", self.logTag);
     }
 
     self.callViewWindow.hidden = YES;
@@ -512,7 +512,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (self.menuActionsWindow.hidden) {
-        DDLogInfo(@"%@ showing message actions window.", self.logTag);
+        OWSLogInfo(@"%@ showing message actions window.", self.logTag);
     }
 
     // Do not make key, we want the keyboard to stay popped.
@@ -524,7 +524,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (!self.menuActionsWindow.hidden) {
-        DDLogInfo(@"%@ hiding message actions window.", self.logTag);
+        OWSLogInfo(@"%@ hiding message actions window.", self.logTag);
     }
 
     self.menuActionsWindow.hidden = YES;
@@ -535,7 +535,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (self.screenBlockingWindow.windowLevel != UIWindowLevel_ScreenBlocking()) {
-        DDLogInfo(@"%@ showing block window.", self.logTag);
+        OWSLogInfo(@"%@ showing block window.", self.logTag);
     }
 
     self.screenBlockingWindow.windowLevel = UIWindowLevel_ScreenBlocking();
@@ -547,7 +547,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertIsOnMainThread();
 
     if (self.screenBlockingWindow.windowLevel != UIWindowLevel_Background) {
-        DDLogInfo(@"%@ hiding block window.", self.logTag);
+        OWSLogInfo(@"%@ hiding block window.", self.logTag);
     }
 
     // Never hide the blocking window (that can lead to bad frames).

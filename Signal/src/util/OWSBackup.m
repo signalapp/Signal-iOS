@@ -295,7 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [OWSBackupAPI checkForManifestInCloudWithSuccess:^(BOOL value) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -368,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
 
     if (self.backupImportJob == backupJob) {
         self.backupImportJob = nil;
@@ -381,7 +381,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self ensureBackupExportState];
     } else {
-        DDLogWarn(@"%@ obsolete job succeeded: %@", self.logTag, [backupJob class]);
+        OWSLogWarn(@"%@ obsolete job succeeded: %@", self.logTag, [backupJob class]);
         return;
     }
 
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
 
     if (self.backupImportJob == backupJob) {
         self.backupImportJob = nil;
@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self ensureBackupExportState];
     } else {
-        DDLogInfo(@"%@ obsolete backup job failed.", self.logTag);
+        OWSLogInfo(@"%@ obsolete backup job failed.", self.logTag);
         return;
     }
 
@@ -418,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // TODO: Should we consolidate this state?
     BOOL didChange;
@@ -447,16 +447,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
-        for (NSString *recordName in [recordNames sortedArrayUsingSelector:@selector(compare:)]) {
-            DDLogInfo(@"%@ \t %@", self.logTag, recordName);
+    [OWSBackupAPI
+        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+            for (NSString *recordName in [recordNames sortedArrayUsingSelector:@selector(compare:)]) {
+                OWSLogInfo(@"%@ \t %@", self.logTag, recordName);
+            }
+            OWSLogInfo(@"%@ record count: %zd", self.logTag, recordNames.count);
         }
-        DDLogInfo(@"%@ record count: %zd", self.logTag, recordNames.count);
-    }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to retrieve backup records: %@", self.logTag, error);
+            OWSLogError(@"%@ Failed to retrieve backup records: %@", self.logTag, error);
         }];
 }
 
@@ -464,23 +465,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
-        if (recordNames.count < 1) {
-            DDLogInfo(@"%@ No CloudKit records found to clear.", self.logTag);
-            return;
-        }
-        [OWSBackupAPI deleteRecordsFromCloudWithRecordNames:recordNames
-            success:^{
-                DDLogInfo(@"%@ Clear all CloudKit records succeeded.", self.logTag);
+    [OWSBackupAPI
+        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+            if (recordNames.count < 1) {
+                OWSLogInfo(@"%@ No CloudKit records found to clear.", self.logTag);
+                return;
             }
-            failure:^(NSError *error) {
-                DDLogError(@"%@ Clear all CloudKit records failed: %@.", self.logTag, error);
-            }];
-    }
+            [OWSBackupAPI deleteRecordsFromCloudWithRecordNames:recordNames
+                success:^{
+                    OWSLogInfo(@"%@ Clear all CloudKit records succeeded.", self.logTag);
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"%@ Clear all CloudKit records failed: %@.", self.logTag, error);
+                }];
+        }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to retrieve CloudKit records: %@", self.logTag, error);
+            OWSLogError(@"%@ Failed to retrieve CloudKit records: %@", self.logTag, error);
         }];
 }
 
@@ -548,21 +550,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable attachmentFilePath = [attachment filePath];
     if (attachmentFilePath.length < 1) {
-        DDLogError(@"%@ Attachment has invalid file path.", self.logTag);
+        OWSLogError(@"%@ Attachment has invalid file path.", self.logTag);
         return completion(NO);
     }
     if ([NSFileManager.defaultManager fileExistsAtPath:attachmentFilePath]) {
-        DDLogError(@"%@ Attachment already has file.", self.logTag);
+        OWSLogError(@"%@ Attachment already has file.", self.logTag);
         return completion(NO);
     }
 
     OWSBackupFragment *_Nullable lazyRestoreFragment = attachment.lazyRestoreFragment;
     if (!lazyRestoreFragment) {
-        DDLogWarn(@"%@ Attachment missing lazy restore metadata.", self.logTag);
+        OWSLogWarn(@"%@ Attachment missing lazy restore metadata.", self.logTag);
         return completion(NO);
     }
     if (lazyRestoreFragment.recordName.length < 1 || lazyRestoreFragment.encryptionKey.length < 1) {
-        DDLogError(@"%@ Incomplete lazy restore metadata.", self.logTag);
+        OWSLogError(@"%@ Incomplete lazy restore metadata.", self.logTag);
         return completion(NO);
     }
 
@@ -604,7 +606,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable data = [NSData dataWithContentsOfFile:encryptedFilePath];
     if (!data) {
-        DDLogError(@"%@ Could not load encrypted file.", self.logTag);
+        OWSLogError(@"%@ Could not load encrypted file.", self.logTag);
         return completion(NO);
     }
 
@@ -612,20 +614,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     @autoreleasepool {
         if (![backupIO decryptFileAsFile:encryptedFilePath dstFilePath:decryptedFilePath encryptionKey:encryptionKey]) {
-            DDLogError(@"%@ Could not load decrypt file.", self.logTag);
+            OWSLogError(@"%@ Could not load decrypt file.", self.logTag);
             return completion(NO);
         }
     }
 
     NSString *_Nullable attachmentFilePath = [attachment filePath];
     if (attachmentFilePath.length < 1) {
-        DDLogError(@"%@ Attachment has invalid file path.", self.logTag);
+        OWSLogError(@"%@ Attachment has invalid file path.", self.logTag);
         return completion(NO);
     }
 
     NSString *attachmentDirPath = [attachmentFilePath stringByDeletingLastPathComponent];
     if (![OWSFileSystem ensureDirectoryExists:attachmentDirPath]) {
-        DDLogError(@"%@ Couldn't create directory for attachment file.", self.logTag);
+        OWSLogError(@"%@ Couldn't create directory for attachment file.", self.logTag);
         return completion(NO);
     }
 
@@ -633,7 +635,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL success =
         [NSFileManager.defaultManager moveItemAtPath:decryptedFilePath toPath:attachmentFilePath error:&error];
     if (!success || error) {
-        DDLogError(@"%@ Attachment file could not be restored: %@.", self.logTag, error);
+        OWSLogError(@"%@ Attachment file could not be restored: %@.", self.logTag, error);
         return completion(NO);
     }
 

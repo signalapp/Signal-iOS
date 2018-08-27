@@ -117,9 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    
+
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self updateTableContents];
 }

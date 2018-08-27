@@ -184,10 +184,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
 
             if ([beforeSnapshot isEqual:afterSnapshot]) {
-                DDLogVerbose(@"%@ Ignoring redundant update in %s: %@",
-                    self.logTag,
-                    functionName,
-                    self.debugDescription);
+                OWSLogVerbose(
+                    @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
                 didChange = NO;
             } else {
                 [latestInstance saveWithTransaction:transaction];
@@ -407,7 +405,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 + (nullable NSError *)migrateToSharedData
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
                        sharedDataFilePath:self.sharedDataProfileAvatarsDirPath];
@@ -434,7 +432,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     NSError *error;
     [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
     if (error) {
-        DDLogError(@"Failed to delete database: %@", error.description);
+        OWSLogError(@"Failed to delete database: %@", error.description);
     }
 }
 

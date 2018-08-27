@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)backupTestFile
 {
-    DDLogInfo(@"%@ backupTestFile.", self.logTag);
+    OWSLogInfo(@"%@ backupTestFile.", self.logTag);
 
     NSData *_Nullable data = [Randomness generateRandomBytes:32];
     OWSAssert(data);
@@ -81,26 +81,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)checkForBackup
 {
-    DDLogInfo(@"%@ checkForBackup.", self.logTag);
+    OWSLogInfo(@"%@ checkForBackup.", self.logTag);
 
-    [OWSBackup.sharedManager checkCanImportBackup:^(BOOL value) {
-        DDLogInfo(@"%@ has backup available  for import? %d", self.logTag, value);
-    }
-                                          failure:^(NSError *error){
-                                              // Do nothing.
-                                          }];
+    [OWSBackup.sharedManager
+        checkCanImportBackup:^(BOOL value) {
+            OWSLogInfo(@"%@ has backup available  for import? %d", self.logTag, value);
+        }
+                     failure:^(NSError *error){
+                         // Do nothing.
+                     }];
 }
 
 + (void)logBackupRecords
 {
-    DDLogInfo(@"%@ logBackupRecords.", self.logTag);
+    OWSLogInfo(@"%@ logBackupRecords.", self.logTag);
 
     [OWSBackup.sharedManager logBackupRecords];
 }
 
 + (void)tryToImportBackup
 {
-    DDLogInfo(@"%@ tryToImportBackup.", self.logTag);
+    OWSLogInfo(@"%@ tryToImportBackup.", self.logTag);
 
     UIAlertController *controller =
         [UIAlertController alertControllerWithTitle:@"Restore CloudKit Backup"
@@ -119,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)logDatabaseSizeStats
 {
-    DDLogInfo(@"%@ logDatabaseSizeStats.", self.logTag);
+    OWSLogInfo(@"%@ logDatabaseSizeStats.", self.logTag);
 
     __block unsigned long long interactionCount = 0;
     __block unsigned long long interactionSizeTotal = 0;
@@ -146,28 +147,28 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    DDLogInfo(@"%@ interactionCount: %llu", self.logTag, interactionCount);
-    DDLogInfo(@"%@ interactionSizeTotal: %llu", self.logTag, interactionSizeTotal);
+    OWSLogInfo(@"%@ interactionCount: %llu", self.logTag, interactionCount);
+    OWSLogInfo(@"%@ interactionSizeTotal: %llu", self.logTag, interactionSizeTotal);
     if (interactionCount > 0) {
-        DDLogInfo(@"%@ interaction average size: %f", self.logTag, interactionSizeTotal / (double)interactionCount);
+        OWSLogInfo(@"%@ interaction average size: %f", self.logTag, interactionSizeTotal / (double)interactionCount);
     }
-    DDLogInfo(@"%@ attachmentCount: %llu", self.logTag, attachmentCount);
-    DDLogInfo(@"%@ attachmentSizeTotal: %llu", self.logTag, attachmentSizeTotal);
+    OWSLogInfo(@"%@ attachmentCount: %llu", self.logTag, attachmentCount);
+    OWSLogInfo(@"%@ attachmentSizeTotal: %llu", self.logTag, attachmentSizeTotal);
     if (attachmentCount > 0) {
-        DDLogInfo(@"%@ attachment average size: %f", self.logTag, attachmentSizeTotal / (double)attachmentCount);
+        OWSLogInfo(@"%@ attachment average size: %f", self.logTag, attachmentSizeTotal / (double)attachmentCount);
     }
 }
 
 + (void)clearAllCloudKitRecords
 {
-    DDLogInfo(@"%@ clearAllCloudKitRecords.", self.logTag);
+    OWSLogInfo(@"%@ clearAllCloudKitRecords.", self.logTag);
 
     [OWSBackup.sharedManager clearAllCloudKitRecords];
 }
 
 + (void)clearBackupMetadataCache
 {
-    DDLogInfo(@"%@ ClearBackupMetadataCache.", self.logTag);
+    OWSLogInfo(@"%@ ClearBackupMetadataCache.", self.logTag);
 
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

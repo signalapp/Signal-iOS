@@ -36,7 +36,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     [[storage newDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (NSString *extensionName in storage.registeredExtensionNames) {
-            DDLogVerbose(@"Verifying database extension: %@", extensionName);
+            OWSLogVerbose(@"Verifying database extension: %@", extensionName);
             YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:extensionName];
             if (!viewTransaction) {
                 OWSCFailDebug(@"VerifyRegistrationsForPrimaryStorage missing database extension: %@", extensionName);
@@ -125,8 +125,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [self updateUIDatabaseConnectionToLatest];
 }
 
@@ -182,7 +182,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     OWSAssert(completion);
     OWSAssert(self.database);
 
-    DDLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
+    OWSLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
 
     // Asynchronously register other extensions.
     //
@@ -215,7 +215,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                                              completionBlock:^{
                                                  OWSAssertIsOnMainThread();
                                                  OWSAssert(!self.areAsyncRegistrationsComplete);
-                                                 DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+                                                 OWSLogVerbose(@"%@ async registrations complete.", self.logTag);
                                                  self.areAsyncRegistrationsComplete = YES;
 
                                                  completion();
@@ -231,11 +231,11 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (void)protectFiles
 {
-    DDLogInfo(
+    OWSLogInfo(
         @"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
-    DDLogInfo(
+    OWSLogInfo(
         @"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
-    DDLogInfo(
+    OWSLogInfo(
         @"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
     // Protect the entire new database directory.
@@ -305,7 +305,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (nullable NSError *)migrateToSharedData
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.
@@ -320,7 +320,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            DDLogInfo(@"%@ before migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            OWSLogInfo(
+                @"%@ before migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
 
@@ -373,7 +374,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            DDLogInfo(@"%@ after migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            OWSLogInfo(@"%@ after migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
 
@@ -382,7 +383,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilePath
 {
-    DDLogVerbose(@"%@ databasePath: %@", self.logTag, OWSPrimaryStorage.sharedDataDatabaseFilePath);
+    OWSLogVerbose(@"%@ databasePath: %@", self.logTag, OWSPrimaryStorage.sharedDataDatabaseFilePath);
 
     return self.sharedDataDatabaseFilePath;
 }

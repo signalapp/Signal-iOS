@@ -196,11 +196,11 @@ typedef NSNumber *OWSTaskId;
             // Current state is correct.
             return YES;
         } else if (shouldHaveBackgroundTask) {
-            DDLogInfo(@"%@ Starting background task.", self.logTag);
+            OWSLogInfo(@"%@ Starting background task.", self.logTag);
             return [self startBackgroundTask];
         } else {
             // Need to end background task.
-            DDLogInfo(@"%@ Ending background task.", self.logTag);
+            OWSLogInfo(@"%@ Ending background task.", self.logTag);
             UIBackgroundTaskIdentifier backgroundTaskId = self.backgroundTaskId;
             self.backgroundTaskId = UIBackgroundTaskInvalid;
             [CurrentAppContext() endBackgroundTask:backgroundTaskId];
@@ -232,7 +232,7 @@ typedef NSNumber *OWSTaskId;
 
         // If the background task could not begin, return NO to indicate that.
         if (self.backgroundTaskId == UIBackgroundTaskInvalid) {
-            DDLogError(@"%@ background task could not be started.", self.logTag);
+            OWSLogError(@"%@ background task could not be started.", self.logTag);
 
             return NO;
         }
@@ -363,7 +363,7 @@ typedef NSNumber *OWSTaskId;
             if (!strongSelf) {
                 return;
             }
-            DDLogVerbose(@"%@ task expired", strongSelf.logTag);
+            OWSLogVerbose(@"%@ task expired", strongSelf.logTag);
 
             // Make a local copy of completionBlock to ensure that it is called
             // exactly once.
@@ -374,7 +374,7 @@ typedef NSNumber *OWSTaskId;
                 if (!strongSelf.taskId) {
                     return;
                 }
-                DDLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
+                OWSLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
                 strongSelf.taskId = nil;
 
                 completionBlock = strongSelf.completionBlock;
@@ -389,7 +389,7 @@ typedef NSNumber *OWSTaskId;
 
     // If a background task could not be begun, call the completion block.
     if (!self.taskId) {
-        DDLogError(@"%@ %@ background task could not be started.", self.logTag, self.label);
+        OWSLogError(@"%@ %@ background task could not be started.", self.logTag, self.label);
 
         // Make a local copy of completionBlock to ensure that it is called
         // exactly once.

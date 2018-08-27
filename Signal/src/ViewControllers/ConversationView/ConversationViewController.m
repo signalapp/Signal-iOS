@@ -443,7 +443,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert(thread);
 
-    DDLogInfo(@"%@ configureForThread.", self.logTag);
+    OWSLogInfo(@"%@ configureForThread.", self.logTag);
 
     _thread = thread;
     self.actionOnOpen = action;
@@ -496,7 +496,7 @@ typedef enum : NSUInteger {
         }
     }
 
-    DDLogVerbose(@"%@ reloading conversation view contents.", self.logTag);
+    OWSLogVerbose(@"%@ reloading conversation view contents.", self.logTag);
     [self resetContentAndLayout];
 }
 
@@ -592,13 +592,13 @@ typedef enum : NSUInteger {
 
 - (BOOL)becomeFirstResponder
 {
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
     return [super becomeFirstResponder];
 }
 
 - (BOOL)resignFirstResponder
 {
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
     return [super resignFirstResponder];
 }
 
@@ -660,18 +660,18 @@ typedef enum : NSUInteger {
 {
     UIViewController *_Nullable presentedViewController = self.presentedViewController;
     if (!presentedViewController) {
-        DDLogDebug(@"%@ presentedViewController was nil", self.logTag);
+        OWSLogDebug(@"%@ presentedViewController was nil", self.logTag);
         return;
     }
 
     if ([presentedViewController isKindOfClass:[UIAlertController class]]) {
-        DDLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
+        OWSLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
         [self dismissViewControllerAnimated:NO completion:nil];
         return;
     }
 
     if ([presentedViewController isKindOfClass:[UIImagePickerController class]]) {
-        DDLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
+        OWSLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
         [self dismissViewControllerAnimated:NO completion:nil];
         return;
     }
@@ -679,7 +679,7 @@ typedef enum : NSUInteger {
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    DDLogDebug(@"%@ viewWillAppear", self.logTag);
+    OWSLogDebug(@"%@ viewWillAppear", self.logTag);
 
     [self ensureBannerState];
 
@@ -711,7 +711,7 @@ typedef enum : NSUInteger {
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
-        DDLogVerbose(@"%@ First viewWillAppear took: %.2fms", self.logTag, appearenceDuration * 1000);
+        OWSLogVerbose(@"%@ First viewWillAppear took: %.2fms", self.logTag, appearenceDuration * 1000);
     }
 }
 
@@ -1153,7 +1153,7 @@ typedef enum : NSUInteger {
         // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
         // a distracting animation.
         if (!self.inputToolbar.isInputTextViewFirstResponder) {
-            DDLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
+            OWSLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
             [self becomeFirstResponder];
         }
     }
@@ -1182,7 +1182,7 @@ typedef enum : NSUInteger {
 // until `viewDidDisappear`.
 - (void)viewWillDisappear:(BOOL)animated
 {
-    DDLogDebug(@"%@ viewWillDisappear", self.logTag);
+    OWSLogDebug(@"%@ viewWillDisappear", self.logTag);
 
     [super viewWillDisappear:animated];
 
@@ -1506,7 +1506,7 @@ typedef enum : NSUInteger {
     OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
 
     if (![self canCall]) {
-        DDLogWarn(@"Tried to initiate a call but thread is not callable.");
+        OWSLogWarn(@"Tried to initiate a call but thread is not callable.");
         return;
     }
 
@@ -1549,7 +1549,7 @@ typedef enum : NSUInteger {
  */
 - (void)didChangePreferredContentSize:(NSNotification *)notification
 {
-    DDLogInfo(@"%@ didChangePreferredContentSize", self.logTag);
+    OWSLogInfo(@"%@ didChangePreferredContentSize", self.logTag);
 
     // Evacuate cached cell sizes.
     for (ConversationViewItem *viewItem in self.viewItems) {
@@ -1581,7 +1581,7 @@ typedef enum : NSUInteger {
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
     if (self.userLeftGroup) {
-        DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.logTag);
+        OWSLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.logTag);
         return;
     }
 
@@ -1596,7 +1596,7 @@ typedef enum : NSUInteger {
 
 - (void)disappearingTimerConfigurationViewWasTapped:(DisappearingTimerConfigurationView *)disappearingTimerView
 {
-    DDLogDebug(@"%@ Tapped timer in navbar", self.logTag);
+    OWSLogDebug(@"%@ Tapped timer in navbar", self.logTag);
     [self showConversationSettings];
 }
 
@@ -1717,7 +1717,7 @@ typedef enum : NSUInteger {
         if (self.focusMessageIdOnOpen) {
             OWSAssert(self.dynamicInteractions.focusMessagePosition);
             if (self.dynamicInteractions.focusMessagePosition) {
-                DDLogVerbose(@"%@ ensuring load of focus message: %@",
+                OWSLogVerbose(@"%@ ensuring load of focus message: %@",
                     self.logTag,
                     self.dynamicInteractions.focusMessagePosition);
                 rangeLength = MAX(rangeLength, 1 + self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue);
@@ -1773,10 +1773,10 @@ typedef enum : NSUInteger {
     [processor fetchAttachmentsForMessage:message
         primaryStorage:self.primaryStorage
         success:^(TSAttachmentStream *attachmentStream) {
-            DDLogInfo(@"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
+            OWSLogInfo(@"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
         }
         failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
+            OWSLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
         }];
 }
 
@@ -1802,10 +1802,10 @@ typedef enum : NSUInteger {
                                handler:^(UIAlertAction *action) {
                                    [self.messageSender enqueueMessage:message
                                        success:^{
-                                           DDLogInfo(@"%@ Successfully resent failed message.", self.logTag);
+                                           OWSLogInfo(@"%@ Successfully resent failed message.", self.logTag);
                                        }
                                        failure:^(NSError *error) {
-                                           DDLogWarn(@"%@ Failed to send message with error: %@", self.logTag, error);
+                                           OWSLogWarn(@"%@ Failed to send message with error: %@", self.logTag, error);
                                        }];
                                }];
 
@@ -1820,11 +1820,11 @@ typedef enum : NSUInteger {
     if (signalIdParam == nil) {
         if (self.thread.isGroupThread) {
             // Before 2.13 we didn't track the recipient id in the identity change error.
-            DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
+            OWSLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
             return;
             
         } else {
-            DDLogInfo(
+            OWSLogInfo(
                 @"%@ Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
                 self.logTag,
                 self.thread.contactIdentifier);
@@ -1854,7 +1854,7 @@ typedef enum : NSUInteger {
                 handler:^(UIAlertAction *action) {
                     if (![self.thread isKindOfClass:[TSContactThread class]]) {
                         // Corrupt Message errors only appear in contact threads.
-                        DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
+                        OWSLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
                         return;
                     }
                     TSContactThread *contactThread = (TSContactThread *)self.thread;
@@ -1885,7 +1885,7 @@ typedef enum : NSUInteger {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
-                                   DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.logTag);
+                                   OWSLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.logTag);
                                    [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
                                }];
     [actionSheetController addAction:showSafteyNumberAction];
@@ -1894,7 +1894,7 @@ typedef enum : NSUInteger {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
-                                   DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.logTag);
+                                   OWSLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.logTag);
 
                                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
                                    // but there will be some legacy ones in the wild, behind which await
@@ -1975,7 +1975,7 @@ typedef enum : NSUInteger {
     newInset.bottom -= verticalChange;
     newOffset.y -= verticalChange;
 
-    DDLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
+    OWSLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
         self.logTag,
         __PRETTY_FUNCTION__,
         verticalChange,
@@ -2003,7 +2003,7 @@ typedef enum : NSUInteger {
     newInset.bottom += verticalChange;
     newOffset.y += verticalChange;
 
-    DDLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
+    OWSLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
         self.logTag,
         __PRETTY_FUNCTION__,
         verticalChange,
@@ -2087,7 +2087,7 @@ typedef enum : NSUInteger {
                             @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *action) {
-                    DDLogInfo(@"%@ Blocking an unknown user.", self.logTag);
+                    OWSLogInfo(@"%@ Blocking an unknown user.", self.logTag);
                     [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
                     // Delete the offers.
                     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -2336,7 +2336,7 @@ typedef enum : NSUInteger {
                     }];
             }
             failure:^(NSError *error) {
-                DDLogWarn(@"%@ Failed to redownload thumbnail with error: %@", self.logTag, error);
+                OWSLogWarn(@"%@ Failed to redownload thumbnail with error: %@", self.logTag, error);
                 [self.editingDatabaseConnection
                     asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message touchWithTransaction:transaction];
@@ -2416,7 +2416,7 @@ typedef enum : NSUInteger {
         NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
         NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
         if (additionalItemsToLoad < 1) {
-            DDLogError(@"%@ Couldn't determine how to load quoted reply.", self.logTag);
+            OWSLogError(@"%@ Couldn't determine how to load quoted reply.", self.logTag);
             return;
         }
 
@@ -2435,7 +2435,7 @@ typedef enum : NSUInteger {
         }];
 
         if (!quotedInteraction || !groupIndex) {
-            DDLogError(@"%@ Failed to find quoted reply in group.", self.logTag);
+            OWSLogError(@"%@ Failed to find quoted reply in group.", self.logTag);
             return;
         }
 
@@ -2445,7 +2445,7 @@ typedef enum : NSUInteger {
                                             inGroup:self.thread.uniqueId];
 
         if (!isInMappings) {
-            DDLogError(@"%@ Could not load quoted reply into mapping.", self.logTag);
+            OWSLogError(@"%@ Could not load quoted reply into mapping.", self.logTag);
             return;
         }
     }
@@ -2474,7 +2474,7 @@ typedef enum : NSUInteger {
     BOOL foundInGroup =
         [extension getGroup:nil index:&groupIndex forKey:interaction.uniqueId inCollection:TSInteraction.collection];
     if (!foundInGroup) {
-        DDLogError(@"%@ Couldn't find quoted message in group.", self.logTag);
+        OWSLogError(@"%@ Couldn't find quoted message in group.", self.logTag);
         return nil;
     }
     return @(groupIndex);
@@ -2497,7 +2497,7 @@ typedef enum : NSUInteger {
 
 - (void)populateReplyForViewItem:(ConversationViewItem *)conversationItem
 {
-    DDLogDebug(@"%@ user did tap reply", self.logTag);
+    OWSLogDebug(@"%@ user did tap reply", self.logTag);
 
     __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -2518,7 +2518,7 @@ typedef enum : NSUInteger {
 
 - (void)didFinishEditingContact
 {
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -2532,10 +2532,10 @@ typedef enum : NSUInteger {
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        DDLogDebug(@"%@ completed editing contact.", self.logTag);
+        OWSLogDebug(@"%@ completed editing contact.", self.logTag);
         [self dismissViewControllerAnimated:NO completion:nil];
     } else {
-        DDLogDebug(@"%@ canceled editing contact.", self.logTag);
+        OWSLogDebug(@"%@ canceled editing contact.", self.logTag);
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -2815,7 +2815,7 @@ typedef enum : NSUInteger {
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
-    DDLogDebug(@"%@ Picked document at url: %@", self.logTag, url);
+    OWSLogDebug(@"%@ Picked document at url: %@", self.logTag, url);
 
     NSString *type;
     NSError *typeError;
@@ -2836,7 +2836,7 @@ typedef enum : NSUInteger {
         OWSFailDebug(
             @"%@ Determining if picked document was a directory failed with error: %@", self.logTag, isDirectoryError);
     } else if ([isDirectory boolValue]) {
-        DDLogInfo(@"%@ User picked directory.", self.logTag);
+        OWSLogInfo(@"%@ User picked directory.", self.logTag);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts
@@ -2894,7 +2894,7 @@ typedef enum : NSUInteger {
 {
     [self ows_askForCameraPermissions:^(BOOL granted) {
         if (!granted) {
-            DDLogWarn(@"%@ camera permission denied.", self.logTag);
+            OWSLogWarn(@"%@ camera permission denied.", self.logTag);
             return;
         }
         
@@ -2931,7 +2931,7 @@ typedef enum : NSUInteger {
 
     [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
-            DDLogWarn(@"%@ Media Library permission denied.", self.logTag);
+            OWSLogWarn(@"%@ Media Library permission denied.", self.logTag);
             return;
         }
         
@@ -2971,7 +2971,7 @@ typedef enum : NSUInteger {
 
     NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];
     if (!referenceURL) {
-        DDLogVerbose(@"Could not retrieve reference URL for picked asset");
+        OWSLogVerbose(@"Could not retrieve reference URL for picked asset");
         [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:nil];
         return;
     }
@@ -2997,7 +2997,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
-        DDLogError(@"failed to pick attachment with error: %@", error);
+        OWSLogError(@"failed to pick attachment with error: %@", error);
     };
 
     NSString *mediaType = info[UIImagePickerControllerMediaType];
@@ -3028,7 +3028,7 @@ typedef enum : NSUInteger {
                                                                                filename:filename
                                                                            imageQuality:TSImageQualityCompact];
                                          if (!attachment || [attachment hasError]) {
-                                             DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                                             OWSLogWarn(@"%@ %s Invalid attachment: %@.",
                                                  self.logTag,
                                                  __PRETTY_FUNCTION__,
                                                  attachment ? [attachment errorName] : @"Missing data");
@@ -3084,7 +3084,7 @@ typedef enum : NSUInteger {
                                                     completion:^{
                                                         OWSAssertIsOnMainThread();
                                                         if (!attachment || [attachment hasError]) {
-                                                            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+                                                            OWSLogWarn(@"%@ %s Invalid attachment: %@.",
                                                                 self.logTag,
                                                                 __PRETTY_FUNCTION__,
                                                                 attachment ? [attachment errorName] : @"Missing data");
@@ -3106,7 +3106,7 @@ typedef enum : NSUInteger {
     OWSAssert(![attachment hasError]);
     OWSAssert([attachment mimeType].length > 0);
 
-    DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
+    OWSLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
 
@@ -3129,7 +3129,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    DDLogVerbose(@"%@ Sending contact share.", self.logTag);
+    OWSLogVerbose(@"%@ Sending contact share.", self.logTag);
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
@@ -3179,7 +3179,7 @@ typedef enum : NSUInteger {
 
                           [modalActivityIndicator dismissWithCompletion:^{
                               if (!attachment || [attachment hasError]) {
-                                  DDLogError(@"%@ %s Invalid attachment: %@.",
+                                  OWSLogError(@"%@ %s Invalid attachment: %@.",
                                       self.logTag,
                                       __PRETTY_FUNCTION__,
                                       attachment ? [attachment errorName] : @"Missing data");
@@ -3208,7 +3208,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -3242,8 +3242,8 @@ typedef enum : NSUInteger {
     if (!self.shouldObserveDBModifications) {
         return;
     }
-    
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
     OWSAssert([notifications isKindOfClass:[NSArray class]]);
@@ -3376,7 +3376,7 @@ typedef enum : NSUInteger {
         for (YapDatabaseViewRowChange *rowChange in rowChanges) {
             switch (rowChange.type) {
                 case YapDatabaseViewChangeDelete: {
-                    DDLogVerbose(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                    OWSLogVerbose(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3386,7 +3386,7 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
-                    DDLogVerbose(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
+                    OWSLogVerbose(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3403,8 +3403,8 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
-                    DDLogVerbose(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
-                                 @"finalIndex: %lu",
+                    OWSLogVerbose(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, newIndexPath: %@, "
+                                  @"finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.newIndexPath,
@@ -3413,7 +3413,7 @@ typedef enum : NSUInteger {
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
-                    DDLogVerbose(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                    OWSLogVerbose(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu",
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         (unsigned long)rowChange.finalIndex);
@@ -3424,7 +3424,7 @@ typedef enum : NSUInteger {
         }
     };
 
-    DDLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
 
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
@@ -3432,7 +3432,7 @@ typedef enum : NSUInteger {
         
         
         if (!finished) {
-            DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
+            OWSLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
         }
         
         [self updateLastVisibleTimestamp];
@@ -3580,7 +3580,7 @@ typedef enum : NSUInteger {
         if (granted) {
             [strongSelf startRecordingVoiceMemo];
         } else {
-            DDLogInfo(@"%@ we do not have recording permission.", self.logTag);
+            OWSLogInfo(@"%@ we do not have recording permission.", self.logTag);
             [strongSelf cancelVoiceMemo];
             [OWSAlerts showNoMicrophonePermissionAlert];
         }
@@ -3591,7 +3591,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"startRecordingVoiceMemo");
+    OWSLogInfo(@"startRecordingVoiceMemo");
 
     // Cancel any ongoing audio playback.
     [self.audioAttachmentPlayer stop];
@@ -3645,14 +3645,14 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"endRecordingVoiceMemo");
+    OWSLogInfo(@"endRecordingVoiceMemo");
 
     self.voiceMessageUUID = nil;
 
     if (!self.audioRecorder) {
         // No voice message recording is in progress.
         // We may be cancelling before the recording could begin.
-        DDLogError(@"%@ Missing audioRecorder", self.logTag);
+        OWSLogError(@"%@ Missing audioRecorder", self.logTag);
         return;
     }
 
@@ -3662,7 +3662,7 @@ typedef enum : NSUInteger {
 
     const NSTimeInterval kMinimumRecordingTimeSeconds = 1.f;
     if (durationSeconds < kMinimumRecordingTimeSeconds) {
-        DDLogInfo(@"Discarding voice message; too short.");
+        OWSLogInfo(@"Discarding voice message; too short.");
         self.audioRecorder = nil;
 
         [self dismissKeyBoard];
@@ -3692,9 +3692,9 @@ typedef enum : NSUInteger {
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
-    DDLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.logTag, durationSeconds, [dataSource dataLength]);
+    OWSLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.logTag, durationSeconds, [dataSource dataLength]);
     if (!attachment || [attachment hasError]) {
-        DDLogWarn(@"%@ %s Invalid attachment: %@.",
+        OWSLogWarn(@"%@ %s Invalid attachment: %@.",
             self.logTag,
             __PRETTY_FUNCTION__,
             attachment ? [attachment errorName] : @"Missing data");
@@ -3713,7 +3713,7 @@ typedef enum : NSUInteger {
 - (void)cancelRecordingVoiceMemo
 {
     OWSAssertIsOnMainThread();
-    DDLogDebug(@"cancelRecordingVoiceMemo");
+    OWSLogDebug(@"cancelRecordingVoiceMemo");
 
     [self stopRecording];
     self.audioRecorder = nil;
@@ -3900,15 +3900,15 @@ typedef enum : NSUInteger {
 - (void)markVisibleMessagesAsRead
 {
     if (self.presentedViewController) {
-        DDLogInfo(@"%@ Not marking messages as read; another view is presented.", self.logTag);
+        OWSLogInfo(@"%@ Not marking messages as read; another view is presented.", self.logTag);
         return;
     }
     if (OWSWindowManager.sharedManager.shouldShowCallView) {
-        DDLogInfo(@"%@ Not marking messages as read; call view is presented.", self.logTag);
+        OWSLogInfo(@"%@ Not marking messages as read; call view is presented.", self.logTag);
         return;
     }
     if (self.navigationController.topViewController != self) {
-        DDLogInfo(@"%@ Not marking messages as read; another view is pushed.", self.logTag);
+        OWSLogInfo(@"%@ Not marking messages as read; another view is pushed.", self.logTag);
         return;
     }
 
@@ -3953,24 +3953,24 @@ typedef enum : NSUInteger {
             contentType:OWSMimeTypeImagePng
             inMessage:message
             success:^{
-                DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);
+                OWSLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);
                 if (successCompletion) {
                     successCompletion();
                 }
             }
             failure:^(NSError *error) {
-                DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
+                OWSLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
             }];
     } else {
         [self.messageSender enqueueMessage:message
             success:^{
-                DDLogDebug(@"%@ Successfully sent group update", self.logTag);
+                OWSLogDebug(@"%@ Successfully sent group update", self.logTag);
                 if (successCompletion) {
                     successCompletion();
                 }
             }
             failure:^(NSError *error) {
-                DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
+                OWSLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
             }];
     }
 
@@ -4079,7 +4079,7 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
 {
-    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self tryToSendAttachmentIfApproved:attachment];
 }
@@ -4092,7 +4092,7 @@ typedef enum : NSUInteger {
 - (void)tryToSendAttachmentIfApproved:(SignalAttachment *_Nullable)attachment
                    skipApprovalDialog:(BOOL)skipApprovalDialog
 {
-    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
@@ -4118,7 +4118,7 @@ typedef enum : NSUInteger {
         }
 
         if (attachment == nil || [attachment hasError]) {
-            DDLogWarn(@"%@ %s Invalid attachment: %@.",
+            OWSLogWarn(@"%@ %s Invalid attachment: %@.",
                 self.logTag,
                 __PRETTY_FUNCTION__,
                 attachment ? [attachment errorName] : @"Missing data");
@@ -4138,7 +4138,7 @@ typedef enum : NSUInteger {
     // `willChange` is the correct keyboard notifiation to observe when adjusting contentInset
     // in lockstep with the keyboard presentation animation. `didChange` results in the contentInset
     // not adjusting until after the keyboard is fully up.
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [self handleKeyboardNotification:notification];
 }
 
@@ -4260,7 +4260,7 @@ typedef enum : NSUInteger {
     NSString *errorMessage
         = (attachment ? [attachment localizedErrorDescription] : [SignalAttachment missingDataErrorMessage]);
 
-    DDLogError(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, errorMessage);
+    OWSLogError(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, errorMessage);
 
     [OWSAlerts showAlertWithTitle:NSLocalizedString(
                                       @"ATTACHMENT_ERROR_ALERT_TITLE", @"The title of the 'attachment error' alert.")
@@ -4347,8 +4347,8 @@ typedef enum : NSUInteger {
     TSGroupModel *groupModel = groupThread.groupModel;
     [self updateGroupModelTo:groupModel
            successCompletion:^{
-               DDLogInfo(@"Group updated, removing group creation error.");
-               
+               OWSLogInfo(@"Group updated, removing group creation error.");
+
                [message remove];
            }];
 }
@@ -4475,7 +4475,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"voiceMemoGestureDidStart");
+    OWSLogInfo(@"voiceMemoGestureDidStart");
 
     const CGFloat kIgnoreMessageSendDoubleTapDurationSeconds = 2.f;
     if (self.lastMessageSentDate &&
@@ -4497,7 +4497,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"voiceMemoGestureDidEnd");
+    OWSLogInfo(@"voiceMemoGestureDidEnd");
 
     [self.inputToolbar hideVoiceMemoUI:YES];
     [self endRecordingVoiceMemo];
@@ -4508,7 +4508,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"voiceMemoGestureDidCancel");
+    OWSLogInfo(@"voiceMemoGestureDidCancel");
 
     [self.inputToolbar hideVoiceMemoUI:NO];
     [self cancelRecordingVoiceMemo];
@@ -4586,7 +4586,7 @@ typedef enum : NSUInteger {
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
     if (self.shouldObserveDBModifications) {
-        DDLogVerbose(@"%@ resume observation of database modifications.", self.logTag);
+        OWSLogVerbose(@"%@ resume observation of database modifications.", self.logTag);
         // We need to call resetMappings when we _resume_ observing DB modifications,
         // since we've been ignore DB modifications so the mappings can be wrong.
         //
@@ -4636,7 +4636,7 @@ typedef enum : NSUInteger {
         BOOL hasAddedNewItems = (lastViewItem && previousLastTimestamp
             && lastViewItem.interaction.timestamp > previousLastTimestamp.unsignedLongLongValue);
 
-        DDLogInfo(@"%@ hasAddedNewItems: %d", self.logTag, hasAddedNewItems);
+        OWSLogInfo(@"%@ hasAddedNewItems: %d", self.logTag, hasAddedNewItems);
         if (hasAddedNewItems) {
             NSIndexPath *_Nullable indexPathToShow = [self firstIndexPathAtViewHorizonTimestamp];
             if (indexPathToShow) {
@@ -4651,9 +4651,9 @@ typedef enum : NSUInteger {
             }
         }
         self.viewHorizonTimestamp = nil;
-        DDLogVerbose(@"%@ resumed observation of database modifications.", self.logTag);
+        OWSLogVerbose(@"%@ resumed observation of database modifications.", self.logTag);
     } else {
-        DDLogVerbose(@"%@ pausing observation of database modifications.", self.logTag);
+        OWSLogVerbose(@"%@ pausing observation of database modifications.", self.logTag);
         // When stopping observation, try to record the timestamp of the "view horizon".
         // The "view horizon" is where we'll want to focus the users when we resume
         // observation if any changes have happened while we weren't observing.
@@ -4683,7 +4683,7 @@ typedef enum : NSUInteger {
         } else {
             self.viewHorizonTimestamp = nil;
         }
-        DDLogVerbose(@"%@ paused observation of database modifications.", self.logTag);
+        OWSLogVerbose(@"%@ paused observation of database modifications.", self.logTag);
     }
 }
 
@@ -4720,10 +4720,10 @@ typedef enum : NSUInteger {
     OWSAssert(left == right);
     ConversationViewItem *viewItem  = self.viewItems[left];
     if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
-        DDLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: %zd / %zd", self.logTag, left, self.viewItems.count);
+        OWSLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: %zd / %zd", self.logTag, left, self.viewItems.count);
         return [NSIndexPath indexPathForRow:(NSInteger) left inSection:0];
     } else {
-        DDLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: none / %zd", self.logTag, self.viewItems.count);
+        OWSLogInfo(@"%@ firstIndexPathAtViewHorizonTimestamp: none / %zd", self.logTag, self.viewItems.count);
         return nil;
     }
 }
@@ -4768,7 +4768,7 @@ typedef enum : NSUInteger {
              addedItemCount++;
          }];
     }];
-    DDLogInfo(@"%@ extendRangeToIncludeUnobservedItems: %zd", self.logTag, addedItemCount);
+    OWSLogInfo(@"%@ extendRangeToIncludeUnobservedItems: %zd", self.logTag, addedItemCount);
     self.lastRangeLength += addedItemCount;
     // We only want to do this once, so clear the "previous last timestamp".
     self.previousLastTimestamp = nil;
@@ -4901,7 +4901,7 @@ typedef enum : NSUInteger {
     // Flag to ensure that we only increment once per launch.
     static BOOL hasIncrementedDatabaseView = NO;
     if (hasError && !hasIncrementedDatabaseView) {
-        DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
+        OWSLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
         [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
         hasIncrementedDatabaseView = YES;
     }
@@ -4982,7 +4982,7 @@ typedef enum : NSUInteger {
     if (unreadIndicator) {
         // This isn't necessarily a bug - all of the interactions after the
         // unread indicator may have disappeared or been deleted.
-        DDLogWarn(@"%@ Couldn't find an interaction to hang the unread indicator on.", self.logTag);
+        OWSLogWarn(@"%@ Couldn't find an interaction to hang the unread indicator on.", self.logTag);
     }
 
     // Update the properties of the view items.
@@ -5225,13 +5225,13 @@ typedef enum : NSUInteger {
 
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
 {
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker contactFetchDidFail:(NSError *)error
 {
-    DDLogDebug(@"%@ in %s with error %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSLogDebug(@"%@ in %s with error %@", self.logTag, __PRETTY_FUNCTION__, error);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -5245,7 +5245,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
+    OWSLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
     if (!contactShareRecord) {
@@ -5295,7 +5295,7 @@ typedef enum : NSUInteger {
 - (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
      didApproveContactShare:(ContactShareViewModel *)contactShare
 {
-    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
@@ -5306,7 +5306,7 @@ typedef enum : NSUInteger {
 - (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
       didCancelContactShare:(ContactShareViewModel *)contactShare
 {
-    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -5315,7 +5315,7 @@ typedef enum : NSUInteger {
 
 - (void)didCreateOrEditContact
 {
-    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -5323,7 +5323,7 @@ typedef enum : NSUInteger {
 
 - (void)presentMissingQuotedReplyToast
 {
-    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
         @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "
@@ -5338,7 +5338,7 @@ typedef enum : NSUInteger {
 
 - (void)presentRemotelySourcedQuotedReplyToast
 {
-    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSString *toastText = NSLocalizedString(@"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
         @"Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of "

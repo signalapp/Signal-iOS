@@ -42,14 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSRequestFactory deviceProvisioningRequestWithMessageBody:messageBody ephemeralDeviceId:deviceId];
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-            DDLogVerbose(@"Provisioning request succeeded");
+            OWSLogVerbose(@"Provisioning request succeeded");
             successCallback();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents errorProvisioningRequestFailed]);
             }
-            DDLogVerbose(@"Provisioning request failed with error: %@", error);
+            OWSLogVerbose(@"Provisioning request failed with error: %@", error);
             failureCallback(error);
         }];
 }

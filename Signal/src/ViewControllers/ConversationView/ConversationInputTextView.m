@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)modifiedReturnPressed:(UIKeyCommand *)sender
 {
-    DDLogInfo(@"%@ modifiedReturnPressed: %@", self.logTag, sender.input);
+    OWSLogInfo(@"%@ modifiedReturnPressed: %@", self.logTag, sender.input);
     [self.inputTextViewDelegate inputTextViewSendMessagePressed];
 }
 

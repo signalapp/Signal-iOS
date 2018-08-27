@@ -27,12 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (NSString *relativePath in directoryEnumerator) {
         NSString *filePath = [dirPath stringByAppendingPathComponent:relativePath];
-        DDLogDebug(@"%@ path: %@ had attributes: %@", self.logTag, filePath, directoryEnumerator.fileAttributes);
+        OWSLogDebug(@"%@ path: %@ had attributes: %@", self.logTag, filePath, directoryEnumerator.fileAttributes);
 
         success = success && [self protectFileOrFolderAtPath:filePath];
     }
 
-    DDLogInfo(@"%@ protected contents at path: %@", self.logTag, path);
+    OWSLogInfo(@"%@ protected contents at path: %@", self.logTag, path);
     return success;
 }
 
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
 {
-    DDLogVerbose(@"%@ protecting file at path: %@", self.logTag, path);
+    OWSLogVerbose(@"%@ protecting file at path: %@", self.logTag, path);
     if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
         return NO;
     }
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (isDirectory) {
         NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:(NSString *)path];
         for (NSString *path in directoryEnumerator) {
-            DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, directoryEnumerator.fileAttributes);
+            OWSLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, directoryEnumerator.fileAttributes);
         }
     } else {
         NSError *error;
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (error) {
             OWSFailDebug(@"%@ error retrieving file attributes: %@", self.logTag, error);
         } else {
-            DDLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
+            OWSLogDebug(@"%@ path: %@ has attributes: %@", self.logTag, path, attributes);
         }
     }
 }
@@ -132,12 +132,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *newFilePath =
         [[oldFilePath stringByAppendingString:@"."] stringByAppendingString:[NSUUID UUID].UUIDString];
 
-    DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
+    OWSLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
 
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        DDLogDebug(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+        OWSLogDebug(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
             self.logTag,
             oldFilePath,
             newFilePath,
@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    DDLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
+    OWSLogInfo(@"%@ Moving file or directory from: %@ to: %@", self.logTag, oldFilePath, newFilePath);
 
     if ([fileManager fileExistsAtPath:newFilePath]) {
         // If a file/directory already exists at the destination,
@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([fileManager fileExistsAtPath:newFilePath]) {
-        DDLogDebug(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
+        OWSLogDebug(@"%@ Can't move file or directory from: %@ to: %@; destination already exists.",
             self.logTag,
             oldFilePath,
             newFilePath);
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        DDLogDebug(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
+        OWSLogDebug(@"%@ Could not move file or directory from: %@ to: %@, error: %@",
             self.logTag,
             oldFilePath,
             newFilePath,
@@ -190,8 +190,8 @@ NS_ASSUME_NONNULL_BEGIN
         return error;
     }
 
-    DDLogInfo(@"%@ Moved file or directory in: %f", self.logTag, fabs([startDate timeIntervalSinceNow]));
-    DDLogDebug(@"%@ Moved file or directory from: %@ to: %@ in: %f",
+    OWSLogInfo(@"%@ Moved file or directory in: %f", self.logTag, fabs([startDate timeIntervalSinceNow]));
+    OWSLogDebug(@"%@ Moved file or directory from: %@ to: %@ in: %f",
         self.logTag,
         oldFilePath,
         newFilePath,
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         return [self protectFileOrFolderAtPath:dirPath];
     } else {
-        DDLogInfo(@"%@ Creating directory at: %@", self.logTag, dirPath);
+        OWSLogInfo(@"%@ Creating directory at: %@", self.logTag, dirPath);
 
         NSError *error = nil;
         [[NSFileManager defaultManager] createDirectoryAtPath:dirPath
@@ -251,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
     if (!success || error) {
-        DDLogError(@"%@ Failed to delete file: %@", self.logTag, error.description);
+        OWSLogError(@"%@ Failed to delete file: %@", self.logTag, error.description);
         return NO;
     }
     return YES;
@@ -338,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
     unsigned long long fileSize =
         [[fileManager attributesOfItemAtPath:filePath error:&error][NSFileSize] unsignedLongLongValue];
     if (error) {
-        DDLogError(@"%@ Couldn't fetch file size[%@]: %@", self.logTag, filePath, error);
+        OWSLogError(@"%@ Couldn't fetch file size[%@]: %@", self.logTag, filePath, error);
         return nil;
     } else {
         return @(fileSize);

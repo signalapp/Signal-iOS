@@ -196,7 +196,7 @@ const CGFloat kIconViewLength = 24;
 {
     [self updateTableContents];
 
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 
@@ -211,10 +211,10 @@ const CGFloat kIconViewLength = 24;
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        DDLogDebug(@"%@ completed editing contact.", self.logTag);
+        OWSLogDebug(@"%@ completed editing contact.", self.logTag);
         [self dismissViewControllerAnimated:NO completion:nil];
     } else {
-        DDLogDebug(@"%@ canceled editing contact.", self.logTag);
+        OWSLogDebug(@"%@ canceled editing contact.", self.logTag);
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -990,10 +990,10 @@ const CGFloat kIconViewLength = 24;
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
     [self.messageSender enqueueMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully left group.", self.logTag);
+            OWSLogInfo(@"%@ Successfully left group.", self.logTag);
         }
         failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
+            OWSLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
@@ -1215,7 +1215,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showMediaGallery
 {
-    DDLogDebug(@"%@ in showMediaGallery", self.logTag);
+    OWSLogDebug(@"%@ in showMediaGallery", self.logTag);
 
     MediaGalleryViewController *vc =
         [[MediaGalleryViewController alloc] initWithThread:self.thread
@@ -1264,7 +1264,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)colorPicker:(ColorPickerViewController *)colorPicker didPickColorName:(NSString *)colorName
 {
-    DDLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
+    OWSLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.thread updateConversationColorName:colorName transaction:transaction];
     }];

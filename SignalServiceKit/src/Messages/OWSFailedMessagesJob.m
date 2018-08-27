@@ -69,7 +69,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
             block(message);
         } else {
-            DDLogError(@"%@ unexpected object: %@", self.logTag, message);
+            OWSLogError(@"%@ unexpected object: %@", self.logTag, message);
         }
     }
 }
@@ -84,13 +84,13 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                 // sanity check
                 OWSAssert(message.messageState == TSOutgoingMessageStateSending);
                 if (message.messageState != TSOutgoingMessageStateSending) {
-                    DDLogError(@"%@ Refusing to mark as unsent message with state: %d",
+                    OWSLogError(@"%@ Refusing to mark as unsent message with state: %d",
                         self.logTag,
                         (int)message.messageState);
                     return;
                 }
 
-                DDLogDebug(@"%@ marking message as unsent: %@", self.logTag, message.uniqueId);
+                OWSLogDebug(@"%@ marking message as unsent: %@", self.logTag, message.uniqueId);
                 [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
                 OWSAssert(message.messageState == TSOutgoingMessageStateFailed);
 
@@ -99,7 +99,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                                               transaction:transaction];
         }];
 
-    DDLogDebug(@"%@ Marked %u messages as unsent", self.logTag, count);
+    OWSLogDebug(@"%@ Marked %u messages as unsent", self.logTag, count);
 }
 
 #pragma mark - YapDatabaseExtension

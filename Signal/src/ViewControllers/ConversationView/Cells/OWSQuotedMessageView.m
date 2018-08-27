@@ -332,7 +332,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (void)didTapFailedThumbnailDownload:(UITapGestureRecognizer *)gestureRecognizer
 {
-    DDLogDebug(@"%@ in didTapFailedThumbnailDownload", self.logTag);
+    OWSLogDebug(@"%@ in didTapFailedThumbnailDownload", self.logTag);
 
     if (!self.quotedMessage.thumbnailDownloadFailed) {
         OWSFailDebug(@"%@ in %s thumbnailDownloadFailed was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);

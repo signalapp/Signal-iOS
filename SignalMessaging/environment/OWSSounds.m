@@ -34,7 +34,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         return self;
     }
 
-    DDLogDebug(@"%@ creating system sound for %@", self.logTag, url.lastPathComponent);
+    OWSLogDebug(@"%@ creating system sound for %@", self.logTag, url.lastPathComponent);
     _soundURL = url;
 
     SystemSoundID newSoundID;
@@ -48,7 +48,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 - (void)dealloc
 {
-    DDLogDebug(@"%@ in dealloc disposing sound: %@", self.logTag, _soundURL.lastPathComponent);
+    OWSLogDebug(@"%@ in dealloc disposing sound: %@", self.logTag, _soundURL.lastPathComponent);
     OSStatus status = AudioServicesDisposeSystemSoundID(_soundID);
     OWSAssert(status == kAudioServicesNoError);
 }
@@ -316,7 +316,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 {
     OWSAssert(transaction);
 
-    DDLogInfo(@"%@ Setting global notification sound to: %@", self.logTag, [[self class] displayNameForSound:sound]);
+    OWSLogInfo(@"%@ Setting global notification sound to: %@", self.logTag, [[self class] displayNameForSound:sound]);
 
     // Fallback push notifications play a sound specified by the server, but we don't want to store this configuration
     // on the server. Instead, we create a file with the same name as the default to be played when receiving
@@ -328,7 +328,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     NSString *kDefaultNotificationSoundFilename = @"NewMessage.aifc";
     NSString *defaultSoundPath = [dirPath stringByAppendingPathComponent:kDefaultNotificationSoundFilename];
 
-    DDLogDebug(@"%@ writing new default sound to %@", self.logTag, defaultSoundPath);
+    OWSLogDebug(@"%@ writing new default sound to %@", self.logTag, defaultSoundPath);
 
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
 

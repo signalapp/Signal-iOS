@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   transaction:transaction];
 
         if (thumbnailStream) {
-            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%lu",
+            OWSLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%lu",
                 self.logTag,
                 thread.uniqueId,
                 (unsigned long)timestamp);
@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             attachmentInfo.thumbnailAttachmentStreamId = thumbnailStream.uniqueId;
         } else if (quotedAttachment.thumbnail) {
-            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
+            OWSLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
                 self.logTag,
                 thread.uniqueId,
                 (unsigned long)timestamp);
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
         } else {
-            DDLogDebug(
+            OWSLogDebug(
                 @"%@ No thumbnail for quoted message: %@:%lu", self.logTag, thread.uniqueId, (unsigned long)timestamp);
         }
 

@@ -158,22 +158,22 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // We don't need to try to lock the screen lock;
         // It will be initialized by `setupWithRootWindow`.
-        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 0", self.logTag);
+        OWSLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 0", self.logTag);
         return;
     }
     if (!OWSScreenLock.sharedManager.isScreenLockEnabled) {
         // Screen lock is not enabled.
-        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 1", self.logTag);
+        OWSLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 1", self.logTag);
         return;
     }
     if (self.isScreenLockLocked) {
         // Screen lock is already activated.
-        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 2", self.logTag);
+        OWSLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 2", self.logTag);
         return;
     }
     if (!self.screenLockCountdownDate) {
         // We became inactive, but never started a countdown.
-        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 3", self.logTag);
+        OWSLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 3", self.logTag);
         return;
     }
     NSTimeInterval countdownInterval = fabs([self.screenLockCountdownDate timeIntervalSinceNow]);
@@ -183,12 +183,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (countdownInterval >= screenLockTimeout) {
         self.isScreenLockLocked = YES;
 
-        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive YES 4 (%0.3f >= %0.3f)",
+        OWSLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive YES 4 (%0.3f >= %0.3f)",
             self.logTag,
             countdownInterval,
             screenLockTimeout);
     } else {
-        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 5 (%0.3f < %0.3f)",
+        OWSLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 5 (%0.3f < %0.3f)",
             self.logTag,
             countdownInterval,
             screenLockTimeout);
@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self tryToActivateScreenLockBasedOnCountdown];
 
-        DDLogInfo(@"%@ setAppIsInactiveOrBackground clear screenLockCountdownDate.", self.logTag);
+        OWSLogInfo(@"%@ setAppIsInactiveOrBackground clear screenLockCountdownDate.", self.logTag);
         self.screenLockCountdownDate = nil;
     }
 
@@ -236,10 +236,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startScreenLockCountdownIfNecessary
 {
-    DDLogVerbose(@"%@ startScreenLockCountdownIfNecessary: %d", self.logTag, self.screenLockCountdownDate != nil);
+    OWSLogVerbose(@"%@ startScreenLockCountdownIfNecessary: %d", self.logTag, self.screenLockCountdownDate != nil);
 
     if (!self.screenLockCountdownDate) {
-        DDLogInfo(@"%@ startScreenLockCountdown.", self.logTag);
+        OWSLogInfo(@"%@ startScreenLockCountdown.", self.logTag);
         self.screenLockCountdownDate = [NSDate new];
     }
 
@@ -263,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ScreenLockUIState desiredUIState = self.desiredUIState;
 
-    DDLogVerbose(@"%@, ensureUI: %@", self.logTag, NSStringForScreenLockUIState(desiredUIState));
+    OWSLogVerbose(@"%@, ensureUI: %@", self.logTag, NSStringForScreenLockUIState(desiredUIState));
 
     [self updateScreenBlockingWindow:desiredUIState animated:YES];
 
@@ -286,21 +286,22 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogInfo(@"%@, try to unlock screen lock", self.logTag);
+    OWSLogInfo(@"%@, try to unlock screen lock", self.logTag);
 
     self.isShowingScreenLockUI = YES;
 
-    [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
-        DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
+    [OWSScreenLock.sharedManager
+        tryToUnlockScreenLockWithSuccess:^{
+            OWSLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
 
-        self.isShowingScreenLockUI = NO;
+            self.isShowingScreenLockUI = NO;
 
-        self.isScreenLockLocked = NO;
+            self.isScreenLockLocked = NO;
 
-        [self ensureUI];
-    }
+            [self ensureUI];
+        }
         failure:^(NSError *error) {
-            DDLogInfo(@"%@ unlock screen lock failed.", self.logTag);
+            OWSLogInfo(@"%@ unlock screen lock failed.", self.logTag);
 
             [self clearAuthUIWhenActive];
 
@@ -309,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
         }
         unexpectedFailure:^(NSError *error) {
-            DDLogInfo(@"%@ unlock screen lock unexpectedly failed.", self.logTag);
+            OWSLogInfo(@"%@ unlock screen lock unexpectedly failed.", self.logTag);
 
             // Local Authentication isn't working properly.
             // This isn't covered by the docs or the forums but in practice
@@ -319,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         }
         cancel:^{
-            DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
+            OWSLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
 
             [self clearAuthUIWhenActive];
 
@@ -337,25 +338,25 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.isScreenLockLocked) {
         if (self.appIsInactiveOrBackground) {
-            DDLogVerbose(@"%@ desiredUIState: screen protection 1.", self.logTag);
+            OWSLogVerbose(@"%@ desiredUIState: screen protection 1.", self.logTag);
             return ScreenLockUIStateScreenProtection;
         } else {
-            DDLogVerbose(@"%@ desiredUIState: screen lock 2.", self.logTag);
+            OWSLogVerbose(@"%@ desiredUIState: screen lock 2.", self.logTag);
             return ScreenLockUIStateScreenLock;
         }
     }
 
     if (!self.appIsInactiveOrBackground) {
         // App is inactive or background.
-        DDLogVerbose(@"%@ desiredUIState: none 3.", self.logTag);
+        OWSLogVerbose(@"%@ desiredUIState: none 3.", self.logTag);
         return ScreenLockUIStateNone;
     }
 
     if (Environment.preferences.screenSecurityIsEnabled) {
-        DDLogVerbose(@"%@ desiredUIState: screen protection 4.", self.logTag);
+        OWSLogVerbose(@"%@ desiredUIState: screen protection 4.", self.logTag);
         return ScreenLockUIStateScreenProtection;
     } else {
-        DDLogVerbose(@"%@ desiredUIState: none 5.", self.logTag);
+        OWSLogVerbose(@"%@ desiredUIState: none 5.", self.logTag);
         return ScreenLockUIStateNone;
     }
 }
@@ -466,7 +467,7 @@ NS_ASSUME_NONNULL_BEGIN
 // trigger screen lock immediately if enabled.
 - (void)clockDidChange:(NSNotification *)notification
 {
-    DDLogInfo(@"%@ clock did change", self.logTag);
+    OWSLogInfo(@"%@ clock did change", self.logTag);
 
     if (!AppReadiness.isAppReady) {
         // It's not safe to access OWSScreenLock.isScreenLockEnabled
@@ -474,7 +475,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // We don't need to try to lock the screen lock;
         // It will be initialized by `setupWithRootWindow`.
-        DDLogVerbose(@"%@ clockDidChange 0", self.logTag);
+        OWSLogVerbose(@"%@ clockDidChange 0", self.logTag);
         return;
     }
     self.isScreenLockLocked = OWSScreenLock.sharedManager.isScreenLockEnabled;
@@ -497,7 +498,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogInfo(@"%@ unlockButtonWasTapped", self.logTag);
+    OWSLogInfo(@"%@ unlockButtonWasTapped", self.logTag);
 
     self.didLastUnlockAttemptFail = NO;
 

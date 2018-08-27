@@ -78,23 +78,23 @@ static NSTimeInterval launchStartedAt;
 @synthesize window = _window;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationDidEnterBackground.", self.logTag);
+    OWSLogWarn(@"%@ applicationDidEnterBackground.", self.logTag);
 
     [DDLog flushLog];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    DDLogWarn(@"%@ applicationWillEnterForeground.", self.logTag);
+    OWSLogWarn(@"%@ applicationWillEnterForeground.", self.logTag);
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
-    DDLogWarn(@"%@ applicationDidReceiveMemoryWarning.", self.logTag);
+    OWSLogWarn(@"%@ applicationDidReceiveMemoryWarning.", self.logTag);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    DDLogWarn(@"%@ applicationWillTerminate.", self.logTag);
+    OWSLogWarn(@"%@ applicationWillTerminate.", self.logTag);
 
     [DDLog flushLog];
 }
@@ -119,8 +119,7 @@ static NSTimeInterval launchStartedAt;
         [DebugLogger.sharedLogger enableFileLogging];
     }
 
-    DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
-
+    OWSLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
     [Cryptography seedRandom];
 
     // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
@@ -142,7 +141,7 @@ static NSTimeInterval launchStartedAt;
         //
         // ensureIsReadyForAppExtensions will show a failure mode UI that
         // lets users report this error.
-        DDLogInfo(@"%@ application: didFinishLaunchingWithOptions failed.", self.logTag);
+        OWSLogInfo(@"%@ application: didFinishLaunchingWithOptions failed.", self.logTag);
 
         return YES;
     }
@@ -185,7 +184,7 @@ static NSTimeInterval launchStartedAt;
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
-        DDLogInfo(@"Application was launched by tapping a push notification.");
+        OWSLogInfo(@"Application was launched by tapping a push notification.");
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
 
@@ -210,7 +209,7 @@ static NSTimeInterval launchStartedAt;
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
 
-    DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
+    OWSLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
 
     [OWSAnalytics appLaunchDidBegin];
 
@@ -227,7 +226,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
-        DDLogInfo(
+        OWSLogInfo(
             @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
 
         UILocalNotification *notification = [UILocalNotification new];
@@ -267,7 +266,7 @@ static NSTimeInterval launchStartedAt;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            DDLogInfo(@"%@ storage file: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            OWSLogInfo(@"%@ storage file: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
 
@@ -279,13 +278,13 @@ static NSTimeInterval launchStartedAt;
     SUPPRESS_DEADSTORE_WARNING(backgroundTask);
 
     if ([NSFileManager.defaultManager fileExistsAtPath:OWSPrimaryStorage.legacyDatabaseFilePath]) {
-        DDLogInfo(@"%@ Legacy Database file size: %@",
+        OWSLogInfo(@"%@ Legacy Database file size: %@",
             self.logTag,
             [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath]);
-        DDLogInfo(@"%@ \t Legacy SHM file size: %@",
+        OWSLogInfo(@"%@ \t Legacy SHM file size: %@",
             self.logTag,
             [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_SHM]);
-        DDLogInfo(@"%@ \t Legacy WAL file size: %@",
+        OWSLogInfo(@"%@ \t Legacy WAL file size: %@",
             self.logTag,
             [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_WAL]);
     }
@@ -346,7 +345,7 @@ static NSTimeInterval launchStartedAt;
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [Pastelog submitLogsWithCompletion:^{
-                                                         DDLogInfo(
+                                                         OWSLogInfo(
                                                              @"%@ exiting after sharing debug logs.", self.logTag);
                                                          [DDLog flushLog];
                                                          exit(0);
@@ -358,11 +357,11 @@ static NSTimeInterval launchStartedAt;
 
 - (nullable NSError *)convertDatabaseIfNecessary
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSString *databaseFilePath = [OWSPrimaryStorage legacyDatabaseFilePath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
-        DDLogVerbose(@"%@ no legacy database file found", self.logTag);
+        OWSLogVerbose(@"%@ no legacy database file found", self.logTag);
         return nil;
     }
 
@@ -375,14 +374,14 @@ static NSTimeInterval launchStartedAt;
     }
 
     YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
-        DDLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
+        OWSLogVerbose(@"%@ saltData: %@", self.logTag, saltData.hexadecimalString);
 
         // Derive and store the raw cipher key spec, to avoid the ongoing tax of future KDF
         NSData *_Nullable keySpecData =
             [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
 
         if (!keySpecData) {
-            DDLogError(@"%@ Failed to derive key spec.", self.logTag);
+            OWSLogError(@"%@ Failed to derive key spec.", self.logTag);
             return NO;
         }
 
@@ -403,19 +402,19 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startupLogging
 {
-    DDLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
+    OWSLogInfo(@"iOS Version: %@", [UIDevice currentDevice].systemVersion);
 
     NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
     if (localeIdentifier.length > 0) {
-        DDLogInfo(@"Locale Identifier: %@", localeIdentifier);
+        OWSLogInfo(@"Locale Identifier: %@", localeIdentifier);
     }
     NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
     if (countryCode.length > 0) {
-        DDLogInfo(@"Country Code: %@", countryCode);
+        OWSLogInfo(@"Country Code: %@", countryCode);
     }
     NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
     if (languageCode.length > 0) {
-        DDLogInfo(@"Language Code: %@", languageCode);
+        OWSLogInfo(@"Language Code: %@", languageCode);
     }
 
     size_t size;
@@ -425,7 +424,7 @@ static NSTimeInterval launchStartedAt;
     NSString *platform = [NSString stringWithUTF8String:machine];
     free(machine);
 
-    DDLogInfo(@"iPhone Version: %@", platform);
+    OWSLogInfo(@"iPhone Version: %@", platform);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -437,7 +436,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
+    OWSLogInfo(@"%@ registered vanilla push token: %@", self.logTag, deviceToken);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
 }
 
@@ -450,9 +449,9 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogError(@"%@ failed to register vanilla push token with error: %@", self.logTag, error);
+    OWSLogError(@"%@ failed to register vanilla push token with error: %@", self.logTag, error);
 #ifdef DEBUG
-    DDLogWarn(
+    OWSLogWarn(
         @"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.logTag);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
@@ -471,7 +470,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogInfo(@"%@ registered user notification settings", self.logTag);
+    OWSLogInfo(@"%@ registered user notification settings", self.logTag);
     [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
 }
 
@@ -488,7 +487,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if (!AppReadiness.isAppReady) {
-        DDLogWarn(@"%@ Ignoring openURL: app not ready.", self.logTag);
+        OWSLogWarn(@"%@ Ignoring openURL: app not ready.", self.logTag);
         // We don't need to use [AppReadiness runNowOrWhenAppIsReady:];
         // the only URLs we handle in Signal iOS at the moment are used
         // for resuming the verification step of the registration flow.
@@ -507,8 +506,8 @@ static NSTimeInterval launchStartedAt;
                     [cvvc setVerificationCodeAndTryToVerify:verificationCode];
                     return YES;
                 } else {
-                    DDLogWarn(@"Not the verification view controller we expected. Got %@ instead",
-                              NSStringFromClass(controller.class));
+                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
+                        NSStringFromClass(controller.class));
                 }
             }
         } else {
@@ -528,7 +527,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
+    OWSLogWarn(@"%@ applicationDidBecomeActive.", self.logTag);
     if (CurrentAppContext().isRunningTests) {
         return;
     }
@@ -550,7 +549,7 @@ static NSTimeInterval launchStartedAt;
     // be called _before_ we become active.
     [self clearAllNotificationsAndRestoreBadgeCount];
 
-    DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
+    OWSLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
 
 - (void)enableBackgroundRefreshIfNecessary
@@ -571,7 +570,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    DDLogWarn(@"%@ handleActivation.", self.logTag);
+    OWSLogWarn(@"%@ handleActivation.", self.logTag);
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -584,7 +583,7 @@ static NSTimeInterval launchStartedAt;
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                DDLogInfo(@"%@ running post launch block for registered user: %@",
+                OWSLogInfo(@"%@ running post launch block for registered user: %@",
                     self.logTag,
                     [TSAccountManager localNumber]);
 
@@ -602,10 +601,9 @@ static NSTimeInterval launchStartedAt;
                 [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
                     run];
-
             });
         } else {
-            DDLogInfo(@"%@ running post launch block for unregistered user.", self.logTag);
+            OWSLogInfo(@"%@ running post launch block for unregistered user.", self.logTag);
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [SignalApp clearAllNotifications];
@@ -630,7 +628,7 @@ static NSTimeInterval launchStartedAt;
             [[PushManager sharedManager] applicationDidBecomeActive];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
-                DDLogInfo(
+                OWSLogInfo(
                     @"%@ Retrying to register for remote notifications since user hasn't registered yet.", self.logTag);
                 // Push tokens don't normally change while the app is launched, so checking once during launch is
                 // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
@@ -643,7 +641,7 @@ static NSTimeInterval launchStartedAt;
 
             if ([OWS2FAManager sharedManager].isDueForReminder) {
                 if (!self.hasInitialRootViewController || self.window.rootViewController == nil) {
-                    DDLogDebug(
+                    OWSLogDebug(
                         @"%@ Skipping 2FA reminder since there isn't yet an initial view controller", self.logTag);
                 } else {
                     UIViewController *rootViewController = self.window.rootViewController;
@@ -656,7 +654,7 @@ static NSTimeInterval launchStartedAt;
         });
     }
 
-    DDLogInfo(@"%@ handleActivation completed.", self.logTag);
+    OWSLogInfo(@"%@ handleActivation completed.", self.logTag);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -667,7 +665,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
+    OWSLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     [DDLog flushLog];
 }
@@ -743,23 +741,23 @@ static NSTimeInterval launchStartedAt;
 
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            DDLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.logTag);
+            OWSLogError(@"%@ unexpectedly received INStartVideoCallIntent pre iOS10", self.logTag);
             return NO;
         }
 
-        DDLogInfo(@"%@ got start video call intent", self.logTag);
+        OWSLogInfo(@"%@ got start video call intent", self.logTag);
 
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
         if (![intent isKindOfClass:[INStartVideoCallIntent class]]) {
-            DDLogError(@"%@ unexpected class for start call video: %@", self.logTag, intent);
+            OWSLogError(@"%@ unexpected class for start call video: %@", self.logTag, intent);
             return NO;
         }
         INStartVideoCallIntent *startCallIntent = (INStartVideoCallIntent *)intent;
         NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
         if (!handle) {
-            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.logTag, startCallIntent);
+            OWSLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.logTag, startCallIntent);
             return NO;
         }
 
@@ -768,7 +766,7 @@ static NSTimeInterval launchStartedAt;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [[OWSPrimaryStorage sharedManager] phoneNumberForCallKitId:handle];
                 if (phoneNumber.length < 1) {
-                    DDLogWarn(
+                    OWSLogWarn(
                         @"%@ ignoring attempt to initiate video call to unknown anonymous signal user.", self.logTag);
                     return;
                 }
@@ -784,11 +782,11 @@ static NSTimeInterval launchStartedAt;
             //   to that user - unless there already is another call in progress.
             if (SignalApp.sharedApp.callService.call != nil) {
                 if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.remotePhoneNumber]) {
-                    DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
+                    OWSLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
                     [SignalApp.sharedApp.callService handleCallKitStartVideo];
                     return;
                 } else {
-                    DDLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.",
+                    OWSLogWarn(@"%@ ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.",
                         self.logTag);
                     return;
                 }
@@ -802,23 +800,23 @@ static NSTimeInterval launchStartedAt;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
 
         if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            DDLogError(@"%@ unexpectedly received INStartAudioCallIntent pre iOS10", self.logTag);
+            OWSLogError(@"%@ unexpectedly received INStartAudioCallIntent pre iOS10", self.logTag);
             return NO;
         }
 
-        DDLogInfo(@"%@ got start audio call intent", self.logTag);
+        OWSLogInfo(@"%@ got start audio call intent", self.logTag);
 
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
         if (![intent isKindOfClass:[INStartAudioCallIntent class]]) {
-            DDLogError(@"%@ unexpected class for start call audio: %@", self.logTag, intent);
+            OWSLogError(@"%@ unexpected class for start call audio: %@", self.logTag, intent);
             return NO;
         }
         INStartAudioCallIntent *startCallIntent = (INStartAudioCallIntent *)intent;
         NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
         if (!handle) {
-            DDLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.logTag, startCallIntent);
+            OWSLogWarn(@"%@ unable to find handle in startCallIntent: %@", self.logTag, startCallIntent);
             return NO;
         }
 
@@ -827,14 +825,14 @@ static NSTimeInterval launchStartedAt;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [[OWSPrimaryStorage sharedManager] phoneNumberForCallKitId:handle];
                 if (phoneNumber.length < 1) {
-                    DDLogWarn(
+                    OWSLogWarn(
                         @"%@ ignoring attempt to initiate audio call to unknown anonymous signal user.", self.logTag);
                     return;
                 }
             }
 
             if (SignalApp.sharedApp.callService.call != nil) {
-                DDLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.logTag);
+                OWSLogWarn(@"%@ ignoring INStartAudioCallIntent due to ongoing WebRTC call.", self.logTag);
                 return;
             }
 
@@ -844,7 +842,7 @@ static NSTimeInterval launchStartedAt;
         }];
         return YES;
     } else {
-        DDLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
+        OWSLogWarn(@"%@ called %s with userActivity: %@, but not yet supported.",
             self.logTag,
             __PRETTY_FUNCTION__,
             userActivity.activityType);
@@ -913,7 +911,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
+    OWSLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
     [AppReadiness runNowOrWhenAppIsReady:^{
         [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
     }];
@@ -951,7 +949,7 @@ static NSTimeInterval launchStartedAt;
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
-    DDLogInfo(@"%@ handling action with identifier: %@", self.logTag, identifier);
+    OWSLogInfo(@"%@ handling action with identifier: %@", self.logTag, identifier);
 
     OWSAssertIsOnMainThread();
 
@@ -978,7 +976,7 @@ static NSTimeInterval launchStartedAt;
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
-    DDLogInfo(@"%@ performing background fetch", self.logTag);
+    OWSLogInfo(@"%@ performing background fetch", self.logTag);
     [AppReadiness runNowOrWhenAppIsReady:^{
         __block AnyPromise *job = [[SignalApp sharedApp].messageFetcherJob run].then(^{
             // HACK: Call completion handler after n seconds.
@@ -1001,7 +999,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ versionMigrationsDidComplete", self.logTag);
+    OWSLogInfo(@"%@ versionMigrationsDidComplete", self.logTag);
 
     self.areVersionMigrationsComplete = YES;
 
@@ -1011,7 +1009,7 @@ static NSTimeInterval launchStartedAt;
 - (void)storageIsReady
 {
     OWSAssertIsOnMainThread();
-    DDLogInfo(@"%@ storageIsReady", self.logTag);
+    OWSLogInfo(@"%@ storageIsReady", self.logTag);
 
     [self checkIfAppIsReady];
 }
@@ -1032,7 +1030,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    DDLogInfo(@"%@ checkIfAppIsReady", self.logTag);
+    OWSLogInfo(@"%@ checkIfAppIsReady", self.logTag);
 
     // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
     [[OWSProfileManager sharedManager] ensureLocalProfileCached];
@@ -1042,7 +1040,7 @@ static NSTimeInterval launchStartedAt;
     [AppReadiness setAppIsReady];
 
     if ([TSAccountManager isRegistered]) {
-        DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
@@ -1110,12 +1108,12 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"registrationStateDidChange");
+    OWSLogInfo(@"registrationStateDidChange");
 
     [self enableBackgroundRefreshIfNecessary];
 
     if ([TSAccountManager isRegistered]) {
-        DDLogInfo(@"%@ localNumber: %@", [TSAccountManager localNumber], self.logTag);
+        OWSLogInfo(@"%@ localNumber: %@", [TSAccountManager localNumber], self.logTag);
 
         [[OWSPrimaryStorage sharedManager].newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -1140,7 +1138,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ ensureRootViewController", self.logTag);
+    OWSLogInfo(@"%@ ensureRootViewController", self.logTag);
 
     if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
         return;
@@ -1148,7 +1146,7 @@ static NSTimeInterval launchStartedAt;
     self.hasInitialRootViewController = YES;
 
     NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
-    DDLogInfo(@"%@ Presenting app %.2f seconds after launch started.", self.logTag, startupDuration);
+    OWSLogInfo(@"%@ Presenting app %.2f seconds after launch started.", self.logTag, startupDuration);
 
     if ([TSAccountManager isRegistered]) {
         HomeViewController *homeView = [HomeViewController new];
@@ -1174,7 +1172,7 @@ static NSTimeInterval launchStartedAt;
     CGPoint location = [[[event allTouches] anyObject] locationInView:[self window]];
     CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
     if (CGRectContainsPoint(statusBarFrame, location)) {
-        DDLogDebug(@"%@ touched status bar", self.logTag);
+        OWSLogDebug(@"%@ touched status bar", self.logTag);
         [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
     }
 }

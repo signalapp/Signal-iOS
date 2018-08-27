@@ -379,7 +379,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             TSAttachment *_Nullable attachment =
                 [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
             if (!attachment) {
-                DDLogError(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
+                OWSLogError(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
                 continue;
             }
             [attachment removeWithTransaction:transaction];
@@ -449,7 +449,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         // There's no need to save this message, since it's not displayed to the user.
         //
         // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
-        DDLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
+        OWSLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
 
         return;
     }
@@ -477,8 +477,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             // no longer be considered sent.
             // So here we take extra care not to stop any expiration that had previously started.
             // This can also happen under normal cirumstances with an outgoing group message.
-            DDLogWarn(@"%@ in %s expiration previously started", self.logTag, __PRETTY_FUNCTION__);
-            
+            OWSLogWarn(@"%@ in %s expiration previously started", self.logTag, __PRETTY_FUNCTION__);
+
             return YES;
         }
         
@@ -696,7 +696,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                     DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
+                                     OWSLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.deliveryTimestamp = deliveryTimestamp;
@@ -721,7 +721,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                     DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
+                                     OWSLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);
@@ -818,7 +818,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         OWSFailDebug(@"%@ message body length too long.", self.logTag);
         NSString *truncatedBody = [self.body copy];
         while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            DDLogError(@"%@ truncating body which is too long: %lu",
+            OWSLogError(@"%@ truncating body which is too long: %lu",
                 self.logTag,
                 (unsigned long)[truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
             truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];

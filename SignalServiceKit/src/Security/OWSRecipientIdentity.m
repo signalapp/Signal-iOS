@@ -166,7 +166,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 
 + (void)printAllIdentities
 {
-    DDLogInfo(@"%@ ### All Recipient Identities ###", self.logTag);
+    OWSLogInfo(@"%@ ### All Recipient Identities ###", self.logTag);
     __block int count = 0;
     [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         count++;
@@ -176,7 +176,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
         }
         OWSRecipientIdentity *recipientIdentity = (OWSRecipientIdentity *)obj;
 
-        DDLogInfo(@"%@ Identity %d: %@", self.logTag, count, recipientIdentity.debugDescription);
+        OWSLogInfo(@"%@ Identity %d: %@", self.logTag, count, recipientIdentity.debugDescription);
     }];
 }
 

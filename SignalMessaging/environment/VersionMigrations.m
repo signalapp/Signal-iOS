@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
@@ -43,13 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *previousVersion = AppVersion.sharedInstance.lastAppVersion;
     NSString *currentVersion = AppVersion.sharedInstance.currentAppVersion;
 
-    DDLogInfo(@"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@",
+    OWSLogInfo(@"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@",
         self.logTag,
         currentVersion,
         previousVersion);
 
     if (!previousVersion) {
-        DDLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
+        OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         OWSDatabaseMigrationRunner *runner =
             [[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
         [runner assumeAllExistingMigrationsRun];
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
-        DDLogError(@"Migrating from RedPhone no longer supported. Quitting.");
+        OWSLogError(@"Migrating from RedPhone no longer supported. Quitting.");
         // Not translating these as so few are affected.
         UIAlertController *alertController = [UIAlertController
             alertControllerWithTitle:@"You must reinstall Signal"
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (error) {
-        DDLogError(
+        OWSLogError(
             @"An error occured while removing the videos cache folder from old location: %@", error.debugDescription);
     }
 }
@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
                 }
                 success = NO;
-                DDLogError(@"Updating attributess failed with error: %@", error.description);
+                OWSLogError(@"Updating attributess failed with error: %@", error.description);
                 dispatch_semaphore_signal(sema);
             }];
 
@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
     [LockInteractionController performBlock:blockingOperation
                             completionBlock:^{
                                 [[NSUserDefaults appUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_ATTRIBUTES];
-                                DDLogWarn(@"Successfully updated attributes.");
+                                OWSLogWarn(@"Successfully updated attributes.");
                             }
                                  retryBlock:retryBlock
                                 usesNetwork:YES];
@@ -186,17 +186,17 @@ NS_ASSUME_NONNULL_BEGIN
     if ([fm fileExistsAtPath:bloomFilterPath]) {
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
-            DDLogInfo(@"Successfully removed bloom filter cache.");
+            OWSLogInfo(@"Successfully removed bloom filter cache.");
             [OWSPrimaryStorage.dbReadWriteConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                     [transaction removeAllObjectsInCollection:@"TSRecipient"];
                 }];
-            DDLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+            OWSLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
         } else {
-            DDLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
+            OWSLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
         }
     } else {
-        DDLogDebug(@"No bloom filter cache to remove.");
+        OWSLogDebug(@"No bloom filter cache to remove.");
     }
 }
 

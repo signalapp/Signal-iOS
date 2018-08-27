@@ -64,7 +64,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 - (void)dealloc
 {
     // Surface memory leaks by logging the deallocation.
-    DDLogVerbose(@"Dealloc: %@", self.class);
+    OWSLogVerbose(@"Dealloc: %@", self.class);
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -75,7 +75,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (BOOL)ensureJobTempDir
 {
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // TODO: Exports should use a new directory each time, but imports
     // might want to use a predictable directory so that repeated
@@ -101,7 +101,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (void)succeed
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
@@ -140,7 +140,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (void)updateProgressWithDescription:(nullable NSString *)description progress:(nullable NSNumber *)progress
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
@@ -160,7 +160,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     OWSAssert(failure);
     OWSAssert(backupIO);
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     __weak OWSBackupJob *weakSelf = self;
     [OWSBackupAPI downloadManifestFromCloudWithSuccess:^(NSData *data) {
@@ -198,7 +198,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         return;
     }
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSData *_Nullable manifestDataDecrypted =
         [backupIO decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
@@ -215,7 +215,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         return failure();
     }
 
-    DDLogVerbose(@"%@ json: %@", self.logTag, json);
+    OWSLogVerbose(@"%@ json: %@", self.logTag, json);
 
     NSArray<OWSBackupFragment *> *_Nullable databaseItems =
         [self parseItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
@@ -270,13 +270,13 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         }
         // relativeFilePath is an optional field.
         if (relativeFilePath && ![relativeFilePath isKindOfClass:[NSString class]]) {
-            DDLogDebug(@"%@ manifest has invalid relativeFilePath: %@.", self.logTag, relativeFilePath);
+            OWSLogDebug(@"%@ manifest has invalid relativeFilePath: %@.", self.logTag, relativeFilePath);
             OWSFailDebug(@"%@ manifest has invalid relativeFilePath", self.logTag);
             return nil;
         }
         // attachmentId is an optional field.
         if (attachmentId && ![attachmentId isKindOfClass:[NSString class]]) {
-            DDLogDebug(@"%@ manifest has invalid attachmentId: %@.", self.logTag, attachmentId);
+            OWSLogDebug(@"%@ manifest has invalid attachmentId: %@.", self.logTag, attachmentId);
             OWSFailDebug(@"%@ manifest has invalid attachmentId", self.logTag);
             return nil;
         }

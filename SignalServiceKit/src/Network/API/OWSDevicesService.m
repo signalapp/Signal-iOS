@@ -19,13 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
     TSRequest *request = [OWSRequestFactory getDevicesRequest];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-            DDLogVerbose(@"Get devices request succeeded");
+            OWSLogVerbose(@"Get devices request succeeded");
             NSArray<OWSDevice *> *devices = [self parseResponse:responseObject];
 
             if (devices) {
                 successCallback(devices);
             } else {
-                DDLogError(@"%@ unable to parse devices response:%@", self.logTag, responseObject);
+                OWSLogError(@"%@ unable to parse devices response:%@", self.logTag, responseObject);
                 NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                 failureCallback(error);
             }
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents errorGetDevicesFailed]);
             }
-            DDLogVerbose(@"Get devices request failed with error: %@", error);
+            OWSLogVerbose(@"Get devices request failed with error: %@", error);
             failureCallback(error);
         }];
 }
@@ -47,14 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
-            DDLogVerbose(@"Delete device request succeeded");
+            OWSLogVerbose(@"Delete device request succeeded");
             successCallback();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents errorUnlinkDeviceFailed]);
             }
-            DDLogVerbose(@"Get devices request failed with error: %@", error);
+            OWSLogVerbose(@"Get devices request failed with error: %@", error);
             failureCallback(error);
         }];
 }
@@ -62,14 +62,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<OWSDevice *> *)parseResponse:(id)responseObject
 {
     if (![responseObject isKindOfClass:[NSDictionary class]]) {
-        DDLogError(@"Device response was not a dictionary.");
+        OWSLogError(@"Device response was not a dictionary.");
         return nil;
     }
     NSDictionary *response = (NSDictionary *)responseObject;
 
     NSArray<NSDictionary *> *devicesAttributes = response[@"devices"];
     if (!devicesAttributes) {
-        DDLogError(@"Device response had no devices.");
+        OWSLogError(@"Device response had no devices.");
         return nil;
     }
 
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         OWSDevice *device = [OWSDevice deviceFromJSONDictionary:deviceAttributes error:&error];
         if (error) {
-            DDLogError(@"Failed to build device from dictionary with error: %@", error);
+            OWSLogError(@"Failed to build device from dictionary with error: %@", error);
         } else {
             [devices addObject:device];
         }

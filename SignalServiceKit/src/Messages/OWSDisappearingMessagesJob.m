@@ -128,14 +128,14 @@ void AssertIsOnDisappearingMessagesQueue()
                 return;
             }
 
-            DDLogInfo(@"%@ Removing message which expired at: %lld", self.logTag, message.expiresAt);
+            OWSLogInfo(@"%@ Removing message which expired at: %lld", self.logTag, message.expiresAt);
             [message removeWithTransaction:transaction];
             expirationCount++;
         }
                                                                transaction:transaction];
     }];
 
-    DDLogDebug(@"%@ Removed %lu expired messages", self.logTag, (unsigned long)expirationCount);
+    OWSLogDebug(@"%@ Removed %lu expired messages", self.logTag, (unsigned long)expirationCount);
 
     OWSAssert(backgroundTask);
     backgroundTask = nil;
@@ -145,7 +145,7 @@ void AssertIsOnDisappearingMessagesQueue()
 // deletes any expired messages and schedules the next run.
 - (NSUInteger)runLoop
 {
-    DDLogVerbose(@"%@ in runLoop", self.logTag);
+    OWSLogVerbose(@"%@ in runLoop", self.logTag);
     AssertIsOnDisappearingMessagesQueue();
 
     NSUInteger deletedCount = [self deleteExpiredMessages];
@@ -157,7 +157,7 @@ void AssertIsOnDisappearingMessagesQueue()
     }];
 
     if (!nextExpirationTimestampNumber) {
-        DDLogDebug(@"%@ No more expiring messages.", self.logTag);
+        OWSLogDebug(@"%@ No more expiring messages.", self.logTag);
         return deletedCount;
     }
 
@@ -179,7 +179,7 @@ void AssertIsOnDisappearingMessagesQueue()
     }
 
     NSTimeInterval startedSecondsAgo = ([NSDate ows_millisecondTimeStamp] - expirationStartedAt) / 1000.0;
-    DDLogDebug(@"%@ Starting expiration for message read %f seconds ago", self.logTag, startedSecondsAgo);
+    OWSLogDebug(@"%@ Starting expiration for message read %f seconds ago", self.logTag, startedSecondsAgo);
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
@@ -242,7 +242,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    DDLogInfo(@"%@ becoming consistent with disappearing message configuration: %@",
+    OWSLogInfo(@"%@ becoming consistent with disappearing message configuration: %@",
         self.logTag,
         disappearingMessagesConfiguration.dictionaryValue);
 
@@ -310,7 +310,7 @@ void AssertIsOnDisappearingMessagesQueue()
         NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, date.timeIntervalSinceNow);
         NSDate *newTimerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
         if (self.nextDisappearanceDate && [self.nextDisappearanceDate isBeforeDate:newTimerScheduleDate]) {
-            DDLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
+            OWSLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
                 self.logTag,
                 [self.dateFormatter stringFromDate:date],
                 (int)round(MAX(0, [date timeIntervalSinceDate:[NSDate new]])),
@@ -320,7 +320,7 @@ void AssertIsOnDisappearingMessagesQueue()
         }
 
         // Update Schedule
-        DDLogVerbose(@"%@ Scheduled run at %@ (%d sec.)",
+        OWSLogVerbose(@"%@ Scheduled run at %@ (%d sec.)",
             self.logTag,
             [self.dateFormatter stringFromDate:newTimerScheduleDate],
             (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
@@ -337,7 +337,7 @@ void AssertIsOnDisappearingMessagesQueue()
 - (void)disappearanceTimerDidFire
 {
     OWSAssertIsOnMainThread();
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
@@ -355,7 +355,7 @@ void AssertIsOnDisappearingMessagesQueue()
 - (void)fallbackTimerDidFire
 {
     OWSAssertIsOnMainThread();
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     BOOL recentlyScheduledDisappearanceTimer = NO;
     if (fabs(self.nextDisappearanceDate.timeIntervalSinceNow) < 1.0) {
@@ -363,7 +363,7 @@ void AssertIsOnDisappearingMessagesQueue()
     }
 
     if (!CurrentAppContext().isMainAppAndActive) {
-        DDLogInfo(@"%@ Ignoring fallbacktimer for app which is not main and active.", self.logTag);
+        OWSLogInfo(@"%@ Ignoring fallbacktimer for app which is not main and active.", self.logTag);
         return;
     }
 

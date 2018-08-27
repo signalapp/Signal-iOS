@@ -199,7 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (!thread) {
         OWSFailDebug(@"%@ Can't present nil thread.", self.logTag);
@@ -231,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)resetAppData
 {
     // This _should_ be wiped out below.
-    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
     [OWSStorage resetAllStorage];
@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearAllNotifications
 {
-    DDLogInfo(@"%@ clearAllNotifications.", self.logTag);
+    OWSLogInfo(@"%@ clearAllNotifications.", self.logTag);
 
     // This will cancel all "scheduled" local notifications that haven't
     // been presented yet.

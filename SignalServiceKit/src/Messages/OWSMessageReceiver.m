@@ -303,7 +303,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
     if (!job) {
         self.isDrainingQueue = NO;
-        DDLogVerbose(@"%@ Queue is drained.", self.logTag);
+        OWSLogVerbose(@"%@ Queue is drained.", self.logTag);
         return;
     }
 
@@ -313,7 +313,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     [self processJob:job
           completion:^(BOOL success) {
               [self.finder removeJobWithId:job.uniqueId];
-              DDLogVerbose(@"%@ %@ job. %lu jobs left.",
+              OWSLogVerbose(@"%@ %@ job. %lu jobs left.",
                   self.logTag,
                   success ? @"decrypted" : @"failed to decrypt",
                   (unsigned long)[OWSMessageDecryptJob numberOfKeysInCollection]);

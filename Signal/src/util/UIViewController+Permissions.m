@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_askForCameraPermissions:(void (^)(BOOL granted))callbackParam
 {
-    DDLogVerbose(@"[%@] ows_askForCameraPermissions", NSStringFromClass(self.class));
+    OWSLogVerbose(@"[%@] ows_askForCameraPermissions", NSStringFromClass(self.class));
 
     // Ensure callback is invoked on main thread.
     void (^callback)(BOOL) = ^(BOOL granted) {
@@ -25,13 +25,13 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        DDLogError(@"Skipping camera permissions request when app is in background.");
+        OWSLogError(@"Skipping camera permissions request when app is in background.");
         callback(NO);
         return;
     }
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        DDLogError(@"Camera ImagePicker source not available");
+        OWSLogError(@"Camera ImagePicker source not available");
         callback(NO);
         return;
     }
@@ -66,14 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                  completionHandler:callback];
     } else {
-        DDLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
+        OWSLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
         callback(NO);
     }
 }
 
 - (void)ows_askForMediaLibraryPermissions:(void (^)(BOOL granted))callbackParam
 {
-    DDLogVerbose(@"[%@] ows_askForMediaLibraryPermissions", NSStringFromClass(self.class));
+    OWSLogVerbose(@"[%@] ows_askForMediaLibraryPermissions", NSStringFromClass(self.class));
 
     // Ensure callback is invoked on main thread.
     void (^completionCallback)(BOOL) = ^(BOOL granted) {
@@ -112,13 +112,13 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        DDLogError(@"Skipping media library permissions request when app is in background.");
+        OWSLogError(@"Skipping media library permissions request when app is in background.");
         completionCallback(NO);
         return;
     }
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        DDLogError(@"%@ PhotoLibrary ImagePicker source not available", self.logTag);
+        OWSLogError(@"%@ PhotoLibrary ImagePicker source not available", self.logTag);
         completionCallback(NO);
     }
 
@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_askForMicrophonePermissions:(void (^)(BOOL granted))callbackParam
 {
-    DDLogVerbose(@"[%@] ows_askForMicrophonePermissions", NSStringFromClass(self.class));
+    OWSLogVerbose(@"[%@] ows_askForMicrophonePermissions", NSStringFromClass(self.class));
 
     // Ensure callback is invoked on main thread.
     void (^callback)(BOOL) = ^(BOOL granted) {
@@ -163,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        DDLogError(@"Skipping microphone permissions request when app is in background.");
+        OWSLogError(@"Skipping microphone permissions request when app is in background.");
         callback(NO);
         return;
     }

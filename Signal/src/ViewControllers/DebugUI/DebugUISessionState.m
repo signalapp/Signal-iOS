@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Toggle Key Change"
                             actionBlock:^{
-                                DDLogError(@"Flipping identity Key. Flip again to return.");
+                                OWSLogError(@"Flipping identity Key. Flip again to return.");
 
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
                                 NSString *recipientId = [thread contactIdentifier];

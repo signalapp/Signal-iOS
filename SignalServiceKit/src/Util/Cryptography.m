@@ -313,9 +313,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     if (hmac == nil || ![ourHmacData ows_constantTimeIsEqualToData:hmac]) {
-        DDLogError(@"%@ Bad HMAC on decrypting payload.", self.logTag);
+        OWSLogError(@"%@ Bad HMAC on decrypting payload.", self.logTag);
         // Don't log HMAC in prod
-        DDLogDebug(@"%@ %s Bad HMAC on decrypting payload. Their MAC: %@, our MAC: %@",
+        OWSLogDebug(@"%@ %s Bad HMAC on decrypting payload. Their MAC: %@, our MAC: %@",
             self.logTag,
             __PRETTY_FUNCTION__,
             hmac,
@@ -325,13 +325,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     // Optionally verify digest of: version? || iv || encrypted data || hmac
     if (digest) {
-        DDLogDebug(@"%@ verifying their digest", self.logTag);
+        OWSLogDebug(@"%@ verifying their digest", self.logTag);
         [dataToAuth appendData:ourHmacData];
         NSData *_Nullable ourDigest = [Cryptography computeSHA256Digest:dataToAuth];
         if (!ourDigest || ![ourDigest ows_constantTimeIsEqualToData:digest]) {
-            DDLogWarn(@"%@ Bad digest on decrypting payload", self.logTag);
+            OWSLogWarn(@"%@ Bad digest on decrypting payload", self.logTag);
             // Don't log digest in prod
-            DDLogDebug(@"%@ Bad digest on decrypting payload. Their digest: %@, our digest: %@",
+            OWSLogDebug(@"%@ Bad digest on decrypting payload. Their digest: %@, our digest: %@",
                 self.logTag,
                 digest,
                 ourDigest);
@@ -343,7 +343,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     size_t bufferSize = [dataToDecrypt length] + kCCBlockSizeAES128;
     NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
     if (!bufferData) {
-        DDLogError(@"%@ Failed to allocate buffer.", self.logTag);
+        OWSLogError(@"%@ Failed to allocate buffer.", self.logTag);
         return nil;
     }
 
@@ -362,7 +362,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     if (cryptStatus == kCCSuccess) {
         return [bufferData subdataWithRange:NSMakeRange(0, bytesDecrypted)];
     } else {
-        DDLogError(@"%@ Failed CBC decryption", self.logTag);
+        OWSLogError(@"%@ Failed CBC decryption", self.logTag);
     }
 
     return nil;
@@ -420,7 +420,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 {
     if (digest.length <= 0) {
         // This *could* happen with sufficiently outdated clients.
-        DDLogError(@"%@ Refusing to decrypt attachment without a digest.", self.logTag);
+        OWSLogError(@"%@ Refusing to decrypt attachment without a digest.", self.logTag);
         *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage,
             NSLocalizedString(@"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT",
                 @"Error message when unable to receive an attachment because the sending client is too old."));
@@ -429,7 +429,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     if (([dataToDecrypt length] < AES_CBC_IV_LENGTH + HMAC256_OUTPUT_LENGTH) ||
         ([key length] < AES_KEY_SIZE + HMAC256_KEY_LENGTH)) {
-        DDLogError(@"%@ Message shorter than crypto overhead!", self.logTag);
+        OWSLogError(@"%@ Message shorter than crypto overhead!", self.logTag);
         *error = OWSErrorWithCodeDescription(
             OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
         return nil;
@@ -463,7 +463,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     } else if (unpaddedSize == 0) {
         // Work around for legacy iOS client's which weren't setting padding size.
         // Since we know those clients pre-date attachment padding we return the entire data.
-        DDLogWarn(@"%@ Decrypted attachment with unspecified size.", self.logTag);
+        OWSLogWarn(@"%@ Decrypted attachment with unspecified size.", self.logTag);
         return paddedPlainText;
     } else {
         if (unpaddedSize > paddedPlainText.length) {
@@ -473,11 +473,11 @@ const NSUInteger kAES256_KeyByteLength = 32;
         }
 
         if (unpaddedSize == paddedPlainText.length) {
-            DDLogInfo(@"%@ decrypted unpadded attachment.", self.logTag);
+            OWSLogInfo(@"%@ decrypted unpadded attachment.", self.logTag);
             return [paddedPlainText copy];
         } else {
             unsigned long paddingSize = paddedPlainText.length - unpaddedSize;
-            DDLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %lu, paddingSize: %lu",
+            OWSLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %lu, paddingSize: %lu",
                 self.logTag,
                 (unsigned long)unpaddedSize,
                 paddingSize);
@@ -505,7 +505,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 {
     // Due to paddedSize, we need to divide by two.
     if (attachmentData.length >= SIZE_MAX / 2) {
-        DDLogError(@"%@ data is too long.", self.logTag);
+        OWSLogError(@"%@ data is too long.", self.logTag);
         return nil;
     }
 
@@ -528,7 +528,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     size_t bufferSize = [paddedAttachmentData length] + kCCBlockSizeAES128;
     NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
     if (!bufferData) {
-        DDLogError(@"%@ Failed to allocate buffer.", self.logTag);
+        OWSLogError(@"%@ Failed to allocate buffer.", self.logTag);
         return nil;
     }
 
@@ -546,7 +546,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
         &bytesEncrypted);
 
     if (cryptStatus != kCCSuccess) {
-        DDLogError(@"%@ %s CCCrypt failed with status: %d", self.logTag, __PRETTY_FUNCTION__, (int32_t)cryptStatus);
+        OWSLogError(@"%@ %s CCCrypt failed with status: %d", self.logTag, __PRETTY_FUNCTION__, (int32_t)cryptStatus);
         return nil;
     }
 
@@ -780,7 +780,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     } else {
         // This should only happen if the user has changed their profile key, which should only
         // happen currently if they re-register.
-        DDLogError(@"%@ Decrypt verification failed", self.logTag);
+        OWSLogError(@"%@ Decrypt verification failed", self.logTag);
         return nil;
     }
 }

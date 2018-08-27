@@ -75,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
             NSError *__nullable activityError) {
 
             if (activityError) {
-                DDLogInfo(@"%@ Failed to share with activityError: %@", self.logTag, activityError);
+                OWSLogInfo(@"%@ Failed to share with activityError: %@", self.logTag, activityError);
             } else if (completed) {
-                DDLogInfo(@"%@ Did share with activityType: %@", self.logTag, activityType);
+                OWSLogInfo(@"%@ Did share with activityType: %@", self.logTag, activityType);
             }
 
             if (completion) {

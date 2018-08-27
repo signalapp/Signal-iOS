@@ -47,7 +47,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
     [identityKeys enumerateKeysAndObjectsUsingBlock:^(
         NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
-        DDLogInfo(@"%@ Migrating identity key for recipient: %@", self.logTag, recipientId);
+        OWSLogInfo(@"%@ Migrating identity key for recipient: %@", self.logTag, recipientId);
         [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
                                                identityKey:identityKey
                                            isFirstKnownKey:NO

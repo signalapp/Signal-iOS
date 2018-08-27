@@ -583,7 +583,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     BOOL success = [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
     if (!success || error) {
-        DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.logTag, error);
+        OWSLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.logTag, error);
     }
 }
 

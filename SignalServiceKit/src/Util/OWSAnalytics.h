@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAnalyticsEvents.h"
@@ -144,7 +144,7 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)(v
 // log but too dangerous to include in the analytics event.
 #define OWSProdErrorWEnvelope(__analyticsEventName, __envelope)                                                        \
     {                                                                                                                  \
-        DDLogError(@"%s:%d %@: %@",                                                                                    \
+        OWSLogError(@"%s:%d %@: %@",                                                                                   \
             __PRETTY_FUNCTION__,                                                                                       \
             __LINE__,                                                                                                  \
             __analyticsEventName,                                                                                      \
@@ -154,7 +154,7 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)(v
 
 #define OWSProdInfoWEnvelope(__analyticsEventName, __envelope)                                                         \
     {                                                                                                                  \
-        DDLogInfo(@"%s:%d %@: %@",                                                                                     \
+        OWSLogInfo(@"%s:%d %@: %@",                                                                                    \
             __PRETTY_FUNCTION__,                                                                                       \
             __LINE__,                                                                                                  \
             __analyticsEventName,                                                                                      \

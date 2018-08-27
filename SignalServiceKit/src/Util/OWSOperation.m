@@ -40,7 +40,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)dealloc
 {
-    DDLogDebug(@"%@ in dealloc", self.logTag);
+    OWSLogDebug(@"%@ in dealloc", self.logTag);
 }
 
 #pragma mark - Subclass Overrides
@@ -100,7 +100,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Do not override this method in a subclass instead, override `run`
 - (void)main
 {
-    DDLogDebug(@"%@ started.", self.logTag);
+    OWSLogDebug(@"%@ started.", self.logTag);
     NSError *_Nullable preconditionError = [self checkForPreconditionError];
     if (preconditionError) {
         [self failOperationWithError:preconditionError];
@@ -115,7 +115,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportSuccess
 {
-    DDLogDebug(@"%@ succeeded.", self.logTag);
+    OWSLogDebug(@"%@ succeeded.", self.logTag);
     [self didSucceed];
     [self markAsComplete];
 }
@@ -123,14 +123,14 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportCancelled
 {
-    DDLogDebug(@"%@ cancelled.", self.logTag);
+    OWSLogDebug(@"%@ cancelled.", self.logTag);
     [self didCancel];
     [self markAsComplete];
 }
 
 - (void)reportError:(NSError *)error
 {
-    DDLogDebug(@"%@ reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
+    OWSLogDebug(@"%@ reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
         self.logTag,
         error,
         error.isFatal,
@@ -165,7 +165,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)failOperationWithError:(NSError *)error
 {
-    DDLogDebug(@"%@ failed terminally.", self.logTag);
+    OWSLogDebug(@"%@ failed terminally.", self.logTag);
     self.failingError = error;
 
     [self didFailWithError:error];

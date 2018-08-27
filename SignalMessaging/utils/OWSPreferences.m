@@ -253,7 +253,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         }
     }();
 
-    DDLogInfo(@"%@ Migrating setting - System Call Log Enabled: %d", self.logTag, shouldLogCallsInRecents);
+    OWSLogInfo(@"%@ Migrating setting - System Call Log Enabled: %d", self.logTag, shouldLogCallsInRecents);
     [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled
                  toValue:@(shouldLogCallsInRecents)
              transaction:transaction];
@@ -392,7 +392,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         case NotificationNoNameNoPreview:
             return NSLocalizedString(@"NOTIFICATIONS_NONE", nil);
         default:
-            DDLogWarn(@"Undefined NotificationType in Settings");
+            OWSLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
 }
@@ -421,7 +421,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (void)unsetRecordedAPNSTokens
 {
-    DDLogWarn(@"%@ Forgetting recorded APNS tokens", self.logTag);
+    OWSLogWarn(@"%@ Forgetting recorded APNS tokens", self.logTag);
     [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:nil];
     [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:nil];
 }

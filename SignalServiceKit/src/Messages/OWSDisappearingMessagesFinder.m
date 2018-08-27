@@ -197,7 +197,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         if ([message isKindOfClass:[TSMessage class]]) {
             block(message);
         } else {
-            DDLogError(@"%@ unexpected object: %@", self.logTag, message);
+            OWSLogError(@"%@ unexpected object: %@", self.logTag, message);
         }
     }
 }

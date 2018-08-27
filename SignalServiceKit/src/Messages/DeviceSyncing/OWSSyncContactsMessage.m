@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
-        DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
+        OWSLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
 

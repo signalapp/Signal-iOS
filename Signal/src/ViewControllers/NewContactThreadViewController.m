@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contactsViewHelper.contactsManager
         userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
             if (error) {
-                DDLogError(@"%@ refreshing contacts failed with error: %@", self.logTag, error);
+                OWSLogError(@"%@ refreshing contacts failed with error: %@", self.logTag, error);
             }
             [refreshControl endRefreshing];
         }];
@@ -793,7 +793,7 @@ NS_ASSUME_NONNULL_BEGIN
         case MessageComposeResultSent: {
             [self dismissViewControllerAnimated:NO
                                      completion:^{
-                                         DDLogDebug(@"view controller dismissed");
+                                         OWSLogDebug(@"view controller dismissed");
                                      }];
             [OWSAlerts
                 showAlertWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")];

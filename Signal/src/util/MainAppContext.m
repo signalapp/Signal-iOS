@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateBackground;
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateActive;
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
 
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 }
 
@@ -193,9 +193,9 @@ NS_ASSUME_NONNULL_BEGIN
             if (blockingObjects.count > 1) {
                 [logString appendString:[NSString stringWithFormat:@"(and %lu others)", blockingObjects.count - 1]];
             }
-            DDLogInfo(@"%@", logString);
+            OWSLogInfo(@"%@", logString);
         } else {
-            DDLogInfo(@"%@ Unblocking Sleep.", self.logTag);
+            OWSLogInfo(@"%@ Unblocking Sleep.", self.logTag);
         }
     }
     UIApplication.sharedApplication.idleTimerDisabled = shouldBeBlocking;

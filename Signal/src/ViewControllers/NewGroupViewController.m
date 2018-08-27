@@ -449,7 +449,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
     void (^successHandler)(void) = ^{
-        DDLogError(@"Group creation successful.");
+        OWSLogError(@"Group creation successful.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
@@ -458,7 +458,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     };
 
     void (^failureHandler)(NSError *error) = ^(NSError *error) {
-        DDLogError(@"Group creation failed: %@", error);
+        OWSLogError(@"Group creation failed: %@", error);
 
         // Add an error message to the new group indicating
         // that group creation didn't succeed.

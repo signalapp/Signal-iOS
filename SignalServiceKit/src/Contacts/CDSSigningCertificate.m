@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     // The leaf is always the first certificate.
     NSData *_Nullable leafCertificateData = [certificateDerDatas firstObject];
     if (!leafCertificateData) {
-        DDLogError(@"%@ Could not extract leaf certificate data.", self.logTag);
+        OWSLogError(@"%@ Could not extract leaf certificate data.", self.logTag);
         return nil;
     }
     if (![self verifyDistinguishedNameOfCertificate:leafCertificateData]) {
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     SecPolicyRef policy = SecPolicyCreateBasicX509();
     signingCertificate.policy = policy;
     if (!policy) {
-        DDLogError(@"%@ Could not create policy.", self.logTag);
+        OWSLogError(@"%@ Could not create policy.", self.logTag);
         return nil;
     }
 
@@ -100,23 +100,23 @@ NS_ASSUME_NONNULL_BEGIN
     OSStatus status = SecTrustCreateWithCertificates((__bridge CFTypeRef)certificates, policy, &trust);
     signingCertificate.trust = trust;
     if (status != errSecSuccess) {
-        DDLogError(@"%@ trust could not be created.", self.logTag);
+        OWSLogError(@"%@ trust could not be created.", self.logTag);
         return nil;
     }
     if (!trust) {
-        DDLogError(@"%@ Could not create trust.", self.logTag);
+        OWSLogError(@"%@ Could not create trust.", self.logTag);
         return nil;
     }
 
     status = SecTrustSetNetworkFetchAllowed(trust, NO);
     if (status != errSecSuccess) {
-        DDLogError(@"%@ trust fetch could not be configured.", self.logTag);
+        OWSLogError(@"%@ trust fetch could not be configured.", self.logTag);
         return nil;
     }
 
     status = SecTrustSetAnchorCertificatesOnly(trust, YES);
     if (status != errSecSuccess) {
-        DDLogError(@"%@ trust anchor certs could not be configured.", self.logTag);
+        OWSLogError(@"%@ trust anchor certs could not be configured.", self.logTag);
         return nil;
     }
 
@@ -132,14 +132,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
     status = SecTrustSetAnchorCertificates(trust, (__bridge CFArrayRef)pinnedCertificates);
     if (status != errSecSuccess) {
-        DDLogError(@"%@ The anchor certificates couldn't be set.", self.logTag);
+        OWSLogError(@"%@ The anchor certificates couldn't be set.", self.logTag);
         return nil;
     }
 
     SecTrustResultType result;
     status = SecTrustEvaluate(trust, &result);
     if (status != errSecSuccess) {
-        DDLogError(@"%@ Could not evaluate certificates.", self.logTag);
+        OWSLogError(@"%@ Could not evaluate certificates.", self.logTag);
         return nil;
     }
 
@@ -147,14 +147,14 @@ NS_ASSUME_NONNULL_BEGIN
     // See the comments in the header where it is defined.
     BOOL isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
     if (!isValid) {
-        DDLogError(@"%@ Certificate evaluation failed.", self.logTag);
+        OWSLogError(@"%@ Certificate evaluation failed.", self.logTag);
         return nil;
     }
 
     SecKeyRef publicKey = SecTrustCopyPublicKey(trust);
     signingCertificate.publicKey = publicKey;
     if (!publicKey) {
-        DDLogError(@"%@ Could not extract public key.", self.logTag);
+        OWSLogError(@"%@ Could not extract public key.", self.logTag);
         return nil;
     }
 

@@ -118,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
           };
 
     @try {
-        DDLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+        OWSLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
 
         OWSAssert(envelope.source.length > 0);
         if ([self isEnvelopeBlocked:envelope]) {
-            DDLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
+            OWSLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
             failureBlock();
             return;
         }
@@ -131,11 +131,11 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-                        DDLogDebug(@"%@ decrypted secure message.", self.logTag);
+                        OWSLogDebug(@"%@ decrypted secure message.", self.logTag);
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        DDLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
+                        OWSLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
                             self.logTag,
                             envelopeAddress(envelope),
                             error);
@@ -148,12 +148,12 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-                        DDLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
+                        OWSLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        DDLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
-                                   @"with error: %@",
+                        OWSLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
+                                    @"with error: %@",
                             self.logTag,
                             envelopeAddress(envelope),
                             error);
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             default:
-                DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
+                OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
                 break;
         }
     } @catch (NSException *exception) {
@@ -280,7 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope
 {
-    DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
+    OWSLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
         self.logTag,
         exception.description,
         exception.name,

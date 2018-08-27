@@ -362,7 +362,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
         return [self filePathForData:uniqueId withFileExtension:fileExtension inFolder:folder];
     }
 
-    DDLogError(@"Got asked for path of file %@ which is unsupported", contentType);
+    OWSLogError(@"Got asked for path of file %@ which is unsupported", contentType);
     // Use a fallback file extension.
     return [self filePathForData:uniqueId withFileExtension:kDefaultFileExtension inFolder:folder];
 }

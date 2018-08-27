@@ -163,7 +163,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     @autoreleasepool {
 
         if (![NSFileManager.defaultManager fileExistsAtPath:srcFilePath]) {
-            DDLogError(@"%@ missing downloaded file.", self.logTag);
+            OWSLogError(@"%@ missing downloaded file.", self.logTag);
             return nil;
         }
 
@@ -221,7 +221,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
             dstBufferData.mutableBytes, dstBufferLength, srcData.bytes, srcLength, NULL, SignalCompressionAlgorithm);
         NSData *compressedData = [dstBufferData subdataWithRange:NSMakeRange(0, dstLength)];
 
-        DDLogVerbose(@"%@ compressed %zd -> %zd = %0.2f",
+        OWSLogVerbose(@"%@ compressed %zd -> %zd = %0.2f",
             self.logTag,
             srcLength,
             dstLength,
@@ -256,7 +256,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
             dstBufferData.mutableBytes, dstBufferLength, srcData.bytes, srcLength, NULL, SignalCompressionAlgorithm);
         NSData *decompressedData = [dstBufferData subdataWithRange:NSMakeRange(0, dstLength)];
         OWSAssert(decompressedData.length == uncompressedDataLength);
-        DDLogVerbose(@"%@ decompressed %zd -> %zd = %0.2f",
+        OWSLogVerbose(@"%@ decompressed %zd -> %zd = %0.2f",
             self.logTag,
             srcLength,
             dstLength,

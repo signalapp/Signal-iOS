@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
         success:^(NSSet<SignalRecipient *> *recipients) {
             if (recipients.count == 0) {
-                DDLogInfo(@"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
+                OWSLogInfo(@"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
             }
             DispatchMainThreadSafe(^{
                 success(recipients.allObjects);

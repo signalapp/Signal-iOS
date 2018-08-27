@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
             // For legacy instances, try to parse the serverId from the uniqueId.
             self.serverId = [self.uniqueId integerValue];
         } else {
-            DDLogError(@"%@ invalid legacy attachment uniqueId: %@.", self.logTag, self.uniqueId);
+            OWSLogError(@"%@ invalid legacy attachment uniqueId: %@.", self.logTag, self.uniqueId);
         }
     }
 }

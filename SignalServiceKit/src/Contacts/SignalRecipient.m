@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([devices isSubsetOfSet:latest.devices.set]) {
         return;
     }
-    DDLogDebug(@"%@ adding devices: %@, to recipient: %@", self.logTag, devices, latest.recipientId);
+    OWSLogDebug(@"%@ adding devices: %@, to recipient: %@", self.logTag, devices, latest.recipientId);
 
     [latest addDevices:devices];
     [latest saveWithTransaction_internal:transaction];
@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![devices intersectsSet:latest.devices.set]) {
         return;
     }
-    DDLogDebug(@"%@ removing devices: %@, from registered recipient: %@", self.logTag, devices, latest.recipientId);
+    OWSLogDebug(@"%@ removing devices: %@, from registered recipient: %@", self.logTag, devices, latest.recipientId);
 
     [latest removeDevices:devices];
     [latest saveWithTransaction_internal:transaction];
@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super saveWithTransaction:transaction];
 
-    DDLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
+    OWSLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
 }
 
 + (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
 
     if (!instance) {
-        DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
+        OWSLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
 
         instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
         [instance saveWithTransaction_internal:transaction];
@@ -233,11 +233,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
     if (![recipient.devices containsObject:@(deviceId)]) {
-        DDLogDebug(@"%@ in %s adding device %u to existing recipient.",
-                   self.logTag,
-                   __PRETTY_FUNCTION__,
-                   (unsigned int)deviceId);
-        
+        OWSLogDebug(@"%@ in %s adding device %u to existing recipient.",
+            self.logTag,
+            __PRETTY_FUNCTION__,
+            (unsigned int)deviceId);
+
         [recipient addDevices:[NSSet setWithObject:@(deviceId)]];
         [recipient saveWithTransaction_internal:transaction];
     }
@@ -252,7 +252,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!instance) {
         return;
     }
-    DDLogDebug(@"%@ removing recipient: %@", self.logTag, recipientId);
+    OWSLogDebug(@"%@ removing recipient: %@", self.logTag, recipientId);
     [instance removeWithTransaction:transaction];
 }
 

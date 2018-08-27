@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(databasePassword.length > 0 || databaseKeySpec.length > 0);
     OWSAssert(databaseBlock);
 
-    DDLogVerbose(@"openYapDatabase: %@", databaseFilePath);
+    OWSLogVerbose(@"openYapDatabase: %@", databaseFilePath);
     [DDLog flushLog];
 
     __weak YapDatabase *_Nullable weakDatabase = nil;
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
         YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
         options.corruptAction = YapDatabaseCorruptAction_Fail;
         if (databasePassword) {
-            DDLogInfo(@"%@ Using password.", self.logTag);
+            OWSLogInfo(@"%@ Using password.", self.logTag);
             options.cipherKeyBlock = ^{
                 return databasePassword;
             };
@@ -89,13 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
         options.enableMultiProcessSupport = YES;
 
         if (databaseSalt) {
-            DDLogInfo(@"%@ Using salt & unencrypted header.", self.logTag);
+            OWSLogInfo(@"%@ Using salt & unencrypted header.", self.logTag);
             options.cipherSaltBlock = ^{
                 return databaseSalt;
             };
             options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
         } else if (databaseKeySpec) {
-            DDLogInfo(@"%@ Using key spec & unencrypted header.", self.logTag);
+            OWSLogInfo(@"%@ Using key spec & unencrypted header.", self.logTag);
             options.cipherKeySpecBlock = ^{
                 return databaseKeySpec;
             };
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary *fileAttributes =
         [[NSFileManager defaultManager] attributesOfItemAtPath:databaseFilePath error:&error];
     OWSAssert(fileAttributes && !error);
-    DDLogVerbose(@"%@ test database file size: %@", self.logTag, fileAttributes[NSFileSize]);
+    OWSLogVerbose(@"%@ test database file size: %@", self.logTag, fileAttributes[NSFileSize]);
 }
 
 - (BOOL)verifyTestDatabase:(NSString *)databaseFilePath
@@ -233,7 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *databaseFilePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
 
-    DDLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
+    OWSLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
     [DDLog flushLog];
 
     return databaseFilePath;
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -360,7 +360,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -452,7 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -495,7 +495,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -528,7 +528,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        DDLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -622,7 +622,7 @@ NS_ASSUME_NONNULL_BEGIN
     int log, ckpt;
     rc = sqlite3_wal_checkpoint_v2(db, NULL, SQLITE_CHECKPOINT_FULL, &log, &ckpt);
     XCTAssertTrue(rc == SQLITE_OK);
-    DDLogInfo(@"log = %d, ckpt = %d", log, ckpt);
+    OWSLogInfo(@"log = %d, ckpt = %d", log, ckpt);
 
     rc = sqlite3_close(db);
     XCTAssertTrue(rc == SQLITE_OK);
@@ -639,7 +639,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(rc == SQLITE_OK);
 
     NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
-    DDLogInfo(@"salt pragma = %@", saltPragma);
+    OWSLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
 
@@ -723,7 +723,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(rc == SQLITE_OK);
 
     NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
-    DDLogInfo(@"salt pragma = %@", saltPragma);
+    OWSLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
 
@@ -768,7 +768,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(rc == SQLITE_OK);
 
     //    NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
-    //    DDLogInfo(@"salt pragma = %@", saltPragma);
+    //    OWSLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
 
@@ -817,7 +817,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertTrue(rc == SQLITE_OK);
 
     NSString *saltPragma = [NSString stringWithFormat:@"PRAGMA cipher_salt = \"x'%@'\";", salt];
-    DDLogInfo(@"salt pragma = %@", saltPragma);
+    OWSLogInfo(@"salt pragma = %@", saltPragma);
     rc = sqlite3_exec(db, [saltPragma UTF8String], NULL, NULL, NULL);
     XCTAssertTrue(rc == SQLITE_OK);
 
@@ -951,7 +951,7 @@ NS_ASSUME_NONNULL_BEGIN
             [output appendString:@"_"];
         }
     }
-    DDLogInfo(@"%@: %@", label, output);
+    OWSLogInfo(@"%@: %@", label, output);
 }
 
 

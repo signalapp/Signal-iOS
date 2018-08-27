@@ -215,7 +215,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     @synchronized(self)
     {
-        DDLogVerbose(@"%@ Processing read receipts.", self.logTag);
+        OWSLogVerbose(@"%@ Processing read receipts.", self.logTag);
 
         NSArray<OWSLinkedDeviceReadReceipt *> *readReceiptsForLinkedDevices =
             [self.toLinkedDevicesReadReceiptMap allValues];
@@ -226,12 +226,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             [self.messageSender enqueueMessage:message
                 success:^{
-                    DDLogInfo(@"%@ Successfully sent %lu read receipt to linked devices.",
+                    OWSLogInfo(@"%@ Successfully sent %lu read receipt to linked devices.",
                         self.logTag,
                         (unsigned long)readReceiptsForLinkedDevices.count);
                 }
                 failure:^(NSError *error) {
-                    DDLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.logTag, error);
+                    OWSLogError(@"%@ Failed to send read receipt to linked devices with error: %@", self.logTag, error);
                 }];
         }
 
@@ -250,10 +250,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
                 [self.messageSender enqueueMessage:message
                     success:^{
-                        DDLogInfo(@"%@ Successfully sent %lu read receipts to sender.", self.logTag, (unsigned long)timestamps.count);
+                        OWSLogInfo(@"%@ Successfully sent %lu read receipts to sender.",
+                            self.logTag,
+                            (unsigned long)timestamps.count);
                     }
                     failure:^(NSError *error) {
-                        DDLogError(@"%@ Failed to send read receipts to sender with error: %@", self.logTag, error);
+                        OWSLogError(@"%@ Failed to send read receipts to sender with error: %@", self.logTag, error);
                     }];
             }
             [self.toSenderReadReceiptMap removeAllObjects];
@@ -317,19 +319,19 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             if (oldReadReceipt && oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp) {
                 // If there's an existing "linked device" read receipt for the same thread with
                 // a newer timestamp, discard this "linked device" read receipt.
-                DDLogVerbose(@"%@ Ignoring redundant read receipt for linked devices.", self.logTag);
+                OWSLogVerbose(@"%@ Ignoring redundant read receipt for linked devices.", self.logTag);
             } else {
-                DDLogVerbose(@"%@ Enqueuing read receipt for linked devices.", self.logTag);
+                OWSLogVerbose(@"%@ Enqueuing read receipt for linked devices.", self.logTag);
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
             if ([message.messageAuthorId isEqualToString:[TSAccountManager localNumber]]) {
-                DDLogVerbose(@"%@ Ignoring read receipt for self-sender.", self.logTag);
+                OWSLogVerbose(@"%@ Ignoring read receipt for self-sender.", self.logTag);
                 return;
             }
 
             if ([self areReadReceiptsEnabled]) {
-                DDLogVerbose(@"%@ Enqueuing read receipt for sender.", self.logTag);
+                OWSLogVerbose(@"%@ Enqueuing read receipt for sender.", self.logTag);
                 NSMutableSet<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
                 if (!timestamps) {
                     timestamps = [NSMutableSet new];
@@ -353,7 +355,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssert(sentTimestamps);
 
     if (![self areReadReceiptsEnabled]) {
-        DDLogInfo(@"%@ Ignoring incoming receipt message as read receipts are disabled.", self.logTag);
+        OWSLogInfo(@"%@ Ignoring incoming receipt message as read receipts are disabled.", self.logTag);
         return;
     }
 
@@ -367,7 +369,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                                                        ofClass:[TSOutgoingMessage class]
                                                                                withTransaction:transaction];
                 if (messages.count > 1) {
-                    DDLogError(@"%@ More than one matching message with timestamp: %llu.", self.logTag, sentTimestamp);
+                    OWSLogError(@"%@ More than one matching message with timestamp: %llu.", self.logTag, sentTimestamp);
                 }
                 if (messages.count > 0) {
                     // TODO: We might also need to "mark as read by recipient" any older messages
@@ -469,7 +471,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             for (TSIncomingMessage *message in messages) {
                 NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - readTimestamp / 1000;
                 OWSAssert([message isKindOfClass:[TSIncomingMessage class]]);
-                DDLogDebug(@"%@ read on linked device %f seconds ago", self.logTag, secondsSinceRead);
+                OWSLogDebug(@"%@ read on linked device %f seconds ago", self.logTag, secondsSinceRead);
                 [self markAsReadOnLinkedDevice:message readTimestamp:readTimestamp transaction:transaction];
             }
         } else {
@@ -555,9 +557,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
     
     if (wasLocal) {
-        DDLogError(@"Marking %lu messages as read locally.", (unsigned long)newlyReadList.count);
+        OWSLogError(@"Marking %lu messages as read locally.", (unsigned long)newlyReadList.count);
     } else {
-        DDLogError(@"Marking %lu messages as read by linked device.", (unsigned long)newlyReadList.count);
+        OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)newlyReadList.count);
     }
     for (id<OWSReadTracking> readItem in newlyReadList) {
         [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
@@ -598,7 +600,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)setAreReadReceiptsEnabled:(BOOL)value
 {
-    DDLogInfo(@"%@ setAreReadReceiptsEnabled: %d.", self.logTag, value);
+    OWSLogInfo(@"%@ setAreReadReceiptsEnabled: %d.", self.logTag, value);
 
     [self.dbConnection setBool:value
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
@@ -608,10 +610,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:value];
     [self.messageSender enqueueMessage:syncConfigurationMessage
         success:^{
-            DDLogInfo(@"%@ Successfully sent Configuration syncMessage.", self.logTag);
+            OWSLogInfo(@"%@ Successfully sent Configuration syncMessage.", self.logTag);
         }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send Configuration syncMessage with error: %@", self.logTag, error);
+            OWSLogError(@"%@ Failed to send Configuration syncMessage with error: %@", self.logTag, error);
         }];
 
     self.areReadReceiptsEnabledCached = @(value);

@@ -175,7 +175,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
                 }
             }
             *success = NO;
-            DDLogError(@"%@ unable to decode date from %@", self.logTag, value);
+            OWSLogError(@"%@ unable to decode date from %@", self.logTag, value);
             *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from %@");
             return nil;
         }
@@ -188,7 +188,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
                         return result;
                     }
                 }
-                DDLogError(@"%@ unable to encode date from %@", self.logTag, value);
+                OWSLogError(@"%@ unable to encode date from %@", self.logTag, value);
                 *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date");
                 *success = NO;
                 return nil;

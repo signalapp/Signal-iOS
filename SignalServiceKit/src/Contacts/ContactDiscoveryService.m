@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
         derivedMaterial =
             [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
     } @catch (NSException *exception) {
-        DDLogError(@"%@ could not derive service key: %@", self.logTag, exception);
+        OWSLogError(@"%@ could not derive service key: %@", self.logTag, exception);
         return NO;
     }
 
@@ -197,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *_Nullable valueData = [self base64DataForKey:key];
     if (valueData && valueData.length != expectedLength) {
-        DDLogDebug(@"%@ decoded base 64 value for key: %@, has unexpected length: %zd != %zd",
+        OWSLogDebug(@"%@ decoded base 64 value for key: %@, has unexpected length: %zd != %zd",
             self.logTag,
             key,
             valueData.length,
@@ -244,10 +244,10 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self
             performRemoteAttestationWithSuccess:^(RemoteAttestation *_Nonnull remoteAttestation) {
-                DDLogDebug(@"%@ in %s succeeded", self.logTag, __PRETTY_FUNCTION__);
+                OWSLogDebug(@"%@ in %s succeeded", self.logTag, __PRETTY_FUNCTION__);
             }
             failure:^(NSError *_Nonnull error) {
-                DDLogDebug(@"%@ in %s failed with error: %@", self.logTag, __PRETTY_FUNCTION__, error);
+                OWSLogDebug(@"%@ in %s failed with error: %@", self.logTag, __PRETTY_FUNCTION__, error);
             }];
     });
 }
@@ -271,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];
                 if (!auth) {
-                    DDLogError(@"%@ remote attestation auth could not be parsed: %@", self.logTag, responseDict);
+                    OWSLogError(@"%@ remote attestation auth could not be parsed: %@", self.logTag, responseDict);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                     failureHandler(error);
                     return;
@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            DDLogVerbose(@"%@ remote attestation auth failure: %zd", self.logTag, response.statusCode);
+            OWSLogVerbose(@"%@ remote attestation auth failure: %zd", self.logTag, response.statusCode);
             failureHandler(error);
         }];
 }
@@ -346,7 +346,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            DDLogVerbose(@"%@ remote attestation failure: %zd", self.logTag, response.statusCode);
+            OWSLogVerbose(@"%@ remote attestation failure: %zd", self.logTag, response.statusCode);
             failureHandler(error);
         }];
 }
@@ -472,7 +472,7 @@ NS_ASSUME_NONNULL_BEGIN
     result.enclaveId = enclaveId;
     result.auth = auth;
 
-    DDLogVerbose(@"%@ remote attestation complete.", self.logTag);
+    OWSLogVerbose(@"%@ remote attestation complete.", self.logTag);
 
     return result;
 }

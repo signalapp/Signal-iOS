@@ -532,7 +532,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (self.messageCellType == OWSMessageCellType_Unknown) {
         // Messages of unknown type (including messages with missing attachments)
         // are rendered like empty text messages, but without any interactivity.
-        DDLogWarn(@"%@ Treating unknown message as empty text message: %@ %llu", self.logTag, message.class, message.timestamp);
+        OWSLogWarn(@"%@ Treating unknown message as empty text message: %@ %llu",
+            self.logTag,
+            message.class,
+            message.timestamp);
         self.messageCellType = OWSMessageCellType_TextMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
@@ -825,7 +828,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                              metadata:nil
                                       completionBlock:^(NSURL *assetURL, NSError *error) {
                                           if (error) {
-                                              DDLogWarn(@"Error Saving image to photo album: %@", error);
+                                              OWSLogWarn(@"Error Saving image to photo album: %@", error);
                                           }
                                       }];
             break;

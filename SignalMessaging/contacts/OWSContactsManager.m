@@ -87,7 +87,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     __block NSMutableArray<SignalAccount *> *signalAccounts;
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
-        DDLogInfo(@"%@ loading %lu signal accounts from cache.", self.logTag, (unsigned long)signalAccountCount);
+        OWSLogInfo(@"%@ loading %lu signal accounts from cache.", self.logTag, (unsigned long)signalAccountCount);
 
         signalAccounts = [[NSMutableArray alloc] initWithCapacity:signalAccountCount];
 
@@ -302,15 +302,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         OWSAssert(recipientIdsForIntersection);
 
         if (recipientIdsForIntersection.count < 1) {
-            DDLogInfo(@"%@ Skipping intersection; no contacts to intersect.", self.logTag);
+            OWSLogInfo(@"%@ Skipping intersection; no contacts to intersect.", self.logTag);
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completion(nil);
             });
             return;
         } else if (isFullIntersection) {
-            DDLogInfo(@"%@ Doing full intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
+            OWSLogInfo(
+                @"%@ Doing full intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
         } else {
-            DDLogInfo(
+            OWSLogInfo(
                 @"%@ Doing delta intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
         }
 
@@ -362,18 +363,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssert(failureParameter);
 
     void (^success)(NSArray<SignalRecipient *> *) = ^(NSArray<SignalRecipient *> *registeredRecipientIds) {
-        DDLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
+        OWSLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
         successParameter([NSSet setWithArray:registeredRecipientIds]);
     };
     void (^failure)(NSError *) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
             && error.code == OWSErrorCodeContactsUpdaterRateLimit) {
-            DDLogError(@"Contact intersection hit rate limit with error: %@", error);
+            OWSLogError(@"Contact intersection hit rate limit with error: %@", error);
             failureParameter(error);
             return;
         }
 
-        DDLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.logTag, error);
+        OWSLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.logTag, error);
 
         // Retry with exponential backoff.
         //
@@ -462,7 +463,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector((compare:))]) {
                 if ([seenRecipientIds containsObject:signalRecipient.recipientId]) {
-                    DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);
+                    OWSLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);
                     continue;
                 }
                 [seenRecipientIds addObject:signalRecipient.recipientId];
@@ -514,16 +515,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         // Update cached SignalAccounts on disk
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
+            OWSLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
-                DDLogVerbose(@"%@ Saving SignalAccount: %@", self.logTag, signalAccount);
+                OWSLogVerbose(@"%@ Saving SignalAccount: %@", self.logTag, signalAccount);
                 [signalAccount saveWithTransaction:transaction];
             }
 
             if (shouldClearStaleCache) {
-                DDLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
+                OWSLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
                 for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
-                    DDLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);
+                    OWSLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);
                     [signalAccount removeWithTransaction:transaction];
                 }
             } else {
@@ -534,11 +535,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 // their contacts we'll clear the cached ones.
                 // RADAR: https://bugreport.apple.com/web/?problemID=36082946
                 if (oldSignalAccounts.allValues.count > 0) {
-                    DDLogWarn(@"%@ NOT Removing %lu old SignalAccounts.",
+                    OWSLogWarn(@"%@ NOT Removing %lu old SignalAccounts.",
                         self.logTag,
                         (unsigned long)oldSignalAccounts.count);
                     for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
-                        DDLogVerbose(
+                        OWSLogVerbose(
                             @"%@ Ensuring old SignalAccount is not inadvertently lost: %@", self.logTag, signalAccount);
                         [signalAccounts addObject:signalAccount];
                     }
@@ -560,7 +561,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertIsOnMainThread();
 
     if ([signalAccounts isEqual:self.signalAccounts]) {
-        DDLogDebug(@"%@ SignalAccounts unchanged.", self.logTag);
+        OWSLogDebug(@"SignalAccounts unchanged.");
         return;
     }
 
@@ -591,7 +592,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        DDLogDebug(@"%@ no signal account", self.logTag);
+        OWSLogDebug(@"%@ no signal account", self.logTag);
         Contact *_Nullable nonSignalContact = self.allContactsMap[recipientId];
         if (!nonSignalContact) {
             return nil;

@@ -163,7 +163,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
         [[TSNetworkManager sharedManager] makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
-                DDLogInfo(@"%@ Successfully registered %@.", self.logTag, description);
+                OWSLogInfo(@"%@ Successfully registered %@.", self.logTag, description);
 
                 // Mark signed prekey as accepted by service.
                 [signedPreKey markAsAcceptedByService];
@@ -237,19 +237,20 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             void (^updatePreKeys)(RefreshPreKeysMode) = ^(RefreshPreKeysMode mode) {
                 [self registerPreKeysWithMode:mode
                     success:^{
-                        DDLogInfo(@"%@ New prekeys registered with server.", self.logTag);
+                        OWSLogInfo(@"%@ New prekeys registered with server.", self.logTag);
 
                         [self clearSignedPreKeyRecords];
                     }
                     failure:^(NSError *error) {
-                        DDLogWarn(@"%@ Failed to update prekeys with the server: %@", self.logTag, error);
+                        OWSLogWarn(@"%@ Failed to update prekeys with the server: %@", self.logTag, error);
                     }];
             };
 
             BOOL shouldUpdateOneTimePreKeys = count.integerValue <= kEphemeralPreKeysMinimumCount;
 
             if (shouldUpdateOneTimePreKeys) {
-                DDLogInfo(@"%@ Updating one-time and signed prekeys due to shortage of one-time prekeys.", self.logTag);
+                OWSLogInfo(
+                    @"%@ Updating one-time and signed prekeys due to shortage of one-time prekeys.", self.logTag);
                 updatePreKeys(RefreshPreKeysMode_SignedAndOneTime);
                 didUpdatePreKeys = YES;
             } else {
@@ -257,7 +258,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                 NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
                 BOOL shouldUpdateSignedPrekey = NO;
                 if (!currentSignedPrekeyId) {
-                    DDLogError(@"%@ %s Couldn't find current signed prekey id", self.logTag, __PRETTY_FUNCTION__);
+                    OWSLogError(@"%@ %s Couldn't find current signed prekey id", self.logTag, __PRETTY_FUNCTION__);
                     shouldUpdateSignedPrekey = YES;
                 } else {
                     SignedPreKeyRecord *currentRecord =
@@ -275,11 +276,11 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                 }
                 
                 if (shouldUpdateSignedPrekey) {
-                    DDLogInfo(@"%@ Updating signed prekey due to rotation period.", self.logTag);
+                    OWSLogInfo(@"%@ Updating signed prekey due to rotation period.", self.logTag);
                     updatePreKeys(RefreshPreKeysMode_SignedOnly);
                     didUpdatePreKeys = YES;
                 } else {
-                    DDLogDebug(@"%@ Not updating prekeys.", self.logTag);
+                    OWSLogDebug(@"%@ Not updating prekeys.", self.logTag);
                 }
             }
 
@@ -298,7 +299,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                         NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
 
                         if (!keyId || !currentSignedPrekeyId || ![currentSignedPrekeyId isEqualToNumber:keyId]) {
-                            DDLogError(
+                            OWSLogError(
                                 @"%@ Local and service 'current signed prekey ids' did not match. %@ == %@ == %d.",
                                 self.logTag,
                                 keyId,
@@ -310,7 +311,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                         if (!IsNSErrorNetworkFailure(error)) {
                             OWSProdError([OWSAnalyticsEvents errorPrekeysCurrentSignedPrekeyRequestFailed]);
                         }
-                        DDLogWarn(@"%@ Could not retrieve current signed key from the service.", self.logTag);
+                        OWSLogWarn(@"%@ Could not retrieve current signed key from the service.", self.logTag);
 
                         // Mark the prekeys as _NOT_ checked on failure.
                         [self markPreKeysAsNotChecked];
@@ -321,7 +322,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents errorPrekeysAvailablePrekeysRequestFailed]);
             }
-            DDLogError(@"%@ Failed to retrieve the number of available prekeys.", self.logTag);
+            OWSLogError(@"%@ Failed to retrieve the number of available prekeys.", self.logTag);
 
             // Mark the prekeys as _NOT_ checked on failure.
             [self markPreKeysAsNotChecked];

@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
         return NO;
     }
-    DDLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
+    OWSLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
         return NO;
     }
-    DDLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
+    OWSLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
     return [dataSource writeToPath:filePath];
 }
 
@@ -209,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSError *)migrateToSharedData
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     return [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
                        sharedDataFilePath:self.sharedDataAttachmentsDirPath];
@@ -275,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
 
         if (error) {
-            DDLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
+            OWSLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
         }
     }
 
@@ -287,7 +287,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
-        DDLogError(@"%@ remove file errored with: %@", self.logTag, error);
+        OWSLogError(@"%@ remove file errored with: %@", self.logTag, error);
     }
 }
 
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
         // This isn't true for some useful edge cases tested by the Debug UI.
-        DDLogError(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+        OWSLogError(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
 
         return nil;
     }
@@ -431,7 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        OWSLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
         // If we're not lazy-restoring this message, the attachment should exist on disk.
         OWSAssert(self.lazyRestoreFragmentId);
         return;
@@ -443,7 +443,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable result;
     if (self.isImage || self.isAnimated) {
         if (![self isValidImage]) {
-            DDLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
+            OWSLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
             return;
         }
 
@@ -478,7 +478,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *thumbnailData = UIImageJPEGRepresentation(result, 0.9);
 
     OWSAssert(thumbnailData.length > 0);
-    DDLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
+    OWSLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
     [thumbnailData writeToFile:thumbnailPath atomically:YES];
 }
 
@@ -652,7 +652,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
-        DDLogError(@"Could not find audio duration: %@", self.mediaURL);
+        OWSLogError(@"Could not find audio duration: %@", self.mediaURL);
         return 0;
     }
 }
@@ -762,7 +762,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
     if (!success || error) {
-        DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+        OWSLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
         return nil;
     }
 
@@ -780,7 +780,7 @@ NS_ASSUME_NONNULL_BEGIN
     // but should be straight forward.
     TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
+        OWSLogError(@"Unexpected type for attachment builder: %@", attachment);
         return nil;
     }
 
@@ -798,7 +798,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
-    DDLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, self.sourceFilename);
+    OWSLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, self.sourceFilename);
     builder.fileName = self.sourceFilename;
 
     builder.size = self.byteCount;

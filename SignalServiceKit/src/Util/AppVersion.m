@@ -68,23 +68,23 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
     [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_LastAppVersion];
     [[NSUserDefaults appUserDefaults] synchronize];
 
-    DDLogInfo(@"%@ firstAppVersion: %@", self.logTag, self.firstAppVersion);
-    DDLogInfo(@"%@ lastAppVersion: %@", self.logTag, self.lastAppVersion);
-    DDLogInfo(@"%@ currentAppVersion: %@ (%@)",
+    OWSLogInfo(@"%@ firstAppVersion: %@", self.logTag, self.firstAppVersion);
+    OWSLogInfo(@"%@ lastAppVersion: %@", self.logTag, self.lastAppVersion);
+    OWSLogInfo(@"%@ currentAppVersion: %@ (%@)",
         self.logTag,
         self.currentAppVersion,
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
 
-    DDLogInfo(@"%@ lastCompletedLaunchAppVersion: %@", self.logTag, self.lastCompletedLaunchAppVersion);
-    DDLogInfo(@"%@ lastCompletedLaunchMainAppVersion: %@", self.logTag, self.lastCompletedLaunchMainAppVersion);
-    DDLogInfo(@"%@ lastCompletedLaunchSAEAppVersion: %@", self.logTag, self.lastCompletedLaunchSAEAppVersion);
+    OWSLogInfo(@"%@ lastCompletedLaunchAppVersion: %@", self.logTag, self.lastCompletedLaunchAppVersion);
+    OWSLogInfo(@"%@ lastCompletedLaunchMainAppVersion: %@", self.logTag, self.lastCompletedLaunchMainAppVersion);
+    OWSLogInfo(@"%@ lastCompletedLaunchSAEAppVersion: %@", self.logTag, self.lastCompletedLaunchSAEAppVersion);
 }
 
 - (void)appLaunchDidComplete
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ appLaunchDidComplete", self.logTag);
+    OWSLogInfo(@"%@ appLaunchDidComplete", self.logTag);
 
     self.lastCompletedLaunchAppVersion = self.currentAppVersion;
 

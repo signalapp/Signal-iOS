@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     if (self.errorType != TSErrorMessageWrongTrustedIdentityKey) {
-        DDLogError(@"Refusing to accept identity key for anything but a Key error.");
+        OWSLogError(@"Refusing to accept identity key for anything but a Key error.");
         return;
     }
 
@@ -114,18 +114,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)newIdentityKey
 {
     if (!self.envelope) {
-        DDLogError(@"Error message had no envelope data to extract key from");
+        OWSLogError(@"Error message had no envelope data to extract key from");
         return nil;
     }
 
     if (self.envelope.type != SSKProtoEnvelopeTypePrekeyBundle) {
-        DDLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
+        OWSLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
         return nil;
     }
 
     NSData *pkwmData = self.envelope.content;
     if (!pkwmData) {
-        DDLogError(@"Ignoring acceptNewIdentityKey for empty message");
+        OWSLogError(@"Ignoring acceptNewIdentityKey for empty message");
         return nil;
     }
 

@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
+
 #import "FunctionalUtil.h"
 
 @interface FUBadArgument : NSException
@@ -14,12 +18,12 @@
 }
 @end
 
-#define tskit_require(expr)                                                                              \
-    if (!(expr)) {                                                                                       \
-        NSString *reason =                                                                               \
-            [NSString stringWithFormat:@"require %@ (in %s at line %d)", (@ #expr), __FILE__, __LINE__]; \
-        DDLogError(@"%@", reason);                                                                       \
-        [FUBadArgument raise:reason];                                                                      \
+#define tskit_require(expr)                                                                                            \
+    if (!(expr)) {                                                                                                     \
+        NSString *reason =                                                                                             \
+            [NSString stringWithFormat:@"require %@ (in %s at line %d)", (@ #expr), __FILE__, __LINE__];               \
+        OWSLogError(@"%@", reason);                                                                                    \
+        [FUBadArgument raise:reason];                                                                                  \
     };
 
 

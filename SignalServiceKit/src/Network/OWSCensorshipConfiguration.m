@@ -152,12 +152,12 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         NSError *error;
         NSData *certData = [self certificateDataWithName:certName error:&error];
         if (error) {
-            DDLogError(@"%@ reading data for certificate: %@ failed with error: %@", self.logTag, certName, error);
+            OWSLogError(@"%@ reading data for certificate: %@ failed with error: %@", self.logTag, certName, error);
             OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
         }
 
         if (!certData) {
-            DDLogError(@"%@ No data for certificate: %@", self.logTag, certName);
+            OWSLogError(@"%@ No data for certificate: %@", self.logTag, certName);
             OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
         }
         [certificates addObject:certData];
@@ -195,7 +195,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         return nil;
     }
 
-    DDLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.logTag, name, (unsigned long)certData.length);
+    OWSLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.logTag, name, (unsigned long)certData.length);
     return certData;
 }
 

@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     }];
 
     if (didDetectCorruption) {
-        DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
+        OWSLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
         [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
     }
 
@@ -291,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
              // who's test devices are constantly reinstalled. We could add a purpose-built DB view,
              // but I think in the real world this is rare to be a hotspot.
              if (missedCount > 50) {
-                 DDLogWarn(@"%@ found last interaction for inbox after skipping %lu items",
+                 OWSLogWarn(@"%@ found last interaction for inbox after skipping %lu items",
                      self.logTag,
                      (unsigned long)missedCount);
              }

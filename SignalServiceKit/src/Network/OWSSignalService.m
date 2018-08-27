@@ -93,7 +93,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     if (localNumber) {
         self.hasCensoredPhoneNumber = [OWSCensorshipConfiguration isCensoredPhoneNumber:localNumber];
     } else {
-        DDLogError(@"%@ no known phone number to check for censorship.", self.logTag);
+        OWSLogError(@"%@ no known phone number to check for censorship.", self.logTag);
         self.hasCensoredPhoneNumber = NO;
     }
 
@@ -150,7 +150,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector HTTPSessionManager via: %@",
+        OWSLogInfo(@"%@ using reflector HTTPSessionManager via: %@",
             self.logTag,
             self.censorshipConfiguration.domainFrontBaseURL);
         return self.reflectorSignalServiceSessionManager;
@@ -197,7 +197,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@",
+        OWSLogInfo(@"%@ using reflector CDNSessionManager via: %@",
             self.logTag,
             self.censorshipConfiguration.domainFrontBaseURL);
         return self.reflectorCDNSessionManager;

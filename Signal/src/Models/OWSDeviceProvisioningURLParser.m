@@ -28,7 +28,7 @@ NSString *const OWSQueryItemNameEncodedPublicKeyKey = @"pub_key";
             NSString *encodedPublicKey = queryItem.value;
             _publicKey = [[NSData dataFromBase64String:encodedPublicKey] removeKeyType];
         } else {
-            DDLogWarn(@"Unkown query item in provisioning string: %@", queryItem.name);
+            OWSLogWarn(@"Unkown query item in provisioning string: %@", queryItem.name);
         }
     }
 

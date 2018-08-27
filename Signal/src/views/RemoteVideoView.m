@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat aspectRatio = remoteVideoSize.width / remoteVideoSize.height;
 
-    DDLogVerbose(@"%@ Remote video size: width: %f height: %f ratio: %f",
+    OWSLogVerbose(@"%@ Remote video size: width: %f height: %f ratio: %f",
         self.logTag,
         remoteVideoSize.width,
         remoteVideoSize.height,
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *containingView = self.superview;
     if (containingView == nil) {
-        DDLogDebug(@"%@ Cannot layout video view without superview", self.logTag);
+        OWSLogDebug(@"%@ Cannot layout video view without superview", self.logTag);
         return;
     }
 

@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateLayoutForNavbar:(OWSNavigationBar *)navbar
 {
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [UIView setAnimationsEnabled:NO];
 

@@ -447,7 +447,7 @@ typedef void (^SystemMessageActionBlock)(void);
                                                   }];
     }
 
-    DDLogWarn(@"%@ Unhandled tap for error message:%@", self.logTag, message);
+    OWSLogWarn(@"%@ Unhandled tap for error message:%@", self.logTag, message);
     return nil;
 }
 
@@ -495,7 +495,7 @@ typedef void (^SystemMessageActionBlock)(void);
                           }];
     }
 
-    DDLogInfo(@"%@ Unhandled tap for info message: %@", self.logTag, message);
+    OWSLogInfo(@"%@ Unhandled tap for info message: %@", self.logTag, message);
     return nil;
 }
 

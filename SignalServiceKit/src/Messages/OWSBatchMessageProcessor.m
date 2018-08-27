@@ -351,7 +351,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(batchJobs);
     if (batchJobs.count < 1) {
         self.isDrainingQueue = NO;
-        DDLogVerbose(@"%@ Queue is drained", self.logTag);
+        OWSLogVerbose(@"%@ Queue is drained", self.logTag);
         return;
     }
 
@@ -364,7 +364,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(backgroundTask);
     backgroundTask = nil;
 
-    DDLogVerbose(@"%@ completed %lu/%lu jobs. %lu jobs left.",
+    OWSLogVerbose(@"%@ completed %lu/%lu jobs. %lu jobs left.",
         self.logTag,
         (unsigned long)processedJobs.count,
         (unsigned long)batchJobs.count,

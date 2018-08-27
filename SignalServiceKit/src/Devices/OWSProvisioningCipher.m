@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
         &bytesEncrypted);
 
     if (cryptStatus != kCCSuccess) {
-        DDLogError(@"Encryption failed with status: %d", cryptStatus);
+        OWSLogError(@"Encryption failed with status: %d", cryptStatus);
         return nil;
     }
 

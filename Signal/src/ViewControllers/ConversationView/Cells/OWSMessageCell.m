@@ -395,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
-        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        OWSLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
         return;
     }
 
