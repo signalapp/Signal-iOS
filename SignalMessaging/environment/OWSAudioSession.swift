@@ -52,7 +52,7 @@ public class OWSAudioSession: NSObject {
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryAmbient)
         } catch {
-            owsFail("failed with error: \(error)")
+            owsFailDebug("failed with error: \(error)")
         }
     }
 
@@ -69,7 +69,7 @@ public class OWSAudioSession: NSObject {
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
-            owsFail("failed with error: \(error)")
+            owsFailDebug("failed with error: \(error)")
         }
     }
 
@@ -88,7 +88,7 @@ public class OWSAudioSession: NSObject {
             try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
             return true
         } catch {
-            owsFail("failed with error: \(error)")
+            owsFailDebug("failed with error: \(error)")
             return false
         }
     }
@@ -151,7 +151,7 @@ public class OWSAudioSession: NSObject {
             // By notifying when we deactivate, the other app can resume playback.
             try avAudioSession.setActive(false, with: [.notifyOthersOnDeactivation])
         } catch {
-            owsFail("failed with error: \(error)")
+            owsFailDebug("failed with error: \(error)")
         }
     }
 

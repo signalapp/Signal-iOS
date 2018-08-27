@@ -24,7 +24,7 @@ import Foundation
     @objc
     public class func showAlert(_ alert: UIAlertController) {
         guard let frontmostViewController = CurrentAppContext().frontmostViewController() else {
-            owsFail("frontmostViewController was unexpectedly nil")
+            owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
         frontmostViewController.present(alert, animated: true, completion: nil)

@@ -53,7 +53,7 @@ import LocalAuthentication
         AssertIsOnMainThread()
 
         if !OWSStorage.isStorageReady() {
-            owsFail("accessed screen lock state before storage is ready.")
+            owsFailDebug("accessed screen lock state before storage is ready.")
             return false
         }
 
@@ -74,7 +74,7 @@ import LocalAuthentication
         AssertIsOnMainThread()
 
         if !OWSStorage.isStorageReady() {
-            owsFail("accessed screen lock state before storage is ready.")
+            owsFailDebug("accessed screen lock state before storage is ready.")
             return 0
         }
 
@@ -161,7 +161,7 @@ import LocalAuthentication
                                                  defaultErrorDescription: defaultErrorDescription)
             switch outcome {
             case .success:
-                owsFail("local authentication unexpected success")
+                owsFailDebug("local authentication unexpected success")
                 completion(.failure(error:defaultErrorDescription))
             case .cancel, .failure, .unexpectedFailure:
                 completion(outcome)
@@ -179,7 +179,7 @@ import LocalAuthentication
                                                      defaultErrorDescription: defaultErrorDescription)
                 switch outcome {
                 case .success:
-                    owsFail("local authentication unexpected success")
+                    owsFailDebug("local authentication unexpected success")
                     completion(.failure(error:defaultErrorDescription))
                 case .cancel, .failure, .unexpectedFailure:
                     completion(outcome)
@@ -241,10 +241,10 @@ import LocalAuthentication
                 return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
                                                          comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
             case .invalidContext:
-                owsFail("context not valid.")
+                owsFailDebug("context not valid.")
                 return .unexpectedFailure(error:defaultErrorDescription)
             case .notInteractive:
-                owsFail("context not interactive.")
+                owsFailDebug("context not interactive.")
                 return .unexpectedFailure(error:defaultErrorDescription)
             }
         }

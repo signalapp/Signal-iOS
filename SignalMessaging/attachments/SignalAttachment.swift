@@ -31,7 +31,7 @@ extension String {
 
     func appendingFileExtension(_ fileExtension: String) -> String {
         guard let result = (self as NSString).appendingPathExtension(fileExtension) else {
-            owsFail("Failed to append file extension: \(fileExtension) to string: \(self)")
+            owsFailDebug("Failed to append file extension: \(fileExtension) to string: \(self)")
             return self
         }
         return result
@@ -208,7 +208,7 @@ public class SignalAttachment: NSObject {
     public var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            owsFail("Missing error")
+            owsFailDebug("Missing error")
             return nil
         }
 
@@ -219,11 +219,11 @@ public class SignalAttachment: NSObject {
     public var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            owsFail("Missing error")
+            owsFailDebug("Missing error")
             return nil
         }
         guard let errorDescription = error.errorDescription else {
-            owsFail("Missing error description")
+            owsFailDebug("Missing error description")
             return nil
         }
 
@@ -233,7 +233,7 @@ public class SignalAttachment: NSObject {
     @objc
     public class var missingDataErrorMessage: String {
         guard let errorDescription = SignalAttachmentError.missingData.errorDescription else {
-            owsFail("Missing error description")
+            owsFailDebug("Missing error description")
             return ""
         }
         return errorDescription
@@ -264,7 +264,7 @@ public class SignalAttachment: NSObject {
         do {
             let filePath = mediaUrl.path
             guard FileManager.default.fileExists(atPath: filePath) else {
-                owsFail("asset at \(filePath) doesn't exist")
+                owsFailDebug("asset at \(filePath) doesn't exist")
                 return nil
             }
 
@@ -516,7 +516,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -527,7 +527,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -537,7 +537,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -547,7 +547,7 @@ public class SignalAttachment: NSObject {
 
         let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
         guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -559,15 +559,15 @@ public class SignalAttachment: NSObject {
     private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
         let itemSet = IndexSet(integer: 0)
         guard let datas = UIPasteboard.general.data(forPasteboardType: dataUTI, inItemSet: itemSet) else {
-            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard datas.count > 0 else {
-            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard let data = datas[0] as? Data else {
-            owsFail("Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFailDebug("Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         return data
@@ -597,7 +597,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("imageData was empty")
+            owsFailDebug("imageData was empty")
             attachment.error = .invalidData
             return attachment
         }
@@ -766,7 +766,7 @@ public class SignalAttachment: NSObject {
     // Resizing using a CGContext seems to work fine.
     private class func imageScaled(_ uiImage: UIImage, toMaxSize maxSize: CGFloat) -> UIImage? {
         guard let cgImage = uiImage.cgImage else {
-            owsFail("UIImage missing cgImage.")
+            owsFailDebug("UIImage missing cgImage.")
             return nil
         }
 
@@ -791,7 +791,7 @@ public class SignalAttachment: NSObject {
                                            bytesPerRow: 0,
                                            space: colorSpace,
                                            bitmapInfo: bitmapInfo.rawValue) else {
-                                            owsFail("could not create CGContext.")
+                                            owsFailDebug("could not create CGContext.")
             return nil
         }
         context.interpolationQuality = .high
@@ -801,7 +801,7 @@ public class SignalAttachment: NSObject {
         context.draw(cgImage, in: drawRect)
 
         guard let newCGImage = context.makeImage() else {
-            owsFail("could not create new CGImage.")
+            owsFailDebug("could not create new CGImage.")
             return nil
         }
         return UIImage(cgImage: newCGImage,
@@ -922,7 +922,7 @@ public class SignalAttachment: NSObject {
         }
 
         if !isValidOutputVideo(dataSource: dataSource, dataUTI: dataUTI) {
-            owsFail("building video with invalid output, migrate to async API using compressVideoAsMp4")
+            owsFailDebug("building video with invalid output, migrate to async API using compressVideoAsMp4")
         }
 
         return newAttachment(dataSource: dataSource,
@@ -982,7 +982,7 @@ public class SignalAttachment: NSObject {
 
             guard let dataSource = DataSourcePath.dataSource(with: exportURL,
                                                              shouldDeleteOnDeallocation: true) else {
-                owsFail("Failed to build data source for exported video URL")
+                owsFailDebug("Failed to build data source for exported video URL")
                 let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
                 attachment.error = .couldNotConvertToMpeg4
                 fulfill(attachment)
@@ -1108,7 +1108,7 @@ public class SignalAttachment: NSObject {
     @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
-            owsFail("must specify image quality type")
+            owsFailDebug("must specify image quality type")
         }
         return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
     }
@@ -1162,7 +1162,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("Empty attachment")
+            owsFailDebug("Empty attachment")
             assert(dataSource.dataLength() > 0)
             attachment.error = .invalidData
             return attachment

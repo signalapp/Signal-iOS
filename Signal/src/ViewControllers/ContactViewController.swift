@@ -79,7 +79,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         super.viewWillAppear(animated)
 
         guard let navigationController = self.navigationController else {
-            owsFail("navigationController was unexpectedly nil")
+            owsFailDebug("navigationController was unexpectedly nil")
             return
         }
 
@@ -103,7 +103,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             // animation glitch where the navigation bar for this view controller starts to appear while
             // the whole nav stack is about to be obscured by the modal we are presenting.
             guard let postDismissNavigationController = self.postDismissNavigationController else {
-                owsFail("postDismissNavigationController was unexpectedly nil")
+                owsFailDebug("postDismissNavigationController was unexpectedly nil")
                 return
             }
 
@@ -157,7 +157,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         AssertIsOnMainThread()
 
         guard let rootView = self.view else {
-            owsFail("missing root view.")
+            owsFailDebug("missing root view.")
             return
         }
 
@@ -223,7 +223,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let backIconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
         guard let backIconImage = UIImage(named: backIconName) else {
-            owsFail("missing icon.")
+            owsFailDebug("missing icon.")
             return topView
         }
         let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
@@ -438,7 +438,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         circleView.autoHCenterInSuperview()
 
         guard let image = UIImage(named: imageName) else {
-            owsFail("missing image.")
+            owsFailDebug("missing image.")
             return button
         }
         let imageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
@@ -527,7 +527,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("")
 
         guard let navigationController = self.navigationController else {
-            owsFail("navigationController was unexpectedly nil")
+            owsFailDebug("navigationController was unexpectedly nil")
             return
         }
 
@@ -573,7 +573,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("")
 
         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
-            owsFail("could not open phone number.")
+            owsFailDebug("could not open phone number.")
             return
         }
         UIApplication.shared.openURL(url as URL)
@@ -601,7 +601,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("")
 
         guard let url = NSURL(string: "mailto:\(email.email)") else {
-            owsFail("could not open email.")
+            owsFailDebug("could not open email.")
             return
         }
         UIApplication.shared.openURL(url as URL)
@@ -632,13 +632,13 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let mapAddress = formatAddressForQuery(address: address)
         guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            owsFail("could not open address.")
+            owsFailDebug("could not open address.")
             return
         }
         // Note that we use "q" (i.e. query) rather than "address" since we can't assume
         // this is a well-formed address.
         guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
-            owsFail("could not open address.")
+            owsFailDebug("could not open address.")
             return
         }
 

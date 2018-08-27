@@ -108,7 +108,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
 
     public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         guard let color = colors[safe: row] else {
-            owsFail("color was unexpectedly nil")
+            owsFailDebug("color was unexpectedly nil")
             return ColorView(color: .white)
         }
 
@@ -120,7 +120,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     var currentColor: UIColor {
         let index = pickerView.selectedRow(inComponent: 0)
         guard let color = self.colors[safe: index] else {
-            owsFail("index was unexpectedly nil")
+            owsFailDebug("index was unexpectedly nil")
             return UIColor.white
         }
 
@@ -130,7 +130,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @objc
     public func didTapSave() {
         guard let colorName = UIColor.ows_conversationColorName(color: self.currentColor) else {
-            owsFail("colorName was unexpectedly nil")
+            owsFailDebug("colorName was unexpectedly nil")
             self.delegate?.colorPickerDidCancel(self)
             return
         }

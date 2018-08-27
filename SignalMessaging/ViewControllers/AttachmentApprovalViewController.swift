@@ -67,7 +67,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         let navController = OWSNavigationController(rootViewController: vc)
 
         guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
-            owsFail("navigationBar was nil or unexpected class")
+            owsFailDebug("navigationBar was nil or unexpected class")
             return navController
         }
         navigationBar.makeClear()
@@ -170,7 +170,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         if attachment.isVideo {
 
             guard let videoURL = attachment.dataUrl else {
-                owsFail("Missing videoURL")
+                owsFailDebug("Missing videoURL")
                 return
             }
 
@@ -274,12 +274,12 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         Logger.info("")
 
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("video player was unexpectedly nil")
+            owsFailDebug("video player was unexpectedly nil")
             return
         }
 
         guard let playVideoButton = self.playVideoButton else {
-            owsFail("playVideoButton was unexpectedly nil")
+            owsFailDebug("playVideoButton was unexpectedly nil")
             return
         }
         UIView.animate(withDuration: 0.1) {
@@ -290,13 +290,13 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     private func pauseVideo() {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("video player was unexpectedly nil")
+            owsFailDebug("video player was unexpectedly nil")
             return
         }
 
         videoPlayer.pause()
         guard let playVideoButton = self.playVideoButton else {
-            owsFail("playVideoButton was unexpectedly nil")
+            owsFailDebug("playVideoButton was unexpectedly nil")
             return
         }
         UIView.animate(withDuration: 0.1) {
@@ -307,7 +307,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     @objc
     public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
         guard let playVideoButton = self.playVideoButton else {
-            owsFail("playVideoButton was unexpectedly nil")
+            owsFailDebug("playVideoButton was unexpectedly nil")
             return
         }
 
@@ -318,7 +318,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("video player was unexpectedly nil")
+            owsFailDebug("video player was unexpectedly nil")
             return
         }
         videoPlayer.pause()
@@ -326,7 +326,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("video player was unexpectedly nil")
+            owsFailDebug("video player was unexpectedly nil")
             return
         }
 
@@ -335,7 +335,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
         guard let videoPlayer = self.videoPlayer else {
-            owsFail("video player was unexpectedly nil")
+            owsFailDebug("video player was unexpectedly nil")
             return
         }
 

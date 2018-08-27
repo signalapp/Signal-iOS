@@ -99,7 +99,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     func ensureCellState() {
         for cell in self.collectionView.visibleCells {
             guard let cell = cell as? GifPickerCell else {
-                owsFail("unexpected cell.")
+                owsFailDebug("unexpected cell.")
                 return
             }
             cell.ensureCellState()
@@ -236,15 +236,15 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func updateContents() {
         guard let noResultsView = self.noResultsView else {
-            owsFail("Missing noResultsView")
+            owsFailDebug("Missing noResultsView")
             return
         }
         guard let searchErrorView = self.searchErrorView else {
-            owsFail("Missing searchErrorView")
+            owsFailDebug("Missing searchErrorView")
             return
         }
         guard let activityIndicator = self.activityIndicator else {
-            owsFail("Missing activityIndicator")
+            owsFailDebug("Missing activityIndicator")
             return
         }
 
@@ -307,7 +307,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let imageInfo = imageInfos[indexPath.row]
 
         guard let gifCell = cell as? GifPickerCell else {
-            owsFail("Unexpected cell type.")
+            owsFailDebug("Unexpected cell type.")
             return cell
         }
         gifCell.imageInfo = imageInfo
@@ -319,7 +319,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
-            owsFail("unexpected cell.")
+            owsFailDebug("unexpected cell.")
             return
         }
 
@@ -330,7 +330,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
 
         guard self.hasSelectedCell == false else {
-            owsFail("Already selected cell")
+            owsFailDebug("Already selected cell")
             return
         }
         self.hasSelectedCell = true
@@ -370,7 +370,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             let filePath = asset.filePath
             guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath,
                 shouldDeleteOnDeallocation: false) else {
-                owsFail("couldn't load asset.")
+                owsFailDebug("couldn't load asset.")
                 return
             }
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: asset.rendition.utiType, imageQuality: .original)
@@ -402,7 +402,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GifPickerCell else {
-            owsFail("unexpected cell.")
+            owsFailDebug("unexpected cell.")
             return
         }
         // We only want to load the cells which are on-screen.
@@ -411,7 +411,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GifPickerCell else {
-            owsFail("unexpected cell.")
+            owsFailDebug("unexpected cell.")
             return
         }
         cell.isCellVisible = false

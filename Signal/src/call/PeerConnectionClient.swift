@@ -311,7 +311,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                            configuration: configuration) else {
 
                                                             // TODO fail outgoing call?
-                                                            owsFail("dataChannel was unexpectedly nil")
+                                                            owsFailDebug("dataChannel was unexpectedly nil")
                                                             return
         }
         dataChannel.delegate = proxy
@@ -362,7 +362,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             guard let strongSelf = proxyCopy.get() else { return }
 
             guard let captureController = strongSelf.videoCaptureController else {
-                owsFail("captureController was unexpectedly nil")
+                owsFailDebug("captureController was unexpectedly nil")
                 return
             }
 
@@ -383,7 +383,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 }
 
                 guard let captureController = strongSelf.videoCaptureController else {
-                    owsFail("videoCaptureController was unexpectedly nil")
+                    owsFailDebug("videoCaptureController was unexpectedly nil")
                     return nil
                 }
 
@@ -889,11 +889,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard peerConnection == peerConnectionParam else {
-                owsFail("mismatched peerConnection callback.")
+                owsFailDebug("mismatched peerConnection callback.")
                 return
             }
             guard stream.videoTracks.count > 0 else {
-                owsFail("didAdd stream missing stream.")
+                owsFailDebug("didAdd stream missing stream.")
                 return
             }
             let remoteVideoTrack = stream.videoTracks[0]
@@ -946,7 +946,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard peerConnection == peerConnectionParam else {
-                owsFail("mismatched peerConnection callback.")
+                owsFailDebug("mismatched peerConnection callback.")
                 return
             }
 
@@ -988,7 +988,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard peerConnection == peerConnectionParam else {
-                owsFail("mismatched peerConnection callback.")
+                owsFailDebug("mismatched peerConnection callback.")
                 return
             }
             Logger.info("adding local ICE candidate:\(candidate.sdp)")
@@ -1021,12 +1021,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard peerConnection == peerConnectionParam else {
-                owsFail("mismatched peerConnection callback.")
+                owsFailDebug("mismatched peerConnection callback.")
                 return
             }
             Logger.info("didOpen dataChannel:\(dataChannel)")
             if strongSelf.dataChannel != nil {
-                owsFail("dataChannel unexpectedly set twice.")
+                owsFailDebug("dataChannel unexpectedly set twice.")
             }
             strongSelf.dataChannel = dataChannel
             dataChannel.delegate = strongSelf.proxy
@@ -1174,12 +1174,12 @@ class VideoCaptureController {
 
         let position: AVCaptureDevice.Position = isUsingFrontCamera ? .front : .back
         guard let device: AVCaptureDevice = self.device(position: position) else {
-            owsFail("unable to find captureDevice")
+            owsFailDebug("unable to find captureDevice")
             return
         }
 
         guard let format: AVCaptureDevice.Format = self.format(device: device) else {
-            owsFail("unable to find captureDevice")
+            owsFailDebug("unable to find captureDevice")
             return
         }
 

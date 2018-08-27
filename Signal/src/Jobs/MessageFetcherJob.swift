@@ -45,7 +45,7 @@ public class MessageFetcherJob: NSObject {
                     let envelopeData = try envelope.serializedData()
                     self.messageReceiver.handleReceivedEnvelopeData(envelopeData)
                 } catch {
-                    owsFail("failed to serialize envelope")
+                    owsFailDebug("failed to serialize envelope")
                 }
                 self.acknowledgeDelivery(envelope: envelope)
             }
@@ -154,7 +154,7 @@ public class MessageFetcherJob: NSObject {
 
             return try builder.build()
         } catch {
-            owsFail("error building envelope: \(error)")
+            owsFailDebug("error building envelope: \(error)")
             return nil
         }
     }

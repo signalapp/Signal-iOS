@@ -103,7 +103,7 @@ class SAELoadViewController: UIViewController {
 
     @objc func cancelPressed(sender: UIButton) {
         guard let delegate = delegate else {
-            owsFail("missing delegate")
+            owsFailDebug("missing delegate")
             return
         }
         delegate.shareViewWasCancelled()

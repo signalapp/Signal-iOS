@@ -499,7 +499,7 @@ import SignalMessaging
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
         if scaledImage == nil {
-            owsFail("could not generate dst image.")
+            owsFailDebug("could not generate dst image.")
         }
         UIGraphicsEndImageContext()
         return scaledImage

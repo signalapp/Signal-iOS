@@ -65,7 +65,7 @@
                     return try fileManager.contentsOfDirectory(at: fileURL,
                                                                includingPropertiesForKeys: resourceKeys)
                 } catch {
-                    owsFail("contentsOfDirectory(\(fileURL) failed with error: \(error)")
+                    owsFailDebug("contentsOfDirectory(\(fileURL) failed with error: \(error)")
                     return []
                 }
             }()
@@ -74,13 +74,13 @@
                 let fileIcon: String = {
                     do {
                         guard let isDirectory = try fileInDirectory.resourceValues(forKeys: Set(resourceKeys)).isDirectory else {
-                            owsFail("unable to check isDirectory for file: \(fileInDirectory)")
+                            owsFailDebug("unable to check isDirectory for file: \(fileInDirectory)")
                             return ""
                         }
 
                         return isDirectory ? "📁 " : ""
                     } catch {
-                        owsFail("failed to check isDirectory for file: \(fileInDirectory) with error: \(error)")
+                        owsFailDebug("failed to check isDirectory for file: \(fileInDirectory) with error: \(error)")
                         return ""
                     }
                 }()
@@ -107,7 +107,7 @@
                     }
                 }
             } catch {
-                owsFail("failed getting attributes for file at path: \(fileURL)")
+                owsFailDebug("failed getting attributes for file at path: \(fileURL)")
                 return []
             }
         }()
@@ -127,7 +127,7 @@
                 alert.addAction(OWSAlerts.cancelAction)
                 alert.addAction(UIAlertAction(title: "Rename \(strongSelf.fileURL.lastPathComponent)", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
-                        owsFail("missing text field")
+                        owsFailDebug("missing text field")
                         return
                     }
 
@@ -144,7 +144,7 @@
                         Logger.debug("\(strongSelf) moved \(strongSelf.fileURL) -> \(newURL)")
                         strongSelf.navigationController?.popViewController(animated: true)
                     } catch {
-                        owsFail("\(strongSelf) failed to move \(strongSelf.fileURL) -> \(newURL) with error: \(error)")
+                        owsFailDebug("\(strongSelf) failed to move \(strongSelf.fileURL) -> \(newURL) with error: \(error)")
                     }
                 })
 
@@ -172,7 +172,7 @@
                 alert.addAction(OWSAlerts.cancelAction)
                 alert.addAction(UIAlertAction(title: "Moving \(filename)", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
-                        owsFail("missing text field")
+                        owsFailDebug("missing text field")
                         return
                     }
 
@@ -189,7 +189,7 @@
                         Logger.debug("\(strongSelf) moved \(fileURL) -> \(newURL)")
                         strongSelf.navigationController?.popViewController(animated: true)
                     } catch {
-                        owsFail("\(strongSelf) failed to move \(fileURL) -> \(newURL) with error: \(error)")
+                        owsFailDebug("\(strongSelf) failed to move \(fileURL) -> \(newURL) with error: \(error)")
                     }
                 })
 
@@ -212,7 +212,7 @@
                         try strongSelf.fileManager.removeItem(atPath: strongSelf.fileURL.path)
                         strongSelf.navigationController?.popViewController(animated: true)
                     } catch {
-                        owsFail("failed to remove item: \(strongSelf.fileURL) with error: \(error)")
+                        owsFailDebug("failed to remove item: \(strongSelf.fileURL) with error: \(error)")
                     }
                 }
             },
@@ -248,7 +248,7 @@
                         let attributes = try strongSelf.fileManager.attributesOfItem(atPath: fileURL.path)
                         return attributes[FileAttributeKey.protectionKey] as? FileProtectionType
                     } catch {
-                        owsFail("failed to get current file protection for file: \(fileURL)")
+                        owsFailDebug("failed to get current file protection for file: \(fileURL)")
                         return nil
                     }
                 }()
@@ -267,7 +267,7 @@
                             Logger.debug("updated file protection at path:\(fileURL.path) to: \(protection.rawValue)")
                             strongSelf.updateContents()
                         } catch {
-                            owsFail("failed to update file protection at path:\(fileURL.path) with error: \(error)")
+                            owsFailDebug("failed to update file protection at path:\(fileURL.path) with error: \(error)")
                         }
                     })
                 }
@@ -290,7 +290,7 @@
                 alert.addAction(OWSAlerts.cancelAction)
                 alert.addAction(UIAlertAction(title: "Create", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
-                        owsFail("missing text field")
+                        owsFailDebug("missing text field")
                         return
                     }
 
@@ -328,7 +328,7 @@
                 alert.addAction(OWSAlerts.cancelAction)
                 alert.addAction(UIAlertAction(title: "Create", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
-                        owsFail("missing text field")
+                        owsFailDebug("missing text field")
                         return
                     }
 
@@ -344,7 +344,7 @@
                         try strongSelf.fileManager.createDirectory(atPath: newPath, withIntermediateDirectories: false)
                         strongSelf.updateContents()
                     } catch {
-                        owsFail("Failed to create dir: \(newPath) with error: \(error)")
+                        owsFailDebug("Failed to create dir: \(newPath) with error: \(error)")
                     }
                 })
 

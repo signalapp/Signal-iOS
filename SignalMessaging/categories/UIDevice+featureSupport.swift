@@ -29,7 +29,7 @@ public extension UIDevice {
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
-            owsFail("unknown device format")
+            owsFailDebug("unknown device format")
             return false
         }
     }

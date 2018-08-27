@@ -21,16 +21,16 @@ public func AssertIsOnMainThread(file: String = #file,
                                  function: String = #function,
                                  line: Int = #line) {
     if !Thread.isMainThread {
-        owsFail("Must be on main thread.", file: file, function: function, line: line)
+        owsFailDebug("Must be on main thread.", file: file, function: function, line: line)
     }
 }
 
 // Once we're on Swift4.2 we can mark this as inlineable
 // @inlinable
-public func owsFail(_ logMessage: String,
-                    file: String = #file,
-                    function: String = #function,
-                    line: Int = #line) {
+public func owsFailDebug(_ logMessage: String,
+                         file: String = #file,
+                         function: String = #function,
+                         line: Int = #line) {
     Logger.error(logMessage, file: file, function: function, line: line)
     Logger.flush()
     let formattedMessage = owsFormatLogMessage(logMessage, file: file, function: function, line: line)
@@ -39,12 +39,12 @@ public func owsFail(_ logMessage: String,
 
 // Once we're on Swift4.2 we can mark this as inlineable
 // @inlinable
-public func owsProdExit(_ logMessage: String,
-                        file: String = #file,
-                        function: String = #function,
-                        line: Int = #line) -> Never {
-
-    owsFail(logMessage, file: file, function: function, line: line)
+public func owsFail(_ logMessage: String,
+                    file: String = #file,
+                    function: String = #function,
+                    line: Int = #line) -> Never {
+    
+    owsFailDebug(logMessage, file: file, function: function, line: line)
     let formattedMessage = owsFormatLogMessage(logMessage, file: file, function: function, line: line)
     fatalError(formattedMessage)
 }
@@ -54,5 +54,6 @@ public func owsProdExit(_ logMessage: String,
 public func notImplemented(file: String = #file,
                            function: String = #function,
                            line: Int = #line) -> Never {
-    owsProdExit("Method not implemented.", file: file, function: function, line: line)
+    owsFail("Method not implemented.", file: file, function: function, line: line)
 }
+ 

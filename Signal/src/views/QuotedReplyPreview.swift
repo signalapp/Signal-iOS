@@ -81,7 +81,7 @@ class QuotedReplyPreview: UIView {
 
     func updateHeight() {
         guard let quotedMessageView = quotedMessageView else {
-            owsFail("missing quotedMessageView")
+            owsFailDebug("missing quotedMessageView")
             return
         }
         let size = quotedMessageView.size(forMaxWidth: CGFloat.infinity)

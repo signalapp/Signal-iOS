@@ -127,7 +127,7 @@ public class MessageRecipientStatusUtils: NSObject {
             return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "status message for sent messages"))
         default:
-            owsFail("Message has unexpected status: \(outgoingMessage.messageState).")
+            owsFailDebug("Message has unexpected status: \(outgoingMessage.messageState).")
             return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "status message for sent messages"))
         }

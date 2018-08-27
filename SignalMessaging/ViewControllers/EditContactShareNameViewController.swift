@@ -92,7 +92,7 @@ class ContactNameFieldView: UIView {
         hasUnsavedChanges = true
 
         guard let delegate = self.delegate else {
-            owsFail("missing delegate.")
+            owsFailDebug("missing delegate.")
             return
         }
 
@@ -244,7 +244,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         AssertIsOnMainThread()
 
         guard let rootView = self.view else {
-            owsFail("missing root view.")
+            owsFailDebug("missing root view.")
             return
         }
 
@@ -289,7 +289,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         Logger.info("")
 
         guard let newName = OWSContactName() else {
-            owsFail("could not create a new name.")
+            owsFailDebug("could not create a new name.")
             return
         }
         newName.namePrefix = namePrefixView.value().ows_stripped()
@@ -302,14 +302,14 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         let modifiedContactShare = contactShare.copy(withName: newName)
 
         guard let delegate = self.delegate else {
-            owsFail("missing delegate.")
+            owsFailDebug("missing delegate.")
             return
         }
 
         delegate.editContactShareNameView(self, didEditContactShare: modifiedContactShare)
 
         guard let navigationController = self.navigationController else {
-            owsFail("Missing navigationController.")
+            owsFailDebug("Missing navigationController.")
             return
         }
         navigationController.popViewController(animated: true)
@@ -319,7 +319,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         Logger.info("")
 
         guard let navigationController = self.navigationController else {
-            owsFail("Missing navigationController.")
+            owsFailDebug("Missing navigationController.")
             return
         }
         navigationController.popViewController(animated: true)

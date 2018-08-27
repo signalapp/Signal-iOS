@@ -45,7 +45,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
                 guard let fromViewController = UIApplication.shared.frontmostViewController else {
-                    owsFail("frontmostViewController was unexectedly nil")
+                    owsFailDebug("frontmostViewController was unexectedly nil")
                     return
                 }
 
@@ -107,7 +107,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         Logger.debug("")
 
         guard let buttonAction = self.buttonAction else {
-            owsFail("button action was nil")
+            owsFailDebug("button action was nil")
             return
         }
 
@@ -155,7 +155,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
             // dismiss the modally presented view controller, then proceed.
             self.experienceUpgradesPageViewController.dismiss(animated: true) {
                 guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
-                    owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
+                    owsFailDebug("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
                     return
                 }
 
@@ -217,7 +217,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         Logger.debug("")
 
         guard let buttonAction = self.buttonAction else {
-            owsFail("button action was nil")
+            owsFailDebug("button action was nil")
             return
         }
 
@@ -349,7 +349,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
         // dismiss the modally presented view controller, then proceed.
         experienceUpgradesPageViewController.dismiss(animated: true) {
             guard let fromViewController = UIApplication.shared.frontmostViewController as? HomeViewController else {
-                owsFail("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
+                owsFailDebug("unexpected frontmostViewController: \(String(describing: UIApplication.shared.frontmostViewController))")
                 return
             }
             ProfileViewController.presentForUpgradeOrNag(from: fromViewController)
@@ -515,7 +515,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
 
     @objc public override func viewDidLoad() {
         guard let firstViewController = allViewControllers.first else {
-            owsFail("no pages to show.")
+            owsFailDebug("no pages to show.")
             dismiss(animated: true)
             return
         }
@@ -601,7 +601,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         Logger.debug("")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            owsFail("unknown view controller: \(viewController)")
+            owsFailDebug("unknown view controller: \(viewController)")
             return nil
         }
 
@@ -616,7 +616,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         Logger.debug("")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            owsFail("unknown view controller: \(viewController)")
+            owsFailDebug("unknown view controller: \(viewController)")
             return nil
         }
 
@@ -653,7 +653,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
             return
         }
         guard let identifier = ExperienceUpgradeId(rawValue: uniqueId) else {
-            owsFail("unknown experience upgrade. skipping")
+            owsFailDebug("unknown experience upgrade. skipping")
             return
         }
 

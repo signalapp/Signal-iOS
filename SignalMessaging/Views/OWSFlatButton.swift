@@ -17,7 +17,7 @@ public class OWSFlatButton: UIView {
 
     override public var backgroundColor: UIColor? {
         willSet {
-            owsFail("Use setBackgroundColors(upColor:) instead.")
+            owsFailDebug("Use setBackgroundColors(upColor:) instead.")
         }
     }
 
@@ -157,7 +157,7 @@ public class OWSFlatButton: UIView {
     @objc
     public func setPressedBlock(_ pressedBlock: @escaping () -> Void) {
         guard self.pressedBlock == nil else {
-            owsFail("Button already has pressed block.")
+            owsFailDebug("Button already has pressed block.")
             return
         }
         self.pressedBlock = pressedBlock

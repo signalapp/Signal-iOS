@@ -118,7 +118,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                     return true
                 } else {
                     guard let portDescription = audioSource.portDescription else {
-                        owsFail("Only built in speaker should be lacking a port description.")
+                        owsFailDebug("Only built in speaker should be lacking a port description.")
                         return false
                     }
 

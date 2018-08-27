@@ -81,7 +81,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     @objc
     func runChangeHandler() {
         guard let changeHandler = self.changeHandler else {
-            owsFail("trying to run change handler before it was registered")
+            owsFailDebug("trying to run change handler before it was registered")
             return
         }
         changeHandler()
@@ -100,7 +100,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
                 systemContacts.append(contact)
             }
         } catch let error as NSError {
-            owsFail("Failed to fetch contacts with error:\(error)")
+            owsFailDebug("Failed to fetch contacts with error:\(error)")
             return .error(error)
         }
 
@@ -117,13 +117,13 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
 
             try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 guard result == nil else {
-                    owsFail("More than one contact with contact id.")
+                    owsFailDebug("More than one contact with contact id.")
                     return
                 }
                 result = contact
             }
         } catch let error as NSError {
-            owsFail("Failed to fetch contact with error:\(error)")
+            owsFailDebug("Failed to fetch contact with error:\(error)")
             return nil
         }
 
@@ -163,7 +163,7 @@ public class SystemContactsFetcher: NSObject {
     @objc
     public var isAuthorized: Bool {
         guard self.authorizationStatus != .notDetermined else {
-            owsFail("should have called `requestOnce` before checking authorization status.")
+            owsFailDebug("should have called `requestOnce` before checking authorization status.")
             return false
         }
 
@@ -245,7 +245,7 @@ public class SystemContactsFetcher: NSObject {
 
                 guard granted else {
                     // This case should have been caught by the error guard a few lines up.
-                    owsFail("declined contact access.")
+                    owsFailDebug("declined contact access.")
                     completion(nil)
                     return
                 }
@@ -282,7 +282,7 @@ public class SystemContactsFetcher: NSObject {
         AssertIsOnMainThread()
 
         guard authorizationStatus == .authorized else {
-            owsFail("should have already requested contact access")
+            owsFailDebug("should have already requested contact access")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             completion(nil)
             return
@@ -347,7 +347,7 @@ public class SystemContactsFetcher: NSObject {
             }
 
             guard let contacts = fetchedContacts else {
-                owsFail("contacts was unexpectedly not set.")
+                owsFailDebug("contacts was unexpectedly not set.")
                 completion(nil)
             }
 
