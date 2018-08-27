@@ -322,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
-        OWSFail(@"%@ Contact editing not supported.", self.logTag);
+        OWSFailDebug(@"%@ Contact editing not supported.", self.logTag);
         return;
     }
 
@@ -343,8 +343,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
             CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
             if ([phoneNumber.stringValue isEqualToString:recipientId]) {
-                OWSFail(@"We currently only should the 'add to existing contact' UI for phone numbers that don't "
-                        @"correspond to an existing user.");
+                OWSFailDebug(@"We currently only should the 'add to existing contact' UI for phone numbers that don't "
+                             @"correspond to an existing user.");
                 hasPhoneNumber = YES;
                 break;
             }

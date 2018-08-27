@@ -28,7 +28,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("unimplemented")
+        notImplemented()
     }
 
     @objc
@@ -159,7 +159,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
         guard let contactThread = self.thread as? TSContactThread else {
-            owsFail("Unexpected thread type")
+            owsFailDebug("Unexpected thread type")
             return recipientRow
         }
 

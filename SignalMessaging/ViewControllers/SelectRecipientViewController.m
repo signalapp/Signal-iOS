@@ -286,7 +286,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     OWSAssert(self.delegate);
 
     if (![self hasValidPhoneNumber]) {
-        OWSFail(@"Invalid phone number was selected.");
+        OWSFailDebug(@"Invalid phone number was selected.");
         return;
     }
 
@@ -299,7 +299,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         [possiblePhoneNumbers addObject:phoneNumber.toE164];
     }
     if ([possiblePhoneNumbers count] < 1) {
-        OWSFail(@"Couldn't parse phone number.");
+        OWSFailDebug(@"Couldn't parse phone number.");
         return;
     }
 

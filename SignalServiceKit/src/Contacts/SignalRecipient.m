@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [self.devices containsObject:@(1)]) {
-        OWSFail(@"%@ in %s self as recipient device", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"%@ in %s self as recipient device", self.logTag, __PRETTY_FUNCTION__);
     }
 
     return self;
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(devices.count > 0);
     
     if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [devices containsObject:@(1)]) {
-        OWSFail(@"%@ in %s adding self as recipient device", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"%@ in %s adding self as recipient device", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
     // be strict about using persisted SignalRecipients as a cache to
     // reflect "last known registration status".  Forcing our codebase to
     // use those methods helps ensure that we update the cache deliberately.
-    OWSFail(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
+    OWSFailDebug(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
 
     [self saveWithTransaction_internal:transaction];
 }

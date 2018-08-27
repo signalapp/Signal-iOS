@@ -159,7 +159,7 @@ class ContactShareFieldView: UIStackView {
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
@@ -236,7 +236,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     @available(*, unavailable, message:"use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("unimplemented")
+        notImplemented()
     }
 
     @objc
@@ -264,7 +264,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
                                                       delegate: self)
                 fieldViews.append(fieldView)
             } else {
-                owsFail("could not load avatar image.")
+                owsFailDebug("could not load avatar image.")
             }
         }
 
@@ -354,7 +354,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         AssertIsOnMainThread()
 
         guard let rootView = self.view else {
-            owsFail("missing root view.")
+            owsFailDebug("missing root view.")
             return
         }
 
@@ -464,7 +464,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         Logger.info("")
 
         guard let delegate = self.delegate else {
-            owsFail("missing delegate.")
+            owsFailDebug("missing delegate.")
             return
         }
 
@@ -479,7 +479,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         Logger.info("")
 
         guard let delegate = self.delegate else {
-            owsFail("missing delegate.")
+            owsFailDebug("missing delegate.")
             return
         }
 

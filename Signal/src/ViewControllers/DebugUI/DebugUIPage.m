@@ -13,14 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)name
 {
-    OWSFail(@"This method should be overriden in subclasses.");
+    OWSFailDebug(@"This method should be overriden in subclasses.");
 
     return nil;
 }
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    OWSFail(@"This method should be overriden in subclasses.");
+    OWSFailDebug(@"This method should be overriden in subclasses.");
 
     return nil;
 }

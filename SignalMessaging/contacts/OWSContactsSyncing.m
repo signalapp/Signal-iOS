@@ -133,7 +133,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
         }];
 
         if (!messageData) {
-            OWSFail(@"%@ Failed to serialize contacts sync message.", self.logTag);
+            OWSFailDebug(@"%@ Failed to serialize contacts sync message.", self.logTag);
             return;
         }
 

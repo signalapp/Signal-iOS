@@ -324,14 +324,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
-        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        OWSFailDebug(@"%@ contactsManager should not be nil", self.logTag);
         self.avatarView.image = nil;
         return;
     }
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {
-        OWSFail(@"%@ thread should not be nil", self.logTag);
+        OWSFailDebug(@"%@ thread should not be nil", self.logTag);
         self.avatarView.image = nil;
         return;
     }
@@ -398,7 +398,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)stringForDate:(nullable NSDate *)date
 {
     if (date == nil) {
-        OWSFail(@"%@ date was unexpectedly nil", self.logTag);
+        OWSFailDebug(@"%@ date was unexpectedly nil", self.logTag);
         return @"";
     }
 
@@ -491,14 +491,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {
-        OWSFail(@"%@ thread should not be nil", self.logTag);
+        OWSFailDebug(@"%@ thread should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;
         return;
     }
 
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
-        OWSFail(@"%@ contacts manager should not be nil", self.logTag);
+        OWSFailDebug(@"%@ contacts manager should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;
         return;
     }

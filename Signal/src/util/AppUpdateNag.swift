@@ -21,17 +21,17 @@ class AppUpdateNag: NSObject {
     public func showAppUpgradeNagIfNecessary() {
 
         guard let currentVersion = self.currentVersion else {
-            owsFail("currentVersion was unexpectedly nil")
+            owsFailDebug("currentVersion was unexpectedly nil")
             return
         }
 
         guard let bundleIdentifier = self.bundleIdentifier else {
-            owsFail("bundleIdentifier was unexpectedly nil")
+            owsFailDebug("bundleIdentifier was unexpectedly nil")
             return
         }
 
         guard let lookupURL = lookupURL(bundleIdentifier: bundleIdentifier) else {
-            owsFail("appStoreURL was unexpectedly nil")
+            owsFailDebug("appStoreURL was unexpectedly nil")
             return
         }
 
@@ -110,7 +110,7 @@ class AppUpdateNag: NSObject {
         // Only show nag if we are "at rest" in the home view or registration view without any
         // alerts or dialogs showing.
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("frontmostViewController was unexpectedly nil")
+            owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
 

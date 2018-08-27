@@ -424,7 +424,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     NSString *senderId = message.messageAuthorId;
     uint64_t timestamp = message.timestamp;
     if (senderId.length < 1 || timestamp < 1) {
-        OWSFail(@"%@ Invalid incoming message: %@ %llu", self.logTag, senderId, timestamp);
+        OWSFailDebug(@"%@ Invalid incoming message: %@ %llu", self.logTag, senderId, timestamp);
         return;
     }
 
@@ -452,12 +452,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         uint64_t messageIdTimestamp = readReceiptProto.timestamp;
 
         if (senderId.length == 0) {
-            OWSFail(@"%@ in %s senderId was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"%@ in %s senderId was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 
         if (messageIdTimestamp == 0) {
-            OWSFail(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 
@@ -529,8 +529,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                   BOOL *stop) {
          
          if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-             OWSFail(@"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
-                     @"key: %@",
+             OWSFailDebug(@"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
+                          @"key: %@",
                  [object class],
                  collection,
                  key);

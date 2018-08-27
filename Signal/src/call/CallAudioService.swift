@@ -65,12 +65,12 @@ struct AudioSource: Hashable {
         }
 
         guard let lhsPortDescription = lhs.portDescription else {
-            owsFail("only the built in speaker should lack a port description")
+            owsFailDebug("only the built in speaker should lack a port description")
             return false
         }
 
         guard let rhsPortDescription = rhs.portDescription else {
-            owsFail("only the built in speaker should lack a port description")
+            owsFailDebug("only the built in speaker should lack a port description")
             return false
         }
 
@@ -193,7 +193,7 @@ protocol CallAudioServiceDelegate: class {
             do {
                 try self.avAudioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
             } catch {
-                owsFail("failed to set \(#function) = \(isEnabled) with error: \(error)")
+                owsFailDebug("failed to set \(#function) = \(isEnabled) with error: \(error)")
             }
         }
     }
@@ -260,7 +260,7 @@ protocol CallAudioServiceDelegate: class {
             }
 
         } catch {
-            owsFail("failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
+            owsFailDebug("failed setting audio source with error: \(error) isSpeakerPhoneEnabled: \(call.isSpeakerphoneEnabled)")
         }
     }
 
@@ -397,7 +397,7 @@ protocol CallAudioServiceDelegate: class {
 
     private func play(sound: OWSSound) {
         guard let newPlayer = OWSSounds.audioPlayer(for: sound) else {
-            owsFail("unable to build player for sound: \(OWSSounds.displayName(for: sound))")
+            owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(for: sound))")
             return
         }
         Logger.info("playing sound: \(OWSSounds.displayName(for: sound))")
@@ -461,7 +461,7 @@ protocol CallAudioServiceDelegate: class {
     var availableInputs: [AudioSource] {
         guard let availableInputs = avAudioSession.availableInputs else {
             // I'm not sure why this would happen, but it may indicate an error.
-            owsFail("No available inputs or inputs not ready")
+            owsFailDebug("No available inputs or inputs not ready")
             return [AudioSource.builtInSpeaker]
         }
 
@@ -538,7 +538,7 @@ protocol CallAudioServiceDelegate: class {
             }
         } catch {
             let message = "failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
-            owsFail(message)
+            owsFailDebug(message)
         }
 
         if audioSessionChanged {

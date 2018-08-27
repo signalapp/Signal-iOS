@@ -32,12 +32,12 @@ class ReminderView: UIView {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
     override init(frame: CGRect) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     private init(mode: ReminderViewMode,
@@ -94,7 +94,7 @@ class ReminderView: UIView {
             // Icon
             let iconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
             guard let iconImage = UIImage(named: iconName) else {
-                owsFail("missing icon.")
+                owsFailDebug("missing icon.")
                 return
             }
             let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))

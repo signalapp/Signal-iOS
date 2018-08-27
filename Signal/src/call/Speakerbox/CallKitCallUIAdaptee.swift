@@ -172,7 +172,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        owsFail("CallKit should answer calls via system call screen, not via notifications.")
+        owsFailDebug("CallKit should answer calls via system call screen, not via notifications.")
     }
 
     func answerCall(_ call: SignalCall) {
@@ -185,7 +185,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func declineCall(localId: UUID) {
         AssertIsOnMainThread()
 
-        owsFail("CallKit should decline calls via system call screen, not via notifications.")
+        owsFailDebug("CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func declineCall(_ call: SignalCall) {
@@ -370,7 +370,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
         AssertIsOnMainThread()
 
-        owsFail("Timed out while performing \(action)")
+        owsFailDebug("Timed out while performing \(action)")
 
         // React to the action timeout if necessary, such as showing an error UI.
     }

@@ -30,7 +30,7 @@ class DismissInputBar: UIToolbar {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc
@@ -55,7 +55,7 @@ public class DismissableTextField: UITextField, DismissInputBarDelegate {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: DismissInputBarDelegate

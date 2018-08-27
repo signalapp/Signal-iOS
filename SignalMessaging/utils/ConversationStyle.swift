@@ -177,7 +177,7 @@ public class ConversationStyle: NSObject {
                 return bubbleColorOutgoingSent
             }
         } else {
-            owsFail("Unexpected message type: \(message)")
+            owsFailDebug("Unexpected message type: \(message)")
             return bubbleColorOutgoingSent
         }
     }
@@ -206,7 +206,7 @@ public class ConversationStyle: NSObject {
         } else if message is TSOutgoingMessage {
             return ConversationStyle.bubbleTextColorOutgoing
         } else {
-            owsFail("Unexpected message type: \(message)")
+            owsFailDebug("Unexpected message type: \(message)")
             return ConversationStyle.bubbleTextColorOutgoing
         }
     }

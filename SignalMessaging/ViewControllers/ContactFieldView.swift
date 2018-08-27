@@ -8,7 +8,7 @@ public class ContactFieldView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     public required init(rows: [UIView], hMargin: CGFloat) {
@@ -26,7 +26,7 @@ public class ContactFieldView: UIView {
 
         let addSpacerRow = {
             guard let prevRow = lastRow else {
-                owsFail("missing last row")
+                owsFailDebug("missing last row")
                 return
             }
             let row = UIView()

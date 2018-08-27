@@ -46,7 +46,7 @@ import SignalMessaging
         // because it can change after app launch due to user settings
         let callUIAdapter = SignalApp.shared().callUIAdapter
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("could not identify frontmostViewController")
+            owsFailDebug("could not identify frontmostViewController")
             return false
         }
 

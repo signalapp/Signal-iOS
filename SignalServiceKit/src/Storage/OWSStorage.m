@@ -207,7 +207,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    OWSFail(@"%@ Tried to save object from unknown collection", self.logTag);
+    OWSFailDebug(@"%@ Tried to save object from unknown collection", self.logTag);
 
     return [super encodeWithCoder:aCoder];
 }
@@ -224,21 +224,21 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFail(@"%@ Tried to save unknown object", self.logTag);
+    OWSFailDebug(@"%@ Tried to save unknown object", self.logTag);
 
     // No-op.
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFail(@"%@ Tried to touch unknown object", self.logTag);
+    OWSFailDebug(@"%@ Tried to touch unknown object", self.logTag);
 
     // No-op.
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFail(@"%@ Tried to remove unknown object", self.logTag);
+    OWSFailDebug(@"%@ Tried to remove unknown object", self.logTag);
 
     // No-op.
 }
@@ -262,7 +262,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     if ([name isEqualToString:@"TSRecipient"]) {
         DDLogError(@"%@ Could not decode object: %@", self.logTag, name);
     } else {
-        OWSFail(@"%@ Could not decode object: %@", self.logTag, name);
+        OWSFailDebug(@"%@ Could not decode object: %@", self.logTag, name);
     }
     OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
@@ -315,7 +315,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         //
         // The best we can try to do is to discard the current database
         // and behave like a clean install.
-        OWSFail(@"%@ Could not load database", self.logTag);
+        OWSFailDebug(@"%@ Could not load database", self.logTag);
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
         // Try to reset app by deleting all databases.
@@ -324,7 +324,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // [OWSStorage deleteDatabaseFiles];
 
         if (![self tryToLoadDatabase]) {
-            OWSFail(@"%@ Could not load database (second try)", self.logTag);
+            OWSFailDebug(@"%@ Could not load database (second try)", self.logTag);
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
 
             // Sleep to give analytics events time to be delivered.
@@ -482,7 +482,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
         if (!data || data.length <= 0) {
-            OWSFail(@"%@ can't deserialize null object: %@", self.logTag, collection);
+            OWSFailDebug(@"%@ can't deserialize null object: %@", self.logTag, collection);
             return [OWSUnknownDBObject new];
         }
 
@@ -492,7 +492,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSFail(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
+            OWSFailDebug(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
             OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
@@ -592,7 +592,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // This method needs to be able to update the versionTag of all extensions.
         // If we start using other extension types, we need to modify this method to
         // handle them as well.
-        OWSFail(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
+        OWSFailDebug(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
 
         return extension;
     }
@@ -627,7 +627,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                                  withName:extensionName
                           completionBlock:^(BOOL ready) {
                               if (!ready) {
-                                  OWSFail(@"%@ asyncRegisterExtension failed: %@", self.logTag, extensionName);
+                                  OWSFailDebug(@"%@ asyncRegisterExtension failed: %@", self.logTag, extensionName);
                               } else {
                                   DDLogVerbose(@"%@ asyncRegisterExtension succeeded: %@", self.logTag, extensionName);
                               }
@@ -792,7 +792,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // "known good state" and behave like a new install.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFail(@"%@ Could not load database metadata", self.logTag);
+            OWSFailDebug(@"%@ Could not load database metadata", self.logTag);
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
@@ -873,7 +873,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
     if (!success || error) {
-        OWSFail(@"%@ Could not store database metadata", self.logTag);
+        OWSFailDebug(@"%@ Could not store database metadata", self.logTag);
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
 
         // Sleep to give analytics events time to be delivered.

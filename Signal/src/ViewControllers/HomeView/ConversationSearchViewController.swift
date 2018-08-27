@@ -122,17 +122,17 @@ class ConversationSearchViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: false)
 
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
-            owsFail("unknown section selected.")
+            owsFailDebug("unknown section selected.")
             return
         }
 
         switch searchSection {
         case .noResults:
-            owsFail("shouldn't be able to tap 'no results' section")
+            owsFailDebug("shouldn't be able to tap 'no results' section")
         case .conversations:
             let sectionResults = searchResultSet.conversations
             guard let searchResult = sectionResults[safe: indexPath.row] else {
-                owsFail("unknown row selected.")
+                owsFailDebug("unknown row selected.")
                 return
             }
 
@@ -142,7 +142,7 @@ class ConversationSearchViewController: UITableViewController {
         case .contacts:
             let sectionResults = searchResultSet.contacts
             guard let searchResult = sectionResults[safe: indexPath.row] else {
-                owsFail("unknown row selected.")
+                owsFailDebug("unknown row selected.")
                 return
             }
 
@@ -151,7 +151,7 @@ class ConversationSearchViewController: UITableViewController {
         case .messages:
             let sectionResults = searchResultSet.messages
             guard let searchResult = sectionResults[safe: indexPath.row] else {
-                owsFail("unknown row selected.")
+                owsFailDebug("unknown row selected.")
                 return
             }
 
@@ -167,7 +167,7 @@ class ConversationSearchViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else {
-            owsFail("unknown section: \(section)")
+            owsFailDebug("unknown section: \(section)")
             return 0
         }
 
@@ -192,12 +192,12 @@ class ConversationSearchViewController: UITableViewController {
         switch searchSection {
         case .noResults:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: EmptySearchResultCell.reuseIdentifier) as? EmptySearchResultCell else {
-                owsFail("cell was unexpectedly nil")
+                owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard indexPath.row == 0 else {
-                owsFail("searchResult was unexpected index")
+                owsFailDebug("searchResult was unexpected index")
                 return UITableViewCell()
             }
 
@@ -208,36 +208,36 @@ class ConversationSearchViewController: UITableViewController {
             return cell
         case .conversations:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
-                owsFail("cell was unexpectedly nil")
+                owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard let searchResult = self.searchResultSet.conversations[safe: indexPath.row] else {
-                owsFail("searchResult was unexpectedly nil")
+                owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
             cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, blockedPhoneNumber: self.blockedPhoneNumberSet)
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
-                owsFail("cell was unexpectedly nil")
+                owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
-                owsFail("searchResult was unexpectedly nil")
+                owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
             cell.configure(withRecipientId: searchResult.signalAccount.recipientId, contactsManager: contactsManager)
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
-                owsFail("cell was unexpectedly nil")
+                owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard let searchResult = self.searchResultSet.messages[safe: indexPath.row] else {
-                owsFail("searchResult was unexpectedly nil")
+                owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
 
@@ -247,7 +247,7 @@ class ConversationSearchViewController: UITableViewController {
                 if let messageDate = searchResult.messageDate {
                     overrideDate = messageDate
                 } else {
-                    owsFail("message search result is missing message timestamp")
+                    owsFailDebug("message search result is missing message timestamp")
                 }
 
                 // Note that we only use the snippet for message results,
@@ -260,7 +260,7 @@ class ConversationSearchViewController: UITableViewController {
                                                             NSAttributedStringKey.foregroundColor: Theme.secondaryColor
                     ])
                 } else {
-                    owsFail("message search result is missing message snippet")
+                    owsFailDebug("message search result is missing message snippet")
                 }
             }
 
@@ -309,7 +309,7 @@ class ConversationSearchViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let searchSection = SearchSection(rawValue: section) else {
-            owsFail("unknown section: \(section)")
+            owsFailDebug("unknown section: \(section)")
             return nil
         }
 
@@ -387,7 +387,7 @@ class ConversationSearchViewController: UITableViewController {
                                                 guard let strongSelf = self else { return }
 
                                                 guard let results = searchResults else {
-                                                    owsFail("\(strongSelf.logTag) in \(#function) searchResults was unexpectedly nil")
+                                                    owsFailDebug("\(strongSelf.logTag) in \(#function) searchResults was unexpectedly nil")
                                                     return
                                                 }
 
@@ -431,7 +431,7 @@ class EmptySearchResultCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     public func configure(searchText: String) {

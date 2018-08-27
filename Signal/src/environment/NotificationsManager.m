@@ -208,7 +208,7 @@
     OWSAssert(message);
 
     if (!thread) {
-        OWSFail(@"%@ unexpected notification not associated with a thread: %@.", self.logTag, [message class]);
+        OWSFailDebug(@"%@ unexpected notification not associated with a thread: %@.", self.logTag, [message class]);
         [self notifyUserForThreadlessErrorMessage:message transaction:transaction];
         return;
     }

@@ -52,7 +52,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: View LifeCycle
@@ -97,13 +97,13 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
     private func addSnapshotFocusedView() -> UIView? {
         guard let snapshotView = self.focusedView.snapshotView(afterScreenUpdates: false) else {
-            owsFail("snapshotView was unexpectedly nil")
+            owsFailDebug("snapshotView was unexpectedly nil")
             return nil
         }
         view.addSubview(snapshotView)
 
         guard let focusedViewSuperview = focusedView.superview else {
-            owsFail("focusedViewSuperview was unexpectedly nil")
+            owsFailDebug("focusedViewSuperview was unexpectedly nil")
             return nil
         }
 
@@ -115,18 +115,18 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
     private func animatePresentation() {
         guard let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint else {
-            owsFail("actionSheetViewVerticalConstraint was unexpectedly nil")
+            owsFailDebug("actionSheetViewVerticalConstraint was unexpectedly nil")
             return
         }
 
         guard let focusedViewSuperview = focusedView.superview else {
-            owsFail("focusedViewSuperview was unexpectedly nil")
+            owsFailDebug("focusedViewSuperview was unexpectedly nil")
             return
         }
 
         // darken background
         guard let snapshotView = addSnapshotFocusedView() else {
-            owsFail("snapshotView was unexpectedly nil")
+            owsFailDebug("snapshotView was unexpectedly nil")
             return
         }
 
@@ -169,19 +169,19 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
     private func animateDismiss(action: MenuAction?) {
         guard let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint else {
-            owsFail("actionSheetVerticalConstraint was unexpectedly nil")
+            owsFailDebug("actionSheetVerticalConstraint was unexpectedly nil")
             self.delegate?.menuActionsDidHide(self)
             return
         }
 
         guard let snapshotView = self.snapshotView else {
-            owsFail("snapshotView was unexpectedly nil")
+            owsFailDebug("snapshotView was unexpectedly nil")
             self.delegate?.menuActionsDidHide(self)
             return
         }
 
         guard let presentationFocusOffset = self.presentationFocusOffset else {
-            owsFail("presentationFocusOffset was unexpectedly nil")
+            owsFailDebug("presentationFocusOffset was unexpectedly nil")
             self.delegate?.menuActionsDidHide(self)
             return
         }
@@ -231,7 +231,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
         didInformDelegateOfDismissalAnimation = true
 
         guard let presentationFocusOffset = self.presentationFocusOffset else {
-            owsFail("presentationFocusOffset was unexpectedly nil")
+            owsFailDebug("presentationFocusOffset was unexpectedly nil")
             self.delegate?.menuActionsDidHide(self)
             return
         }
@@ -304,7 +304,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("not implemented")
+        notImplemented()
     }
 
     @objc
@@ -486,6 +486,6 @@ class MenuActionView: UIButton {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("not implemented")
+        notImplemented()
     }
 }

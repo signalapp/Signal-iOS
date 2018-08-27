@@ -67,7 +67,7 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
-        owsFail("if this method ends up being used by the tests, we should provide a better implementation.")
+        owsFailDebug("if this method ends up being used by the tests, we should provide a better implementation.")
 
         return .orderedAscending
     }
@@ -343,19 +343,19 @@ class ConversationSearcherTest: XCTestCase {
         self.dbConnection.read { transaction in
             for messageResult in messageResults {
                 guard let messageId = messageResult.messageId else {
-                    owsFail("message result missing message id")
+                    owsFailDebug("message result missing message id")
                     continue
                 }
                 guard let interaction = TSInteraction.fetch(uniqueId: messageId, transaction: transaction) else {
-                    owsFail("couldn't load interaction for message result")
+                    owsFailDebug("couldn't load interaction for message result")
                     continue
                 }
                 guard let message = interaction as? TSMessage else {
-                    owsFail("invalid message for message result")
+                    owsFailDebug("invalid message for message result")
                     continue
                 }
                 guard let messageBody = message.body else {
-                    owsFail("message result missing message body")
+                    owsFailDebug("message result missing message body")
                     continue
                 }
                 result.append(messageBody)
@@ -365,7 +365,7 @@ class ConversationSearcherTest: XCTestCase {
         return result.sorted()
     }
 
-    // Mark: Helpers
+    // MARK: Helpers
 
     private func searchConversations(searchText: String) -> [ThreadViewModel] {
         let results = getResultSet(searchText: searchText)

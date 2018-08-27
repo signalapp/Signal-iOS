@@ -55,7 +55,7 @@ public class ProfileFetcherJob: NSObject {
         if (!CurrentAppContext().isMainApp) {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
             // in the AppExtension for our users who choose not to verify contacts.
-            owsFail("Should only fetch profiles in the main app")
+            owsFailDebug("Should only fetch profiles in the main app")
             return
         }
 

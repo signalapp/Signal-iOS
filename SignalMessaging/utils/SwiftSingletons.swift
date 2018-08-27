@@ -22,7 +22,7 @@ public class SwiftSingletons: NSObject {
         }
         let singletonClassName = String(describing: type(of: singleton))
         guard !classSet.contains(singletonClassName) else {
-            owsFail("Duplicate singleton: \(singletonClassName).")
+            owsFailDebug("Duplicate singleton: \(singletonClassName).")
             return
         }
         Logger.verbose("Registering singleton: \(singletonClassName).")

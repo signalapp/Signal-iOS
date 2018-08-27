@@ -485,7 +485,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                        options:(NSJSONWritingOptions)0
                          error:&error];
         if (!jsonData || error) {
-            OWSFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
+            OWSFailDebug(@"%@ could not serialize request JSON: %@", self.logTag, error);
             [socketMessage didFailBeforeSending];
             return;
         }
@@ -506,7 +506,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     WebSocketProtoWebSocketRequestMessage *_Nullable requestProto = [requestBuilder buildAndReturnError:&error];
     if (!requestProto || error) {
-        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not build proto: %@", self.logTag, error);
         return;
     }
 
@@ -516,7 +516,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
-        OWSFail(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFailDebug(@"%@ could not serialize proto: %@.", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
@@ -529,7 +529,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
     if (!wasScheduled || error) {
-        OWSFail(@"%@ could not send socket request: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not send socket request: %@", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
@@ -587,7 +587,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         id _Nullable responseJson =
             [NSJSONSerialization JSONObjectWithData:responseData options:(NSJSONReadingOptions)0 error:&error];
         if (!responseJson || error) {
-            OWSFail(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
+            OWSFailDebug(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
             hasValidResponse = NO;
         } else {
             responseObject = responseJson;
@@ -701,7 +701,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     WebSocketProtoWebSocketMessage *_Nullable wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
     if (!wsMessage || error) {
-        OWSFail(@"%@ could not parse proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not parse proto: %@", self.logTag, error);
         return;
     }
 
@@ -745,7 +745,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
                 [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
             } @catch (NSException *exception) {
-                OWSFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                OWSFailDebug(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
                 // TODO: Add analytics.
 
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
@@ -784,7 +784,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     [responseBuilder setMessage:@"OK"];
     WebSocketProtoWebSocketResponseMessage *_Nullable response = [responseBuilder buildAndReturnError:&error];
     if (!response || error) {
-        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not build proto: %@", self.logTag, error);
         return;
     }
 
@@ -794,7 +794,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
-        OWSFail(@"%@ could not serialize proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not serialize proto: %@", self.logTag, error);
         return;
     }
 

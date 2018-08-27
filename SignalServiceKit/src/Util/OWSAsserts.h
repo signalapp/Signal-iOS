@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 #define CONVERT_TO_STRING(X) #X
 #define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
 
-// OWSAssert() and OWSFail() should be used in Obj-C methods.
-// OWSCAssert() and OWSCFail() should be used in free functions.
+// OWSAssert() and OWSFailDebug() should be used in Obj-C methods.
+// OWSCAssert() and OWSCFailDebug() should be used in free functions.
 
 #define OWSAssert(X)                                                                                                   \
     do {                                                                                                               \
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWSAbstractMethod() OWSFail(@"%@ Method needs to be implemented by subclasses.", self.logTag)
+#define OWSAbstractMethod() OWSFailDebug(@"%@ Method needs to be implemented by subclasses.", self.logTag)
 
 #pragma mark - Singleton Asserts
 
@@ -124,20 +124,32 @@ NS_ASSUME_NONNULL_BEGIN
 // This macro is intended for use in Objective-C.
 #define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])
 
-#define OWSFail(_messageFormat, ...)                                                                                   \
+#define OWSFailDebug(_messageFormat, ...)                                                                              \
     do {                                                                                                               \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
         OWSFailWithoutLogging(_messageFormat, ##__VA_ARGS__);                                                          \
     } while (0)
 
-#define OWSCFail(_messageFormat, ...)                                                                                  \
+#define OWSCFailDebug(_messageFormat, ...)                                                                             \
     do {                                                                                                               \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
         OWSCFailWithoutLogging(_messageFormat, ##__VA_ARGS__);                                                         \
     } while (NO)
 
+
+#define OWSFail(_messageFormat, ...)                                                                                   \
+    do {                                                                                                               \
+        OWSFailDebug(_messageFormat, ##__VA_ARGS__);                                                                   \
+        exit(0);                                                                                                       \
+    } while (0)
+
+#define OWSCFail(_messageFormat, ...)                                                                                  \
+    do {                                                                                                               \
+        OWSCFailDebug(_messageFormat, ##__VA_ARGS__);                                                                  \
+        exit(0);                                                                                                       \
+    } while (NO)
 
 // Avoids Clang analyzer warning:
 //   Value stored to 'x' during it's initialization is never read

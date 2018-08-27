@@ -22,7 +22,7 @@ class DebugUICalling: DebugUIPage {
 
     override func section(thread aThread: TSThread?) -> OWSTableSection? {
         guard let thread = aThread as? TSContactThread else {
-            owsFail("Calling is only valid for contact thread, got thread: \(String(describing: aThread))")
+            owsFailDebug("Calling is only valid for contact thread, got thread: \(String(describing: aThread))")
             return nil
         }
 
@@ -37,7 +37,7 @@ class DebugUICalling: DebugUIPage {
                     hangupBuilder.setId(kFakeCallId)
                     hangupMessage = try hangupBuilder.build()
                 } catch {
-                    owsFail("could not build proto")
+                    owsFailDebug("could not build proto")
                     return
                 }
                 let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
@@ -58,7 +58,7 @@ class DebugUICalling: DebugUIPage {
                     busyBuilder.setId(kFakeCallId)
                     busyMessage = try busyBuilder.build()
                 } catch {
-                    owsFail("Couldn't build proto")
+                    owsFailDebug("Couldn't build proto")
                     return
                 }
 

@@ -29,7 +29,7 @@ class SAEFailedViewController: UIViewController {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     override func loadView() {
@@ -89,7 +89,7 @@ class SAEFailedViewController: UIViewController {
 
     @objc func cancelPressed(sender: UIButton) {
         guard let delegate = delegate else {
-            owsFail("missing delegate")
+            owsFailDebug("missing delegate")
             return
         }
         delegate.shareViewWasCancelled()

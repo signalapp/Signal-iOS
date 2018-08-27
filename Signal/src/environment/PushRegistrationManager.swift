@@ -72,7 +72,7 @@ public enum PushRegistrationError: Error {
     @objc
     public func didRegisterUserNotificationSettings() {
         guard let fulfillUserNotificationSettingsPromise = self.fulfillUserNotificationSettingsPromise else {
-            owsFail("promise completion in \(#function) unexpectedly nil")
+            owsFailDebug("promise completion in \(#function) unexpectedly nil")
             return
         }
 
@@ -85,7 +85,7 @@ public enum PushRegistrationError: Error {
     @objc
     public func didReceiveVanillaPushToken(_ tokenData: Data) {
         guard let fulfillVanillaTokenPromise = self.fulfillVanillaTokenPromise else {
-            owsFail("promise completion in \(#function) unexpectedly nil")
+            owsFailDebug("promise completion in \(#function) unexpectedly nil")
             return
         }
 
@@ -96,7 +96,7 @@ public enum PushRegistrationError: Error {
     @objc
     public func didFailToReceiveVanillaPushToken(error: Error) {
         guard let rejectVanillaTokenPromise = self.rejectVanillaTokenPromise else {
-            owsFail("promise completion in \(#function) unexpectedly nil")
+            owsFailDebug("promise completion in \(#function) unexpectedly nil")
             return
         }
 
@@ -116,7 +116,7 @@ public enum PushRegistrationError: Error {
         assert(type == .voIP)
         assert(credentials.type == .voIP)
         guard let fulfillVoipTokenPromise = self.fulfillVoipTokenPromise else {
-            owsFail("fulfillVoipTokenPromise was unexpectedly nil")
+            owsFailDebug("fulfillVoipTokenPromise was unexpectedly nil")
             return
         }
 
@@ -126,7 +126,7 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         // It's not clear when this would happen. We've never previously handled it, but we should at
         // least start learning if it happens.
-        owsFail("Invalid state")
+        owsFailDebug("Invalid state")
     }
 
     // MARK: helpers
@@ -222,7 +222,7 @@ public enum PushRegistrationError: Error {
         }.then { (pushTokenData: Data) -> String in
             if self.isSusceptibleToFailedPushRegistration {
                 // Sentinal in case this bug is fixed.
-                owsFail("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
+                owsFailDebug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
             }
 
             Logger.info("successfully registered for vanilla push notifications")
@@ -257,7 +257,7 @@ public enum PushRegistrationError: Error {
         }
 
         guard let voipRegistry = self.voipRegistry else {
-            owsFail("failed to initialize voipRegistry")
+            owsFailDebug("failed to initialize voipRegistry")
             reject(PushRegistrationError.assertionError(description: "\(self.logTag) failed to initialize voipRegistry"))
             return promise.then { _ in
                 // coerce expected type of returned promise - we don't really care about the value,

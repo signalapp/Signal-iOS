@@ -130,7 +130,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     // TODO: Should we localize these sound names?
     switch (sound) {
         case OWSSound_Default:
-            OWSFail(@"%@ invalid argument.", self.logTag);
+            OWSFailDebug(@"%@ invalid argument.", self.logTag);
             return @"";
 
         // Notification Sounds
@@ -192,7 +192,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 {
     switch (sound) {
         case OWSSound_Default:
-            OWSFail(@"%@ invalid argument.", self.logTag);
+            OWSFailDebug(@"%@ invalid argument.", self.logTag);
             return @"";
 
             // Notification Sounds
@@ -350,7 +350,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     [OWSFileSystem protectFileOrFolderAtPath:defaultSoundPath fileProtectionType:NSFileProtectionNone];
 
     if (!success) {
-        OWSFail(@"%@ Unable to write new default sound data from: %@ to :%@", self.logTag, soundURL, defaultSoundPath);
+        OWSFailDebug(
+            @"%@ Unable to write new default sound data from: %@ to :%@", self.logTag, soundURL, defaultSoundPath);
         return;
     }
 

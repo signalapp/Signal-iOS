@@ -58,7 +58,7 @@ import SignalMessaging
             return super.storageBehaviorForProperty(withKey: propertyKey)
         } else {
             // Being conservative here in case we rename a property.
-            owsFail("unknown property \(propertyKey)")
+            owsFailDebug("unknown property \(propertyKey)")
             return super.storageBehaviorForProperty(withKey: propertyKey)
         }
     }

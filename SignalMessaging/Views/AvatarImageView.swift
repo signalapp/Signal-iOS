@@ -70,7 +70,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             self.recipientId = nil
             self.groupThreadId = groupThread.uniqueId
         default:
-            owsFail("unexpected thread type: \(thread)")
+            owsFailDebug("unexpected thread type: \(thread)")
             self.recipientId = nil
             self.groupThreadId = nil
         }
@@ -92,7 +92,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc func handleSignalAccountsChanged(notification: Notification) {
@@ -108,13 +108,13 @@ public class ConversationAvatarImageView: AvatarImageView {
         Logger.debug("")
 
         guard let changedRecipientId = notification.userInfo?[kNSNotificationKey_ProfileRecipientId] as? String else {
-            owsFail("recipientId was unexpectedly nil")
+            owsFailDebug("recipientId was unexpectedly nil")
             return
         }
 
         guard let recipientId = self.recipientId else {
             // shouldn't call this for group threads
-            owsFail("contactId was unexpectedly nil")
+            owsFailDebug("contactId was unexpectedly nil")
             return
         }
 
@@ -130,13 +130,13 @@ public class ConversationAvatarImageView: AvatarImageView {
         Logger.debug("")
 
         guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificationKey_UniqueId] as? String else {
-            owsFail("groupThreadId was unexpectedly nil")
+            owsFailDebug("groupThreadId was unexpectedly nil")
             return
         }
 
         guard let groupThreadId = self.groupThreadId else {
             // shouldn't call this for contact threads
-            owsFail("groupThreadId was unexpectedly nil")
+            owsFailDebug("groupThreadId was unexpectedly nil")
             return
         }
 

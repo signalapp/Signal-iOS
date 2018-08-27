@@ -403,7 +403,7 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "obsolete call")
             }
             guard let peerConnectionClient = self.peerConnectionClient else {
-                owsFail("Missing peerConnectionClient")
+                owsFailDebug("Missing peerConnectionClient")
                 throw CallError.obsoleteCall(description: "Missing peerConnectionClient")
             }
 
@@ -414,7 +414,7 @@ private class SignalCallData: NSObject {
                     let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build())
                     return self.messageSender.sendPromise(message: callMessage)
                 } catch {
-                    owsFail("Couldn't build proto")
+                    owsFailDebug("Couldn't build proto")
                     throw CallError.fatalError(description: "Couldn't build proto")
                 }
             }
@@ -552,7 +552,7 @@ private class SignalCallData: NSObject {
 
             handleMissedCall(call)
         } catch {
-            owsFail("Couldn't build proto")
+            owsFailDebug("Couldn't build proto")
         }
     }
 
@@ -603,7 +603,7 @@ private class SignalCallData: NSObject {
 
             switch untrustedIdentity!.verificationState {
             case .verified:
-                owsFail("shouldn't have missed a call due to untrusted identity if the identity is verified")
+                owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
                 self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
             case .default:
                 self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
@@ -721,7 +721,7 @@ private class SignalCallData: NSObject {
 
                 return self.messageSender.sendPromise(message: callAnswerMessage)
             } catch {
-                owsFail("Couldn't build proto")
+                owsFailDebug("Couldn't build proto")
                 throw CallError.fatalError(description: "Couldn't build proto")
             }
         }.then {
@@ -842,12 +842,12 @@ private class SignalCallData: NSObject {
             }
 
             guard let sdpMid = iceCandidate.sdpMid else {
-                owsFail("Missing sdpMid")
+                owsFailDebug("Missing sdpMid")
                 throw CallError.fatalError(description: "Missing sdpMid")
             }
 
             guard iceCandidate.sdpMLineIndex < UINT32_MAX else {
-                owsFail("Invalid sdpMLineIndex")
+                owsFailDebug("Invalid sdpMLineIndex")
                 throw CallError.fatalError(description: "Invalid sdpMLineIndex")
             }
 
@@ -867,7 +867,7 @@ private class SignalCallData: NSObject {
                 let sendPromise = self.messageSender.sendPromise(message: callMessage)
                 sendPromise.retainUntilComplete()
             } catch {
-                owsFail("Couldn't build proto")
+                owsFailDebug("Couldn't build proto")
                 throw CallError.fatalError(description: "Couldn't build proto")
             }
         }.catch { error in
@@ -908,7 +908,7 @@ private class SignalCallData: NSObject {
         case .reconnecting:
             call.state = .connected
         case .idle, .localRinging, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
-            owsFail("unexpected call state: \(call.state): \(call.identifiersForLogs).")
+            owsFailDebug("unexpected call state: \(call.state): \(call.identifiersForLogs).")
         }
     }
 
@@ -931,7 +931,7 @@ private class SignalCallData: NSObject {
         case .connected:
             call.state = .reconnecting
         default:
-            owsFail("unexpected call state: \(call.state): \(call.identifiersForLogs).")
+            owsFailDebug("unexpected call state: \(call.state): \(call.identifiersForLogs).")
         }
     }
 
@@ -987,7 +987,7 @@ private class SignalCallData: NSObject {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            owsFail("call was unexpectedly nil")
+            owsFailDebug("call was unexpectedly nil")
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) call was unexpectedly nil"))
             return
@@ -995,7 +995,7 @@ private class SignalCallData: NSObject {
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            owsFail("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
+            owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
@@ -1091,7 +1091,7 @@ private class SignalCallData: NSObject {
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
-            owsFail("call was unexpectedly nil")
+            owsFailDebug("call was unexpectedly nil")
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) call was unexpectedly nil"))
             return
@@ -1099,7 +1099,7 @@ private class SignalCallData: NSObject {
 
         guard call.localId == localId else {
             // This should never happen; return to a known good state.
-            owsFail("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
+            owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
@@ -1119,7 +1119,7 @@ private class SignalCallData: NSObject {
         Logger.info("\(call.identifiersForLogs).")
 
         if let callRecord = call.callRecord {
-            owsFail("Not expecting callrecord to already be set")
+            owsFailDebug("Not expecting callrecord to already be set")
             callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
         } else {
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
@@ -1162,7 +1162,7 @@ private class SignalCallData: NSObject {
                 callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
             }
         } else {
-            owsFail("missing call record")
+            owsFailDebug("missing call record")
         }
 
         // TODO something like this lifted from Signal-Android.
@@ -1281,7 +1281,7 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
 
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("could not identify frontmostViewController")
+            owsFailDebug("could not identify frontmostViewController")
             return
         }
 
@@ -1359,7 +1359,7 @@ private class SignalCallData: NSObject {
 
         guard let callData = self.callData else {
             // This should never happen; return to a known good state.
-            owsFail("received data message, but there is no current call. Ignoring.")
+            owsFailDebug("received data message, but there is no current call. Ignoring.")
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received data message, but there is no current call. Ignoring."))
             return
@@ -1371,7 +1371,7 @@ private class SignalCallData: NSObject {
 
             guard connected.id == call.signalingId else {
                 // This should never happen; return to a known good state.
-                owsFail("received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
+                owsFailDebug("received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
                 OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
                 handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
                 return
@@ -1385,7 +1385,7 @@ private class SignalCallData: NSObject {
 
             guard hangup.id == call.signalingId else {
                 // This should never happen; return to a known good state.
-                owsFail("received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
+                owsFailDebug("received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
                 OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
                 handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
                 return
@@ -1558,7 +1558,7 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
 
         if case CallError.assertionError(description: let description) = error {
-            owsFail(description)
+            owsFailDebug(description)
         }
 
         if let failedCall = failedCall {
@@ -1748,7 +1748,7 @@ private class SignalCallData: NSObject {
             }
 
             guard let call = strongSelf.call else {
-                owsFail("call has since ended. Timer should have been invalidated.")
+                owsFailDebug("call has since ended. Timer should have been invalidated.")
                 timer.invalidate()
                 return
             }
@@ -1759,11 +1759,11 @@ private class SignalCallData: NSObject {
 
     func ensureCallScreenPresented(call: SignalCall) {
         guard let currentCall = self.call else {
-            owsFail("obsolete call: \(call.identifiersForLogs)")
+            owsFailDebug("obsolete call: \(call.identifiersForLogs)")
             return
         }
         guard currentCall == call else {
-            owsFail("obsolete call: \(call.identifiersForLogs)")
+            owsFailDebug("obsolete call: \(call.identifiersForLogs)")
             return
         }
 
@@ -1789,7 +1789,7 @@ private class SignalCallData: NSObject {
 
         if !OWSWindowManager.shared().hasCall() {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file: #file, function: #function, line: #line)
-            owsFail("Call terminated due to missing call view.")
+            owsFailDebug("Call terminated due to missing call view.")
             self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "Call view didn't present after \(kMaxViewPresentationDelay) seconds"))
             return
         }

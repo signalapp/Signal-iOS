@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     [interactionsByThread enumerateKeysInGroup:self.uniqueId
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                                         if (![key isKindOfClass:[NSString class]] || key.length < 1) {
-                                            OWSFail(@"%@ invalid key in thread interactions: %@, %@.",
+                                            OWSFailDebug(@"%@ invalid key in thread interactions: %@, %@.",
                                                 self.logTag,
                                                 key,
                                                 [key class]);
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSInteraction *_Nullable interaction =
             [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
         if (!interaction) {
-            OWSFail(@"%@ couldn't load thread's interaction for deletion.", self.logTag);
+            OWSFailDebug(@"%@ couldn't load thread's interaction for deletion.", self.logTag);
             continue;
         }
         [interaction removeWithTransaction:transaction];
@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
                       if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                          OWSFail(@"%@ Unexpected object in unseen messages: %@", self.logTag, [object class]);
+                          OWSFailDebug(@"%@ Unexpected object in unseen messages: %@", self.logTag, [object class]);
                           return;
                       }
                       [messages addObject:(id<OWSReadTracking>)object];
@@ -461,7 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hashData) {
         [hashData getBytes:&hash length:hashingLength];
     } else {
-        OWSFail(@"%@ could not compute hash for color seed.", self.logTag);
+        OWSFailDebug(@"%@ could not compute hash for color seed.", self.logTag);
     }
 
     NSUInteger index = (hash % [self.conversationColorNames count]);

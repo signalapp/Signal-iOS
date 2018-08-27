@@ -87,7 +87,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: - Lifecycle Methods
@@ -247,7 +247,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as? ContactCell else {
-            owsFail("cell had unexpected type")
+            owsFailDebug("cell had unexpected type")
             return UITableViewCell()
         }
 

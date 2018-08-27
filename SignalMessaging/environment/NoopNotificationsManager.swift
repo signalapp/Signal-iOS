@@ -8,7 +8,7 @@ import SignalServiceKit
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, contactsManager: ContactsManagerProtocol, transaction: YapDatabaseReadTransaction) {
-        owsFail("")
+        owsFailDebug("")
     }
 
     public func notifyUser(for error: TSErrorMessage, thread: TSThread, transaction: YapDatabaseReadWriteTransaction) {

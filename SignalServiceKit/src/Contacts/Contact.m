@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (hashData) {
             [hashData getBytes:&hashValue length:sizeof(hashValue)];
         } else {
-            OWSFail(@"%@ could not compute hash for avatar.", self.logTag);
+            OWSFailDebug(@"%@ could not compute hash for avatar.", self.logTag);
         }
         _imageHash = hashValue;
     } else {
@@ -310,15 +310,15 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSArray<CNContact *> *_Nullable contacts = [CNContactVCardSerialization contactsWithData:data error:&error];
     if (!contacts || error) {
-        OWSFail(@"%@ could not parse vcard: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not parse vcard: %@", self.logTag, error);
         return nil;
     }
     if (contacts.count < 1) {
-        OWSFail(@"%@ empty vcard: %@", self.logTag, error);
+        OWSFailDebug(@"%@ empty vcard: %@", self.logTag, error);
         return nil;
     }
     if (contacts.count > 1) {
-        OWSFail(@"%@ more than one contact in vcard: %@", self.logTag, error);
+        OWSFailDebug(@"%@ more than one contact in vcard: %@", self.logTag, error);
     }
     return contacts.firstObject;
 }
@@ -332,7 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CNMutableContact *_Nullable mergedCNContact = [oldCNContact mutableCopy];
     if (!mergedCNContact) {
-        OWSFail(@"%@ in %s mergedCNContact was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"%@ in %s mergedCNContact was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         return [CNContact new];
     }
     

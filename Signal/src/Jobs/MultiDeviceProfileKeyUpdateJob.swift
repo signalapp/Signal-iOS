@@ -36,7 +36,7 @@ import SignalMessaging
 
     func run(retryDelay: TimeInterval = 1) {
         guard let localNumber = TSAccountManager.localNumber() else {
-            owsFail("localNumber was unexpectedly nil")
+            owsFailDebug("localNumber was unexpectedly nil")
             return
         }
 
@@ -49,14 +49,14 @@ import SignalMessaging
         var dataSource: DataSource?
         self.editingDatabaseConnection.readWrite { transaction in
             guard let messageData: Data = syncContactsMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFail("could not serialize sync contacts data")
+                owsFailDebug("could not serialize sync contacts data")
                 return
             }
             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
         }
 
         guard let attachmentDataSource = dataSource else {
-            owsFail("dataSource was unexpectedly nil")
+            owsFailDebug("dataSource was unexpectedly nil")
             return
         }
 

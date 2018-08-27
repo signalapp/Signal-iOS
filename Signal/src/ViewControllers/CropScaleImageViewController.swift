@@ -75,7 +75,7 @@ import SignalMessaging
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     @objc required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
@@ -499,7 +499,7 @@ import SignalMessaging
 
         let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
         if scaledImage == nil {
-            owsFail("could not generate dst image.")
+            owsFailDebug("could not generate dst image.")
         }
         UIGraphicsEndImageContext()
         return scaledImage

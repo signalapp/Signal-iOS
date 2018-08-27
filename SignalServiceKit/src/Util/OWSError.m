@@ -37,7 +37,7 @@ NSError *OWSErrorMakeNoSuchSignalRecipientError()
 
 NSError *OWSErrorMakeAssertionError(NSString *description)
 {
-    OWSCFail(@"Assertion failed: %@", description);
+    OWSCFailDebug(@"Assertion failed: %@", description);
     return OWSErrorWithCodeDescription(OWSErrorCodeAssertionFailure,
         NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
 }

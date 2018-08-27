@@ -372,12 +372,12 @@ NS_ASSUME_NONNULL_BEGIN
                 [strongSelf.collation sectionForSectionIndexTitleAtIndex:index] + noncollatedSections;
             if (sectionIndex < 0) {
                 // Sentinal in case we change our section ordering in a surprising way.
-                OWSCFail(@"Unexpected negative section index");
+                OWSCFailDebug(@"Unexpected negative section index");
                 return 0;
             }
             if (sectionIndex >= (NSInteger)contents.sections.count) {
                 // Sentinal in case we change our section ordering in a surprising way.
-                OWSCFail(@"Unexpectedly large index");
+                OWSCFailDebug(@"Unexpectedly large index");
                 return 0;
             }
 
@@ -448,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.collation sectionForObject:signalAccount collationStringSelector:@selector(stringForCollation)];
 
         if (section < 0) {
-            OWSFail(@"Unexpected collation for name:%@", signalAccount.stringForCollation);
+            OWSFailDebug(@"Unexpected collation for name:%@", signalAccount.stringForCollation);
             continue;
         }
         NSUInteger sectionIndex = (NSUInteger)section;

@@ -57,7 +57,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         // want to let the user select if there's more than one.
         let phoneNumbers = contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
         guard phoneNumbers.count > 0 else {
-            owsFail("missing Signal recipient id.")
+            owsFailDebug("missing Signal recipient id.")
             return
         }
         guard phoneNumbers.count > 1 else {
@@ -82,7 +82,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         }
         let phoneNumbers = contactShare.e164PhoneNumbers()
         guard phoneNumbers.count > 0 else {
-            owsFail("no phone numbers.")
+            owsFailDebug("no phone numbers.")
             return
         }
 
@@ -143,12 +143,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         guard contactsManager.supportsContactEditing else {
-            owsFail("Contact editing not supported")
+            owsFailDebug("Contact editing not supported")
             return
         }
 
         guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
-            owsFail("Could not derive system contact.")
+            owsFailDebug("Could not derive system contact.")
             return
         }
 
@@ -172,7 +172,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         guard contactsManager.supportsContactEditing else {
-            owsFail("Contact editing not supported")
+            owsFailDebug("Contact editing not supported")
             return
         }
 
@@ -182,7 +182,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         }
 
         guard let navigationController = fromViewController.navigationController else {
-            owsFail("missing navigationController")
+            owsFailDebug("missing navigationController")
             return
         }
 
@@ -196,7 +196,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         Logger.info("")
 
         guard let delegate = delegate else {
-            owsFail("missing delegate")
+            owsFailDebug("missing delegate")
             return
         }
 
@@ -207,7 +207,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         Logger.info("")
 
         guard let delegate = delegate else {
-            owsFail("missing delegate")
+            owsFailDebug("missing delegate")
             return
         }
 

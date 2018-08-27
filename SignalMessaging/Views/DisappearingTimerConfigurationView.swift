@@ -49,7 +49,7 @@ public class DisappearingTimerConfigurationView: UIView {
     private var pressGesture: UILongPressGestureRecognizer!
 
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc

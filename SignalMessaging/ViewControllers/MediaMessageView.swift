@@ -56,7 +56,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     // Currently we only use one mode (AttachmentApproval), so we could simplify this class, but it's kind

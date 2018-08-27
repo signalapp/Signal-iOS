@@ -136,7 +136,7 @@ public class ConversationSearcher: NSObject {
                 let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
                 contacts.append(searchResult)
             } else {
-                owsFail("unhandled item: \(match)")
+                owsFailDebug("unhandled item: \(match)")
             }
         }
 
@@ -166,7 +166,7 @@ public class ConversationSearcher: NSObject {
             case let contactThread as TSContactThread:
                 return self.contactThreadSearcher.matches(item: contactThread, query: searchText)
             default:
-                owsFail("Unexpected thread type: \(thread)")
+                owsFailDebug("Unexpected thread type: \(thread)")
                 return false
             }
         }

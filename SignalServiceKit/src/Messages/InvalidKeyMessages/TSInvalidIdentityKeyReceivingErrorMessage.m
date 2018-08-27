@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     _envelopeData = [envelope serializedDataAndReturnError:&error];
     if (!_envelopeData || error != nil) {
-        OWSFail(@"%@ failure: envelope data failed with error: %@", self.logTag, error);
+        OWSFailDebug(@"%@ failure: envelope data failed with error: %@", self.logTag, error);
         return nil;
     }
     
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
         if (error || envelope == nil) {
-            OWSFail(@"%@ Could not parse proto: %@", self.logTag, error);
+            OWSFailDebug(@"%@ Could not parse proto: %@", self.logTag, error);
         } else {
             _envelope = envelope;
         }
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable newKey = [self newIdentityKey];
     if (!newKey) {
-        OWSFail(@"Couldn't extract identity key to accept");
+        OWSFailDebug(@"Couldn't extract identity key to accept");
         return;
     }
 

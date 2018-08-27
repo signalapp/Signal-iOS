@@ -3396,7 +3396,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             TSContactThread *contactThread = (TSContactThread *)thread;
             return contactThread.contactIdentifier;
         } else {
-            OWSFail(@"%@ failure: unknown thread type", self.logTag);
+            OWSFailDebug(@"%@ failure: unknown thread type", self.logTag);
             return @"unknown-source-id";
         }
     }();
@@ -3409,7 +3409,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
     if (error || !envelope) {
-        OWSFail(@"%@ Could not construct envelope: %@.", self.logTag, error);
+        OWSFailDebug(@"%@ Could not construct envelope: %@.", self.logTag, error);
         return nil;
     }
     return envelope;
@@ -3932,7 +3932,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSError *error;
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
     if (error || !envelopeData) {
-        OWSFail(@"%@ Could not serialize envelope: %@.", self.logTag, error);
+        OWSFailDebug(@"%@ Could not serialize envelope: %@.", self.logTag, error);
         return;
     }
 
@@ -4454,7 +4454,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [label appendString:@" (Sent)"];
         }
     } else {
-        OWSFail(@"%@ unknown message state.", self.logTag);
+        OWSFailDebug(@"%@ unknown message state.", self.logTag);
     }
     return label;
 }

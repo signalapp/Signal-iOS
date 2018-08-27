@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];
     if (error || !configurationProto) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
 

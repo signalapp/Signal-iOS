@@ -21,7 +21,7 @@ class QuotedReplyPreview: UIView {
 
     @objc
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc
@@ -81,7 +81,7 @@ class QuotedReplyPreview: UIView {
 
     func updateHeight() {
         guard let quotedMessageView = quotedMessageView else {
-            owsFail("missing quotedMessageView")
+            owsFailDebug("missing quotedMessageView")
             return
         }
         let size = quotedMessageView.size(forMaxWidth: CGFloat.infinity)

@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     if (![self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
-        OWSFail(@"%@ expected OWSContactOffersInteraction but found: %@", self.logTag, self.viewItem.interaction);
+        OWSFailDebug(@"%@ expected OWSContactOffersInteraction but found: %@", self.logTag, self.viewItem.interaction);
         return nil;
     }
     return (OWSContactOffersInteraction *)self.viewItem.interaction;
