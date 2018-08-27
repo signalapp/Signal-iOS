@@ -86,21 +86,21 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             }
 
             if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
                 [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
             NSString *uploadUrl = responseObject[@"url"];
             if (![uploadUrl isKindOfClass:[NSString class]] || uploadUrl.length < 1) {
-                OWSLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
                 [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
             NSDictionary *fields = responseObject[@"fields"];
             if (![fields isKindOfClass:[NSDictionary class]] || fields.count < 1) {
-                OWSLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
                 [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
@@ -109,7 +109,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 NSString *fieldValue = fields[fieldName];
                 if (![fieldName isKindOfClass:[NSString class]] || fieldName.length < 1
                     || ![fieldValue isKindOfClass:[NSString class]] || fieldValue.length < 1) {
-                    OWSLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                    OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
                     [strongSelf failWithError:OWSErrorWithCodeDescription(
                                                   OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                     return;
@@ -117,7 +117,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             }
             NSString *_Nullable uploadKey = fields[@"key"];
             if (![uploadKey isKindOfClass:[NSString class]] || uploadKey.length < 1) {
-                OWSLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
                 [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
@@ -126,7 +126,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             // Add a file extension to the upload's key.
             NSString *fileExtension = strongSelf.fileUrl.lastPathComponent.pathExtension;
             if (fileExtension.length < 1) {
-                OWSLogError(@"%@ Invalid file url: %@, %@", strongSelf.logTag, urlString, responseObject);
+                OWSLogError(@"Invalid file url: %@, %@", urlString, responseObject);
                 [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid file url")];
                 return;
@@ -138,7 +138,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             [strongSelf uploadFileWithUploadUrl:uploadUrl fields:updatedFields uploadKey:uploadKey];
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
-            OWSLogError(@"%@ failed: %@", weakSelf.logTag, urlString);
+            OWSLogError(@"failed: %@", urlString);
             [weakSelf failWithError:error];
         }];
 }
@@ -172,18 +172,18 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                                   mimeType:weakSelf.mimeType
                                                      error:&error];
             if (!success || error) {
-                OWSLogError(@"%@ failed: %@, error: %@", weakSelf.logTag, uploadUrl, error);
+                OWSLogError(@"failed: %@, error: %@", uploadUrl, error);
             }
         }
         progress:nil
         success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
-            OWSLogVerbose(@"%@ Response: %@, %@", weakSelf.logTag, uploadUrl, responseObject);
+            OWSLogVerbose(@"Response: %@, %@", uploadUrl, responseObject);
 
             NSString *urlString = [NSString stringWithFormat:@"https://debuglogs.org/%@", uploadKey];
             [self succeedWithUrl:[NSURL URLWithString:urlString]];
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
-            OWSLogError(@"%@ upload: %@ failed with error: %@", weakSelf.logTag, uploadUrl, error);
+            OWSLogError(@"upload: %@ failed with error: %@", uploadUrl, error);
             [weakSelf failWithError:error];
         }];
 }

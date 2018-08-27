@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
                               OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
                               [[OWS2FAManager sharedManager] mark2FAAsEnabledWithPin:pinCode];
 
-                              OWSLogInfo(@"%@ Successfully registered Signal account.", weakSelf.logTag);
+                              OWSLogInfo(@"Successfully registered Signal account.");
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       OWSAssertIsOnMainThread();
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
                           .catch(^(NSError *error) {
                               OWSAssertIsOnMainThread();
                               OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
-                              OWSLogError(@"%@ error verifying challenge: %@", weakSelf.logTag, error);
+                              OWSLogError(@"error verifying challenge: %@", error);
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       OWSAssertIsOnMainThread();

@@ -715,7 +715,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // Database files are critical so any error uploading them is unrecoverable.
-                OWSLogVerbose(@"%@ error while saving file: %@", weakSelf.logTag, item.encryptedItem.filePath);
+                OWSLogVerbose(@"error while saving file: %@", item.encryptedItem.filePath);
                 completion(error);
             });
         }];

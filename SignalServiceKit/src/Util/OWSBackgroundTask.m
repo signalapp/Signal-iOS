@@ -363,7 +363,7 @@ typedef NSNumber *OWSTaskId;
             if (!strongSelf) {
                 return;
             }
-            OWSLogVerbose(@"%@ task expired", strongSelf.logTag);
+            OWSLogVerbose(@"task expired");
 
             // Make a local copy of completionBlock to ensure that it is called
             // exactly once.
@@ -374,7 +374,7 @@ typedef NSNumber *OWSTaskId;
                 if (!strongSelf.taskId) {
                     return;
                 }
-                OWSLogInfo(@"%@ %@ background task expired.", strongSelf.logTag, strongSelf.label);
+                OWSLogInfo(@"%@ background task expired.", strongSelf.label);
                 strongSelf.taskId = nil;
 
                 completionBlock = strongSelf.completionBlock;

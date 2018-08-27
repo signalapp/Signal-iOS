@@ -379,7 +379,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             TSAttachment *_Nullable attachment =
                 [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
             if (!attachment) {
-                OWSLogError(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
+                OWSLogError(@"Couldn't load interaction's attachment for deletion.");
                 continue;
             }
             [attachment removeWithTransaction:transaction];

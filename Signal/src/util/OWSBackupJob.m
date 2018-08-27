@@ -178,7 +178,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         failure:^(NSError *error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // The manifest file is critical so any error downloading it is unrecoverable.
-                OWSCFailDebug(@"%@ Could not download manifest.", weakSelf.logTag);
+                OWSCFailDebug(@"Could not download manifest.");
                 failure(error);
             });
         }];
