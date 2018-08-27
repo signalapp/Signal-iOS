@@ -21,19 +21,21 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contactsManager);
 
     OWSAvatarBuilder *avatarBuilder;
-    if ([thread isKindOfClass:[TSThread class]]) {
-        TSThread *contactThread = (TSThread *)thread;
-        NSString *colorName = thread.conversationColorName;
-        UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
-        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
-                                                                    color:color
-                                                                 diameter:diameter
-                                                          contactsManager:contactsManager];
-    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
-        avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
-    } else {
-        DDLogError(@"%@ called with unsupported thread: %@", self.logTag, thread);
-    }
+//    if ([thread isKindOfClass:[TSThread class]]) {
+//        TSThread *contactThread = (TSThread *)thread;
+//        NSString *colorName = thread.conversationColorName;
+//        UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
+//        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
+//                                                                    color:color
+//                                                                 diameter:diameter
+//                                                          contactsManager:contactsManager];
+//    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
+    
+        avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSThread *)thread];
+    
+//    } else {
+//        DDLogError(@"%@ called with unsupported thread: %@", self.logTag, thread);
+//    }
     return [avatarBuilder build];
 }
 

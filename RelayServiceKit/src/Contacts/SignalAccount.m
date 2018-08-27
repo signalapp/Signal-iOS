@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable NSString *)uniqueId
+- (nonnull NSString *)uniqueId
 {
     return _recipientId;
 }

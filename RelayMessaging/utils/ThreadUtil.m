@@ -134,7 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
                                                      isVoiceMessage:[attachment isVoiceMessage]
-                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessage]
                                                        contactShare:nil];
 
@@ -185,7 +184,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
                                                      isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:contactShare];
 
@@ -339,44 +337,44 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL shouldHaveAddToContactsOffer = YES;
         BOOL shouldHaveAddToProfileWhitelistOffer = YES;
 
-        BOOL isContactThread = [thread isKindOfClass:[TSThread class]];
-        if (!isContactThread) {
+//        BOOL isContactThread = [thread isKindOfClass:[TSThread class]];
+//        if (!isContactThread) {
             // Only create "add to contacts" offers in 1:1 conversations.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers in 1:1 conversations.
             shouldHaveBlockOffer = NO;
             // Only create profile whitelist offers in 1:1 conversations.
             shouldHaveAddToProfileWhitelistOffer = NO;
-        } else {
-            NSString *recipientId = ((TSThread *)thread).contactIdentifier;
-
-            if ([recipientId isEqualToString:localNumber]) {
-                // Don't add self to contacts.
-                shouldHaveAddToContactsOffer = NO;
-                // Don't bother to block self.
-                shouldHaveBlockOffer = NO;
-                // Don't bother adding self to profile whitelist.
-                shouldHaveAddToProfileWhitelistOffer = NO;
-            } else {
-                if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
-                    // Only create "add to contacts" offers for users which are not already blocked.
-                    shouldHaveAddToContactsOffer = NO;
-                    // Only create block offers for users which are not already blocked.
-                    shouldHaveBlockOffer = NO;
-                    // Don't create profile whitelist offers for users which are not already blocked.
-                    shouldHaveAddToProfileWhitelistOffer = NO;
-                }
-
-                if ([contactsManager hasSignalAccountForRecipientId:recipientId]) {
-                    // Only create "add to contacts" offers for non-contacts.
-                    shouldHaveAddToContactsOffer = NO;
-                    // Only create block offers for non-contacts.
-                    shouldHaveBlockOffer = NO;
-                    // Don't create profile whitelist offers for non-contacts.
-                    shouldHaveAddToProfileWhitelistOffer = NO;
-                }
-            }
-        }
+//        } else {
+//            NSString *recipientId = ((TSThread *)thread).contactIdentifier;
+//
+//            if ([recipientId isEqualToString:localNumber]) {
+//                // Don't add self to contacts.
+//                shouldHaveAddToContactsOffer = NO;
+//                // Don't bother to block self.
+//                shouldHaveBlockOffer = NO;
+//                // Don't bother adding self to profile whitelist.
+//                shouldHaveAddToProfileWhitelistOffer = NO;
+//            } else {
+//                if ([[blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
+//                    // Only create "add to contacts" offers for users which are not already blocked.
+//                    shouldHaveAddToContactsOffer = NO;
+//                    // Only create block offers for users which are not already blocked.
+//                    shouldHaveBlockOffer = NO;
+//                    // Don't create profile whitelist offers for users which are not already blocked.
+//                    shouldHaveAddToProfileWhitelistOffer = NO;
+//                }
+//
+//                if ([contactsManager hasSignalAccountForRecipientId:recipientId]) {
+//                    // Only create "add to contacts" offers for non-contacts.
+//                    shouldHaveAddToContactsOffer = NO;
+//                    // Only create block offers for non-contacts.
+//                    shouldHaveBlockOffer = NO;
+//                    // Don't create profile whitelist offers for non-contacts.
+//                    shouldHaveAddToProfileWhitelistOffer = NO;
+//                }
+//            }
+//        }
 
         if (!firstCallOrMessage) {
             shouldHaveAddToContactsOffer = NO;
@@ -405,7 +403,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Don't show offer if thread is local user hasn't configured their profile.
             // Don't show offer if thread is already in profile whitelist.
             shouldHaveAddToProfileWhitelistOffer = NO;
-        } else if (thread.isGroupThread && !hasUnwhitelistedMember) {
+        } else if (!hasUnwhitelistedMember) {
             // Don't show offer in group thread if all members are already individually
             // whitelisted.
             shouldHaveAddToProfileWhitelistOffer = NO;
@@ -413,12 +411,12 @@ NS_ASSUME_NONNULL_BEGIN
 
         BOOL shouldHaveContactOffers
             = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
-        if (isContactThread) {
-            TSThread *contactThread = (TSThread *)thread;
-            if (contactThread.hasDismissedOffers) {
-                shouldHaveContactOffers = NO;
-            }
-        }
+//        if (isContactThread) {
+//            TSThread *contactThread = (TSThread *)thread;
+//            if (contactThread.hasDismissedOffers) {
+//                shouldHaveContactOffers = NO;
+//            }
+//        }
 
         // We want the offers to be the first interactions in their
         // conversation's timeline, so we back-date them to slightly before
@@ -451,21 +449,22 @@ NS_ASSUME_NONNULL_BEGIN
                 existingContactOffers.timestampForSorting);
             [existingContactOffers removeWithTransaction:transaction];
         } else if (!existingContactOffers && shouldHaveContactOffers) {
-            NSString *recipientId = ((TSThread *)thread).contactIdentifier;
-
-            TSInteraction *offersMessage =
-                [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp
-                                                                             thread:thread
-                                                                      hasBlockOffer:shouldHaveBlockOffer
-                                                              hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                                      hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                                        recipientId:recipientId];
-            [offersMessage saveWithTransaction:transaction];
-
-            DDLogInfo(@"%@ Creating contact offers: %@ (%llu)",
-                self.logTag,
-                offersMessage.uniqueId,
-                offersMessage.timestampForSorting);
+            // No contact offers
+//            NSString *recipientId = ((TSThread *)thread).contactIdentifier;
+//
+//            TSInteraction *offersMessage =
+//                [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp
+//                                                                             thread:thread
+//                                                                      hasBlockOffer:shouldHaveBlockOffer
+//                                                              hasAddToContactsOffer:shouldHaveAddToContactsOffer
+//                                                      hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+//                                                                        recipientId:recipientId];
+//            [offersMessage saveWithTransaction:transaction];
+//
+//            DDLogInfo(@"%@ Creating contact offers: %@ (%llu)",
+//                self.logTag,
+//                offersMessage.uniqueId,
+//                offersMessage.timestampForSorting);
         }
 
         [self ensureUnreadIndicator:result
@@ -654,9 +653,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     OWSAssert(blockingManager);
 
-    if (!thread.isGroupThread) {
-        return NO;
-    }
+//    if (!thread.isGroupThread) {
+//        return NO;
+//    }
+    
     if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
         return NO;
     }
@@ -682,9 +682,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    if (thread.isGroupThread) {
-        return NO;
-    }
+//    if (thread.isGroupThread) {
+//        return NO;
+//    }
     if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
         return NO;
     }

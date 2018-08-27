@@ -22,7 +22,6 @@
 #import <RelayServiceKit/OWSSignalService.h>
 #import <RelayServiceKit/SecurityUtils.h>
 #import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSGroupThread.h>
 #import <RelayServiceKit/TSNetworkManager.h>
 #import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/TSYapDatabaseObject.h>
@@ -600,20 +599,20 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return result;
 }
 
-- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
+- (void)addGroupIdToProfileWhitelist:(NSString *)groupId
 {
     OWSAssert(groupId.length > 0);
 
-    NSString *groupIdKey = [groupId hexadecimalString];
+//    NSString *groupIdKey = [groupId hexadecimalString];
 
     __block BOOL didChange = NO;
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSNumber *_Nullable oldValue =
-            [transaction objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
+            [transaction objectForKey:groupId inCollection:kOWSProfileManager_GroupWhitelistCollection];
         if (oldValue && oldValue.boolValue) {
             // Do nothing.
         } else {
-            [transaction setObject:@(YES) forKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
+            [transaction setObject:@(YES) forKey:groupId inCollection:kOWSProfileManager_GroupWhitelistCollection];
             didChange = YES;
         }
     }
@@ -633,34 +632,36 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(thread);
 
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        [self addGroupIdToProfileWhitelist:groupId];
-
-        // When we add a group to the profile whitelist, we might as well
-        // also add all current members to the profile whitelist
-        // individually as well just in case delivery of the profile key
-        // fails.
-        for (NSString *recipientId in groupThread.recipientIdentifiers) {
-            [self addUserToProfileWhitelist:recipientId];
-        }
-    } else {
-        NSString *recipientId = thread.contactIdentifier;
-        [self addUserToProfileWhitelist:recipientId];
-    }
+    [self addUsersToProfileWhitelist:thread.participantIds];
+    [self addGroupIdToProfileWhitelist:thread.uniqueId];
+//    if (thread.isGroupThread) {
+//        TSGroupThread *groupThread = (TSGroupThread *)thread;
+//        NSData *groupId = groupThread.groupModel.groupId;
+//        [self addGroupIdToProfileWhitelist:groupId];
+//
+//        // When we add a group to the profile whitelist, we might as well
+//        // also add all current members to the profile whitelist
+//        // individually as well just in case delivery of the profile key
+//        // fails.
+//        for (NSString *recipientId in groupThread.recipientIdentifiers) {
+//            [self addUserToProfileWhitelist:recipientId];
+//        }
+//    } else {
+//        NSString *recipientId = thread.contactIdentifier;
+//        [self addUserToProfileWhitelist:recipientId];
+//    }
 }
 
-- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId
+- (BOOL)isGroupIdInProfileWhitelist:(NSString *)groupId
 {
     OWSAssert(groupId.length > 0);
 
-    NSString *groupIdKey = [groupId hexadecimalString];
+//    NSString *groupIdKey = [groupId hexadecimalString];
 
     __block BOOL result = NO;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSNumber *_Nullable oldValue =
-            [transaction objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
+            [transaction objectForKey:groupId inCollection:kOWSProfileManager_GroupWhitelistCollection];
         result = (oldValue && oldValue.boolValue);
     }];
     return result;
@@ -670,14 +671,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(thread);
 
-    if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        NSData *groupId = groupThread.groupModel.groupId;
-        return [self isGroupIdInProfileWhitelist:groupId];
-    } else {
-        NSString *recipientId = thread.contactIdentifier;
-        return [self isUserInProfileWhitelist:recipientId];
-    }
+        return [self isGroupIdInProfileWhitelist:thread.uniqueId];
 }
 
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds

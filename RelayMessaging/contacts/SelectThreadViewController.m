@@ -197,13 +197,12 @@ NS_ASSUME_NONNULL_BEGIN
                             // instead of HomeViewCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                            if ([thread isKindOfClass:[TSThread class]]) {
-                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
-                                if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                                }
-                            }
+                            // Blocking not yet implemented in Forst world
+//                            BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
+//                            if (isBlocked) {
+//                                cell.accessoryMessage = NSLocalizedString(
+//                                                                          @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+//                            }
 
                             [cell configureWithThread:thread contactsManager:helper.contactsManager];
 
@@ -239,22 +238,23 @@ NS_ASSUME_NONNULL_BEGIN
                                 return;
                             }
 
-                            if ([thread isKindOfClass:[TSThread class]]) {
-                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
-                                if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
-                                    [BlockListUIUtils showUnblockPhoneNumberActionSheet:thread.contactIdentifier
-                                                                     fromViewController:strongSelf
-                                                                        blockingManager:helper.blockingManager
-                                                                        contactsManager:helper.contactsManager
-                                                                        completionBlock:^(BOOL isStillBlocked) {
-                                                                            if (!isStillBlocked) {
-                                                                                [strongSelf.selectThreadViewDelegate
-                                                                                    threadWasSelected:thread];
-                                                                            }
-                                                                        }];
-                                    return;
-                                }
-                            }
+                            // Blocking not yet implemented in Forst world
+//                            if ([thread isKindOfClass:[TSThread class]]) {
+//                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
+//                                if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
+//                                    [BlockListUIUtils showUnblockPhoneNumberActionSheet:thread.contactIdentifier
+//                                                                     fromViewController:strongSelf
+//                                                                        blockingManager:helper.blockingManager
+//                                                                        contactsManager:helper.contactsManager
+//                                                                        completionBlock:^(BOOL isStillBlocked) {
+//                                                                            if (!isStillBlocked) {
+//                                                                                [strongSelf.selectThreadViewDelegate
+//                                                                                    threadWasSelected:thread];
+//                                                                            }
+//                                                                        }];
+//                                    return;
+//                                }
+//                            }
 
                             [strongSelf.selectThreadViewDelegate threadWasSelected:thread];
                         }]];
@@ -353,24 +353,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
-    NSArray<TSThread *> *threads = self.threadViewHelper.threads;
-    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
-    for (TSThread *thread in threads) {
-        if ([thread isKindOfClass:[TSThread class]]) {
-            TSThread *contactThread = (TSThread *)thread;
-            [contactIdsToIgnore addObject:contactThread.contactIdentifier];
-        }
-    }
+//    NSArray<TSThread *> *threads = self.threadViewHelper.threads;
+//    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
+//    for (TSThread *thread in threads) {
+//        [contactIdsToIgnore addObject:contactThread.contactIdentifier];
+//    }
 
     NSString *searchString = self.searchBar.text;
     NSArray<SignalAccount *> *matchingAccounts =
         [self.contactsViewHelper signalAccountsMatchingSearchString:searchString];
 
-    return [matchingAccounts
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
-                                        NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
-        }]];
+    return matchingAccounts;
+//    return [matchingAccounts
+//        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
+//                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+//            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
+//        }]];
 }
 
 #pragma mark - Events

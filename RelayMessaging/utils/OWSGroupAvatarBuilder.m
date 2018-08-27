@@ -9,13 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSGroupAvatarBuilder ()
 
-@property (nonatomic, readonly) TSGroupThread *thread;
+@property (nonatomic, readonly) TSThread *thread;
 
 @end
 
 @implementation OWSGroupAvatarBuilder
 
-- (instancetype)initWithThread:(TSGroupThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread
 {
     self = [super init];
     if (!self) {
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    return self.thread.groupModel.groupImage;
+    return self.thread.image;
 }
 
 - (UIImage *)buildDefaultImage

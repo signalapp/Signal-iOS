@@ -178,7 +178,7 @@ import RelayServiceKit
     
     @objc public func save(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
         recipient.save(with: transaction)
-        self.recipientCache.setObject(recipient, forKey: recipient.uniqueId! as NSString)
+        self.recipientCache.setObject(recipient, forKey: recipient.uniqueId as NSString)
     }
     
     @objc public func remove(recipient: RelayRecipient) {
@@ -188,7 +188,7 @@ import RelayServiceKit
     }
     
     @objc public func remove(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
-        self.recipientCache.removeObject(forKey: recipient.uniqueId! as NSString)
+        self.recipientCache.removeObject(forKey: recipient.uniqueId as NSString)
         recipient.remove(with: transaction)
     }
     
@@ -217,7 +217,7 @@ import RelayServiceKit
     
     @objc public func save(tag: FLTag, with transaction: YapDatabaseReadWriteTransaction) {
         tag.save(with: transaction)
-        self.tagCache.setObject(tag, forKey: tag.uniqueId! as NSString)
+        self.tagCache.setObject(tag, forKey: tag.uniqueId as NSString)
     }
     
     @objc public func remove(tag: FLTag) {
@@ -227,7 +227,7 @@ import RelayServiceKit
     }
     
     @objc public func remove(tag: FLTag, with transaction: YapDatabaseReadWriteTransaction) {
-        self.tagCache.removeObject(forKey: tag.uniqueId! as NSString)
+        self.tagCache.removeObject(forKey: tag.uniqueId as NSString)
         tag.remove(with: transaction)
     }
     

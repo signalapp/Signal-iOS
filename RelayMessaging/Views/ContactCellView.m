@@ -141,8 +141,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.contactsManager = contactsManager;
 
-    NSString *threadName = thread.name;
-    if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
+    NSString *threadName = nil;
+    if (thread.title.length > 0) {
+        threadName = thread.title;
+    } else if (thread.prettyExpression.length > 0) {
+        threadName = thread.prettyExpression;
+    } else {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
 
@@ -153,15 +157,16 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                         }];
     self.nameLabel.attributedText = attributedText;
 
-    if ([thread isKindOfClass:[TSThread class]]) {
-        self.recipientId = thread.contactIdentifier;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(otherUsersProfileDidChange:)
-                                                     name:kNSNotificationName_OtherUsersProfileDidChange
-                                                   object:nil];
-        [self updateProfileName];
-    }
+//    if ([thread isKindOfClass:[TSThread class]]) {
+//        self.recipientId = thread.contactIdentifier;
+//
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(otherUsersProfileDidChange:)
+//                                                     name:kNSNotificationName_OtherUsersProfileDidChange
+//                                                   object:nil];
+//        [self updateProfileName];
+//    }
+    
     self.avatarView.image =
         [OWSAvatarBuilder buildImageForThread:thread diameter:kContactCellAvatarSize contactsManager:contactsManager];
 

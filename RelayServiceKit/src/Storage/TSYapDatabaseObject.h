@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  The unique identifier of the stored object
  */
-@property (nonatomic, nullable) NSString *uniqueId;
+@property (nonatomic, nonnull) NSString *uniqueId;
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)remove;

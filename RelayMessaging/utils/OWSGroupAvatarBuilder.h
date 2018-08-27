@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSGroupAvatarBuilder : OWSAvatarBuilder
 
-- (instancetype)initWithThread:(TSGroupThread *)thread;
+- (instancetype)initWithThread:(TSThread *)thread;
 
 @end
 

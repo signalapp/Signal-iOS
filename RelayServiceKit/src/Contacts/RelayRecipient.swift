@@ -81,7 +81,7 @@ import YapDatabase
             let tagDict = userDict["tag"] as? [AnyHashable : Any]
             if tagDict != nil {
                 recipient.flTag = FLTag.getOrCreateTag(with: tagDict!, transaction: transaction)
-                recipient.flTag?.recipientIds = NSCountedSet.init(array: [recipient.uniqueId!])
+                recipient.flTag?.recipientIds = NSCountedSet.init(array: [recipient.uniqueId])
                 if recipient.flTag?.tagDescription?.count == 0 {
                     recipient.flTag?.tagDescription = recipient.fullName()
                 }
@@ -148,7 +148,7 @@ import YapDatabase
     @objc public func addDevices(toRegisteredRecipient devices: NSOrderedSet, transaction: YapDatabaseReadWriteTransaction) {
         self.addDevices(devices)
         
-        let latest = RelayRecipient.mark(asRegisteredAndGet: self.uniqueId!, transaction: transaction)
+        let latest = RelayRecipient.mark(asRegisteredAndGet: self.uniqueId, transaction: transaction)
         
         guard !(devices.isSubset(of: (latest?.devices)!)) else {
             return
@@ -161,7 +161,7 @@ import YapDatabase
     @objc public func removeDevices(fromRecipient devices: NSOrderedSet, transaction: YapDatabaseReadWriteTransaction) {
         self.removeDevices(devices)
         
-        let latest = RelayRecipient.mark(asRegisteredAndGet: self.uniqueId!, transaction: transaction)
+        let latest = RelayRecipient.mark(asRegisteredAndGet: self.uniqueId, transaction: transaction)
         
         guard devices.intersects((latest?.devices)!) else {
             return
@@ -197,7 +197,7 @@ import YapDatabase
     
     private func addDevices(_ devices: NSOrderedSet) {
         assert(devices.count > 0)
-        if (uniqueId?.isEqual(TSAccountManager.localUID()))! && devices.contains(OWSDeviceManager.shared().currentDeviceId()) {
+        if (uniqueId.isEqual(TSAccountManager.localUID())) && devices.contains(OWSDeviceManager.shared().currentDeviceId()) {
             Logger.error("\(self.logTag) in \(#function) adding self as recipient device")
             return
         }
