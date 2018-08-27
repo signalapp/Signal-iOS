@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    DDLogInfo(@"%@ marking migration as complete.", self.logTag);
+    OWSLogInfo(@"marking migration as complete.");
 
     [super saveWithTransaction:transaction];
 }
@@ -59,11 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
 
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self runUpWithTransaction:transaction];
-    }
+    [dbConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self runUpWithTransaction:transaction];
+        }
         completionBlock:^{
-            DDLogInfo(@"Completed migration %@", self.uniqueId);
+            OWSLogInfo(@"Completed migration %@", self.uniqueId);
             [self save];
 
             completion();

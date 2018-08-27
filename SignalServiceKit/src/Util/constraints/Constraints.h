@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "BadArgument.h"
@@ -9,12 +9,12 @@
 
 /// 'require(X)' is used to indicate parameter-related preconditions that callers must satisfy.
 /// Failure to satisfy indicates a bug in the caller.
-#define ows_require(expr)                                                                                \
-    if (!(expr)) {                                                                                       \
-        NSString *reason =                                                                               \
-            [NSString stringWithFormat:@"require %@ (in %s at line %d)", (@ #expr), __FILE__, __LINE__]; \
-        DDLogError(@"%@", reason);                                                                       \
-        [BadArgument raise:reason];                                                                      \
+#define ows_require(expr)                                                                                              \
+    if (!(expr)) {                                                                                                     \
+        NSString *reason =                                                                                             \
+            [NSString stringWithFormat:@"require %@ (in %s at line %d)", (@ #expr), __FILE__, __LINE__];               \
+        OWSLogError(@"%@", reason);                                                                                    \
+        [BadArgument raise:reason];                                                                                    \
     };
 
 /// 'requireState(X)' is used to indicate callee-state-related preconditions that callers must satisfy.

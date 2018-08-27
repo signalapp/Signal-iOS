@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(image);
 
     if (image.size.width == 0 || image.size.height == 0) {
-        OWSFailDebug(@"%@ Invalid image dimensions. %@", self.logTag, NSStringFromCGSize(image.size));
+        OWSFailDebug(@"Invalid image dimensions. %@", NSStringFromCGSize(image.size));
         return;
     }
 
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[self.attachmentUrl path]]) {
-        OWSFailDebug(@"%@ Missing video file", self.logTag);
+        OWSFailDebug(@"Missing video file");
     }
 
     OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didDoubleTapImage:(UITapGestureRecognizer *)gesture
 {
-    DDLogVerbose(@"%@ did double tap image.", self.logTag);
+    OWSLogVerbose(@"did double tap image.");
     if (self.scrollView.zoomScale == self.scrollView.minimumZoomScale) {
         CGFloat kDoubleTapZoomScale = 2;
 
@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressShare:(id)sender
 {
-    DDLogInfo(@"%@: didPressShare", self.logTag);
+    OWSLogInfo(@"didPressShare");
     if (!self.viewItem) {
         OWSFailDebug(@"share should only be available when a viewItem is present");
         return;
@@ -344,7 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didPressDelete:(id)sender
 {
-    DDLogInfo(@"%@: didPressDelete", self.logTag);
+    OWSLogInfo(@"didPressDelete");
     if (!self.viewItem) {
         OWSFailDebug(@"delete should only be available when a viewItem is present");
         return;
@@ -455,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.isVideo);
     OWSAssert(self.videoPlayer);
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self stopVideo];
 }
@@ -491,9 +491,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error) {
-        DDLogWarn(@"There was a problem saving <%@> to camera roll from %s ",
-            error.localizedDescription,
-            __PRETTY_FUNCTION__);
+        OWSLogWarn(@"There was a problem saving <%@> to camera roll.", error.localizedDescription);
     }
 }
 

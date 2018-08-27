@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)migrateToSharedUserDefaults
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     NSUserDefaults *appUserDefaults = self.appUserDefaults;
 

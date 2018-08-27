@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
     if (error || envelope == nil) {
-        OWSFailDebug(@"%@ failed to parase envelope with error: %@", self.logTag, error);
+        OWSFailDebug(@"failed to parase envelope with error: %@", error);
         return nil;
     }
 
@@ -303,7 +303,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSMessageDecryptJob *_Nullable job = [self.finder nextJob];
     if (!job) {
         self.isDrainingQueue = NO;
-        DDLogVerbose(@"%@ Queue is drained.", self.logTag);
+        OWSLogVerbose(@"Queue is drained.");
         return;
     }
 
@@ -313,8 +313,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     [self processJob:job
           completion:^(BOOL success) {
               [self.finder removeJobWithId:job.uniqueId];
-              DDLogVerbose(@"%@ %@ job. %lu jobs left.",
-                  self.logTag,
+              OWSLogVerbose(@"%@ job. %lu jobs left.",
                   success ? @"decrypted" : @"failed to decrypt",
                   (unsigned long)[OWSMessageDecryptJob numberOfKeysInCollection]);
               [self drainQueueWorkStep];
@@ -330,7 +329,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     SSKProtoEnvelope *_Nullable envelope = job.envelopeProto;
     if (!envelope) {
-        OWSFailDebug(@"%@ Could not parse proto.", self.logTag);
+        OWSFailDebug(@"Could not parse proto.");
         // TODO: Add analytics.
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]

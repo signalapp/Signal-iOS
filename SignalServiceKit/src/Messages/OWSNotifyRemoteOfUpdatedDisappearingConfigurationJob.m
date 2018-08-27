@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h"
@@ -51,14 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.messageSender enqueueMessage:message
         success:^{
-            DDLogDebug(
-                @"%@ Successfully notified %@ of new disappearing messages configuration", self.logTag, self.thread);
+            OWSLogDebug(@"Successfully notified %@ of new disappearing messages configuration", self.thread);
         }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to notify %@ of new disappearing messages configuration with error: %@",
-                self.logTag,
-                self.thread,
-                error);
+            OWSLogError(
+                @"Failed to notify %@ of new disappearing messages configuration with error: %@", self.thread, error);
         }];
 }
 

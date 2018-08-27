@@ -332,15 +332,15 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (void)didTapFailedThumbnailDownload:(UITapGestureRecognizer *)gestureRecognizer
 {
-    DDLogDebug(@"%@ in didTapFailedThumbnailDownload", self.logTag);
+    OWSLogDebug(@"in didTapFailedThumbnailDownload");
 
     if (!self.quotedMessage.thumbnailDownloadFailed) {
-        OWSFailDebug(@"%@ in %s thumbnailDownloadFailed was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"thumbnailDownloadFailed was unexpectedly false");
         return;
     }
 
     if (!self.quotedMessage.thumbnailAttachmentPointer) {
-        OWSFailDebug(@"%@ in %s thumbnailAttachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"thumbnailAttachmentPointer was unexpectedly nil");
         return;
     }
 

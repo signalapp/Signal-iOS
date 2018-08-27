@@ -98,7 +98,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         messageType = [NSString stringWithFormat:@"Ice Updates (%lu)", (unsigned long)callMessage.iceUpdate.count];
         callId = callMessage.iceUpdate.firstObject.id;
     } else {
-        OWSFailDebug(@"%@ failure: unexpected call message type: %@", self.logTag, callMessage);
+        OWSFailDebug(@"failure: unexpected call message type: %@", callMessage);
         messageType = @"Unknown";
         callId = 0;
     }

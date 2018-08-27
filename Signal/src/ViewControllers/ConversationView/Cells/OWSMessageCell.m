@@ -254,17 +254,17 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     if (!self.viewItem.isGroupThread) {
-        OWSFailDebug(@"%@ not a group thread.", self.logTag);
+        OWSFailDebug(@"not a group thread.");
         return NO;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        OWSFailDebug(@"%@ not an incoming message.", self.logTag);
+        OWSFailDebug(@"not an incoming message.");
         return NO;
     }
 
     OWSContactsManager *contactsManager = self.delegate.contactsManager;
     if (contactsManager == nil) {
-        OWSFailDebug(@"%@ contactsManager should not be nil", self.logTag);
+        OWSFailDebug(@"contactsManager should not be nil");
         return NO;
     }
 
@@ -297,11 +297,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!self.viewItem.isGroupThread) {
-        OWSFailDebug(@"%@ not a group thread.", self.logTag);
+        OWSFailDebug(@"not a group thread.");
         return;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        OWSFailDebug(@"%@ not an incoming message.", self.logTag);
+        OWSFailDebug(@"not an incoming message.");
         return;
     }
 
@@ -395,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
-        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        OWSLogVerbose(@"Ignoring tap on message: %@", self.viewItem.interaction.debugDescription);
         return;
     }
 

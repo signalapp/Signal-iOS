@@ -93,7 +93,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     if (localNumber) {
         self.hasCensoredPhoneNumber = [OWSCensorshipConfiguration isCensoredPhoneNumber:localNumber];
     } else {
-        DDLogError(@"%@ no known phone number to check for censorship.", self.logTag);
+        OWSLogError(@"no known phone number to check for censorship.");
         self.hasCensoredPhoneNumber = NO;
     }
 
@@ -150,9 +150,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)signalServiceSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector HTTPSessionManager via: %@",
-            self.logTag,
-            self.censorshipConfiguration.domainFrontBaseURL);
+        OWSLogInfo(@"using reflector HTTPSessionManager via: %@", self.censorshipConfiguration.domainFrontBaseURL);
         return self.reflectorSignalServiceSessionManager;
     } else {
         return self.defaultSignalServiceSessionManager;
@@ -197,9 +195,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)CDNSessionManager
 {
     if (self.isCensorshipCircumventionActive) {
-        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@",
-            self.logTag,
-            self.censorshipConfiguration.domainFrontBaseURL);
+        OWSLogInfo(@"using reflector CDNSessionManager via: %@", self.censorshipConfiguration.domainFrontBaseURL);
         return self.reflectorCDNSessionManager;
     } else {
         return self.defaultCDNSessionManager;
@@ -262,7 +258,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     if (self.isCensorshipCircumventionManuallyActivated) {
         NSString *countryCode = self.manualCensorshipCircumventionCountryCode;
         if (countryCode.length == 0) {
-            OWSFailDebug(@"%@ manualCensorshipCircumventionCountryCode was unexpectedly 0", self.logTag);
+            OWSFailDebug(@"manualCensorshipCircumventionCountryCode was unexpectedly 0");
         }
 
         OWSCensorshipConfiguration *configuration =

@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     switch (self.mode) {
         case OWS2FASettingsMode_Status:
-            OWSFailDebug(@"%@ status mode should not have a next button.", self.logTag);
+            OWSFailDebug(@"status mode should not have a next button.");
             return;
         case OWS2FASettingsMode_SelectPIN: {
             OWSAssert(self.hasValidPin);
@@ -338,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(![OWS2FAManager.sharedManager is2FAEnabled]);
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
     vc.mode = OWS2FASettingsMode_SelectPIN;
@@ -348,7 +348,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tryToDisable2FA
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     __weak OWS2FASettingsViewController *weakSelf = self;
 
@@ -380,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.candidatePin.length > 0);
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     __weak OWS2FASettingsViewController *weakSelf = self;
 
@@ -417,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([OWS2FAManager.sharedManager is2FAEnabled]);
     OWSAssert(self.root2FAViewController);
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [self.navigationController popToViewController:self.root2FAViewController animated:YES];
 }
@@ -429,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stateDidChange:(NSNotification *)notification
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     if (self.mode == OWS2FASettingsMode_Status) {
         [self createContents];

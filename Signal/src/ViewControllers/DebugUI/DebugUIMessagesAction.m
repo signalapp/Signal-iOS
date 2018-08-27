@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareAndPerformNTimes:(NSUInteger)count
 {
-    DDLogInfo(@"%@ %@ prepareAndPerformNTimes: %zd", self.logTag, self.label, count);
+    OWSLogInfo(@"%@ prepareAndPerformNTimes: %zd", self.label, count);
     [DDLog flushLog];
 
     [self prepare:^{
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(success);
     OWSAssert(failure);
 
-    DDLogInfo(@"%@ %@ performNTimes: %zd", self.logTag, self.label, countParam);
+    OWSLogInfo(@"%@ performNTimes: %zd", self.label, countParam);
     [DDLog flushLog];
 
     if (countParam < 1) {
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
                     ^{
                         dispatch_after(
                             dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                                DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
+                                OWSLogInfo(@"%@ performNTimes success: %zd", self.label, count);
                                 [self performNTimes:count - 1 success:success failure:failure];
                             });
                     },
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if (batchSize >= kMaxBatchSize) {
                     dispatch_after(
                         dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                            DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
+                            OWSLogInfo(@"%@ performNTimes success: %zd", self.label, count);
                             [self performNTimes:count - 1 success:success failure:failure];
                         });
 
@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DebugUIMessagesAction *nextAction = unpreparedSubactions.lastObject;
     [unpreparedSubactions removeLastObject];
-    DDLogInfo(@"%@ preparing: %@", self.logTag, nextAction.label);
+    OWSLogInfo(@"preparing: %@", nextAction.label);
     [DDLog flushLog];
     [nextAction prepare:^{
         [self prepareSubactions:unpreparedSubactions success:success failure:failure];

@@ -125,7 +125,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
-    DDLogError(@"%@ %s didFailWithStatusCode: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+    OWSLogError(@"didFailWithStatusCode: %zd, %@", statusCode, error);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);
@@ -284,7 +284,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 self.state = SocketManagerStateOpen;
                 return;
             case SR_CONNECTING:
-                DDLogVerbose(@"%@ WebSocket is already connecting", self.logTag);
+                OWSLogVerbose(@"WebSocket is already connecting");
                 self.state = SocketManagerStateConnecting;
                 return;
             default:
@@ -292,7 +292,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }
     }
 
-    DDLogWarn(@"%@ Creating new websocket", self.logTag);
+    OWSLogWarn(@"Creating new websocket");
 
     // If socket is not already open or connecting, connect now.
     //
@@ -358,8 +358,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    DDLogWarn(@"%@ Socket state: %@ -> %@",
-        self.logTag,
+    OWSLogWarn(@"Socket state: %@ -> %@",
         [self stringFromSocketManagerState:_state],
         [self stringFromSocketManagerState:state]);
 
@@ -443,7 +442,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssertIsOnMainThread();
 
     if (self.websocket) {
-        DDLogWarn(@"%@ closeWebSocket.", self.logTag);
+        OWSLogWarn(@"closeWebSocket.");
     }
 
     self.state = SocketManagerStateClosed;
@@ -485,7 +484,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                        options:(NSJSONWritingOptions)0
                          error:&error];
         if (!jsonData || error) {
-            OWSFailDebug(@"%@ could not serialize request JSON: %@", self.logTag, error);
+            OWSFailDebug(@"could not serialize request JSON: %@", error);
             [socketMessage didFailBeforeSending];
             return;
         }
@@ -506,7 +505,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     WebSocketProtoWebSocketRequestMessage *_Nullable requestProto = [requestBuilder buildAndReturnError:&error];
     if (!requestProto || error) {
-        OWSFailDebug(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFailDebug(@"could not build proto: %@", error);
         return;
     }
 
@@ -516,25 +515,24 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
-        OWSFailDebug(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFailDebug(@"could not serialize proto: %@.", error);
         [socketMessage didFailBeforeSending];
         return;
     }
 
     if (!self.canMakeRequests) {
-        DDLogError(@"%@ makeRequest: socket not open.", self.logTag);
+        OWSLogError(@"makeRequest: socket not open.");
         [socketMessage didFailBeforeSending];
         return;
     }
 
     BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
     if (!wasScheduled || error) {
-        OWSFailDebug(@"%@ could not send socket request: %@", self.logTag, error);
+        OWSFailDebug(@"could not send socket request: %@", error);
         [socketMessage didFailBeforeSending];
         return;
     }
-    DDLogVerbose(@"%@ message scheduled: %llu, %@, %@, %zd.",
-        self.logTag,
+    OWSLogVerbose(@"message scheduled: %llu, %@, %@, %zd.",
         socketMessage.requestId,
         request.HTTPMethod,
         requestPath,
@@ -563,7 +561,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     OWSAssert(message);
 
-    DDLogInfo(@"%@ received WebSocket response.", self.logTag);
+    OWSLogInfo(@"received WebSocket response.");
 
     DispatchMainThreadSafe(^{
         [self requestSocketAliveForAtLeastSeconds:kMakeRequestKeepSocketAliveDurationSeconds];
@@ -587,7 +585,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         id _Nullable responseJson =
             [NSJSONSerialization JSONObjectWithData:responseData options:(NSJSONReadingOptions)0 error:&error];
         if (!responseJson || error) {
-            OWSFailDebug(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
+            OWSFailDebug(@"could not parse WebSocket response JSON: %@.", error);
             hasValidResponse = NO;
         } else {
             responseObject = responseJson;
@@ -602,7 +600,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     if (!socketMessage) {
-        DDLogError(@"%@ received response to unknown request.", self.logTag);
+        OWSLogError(@"received response to unknown request.");
     } else {
         BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
         BOOL didSucceed = hasSuccessStatus && hasValidResponse;
@@ -641,7 +639,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         [self.socketMessageMap removeAllObjects];
     }
 
-    DDLogInfo(@"%@ failAllPendingSocketMessages: %zd.", self.logTag, socketMessages.count);
+    OWSLogInfo(@"failAllPendingSocketMessages: %zd.", socketMessages.count);
 
     for (TSSocketMessage *socketMessage in socketMessages) {
         [socketMessage didFailBeforeSending];
@@ -674,7 +672,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    DDLogError(@"Websocket did fail with error: %@", error);
+    OWSLogError(@"Websocket did fail with error: %@", error);
 
     if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
         NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
@@ -701,7 +699,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     WebSocketProtoWebSocketMessage *_Nullable wsMessage = [WebSocketProtoWebSocketMessage parseData:data error:&error];
     if (!wsMessage || error) {
-        OWSFailDebug(@"%@ could not parse proto: %@", self.logTag, error);
+        OWSFailDebug(@"could not parse proto: %@", error);
         return;
     }
 
@@ -710,7 +708,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     } else if (wsMessage.type == WebSocketProtoWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
-        DDLogWarn(@"%@ webSocket:didReceiveMessage: unknown.", self.logTag);
+        OWSLogWarn(@"webSocket:didReceiveMessage: unknown.");
     }
 }
 
@@ -718,7 +716,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ Got message with verb: %@ and path: %@", self.logTag, message.verb, message.path);
+    OWSLogInfo(@"Got message with verb: %@ and path: %@", message.verb, message.path);
 
     // If we receive a message over the socket while the app is in the background,
     // prolong how long the socket stays open.
@@ -736,7 +734,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                                             withSignalingKey:TSAccountManager.signalingKey];
 
                 if (!decryptedPayload) {
-                    DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
+                    OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
                     [self sendWebSocketMessageAcknowledgement:message];
                     OWSAssert(backgroundTask);
                     backgroundTask = nil;
@@ -745,7 +743,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
                 [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
             } @catch (NSException *exception) {
-                OWSFailDebug(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 // TODO: Add analytics.
 
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
@@ -767,7 +765,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
         [self sendWebSocketMessageAcknowledgement:message];
     } else {
-        DDLogWarn(@"%@ Unsupported WebSocket Request", self.logTag);
+        OWSLogWarn(@"Unsupported WebSocket Request");
 
         [self sendWebSocketMessageAcknowledgement:message];
     }
@@ -784,7 +782,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     [responseBuilder setMessage:@"OK"];
     WebSocketProtoWebSocketResponseMessage *_Nullable response = [responseBuilder buildAndReturnError:&error];
     if (!response || error) {
-        OWSFailDebug(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFailDebug(@"could not build proto: %@", error);
         return;
     }
 
@@ -794,13 +792,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {
-        OWSFailDebug(@"%@ could not serialize proto: %@", self.logTag, error);
+        OWSFailDebug(@"could not serialize proto: %@", error);
         return;
     }
 
     [self.websocket sendDataNoCopy:messageData error:&error];
     if (error) {
-        DDLogWarn(@"Error while trying to write on websocket %@", error);
+        OWSLogWarn(@"Error while trying to write on websocket %@", error);
         [self handleSocketFailure];
     }
 }
@@ -844,7 +842,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    DDLogWarn(@"Websocket did close with code: %ld", (long)code);
+    OWSLogWarn(@"Websocket did close with code: %ld", (long)code);
 
     [self handleSocketFailure];
 }
@@ -856,11 +854,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         NSError *error;
         [self.websocket sendPing:nil error:&error];
         if (error) {
-            DDLogWarn(@"Error in websocket heartbeat: %@", error.localizedDescription);
+            OWSLogWarn(@"Error in websocket heartbeat: %@", error.localizedDescription);
             [self handleSocketFailure];
         }
     } else {
-        DDLogWarn(@"webSocketHeartBeat closing web socket");
+        OWSLogWarn(@"webSocketHeartBeat closing web socket");
         [self closeWebSocket];
         [self applyDesiredSocketState];
     }
@@ -888,7 +886,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     if (self.signalService.isCensorshipCircumventionActive) {
-        DDLogWarn(@"%@ Skipping opening of websocket due to censorship circumvention.", self.logTag);
+        OWSLogWarn(@"Skipping opening of websocket due to censorship circumvention.");
         return NO;
     }
 
@@ -916,7 +914,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         OWSAssert(!self.backgroundKeepAliveUntilDate);
         OWSAssert(!self.backgroundKeepAliveTimer);
 
-        DDLogInfo(@"%s activating socket in the background", __PRETTY_FUNCTION__);
+        OWSLogInfo(@"activating socket in the background");
 
         // Set up state used to keep socket alive in background.
         self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];

@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSInteger written = [self.outputStream write:&value maxLength:sizeof(value)];
     if (written != sizeof(value)) {
-        OWSFailDebug(@"%@ could not write to output stream.", self.logTag);
+        OWSFailDebug(@"could not write to output stream.");
         self.hasError = YES;
         return NO;
     }
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
     while (YES) {
         NSInteger written = [self.outputStream write:data.bytes maxLength:data.length];
         if (written < 1) {
-            OWSFailDebug(@"%@ could not write to output stream.", self.logTag);
+            OWSFailDebug(@"could not write to output stream.");
             self.hasError = YES;
             return NO;
         }

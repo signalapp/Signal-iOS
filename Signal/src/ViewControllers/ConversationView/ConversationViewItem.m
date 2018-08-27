@@ -250,7 +250,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (!measurementCell) {
         switch (self.interaction.interactionType) {
             case OWSInteractionType_Unknown:
-                OWSFailDebug(@"%@ Unknown interaction type.", self.logTag);
+                OWSFailDebug(@"Unknown interaction type.");
                 return nil;
             case OWSInteractionType_IncomingMessage:
             case OWSInteractionType_OutgoingMessage:
@@ -307,7 +307,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     switch (self.interaction.interactionType) {
         case OWSInteractionType_Unknown:
-            OWSFailDebug(@"%@ Unknown interaction type.", self.logTag);
+            OWSFailDebug(@"Unknown interaction type.");
             return nil;
         case OWSInteractionType_IncomingMessage:
         case OWSInteractionType_OutgoingMessage:
@@ -452,7 +452,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_OutgoingMessage:
             break;
         default:
-            OWSFailDebug(@"%@ Unknown interaction type.", self.logTag);
+            OWSFailDebug(@"Unknown interaction type.");
             return;
     }
 
@@ -486,7 +486,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 } else if ([self.attachmentStream isVideo]) {
                     self.messageCellType = OWSMessageCellType_Video;
                 } else {
-                    OWSFailDebug(@"%@ unexpected attachment type.", self.logTag);
+                    OWSFailDebug(@"unexpected attachment type.");
                     self.messageCellType = OWSMessageCellType_GenericAttachment;
                     return;
                 }
@@ -509,14 +509,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             self.messageCellType = OWSMessageCellType_DownloadingAttachment;
             self.attachmentPointer = (TSAttachmentPointer *)attachment;
         } else {
-            OWSFailDebug(@"%@ Unknown attachment type", self.logTag);
+            OWSFailDebug(@"Unknown attachment type");
         }
     }
 
     // Ignore message body for oversize text attachments.
     if (message.body.length > 0) {
         if (self.hasBodyText) {
-            OWSFailDebug(@"%@ oversize text message has unexpected caption.", self.logTag);
+            OWSFailDebug(@"oversize text message has unexpected caption.");
         }
 
         // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
@@ -532,7 +532,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (self.messageCellType == OWSMessageCellType_Unknown) {
         // Messages of unknown type (including messages with missing attachments)
         // are rendered like empty text messages, but without any interactivity.
-        DDLogWarn(@"%@ Treating unknown message as empty text message: %@ %llu", self.logTag, message.class, message.timestamp);
+        OWSLogWarn(@"Treating unknown message as empty text message: %@ %llu", message.class, message.timestamp);
         self.messageCellType = OWSMessageCellType_TextMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
@@ -594,7 +594,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return [call previewTextWithTransaction:transaction];
         }
         default:
-            OWSFailDebug(@"%@ not a system message.", self.logTag);
+            OWSFailDebug(@"not a system message.");
             return nil;
     }
 }
@@ -679,16 +679,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
-            OWSFailDebug(@"%@ Can't copy not-yet-downloaded attachment", self.logTag);
+            OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             break;
         }
         case OWSMessageCellType_Unknown: {
-            OWSFailDebug(@"%@ No text to copy", self.logTag);
+            OWSFailDebug(@"No text to copy");
             break;
         }
         case OWSMessageCellType_ContactShare: {
             // TODO: Implement copy contact.
-            OWSFailDebug(@"%@ Not implemented yet", self.logTag);
+            OWSFailDebug(@"Not implemented yet");
             break;
         }
     }
@@ -701,7 +701,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_ContactShare: {
-            OWSFailDebug(@"%@ No media to copy", self.logTag);
+            OWSFailDebug(@"No media to copy");
             break;
         }
         case OWSMessageCellType_StillImage:
@@ -711,19 +711,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_GenericAttachment: {
             NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachmentStream.contentType];
             if (!utiType) {
-                OWSFailDebug(@"%@ Unknown MIME type: %@", self.logTag, self.attachmentStream.contentType);
+                OWSFailDebug(@"Unknown MIME type: %@", self.attachmentStream.contentType);
                 utiType = (NSString *)kUTTypeGIF;
             }
             NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream mediaURL]];
             if (!data) {
-                OWSFailDebug(@"%@ Could not load attachment data", self.logTag);
+                OWSFailDebug(@"Could not load attachment data");
                 return;
             }
             [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
-            OWSFailDebug(@"%@ Can't copy not-yet-downloaded attachment", self.logTag);
+            OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             break;
         }
     }
@@ -744,15 +744,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
-            OWSFailDebug(@"%@ Can't share not-yet-downloaded attachment", self.logTag);
+            OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             break;
         }
         case OWSMessageCellType_Unknown: {
-            OWSFailDebug(@"%@ No text to share", self.logTag);
+            OWSFailDebug(@"No text to share");
             break;
         }
         case OWSMessageCellType_ContactShare: {
-            OWSFailDebug(@"%@ share contact not implemented.", self.logTag);
+            OWSFailDebug(@"share contact not implemented.");
             break;
         }
     }
@@ -775,7 +775,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
             break;
         case OWSMessageCellType_DownloadingAttachment: {
-            OWSFailDebug(@"%@ Can't share not-yet-downloaded attachment", self.logTag);
+            OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             break;
         }
     }
@@ -811,13 +811,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_ContactShare:
-            OWSFailDebug(@"%@ Cannot save text data.", self.logTag);
+            OWSFailDebug(@"Cannot save text data.");
             break;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage: {
             NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream mediaURL]];
             if (!data) {
-                OWSFailDebug(@"%@ Could not load image data", self.logTag);
+                OWSFailDebug(@"Could not load image data");
                 return;
             }
             ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
@@ -825,26 +825,26 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                              metadata:nil
                                       completionBlock:^(NSURL *assetURL, NSError *error) {
                                           if (error) {
-                                              DDLogWarn(@"Error Saving image to photo album: %@", error);
+                                              OWSLogWarn(@"Error Saving image to photo album: %@", error);
                                           }
                                       }];
             break;
         }
         case OWSMessageCellType_Audio:
-            OWSFailDebug(@"%@ Cannot save media data.", self.logTag);
+            OWSFailDebug(@"Cannot save media data.");
             break;
         case OWSMessageCellType_Video:
             if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.mediaURL.path)) {
                 UISaveVideoAtPathToSavedPhotosAlbum(self.attachmentStream.mediaURL.path, self, nil, nil);
             } else {
-                OWSFailDebug(@"%@ Could not save incompatible video data.", self.logTag);
+                OWSFailDebug(@"Could not save incompatible video data.");
             }
             break;
         case OWSMessageCellType_GenericAttachment:
-            OWSFailDebug(@"%@ Cannot save media data.", self.logTag);
+            OWSFailDebug(@"Cannot save media data.");
             break;
         case OWSMessageCellType_DownloadingAttachment: {
-            OWSFailDebug(@"%@ Can't save not-yet-downloaded attachment", self.logTag);
+            OWSFailDebug(@"Can't save not-yet-downloaded attachment");
             break;
         }
     }

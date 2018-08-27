@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
     } else {
-        DDLogError(@"%@ called with unsupported thread: %@", self.logTag, thread);
+        OWSLogError(@"called with unsupported thread: %@", thread);
     }
     return [avatarBuilder build];
 }

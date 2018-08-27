@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoGroupContext *_Nullable groupContextProto = [groupContextBuilder buildAndReturnError:&error];
     if (error || !groupContextProto) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
 

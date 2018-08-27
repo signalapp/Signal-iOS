@@ -84,11 +84,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
-    DDLogInfo(@"%@ Making request: %@", self.logTag, request);
+    OWSLogInfo(@"Making request: %@", request);
 
     // TODO: Remove this logging when the call connection issues have been resolved.
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        DDLogInfo(@"%@ request succeeded : %@", self.logTag, request);
+        OWSLogInfo(@"request succeeded : %@", request);
 
         if (request.shouldHaveAuthorizationHeaders) {
             [TSAccountManager.sharedInstance setIsDeregistered:NO];
@@ -142,7 +142,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                            success:success
                            failure:failure];
         } else {
-            DDLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
+            OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
         }
     }
 }
@@ -167,7 +167,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           case 0: {
               error.isRetryable = YES;
 
-              DDLogWarn(@"The network request failed because of a connectivity error: %@", request);
+              OWSLogWarn(@"The network request failed because of a connectivity error: %@", request);
               failureBlock(task,
                   [self errorWithHTTPCode:statusCode
                               description:NSLocalizedString(@"ERROR_DESCRIPTION_NO_INTERNET",
@@ -178,7 +178,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 400: {
-              DDLogError(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
+              OWSLogError(
+                  @"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
 
               error.isRetryable = NO;
 
@@ -190,7 +191,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 401: {
-              DDLogError(@"The server returned an error about the authorization header: %@, %@",
+              OWSLogError(@"The server returned an error about the authorization header: %@, %@",
                   networkError.debugDescription,
                   request);
               error.isRetryable = NO;
@@ -198,20 +199,21 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 403: {
-              DDLogError(
+              OWSLogError(
                   @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
               error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }
           case 404: {
-              DDLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
+              OWSLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
               error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }
           case 411: {
-              DDLogInfo(@"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
+              OWSLogInfo(
+                  @"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC", @"alert title: cannot link - reached max linked devices")
@@ -221,7 +223,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 413: {
-              DDLogWarn(@"Rate limit exceeded: %@", request);
+              OWSLogWarn(@"Rate limit exceeded: %@", request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
@@ -232,7 +234,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           }
           case 417: {
               // TODO: Is this response code obsolete?
-              DDLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
+              OWSLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
@@ -242,14 +244,14 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 422: {
-              DDLogError(@"The registration was requested over an unknown transport: %@, %@",
+              OWSLogError(@"The registration was requested over an unknown transport: %@, %@",
                   networkError.debugDescription,
                   request);
               failureBlock(task, error);
               break;
           }
           default: {
-              DDLogWarn(@"Unknown error: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
+              OWSLogWarn(@"Unknown error: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
               failureBlock(task, error);
               break;
           }

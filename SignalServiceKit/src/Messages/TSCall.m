@@ -141,8 +141,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         return;
     }
 
-    DDLogDebug(
-        @"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.logTag, self.uniqueId, self.timestamp);
+    OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
@@ -163,8 +162,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 {
     OWSAssert(transaction);
 
-    DDLogInfo(@"%@ updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
-        self.logTag,
+    OWSLogInfo(@"updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
         NSStringFromCallType(_callType),
         NSStringFromCallType(callType),
         self.uniqueId,

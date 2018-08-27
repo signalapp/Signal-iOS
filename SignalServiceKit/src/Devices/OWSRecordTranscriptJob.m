@@ -65,10 +65,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
 
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
-    DDLogDebug(@"%@ Recording transcript: %@", self.logTag, transcript);
+    OWSLogDebug(@"Recording transcript: %@", transcript);
 
     if (transcript.isEndSessionMessage) {
-        DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
+        OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
         [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:transcript.thread
@@ -109,8 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                             networkManager:self.networkManager];
 
-            DDLogDebug(
-                @"%@ downloading thumbnail for transcript: %lu", self.logTag, (unsigned long)transcript.timestamp);
+            OWSLogDebug(@"downloading thumbnail for transcript: %lu", (unsigned long)transcript.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:outgoingMessage
                 transaction:transaction
                 success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -121,8 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
                         }];
                 }
                 failure:^(NSError *_Nonnull error) {
-                    DDLogWarn(@"%@ failed to fetch thumbnail for transcript: %lu with error: %@",
-                        self.logTag,
+                    OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",
                         (unsigned long)transcript.timestamp,
                         error);
                 }];
@@ -163,9 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
                        transaction:transaction
                            success:attachmentHandler
                            failure:^(NSError *_Nonnull error) {
-                               DDLogError(@"%@ failed to fetch transcripts attachments for message: %@",
-                                   self.logTag,
-                                   outgoingMessage);
+                               OWSLogError(@"failed to fetch transcripts attachments for message: %@", outgoingMessage);
                            }];
 }
 

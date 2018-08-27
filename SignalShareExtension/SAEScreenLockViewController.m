@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     // Surface memory leaks by logging the deallocation of view controllers.
-    DDLogVerbose(@"Dealloc: %@", self.class);
+    OWSLogVerbose(@"Dealloc: %@", self.class);
 }
 
 - (void)tryToPresentAuthUIToUnlockScreenLock
@@ -86,14 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
         // We're already showing the auth UI; abort.
         return;
     }
-    DDLogInfo(@"%@, try to unlock screen lock", self.logTag);
+    OWSLogInfo(@"try to unlock screen lock");
 
     self.isShowingAuthUI = YES;
 
     [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
         OWSAssertIsOnMainThread();
 
-        DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
+        OWSLogInfo(@"unlock screen lock succeeded.");
 
         self.isShowingAuthUI = NO;
 
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             OWSAssertIsOnMainThread();
 
-            DDLogInfo(@"%@ unlock screen lock failed.", self.logTag);
+            OWSLogInfo(@"unlock screen lock failed.");
 
             self.isShowingAuthUI = NO;
 
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         unexpectedFailure:^(NSError *error) {
             OWSAssertIsOnMainThread();
 
-            DDLogInfo(@"%@ unlock screen lock unexpectedly failed.", self.logTag);
+            OWSLogInfo(@"unlock screen lock unexpectedly failed.");
 
             self.isShowingAuthUI = NO;
 
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         cancel:^{
             OWSAssertIsOnMainThread();
 
-            DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
+            OWSLogInfo(@"unlock screen lock cancelled.");
 
             self.isShowingAuthUI = NO;
 
@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dismissPressed:(id)sender
 {
-    DDLogDebug(@"%@ tapped dismiss share button", self.logTag);
+    OWSLogDebug(@"tapped dismiss share button");
 
     [self cancelShareExperience];
 }
@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ unlockButtonWasTapped", self.logTag);
+    OWSLogInfo(@"unlockButtonWasTapped");
 
     [self tryToPresentAuthUIToUnlockScreenLock];
 }

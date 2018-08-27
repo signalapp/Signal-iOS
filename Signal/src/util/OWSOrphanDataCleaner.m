@@ -56,7 +56,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 + (void)printPaths:(NSArray<NSString *> *)paths label:(NSString *)label
 {
     for (NSString *path in [paths sortedArrayUsingSelector:@selector(compare:)]) {
-        DDLogDebug(@"%@ %@: %@", self.logTag, label, path);
+        OWSLogDebug(@"%@: %@", label, path);
     }
 }
 
@@ -66,10 +66,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSNumber *fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error][NSFileSize];
     if (error) {
         if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == 260) {
-            DDLogWarn(@"%@ can't find size of missing file.", self.logTag);
-            DDLogDebug(@"%@ can't find size of missing file: %@", self.logTag, filePath);
+            OWSLogWarn(@"can't find size of missing file.");
+            OWSLogDebug(@"can't find size of missing file: %@", filePath);
         } else {
-            OWSFailDebug(@"%@ attributesOfItemAtPath: %@ error: %@", self.logTag, filePath, error);
+            OWSFailDebug(@"attributesOfItemAtPath: %@ error: %@", filePath, error);
         }
         return 0;
     }
@@ -97,7 +97,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
     if (error) {
-        OWSFailDebug(@"%@ contentsOfDirectoryAtPath error: %@", self.logTag, error);
+        OWSFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
         return [NSSet new];
     }
     for (NSString *fileName in fileNames) {
@@ -144,7 +144,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssert(databaseConnection);
 
     if (remainingRetries < 1) {
-        DDLogInfo(@"%@ Aborting orphan data search.", self.logTag);
+        OWSLogInfo(@"Aborting orphan data search.");
         dispatch_async(self.workQueue, ^{
             failure();
         });
@@ -191,7 +191,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if ([filePath hasPrefix:attachmentsFolder]) {
                 continue;
             }
-            DDLogVerbose(@"%@ non-attachment file: %@", self.logTag, filePath);
+            OWSLogVerbose(@"non-attachment file: %@", filePath);
         }
     }
     {
@@ -204,7 +204,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if ([filePath hasPrefix:attachmentsFolder]) {
                 continue;
             }
-            DDLogVerbose(@"%@ non-attachment file: %@", self.logTag, filePath);
+            OWSLogVerbose(@"non-attachment file: %@", filePath);
         }
     }
 #endif
@@ -231,14 +231,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             NSError *error;
             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
             if (!attributes || error) {
-                DDLogDebug(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
-                OWSFailDebug(@"%@ Could not get attributes of file", self.logTag);
+                OWSLogDebug(@"Could not get attributes of file at: %@", filePath);
+                OWSFailDebug(@"Could not get attributes of file");
                 continue;
             }
-            DDLogVerbose(@"%@ temp file: %@, %@",
-                self.logTag,
-                filePath,
-                [dateFormatter stringFromDate:attributes.fileModificationDate]);
+            OWSLogVerbose(
+                @"temp file: %@, %@", filePath, [dateFormatter stringFromDate:attributes.fileModificationDate]);
         }
     }
 #endif
@@ -320,7 +318,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                          if (filePath) {
                                              [allAttachmentFilePaths addObject:filePath];
                                          } else {
-                                             OWSFailDebug(@"%@ attachment has no file path.", self.logTag);
+                                             OWSFailDebug(@"attachment has no file path.");
                                          }
 
                                          NSString *_Nullable thumbnailPath = [attachmentStream thumbnailPath];
@@ -374,10 +372,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    DDLogDebug(@"%@ fileCount: %zu", self.logTag, fileCount);
-    DDLogDebug(@"%@ totalFileSize: %lld", self.logTag, totalFileSize.longLongValue);
-    DDLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
-    DDLogDebug(@"%@ attachmentStreams with file paths: %zu", self.logTag, allAttachmentFilePaths.count);
+    OWSLogDebug(@"fileCount: %zu", fileCount);
+    OWSLogDebug(@"totalFileSize: %lld", totalFileSize.longLongValue);
+    OWSLogDebug(@"attachmentStreams: %d", attachmentStreamCount);
+    OWSLogDebug(@"attachmentStreams with file paths: %zu", allAttachmentFilePaths.count);
 
     NSMutableSet<NSString *> *orphanFilePaths = [allOnDiskFilePaths mutableCopy];
     [orphanFilePaths minusSet:allAttachmentFilePaths];
@@ -385,16 +383,16 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:allOnDiskFilePaths];
 
-    DDLogDebug(@"%@ orphan file paths: %zu", self.logTag, orphanFilePaths.count);
-    DDLogDebug(@"%@ missing attachment file paths: %zu", self.logTag, missingAttachmentFilePaths.count);
+    OWSLogDebug(@"orphan file paths: %zu", orphanFilePaths.count);
+    OWSLogDebug(@"missing attachment file paths: %zu", missingAttachmentFilePaths.count);
 
     [self printPaths:orphanFilePaths.allObjects label:@"orphan file paths"];
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
 
-    DDLogDebug(@"%@ attachmentIds: %zu", self.logTag, allAttachmentIds.count);
-    DDLogDebug(@"%@ messageAttachmentIds: %zu", self.logTag, messageAttachmentIds.count);
-    DDLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %zu", self.logTag, quotedReplyThumbnailAttachmentIds.count);
-    DDLogDebug(@"%@ contactShareAvatarAttachmentIds: %zu", self.logTag, contactShareAvatarAttachmentIds.count);
+    OWSLogDebug(@"attachmentIds: %zu", allAttachmentIds.count);
+    OWSLogDebug(@"messageAttachmentIds: %zu", messageAttachmentIds.count);
+    OWSLogDebug(@"quotedReplyThumbnailAttachmentIds: %zu", quotedReplyThumbnailAttachmentIds.count);
+    OWSLogDebug(@"contactShareAvatarAttachmentIds: %zu", contactShareAvatarAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [allAttachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:messageAttachmentIds];
@@ -403,9 +401,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:allAttachmentIds];
 
-    DDLogDebug(@"%@ orphan attachmentIds: %zu", self.logTag, orphanAttachmentIds.count);
-    DDLogDebug(@"%@ missing attachmentIds: %zu", self.logTag, missingAttachmentIds.count);
-    DDLogDebug(@"%@ orphan interactions: %zu", self.logTag, orphanInteractionIds.count);
+    OWSLogDebug(@"orphan attachmentIds: %zu", orphanAttachmentIds.count);
+    OWSLogDebug(@"missing attachmentIds: %zu", missingAttachmentIds.count);
+    OWSLogDebug(@"orphan interactions: %zu", orphanInteractionIds.count);
 
     OWSOrphanData *result = [OWSOrphanData new];
     result.interactionIds = [orphanInteractionIds copy];
@@ -438,13 +436,13 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // Only clean up once per app version.
     NSString *currentAppVersion = AppVersion.sharedInstance.currentAppVersion;
     if (lastCleaningVersion && [lastCleaningVersion isEqualToString:currentAppVersion]) {
-        DDLogVerbose(@"%@ skipping orphan data cleanup; already done on %@.", self.logTag, currentAppVersion);
+        OWSLogVerbose(@"skipping orphan data cleanup; already done on %@.", currentAppVersion);
         return;
     }
 
     // Only clean up once per day.
     if (lastCleaningDate && [DateUtil dateIsToday:lastCleaningDate]) {
-        DDLogVerbose(@"%@ skipping orphan data cleanup; already done today.", self.logTag);
+        OWSLogVerbose(@"skipping orphan data cleanup; already done today.");
         return;
     }
 
@@ -474,11 +472,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssert(databaseConnection);
 
     if (!AppReadiness.isAppReady) {
-        OWSFailDebug(@"%@ can't audit orphan data until app is ready.", self.logTag);
+        OWSFailDebug(@"can't audit orphan data until app is ready.");
         return;
     }
     if (!CurrentAppContext().isMainApp) {
-        OWSFailDebug(@"%@ can't audit orphan data in app extensions.", self.logTag);
+        OWSFailDebug(@"can't audit orphan data in app extensions.");
         return;
     }
 
@@ -515,7 +513,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 databaseConnection:databaseConnection
                 shouldRemoveOrphans:shouldRemoveOrphans
                 success:^{
-                    DDLogInfo(@"%@ Completed orphan data cleanup.", self.logTag);
+                    OWSLogInfo(@"Completed orphan data cleanup.");
 
                     [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [transaction setObject:AppVersion.sharedInstance.currentAppVersion
@@ -527,11 +525,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                     }];
                 }
                 failure:^{
-                    DDLogInfo(@"%@ Aborting orphan data cleanup.", self.logTag);
+                    OWSLogInfo(@"Aborting orphan data cleanup.");
                 }];
         }
         failure:^{
-            DDLogInfo(@"%@ Aborting orphan data cleanup.", self.logTag);
+            OWSLogInfo(@"Aborting orphan data cleanup.");
         }];
 }
 
@@ -549,7 +547,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSAssert(orphanData);
 
     if (remainingRetries < 1) {
-        DDLogInfo(@"%@ Aborting orphan data audit.", self.logTag);
+        OWSLogInfo(@"Aborting orphan data audit.");
         dispatch_async(self.workQueue, ^{
             failure();
         });
@@ -606,25 +604,23 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
             if (!interaction) {
                 // This could just be a race condition, but it should be very unlikely.
-                DDLogWarn(@"%@ Could not load interaction: %@", self.logTag, interactionId);
+                OWSLogWarn(@"Could not load interaction: %@", interactionId);
                 continue;
             }
             // Don't delete interactions which were created in the last N minutes.
             NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp];
             if ([creationDate isAfterDate:thresholdDate]) {
-                DDLogInfo(@"%@ Skipping orphan interaction due to age: %f",
-                    self.logTag,
-                    fabs(creationDate.timeIntervalSinceNow));
+                OWSLogInfo(@"Skipping orphan interaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
                 continue;
             }
-            DDLogInfo(@"%@ Removing orphan message: %@", self.logTag, interaction.uniqueId);
+            OWSLogInfo(@"Removing orphan message: %@", interaction.uniqueId);
             interactionsRemoved++;
             if (!shouldRemoveOrphans) {
                 continue;
             }
             [interaction removeWithTransaction:transaction];
         }
-        DDLogInfo(@"%@ Deleted orphan interactions: %zu", self.logTag, interactionsRemoved);
+        OWSLogInfo(@"Deleted orphan interactions: %zu", interactionsRemoved);
 
         NSUInteger attachmentsRemoved = 0;
         for (NSString *attachmentId in orphanData.attachmentIds) {
@@ -637,7 +633,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if (!attachment) {
                 // This can happen on launch since we sync contacts/groups, especially if you have a lot of attachments
                 // to churn through, it's likely it's been deleted since starting this job.
-                DDLogWarn(@"%@ Could not load attachment: %@", self.logTag, attachmentId);
+                OWSLogWarn(@"Could not load attachment: %@", attachmentId);
                 continue;
             }
             if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -647,19 +643,17 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             // Don't delete attachments which were created in the last N minutes.
             NSDate *creationDate = attachmentStream.creationTimestamp;
             if ([creationDate isAfterDate:thresholdDate]) {
-                DDLogInfo(@"%@ Skipping orphan attachment due to age: %f",
-                    self.logTag,
-                    fabs(creationDate.timeIntervalSinceNow));
+                OWSLogInfo(@"Skipping orphan attachment due to age: %f", fabs(creationDate.timeIntervalSinceNow));
                 continue;
             }
-            DDLogInfo(@"%@ Removing orphan attachmentStream: %@", self.logTag, attachmentStream.uniqueId);
+            OWSLogInfo(@"Removing orphan attachmentStream: %@", attachmentStream.uniqueId);
             attachmentsRemoved++;
             if (!shouldRemoveOrphans) {
                 continue;
             }
             [attachmentStream removeWithTransaction:transaction];
         }
-        DDLogInfo(@"%@ Deleted orphan attachments: %zu", self.logTag, attachmentsRemoved);
+        OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
     }];
 
     if (shouldAbort) {
@@ -676,30 +670,28 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         NSError *error;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
         if (!attributes || error) {
-            DDLogDebug(@"%@ Could not get attributes of file at: %@", self.logTag, filePath);
-            OWSFailDebug(@"%@ Could not get attributes of file", self.logTag);
+            OWSLogDebug(@"Could not get attributes of file at: %@", filePath);
+            OWSFailDebug(@"Could not get attributes of file");
             continue;
         }
         // Don't delete files which were created in the last N minutes.
         NSDate *creationDate = attributes.fileModificationDate;
         if ([creationDate isAfterDate:thresholdDate]) {
-            DDLogInfo(@"%@ Skipping orphan attachment file due to age: %f",
-                self.logTag,
-                fabs([creationDate timeIntervalSinceNow]));
+            OWSLogInfo(@"Skipping orphan attachment file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
             continue;
         }
-        DDLogInfo(@"%@ Deleting orphan attachment file: %@", self.logTag, filePath);
+        OWSLogInfo(@"Deleting orphan attachment file: %@", filePath);
         filesRemoved++;
         if (!shouldRemoveOrphans) {
             continue;
         }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
         if (error) {
-            DDLogDebug(@"%@ Could not remove orphan file at: %@", self.logTag, filePath);
-            OWSFailDebug(@"%@ Could not remove orphan file", self.logTag);
+            OWSLogDebug(@"Could not remove orphan file at: %@", filePath);
+            OWSFailDebug(@"Could not remove orphan file");
         }
     }
-    DDLogInfo(@"%@ Deleted orphan attachment files: %zu", self.logTag, filesRemoved);
+    OWSLogInfo(@"Deleted orphan attachment files: %zu", filesRemoved);
 
     return YES;
 }

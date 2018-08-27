@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
                                          actionBlock:^{
-                                             DDLogInfo(@"%@ Submitting debug logs", weakSelf.logTag);
+                                             OWSLogInfo(@"Submitting debug logs");
                                              [DDLog flushLog];
                                              [Pastelog submitLogs];
                                          }]];
@@ -267,12 +267,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableLogSwitch:(UISwitch *)sender
 {
     if (!sender.isOn) {
-        DDLogInfo(@"%@ disabling logging.", self.logTag);
+        OWSLogInfo(@"disabling logging.");
         [[DebugLogger sharedLogger] wipeLogs];
         [[DebugLogger sharedLogger] disableFileLogging];
     } else {
         [[DebugLogger sharedLogger] enableFileLogging];
-        DDLogInfo(@"%@ enabling logging.", self.logTag);
+        OWSLogInfo(@"enabling logging.");
     }
 
     [OWSPreferences setIsLoggingEnabled:sender.isOn];

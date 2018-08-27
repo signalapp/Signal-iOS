@@ -134,7 +134,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case 5:
             return [UIFont ows_regularFontWithSize:basePointSize + 18.f];
         default:
-            OWSFailDebug(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableBodyText.jumbomojiCount);
+            OWSFailDebug(@"Unexpected jumbomoji count: %zd", self.displayableBodyText.jumbomojiCount);
             break;
     }
 
@@ -669,17 +669,17 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
     id _Nullable cellMedia = [self.cellMediaCache objectForKey:cacheKey];
     if (cellMedia) {
-        DDLogVerbose(@"%@ cell media cache hit", self.logTag);
+        OWSLogVerbose(@"cell media cache hit");
         return cellMedia;
     }
     cellMedia = loadCellMediaBlock();
     if (cellMedia) {
-        DDLogVerbose(@"%@ cell media cache miss", self.logTag);
+        OWSLogVerbose(@"cell media cache miss");
         if (!shouldSkipCache) {
             [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
         }
     } else {
-        DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
+        OWSLogError(@"Failed to load cell media: %@", [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
         [self showAttachmentErrorViewWithMediaView:mediaView];
     }
@@ -1479,7 +1479,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
-        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        OWSLogVerbose(@"Ignoring tap on message: %@", self.viewItem.interaction.debugDescription);
         return;
     }
 
@@ -1514,7 +1514,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             if (self.viewItem.quotedReply) {
                 [self.delegate didTapConversationItem:self.viewItem quotedReply:self.viewItem.quotedReply];
             } else {
-                OWSFailDebug(@"%@ Missing quoted message.", self.logTag);
+                OWSFailDebug(@"Missing quoted message.");
             }
             break;
     }

@@ -400,7 +400,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
 {
-    DDLogDebug(@"%@ Sharing safety numbers", self.logTag);
+    OWSLogDebug(@"Sharing safety numbers");
 
     OWSCompareSafetyNumbersActivity *compareActivity = [[OWSCompareSafetyNumbersActivity alloc] initWithDelegate:self];
 

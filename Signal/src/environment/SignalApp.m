@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
     if (thread == nil) {
-        OWSFailDebug(@"%@ unable to find thread with id: %@", self.logTag, threadId);
+        OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;
     }
 
@@ -199,10 +199,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     if (!thread) {
-        OWSFailDebug(@"%@ Can't present nil thread.", self.logTag);
+        OWSFailDebug(@"Can't present nil thread.");
         return;
     }
 
@@ -231,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)resetAppData
 {
     // This _should_ be wiped out below.
-    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogError(@"");
     [DDLog flushLog];
 
     [OWSStorage resetAllStorage];
@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearAllNotifications
 {
-    DDLogInfo(@"%@ clearAllNotifications.", self.logTag);
+    OWSLogInfo(@"clearAllNotifications.");
 
     // This will cancel all "scheduled" local notifications that haven't
     // been presented yet.

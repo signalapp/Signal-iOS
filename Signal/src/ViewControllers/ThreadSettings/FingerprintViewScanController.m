@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Also, it's less obvious whats being "shared" at this point,
             // so just disable sharing when in capture mode.
 
-            DDLogInfo(@"%@ Showing Scanner", self.logTag);
+            OWSLogInfo(@"Showing Scanner");
 
             [self.qrScanningController startCapture];
         } else {
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contactName.length > 0);
     OWSAssert(tag.length > 0);
 
-    DDLogInfo(@"%@ Successfully verified safety numbers.", tag);
+    OWSLogInfo(@"%@ Successfully verified safety numbers.", tag);
 
     NSString *successTitle = NSLocalizedString(@"SUCCESSFUL_VERIFICATION_TITLE", nil);
     NSString *descriptionFormat = NSLocalizedString(
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(cancelBlock);
     OWSAssert(tag.length > 0);
 
-    DDLogInfo(@"%@ Failed to verify safety numbers.", tag);
+    OWSLogInfo(@"%@ Failed to verify safety numbers.", tag);
 
     NSString *_Nullable failureTitle;
     if (error.code != OWSErrorCodeUserError) {
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [viewController presentViewController:alertController animated:YES completion:nil];
 
-    DDLogWarn(@"%@ Identity verification failed with error: %@", tag, error);
+    OWSLogWarn(@"%@ Identity verification failed with error: %@", tag, error);
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)animated completion:(nullable void (^)(void))completion

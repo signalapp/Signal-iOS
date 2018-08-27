@@ -292,7 +292,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
         // and phone number state.
         NSString *_Nullable phoneNumberE164 = [TSAccountManager sharedInstance].reregisterationPhoneNumber;
         if (!phoneNumberE164) {
-            OWSFailDebug(@"%@ Could not resume re-registration; missing phone number.", self.logTag);
+            OWSFailDebug(@"Could not resume re-registration; missing phone number.");
         } else if ([self tryToApplyPhoneNumberE164:phoneNumberE164]) {
             // Don't let user edit their phone number while re-registering.
             self.phoneNumberTextField.enabled = NO;
@@ -305,34 +305,34 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSAssert(phoneNumberE164);
 
     if (phoneNumberE164.length < 1) {
-        OWSFailDebug(@"%@ Could not resume re-registration; invalid phoneNumberE164.", self.logTag);
+        OWSFailDebug(@"Could not resume re-registration; invalid phoneNumberE164.");
         return NO;
     }
     PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber phoneNumberFromE164:phoneNumberE164];
     if (!parsedPhoneNumber) {
-        OWSFailDebug(@"%@ Could not resume re-registration; couldn't parse phoneNumberE164.", self.logTag);
+        OWSFailDebug(@"Could not resume re-registration; couldn't parse phoneNumberE164.");
         return NO;
     }
     NSNumber *_Nullable callingCode = parsedPhoneNumber.getCountryCode;
     if (!callingCode) {
-        OWSFailDebug(@"%@ Could not resume re-registration; missing callingCode.", self.logTag);
+        OWSFailDebug(@"Could not resume re-registration; missing callingCode.");
         return NO;
     }
     NSString *callingCodeText = [NSString stringWithFormat:@"+%d", callingCode.intValue];
     NSArray<NSString *> *_Nullable countryCodes =
         [PhoneNumberUtil.sharedThreadLocal countryCodesFromCallingCode:callingCodeText];
     if (countryCodes.count < 1) {
-        OWSFailDebug(@"%@ Could not resume re-registration; unknown countryCode.", self.logTag);
+        OWSFailDebug(@"Could not resume re-registration; unknown countryCode.");
         return NO;
     }
     NSString *countryCode = countryCodes.firstObject;
     NSString *_Nullable countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     if (!countryName) {
-        OWSFailDebug(@"%@ Could not resume re-registration; unknown countryName.", self.logTag);
+        OWSFailDebug(@"Could not resume re-registration; unknown countryName.");
         return NO;
     }
     if (![phoneNumberE164 hasPrefix:callingCodeText]) {
-        OWSFailDebug(@"%@ Could not resume re-registration; non-matching calling code.", self.logTag);
+        OWSFailDebug(@"Could not resume re-registration; non-matching calling code.");
         return NO;
     }
     NSString *phoneNumberWithoutCallingCode = [phoneNumberE164 substringFromIndex:callingCodeText.length];
@@ -583,7 +583,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     BOOL success = [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
     if (!success || error) {
-        DDLogError(@"%@ Error persisting 'last registered' value in keychain: %@", self.logTag, error);
+        OWSLogError(@"Error persisting 'last registered' value in keychain: %@", error);
     }
 }
 

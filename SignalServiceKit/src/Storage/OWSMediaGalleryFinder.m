@@ -127,13 +127,13 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction * _Nonnull transaction, NSString * _Nonnull group, NSString * _Nonnull collection1, NSString * _Nonnull key1, id  _Nonnull object1, NSString * _Nonnull collection2, NSString * _Nonnull key2, id  _Nonnull object2) {
         
         if (![object1 isKindOfClass:[TSMessage class]]) {
-            OWSFailDebug(@"%@ Unexpected object while sorting: %@", self.logTag, [object1 class]);
+            OWSFailDebug(@"Unexpected object while sorting: %@", [object1 class]);
             return NSOrderedSame;
         }
         TSMessage *message1 = (TSMessage *)object1;
         
         if (![object2 isKindOfClass:[TSMessage class]]) {
-            OWSFailDebug(@"%@ Unexpected object while sorting: %@", self.logTag, [object2 class]);
+            OWSFailDebug(@"Unexpected object while sorting: %@", [object2 class]);
             return NSOrderedSame;
         }
         TSMessage *message2 = (TSMessage *)object2;

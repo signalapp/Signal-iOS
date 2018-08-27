@@ -177,7 +177,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     NSString *_Nullable singleGroupRecipient = [coder decodeObjectForKey:@"singleGroupRecipient"];
     if (singleGroupRecipient) {
-        OWSFailDebug(@"%@ unexpected single group recipient message.", self.logTag);
+        OWSFailDebug(@"unexpected single group recipient message.");
         // If this is a "single group recipient message", treat it as such.
         recipientIds = @[
             singleGroupRecipient,
@@ -379,7 +379,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             TSAttachment *_Nullable attachment =
                 [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
             if (!attachment) {
-                DDLogError(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
+                OWSLogError(@"Couldn't load interaction's attachment for deletion.");
                 continue;
             }
             [attachment removeWithTransaction:transaction];
@@ -449,7 +449,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         // There's no need to save this message, since it's not displayed to the user.
         //
         // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
-        DDLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
+        OWSLogDebug(@"Skipping save for group meta message.");
 
         return;
     }
@@ -477,8 +477,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             // no longer be considered sent.
             // So here we take extra care not to stop any expiration that had previously started.
             // This can also happen under normal cirumstances with an outgoing group message.
-            DDLogWarn(@"%@ in %s expiration previously started", self.logTag, __PRETTY_FUNCTION__);
-            
+            OWSLogWarn(@"expiration previously started");
+
             return YES;
         }
         
@@ -647,8 +647,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(
-                                         @"%@ Missing recipient state for recipient: %@", self.logTag, recipientId);
+                                     OWSFailDebug(@"Missing recipient state for recipient: %@", recipientId);
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
@@ -665,8 +664,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(
-                                         @"%@ Missing recipient state for recipient: %@", self.logTag, recipientId);
+                                     OWSFailDebug(@"Missing recipient state for recipient: %@", recipientId);
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
@@ -690,13 +688,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(@"%@ Missing recipient state for delivered recipient: %@",
-                                         self.logTag,
-                                         recipientId);
+                                     OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
                                      return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                     DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
+                                     OWSLogWarn(@"marking unsent message as delivered.");
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.deliveryTimestamp = deliveryTimestamp;
@@ -715,13 +711,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFailDebug(@"%@ Missing recipient state for delivered recipient: %@",
-                                         self.logTag,
-                                         recipientId);
+                                     OWSFailDebug(@"Missing recipient state for delivered recipient: %@", recipientId);
                                      return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                     DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
+                                     OWSLogWarn(@"marking unsent message as delivered.");
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);
@@ -796,7 +790,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                              recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                              break;
                                          default:
-                                             OWSFailDebug(@"%@ unexpected message state.", self.logTag);
+                                             OWSFailDebug(@"unexpected message state.");
                                              break;
                                      }
                                  }
@@ -815,11 +809,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];
     } else {
-        OWSFailDebug(@"%@ message body length too long.", self.logTag);
+        OWSFailDebug(@"message body length too long.");
         NSString *truncatedBody = [self.body copy];
         while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            DDLogError(@"%@ truncating body which is too long: %lu",
-                self.logTag,
+            OWSLogError(@"truncating body which is too long: %lu",
                 (unsigned long)[truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
             truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];
         }
@@ -844,7 +837,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                     SSKProtoAttachmentPointer *_Nullable attachmentProto =
                         [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
                     if (!attachmentProto) {
-                        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+                        OWSFailDebug(@"could not build protobuf.");
                         return nil;
                     }
                     [groupBuilder setAvatar:attachmentProto];
@@ -864,7 +857,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         NSError *error;
         SSKProtoGroupContext *_Nullable groupContextProto = [groupBuilder buildAndReturnError:&error];
         if (error || !groupContextProto) {
-            OWSFailDebug(@"%@ could not build protobuf: %@.", self.logTag, error);
+            OWSFailDebug(@"could not build protobuf: %@.", error);
             return nil;
         }
         [builder setGroup:groupContextProto];
@@ -877,7 +870,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
                 [TSAttachmentStream buildProtoForAttachmentId:attachmentId];
             if (!attachmentProto) {
-                OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+                OWSFailDebug(@"could not build protobuf.");
                 return nil;
             }
             [attachments addObject:attachmentProto];
@@ -891,7 +884,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         NSError *error;
         SSKProtoDataMessageQuote *_Nullable quoteProto = [quotedMessageBuilder buildAndReturnError:&error];
         if (error || !quoteProto) {
-            OWSFailDebug(@"%@ could not build protobuf: %@.", self.logTag, error);
+            OWSFailDebug(@"could not build protobuf: %@.", error);
             return nil;
         }
         [builder setQuote:quoteProto];
@@ -904,7 +897,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         if (contactProto) {
             [builder addContact:contactProto];
         } else {
-            OWSFailDebug(@"%@ in %s contactProto was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"contactProto was unexpectedly nil");
         }
     }
 
@@ -947,7 +940,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
                 [quotedAttachmentBuilder buildAndReturnError:&error];
             if (error || !quotedAttachmentMessage) {
-                OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+                OWSFailDebug(@"could not build protobuf: %@", error);
                 return nil;
             }
 
@@ -958,7 +951,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (hasQuotedText || hasQuotedAttachment) {
         return quoteBuilder;
     } else {
-        OWSFailDebug(@"%@ Invalid quoted message data.", self.logTag);
+        OWSFailDebug(@"Invalid quoted message data.");
         return nil;
     }
 }
@@ -969,7 +962,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     OWSAssert(self.thread);
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (!builder) {
-        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+        OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
@@ -978,7 +971,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
     if (error || !dataProto) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
     return dataProto;
@@ -989,7 +982,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     NSError *error;
     SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
     if (error || !dataMessage) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
 
@@ -997,7 +990,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     [contentBuilder setDataMessage:dataMessage];
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contentData) {
-        OWSFailDebug(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not serialize protobuf: %@", error);
         return nil;
     }
     return contentData;

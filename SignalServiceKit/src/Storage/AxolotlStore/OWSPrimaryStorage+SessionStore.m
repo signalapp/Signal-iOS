@@ -75,7 +75,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
-    OWSFailDebug(@"%@ subDevicesSessions is deprecated", self.logTag);
+    OWSFailDebug(@"subDevicesSessions is deprecated");
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -140,7 +140,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    DDLogInfo(
+    OWSLogInfo(
         @"[OWSPrimaryStorage (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
 
     NSDictionary *immutableDictionary =
@@ -163,7 +163,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    DDLogInfo(@"[OWSPrimaryStorage (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
+    OWSLogInfo(@"[OWSPrimaryStorage (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
     [transaction removeObjectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
 }
@@ -175,7 +175,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    DDLogInfo(@"[OWSPrimaryStorage (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
+    OWSLogInfo(@"[OWSPrimaryStorage (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
 
     __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords =
         [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
@@ -202,7 +202,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 {
     OWSAssert(transaction);
 
-    DDLogWarn(@"%@ resetting session store", self.logTag);
+    OWSLogWarn(@"resetting session store");
 
     [transaction removeAllObjectsInCollection:OWSPrimaryStorageSessionStoreCollection];
 }
@@ -211,7 +211,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 {
     NSString *tag = @"[OWSPrimaryStorage (SessionStore)]";
     [self.sessionStoreDBConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        DDLogDebug(@"%@ All Sessions:", tag);
+        OWSLogDebug(@"%@ All Sessions:", tag);
         [transaction
             enumerateKeysAndObjectsInCollection:OWSPrimaryStorageSessionStoreCollection
                                      usingBlock:^(NSString *_Nonnull key,
@@ -225,7 +225,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                          }
                                          NSDictionary *deviceSessions = (NSDictionary *)deviceSessionsObject;
 
-                                         DDLogDebug(@"%@     Sessions for recipient: %@", tag, key);
+                                         OWSLogDebug(@"%@     Sessions for recipient: %@", tag, key);
                                          [deviceSessions enumerateKeysAndObjectsUsingBlock:^(
                                              id _Nonnull key, id _Nonnull sessionRecordObject, BOOL *_Nonnull stop) {
                                              if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
@@ -238,8 +238,8 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                                              SessionState *activeState = [sessionRecord sessionState];
                                              NSArray<SessionState *> *previousStates =
                                                  [sessionRecord previousSessionStates];
-                                             DDLogDebug(@"%@         Device: %@ SessionRecord: %@ activeSessionState: "
-                                                        @"%@ previousSessionStates: %@",
+                                             OWSLogDebug(@"%@         Device: %@ SessionRecord: %@ activeSessionState: "
+                                                         @"%@ previousSessionStates: %@",
                                                  tag,
                                                  key,
                                                  sessionRecord,

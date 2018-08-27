@@ -164,7 +164,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (void)setLastSuccessfulReminderDate:(nullable NSDate *)date
 {
-    DDLogDebug(@"%@ Seting setLastSuccessfulReminderDate:%@", self.logTag, date);
+    OWSLogDebug(@"Seting setLastSuccessfulReminderDate:%@", date);
     [self.dbConnection setDate:date
                         forKey:kOWS2FAManager_LastSuccessfulReminderDateKey
                   inCollection:kOWS2FAManager_Collection];
@@ -219,8 +219,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     NSTimeInterval oldInterval = self.repetitionInterval;
     NSTimeInterval newInterval = [self adjustRepetitionInterval:oldInterval wasSuccessful:wasSuccessful];
 
-    DDLogInfo(@"%@ %@ guess. Updating repetition interval: %f -> %f",
-        self.logTag,
+    OWSLogInfo(@"%@ guess. Updating repetition interval: %f -> %f",
         (wasSuccessful ? @"successful" : @"failed"),
         oldInterval,
         newInterval);

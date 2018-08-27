@@ -156,10 +156,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     uint32_t maxExpirationDuration = [OWSDisappearingMessagesConfiguration maxDurationSeconds];
     if (expiresInSeconds > maxExpirationDuration) {
-        OWSFailDebug(@"%@ in %s using `maxExpirationDuration` instead of: %u",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            maxExpirationDuration);
+        OWSFailDebug(@"using `maxExpirationDuration` instead of: %u", maxExpirationDuration);
     }
 
     _expiresInSeconds = MIN(expiresInSeconds, maxExpirationDuration);
@@ -169,13 +166,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)setExpireStartedAt:(uint64_t)expireStartedAt
 {
     if (_expireStartedAt != 0 && _expireStartedAt < expireStartedAt) {
-        DDLogDebug(@"%@ in %s ignoring later startedAt time", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogDebug(@"ignoring later startedAt time");
         return;
     }
 
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     if (expireStartedAt > now) {
-        DDLogWarn(@"%@ in %s using `now` instead of future time", self.logTag, __PRETTY_FUNCTION__);
+        OWSLogWarn(@"using `now` instead of future time");
     }
 
     _expireStartedAt = MIN(now, expireStartedAt);
@@ -304,7 +301,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
     } else {
-        OWSFailDebug(@"%@ message has neither body nor attachment.", self.logTag);
+        OWSFailDebug(@"message has neither body nor attachment.");
         // TODO: We should do better here.
         return @"";
     }
@@ -319,7 +316,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (!attachment) {
-            OWSFailDebug(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
+            OWSFailDebug(@"couldn't load interaction's attachment for deletion.");
             continue;
         }
         [attachment removeWithTransaction:transaction];

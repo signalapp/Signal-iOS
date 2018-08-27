@@ -34,12 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSNumber *deviceIdString       = [deviceDict objectForKey:@"deviceId"];
 
         if (!(registrationIdString && deviceIdString)) {
-            DDLogError(@"Failed to get the registration id and device id");
+            OWSLogError(@"Failed to get the registration id and device id");
             return nil;
         }
 
         if (![deviceIdString isEqualToNumber:number]) {
-            DDLogWarn(@"Got a keyid for another device");
+            OWSLogWarn(@"Got a keyid for another device");
             return nil;
         }
 
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *_Nullable preKeyPublic;
 
         if (!preKeyDict) {
-            DDLogInfo(@"%@ No one-time prekey included in the bundle.", self.logTag);
+            OWSLogInfo(@"No one-time prekey included in the bundle.");
             prekeyId = -1;
         } else {
             prekeyId = [[preKeyDict objectForKey:@"keyId"] intValue];
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSDictionary *signedPrekey = [deviceDict objectForKey:@"signedPreKey"];
 
         if (![signedPrekey isKindOfClass:[NSDictionary class]]) {
-            DDLogError(@"Device doesn't have signed prekeys registered");
+            OWSLogError(@"Device doesn't have signed prekeys registered");
             return nil;
         }
 
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
         if (!(signedKeyIdNumber && signedPublicKeyString && signedSignatureString)) {
-            DDLogError(@"Missing signed key material");
+            OWSLogError(@"Missing signed key material");
             return nil;
         }
 
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *signedPreKeySignature = [NSData dataFromBase64StringNoPadding:signedSignatureString];
 
         if (!(signedPrekeyPublic && signedPreKeySignature)) {
-            DDLogError(@"Failed to parse signed keying material");
+            OWSLogError(@"Failed to parse signed keying material");
             return nil;
         }
 

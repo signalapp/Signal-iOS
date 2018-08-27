@@ -119,13 +119,13 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoDataMessageQuote *quoteProto = [dataMessage quote];
 
     if (quoteProto.id == 0) {
-        OWSFailDebug(@"%@ quoted message missing id", self.logTag);
+        OWSFailDebug(@"quoted message missing id");
         return nil;
     }
     uint64_t timestamp = [quoteProto id];
 
     if (quoteProto.author.length == 0) {
-        OWSFailDebug(@"%@ quoted message missing author", self.logTag);
+        OWSFailDebug(@"quoted message missing author");
         return nil;
     }
     // TODO: We could verify that this is a valid e164 value.
@@ -174,8 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   transaction:transaction];
 
         if (thumbnailStream) {
-            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%lu",
-                self.logTag,
+            OWSLogDebug(@"Generated local thumbnail for quoted quoted message: %@:%lu",
                 thread.uniqueId,
                 (unsigned long)timestamp);
 
@@ -183,8 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             attachmentInfo.thumbnailAttachmentStreamId = thumbnailStream.uniqueId;
         } else if (quotedAttachment.thumbnail) {
-            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
-                self.logTag,
+            OWSLogDebug(@"Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
                 thread.uniqueId,
                 (unsigned long)timestamp);
 
@@ -195,15 +193,14 @@ NS_ASSUME_NONNULL_BEGIN
 
             attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
         } else {
-            DDLogDebug(
-                @"%@ No thumbnail for quoted message: %@:%lu", self.logTag, thread.uniqueId, (unsigned long)timestamp);
+            OWSLogDebug(@"No thumbnail for quoted message: %@:%lu", thread.uniqueId, (unsigned long)timestamp);
         }
 
         [attachmentInfos addObject:attachmentInfo];
     }
 
     if (body.length == 0 && !hasAttachment) {
-        OWSFailDebug(@"%@ quoted message has neither text nor attachment", self.logTag);
+        OWSFailDebug(@"quoted message has neither text nor attachment");
         return nil;
     }
 

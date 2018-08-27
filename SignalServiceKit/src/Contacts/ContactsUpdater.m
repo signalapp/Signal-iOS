@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
                  failure:(void (^)(NSError *error))failure
 {
     if (identifiers.count < 1) {
-        OWSFailDebug(@"%@ Cannot lookup zero identifiers", self.logTag);
+        OWSFailDebug(@"Cannot lookup zero identifiers");
         DispatchMainThreadSafe(^{
             failure(
                 OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
         success:^(NSSet<SignalRecipient *> *recipients) {
             if (recipients.count == 0) {
-                DDLogInfo(@"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
+                OWSLogInfo(@"no contacts are Signal users");
             }
             DispatchMainThreadSafe(^{
                 success(recipients.allObjects);

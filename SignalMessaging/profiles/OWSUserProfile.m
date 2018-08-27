@@ -184,10 +184,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
 
             if ([beforeSnapshot isEqual:afterSnapshot]) {
-                DDLogVerbose(@"%@ Ignoring redundant update in %s: %@",
-                    self.logTag,
-                    functionName,
-                    self.debugDescription);
+                OWSLogVerbose(@"Ignoring redundant update in %s: %@", functionName, self.debugDescription);
                 didChange = NO;
             } else {
                 [latestInstance saveWithTransaction:transaction];
@@ -331,28 +328,28 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (YapDatabaseConnection *)dbReadConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadConnection;
 }
 
 - (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadWriteConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadWriteConnection;
 }
@@ -407,7 +404,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 + (nullable NSError *)migrateToSharedData
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
                        sharedDataFilePath:self.sharedDataProfileAvatarsDirPath];
@@ -434,7 +431,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     NSError *error;
     [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
     if (error) {
-        DDLogError(@"Failed to delete database: %@", error.description);
+        OWSLogError(@"Failed to delete database: %@", error.description);
     }
 }
 
@@ -448,9 +445,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             enumerateCollectionObjectsWithTransaction:transaction
                                            usingBlock:^(id object, BOOL *stop) {
                                                if (![object isKindOfClass:[OWSUserProfile class]]) {
-                                                   OWSFailDebug(@"%@ unexpected object in user profiles: %@",
-                                                       self.logTag,
-                                                       [object class]);
+                                                   OWSFailDebug(
+                                                       @"unexpected object in user profiles: %@", [object class]);
                                                    return;
                                                }
                                                OWSUserProfile *userProfile = object;

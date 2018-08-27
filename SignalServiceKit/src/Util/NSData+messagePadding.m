@@ -1,9 +1,5 @@
 //
-//  NSData+messagePadding.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 15/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+messagePadding.h"
@@ -21,7 +17,7 @@
             paddingStart = (unsigned long)i;
             break;
         } else if (data[i] != (Byte)0x00) {
-            DDLogWarn(@"Failed to remove padding, returning unstripped padding");
+            OWSLogWarn(@"Failed to remove padding, returning unstripped padding");
             return self;
         }
     }

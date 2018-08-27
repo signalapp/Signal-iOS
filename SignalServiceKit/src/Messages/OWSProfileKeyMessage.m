@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (!builder) {
-        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+        OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
     [builder setTimestamp:self.timestamp];
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
     if (error || !dataProto) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
     return dataProto;

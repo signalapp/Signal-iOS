@@ -285,16 +285,16 @@ NS_ASSUME_NONNULL_BEGIN
         .then(^{
             OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
-            DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.logTag);
+            OWSLogInfo(@"Successfully registered Signal account.");
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
                 [weakSelf verificationWasCompleted];
             });
         })
         .catch(^(NSError *error) {
-            DDLogError(@"%@ error: %@, %@, %zd", weakSelf.logTag, [error class], error.domain, error.code);
+            OWSLogError(@"error: %@, %@, %zd", [error class], error.domain, error.code);
             OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
-            DDLogError(@"%@ error verifying challenge: %@", weakSelf.logTag, error);
+            OWSLogError(@"error verifying challenge: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf stopActivityIndicator];
 
@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
                     if (!strongSelf) {
                         return;
                     }
-                    DDLogInfo(@"%@ Showing 2FA registration view.", strongSelf.logTag);
+                    OWSLogInfo(@"Showing 2FA registration view.");
                     OWS2FARegistrationViewController *viewController = [OWS2FARegistrationViewController new];
                     viewController.verificationCode = strongSelf.validationCodeFromTextField;
                     [strongSelf.navigationController pushViewController:viewController animated:YES];
@@ -352,13 +352,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_requestCodeAgainSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
-    [TSAccountManager rerequestSMSWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested SMS code", weakSelf.logTag);
-        [weakSelf enableServerActions:YES];
-        [weakSelf.requestCodeAgainSpinner stopAnimating];
-    }
+    [TSAccountManager
+        rerequestSMSWithSuccess:^{
+            OWSLogInfo(@"Successfully requested SMS code");
+            [weakSelf enableServerActions:YES];
+            [weakSelf.requestCodeAgainSpinner stopAnimating];
+        }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request SMS code with error: %@", weakSelf.logTag, error);
+            OWSLogError(@"Failed to request SMS code with error: %@", error);
             [weakSelf showRegistrationErrorMessage:error];
             [weakSelf enableServerActions:YES];
             [weakSelf.requestCodeAgainSpinner stopAnimating];
@@ -374,14 +375,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     [_requestCallSpinner startAnimating];
     __weak CodeVerificationViewController *weakSelf = self;
-    [TSAccountManager rerequestVoiceWithSuccess:^{
-        DDLogInfo(@"%@ Successfully requested voice code", weakSelf.logTag);
+    [TSAccountManager
+        rerequestVoiceWithSuccess:^{
+            OWSLogInfo(@"Successfully requested voice code");
 
-        [weakSelf enableServerActions:YES];
-        [weakSelf.requestCallSpinner stopAnimating];
-    }
+            [weakSelf enableServerActions:YES];
+            [weakSelf.requestCallSpinner stopAnimating];
+        }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to request voice code with error: %@", weakSelf.logTag, error);
+            OWSLogError(@"Failed to request voice code with error: %@", error);
             [weakSelf showRegistrationErrorMessage:error];
             [weakSelf enableServerActions:YES];
             [weakSelf.requestCallSpinner stopAnimating];

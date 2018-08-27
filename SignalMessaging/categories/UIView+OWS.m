@@ -475,8 +475,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)logFrameWithLabel:(NSString *)label
 {
-    DDLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
-        self.logTag,
+    OWSLogVerbose(@"%@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
         label,
         NSStringFromCGRect(self.frame),
         self.hidden,
@@ -499,7 +498,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (void)logHierarchyUpwardLaterWithLabel:(NSString *)label
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        DDLogVerbose(@"%@ %@ ----", self.logTag, label);
+        OWSLogVerbose(@"%@ ----", label);
     });
 
     UIResponder *responder = self;

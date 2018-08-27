@@ -322,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
-        OWSFailDebug(@"%@ Contact editing not supported.", self.logTag);
+        OWSFailDebug(@"Contact editing not supported.");
         return;
     }
 

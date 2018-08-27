@@ -233,27 +233,27 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleScreenSecuritySwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
-    DDLogInfo(@"%@ toggled screen security: %@", self.logTag, enabled ? @"ON" : @"OFF");
+    OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
     [Environment.preferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
-    DDLogInfo(@"%@ toggled areReadReceiptsEnabled: %@", self.logTag, enabled ? @"ON" : @"OFF");
+    OWSLogInfo(@"toggled areReadReceiptsEnabled: %@", enabled ? @"ON" : @"OFF");
     [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:enabled];
 }
 
 - (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
-    DDLogInfo(@"%@ toggled callsHideIPAddress: %@", self.logTag, enabled ? @"ON" : @"OFF");
+    OWSLogInfo(@"toggled callsHideIPAddress: %@", enabled ? @"ON" : @"OFF");
     [Environment.preferences setDoCallsHideIPAddress:enabled];
 }
 
 - (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
 {
-    DDLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
 {
-    DDLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsCallKitEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit vs not changed.
@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
 {
-    DDLogInfo(@"%@ user toggled call kit privacy preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
@@ -283,7 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)show2FASettings
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
     vc.mode = OWS2FASettingsMode_Status;
@@ -295,25 +295,25 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL shouldBeEnabled = sender.isOn;
 
     if (shouldBeEnabled == OWSScreenLock.sharedManager.isScreenLockEnabled) {
-        DDLogError(@"%@ ignoring redundant screen lock.", self.logTag);
+        OWSLogError(@"ignoring redundant screen lock.");
         return;
     }
 
-    DDLogInfo(@"%@ trying to set is screen lock enabled: %@", self.logTag, @(shouldBeEnabled));
+    OWSLogInfo(@"trying to set is screen lock enabled: %@", @(shouldBeEnabled));
 
     [OWSScreenLock.sharedManager setIsScreenLockEnabled:shouldBeEnabled];
 }
 
 - (void)screenLockDidChange:(NSNotification *)notification
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [self updateTableContents];
 }
 
 - (void)showScreenLockTimeoutUI
 {
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     UIAlertController *controller = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",

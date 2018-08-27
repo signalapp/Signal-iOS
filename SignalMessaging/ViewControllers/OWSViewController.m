@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     // Surface memory leaks by logging the deallocation of view controllers.
-    DDLogVerbose(@"Dealloc: %@", self.class);
+    OWSLogVerbose(@"Dealloc: %@", self.class);
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *_Nullable keyboardEndFrameValue = userInfo[UIKeyboardFrameEndUserInfoKey];
     if (!keyboardEndFrameValue) {
-        OWSFailDebug(@"%@ Missing keyboard end frame", self.logTag);
+        OWSFailDebug(@"Missing keyboard end frame");
         return;
     }
 

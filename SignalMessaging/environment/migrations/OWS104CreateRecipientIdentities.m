@@ -35,8 +35,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                  usingBlock:^(NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {
                                      if (![object isKindOfClass:[NSData class]]) {
                                          OWSFailDebug(
-                                             @"%@ Unexpected object in trusted keys collection key: %@ object: %@",
-                                             self.logTag,
+                                             @"Unexpected object in trusted keys collection key: %@ object: %@",
                                              recipientId,
                                              [object class]);
                                          return;
@@ -47,7 +46,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
     [identityKeys enumerateKeysAndObjectsUsingBlock:^(
         NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
-        DDLogInfo(@"%@ Migrating identity key for recipient: %@", self.logTag, recipientId);
+        OWSLogInfo(@"Migrating identity key for recipient: %@", recipientId);
         [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
                                                identityKey:identityKey
                                            isFirstKnownKey:NO

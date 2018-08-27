@@ -45,7 +45,7 @@ void SetCurrentAppContext(id<AppContext> appContext)
 
 void ExitShareExtension(void)
 {
-    DDLogInfo(@"ExitShareExtension");
+    OWSLogInfo(@"ExitShareExtension");
     [DDLog flushLog];
     exit(0);
 }

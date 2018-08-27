@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   [attachmentStreams addObject:attachmentStream];
                                               }];
 
-        DDLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
+        OWSLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
 
         // Persist the new localRelativeFilePath property of TSAttachmentStream.
         // For performance, we want to upgrade all existing attachment streams in
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       }];
         }
 
-        DDLogInfo(@"Deleting %zd interactions.", interactionsToDelete.count);
+        OWSLogInfo(@"Deleting %zd interactions.", interactionsToDelete.count);
 
         for (TSInteraction *interaction in interactionsToDelete) {
             [interaction removeWithTransaction:transaction];

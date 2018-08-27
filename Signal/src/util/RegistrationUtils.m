@@ -34,10 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)reregisterWithFromViewController:(UIViewController *)fromViewController
 {
-    DDLogInfo(@"%@ reregisterWithSamePhoneNumber.", self.logTag);
+    OWSLogInfo(@"reregisterWithSamePhoneNumber.");
 
     if (![[TSAccountManager sharedInstance] resetForReregistration]) {
-        OWSFailDebug(@"%@ could not reset for re-registration.", self.logTag);
+        OWSFailDebug(@"could not reset for re-registration.");
         return;
     }
 
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
                       [TSAccountManager
                           registerWithPhoneNumber:[TSAccountManager sharedInstance].reregisterationPhoneNumber
                           success:^{
-                              DDLogInfo(@"%@ re-registering: send verification code succeeded.", self.logTag);
+                              OWSLogInfo(@"re-registering: send verification code succeeded.");
 
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
                               });
                           }
                           failure:^(NSError *error) {
-                              DDLogError(@"%@ re-registering: send verification code failed.", self.logTag);
+                              OWSLogError(@"re-registering: send verification code failed.");
 
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{

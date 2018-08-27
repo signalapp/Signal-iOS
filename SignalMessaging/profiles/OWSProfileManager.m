@@ -198,14 +198,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     // Ensure that the success and failure blocks are called on the main thread.
     void (^failureBlock)(void) = ^{
-        DDLogError(@"%@ Updating service with profile failed.", self.logTag);
+        OWSLogError(@"Updating service with profile failed.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter();
         });
     };
     void (^successBlock)(void) = ^{
-        DDLogInfo(@"%@ Successfully updated service with profile.", self.logTag);
+        OWSLogInfo(@"Successfully updated service with profile.");
 
         dispatch_async(dispatch_get_main_queue(), ^{
             successBlockParameter();
@@ -255,11 +255,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             OWSAssert(userProfile.avatarUrlPath.length > 0);
             OWSAssert(userProfile.avatarFileName.length > 0);
 
-            DDLogVerbose(@"%@ Updating local profile on service with unchanged avatar.", self.logTag);
+            OWSLogVerbose(@"Updating local profile on service with unchanged avatar.");
             // If the avatar hasn't changed, reuse the existing metadata.
             tryToUpdateService(userProfile.avatarUrlPath, userProfile.avatarFileName);
         } else {
-            DDLogVerbose(@"%@ Updating local profile on service with new avatar.", self.logTag);
+            OWSLogVerbose(@"Updating local profile on service with new avatar.");
             [self writeAvatarToDisk:avatarImage
                 success:^(NSData *data, NSString *fileName) {
                     [self uploadAvatarToService:data
@@ -275,7 +275,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 }];
         }
     } else if (userProfile.avatarUrlPath) {
-        DDLogVerbose(@"%@ Updating local profile on service with cleared avatar.", self.logTag);
+        OWSLogVerbose(@"Updating local profile on service with cleared avatar.");
         [self uploadAvatarToService:nil
             success:^(NSString *_Nullable avatarUrlPath) {
                 tryToUpdateService(nil, nil);
@@ -284,7 +284,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 failureBlock();
             }];
     } else {
-        DDLogVerbose(@"%@ Updating local profile on service with no avatar.", self.logTag);
+        OWSLogVerbose(@"Updating local profile on service with no avatar.");
         tryToUpdateService(nil, nil);
     }
 }
@@ -372,7 +372,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 clearLocalAvatar();
 
                 if (avatarData == nil) {
-                    DDLogDebug(@"%@ successfully cleared avatar", self.logTag);
+                    OWSLogDebug(@"successfully cleared avatar");
                     successBlock(nil);
                     return;
                 }
@@ -383,7 +383,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     return;
                 }
                 NSDictionary *responseMap = formResponseObject;
-                DDLogError(@"responseObject: %@", formResponseObject);
+                OWSLogError(@"responseObject: %@", formResponseObject);
 
                 NSString *formAcl = responseMap[@"acl"];
                 if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
@@ -452,18 +452,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         OWSAssert(encryptedAvatarData.length > 0);
                         [formData appendPartWithFormData:encryptedAvatarData name:@"file"];
 
-                        DDLogVerbose(@"%@ constructed body", self.logTag);
+                        OWSLogVerbose(@"constructed body");
                     }
                     progress:^(NSProgress *_Nonnull uploadProgress) {
-                        DDLogVerbose(
-                            @"%@ avatar upload progress: %.2f%%", self.logTag, uploadProgress.fractionCompleted * 100);
+                        OWSLogVerbose(@"avatar upload progress: %.2f%%", uploadProgress.fractionCompleted * 100);
                     }
                     success:^(NSURLSessionDataTask *_Nonnull uploadTask, id _Nullable responseObject) {
-                        DDLogInfo(@"%@ successfully uploaded avatar with key: %@", self.logTag, formKey);
+                        OWSLogInfo(@"successfully uploaded avatar with key: %@", formKey);
                         successBlock(formKey);
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
-                        DDLogError(@"%@ uploading avatar failed with error: %@", self.logTag, error);
+                        OWSLogError(@"uploading avatar failed with error: %@", error);
                         failureBlock();
                     }];
             }
@@ -474,7 +473,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     clearLocalAvatar();
                 }
 
-                DDLogError(@"%@ Failed to get profile avatar upload form: %@", self.logTag, error);
+                OWSLogError(@"Failed to get profile avatar upload form: %@", error);
                 failureBlock();
             }];
     });
@@ -496,7 +495,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 successBlock();
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogError(@"%@ Failed to update profile with error: %@", self.logTag, error);
+                OWSLogError(@"Failed to update profile with error: %@", error);
                 failureBlock();
             }];
     });
@@ -517,7 +516,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)clearProfileWhitelist
 {
-    DDLogWarn(@"%@ Clearing the profile whitelist.", self.logTag);
+    OWSLogWarn(@"Clearing the profile whitelist.");
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeAllObjectsInCollection:kOWSProfileManager_UserWhitelistCollection];
@@ -530,17 +529,17 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)logProfileWhitelist
 {
     [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        DDLogError(@"kOWSProfileManager_UserWhitelistCollection: %lu",
-                   (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
+        OWSLogError(@"kOWSProfileManager_UserWhitelistCollection: %lu",
+            (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
         [transaction enumerateKeysInCollection:kOWSProfileManager_UserWhitelistCollection
                                     usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                        DDLogError(@"\t profile whitelist user: %@", key);
+                                        OWSLogError(@"\t profile whitelist user: %@", key);
                                     }];
-        DDLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
-                   (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
+        OWSLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
+            (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
         [transaction enumerateKeysInCollection:kOWSProfileManager_GroupWhitelistCollection
                                     usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                        DDLogError(@"\t profile whitelist group: %@", key);
+                                        OWSLogError(@"\t profile whitelist group: %@", key);
                                     }];
     }];
 }
@@ -691,14 +690,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)logUserProfiles
 {
     [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        DDLogError(@"logUserProfiles: %zd", [transaction numberOfKeysInCollection:OWSUserProfile.collection]);
+        OWSLogError(@"logUserProfiles: %zd", [transaction numberOfKeysInCollection:OWSUserProfile.collection]);
         [transaction
             enumerateKeysAndObjectsInCollection:OWSUserProfile.collection
                                      usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
                                          OWSAssert([object isKindOfClass:[OWSUserProfile class]]);
                                          OWSUserProfile *userProfile = object;
-                                         DDLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                    @"avatar file: %d, name: %@",
+                                         OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
+                                                     @"avatar file: %d, name: %@",
                                              userProfile.recipientId,
                                              userProfile.profileKey != nil,
                                              userProfile.avatarUrlPath != nil,
@@ -804,7 +803,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (userProfile.avatarUrlPath.length < 1) {
-            OWSFailDebug(@"%@ Malformed avatar URL: %@", self.logTag, userProfile.avatarUrlPath);
+            OWSFailDebug(@"Malformed avatar URL: %@", userProfile.avatarUrlPath);
             return;
         }
         NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
@@ -827,7 +826,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             [self.currentAvatarDownloads addObject:userProfile.recipientId];
         }
 
-        DDLogVerbose(@"%@ downloading profile avatar: %@", self.logTag, userProfile.uniqueId);
+        OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
 
         NSString *tempDirectory = NSTemporaryDirectory();
         NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
@@ -856,20 +855,20 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                            dbConnection:self.dbConnection];
                 if (latestUserProfile.profileKey.keyData.length < 1
                     || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
-                    DDLogWarn(@"%@ Ignoring avatar download for obsolete user profile.", self.logTag);
+                    OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
                 } else if (![avatarUrlPathAtStart isEqualToString:latestUserProfile.avatarUrlPath]) {
-                    DDLogInfo(@"%@ avatar url has changed during download", self.logTag);
+                    OWSLogInfo(@"avatar url has changed during download");
                     if (latestUserProfile.avatarUrlPath.length > 0) {
                         [self downloadAvatarForUserProfile:latestUserProfile];
                     }
                 } else if (error) {
-                    DDLogError(@"%@ avatar download failed: %@", self.logTag, error);
+                    OWSLogError(@"avatar download failed: %@", error);
                 } else if (!encryptedData) {
-                    DDLogError(@"%@ avatar encrypted data could not be read.", self.logTag);
+                    OWSLogError(@"avatar encrypted data could not be read.");
                 } else if (!decryptedData) {
-                    DDLogError(@"%@ avatar data could not be decrypted.", self.logTag);
+                    OWSLogError(@"avatar data could not be decrypted.");
                 } else if (!image) {
-                    DDLogError(@"%@ avatar image could not be loaded: %@", self.logTag, error);
+                    OWSLogError(@"avatar image could not be loaded: %@", error);
                 } else {
                     [self updateProfileAvatarCache:image filename:fileName];
 
@@ -897,10 +896,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         NSURLRequest *request = [NSURLRequest requestWithURL:avatarUrlPath];
         NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
             progress:^(NSProgress *_Nonnull downloadProgress) {
-                DDLogVerbose(@"%@ Downloading avatar for %@ %f",
-                    self.logTag,
-                    userProfile.recipientId,
-                    downloadProgress.fractionCompleted);
+                OWSLogVerbose(
+                    @"Downloading avatar for %@ %f", userProfile.recipientId, downloadProgress.fractionCompleted);
             }
             destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
                 return [NSURL fileURLWithPath:tempFilePath];
@@ -916,11 +913,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(recipientId.length > 0);
 
-    DDLogDebug(@"%@ update profile for: %@ name: %@ avatar: %@",
-        self.logTag,
-        recipientId,
-        profileNameEncrypted,
-        avatarUrlPath);
+    OWSLogDebug(@"update profile for: %@ name: %@ avatar: %@", recipientId, profileNameEncrypted, avatarUrlPath);
 
     // Ensure decryption, etc. off main thread.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1053,7 +1046,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
-        OWSFailDebug(@"%@ name data is too long with length:%lu", self.logTag, (unsigned long)nameData.length);
+        OWSFailDebug(@"name data is too long with length:%lu", (unsigned long)nameData.length);
         return nil;
     }
 
@@ -1150,8 +1143,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     BOOL isFeatureEnabled = NO;
     if (!isFeatureEnabled) {
-        DDLogWarn(
-            @"%@ skipping sending profile-key message because the feature is not yet fully available.", self.logTag);
+        OWSLogWarn(@"skipping sending profile-key message because the feature is not yet fully available.");
         [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
         successHandler();
         return;
@@ -1159,7 +1151,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     [self.messageSender enqueueMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully sent profile key message to thread: %@", self.logTag, thread);
+            OWSLogInfo(@"Successfully sent profile key message to thread: %@", thread);
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1168,7 +1160,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         }
         failure:^(NSError *_Nonnull error) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                DDLogError(@"%@ Failed to send profile key message to thread: %@", self.logTag, thread);
+                OWSLogError(@"Failed to send profile key message to thread: %@", thread);
             });
         }];
 }

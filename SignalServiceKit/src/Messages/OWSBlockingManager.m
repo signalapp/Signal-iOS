@@ -97,7 +97,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert(phoneNumber.length > 0);
 
-    DDLogInfo(@"%@ addBlockedPhoneNumber: %@", self.logTag, phoneNumber);
+    OWSLogInfo(@"addBlockedPhoneNumber: %@", phoneNumber);
 
     @synchronized(self)
     {
@@ -118,7 +118,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert(phoneNumber.length > 0);
 
-    DDLogInfo(@"%@ removeBlockedPhoneNumber: %@", self.logTag, phoneNumber);
+    OWSLogInfo(@"removeBlockedPhoneNumber: %@", phoneNumber);
 
     @synchronized(self)
     {
@@ -139,7 +139,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 {
     OWSAssert(blockedPhoneNumbers != nil);
 
-    DDLogInfo(@"%@ setBlockedPhoneNumbers: %d", self.logTag, (int)blockedPhoneNumbers.count);
+    OWSLogInfo(@"setBlockedPhoneNumbers: %d", (int)blockedPhoneNumbers.count);
 
     @synchronized(self)
     {
@@ -250,7 +250,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
                            inCollection:kOWSBlockingManager_BlockedPhoneNumbersCollection];
     NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
     if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
-        DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.logTag);
+        OWSLogInfo(@"retrying sync of blocked phone numbers");
         [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
     }
 }
@@ -264,13 +264,13 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 
     [self.messageSender enqueueMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.logTag);
+            OWSLogInfo(@"Successfully sent blocked phone numbers sync message");
 
             // Record the last set of "blocked phone numbers" which we successfully synced.
             [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
         }
         failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.logTag, error);
+            OWSLogError(@"Failed to send blocked phone numbers sync message with error: %@", error);
         }];
 }
 

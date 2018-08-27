@@ -29,14 +29,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
-        DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
+        OWSLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
 
     SSKProtoAttachmentPointer *_Nullable attachmentProto =
         [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
     if (!attachmentProto) {
-        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+        OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoSyncMessageGroups *_Nullable groupsProto = [groupsBuilder buildAndReturnError:&error];
     if (error || !groupsProto) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        usingBlock:^(id obj, BOOL *stop) {
                                            if (![obj isKindOfClass:[TSGroupThread class]]) {
                                                if (![obj isKindOfClass:[TSContactThread class]]) {
-                                                   DDLogWarn(
+                                                   OWSLogWarn(
                                                        @"Ignoring non group thread in thread collection: %@", obj);
                                                }
                                                return;
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream close];
 
     if (groupsOutputStream.hasError) {
-        OWSFailDebug(@"%@ Could not write groups sync stream.", self.logTag);
+        OWSFailDebug(@"Could not write groups sync stream.");
         return nil;
     }
 

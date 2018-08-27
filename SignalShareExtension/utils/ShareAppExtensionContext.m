@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.reportedApplicationState = UIApplicationStateActive;
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     self.reportedApplicationState = UIApplicationStateBackground;
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
 {
-    DDLogInfo(@"Ignoring request to show/hide status bar since we're in an app extension");
+    OWSLogInfo(@"Ignoring request to show/hide status bar since we're in an app extension");
 }
 
 - (CGFloat)statusBarHeight
@@ -171,12 +171,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
 {
-    DDLogDebug(@"%@ Ignoring request to block sleep.", self.logTag);
+    OWSLogDebug(@"Ignoring request to block sleep.");
 }
 
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
-    OWSFailDebug(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFailDebug(@"");
 }
 
 - (nullable UIViewController *)frontmostViewController
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
 {
-    OWSFailDebug(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFailDebug(@"");
 }
 
 - (BOOL)isRunningTests
@@ -204,12 +204,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
-    OWSFailDebug(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSFailDebug(@"");
 }
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
 {
-    OWSFailDebug(@"%@ cannot run main app active blocks in share extension.", self.logTag);
+    OWSFailDebug(@"cannot run main app active blocks in share extension.");
 }
 
 @end

@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
     if (!parser.isValid) {
-        DDLogError(@"Unable to parse provisioning params from QRCode: %@", string);
+        OWSLogError(@"Unable to parse provisioning params from QRCode: %@", string);
 
         NSString *title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
         NSString *body = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_BODY", @"report an invalid linking code");
@@ -163,19 +163,20 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                profileKey:myProfileKeyData
                                                                       readReceiptsEnabled:areReadReceiptsEnabled];
 
-    [provisioner provisionWithSuccess:^{
-        DDLogInfo(@"Successfully provisioned device.");
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.linkedDevicesTableViewController expectMoreDevices];
-            [self.navigationController popToViewController:self.linkedDevicesTableViewController animated:YES];
+    [provisioner
+        provisionWithSuccess:^{
+            OWSLogInfo(@"Successfully provisioned device.");
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.linkedDevicesTableViewController expectMoreDevices];
+                [self.navigationController popToViewController:self.linkedDevicesTableViewController animated:YES];
 
-            // The service implementation of the socket connection caches the linked device state,
-            // so all sync message sends will fail on the socket until it is cycled.
-            [TSSocketManager.sharedManager cycleSocket];
-        });
-    }
+                // The service implementation of the socket connection caches the linked device state,
+                // so all sync message sends will fail on the socket until it is cycled.
+                [TSSocketManager.sharedManager cycleSocket];
+            });
+        }
         failure:^(NSError *error) {
-            DDLogError(@"Failed to provision device with error: %@", error);
+            OWSLogError(@"Failed to provision device with error: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self presentViewController:[self retryAlertControllerWithError:error
                                                                      retryBlock:^{

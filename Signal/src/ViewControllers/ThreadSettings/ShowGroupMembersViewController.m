@@ -438,7 +438,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didFinishEditingContact
 {
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    DDLogDebug(@"%@ done editing contact.", self.logTag);
+    OWSLogDebug(@"done editing contact.");
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

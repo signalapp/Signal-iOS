@@ -32,7 +32,7 @@ static NSString *const OWS105AttachmentFilePathsMigrationId = @"105";
                                               [attachmentStreams addObject:attachmentStream];
                                           }];
 
-    DDLogInfo(@"Saving %lu attachment streams.", (unsigned long)attachmentStreams.count);
+    OWSLogInfo(@"Saving %lu attachment streams.", (unsigned long)attachmentStreams.count);
 
     // Persist the new localRelativeFilePath property of TSAttachmentStream.
     // For performance, we want to upgrade all existing attachment streams in

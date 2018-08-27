@@ -196,7 +196,7 @@ const CGFloat kIconViewLength = 24;
 {
     [self updateTableContents];
 
-    DDLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 
@@ -211,10 +211,10 @@ const CGFloat kIconViewLength = 24;
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        DDLogDebug(@"%@ completed editing contact.", self.logTag);
+        OWSLogDebug(@"completed editing contact.");
         [self dismissViewControllerAnimated:NO completion:nil];
     } else {
-        DDLogDebug(@"%@ canceled editing contact.", self.logTag);
+        OWSLogDebug(@"canceled editing contact.");
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -927,11 +927,11 @@ const CGFloat kIconViewLength = 24;
 - (void)presentContactViewController
 {
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFailDebug(@"%@ Contact editing not supported", self.logTag);
+        OWSFailDebug(@"Contact editing not supported");
         return;
     }
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"%@ unexpected thread: %@ in %s", self.logTag, [self.thread class], __PRETTY_FUNCTION__);
+        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
         return;
     }
 
@@ -945,7 +945,7 @@ const CGFloat kIconViewLength = 24;
 {
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
-        OWSFailDebug(@"%@ Contact editing not supported.", self.logTag);
+        OWSFailDebug(@"Contact editing not supported.");
         return;
     }
 
@@ -990,10 +990,10 @@ const CGFloat kIconViewLength = 24;
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
     [self.messageSender enqueueMessage:message
         success:^{
-            DDLogInfo(@"%@ Successfully left group.", self.logTag);
+            OWSLogInfo(@"Successfully left group.");
         }
         failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
+            OWSLogWarn(@"Failed to leave group with error: %@", error);
         }];
 
     NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
@@ -1018,7 +1018,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssert(!self.isGroupThread);
 
     if (![sender isKindOfClass:[UISwitch class]]) {
-        OWSFailDebug(@"%@ Unexpected sender for block user switch: %@", self.logTag, sender);
+        OWSFailDebug(@"Unexpected sender for block user switch: %@", sender);
     }
     UISwitch *blockUserSwitch = (UISwitch *)sender;
 
@@ -1215,7 +1215,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showMediaGallery
 {
-    DDLogDebug(@"%@ in showMediaGallery", self.logTag);
+    OWSLogDebug(@"in showMediaGallery");
 
     MediaGalleryViewController *vc =
         [[MediaGalleryViewController alloc] initWithThread:self.thread
@@ -1264,7 +1264,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)colorPicker:(ColorPickerViewController *)colorPicker didPickColorName:(NSString *)colorName
 {
-    DDLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
+    OWSLogDebug(@"picked color: %@", colorName);
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.thread updateConversationColorName:colorName transaction:transaction];
     }];

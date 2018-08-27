@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSData *_Nullable plainTextProvisionMessage = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!plainTextProvisionMessage || error) {
-        OWSFailDebug(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFailDebug(@"could not serialize proto: %@.", error);
         return nil;
     }
 
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
     if (!envelopeData || error) {
-        OWSFailDebug(@"%@ could not serialize proto: %@.", self.logTag, error);
+        OWSFailDebug(@"could not serialize proto: %@.", error);
         return nil;
     }
 

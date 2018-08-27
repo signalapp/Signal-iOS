@@ -180,14 +180,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
-        OWSFailDebug(@"%@ contactsManager should not be nil", self.logTag);
+        OWSFailDebug(@"contactsManager should not be nil");
         self.avatarView.image = nil;
         return;
     }
 
     NSString *recipientId = self.recipientId;
     if (recipientId.length == 0) {
-        OWSFailDebug(@"%@ recipientId should not be nil", self.logTag);
+        OWSFailDebug(@"recipientId should not be nil");
         self.avatarView.image = nil;
         return;
     }
@@ -212,14 +212,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
-        OWSFailDebug(@"%@ contactsManager should not be nil", self.logTag);
+        OWSFailDebug(@"contactsManager should not be nil");
         self.profileNameLabel.text = nil;
         return;
     }
 
     NSString *recipientId = self.recipientId;
     if (recipientId.length == 0) {
-        OWSFailDebug(@"%@ recipientId should not be nil", self.logTag);
+        OWSFailDebug(@"recipientId should not be nil");
         self.profileNameLabel.text = nil;
         return;
     }

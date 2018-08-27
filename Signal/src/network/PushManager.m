@@ -100,7 +100,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     if ([notification.object isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *message = (TSIncomingMessage *)notification.object;
 
-        DDLogDebug(@"%@ canceled notification for message:%@", self.logTag, message);
+        OWSLogDebug(@"canceled notification for message:%@", message);
         [self cancelNotificationsWithThreadId:message.uniqueThreadId];
     }
 }
@@ -109,7 +109,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
-    DDLogInfo(@"%@ received remote notification", self.logTag);
+    OWSLogInfo(@"received remote notification");
 
     [AppReadiness runNowOrWhenAppIsReady:^{
         [self.messageFetcherJob run];
@@ -131,7 +131,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    DDLogInfo(@"%@ received content-available push", self.logTag);
+    OWSLogInfo(@"received content-available push");
 
     // If we want to re-introduce silent pushes we can remove this assert.
     OWSFailDebug(@"Unexpected content-available push.");
@@ -146,10 +146,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)presentOncePerActivationConversationWithThreadId:(NSString *)threadId
 {
     if (self.hasPresentedConversationSinceLastDeactivation) {
-        OWSFailDebug(@"%@ in %s refusing to present conversation: %@ multiple times.",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            threadId);
+        OWSFailDebug(@"refusing to present conversation: %@ multiple times.", threadId);
         return;
     }
 
@@ -164,14 +161,14 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    DDLogInfo(@"%@ launched from local notification", self.logTag);
+    OWSLogInfo(@"launched from local notification");
 
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
     if (threadId) {
         [self presentOncePerActivationConversationWithThreadId:threadId];
     } else {
-        OWSFailDebug(@"%@ threadId was unexpectedly nil in %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"threadId was unexpectedly nil");
     }
 
     // We only want to receive a single local notification per launch.
@@ -185,7 +182,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
           forLocalNotification:(UILocalNotification *)notification
              completionHandler:(void (^)(void))completionHandler
 {
-    DDLogInfo(@"%@ in %s", self.logTag, __FUNCTION__);
+    OWSLogInfo(@"in %s", __FUNCTION__);
 
     [self application:application
         handleActionWithIdentifier:identifier
@@ -200,7 +197,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)(void))completionHandler
 {
-    DDLogInfo(@"%@ handling action with identifier: %@", self.logTag, identifier);
+    OWSLogInfo(@"handling action with identifier: %@", identifier);
 
     if ([identifier isEqualToString:Signal_Message_Reply_Identifier]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
@@ -220,7 +217,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
                 }
                 failure:^(NSError *_Nonnull error) {
                     // TODO Surface the specific error in the notification?
-                    DDLogError(@"Message send failed with error: %@", error);
+                    OWSLogError(@"Message send failed with error: %@", error);
 
                     UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
                     failedSendNotif.alertBody =
@@ -237,13 +234,13 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     } else if ([identifier isEqualToString:PushManagerActionsAcceptCall]) {
         NSString *localIdString = notification.userInfo[PushManagerUserInfoKeysLocalCallId];
         if (!localIdString) {
-            DDLogError(@"%@ missing localIdString.", self.logTag);
+            OWSLogError(@"missing localIdString.");
             return;
         }
 
         NSUUID *localId = [[NSUUID alloc] initWithUUIDString:localIdString];
         if (!localId) {
-            DDLogError(@"%@ localIdString failed to parse as UUID.", self.logTag);
+            OWSLogError(@"localIdString failed to parse as UUID.");
             return;
         }
 
@@ -252,13 +249,13 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     } else if ([identifier isEqualToString:PushManagerActionsDeclineCall]) {
         NSString *localIdString = notification.userInfo[PushManagerUserInfoKeysLocalCallId];
         if (!localIdString) {
-            DDLogError(@"%@ missing localIdString.", self.logTag);
+            OWSLogError(@"missing localIdString.");
             return;
         }
 
         NSUUID *localId = [[NSUUID alloc] initWithUUIDString:localIdString];
         if (!localId) {
-            DDLogError(@"%@ localIdString failed to parse as UUID.", self.logTag);
+            OWSLogError(@"localIdString failed to parse as UUID.");
             return;
         }
 
@@ -267,7 +264,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     } else if ([identifier isEqualToString:PushManagerActionsCallBack]) {
         NSString *recipientId = notification.userInfo[PushManagerUserInfoKeysCallBackSignalRecipientId];
         if (!recipientId) {
-            DDLogError(@"%@ missing call back id", self.logTag);
+            OWSLogError(@"missing call back id");
             return;
         }
 
@@ -279,16 +276,16 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         if (threadId) {
             [self presentOncePerActivationConversationWithThreadId:threadId];
         } else {
-            OWSFailDebug(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
+            OWSFailDebug(@"threadId was unexpectedly nil in action with identifier: %@", identifier);
         }
         completionHandler();
     } else {
-        OWSFailDebug(@"%@ Unhandled action with identifier: %@", self.logTag, identifier);
+        OWSFailDebug(@"Unhandled action with identifier: %@", identifier);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         if (threadId) {
             [self presentOncePerActivationConversationWithThreadId:threadId];
         } else {
-            OWSFailDebug(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
+            OWSFailDebug(@"threadId was unexpectedly nil in action with identifier: %@", identifier);
         }
         completionHandler();
     }
@@ -298,7 +295,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 {
     NSString *threadId = userInfo[Signal_Thread_UserInfo_Key];
     if (!threadId) {
-        OWSFailDebug(@"%@ missing thread id for notification.", self.logTag);
+        OWSFailDebug(@"missing thread id for notification.");
         return;
     }
 
@@ -442,7 +439,7 @@ NSString *const PushManagerUserInfoKeysCallBackSignalRecipientId = @"PushManager
 
 - (UIUserNotificationSettings *)userNotificationSettings
 {
-    DDLogDebug(@"%@ registering user notification settings", self.logTag);
+    OWSLogDebug(@"registering user notification settings");
     UIUserNotificationSettings *settings = [UIUserNotificationSettings
         settingsForTypes:(UIUserNotificationType)[self allNotificationTypes]
               categories:[NSSet setWithObjects:[self fullNewMessageNotificationCategory],

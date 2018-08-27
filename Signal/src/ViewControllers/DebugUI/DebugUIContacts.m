@@ -1178,7 +1178,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(count > 0);
     OWSAssert(batchCompletionHandler);
 
-    DDLogDebug(@"createRandomContactsBatch: %zu", count);
+    OWSLogDebug(@"createRandomContactsBatch: %zu", count);
 
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
@@ -1225,7 +1225,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  // Contact.m, but it's not worth it for the sake of debug UI.
                                  contact.imageData = UIImageJPEGRepresentation(
                                      [OWSAvatarBuilder buildRandomAvatarWithDiameter:avatarDiameter], (CGFloat)0.9);
-                                 DDLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
+                                 OWSLogDebug(@"avatar size: %lu bytes", (unsigned long)contact.imageData.length);
                              }
 
                              [contacts addObject:contact];
@@ -1233,11 +1233,11 @@ NS_ASSUME_NONNULL_BEGIN
                          }
                      }
 
-                     DDLogError(@"Saving fake contacts: %zu", contacts.count);
+                     OWSLogError(@"Saving fake contacts: %zu", contacts.count);
 
                      NSError *saveError = nil;
                      if (![store executeSaveRequest:request error:&saveError]) {
-                         DDLogError(@"Error saving fake contacts: %@", saveError);
+                         OWSLogError(@"Error saving fake contacts: %@", saveError);
                          [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
                      } else {
                          if (contactHandler) {
@@ -1289,10 +1289,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                         NSError *saveError = nil;
                         if (!result || fetchError) {
-                            DDLogError(@"error = %@", fetchError);
+                            OWSLogError(@"error = %@", fetchError);
                             [OWSAlerts showAlertWithTitle:@"Error" message:fetchError.localizedDescription];
                         } else if (![store executeSaveRequest:request error:&saveError]) {
-                            DDLogError(@"error = %@", saveError);
+                            OWSLogError(@"error = %@", saveError);
                             [OWSAlerts showAlertWithTitle:@"Error" message:saveError.localizedDescription];
                         }
                     }];
@@ -1300,13 +1300,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearSignalAccountCache
 {
-    DDLogWarn(@"%@ Deleting all signal accounts.", self.logTag);
+    OWSLogWarn(@"Deleting all signal accounts.");
     [SignalAccount removeAllObjectsInCollection];
 }
 
 + (void)clearSignalRecipientCache
 {
-    DDLogWarn(@"%@ Deleting all signal recipients.", self.logTag);
+    OWSLogWarn(@"Deleting all signal recipients.");
     [SignalRecipient removeAllObjectsInCollection];
 }
 

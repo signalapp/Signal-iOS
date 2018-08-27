@@ -159,13 +159,13 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         __block int i = 0;
 
-        DDLogInfo(@"%@ SignedPreKeys Report:", tag);
-        DDLogInfo(@"%@   currentId: %@", tag, currentId);
-        DDLogInfo(@"%@   firstPrekeyUpdateFailureDate: %@", tag, firstPrekeyUpdateFailureDate);
-        DDLogInfo(@"%@   prekeyUpdateFailureCount: %lu", tag, (unsigned long)prekeyUpdateFailureCount);
+        OWSLogInfo(@"%@ SignedPreKeys Report:", tag);
+        OWSLogInfo(@"%@   currentId: %@", tag, currentId);
+        OWSLogInfo(@"%@   firstPrekeyUpdateFailureDate: %@", tag, firstPrekeyUpdateFailureDate);
+        OWSLogInfo(@"%@   prekeyUpdateFailureCount: %lu", tag, (unsigned long)prekeyUpdateFailureCount);
 
         NSUInteger count = [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
-        DDLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
+        OWSLogInfo(@"%@   All Keys (count: %lu):", tag, (unsigned long)count);
 
         [transaction
             enumerateKeysAndObjectsInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection
@@ -180,8 +180,8 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
                                          }
                                          SignedPreKeyRecord *signedPreKeyRecord
                                              = (SignedPreKeyRecord *)signedPreKeyObject;
-                                         DDLogInfo(@"%@     #%d <SignedPreKeyRecord: id: %d, generatedAt: %@, "
-                                                   @"wasAcceptedByService:%@, signature: %@",
+                                         OWSLogInfo(@"%@     #%d <SignedPreKeyRecord: id: %d, generatedAt: %@, "
+                                                    @"wasAcceptedByService:%@, signature: %@",
                                              tag,
                                              i,
                                              signedPreKeyRecord.Id,

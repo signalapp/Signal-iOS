@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioner.h"
@@ -75,12 +75,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)provisionWithSuccess:(void (^)(void))successCallback failure:(void (^)(NSError *_Nonnull))failureCallback
 {
-    [self.provisioningCodeService requestProvisioningCodeWithSuccess:^(NSString *provisioningCode) {
-        DDLogInfo(@"Retrieved provisioning code.");
-        [self provisionWithCode:provisioningCode success:successCallback failure:failureCallback];
-    }
+    [self.provisioningCodeService
+        requestProvisioningCodeWithSuccess:^(NSString *provisioningCode) {
+            OWSLogInfo(@"Retrieved provisioning code.");
+            [self provisionWithCode:provisioningCode success:successCallback failure:failureCallback];
+        }
         failure:^(NSError *error) {
-            DDLogError(@"Failed to get provisioning code with error: %@", error);
+            OWSLogError(@"Failed to get provisioning code with error: %@", error);
             failureCallback(error);
         }];
 }
@@ -103,15 +104,15 @@ NS_ASSUME_NONNULL_BEGIN
         failureCallback(error);
         return;
     }
-    
+
     [self.provisioningService provisionWithMessageBody:messageBody
         ephemeralDeviceId:self.ephemeralDeviceId
         success:^{
-            DDLogInfo(@"ProvisioningService SUCCEEDED");
+            OWSLogInfo(@"ProvisioningService SUCCEEDED");
             successCallback();
         }
         failure:^(NSError *error) {
-            DDLogError(@"ProvisioningService FAILED with error:%@", error);
+            OWSLogError(@"ProvisioningService FAILED with error:%@", error);
             failureCallback(error);
         }];
 }

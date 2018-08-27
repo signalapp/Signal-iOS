@@ -118,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
           };
 
     @try {
-        DDLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+        OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
 
         OWSAssert(envelope.source.length > 0);
         if ([self isEnvelopeBlocked:envelope]) {
-            DDLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
+            OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
             failureBlock();
             return;
         }
@@ -131,12 +131,11 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-                        DDLogDebug(@"%@ decrypted secure message.", self.logTag);
+                        OWSLogDebug(@"decrypted secure message.");
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        DDLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
-                            self.logTag,
+                        OWSLogError(@"decrypting secure message from address: %@ failed with error: %@",
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
@@ -148,13 +147,12 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-                        DDLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
+                        OWSLogDebug(@"decrypted pre-key whisper message");
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        DDLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
-                                   @"with error: %@",
-                            self.logTag,
+                        OWSLogError(@"decrypting pre-key whisper message from address: %@ failed "
+                                    @"with error: %@",
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
@@ -174,11 +172,11 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             default:
-                DDLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
+                OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.type);
                 break;
         }
     } @catch (NSException *exception) {
-        OWSFailDebug(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+        OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
@@ -280,11 +278,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope
 {
-    DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
-        self.logTag,
-        exception.description,
-        exception.name,
-        exception.reason);
+    OWSLogError(
+        @"Got exception: %@ of type: %@ with reason: %@", exception.description, exception.name, exception.reason);
 
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -308,8 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // Should no longer get here, since we now record the new identity for incoming messages.
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-            OWSFailDebug(
-                @"%@ Failed to trust identity on incoming message from: %@", self.logTag, envelopeAddress(envelope));
+            OWSFailDebug(@"Failed to trust identity on incoming message from: %@", envelopeAddress(envelope));
             return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);

@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoEnvelope *_Nullable result = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
 
     if (error) {
-        OWSFailDebug(@"%@ paring SSKProtoEnvelope failed with error: %@", self.logTag, error);
+        OWSFailDebug(@"paring SSKProtoEnvelope failed with error: %@", error);
         return nil;
     }
     
@@ -351,7 +351,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(batchJobs);
     if (batchJobs.count < 1) {
         self.isDrainingQueue = NO;
-        DDLogVerbose(@"%@ Queue is drained", self.logTag);
+        OWSLogVerbose(@"Queue is drained");
         return;
     }
 
@@ -364,8 +364,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(backgroundTask);
     backgroundTask = nil;
 
-    DDLogVerbose(@"%@ completed %lu/%lu jobs. %lu jobs left.",
-        self.logTag,
+    OWSLogVerbose(@"completed %lu/%lu jobs. %lu jobs left.",
         (unsigned long)processedJobs.count,
         (unsigned long)batchJobs.count,
         (unsigned long)[OWSMessageContentJob numberOfKeysInCollection]);
@@ -405,7 +404,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                               transaction:transaction];
                 }
             } @catch (NSException *exception) {
-                OWSFailDebug(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 reportFailure(transaction);
             }
             [processedJobs addObject:job];

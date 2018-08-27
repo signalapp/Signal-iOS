@@ -142,10 +142,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)reregister
 {
-    DDLogInfo(@"%@ re-registering.", self.logTag);
+    OWSLogInfo(@"re-registering.");
 
     if (![[TSAccountManager sharedInstance] resetForReregistration]) {
-        OWSFailDebug(@"%@ could not reset for re-registration.", self.logTag);
+        OWSFailDebug(@"could not reset for re-registration.");
         return;
     }
 
@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               toPath:filePath
                                                                error:&error];
             if (!success || error) {
-                OWSFailDebug(@"%@ Could not copy database file: %@.", self.logTag, error);
+                OWSFailDebug(@"Could not copy database file: %@.", error);
                 success = NO;
             }
         }];
@@ -238,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
     attachment.captionText = [databasePassword hexadecimalString];
     if (!attachment || [attachment hasError]) {
-        OWSFailDebug(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
+        OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
     [ThreadUtil sendMessageWithAttachment:attachment
@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *error = [OWSPrimaryStorage.sharedManager.newDatabaseConnection backupToPath:filePath];
     if (error) {
-        OWSFailDebug(@"%@ Could not copy database file: %@.", self.logTag, error);
+        OWSFailDebug(@"Could not copy database file: %@.", error);
         return;
     }
 
@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     if (!attachment || [attachment hasError]) {
-        OWSFailDebug(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
+        OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
     [ThreadUtil sendMessageWithAttachment:attachment
