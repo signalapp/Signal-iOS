@@ -18,28 +18,15 @@
 
 @implementation PhoneNumberUtil
 
-+ (NSObject *)sharedLock
-{
-    static dispatch_once_t onceToken;
-    static NSObject *lock = nil;
-    dispatch_once(&onceToken, ^{
-        lock = [NSObject new];
-    });
-    return lock;
-}
-
 + (PhoneNumberUtil *)sharedThreadLocal
 {
-    @synchronized(self.sharedLock)
-    {
-        NSString *key = PhoneNumberUtil.logTag;
-        PhoneNumberUtil *_Nullable threadLocal = NSThread.currentThread.threadDictionary[key];
-        if (!threadLocal) {
-            threadLocal = [PhoneNumberUtil new];
-            NSThread.currentThread.threadDictionary[key] = threadLocal;
-        }
-        return threadLocal;
+    NSString *key = PhoneNumberUtil.logTag;
+    PhoneNumberUtil *_Nullable threadLocal = NSThread.currentThread.threadDictionary[key];
+    if (!threadLocal) {
+        threadLocal = [PhoneNumberUtil new];
+        NSThread.currentThread.threadDictionary[key] = threadLocal;
     }
+    return threadLocal;
 }
 
 - (instancetype)init {
