@@ -1046,7 +1046,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
-        OWSFailDebug(@"%@ name data is too long with length:%lu", self.logTag, (unsigned long)nameData.length);
+        OWSFailDebug(@"name data is too long with length:%lu", (unsigned long)nameData.length);
         return nil;
     }
 

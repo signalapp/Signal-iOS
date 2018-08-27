@@ -195,7 +195,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         return nil;
     }
 
-    OWSLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.logTag, name, (unsigned long)certData.length);
+    OWSLogVerbose(@"read cert data with name: %@ length: %lu", name, (unsigned long)certData.length);
     return certData;
 }
 

@@ -815,7 +815,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     }
 
     if (keySpec.length != kSQLCipherKeySpecLength) {
-        OWSLogError(@"%@ keyspec had length: %lu", self.logTag, (unsigned long)keySpec.length);
+        OWSLogError(@"keyspec had length: %lu", (unsigned long)keySpec.length);
         [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec invalid"];
     }
 

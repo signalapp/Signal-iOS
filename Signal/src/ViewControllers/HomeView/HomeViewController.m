@@ -788,7 +788,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
     }
 
-    OWSFailDebug(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
+    OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
     return 0;
 }
 
@@ -825,7 +825,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }
     }
 
-    OWSFailDebug(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
+    OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)section);
     return [UITableViewCell new];
 }
 
@@ -1066,7 +1066,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
 {
     if (indexPath.section != HomeViewControllerSectionConversations) {
-        OWSFailDebug(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
+        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
         return;
     }
 
@@ -1122,7 +1122,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section != HomeViewControllerSectionConversations) {
-        OWSFailDebug(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
+        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
         return;
     }
 

@@ -150,12 +150,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"interactionCount: %llu", interactionCount);
     OWSLogInfo(@"interactionSizeTotal: %llu", interactionSizeTotal);
     if (interactionCount > 0) {
-        OWSLogInfo(@"%@ interaction average size: %f", self.logTag, interactionSizeTotal / (double)interactionCount);
+        OWSLogInfo(@"interaction average size: %f", interactionSizeTotal / (double)interactionCount);
     }
     OWSLogInfo(@"attachmentCount: %llu", attachmentCount);
     OWSLogInfo(@"attachmentSizeTotal: %llu", attachmentSizeTotal);
     if (attachmentCount > 0) {
-        OWSLogInfo(@"%@ attachment average size: %f", self.logTag, attachmentSizeTotal / (double)attachmentCount);
+        OWSLogInfo(@"attachment average size: %f", attachmentSizeTotal / (double)attachmentCount);
     }
 }
 

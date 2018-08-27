@@ -610,9 +610,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             // Don't delete interactions which were created in the last N minutes.
             NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:interaction.timestamp];
             if ([creationDate isAfterDate:thresholdDate]) {
-                OWSLogInfo(@"%@ Skipping orphan interaction due to age: %f",
-                    self.logTag,
-                    fabs(creationDate.timeIntervalSinceNow));
+                OWSLogInfo(@"Skipping orphan interaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
                 continue;
             }
             OWSLogInfo(@"Removing orphan message: %@", interaction.uniqueId);
@@ -645,9 +643,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             // Don't delete attachments which were created in the last N minutes.
             NSDate *creationDate = attachmentStream.creationTimestamp;
             if ([creationDate isAfterDate:thresholdDate]) {
-                OWSLogInfo(@"%@ Skipping orphan attachment due to age: %f",
-                    self.logTag,
-                    fabs(creationDate.timeIntervalSinceNow));
+                OWSLogInfo(@"Skipping orphan attachment due to age: %f", fabs(creationDate.timeIntervalSinceNow));
                 continue;
             }
             OWSLogInfo(@"Removing orphan attachmentStream: %@", attachmentStream.uniqueId);
@@ -681,9 +677,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         // Don't delete files which were created in the last N minutes.
         NSDate *creationDate = attributes.fileModificationDate;
         if ([creationDate isAfterDate:thresholdDate]) {
-            OWSLogInfo(@"%@ Skipping orphan attachment file due to age: %f",
-                self.logTag,
-                fabs([creationDate timeIntervalSinceNow]));
+            OWSLogInfo(@"Skipping orphan attachment file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
             continue;
         }
         OWSLogInfo(@"Deleting orphan attachment file: %@", filePath);

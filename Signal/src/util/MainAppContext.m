@@ -188,8 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (UIApplication.sharedApplication.isIdleTimerDisabled != shouldBeBlocking) {
         if (shouldBeBlocking) {
-            NSMutableString *logString = [NSMutableString
-                stringWithFormat:@"%@ Blocking sleep because of: %@", self.logTag, blockingObjects.firstObject];
+            NSMutableString *logString =
+                [NSMutableString stringWithFormat:@"Blocking sleep because of: %@", blockingObjects.firstObject];
             if (blockingObjects.count > 1) {
                 [logString appendString:[NSString stringWithFormat:@"(and %lu others)", blockingObjects.count - 1]];
             }

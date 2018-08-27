@@ -201,8 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
             key,
             valueData.length,
             expectedLength);
-        OWSFailDebug(@"%@ decoded base 64 value for key has unexpected length: %lu != %lu",
-            self.logTag,
+        OWSFailDebug(@"decoded base 64 value for key has unexpected length: %lu != %lu",
             (unsigned long)valueData.length,
             (unsigned long)expectedLength);
         return nil;

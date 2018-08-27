@@ -162,8 +162,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 {
     OWSAssert(transaction);
 
-    OWSLogInfo(@"%@ updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
-        self.logTag,
+    OWSLogInfo(@"updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
         NSStringFromCallType(_callType),
         NSStringFromCallType(callType),
         self.uniqueId,

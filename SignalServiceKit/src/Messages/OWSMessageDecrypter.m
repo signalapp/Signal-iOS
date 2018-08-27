@@ -135,8 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        OWSLogError(@"%@ decrypting secure message from address: %@ failed with error: %@",
-                            self.logTag,
+                        OWSLogError(@"decrypting secure message from address: %@ failed with error: %@",
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
@@ -152,9 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        OWSLogError(@"%@ decrypting pre-key whisper message from address: %@ failed "
+                        OWSLogError(@"decrypting pre-key whisper message from address: %@ failed "
                                     @"with error: %@",
-                            self.logTag,
                             envelopeAddress(envelope),
                             error);
                         OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
@@ -305,8 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // Should no longer get here, since we now record the new identity for incoming messages.
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-            OWSFailDebug(
-                @"%@ Failed to trust identity on incoming message from: %@", self.logTag, envelopeAddress(envelope));
+            OWSFailDebug(@"Failed to trust identity on incoming message from: %@", envelopeAddress(envelope));
             return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);

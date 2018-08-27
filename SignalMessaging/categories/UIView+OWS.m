@@ -475,8 +475,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)logFrameWithLabel:(NSString *)label
 {
-    OWSLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
-        self.logTag,
+    OWSLogVerbose(@"%@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
         label,
         NSStringFromCGRect(self.frame),
         self.hidden,

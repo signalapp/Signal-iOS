@@ -1066,9 +1066,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     switch (statusCode) {
         case 401: {
-            OWSLogWarn(@"%@ Unable to send due to invalid credentials. Did the user's client get de-authed by "
-                       @"registering elsewhere?",
-                self.logTag);
+            OWSLogWarn(@"Unable to send due to invalid credentials. Did the user's client get de-authed by "
+                       @"registering elsewhere?");
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceFailure,
                 NSLocalizedString(
                     @"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED", @"Error message when attempting to send message"));
@@ -1229,10 +1228,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (!plainText) {
         OWSRaiseException(InvalidMessageException, @"Failed to build message proto");
     }
-    OWSLogDebug(@"%@ built message: %@ plainTextData.length: %lu",
-        self.logTag,
-        [message class],
-        (unsigned long)plainText.length);
+    OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plainText.length);
 
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {

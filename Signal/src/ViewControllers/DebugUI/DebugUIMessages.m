@@ -3701,10 +3701,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
                     }];
                 remainder -= batchSize;
-                OWSLogInfo(@"%@ sendFakeMessages %lu / %lu",
-                    self.logTag,
-                    (unsigned long)(counter - remainder),
-                    (unsigned long)counter);
+                OWSLogInfo(@"sendFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
             }
         });
     }
@@ -3736,7 +3733,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
               isTextOnly:(BOOL)isTextOnly
              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSLogInfo(@"%@ sendFakeMessages: %lu", self.logTag, (unsigned long)counter);
+    OWSLogInfo(@"sendFakeMessages: %lu", (unsigned long)counter);
 
     for (NSUInteger i = 0; i < counter; i++) {
         NSString *randomText = [self randomText];
@@ -3888,7 +3885,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 {
     OWSAssert(thread);
 
-    OWSLogInfo(@"%@ injectIncomingMessageInThread: %lu", self.logTag, (unsigned long)counter);
+    OWSLogInfo(@"injectIncomingMessageInThread: %lu", (unsigned long)counter);
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];

@@ -679,7 +679,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
         }
     } else {
-        OWSLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
+        OWSLogError(@"Failed to load cell media: %@", [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
         [self showAttachmentErrorViewWithMediaView:mediaView];
     }

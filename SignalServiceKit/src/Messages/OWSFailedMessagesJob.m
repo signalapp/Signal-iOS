@@ -84,9 +84,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                 // sanity check
                 OWSAssert(message.messageState == TSOutgoingMessageStateSending);
                 if (message.messageState != TSOutgoingMessageStateSending) {
-                    OWSLogError(@"%@ Refusing to mark as unsent message with state: %d",
-                        self.logTag,
-                        (int)message.messageState);
+                    OWSLogError(@"Refusing to mark as unsent message with state: %d", (int)message.messageState);
                     return;
                 }
 

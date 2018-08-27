@@ -254,8 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Missing message for delivery receipt: %llu", timestamp);
         } else {
             if (messages.count > 1) {
-                OWSLogInfo(@"%@ More than one message (%lu) for delivery receipt: %llu",
-                    self.logTag,
+                OWSLogInfo(@"More than one message (%lu) for delivery receipt: %llu",
                     (unsigned long)messages.count,
                     timestamp);
             }
@@ -284,8 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      sourceDeviceId:envelope.sourceDevice
                                                                         transaction:transaction];
     if (duplicateEnvelope) {
-        OWSLogInfo(@"%@ Ignoring previously received envelope from %@ with timestamp: %llu",
-            self.logTag,
+        OWSLogInfo(@"Ignoring previously received envelope from %@ with timestamp: %llu",
             envelopeAddress(envelope),
             envelope.timestamp);
         return;
@@ -412,7 +410,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
-    OWSLogInfo(@"%@ Sending group info request: %@", self.logTag, envelopeAddress(envelope));
+    OWSLogInfo(@"Sending group info request: %@", envelopeAddress(envelope));
 
     NSString *recipientId = envelope.source;
 
@@ -459,7 +457,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       readTimestamp:envelope.timestamp];
             break;
         default:
-            OWSLogInfo(@"%@ Ignoring receipt message of unknown type: %d.", self.logTag, (int)receiptMessage.type);
+            OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.type);
             return;
     }
 }
@@ -711,7 +709,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
         });
     } else if (syncMessage.read.count > 0) {
-        OWSLogInfo(@"%@ Received %ld read receipt(s)", self.logTag, (u_long)syncMessage.read.count);
+        OWSLogInfo(@"Received %ld read receipt(s)", (u_long)syncMessage.read.count);
         [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
                                                                    readTimestamp:envelope.timestamp
                                                                      transaction:transaction];
@@ -756,10 +754,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
     if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
-        OWSLogInfo(@"%@ Expiring messages duration turned to %u for thread %@",
-            self.logTag,
-            (unsigned int)dataMessage.expireTimer,
-            thread);
+        OWSLogInfo(
+            @"Expiring messages duration turned to %u for thread %@", (unsigned int)dataMessage.expireTimer, thread);
         disappearingMessagesConfiguration =
             [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
                                                                    enabled:YES
@@ -791,14 +787,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *recipientId = envelope.source;
     if (!dataMessage.hasProfileKey) {
-        OWSFailDebug(
-            @"%@ received profile key message without profile key from: %@", self.logTag, envelopeAddress(envelope));
+        OWSFailDebug(@"received profile key message without profile key from: %@", envelopeAddress(envelope));
         return;
     }
     NSData *profileKey = dataMessage.profileKey;
     if (profileKey.length != kAES256_KeyByteLength) {
-        OWSFailDebug(@"%@ received profile key of unexpected length:%lu from:%@",
-            self.logTag,
+        OWSFailDebug(@"received profile key of unexpected length:%lu from:%@",
             (unsigned long)profileKey.length,
             envelopeAddress(envelope));
         return;
@@ -1002,8 +996,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 if (body.length == 0 && attachmentIds.count < 1 && !contact) {
-                    OWSLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
-                        self.logTag,
+                    OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
                         envelopeAddress(envelope),
                         groupId,
                         (unsigned long)timestamp);
@@ -1014,8 +1007,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                  thread:oldGroupThread
                                                                                             transaction:transaction];
 
-                OWSLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
-                    self.logTag,
+                OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
                     envelopeAddress(envelope),
                     groupId,
                     (unsigned long)timestamp);
@@ -1038,23 +1030,20 @@ NS_ASSUME_NONNULL_BEGIN
                 return incomingMessage;
             }
             default: {
-                OWSLogWarn(@"%@ Ignoring unknown group message type: %d", self.logTag, (int)dataMessage.group.type);
+                OWSLogWarn(@"Ignoring unknown group message type: %d", (int)dataMessage.group.type);
                 return nil;
             }
         }
     } else {
         if (body.length == 0 && attachmentIds.count < 1 && !contact) {
-            OWSLogWarn(@"%@ ignoring empty incoming message from: %@ with timestamp: %lu",
-                self.logTag,
+            OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
                 envelopeAddress(envelope),
                 (unsigned long)timestamp);
             return nil;
         }
 
-        OWSLogDebug(@"%@ incoming message from: %@ with timestamp: %lu",
-            self.logTag,
-            envelopeAddress(envelope),
-            (unsigned long)timestamp);
+        OWSLogDebug(
+            @"incoming message from: %@ with timestamp: %lu", envelopeAddress(envelope), (unsigned long)timestamp);
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
@@ -1122,8 +1111,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                             networkManager:self.networkManager];
 
-            OWSLogDebug(
-                @"%@ downloading thumbnail for message: %lu", self.logTag, (unsigned long)incomingMessage.timestamp);
+            OWSLogDebug(@"downloading thumbnail for message: %lu", (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
                 transaction:transaction
                 success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -1134,8 +1122,7 @@ NS_ASSUME_NONNULL_BEGIN
                         }];
                 }
                 failure:^(NSError *_Nonnull error) {
-                    OWSLogWarn(@"%@ failed to fetch thumbnail for message: %lu with error: %@",
-                        self.logTag,
+                    OWSLogWarn(@"failed to fetch thumbnail for message: %lu with error: %@",
                         (unsigned long)incomingMessage.timestamp,
                         error);
                 }];
@@ -1154,9 +1141,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                             networkManager:self.networkManager];
 
-            OWSLogDebug(@"%@ downloading contact avatar for message: %lu",
-                self.logTag,
-                (unsigned long)incomingMessage.timestamp);
+            OWSLogDebug(@"downloading contact avatar for message: %lu", (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
                 transaction:transaction
                 success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -1166,8 +1151,7 @@ NS_ASSUME_NONNULL_BEGIN
                         }];
                 }
                 failure:^(NSError *_Nonnull error) {
-                    OWSLogWarn(@"%@ failed to fetch contact avatar for message: %lu with error: %@",
-                        self.logTag,
+                    OWSLogWarn(@"failed to fetch contact avatar for message: %lu with error: %@",
                         (unsigned long)incomingMessage.timestamp,
                         error);
                 }];

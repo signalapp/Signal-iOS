@@ -177,9 +177,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     CGRect newFrame = self.returnToCallWindow.frame;
     newFrame.size.height = OWSWindowManagerCallBannerHeight();
 
-    OWSLogDebug(@"%@ StatusBar changed frames - updating returnToCallWindowFrame: %@",
-        self.logTag,
-        NSStringFromCGRect(newFrame));
+    OWSLogDebug(@"StatusBar changed frames - updating returnToCallWindowFrame: %@", NSStringFromCGRect(newFrame));
     self.returnToCallWindow.frame = newFrame;
 }
 

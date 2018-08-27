@@ -152,7 +152,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     };
 
     if (attachment.serverId < 100) {
-        OWSLogError(@"%@ Suspicious attachment id: %llu", self.logTag, (unsigned long long)attachment.serverId);
+        OWSLogError(@"Suspicious attachment id: %llu", (unsigned long long)attachment.serverId);
     }
     TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachment.serverId];
 
@@ -185,8 +185,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                             // downloading attachments with low server ids".
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                             NSInteger statusCode = [httpResponse statusCode];
-                            OWSFailDebug(@"%@ %d Failure with suspicious attachment id: %llu, %@",
-                                self.logTag,
+                            OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
                                 (int)statusCode,
                                 (unsigned long long)attachment.serverId,
                                 error);
@@ -207,8 +206,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 // downloading attachments with low server ids".
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                 NSInteger statusCode = [httpResponse statusCode];
-                OWSFailDebug(@"%@ %d Failure with suspicious attachment id: %llu, %@",
-                    self.logTag,
+                OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
                     (int)statusCode,
                     (unsigned long long)attachment.serverId,
                     error);
@@ -292,8 +290,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 //
                 // If the current downloaded bytes or the expected total byes
                 // exceed the max download size, abort the download.
-                OWSLogError(@"%@ Attachment download exceed expected content length: %lld, %lld.",
-                    self.logTag,
+                OWSLogError(@"Attachment download exceed expected content length: %lld, %lld.",
                     (long long)progress.totalUnitCount,
                     (long long)progress.completedUnitCount);
                 abortDownload();

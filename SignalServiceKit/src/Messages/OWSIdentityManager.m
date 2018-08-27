@@ -245,8 +245,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 break;
         }
 
-        OWSLogInfo(@"%@ replacing identity for existing recipient: %@ (%@ -> %@)",
-            self.logTag,
+        OWSLogInfo(@"replacing identity for existing recipient: %@ (%@ -> %@)",
             recipientId,
             OWSVerificationStateToString(existingIdentity.verificationState),
             OWSVerificationStateToString(verificationState));
@@ -333,8 +332,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         return;
     }
 
-    OWSLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
-        self.logTag,
+    OWSLogInfo(@"setVerificationState: %@ (%@ -> %@)",
         recipientId,
         OWSVerificationStateToString(recipientIdentity.verificationState),
         OWSVerificationStateToString(verificationState));
@@ -475,7 +473,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
         }
         default: {
-            OWSFailDebug(@"%@ unexpected message direction: %ld", self.logTag, (long)direction);
+            OWSFailDebug(@"unexpected message direction: %ld", (long)direction);
             return NO;
         }
     }
@@ -777,8 +775,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             return;
         }
 
-        OWSLogInfo(@"%@ setVerificationState: %@ (%@ -> %@)",
-            self.logTag,
+        OWSLogInfo(@"setVerificationState: %@ (%@ -> %@)",
             recipientId,
             OWSVerificationStateToString(recipientIdentity.verificationState),
             OWSVerificationStateToString(verificationState));

@@ -212,10 +212,8 @@ NS_ASSUME_NONNULL_BEGIN
             return YES;
         } else if (range.location != index || range.length < 1) {
             // This should never happen.
-            OWSFailDebug(@"%@ unexpected composed character sequence: %lu, %@",
-                self.logTag,
-                (unsigned long)index,
-                NSStringFromRange(range));
+            OWSFailDebug(
+                @"unexpected composed character sequence: %lu, %@", (unsigned long)index, NSStringFromRange(range));
             return YES;
         }
         index = range.location + range.length;

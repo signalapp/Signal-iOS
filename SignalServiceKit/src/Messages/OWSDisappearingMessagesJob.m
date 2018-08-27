@@ -134,7 +134,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                                                transaction:transaction];
     }];
 
-    OWSLogDebug(@"%@ Removed %lu expired messages", self.logTag, (unsigned long)expirationCount);
+    OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
 
     OWSAssert(backgroundTask);
     backgroundTask = nil;
@@ -308,8 +308,7 @@ void AssertIsOnDisappearingMessagesQueue()
         NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, date.timeIntervalSinceNow);
         NSDate *newTimerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
         if (self.nextDisappearanceDate && [self.nextDisappearanceDate isBeforeDate:newTimerScheduleDate]) {
-            OWSLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
-                self.logTag,
+            OWSLogVerbose(@"Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
                 [self.dateFormatter stringFromDate:date],
                 (int)round(MAX(0, [date timeIntervalSinceDate:[NSDate new]])),
                 [self.dateFormatter stringFromDate:self.nextDisappearanceDate],
@@ -318,8 +317,7 @@ void AssertIsOnDisappearingMessagesQueue()
         }
 
         // Update Schedule
-        OWSLogVerbose(@"%@ Scheduled run at %@ (%d sec.)",
-            self.logTag,
+        OWSLogVerbose(@"Scheduled run at %@ (%d sec.)",
             [self.dateFormatter stringFromDate:newTimerScheduleDate],
             (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
         [self resetNextDisappearanceTimer];
@@ -393,8 +391,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
-            OWSFailDebug(
-                @"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
+            OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
             uint64_t readTimeBestGuess = message.timestampForSorting;

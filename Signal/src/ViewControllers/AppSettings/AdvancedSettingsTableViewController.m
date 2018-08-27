@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
                                          actionBlock:^{
-                                             OWSLogInfo(@"%@ Submitting debug logs", weakSelf.logTag);
+                                             OWSLogInfo(@"Submitting debug logs");
                                              [DDLog flushLog];
                                              [Pastelog submitLogs];
                                          }]];

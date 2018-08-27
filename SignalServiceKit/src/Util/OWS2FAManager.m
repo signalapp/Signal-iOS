@@ -219,8 +219,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     NSTimeInterval oldInterval = self.repetitionInterval;
     NSTimeInterval newInterval = [self adjustRepetitionInterval:oldInterval wasSuccessful:wasSuccessful];
 
-    OWSLogInfo(@"%@ %@ guess. Updating repetition interval: %f -> %f",
-        self.logTag,
+    OWSLogInfo(@"%@ guess. Updating repetition interval: %f -> %f",
         (wasSuccessful ? @"successful" : @"failed"),
         oldInterval,
         newInterval);

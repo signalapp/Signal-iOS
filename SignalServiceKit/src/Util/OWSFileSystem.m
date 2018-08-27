@@ -180,9 +180,8 @@ NS_ASSUME_NONNULL_BEGIN
         return error;
     }
 
-    OWSLogInfo(@"%@ Moved file or directory in: %f", self.logTag, fabs([startDate timeIntervalSinceNow]));
-    OWSLogDebug(@"%@ Moved file or directory from: %@ to: %@ in: %f",
-        self.logTag,
+    OWSLogInfo(@"Moved file or directory in: %f", fabs([startDate timeIntervalSinceNow]));
+    OWSLogDebug(@"Moved file or directory from: %@ to: %@ in: %f",
         oldFilePath,
         newFilePath,
         fabs([startDate timeIntervalSinceNow]));

@@ -33,7 +33,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 + (nullable instancetype)keyWithData:(NSData *)data
 {
     if (data.length != kAES256_KeyByteLength) {
-        OWSFailDebug(@"%@ Invalid key length: %lu", self.logTag, (unsigned long)data.length);
+        OWSFailDebug(@"Invalid key length: %lu", (unsigned long)data.length);
         return nil;
     }
     
@@ -470,8 +470,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
             return [paddedPlainText copy];
         } else {
             unsigned long paddingSize = paddedPlainText.length - unpaddedSize;
-            OWSLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %lu, paddingSize: %lu",
-                self.logTag,
+            OWSLogInfo(@"decrypted padded attachment with unpaddedSize: %lu, paddingSize: %lu",
                 (unsigned long)unpaddedSize,
                 paddingSize);
             return [paddedPlainText subdataWithRange:NSMakeRange(0, unpaddedSize)];

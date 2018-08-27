@@ -156,7 +156,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
             NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
             BOOL isValidResponse = (statusCode >= 200) && (statusCode < 400);
             if (!isValidResponse) {
-                OWSLogError(@"%@ Unexpected server response: %d", self.logTag, (int)statusCode);
+                OWSLogError(@"Unexpected server response: %d", (int)statusCode);
                 NSError *invalidResponseError = OWSErrorMakeUnableToProcessServerResponseError();
                 invalidResponseError.isRetryable = YES;
                 [self reportError:invalidResponseError];

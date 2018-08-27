@@ -130,8 +130,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)reportError:(NSError *)error
 {
-    OWSLogDebug(@"%@ reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
-        self.logTag,
+    OWSLogDebug(@"reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
         error,
         error.isFatal,
         error.isRetryable,

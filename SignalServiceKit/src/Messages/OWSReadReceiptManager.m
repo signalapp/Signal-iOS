@@ -226,8 +226,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             [self.messageSender enqueueMessage:message
                 success:^{
-                    OWSLogInfo(@"%@ Successfully sent %lu read receipt to linked devices.",
-                        self.logTag,
+                    OWSLogInfo(@"Successfully sent %lu read receipt to linked devices.",
                         (unsigned long)readReceiptsForLinkedDevices.count);
                 }
                 failure:^(NSError *error) {
@@ -250,9 +249,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
                 [self.messageSender enqueueMessage:message
                     success:^{
-                        OWSLogInfo(@"%@ Successfully sent %lu read receipts to sender.",
-                            self.logTag,
-                            (unsigned long)timestamps.count);
+                        OWSLogInfo(@"Successfully sent %lu read receipts to sender.", (unsigned long)timestamps.count);
                     }
                     failure:^(NSError *error) {
                         OWSLogError(@"Failed to send read receipts to sender with error: %@", error);

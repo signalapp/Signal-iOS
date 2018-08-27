@@ -87,7 +87,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     __block NSMutableArray<SignalAccount *> *signalAccounts;
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
-        OWSLogInfo(@"%@ loading %lu signal accounts from cache.", self.logTag, (unsigned long)signalAccountCount);
+        OWSLogInfo(@"loading %lu signal accounts from cache.", (unsigned long)signalAccountCount);
 
         signalAccounts = [[NSMutableArray alloc] initWithCapacity:signalAccountCount];
 
@@ -513,14 +513,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         // Update cached SignalAccounts on disk
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            OWSLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
+            OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
                 OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
                 [signalAccount saveWithTransaction:transaction];
             }
 
             if (shouldClearStaleCache) {
-                OWSLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
+                OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)oldSignalAccounts.count);
                 for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
                     OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount);
                     [signalAccount removeWithTransaction:transaction];
@@ -533,9 +533,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 // their contacts we'll clear the cached ones.
                 // RADAR: https://bugreport.apple.com/web/?problemID=36082946
                 if (oldSignalAccounts.allValues.count > 0) {
-                    OWSLogWarn(@"%@ NOT Removing %lu old SignalAccounts.",
-                        self.logTag,
-                        (unsigned long)oldSignalAccounts.count);
+                    OWSLogWarn(@"NOT Removing %lu old SignalAccounts.", (unsigned long)oldSignalAccounts.count);
                     for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
                         OWSLogVerbose(@"Ensuring old SignalAccount is not inadvertently lost: %@", signalAccount);
                         [signalAccounts addObject:signalAccount];

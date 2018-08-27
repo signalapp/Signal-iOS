@@ -253,7 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
 {
-    OWSLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
 {
-    OWSLogInfo(@"%@ user toggled call kit preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsCallKitEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit vs not changed.
@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
 {
-    OWSLogInfo(@"%@ user toggled call kit privacy preference: %@", self.logTag, (sender.isOn ? @"ON" : @"OFF"));
+    OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [[Environment current].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogInfo(@"%@ trying to set is screen lock enabled: %@", self.logTag, @(shouldBeEnabled));
+    OWSLogInfo(@"trying to set is screen lock enabled: %@", @(shouldBeEnabled));
 
     [OWSScreenLock.sharedManager setIsScreenLockEnabled:shouldBeEnabled];
 }

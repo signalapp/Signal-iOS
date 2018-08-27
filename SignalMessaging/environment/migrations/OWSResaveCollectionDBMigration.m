@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSString *> *recordIds = [NSMutableArray new];
     [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [recordIds addObjectsFromArray:[transaction allKeysInCollection:collection]];
-        OWSLogInfo(@"%@ Migrating %lu records from: %@.", self.logTag, (unsigned long)recordIds.count, collection);
+        OWSLogInfo(@"Migrating %lu records from: %@.", (unsigned long)recordIds.count, collection);
     }
         completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
         completionBlock:^{

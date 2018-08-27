@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ScreenLockUIState desiredUIState = self.desiredUIState;
 
-    OWSLogVerbose(@"%@, ensureUI: %@", self.logTag, NSStringForScreenLockUIState(desiredUIState));
+    OWSLogVerbose(@"ensureUI: %@", NSStringForScreenLockUIState(desiredUIState));
 
     [self updateScreenBlockingWindow:desiredUIState animated:YES];
 

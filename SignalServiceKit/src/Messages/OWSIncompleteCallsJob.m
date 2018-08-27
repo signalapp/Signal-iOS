@@ -100,8 +100,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
                     [call updateCallType:RPRecentCallTypeIncomingMissed transaction:transaction];
                     OWSAssert(call.callType == RPRecentCallTypeIncomingMissed);
                 } else {
-                    OWSFailDebug(
-                        @"%@ call has unexpected call type: %@", self.logTag, NSStringFromCallType(call.callType));
+                    OWSFailDebug(@"call has unexpected call type: %@", NSStringFromCallType(call.callType));
                     return;
                 }
                 count++;

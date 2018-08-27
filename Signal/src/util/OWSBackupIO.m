@@ -221,8 +221,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
             dstBufferData.mutableBytes, dstBufferLength, srcData.bytes, srcLength, NULL, SignalCompressionAlgorithm);
         NSData *compressedData = [dstBufferData subdataWithRange:NSMakeRange(0, dstLength)];
 
-        OWSLogVerbose(@"%@ compressed %zd -> %zd = %0.2f",
-            self.logTag,
+        OWSLogVerbose(@"compressed %zd -> %zd = %0.2f",
             srcLength,
             dstLength,
             (srcLength > 0 ? (dstLength / (CGFloat)srcLength) : 0));
@@ -256,8 +255,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
             dstBufferData.mutableBytes, dstBufferLength, srcData.bytes, srcLength, NULL, SignalCompressionAlgorithm);
         NSData *decompressedData = [dstBufferData subdataWithRange:NSMakeRange(0, dstLength)];
         OWSAssert(decompressedData.length == uncompressedDataLength);
-        OWSLogVerbose(@"%@ decompressed %zd -> %zd = %0.2f",
-            self.logTag,
+        OWSLogVerbose(@"decompressed %zd -> %zd = %0.2f",
             srcLength,
             dstLength,
             (dstLength > 0 ? (srcLength / (CGFloat)dstLength) : 0));

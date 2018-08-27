@@ -364,8 +364,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSAssert(backgroundTask);
     backgroundTask = nil;
 
-    OWSLogVerbose(@"%@ completed %lu/%lu jobs. %lu jobs left.",
-        self.logTag,
+    OWSLogVerbose(@"completed %lu/%lu jobs. %lu jobs left.",
         (unsigned long)processedJobs.count,
         (unsigned long)batchJobs.count,
         (unsigned long)[OWSMessageContentJob numberOfKeysInCollection]);

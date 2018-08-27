@@ -4843,17 +4843,14 @@ typedef enum : NSUInteger {
             TSInteraction *interaction =
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
             if (!interaction) {
-                OWSFailDebug(@"%@ missing interaction in message mappings: %lu / %lu.",
-                    self.logTag,
-                    (unsigned long)row,
-                    (unsigned long)count);
+                OWSFailDebug(
+                    @"missing interaction in message mappings: %lu / %lu.", (unsigned long)row, (unsigned long)count);
                 // TODO: Add analytics.
                 hasError = YES;
                 continue;
             }
             if (!interaction.uniqueId) {
-                OWSFailDebug(@"%@ invalid interaction in message mappings: %lu / %lu: %@.",
-                    self.logTag,
+                OWSFailDebug(@"invalid interaction in message mappings: %lu / %lu: %@.",
                     (unsigned long)row,
                     (unsigned long)count,
                     interaction);
@@ -5141,7 +5138,7 @@ typedef enum : NSUInteger {
 - (nullable ConversationViewItem *)viewItemForIndex:(NSInteger)index
 {
     if (index < 0 || index >= (NSInteger)self.viewItems.count) {
-        OWSFailDebug(@"%@ Invalid view item index: %lu", self.logTag, (unsigned long)index);
+        OWSFailDebug(@"Invalid view item index: %lu", (unsigned long)index);
         return nil;
     }
     return self.viewItems[(NSUInteger)index];

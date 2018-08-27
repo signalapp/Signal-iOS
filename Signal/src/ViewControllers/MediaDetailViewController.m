@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(image);
 
     if (image.size.width == 0 || image.size.height == 0) {
-        OWSFailDebug(@"%@ Invalid image dimensions. %@", self.logTag, NSStringFromCGSize(image.size));
+        OWSFailDebug(@"Invalid image dimensions. %@", NSStringFromCGSize(image.size));
         return;
     }
 

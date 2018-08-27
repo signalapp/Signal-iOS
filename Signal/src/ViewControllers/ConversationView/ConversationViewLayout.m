@@ -80,8 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.collectionView.bounds.size.width <= 0.f || self.collectionView.bounds.size.height <= 0.f) {
-        OWSFailDebug(
-            @"%@ Collection view has invalid size: %@", self.logTag, NSStringFromCGRect(self.collectionView.bounds));
+        OWSFailDebug(@"Collection view has invalid size: %@", NSStringFromCGRect(self.collectionView.bounds));
         [self clearState];
         return;
     }

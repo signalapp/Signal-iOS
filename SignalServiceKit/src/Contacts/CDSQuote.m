@@ -50,13 +50,13 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 
     uint16_t version = parser.nextShort;
     if (version < 1 || version > 2) {
-        OWSFailDebug(@"%@ unexpected quote version: %d", self.logTag, (int)version);
+        OWSFailDebug(@"unexpected quote version: %d", (int)version);
         return nil;
     }
 
     uint16_t signType = parser.nextShort;
     if ((signType & ~1) != 0) {
-        OWSFailDebug(@"%@ invalid signType: %d", self.logTag, (int)signType);
+        OWSFailDebug(@"invalid signType: %d", (int)signType);
         return nil;
     }
 

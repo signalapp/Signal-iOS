@@ -45,7 +45,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 - (void)dealloc
 {
-    OWSLogVerbose(@"Dealloc: %@", self.logTag);
+    OWSLogVerbose(@"");
 }
 
 - (void)uploadFileWithURL:(NSURL *)fileUrl
