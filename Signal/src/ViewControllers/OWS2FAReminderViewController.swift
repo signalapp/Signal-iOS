@@ -59,7 +59,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
 
     // MARK: PinEntryViewDelegate
     public func pinEntryView(_ entryView: PinEntryView, submittedPinCode pinCode: String) {
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
         if checkResult(pinCode: pinCode) {
             didSubmitCorrectPin()
         } else {
@@ -76,7 +76,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     }
 
     public func pinEntryViewForgotPinLinkTapped(_ entryView: PinEntryView) {
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
         let alertBody = NSLocalizedString("REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE",
                                           comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'")
         OWSAlerts.showAlert(title: nil, message: alertBody)
@@ -86,7 +86,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
 
     @objc
     private func didPressCloseButton(sender: UIButton) {
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
         // We'll ask again next time they launch
         self.dismiss(animated: true)
     }
@@ -96,7 +96,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     }
 
     private func didSubmitCorrectPin() {
-        Logger.info("\(logTag) in \(#function) noWrongGuesses: \(noWrongGuesses)")
+        Logger.info("noWrongGuesses: \(noWrongGuesses)")
 
         self.dismiss(animated: true)
 
@@ -106,7 +106,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     var noWrongGuesses = true
     private func didSubmitWrongPin() {
         noWrongGuesses = false
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
         let alertTitle = NSLocalizedString("REMINDER_2FA_WRONG_PIN_ALERT_TITLE",
                                           comment: "Alert title after wrong guess for 'two-factor auth pin' reminder activity")
         let alertBody = NSLocalizedString("REMINDER_2FA_WRONG_PIN_ALERT_BODY",

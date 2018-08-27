@@ -104,10 +104,10 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
     }
 
     @objc func didTapButton(sender: UIButton) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard let buttonAction = self.buttonAction else {
-            owsFail("\(logTag) button action was nil")
+            owsFail("button action was nil")
             return
         }
 
@@ -214,10 +214,10 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
     }
 
     @objc func didTapButton(sender: UIButton) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard let buttonAction = self.buttonAction else {
-            owsFail("\(logTag) button action was nil")
+            owsFail("button action was nil")
             return
         }
 
@@ -344,7 +344,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
     // MARK: - Actions
 
     @objc func didTapButton(sender: UIButton) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         // dismiss the modally presented view controller, then proceed.
         experienceUpgradesPageViewController.dismiss(animated: true) {
@@ -383,7 +383,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
     // MARK: - Actions
 
     @objc func didTapPrivacySettingsButton(sender: UIButton) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         // dismiss the modally presented view controller, then proceed.
         experienceUpgradesPageViewController.dismiss(animated: true) {
@@ -515,7 +515,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
 
     @objc public override func viewDidLoad() {
         guard let firstViewController = allViewControllers.first else {
-            owsFail("\(logTag) no pages to show.")
+            owsFail("no pages to show.")
             dismiss(animated: true)
             return
         }
@@ -551,7 +551,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: dismissInsetValue, left: dismissInsetValue, bottom: dismissInsetValue, right: dismissInsetValue)
 
         guard let carouselView = self.pageViewController.view else {
-            Logger.error("\(logTag) carousel view was unexpectedly nil")
+            Logger.error("carousel view was unexpectedly nil")
             return
         }
 
@@ -599,9 +599,9 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     // MARK: - UIPageViewControllerDataSource
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            owsFail("\(logTag) unknown view controller: \(viewController)")
+            owsFail("unknown view controller: \(viewController)")
             return nil
         }
 
@@ -614,9 +614,9 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         guard let currentIndex = self.viewControllerIndexes[viewController] else {
-            owsFail("\(logTag) unknown view controller: \(viewController)")
+            owsFail("unknown view controller: \(viewController)")
             return nil
         }
 
@@ -635,12 +635,12 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
 
     public func presentationIndex(for pageViewController: UIPageViewController) -> Int {
         guard let currentViewController = pageViewController.viewControllers?.first else {
-            Logger.error("\(logTag) unexpectedly empty view controllers.")
+            Logger.error("unexpectedly empty view controllers.")
             return 0
         }
 
         guard let currentIndex = self.viewControllerIndexes[currentViewController] else {
-            Logger.error("\(logTag) unknown view controller: \(currentViewController)")
+            Logger.error("unknown view controller: \(currentViewController)")
             return 0
         }
 
@@ -649,11 +649,11 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
 
     public func addViewController(experienceUpgrade: ExperienceUpgrade) {
         guard let uniqueId = experienceUpgrade.uniqueId else {
-            Logger.error("\(self.logTag) experienceUpgrade is missing uniqueId.")
+            Logger.error("experienceUpgrade is missing uniqueId.")
             return
         }
         guard let identifier = ExperienceUpgradeId(rawValue: uniqueId) else {
-            owsFail("\(logTag) unknown experience upgrade. skipping")
+            owsFail("unknown experience upgrade. skipping")
             return
         }
 
@@ -681,19 +681,19 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
         // Blocking write before dismiss, to be sure they're marked as complete
         // before HomeView.didAppear is re-fired.
         self.editingDBConnection.readWrite { transaction in
-            Logger.info("\(self.logTag) marking all upgrades as seen.")
+            Logger.info("marking all upgrades as seen.")
             ExperienceUpgradeFinder.shared.markAllAsSeen(transaction: transaction)
         }
         super.dismiss(animated: flag, completion: completion)
     }
 
     @objc func didTapDismissButton(sender: UIButton) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         self.dismiss(animated: true)
     }
 
     @objc func handleDismissGesture(sender: AnyObject) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         self.dismiss(animated: true)
     }
 }

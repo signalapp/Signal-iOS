@@ -103,7 +103,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public func themeDidChange() {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         applyTheme()
     }
 
@@ -111,13 +111,13 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public func callDidChange() {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         self.navBarLayoutDelegate?.navBarCallLayoutDidChange(navbar: self)
     }
 
     @objc
     public func didChangeStatusBarFrame() {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         self.navBarLayoutDelegate?.navBarCallLayoutDidChange(navbar: self)
     }
 

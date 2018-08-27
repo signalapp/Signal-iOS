@@ -160,7 +160,7 @@ import CloudKit
                                       failure: failure)
                 }
             case .unknownItem:
-                owsFail("\(self.logTag) unexpected CloudKit response.")
+                owsFail("unexpected CloudKit response.")
                 failure(invalidServiceResponseError())
             }
         }
@@ -221,7 +221,7 @@ import CloudKit
                                 } else {
                                     // No record found, saving new record.
                                     guard let fileUrl = fileUrlBlock() else {
-                                        Logger.error("\(self.logTag) error preparing file for upload.")
+                                        Logger.error("error preparing file for upload.")
                                         failure(OWSErrorWithCodeDescription(.exportBackupError,
                                                                             NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
                                                                                               comment: "Error indicating the backup export failed to save a file to the cloud.")))
@@ -282,7 +282,7 @@ import CloudKit
                                         failure: failure)
                 }
             case .unknownItem:
-                owsFail("\(self.logTag) unexpected CloudKit response.")
+                owsFail("unexpected CloudKit response.")
                 failure(invalidServiceResponseError())
             }
         }
@@ -308,7 +308,7 @@ import CloudKit
             switch outcome {
             case .success:
                 guard let record = record else {
-                    owsFail("\(self.logTag) missing fetching record.")
+                    owsFail("missing fetching record.")
                     failure(invalidServiceResponseError())
                     return
                 }
@@ -391,7 +391,7 @@ import CloudKit
             switch outcome {
             case .success:
                 if let cursor = cursor {
-                    Logger.verbose("\(self.logTag) fetching more record names \(allRecordNames.count).")
+                    Logger.verbose("fetching more record names \(allRecordNames.count).")
                     // There are more pages of results, continue fetching.
                     fetchAllRecordNamesStep(query: query,
                                             previousRecordNames: allRecordNames,
@@ -401,7 +401,7 @@ import CloudKit
                                             failure: failure)
                     return
                 }
-                Logger.info("\(self.logTag) fetched \(allRecordNames.count) record names.")
+                Logger.info("fetched \(allRecordNames.count) record names.")
                 success(allRecordNames)
             case .failureDoNotRetry(let outcomeError):
                 failure(outcomeError)
@@ -424,7 +424,7 @@ import CloudKit
                                             failure: failure)
                 }
             case .unknownItem:
-                owsFail("\(self.logTag) unexpected CloudKit response.")
+                owsFail("unexpected CloudKit response.")
                 failure(invalidServiceResponseError())
             }
         }
@@ -455,7 +455,7 @@ import CloudKit
                                     let data = try Data(contentsOf: asset.fileURL)
                                     success(data)
                                 } catch {
-                                    Logger.error("\(self.logTag) couldn't load asset file: \(error).")
+                                    Logger.error("couldn't load asset file: \(error).")
                                     failure(invalidServiceResponseError())
                                 }
                             }
@@ -477,7 +477,7 @@ import CloudKit
                                     try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
                                     success()
                                 } catch {
-                                    Logger.error("\(self.logTag) couldn't copy asset file: \(error).")
+                                    Logger.error("couldn't copy asset file: \(error).")
                                     failure(invalidServiceResponseError())
                                 }
                             }
@@ -506,12 +506,12 @@ import CloudKit
             switch outcome {
             case .success:
                 guard let record = record else {
-                    Logger.error("\(self.logTag) missing fetching record.")
+                    Logger.error("missing fetching record.")
                     failure(invalidServiceResponseError())
                     return
                 }
                 guard let asset = record[payloadKey] as? CKAsset else {
-                    Logger.error("\(self.logTag) record missing payload.")
+                    Logger.error("record missing payload.")
                     failure(invalidServiceResponseError())
                     return
                 }
@@ -533,7 +533,7 @@ import CloudKit
                                       failure: failure)
                 }
             case .unknownItem:
-                Logger.error("\(self.logTag) missing fetching record.")
+                Logger.error("missing fetching record.")
                 failure(invalidServiceResponseError())
             }
         }
@@ -548,15 +548,15 @@ import CloudKit
             DispatchQueue.main.async {
                 switch accountStatus {
                 case .couldNotDetermine:
-                    Logger.error("\(self.logTag) could not determine CloudKit account status:\(String(describing: error)).")
+                    Logger.error("could not determine CloudKit account status:\(String(describing: error)).")
                     OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_COULD_NOT_DETERMINE", comment: "Error indicating that the app could not determine that user's CloudKit account status"))
                     completion(false)
                 case .noAccount:
-                    Logger.error("\(self.logTag) no CloudKit account.")
+                    Logger.error("no CloudKit account.")
                     OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_NO_ACCOUNT", comment: "Error indicating that user does not have an iCloud account."))
                     completion(false)
                 case .restricted:
-                    Logger.error("\(self.logTag) restricted CloudKit account.")
+                    Logger.error("restricted CloudKit account.")
                     OWSAlerts.showErrorAlert(message: NSLocalizedString("CLOUDKIT_STATUS_RESTRICTED", comment: "Error indicating that the app was prevented from accessing the user's CloudKit account."))
                     completion(false)
                 case .available:
@@ -583,20 +583,20 @@ import CloudKit
         if let error = error as? CKError {
             if error.code == CKError.unknownItem {
                 // This is not always an error for our purposes.
-                Logger.verbose("\(self.logTag) \(label) unknown item.")
+                Logger.verbose("\(label) unknown item.")
                 return .unknownItem
             }
 
-            Logger.error("\(self.logTag) \(label) failed: \(error)")
+            Logger.error("\(label) failed: \(error)")
 
             if remainingRetries < 1 {
-                Logger.verbose("\(self.logTag) \(label) no more retries.")
+                Logger.verbose("\(label) no more retries.")
                 return .failureDoNotRetry(error:error)
             }
 
             if #available(iOS 11, *) {
                 if error.code == CKError.serverResponseLost {
-                    Logger.verbose("\(self.logTag) \(label) retry without delay.")
+                    Logger.verbose("\(label) retry without delay.")
                     return .failureRetryWithoutDelay
                 }
             }
@@ -604,25 +604,25 @@ import CloudKit
             switch error {
             case CKError.requestRateLimited, CKError.serviceUnavailable, CKError.zoneBusy:
                 let retryDelay = error.retryAfterSeconds ?? 3.0
-                Logger.verbose("\(self.logTag) \(label) retry with delay: \(retryDelay).")
+                Logger.verbose("\(label) retry with delay: \(retryDelay).")
                 return .failureRetryAfterDelay(retryDelay:retryDelay)
             case CKError.networkFailure:
-                Logger.verbose("\(self.logTag) \(label) retry without delay.")
+                Logger.verbose("\(label) retry without delay.")
                 return .failureRetryWithoutDelay
             default:
-                Logger.verbose("\(self.logTag) \(label) unknown CKError.")
+                Logger.verbose("\(label) unknown CKError.")
                 return .failureDoNotRetry(error:error)
             }
         } else if let error = error {
-            Logger.error("\(self.logTag) \(label) failed: \(error)")
+            Logger.error("\(label) failed: \(error)")
             if remainingRetries < 1 {
-                Logger.verbose("\(self.logTag) \(label) no more retries.")
+                Logger.verbose("\(label) no more retries.")
                 return .failureDoNotRetry(error:error)
             }
-            Logger.verbose("\(self.logTag) \(label) unknown error.")
+            Logger.verbose("\(label) unknown error.")
             return .failureDoNotRetry(error:error)
         } else {
-            Logger.info("\(self.logTag) \(label) succeeded.")
+            Logger.info("\(label) succeeded.")
             return .success
         }
     }

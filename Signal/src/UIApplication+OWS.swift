@@ -20,7 +20,7 @@ import Foundation
         }
         Logger.error("findFrontmostViewController: \(window)")
         guard let viewController = window.rootViewController else {
-            owsFail("\(self.logTag) in \(#function) Missing root view controller.")
+            owsFail("Missing root view controller.")
             return nil
         }
         return viewController.findFrontmostViewController(ignoringAlerts)

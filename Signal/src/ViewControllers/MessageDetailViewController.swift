@@ -89,7 +89,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         super.viewWillTransition(to: size, with: coordinator)
 
@@ -181,7 +181,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     private func updateContent() {
         guard let contentView = contentView else {
-            owsFail("\(logTag) Missing contentView")
+            owsFail("Missing contentView")
             return
         }
 
@@ -234,7 +234,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
                 for recipientId in messageRecipientIds {
                     guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
-                        owsFail("\(self.logTag) no message status for recipient: \(recipientId).")
+                        owsFail("no message status for recipient: \(recipientId).")
                         continue
                     }
 
@@ -370,7 +370,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         if rows.isEmpty {
             // Neither attachment nor body.
-            owsFail("\(self.logTag) Message has neither attachment nor body.")
+            owsFail("Message has neither attachment nor body.")
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
                                                          comment: "Label for messages without a body or attachment in the 'message metadata' view."),
                                  value: ""))
@@ -389,7 +389,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
 
         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
-            Logger.warn("\(logTag) Missing attachment. Was it deleted?")
+            Logger.warn("Missing attachment. Was it deleted?")
             return nil
         }
 
@@ -400,7 +400,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         var rows = [UIView]()
 
         guard let attachment = self.attachment else {
-            Logger.warn("\(logTag) Missing attachment. Was it deleted?")
+            Logger.warn("Missing attachment. Was it deleted?")
             return rows
         }
 
@@ -513,7 +513,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     @objc func shareButtonPressed() {
         guard let attachmentStream = attachmentStream else {
-            Logger.error("\(logTag) Share button should only be shown with attachment, but no attachment found.")
+            Logger.error("Share button should only be shown with attachment, but no attachment found.")
             return
         }
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
@@ -528,11 +528,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         self.uiDatabaseConnection.read { transaction in
             guard let uniqueId = self.message.uniqueId else {
-                Logger.error("\(self.logTag) Message is missing uniqueId.")
+                Logger.error("Message is missing uniqueId.")
                 return
             }
             guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
-                Logger.error("\(self.logTag) Couldn't reload message.")
+                Logger.error("Couldn't reload message.")
                 return
             }
             self.message = newMessage
@@ -551,13 +551,13 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         let notifications = self.uiDatabaseConnection.beginLongLivedReadTransaction()
 
         guard let uniqueId = self.message.uniqueId else {
-            Logger.error("\(self.logTag) Message is missing uniqueId.")
+            Logger.error("Message is missing uniqueId.")
             return
         }
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {
-                                                    Logger.debug("\(logTag) No relevant changes.")
+                                                    Logger.debug("No relevant changes.")
                                                     return
         }
 
@@ -627,7 +627,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
         guard let contactShare = viewItem.contactShare else {
-            owsFail("\(logTag) missing contact.")
+            owsFail("missing contact.")
             return
         }
         let contactViewController = ContactViewController(contactShare: contactShare)
@@ -652,12 +652,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         AssertIsOnMainThread()
 
         guard let mediaURL = attachmentStream.mediaURL() else {
-            owsFail("\(logTag) in \(#function) mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
+            owsFail("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
             return
         }
 
         guard FileManager.default.fileExists(atPath: mediaURL.path) else {
-            owsFail("\(logTag) in \(#function) audio file missing at path: \(mediaURL)")
+            owsFail("audio file missing at path: \(mediaURL)")
             return
         }
 
@@ -682,7 +682,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {
         guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            owsFail("navigationController was unexpectedly nil")
             return
         }
 
@@ -717,11 +717,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MediaGalleryDataSourceDelegate
 
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
-        Logger.info("\(self.logTag) in \(#function)")
+        Logger.info("")
 
         guard (items.map({ $0.message }) == [self.message]) else {
             // Should only be one message we can delete when viewing message details
-            owsFail("\(logTag) in \(#function) Unexpectedly informed of irrelevant message deletion")
+            owsFail("Unexpectedly informed of irrelevant message deletion")
             return
         }
 

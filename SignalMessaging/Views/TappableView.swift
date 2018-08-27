@@ -23,7 +23,7 @@ public class TappableView: UIView {
     }
 
     @objc func wasTapped(sender: UIGestureRecognizer) {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard sender.state == .recognized else {
             return

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -89,7 +89,7 @@ class SAEFailedViewController: UIViewController {
 
     @objc func cancelPressed(sender: UIButton) {
         guard let delegate = delegate else {
-            owsFail("\(self.logTag) missing delegate")
+            owsFail("missing delegate")
             return
         }
         delegate.shareViewWasCancelled()

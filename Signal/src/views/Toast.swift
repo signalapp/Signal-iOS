@@ -93,7 +93,7 @@ class ToastController: NSObject, ToastViewDelegate {
 
     @objc
     func presentToastView(fromBottomOfView view: UIView, inset: CGFloat) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         toastView.alpha = 0
         view.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
@@ -121,19 +121,19 @@ class ToastController: NSObject, ToastViewDelegate {
     // MARK: ToastViewDelegate
 
     func didTapToastView(_ toastView: ToastView) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         self.dismissToastView()
     }
 
     func didSwipeToastView(_ toastView: ToastView) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         self.dismissToastView()
     }
 
     // MARK: Internal
 
     func dismissToastView() {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard !isDismissing else {
             return

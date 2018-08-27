@@ -77,7 +77,7 @@ class ContactNameFieldView: UIView {
     }
 
     @objc func wasTapped(sender: UIGestureRecognizer) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         guard sender.state == .recognized else {
             return
@@ -87,12 +87,12 @@ class ContactNameFieldView: UIView {
     }
 
     @objc func textFieldDidChange(sender: UITextField) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         hasUnsavedChanges = true
 
         guard let delegate = self.delegate else {
-            owsFail("\(logTag) missing delegate.")
+            owsFail("missing delegate.")
             return
         }
 
@@ -244,7 +244,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         AssertIsOnMainThread()
 
         guard let rootView = self.view else {
-            owsFail("\(logTag) missing root view.")
+            owsFail("missing root view.")
             return
         }
 
@@ -286,10 +286,10 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     // MARK: -
 
     @objc func didPressSave() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard let newName = OWSContactName() else {
-            owsFail("\(logTag) could not create a new name.")
+            owsFail("could not create a new name.")
             return
         }
         newName.namePrefix = namePrefixView.value().ows_stripped()
@@ -302,24 +302,24 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         let modifiedContactShare = contactShare.copy(withName: newName)
 
         guard let delegate = self.delegate else {
-            owsFail("\(logTag) missing delegate.")
+            owsFail("missing delegate.")
             return
         }
 
         delegate.editContactShareNameView(self, didEditContactShare: modifiedContactShare)
 
         guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) Missing navigationController.")
+            owsFail("Missing navigationController.")
             return
         }
         navigationController.popViewController(animated: true)
     }
 
     @objc func didPressCancel() {
-        Logger.info("\(logTag) \(#function)")
+        Logger.info("")
 
         guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) Missing navigationController.")
+            owsFail("Missing navigationController.")
             return
         }
         navigationController.popViewController(animated: true)

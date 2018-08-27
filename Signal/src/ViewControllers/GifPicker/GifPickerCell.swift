@@ -113,7 +113,7 @@ class GifPickerCell: UICollectionViewCell {
         // Record high quality animated rendition, but to save bandwidth, don't start downloading
         // until it's selected.
         guard let highQualityAnimatedRendition = imageInfo.pickSendingRendition() else {
-            Logger.warn("\(logTag) could not pick gif rendition: \(imageInfo.giphyId)")
+            Logger.warn("could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return
         }
@@ -122,12 +122,12 @@ class GifPickerCell: UICollectionViewCell {
         // The Giphy API returns a slew of "renditions" for a given image. 
         // It's critical that we carefully "pick" the best rendition to use.
         guard let animatedRendition = imageInfo.pickPreviewRendition() else {
-            Logger.warn("\(logTag) could not pick gif rendition: \(imageInfo.giphyId)")
+            Logger.warn("could not pick gif rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return
         }
         guard let stillRendition = imageInfo.pickStillRendition() else {
-            Logger.warn("\(logTag) could not pick still rendition: \(imageInfo.giphyId)")
+            Logger.warn("could not pick still rendition: \(imageInfo.giphyId)")
             clearAssetRequests()
             return
         }
@@ -197,7 +197,7 @@ class GifPickerCell: UICollectionViewCell {
             return
         }
         guard let image = YYImage(contentsOfFile: asset.filePath) else {
-            owsFail("\(logTag) could not load asset.")
+            owsFail("could not load asset.")
             clearViewState()
             return
         }
@@ -208,7 +208,7 @@ class GifPickerCell: UICollectionViewCell {
             imageView.ows_autoPinToSuperviewEdges()
         }
         guard let imageView = imageView else {
-            owsFail("\(logTag) missing imageview.")
+            owsFail("missing imageview.")
             clearViewState()
             return
         }
@@ -240,7 +240,7 @@ class GifPickerCell: UICollectionViewCell {
 
     public func requestRenditionForSending() -> Promise<GiphyAsset> {
         guard let renditionForSending = self.renditionForSending else {
-            owsFail("\(logTag) renditionForSending was unexpectedly nil")
+            owsFail("renditionForSending was unexpectedly nil")
             return Promise(error: GiphyError.assertionError(description: "renditionForSending was unexpectedly nil"))
         }
 
@@ -257,7 +257,7 @@ class GifPickerCell: UICollectionViewCell {
                                                         failure: { _ in
                                                             // TODO GiphyDownloader API should pass through a useful failing error
                                                             // so we can pass it through here
-                                                            Logger.error("\(self.logTag) request failed")
+                                                            Logger.error("request failed")
                                                             reject(GiphyError.fetchFailure)
         })
 

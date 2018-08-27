@@ -67,13 +67,13 @@ public class ReturnToCallViewController: UIViewController {
     }
 
     override public func viewWillLayoutSubviews() {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         super.viewWillLayoutSubviews()
     }
 
     override public func viewDidLayoutSubviews() {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         super.viewDidLayoutSubviews()
     }

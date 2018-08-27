@@ -43,7 +43,7 @@ public class OWSBackupLazyRestoreJob: NSObject {
         let jobTempDirPath = (temporaryDirectory as NSString).appendingPathComponent(NSUUID().uuidString)
 
         guard OWSFileSystem.ensureDirectoryExists(jobTempDirPath) else {
-            Logger.error("\(logTag) could not create temp directory.")
+            Logger.error("could not create temp directory.")
             return
         }
 
@@ -53,10 +53,10 @@ public class OWSBackupLazyRestoreJob: NSObject {
 
         let attachmentIds = OWSBackup.shared().attachmentIdsForLazyRestore()
         guard attachmentIds.count > 0 else {
-            Logger.info("\(logTag) No attachments need lazy restore.")
+            Logger.info("No attachments need lazy restore.")
             return
         }
-        Logger.info("\(logTag) Lazy restoring \(attachmentIds.count) attachments.")
+        Logger.info("Lazy restoring \(attachmentIds.count) attachments.")
         self.tryToRestoreNextAttachment(attachmentIds: attachmentIds, backupIO: backupIO)
     }
 
@@ -64,12 +64,12 @@ public class OWSBackupLazyRestoreJob: NSObject {
         var attachmentIdsCopy = attachmentIds
         guard let attachmentId = attachmentIdsCopy.last else {
             // This job is done.
-            Logger.verbose("\(logTag) job is done.")
+            Logger.verbose("job is done.")
             return
         }
         attachmentIdsCopy.removeLast()
         guard let attachment = TSAttachmentStream.fetch(uniqueId: attachmentId) else {
-            Logger.warn("\(logTag) could not load attachment.")
+            Logger.warn("could not load attachment.")
             // Not necessarily an error.
             // The attachment might have been deleted since the job began.
             // Continue trying to restore the other attachments.
@@ -80,9 +80,9 @@ public class OWSBackupLazyRestoreJob: NSObject {
                                                  backupIO: backupIO,
                                                  completion: { (success) in
                                                     if success {
-                                                        Logger.info("\(self.logTag) restored attachment.")
+                                                        Logger.info("restored attachment.")
                                                     } else {
-                                                        Logger.warn("\(self.logTag) could not restore attachment.")
+                                                        Logger.warn("could not restore attachment.")
                                                     }
                                                 // Continue trying to restore the other attachments.
                                                 self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, backupIO: backupIO)

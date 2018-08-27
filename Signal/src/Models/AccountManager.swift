@@ -49,7 +49,7 @@ public class AccountManager: NSObject {
             return Promise(error: error)
         }
 
-        Logger.debug("\(self.logTag) registering with signal server")
+        Logger.debug("registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
             return self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
         }.then {
@@ -60,7 +60,7 @@ public class AccountManager: NSObject {
                 // This can happen with:
                 // - simulators, none of which support receiving push notifications
                 // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-                Logger.info("\(self.logTag) Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+                Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
                 return self.registerForManualMessageFetching()
             default:
                 throw error
@@ -85,14 +85,14 @@ public class AccountManager: NSObject {
     }
 
     private func syncPushTokens() -> Promise<Void> {
-        Logger.info("\(self.logTag) in \(#function)")
+        Logger.info("")
         let job = SyncPushTokensJob(accountManager: self, preferences: self.preferences)
         job.uploadOnlyIfStale = false
         return job.run()
     }
 
     private func completeRegistration() {
-        Logger.info("\(self.logTag) in \(#function)")
+        Logger.info("")
         self.textSecureAccountManager.didRegister()
     }
 
@@ -127,7 +127,7 @@ public class AccountManager: NSObject {
                                                     if let turnServerInfo = TurnServerInfo(attributes: responseDictionary) {
                                                         return fulfill(turnServerInfo)
                                                     }
-                                                    Logger.error("\(self.logTag) unexpected server response:\(responseDictionary)")
+                                                    Logger.error("unexpected server response:\(responseDictionary)")
                                                 }
                                                 return reject(OWSErrorMakeUnableToProcessServerResponseError())
             },

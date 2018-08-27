@@ -102,7 +102,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Audio Source
 
     var hasAlternateAudioSources: Bool {
-        Logger.info("\(logTag) available audio sources: \(allAudioSources)")
+        Logger.info("available audio sources: \(allAudioSources)")
         // internal mic and speakerphone will be the first two, any more than one indicates e.g. an attached bluetooth device.
 
         // TODO is this sufficient? Are their devices w/ bluetooth but no external speaker? e.g. ipod?
@@ -201,7 +201,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateAvatarImage()
         NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) updating avatar image")
+            Logger.info("updating avatar image")
             strongSelf.updateAvatarImage()
         }
 
@@ -597,7 +597,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func showCallFailed(error: Error) {
         // TODO Show something in UI.
-        Logger.error("\(logTag) call failed with error: \(error)")
+        Logger.error("call failed with error: \(error)")
     }
 
     // MARK: - View State
@@ -779,10 +779,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Dismiss Handling
         switch callState {
         case .remoteHangup, .remoteBusy, .localFailure:
-            Logger.debug("\(logTag) dismissing after delay because new state is \(callState)")
+            Logger.debug("dismissing after delay because new state is \(callState)")
             dismissIfPossible(shouldDelay: true)
         case .localHangup:
-            Logger.debug("\(logTag) dismissing immediately from local hangup")
+            Logger.debug("dismissing immediately from local hangup")
             dismissIfPossible(shouldDelay: false)
         default: break
         }
@@ -836,7 +836,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
      * Ends a connected call. Do not confuse with `didPressDeclineCall`.
      */
     @objc func didPressHangup(sender: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         callUIAdapter.localHangupCall(call)
 
@@ -844,14 +844,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didPressMute(sender muteButton: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
         muteButton.isSelected = !muteButton.isSelected
 
         callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
     }
 
     @objc func didPressAudioSource(sender button: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         if self.hasAlternateAudioSources {
             presentAudioSourcePicker()
@@ -861,26 +861,26 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func didPressSpeakerphone(sender button: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         button.isSelected = !button.isSelected
         callUIAdapter.audioService.requestSpeakerphone(isEnabled: button.isSelected)
     }
 
     func didPressTextMessage(sender button: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         dismissIfPossible(shouldDelay: false)
     }
 
     @objc func didPressAnswerCall(sender: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         callUIAdapter.answerCall(call)
     }
 
     @objc func didPressVideo(sender: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
         let hasLocalVideo = !sender.isSelected
 
         callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
@@ -890,7 +890,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         sender.isSelected = !sender.isSelected
 
         let isUsingFrontCamera = !sender.isSelected
-        Logger.info("\(logTag) in \(#function) with isUsingFrontCamera: \(isUsingFrontCamera)")
+        Logger.info("with isUsingFrontCamera: \(isUsingFrontCamera)")
 
         callUIAdapter.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
@@ -899,7 +899,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
      * Denies an incoming not-yet-connected call, Do not confuse with `didPressHangup`.
      */
     @objc func didPressDeclineCall(sender: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         callUIAdapter.declineCall(call)
 
@@ -907,7 +907,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didPressShowCallSettings(sender: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         markSettingsNagAsComplete()
 
@@ -926,7 +926,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didPressDismissNag(sender: UIButton) {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         markSettingsNagAsComplete()
 
@@ -940,7 +940,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // settings to their default values to indicate that the user has reviewed
     // them.
     private func markSettingsNagAsComplete() {
-        Logger.info("\(logTag) called \(#function)")
+        Logger.info("")
 
         let preferences = Environment.current().preferences!
 
@@ -956,7 +956,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        Logger.info("\(self.logTag) new call status: \(state)")
+        Logger.info("new call status: \(state)")
+
         self.updateCallUI(callState: state)
     }
 
@@ -1012,7 +1013,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         localVideoView.captureSession = captureSession
         let isHidden = captureSession == nil
 
-        Logger.info("\(logTag) \(#function) isHidden: \(isHidden)")
+        Logger.info("isHidden: \(isHidden)")
         localVideoView.isHidden = isHidden
 
         updateLocalVideoLayout()

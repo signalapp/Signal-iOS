@@ -67,7 +67,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         var dataSource: DataSource?
         self.dbConnection.readWrite { transaction in
             guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFail("\(self.logTag) could not serialize sync contacts data")
+                owsFail("could not serialize sync contacts data")
                 return
             }
             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
@@ -91,7 +91,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         var dataSource: DataSource?
         self.dbConnection.read { transaction in
             guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFail("\(self.logTag) could not serialize sync groups data")
+                owsFail("could not serialize sync groups data")
                 return
             }
             dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)

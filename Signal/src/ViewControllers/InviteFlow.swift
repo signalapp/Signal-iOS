@@ -60,12 +60,12 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func tweetAction() -> UIAlertAction? {
         guard canTweet()  else {
-            Logger.info("\(logTag) Twitter not supported.")
+            Logger.info("Twitter not supported.")
             return nil
         }
 
         guard let twitterViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter) else {
-            Logger.error("\(logTag) unable to build twitter controller.")
+            Logger.error("unable to build twitter controller.")
             return nil
         }
 
@@ -78,7 +78,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment: "action sheet item")
         return UIAlertAction(title: tweetTitle, style: .default) { _ in
-            Logger.debug("\(self.logTag) Chose tweet")
+            Logger.debug("Chose tweet")
 
             self.presentingViewController.present(twitterViewController, animated: true, completion: nil)
         }
@@ -91,10 +91,10 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     // MARK: ContactsPickerDelegate
 
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
-        Logger.debug("\(logTag) didSelectContacts:\(contacts)")
+        Logger.debug("didSelectContacts:\(contacts)")
 
         guard let inviteChannel = channel else {
-            Logger.error("\(logTag) unexpected nil channel after returning from contact picker.")
+            Logger.error("unexpected nil channel after returning from contact picker.")
             self.presentingViewController.dismiss(animated: true)
             return
         }
@@ -107,13 +107,13 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
             sendMailTo(emails: recipients)
         default:
-            Logger.error("\(logTag) unexpected channel after returning from contact picker: \(inviteChannel)")
+            Logger.error("unexpected channel after returning from contact picker: \(inviteChannel)")
         }
     }
 
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool {
         guard let inviteChannel = channel else {
-            Logger.error("\(logTag) unexpected nil channel in contact picker.")
+            Logger.error("unexpected nil channel in contact picker.")
             return true
         }
 
@@ -123,25 +123,25 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         case .mail:
             return contact.emails.count > 0
         default:
-            Logger.error("\(logTag) unexpected channel after returning from contact picker: \(inviteChannel)")
+            Logger.error("unexpected channel after returning from contact picker: \(inviteChannel)")
         }
         return true
     }
 
     func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
-        Logger.error("\(self.logTag) in \(#function) with error: \(error)")
+        Logger.error("with error: \(error)")
         self.presentingViewController.dismiss(animated: true) {
             OWSAlerts.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
         }
     }
 
     func contactsPickerDidCancel(_: ContactsPicker) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
         self.presentingViewController.dismiss(animated: true)
     }
 
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
-        owsFail("\(logTag) in \(#function) InviteFlow only supports multi-select")
+        owsFail("InviteFlow only supports multi-select")
         self.presentingViewController.dismiss(animated: true)
     }
 
@@ -149,13 +149,13 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func messageAction() -> UIAlertAction? {
         guard MFMessageComposeViewController.canSendText() else {
-            Logger.info("\(logTag) Device cannot send text")
+            Logger.info("Device cannot send text")
             return nil
         }
 
         let messageTitle = NSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
         return UIAlertAction(title: messageTitle, style: .default) { _ in
-            Logger.debug("\(self.logTag) Chose message.")
+            Logger.debug("Chose message.")
             self.channel = .message
             let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
             picker.contactsPickerDelegate = self
@@ -206,9 +206,9 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
                 warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
                 self.presentingViewController.present(warning, animated: true, completion: nil)
             case .sent:
-                Logger.debug("\(self.logTag) user successfully invited their friends via SMS.")
+                Logger.debug("user successfully invited their friends via SMS.")
             case .cancelled:
-                Logger.debug("\(self.logTag) user cancelled message invite")
+                Logger.debug("user cancelled message invite")
             }
         }
     }
@@ -217,13 +217,13 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func mailAction() -> UIAlertAction? {
         guard MFMailComposeViewController.canSendMail() else {
-            Logger.info("\(logTag) Device cannot send mail")
+            Logger.info("Device cannot send mail")
             return nil
         }
 
         let mailActionTitle = NSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
         return UIAlertAction(title: mailActionTitle, style: .default) { _ in
-            Logger.debug("\(self.logTag) Chose mail.")
+            Logger.debug("Chose mail.")
             self.channel = .mail
 
             let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
@@ -260,11 +260,11 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
                 warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
                 self.presentingViewController.present(warning, animated: true, completion: nil)
             case .sent:
-                Logger.debug("\(self.logTag) user successfully invited their friends via mail.")
+                Logger.debug("user successfully invited their friends via mail.")
             case .saved:
-                Logger.debug("\(self.logTag) user saved mail invite.")
+                Logger.debug("user saved mail invite.")
             case .cancelled:
-                Logger.debug("\(self.logTag) user cancelled mail invite.")
+                Logger.debug("user cancelled mail invite.")
             }
         }
     }

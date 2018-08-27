@@ -94,7 +94,7 @@ class ReminderView: UIView {
             // Icon
             let iconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
             guard let iconImage = UIImage(named: iconName) else {
-                owsFail("\(logTag) missing icon.")
+                owsFail("missing icon.")
                 return
             }
             let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))

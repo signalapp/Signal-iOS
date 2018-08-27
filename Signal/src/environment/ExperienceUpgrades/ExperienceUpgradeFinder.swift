@@ -15,7 +15,7 @@ enum ExperienceUpgradeId: String {
 
 @objc public class ExperienceUpgradeFinder: NSObject {
 
-    // MARK - Singleton class
+    // MARK: - Singleton class
 
     @objc(sharedManager)
     public static let shared = ExperienceUpgradeFinder()
@@ -84,7 +84,7 @@ enum ExperienceUpgradeId: String {
     }
 
     @objc public func markAllAsSeen(transaction: YapDatabaseReadWriteTransaction) {
-        Logger.info("\(logTag) marking experience upgrades as seen")
+        Logger.info("marking experience upgrades as seen")
         allExperienceUpgrades.forEach { $0.save(with: transaction) }
     }
 }

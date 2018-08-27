@@ -42,7 +42,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             DebugLogger.shared().enableFileLogging()
         }
 
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         _ = AppVersion.sharedInstance()
 
@@ -79,11 +79,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             guard let strongSelf = self else { return }
             guard strongSelf.presentedViewController == nil else {
-                Logger.debug("\(strongSelf.logTag) setup completed quickly, no need to present load view controller.")
+                Logger.debug("setup completed quickly, no need to present load view controller.")
                 return
             }
 
-            Logger.debug("\(strongSelf.logTag) setup is slow - showing loading screen")
+            Logger.debug("setup is slow - showing loading screen")
             strongSelf.showPrimaryViewController(loadViewController)
         }.retainUntilComplete()
 
@@ -126,13 +126,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                name: .OWSApplicationDidEnterBackground,
                                                object: nil)
 
-        Logger.info("\(self.logTag) \(#function) completed.")
+        Logger.info("completed.")
 
         OWSAnalytics.appLaunchDidBegin()
     }
 
     deinit {
-        Logger.info("\(self.logTag) deinit")
+        Logger.info("deinit")
         NotificationCenter.default.removeObserver(self)
 
         // Share extensions reside in a process that may be reused between usages.
@@ -145,11 +145,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     public func applicationDidEnterBackground() {
         AssertIsOnMainThread()
 
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         if OWSScreenLock.shared.isScreenLockEnabled() {
 
-            Logger.info("\(self.logTag) \(#function) dismissing.")
+            Logger.info("dismissing.")
 
             self.dismiss(animated: false) { [weak self] in
                 AssertIsOnMainThread()
@@ -162,7 +162,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func activate() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -178,7 +178,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
                 guard let strongSelf = self else { return }
-                Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
@@ -187,7 +187,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 // We don't need to use OWSFailedAttachmentDownloadsJob in the SAE.
             }
         } else {
-            Logger.info("\(self.logTag) running post launch block for unregistered user.")
+            Logger.info("running post launch block for unregistered user.")
 
             // We don't need to update the app icon badge number in the SAE.
 
@@ -197,7 +197,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if TSAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
-                Logger.info("\(strongSelf.logTag) running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
 
                 // We don't need to use the TSSocketManager in the SAE.
 
@@ -214,7 +214,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     func versionMigrationsDidComplete() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         areVersionMigrationsComplete = true
 
@@ -225,7 +225,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     func storageIsReady() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         checkIsAppReady()
     }
@@ -246,7 +246,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
         OWSProfileManager.shared().ensureLocalProfileCached()
@@ -256,7 +256,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppReadiness.setAppIsReady()
 
         if TSAccountManager.isRegistered() {
-            Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
+            Logger.info("localNumber: \(TSAccountManager.localNumber)")
 
             // We don't need to use messageFetcherJob in the SAE.
 
@@ -288,10 +288,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         if TSAccountManager.isRegistered() {
-            Logger.info("\(self.logTag) localNumber: \(TSAccountManager.localNumber)")
+            Logger.info("localNumber: \(TSAccountManager.localNumber)")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
@@ -304,7 +304,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func ensureRootViewController() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         guard AppReadiness.isAppReady() else {
             return
@@ -314,7 +314,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         hasInitialRootViewController = true
 
-        Logger.info("\(logTag) Presenting initial root view controller")
+        Logger.info("Presenting initial root view controller")
 
         if OWSScreenLock.shared.isScreenLockEnabled() {
             presentScreenLock()
@@ -326,9 +326,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func presentContentView() {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
-        Logger.info("\(logTag) Presenting content view")
+        Logger.info("Presenting content view")
 
         if !TSAccountManager.isRegistered() {
             showNotRegisteredView()
@@ -347,24 +347,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     func startupLogging() {
-        Logger.info("\(self.logTag) iOS Version: \(UIDevice.current.systemVersion)}")
+        Logger.info("iOS Version: \(UIDevice.current.systemVersion)}")
 
         let locale = NSLocale.current as NSLocale
         if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,
             localeIdentifier.count > 0 {
-            Logger.info("\(self.logTag) Locale Identifier: \(localeIdentifier)")
+            Logger.info("Locale Identifier: \(localeIdentifier)")
         } else {
             owsFail("Locale Identifier: Unknown")
         }
         if let countryCode = locale.object(forKey: NSLocale.Key.countryCode) as? String,
             countryCode.count > 0 {
-            Logger.info("\(self.logTag) Country Code: \(countryCode)")
+            Logger.info("Country Code: \(countryCode)")
         } else {
             owsFail("Country Code: Unknown")
         }
         if let languageCode = locale.object(forKey: NSLocale.Key.languageCode) as? String,
             languageCode.count > 0 {
-            Logger.info("\(self.logTag) Language Code: \(languageCode)")
+            Logger.info("Language Code: \(languageCode)")
         } else {
             owsFail("Language Code: Unknown")
         }
@@ -404,7 +404,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         if isReadyForAppExtensions {
             AppReadiness.runNowOrWhenAppIsReady { [weak self] in
@@ -416,19 +416,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     override open func viewWillAppear(_ animated: Bool) {
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         super.viewWillAppear(animated)
     }
 
     override open func viewDidAppear(_ animated: Bool) {
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         super.viewDidAppear(animated)
     }
 
     override open func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         super.viewWillDisappear(animated)
 
@@ -436,7 +436,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     override open func viewDidDisappear(_ animated: Bool) {
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         super.viewDidDisappear(animated)
 
@@ -452,7 +452,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     func owsApplicationWillEnterForeground() throws {
         AssertIsOnMainThread()
 
-        Logger.debug("\(self.logTag) \(#function)")
+        Logger.debug("")
 
         // If a user unregisters in the main app, the SAE should shut down
         // immediately.
@@ -474,13 +474,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
 
     public func shareViewWasUnlocked() {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         presentContentView()
     }
 
     public func shareViewWasCompleted() {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
@@ -490,7 +490,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     public func shareViewWasCancelled() {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
@@ -500,7 +500,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     public func shareViewFailed(error: Error) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         self.dismiss(animated: true) { [weak self] in
             AssertIsOnMainThread()
@@ -523,10 +523,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         shareViewNavigationController.setViewControllers([viewController], animated: false)
         if self.presentedViewController == nil {
-            Logger.debug("\(self.logTag) presenting modally: \(viewController)")
+            Logger.debug("presenting modally: \(viewController)")
             self.present(shareViewNavigationController, animated: true)
         } else {
-            Logger.debug("\(self.logTag) modal already presented. swapping modal content for: \(viewController)")
+            Logger.debug("modal already presented. swapping modal content for: \(viewController)")
             assert(self.presentedViewController == shareViewNavigationController)
         }
     }
@@ -542,10 +542,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             strongSelf.loadViewController = nil
 
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: strongSelf)
-            Logger.debug("\(strongSelf.logTag) presentConversationPicker: \(conversationPicker)")
+            Logger.debug("presentConversationPicker: \(conversationPicker)")
             conversationPicker.attachment = attachment
             strongSelf.showPrimaryViewController(conversationPicker)
-            Logger.info("\(strongSelf.logTag) showing picker with attachment: \(attachment)")
+            Logger.info("showing picker with attachment: \(attachment)")
         }.catch {[weak self]  error in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
@@ -557,7 +557,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                 buttonTitle: CommonStrings.cancelButton) { _ in
                                     strongSelf.shareViewWasCancelled()
             }
-            owsFail("\(strongSelf.logTag) building attachment failed with error: \(error)")
+            owsFail("building attachment failed with error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -565,9 +565,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AssertIsOnMainThread()
 
         let screenLockUI = SAEScreenLockViewController(shareViewDelegate: self)
-        Logger.debug("\(self.logTag) presentScreenLock: \(screenLockUI)")
+        Logger.debug("presentScreenLock: \(screenLockUI)")
         showPrimaryViewController(screenLockUI)
-        Logger.info("\(self.logTag) showing screen lock")
+        Logger.info("showing screen lock")
     }
 
     private class func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
@@ -593,7 +593,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private class func utiType(itemProvider: NSItemProvider) -> String? {
-        Logger.info("\(self.logTag) utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
+        Logger.info("utiTypeForItem: \(itemProvider.registeredTypeIdentifiers)")
 
         if isUrlItem(itemProvider: itemProvider) {
             return kUTTypeURL as String
@@ -675,7 +675,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let error = ShareViewControllerError.assertionError(description: "No item provider in input item attachments")
             return Promise(error: error)
         }
-        Logger.info("\(self.logTag) attachment: \(itemProvider)")
+        Logger.info("attachment: \(itemProvider)")
 
         // We need to be very careful about which UTI type we use.
         //
@@ -690,7 +690,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let error = ShareViewControllerError.unsupportedMedia
             return Promise(error: error)
         }
-        Logger.debug("\(logTag) matched utiType: \(srcUtiType)")
+        Logger.debug("matched utiType: \(srcUtiType)")
 
         let (promise, fulfill, reject) = Promise<(itemUrl: URL, utiType: String)>.pending()
 
@@ -714,7 +714,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 return
             }
 
-            Logger.info("\(strongSelf.logTag) value type: \(type(of: value))")
+            Logger.info("value type: \(type(of: value))")
 
             if let data = value as? Data {
                 // Although we don't support contacts _yet_, when we do we'll want to make
@@ -726,7 +726,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     if Contact(vCardData: data) != nil {
                         isConvertibleToContactShare = true
                     } else {
-                        Logger.error("\(strongSelf.logTag) could not parse vcard.")
+                        Logger.error("could not parse vcard.")
                         let writeError = ShareViewControllerError.assertionError(description: "Could not parse vcard data.")
                         reject(writeError)
                         return
@@ -742,7 +742,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 let fileUrl = URL(fileURLWithPath: tempFilePath)
                 fulfill((itemUrl: fileUrl, utiType: srcUtiType))
             } else if let string = value as? String {
-                Logger.debug("\(strongSelf.logTag) string provider: \(string)")
+                Logger.debug("string provider: \(string)")
                 guard let data = string.filterStringForDisplay().data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
                     reject(writeError)
@@ -809,7 +809,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 }
             }()
 
-            Logger.debug("\(strongSelf.logTag) building DataSource with url: \(url), utiType: \(utiType)")
+            Logger.debug("building DataSource with url: \(url), utiType: \(utiType)")
 
             guard let dataSource = ShareViewController.createDataSource(utiType: utiType, url: url, customFileName: customFileName) else {
                 throw ShareViewControllerError.assertionError(description: "Unable to read attachment data")
@@ -824,7 +824,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             } else if url.pathExtension.count > 0 {
                 // Determine a more specific utiType based on file extension
                 if let typeExtension = MIMETypeUtil.utiType(forFileExtension: url.pathExtension) {
-                    Logger.debug("\(strongSelf.logTag) utiType based on extension: \(typeExtension)")
+                    Logger.debug("utiType based on extension: \(typeExtension)")
                     specificUTIType = typeExtension
                 }
             }
@@ -857,10 +857,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
             if isConvertibleToContactShare {
-                Logger.info("\(strongSelf.logTag) isConvertibleToContactShare")
+                Logger.info("isConvertibleToContactShare")
                 attachment.isConvertibleToContactShare = isConvertibleToContactShare
             } else if isConvertibleToTextMessage {
-                Logger.info("\(strongSelf.logTag) isConvertibleToTextMessage")
+                Logger.info("isConvertibleToTextMessage")
                 attachment.isConvertibleToTextMessage = isConvertibleToTextMessage
             }
             return Promise(value: attachment)
@@ -890,14 +890,14 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
         let pathExtension = itemUrl.pathExtension
         guard pathExtension.count > 0 else {
-            Logger.verbose("\(self.logTag) in \(#function): item URL has no file extension: \(itemUrl).")
+            Logger.verbose("item URL has no file extension: \(itemUrl).")
             return false
         }
         guard let utiTypeForURL = MIMETypeUtil.utiType(forFileExtension: pathExtension) else {
-            Logger.verbose("\(self.logTag) in \(#function): item has unknown UTI type: \(itemUrl).")
+            Logger.verbose("item has unknown UTI type: \(itemUrl).")
             return false
         }
-        Logger.verbose("\(self.logTag) utiTypeForURL: \(utiTypeForURL)")
+        Logger.verbose("utiTypeForURL: \(utiTypeForURL)")
         guard utiTypeForURL == kUTTypeMPEG4 as String else {
             // Either it's not a video or it was a video which was not auto-converted to mp4.
             // Not affected by the issue.
@@ -946,7 +946,7 @@ private class ProgressPoller: NSObject {
             strongSelf.progress.completedUnitCount = completedUnitCount
 
             if completedUnitCount == strongSelf.progressTotalUnitCount {
-                Logger.debug("\(strongSelf.logTag) progress complete")
+                Logger.debug("progress complete")
                 timer.invalidate()
             }
         }

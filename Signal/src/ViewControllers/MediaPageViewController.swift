@@ -120,7 +120,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     deinit {
-        Logger.debug("\(logTag) deinit")
+        Logger.debug("deinit")
     }
 
     var footerBar: UIToolbar!
@@ -192,7 +192,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     override func didReceiveMemoryWarning() {
-        Logger.info("\(logTag) in \(#function)")
+        Logger.info("")
         super.didReceiveMemoryWarning()
 
         self.cachedPages = [:]
@@ -214,12 +214,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     @objc
     public func didPressAllMediaButton(sender: Any) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         currentViewController.stopAnyVideo()
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            owsFail("mediaGalleryDataSource was unexpectedly nil")
             return
         }
         mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
@@ -227,7 +227,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     @objc
     public func didSwipeView(sender: Any) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         self.dismissSelf(animated: true)
     }
@@ -258,7 +258,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // TODO do we still need this? seems like a vestige
         // from when media detail view was used for attachment approval
         if self.footerBar == nil {
-            owsFail("\(logTag) No footer bar visible.")
+            owsFail("No footer bar visible.")
             return
         }
 
@@ -291,7 +291,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     @objc
     public func didPressShare(_ sender: Any) {
         guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFail("\(logTag) in \(#function) currentViewController was unexpectedly nil")
+            owsFail("currentViewController was unexpectedly nil")
             return
         }
         currentViewController.didPressShare(sender)
@@ -300,12 +300,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     @objc
     public func didPressDelete(_ sender: Any) {
         guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFail("\(logTag) in \(#function) currentViewController was unexpectedly nil")
+            owsFail("currentViewController was unexpectedly nil")
             return
         }
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            owsFail("mediaGalleryDataSource was unexpectedly nil")
             return
         }
 
@@ -324,15 +324,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     // MARK: MediaGalleryDataSourceDelegate
 
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         guard let currentItem = self.currentItem else {
-              owsFail("\(logTag) in \(#function) currentItem was unexpectedly nil")
+              owsFail("currentItem was unexpectedly nil")
             return
         }
 
         guard items.contains(currentItem) else {
-            Logger.debug("\(self.logTag) in \(#function) irrelevant item")
+            Logger.debug("irrelevant item")
             return
         }
 
@@ -361,7 +361,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     @objc
     public func didPressPlayBarButton(_ sender: Any) {
         guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFail("\(logTag) in \(#function) currentViewController was unexpectedly nil")
+            owsFail("currentViewController was unexpectedly nil")
             return
         }
         currentViewController.didPressPlayBarButton(sender)
@@ -370,7 +370,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     @objc
     public func didPressPauseBarButton(_ sender: Any) {
         guard let currentViewController = self.viewControllers?[0] as? MediaDetailViewController else {
-            owsFail("\(logTag) in \(#function) currentViewController was unexpectedly nil")
+            owsFail("currentViewController was unexpectedly nil")
             return
         }
         currentViewController.didPressPauseBarButton(sender)
@@ -379,12 +379,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     // MARK: UIPageViewControllerDelegate
 
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         assert(pendingViewControllers.count == 1)
         pendingViewControllers.forEach { viewController in
             guard let pendingPage = viewController as? MediaDetailViewController else {
-                owsFail("\(logTag) in \(#function) unexpected mediaDetailViewController: \(viewController)")
+                owsFail("unexpected mediaDetailViewController: \(viewController)")
                 return
             }
 
@@ -394,12 +394,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted: Bool) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         assert(previousViewControllers.count == 1)
         previousViewControllers.forEach { viewController in
             guard let previousPage = viewController as? MediaDetailViewController else {
-                owsFail("\(logTag) in \(#function) unexpected mediaDetailViewController: \(viewController)")
+                owsFail("unexpected mediaDetailViewController: \(viewController)")
                 return
             }
 
@@ -416,15 +416,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     // MARK: UIPageViewControllerDataSource
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard let previousDetailViewController = viewController as? MediaDetailViewController else {
-            owsFail("\(logTag) in \(#function) unexpected viewController: \(viewController)")
+            owsFail("unexpected viewController: \(viewController)")
             return nil
         }
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            owsFail("mediaGalleryDataSource was unexpectedly nil")
             return nil
         }
 
@@ -441,15 +441,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         guard let previousDetailViewController = viewController as? MediaDetailViewController else {
-            owsFail("\(logTag) in \(#function) unexpected viewController: \(viewController)")
+            owsFail("unexpected viewController: \(viewController)")
             return nil
         }
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            owsFail("mediaGalleryDataSource was unexpectedly nil")
             return nil
         }
 
@@ -469,11 +469,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private func buildGalleryPage(galleryItem: MediaGalleryItem) -> MediaDetailViewController? {
 
         if let cachedPage = cachedPages[galleryItem] {
-            Logger.debug("\(logTag) in \(#function) cache hit.")
+            Logger.debug("cache hit.")
             return cachedPage
         }
 
-        Logger.debug("\(logTag) in \(#function) cache miss.")
+        Logger.debug("cache miss.")
         var fetchedItem: ConversationViewItem?
         self.uiDatabaseConnection.read { transaction in
             let message = galleryItem.message
@@ -504,7 +504,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         currentViewController.stopAnyVideo()
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            owsFail("mediaGalleryDataSource was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: true)
 
             return
@@ -517,28 +517,28 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     @objc
     public func mediaDetailViewControllerDidTapMedia(_ mediaDetailViewController: MediaDetailViewController) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
 
         self.shouldHideToolbars = !self.shouldHideToolbars
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete conversationViewItem: ConversationViewItem) {
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            owsFail("mediaGalleryDataSource was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: true)
 
             return
         }
 
         guard let message = conversationViewItem.interaction as? TSMessage else {
-            owsFail("\(logTag) in \(#function) unexpected interaction: \(type(of: conversationViewItem))")
+            owsFail("unexpected interaction: \(type(of: conversationViewItem))")
             self.presentingViewController?.dismiss(animated: true)
 
             return
         }
 
         guard let galleryItem = self.mediaGalleryDataSource?.galleryItems.first(where: { $0.message == message }) else {
-            owsFail("\(logTag) in \(#function) unexpected interaction: \(type(of: conversationViewItem))")
+            owsFail("unexpected interaction: \(type(of: conversationViewItem))")
             self.presentingViewController?.dismiss(animated: true)
 
             return
@@ -551,7 +551,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
         guard mediaDetailViewController == currentViewController else {
-            Logger.verbose("\(logTag) in \(#function) ignoring stale delegate.")
+            Logger.verbose("ignoring stale delegate.")
             return
         }
 
@@ -572,7 +572,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         case is TSOutgoingMessage:
             return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
         default:
-            owsFail("\(logTag) Unknown message type: \(type(of: message))")
+            owsFail("Unknown message type: \(type(of: message))")
             return ""
         }
     }
@@ -609,7 +609,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     private func updateTitle() {
         guard let currentItem = self.currentItem else {
-            owsFail("\(logTag) currentItem was unexpectedly nil")
+            owsFail("currentItem was unexpectedly nil")
             return
         }
         updateTitle(item: currentItem)

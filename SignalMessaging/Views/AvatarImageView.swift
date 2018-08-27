@@ -70,7 +70,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             self.recipientId = nil
             self.groupThreadId = groupThread.uniqueId
         default:
-            owsFail("in \(#function) unexpected thread type: \(thread)")
+            owsFail("unexpected thread type: \(thread)")
             self.recipientId = nil
             self.groupThreadId = nil
         }
@@ -96,7 +96,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     }
 
     @objc func handleSignalAccountsChanged(notification: Notification) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
@@ -105,16 +105,16 @@ public class ConversationAvatarImageView: AvatarImageView {
     }
 
     @objc func handleOtherUsersProfileChanged(notification: Notification) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         guard let changedRecipientId = notification.userInfo?[kNSNotificationKey_ProfileRecipientId] as? String else {
-            owsFail("\(logTag) in \(#function) recipientId was unexpectedly nil")
+            owsFail("recipientId was unexpectedly nil")
             return
         }
 
         guard let recipientId = self.recipientId else {
             // shouldn't call this for group threads
-            owsFail("\(logTag) in \(#function) contactId was unexpectedly nil")
+            owsFail("contactId was unexpectedly nil")
             return
         }
 
@@ -127,16 +127,16 @@ public class ConversationAvatarImageView: AvatarImageView {
     }
 
     @objc func handleGroupAvatarChanged(notification: Notification) {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("")
 
         guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificationKey_UniqueId] as? String else {
-            owsFail("\(logTag) in \(#function) groupThreadId was unexpectedly nil")
+            owsFail("groupThreadId was unexpectedly nil")
             return
         }
 
         guard let groupThreadId = self.groupThreadId else {
             // shouldn't call this for contact threads
-            owsFail("\(logTag) in \(#function) groupThreadId was unexpectedly nil")
+            owsFail("groupThreadId was unexpectedly nil")
             return
         }
 
@@ -151,7 +151,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     }
 
     public func updateImage() {
-        Logger.debug("\(self.logTag) in \(#function) updateImage")
+        Logger.debug("updateImage")
 
         self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter, contactsManager: contactsManager)
     }

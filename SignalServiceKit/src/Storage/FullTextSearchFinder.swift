@@ -81,13 +81,13 @@ public class FullTextSearchFinder: NSObject {
 
     public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String) -> Void) {
         guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
-            owsFail("\(logTag) ext was unexpectedly nil")
+            owsFail("ext was unexpectedly nil")
             return
         }
 
         let query = FullTextSearchFinder.query(searchText: searchText)
 
-        Logger.verbose("\(logTag) query: \(query)")
+        Logger.verbose("query: \(query)")
 
         let maxSearchResults = 500
         var searchResultCount = 0
@@ -178,12 +178,12 @@ public class FullTextSearchFinder: NSObject {
         let nationalNumber: String = { (recipientId: String) -> String in
 
             guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
-                owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
+                owsFail("unexpected unparseable recipientId: \(recipientId)")
                 return ""
             }
 
             guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
+                owsFail("unexpected unparseable recipientId: \(recipientId)")
                 return ""
             }
 
@@ -209,7 +209,7 @@ public class FullTextSearchFinder: NSObject {
         }
 
         guard let attachment = message.attachment(with: transaction) else {
-            owsFail("\(self.logTag) in \(#function) attachment was unexpectedly nil")
+            owsFail("attachment was unexpectedly nil")
             return nil
         }
 

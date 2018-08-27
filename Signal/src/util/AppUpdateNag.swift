@@ -21,17 +21,17 @@ class AppUpdateNag: NSObject {
     public func showAppUpgradeNagIfNecessary() {
 
         guard let currentVersion = self.currentVersion else {
-            owsFail("\(self.logTag) in \(#function) currentVersion was unexpectedly nil")
+            owsFail("currentVersion was unexpectedly nil")
             return
         }
 
         guard let bundleIdentifier = self.bundleIdentifier else {
-            owsFail("\(self.logTag) in \(#function) bundleIdentifier was unexpectedly nil")
+            owsFail("bundleIdentifier was unexpectedly nil")
             return
         }
 
         guard let lookupURL = lookupURL(bundleIdentifier: bundleIdentifier) else {
-            owsFail("\(self.logTag) in \(#function) appStoreURL was unexpectedly nil")
+            owsFail("appStoreURL was unexpectedly nil")
             return
         }
 
@@ -39,14 +39,14 @@ class AppUpdateNag: NSObject {
             self.versionService.fetchLatestVersion(lookupURL: lookupURL)
         }.then { appStoreRecord -> Void in
             guard appStoreRecord.version.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending else {
-                Logger.debug("\(self.logTag) remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
+                Logger.debug("remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
                 return
             }
 
-            Logger.info("\(self.logTag) new version available: \(appStoreRecord)")
+            Logger.info("new version available: \(appStoreRecord)")
             self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
         }.catch { error in
-            Logger.error("\(self.logTag) in \(#function) failed with error: \(error)")
+            Logger.error("failed with error: \(error)")
         }.retainUntilComplete()
     }
 
@@ -95,14 +95,14 @@ class AppUpdateNag: NSObject {
 
         let intervalBeforeNag = 7 * kDayInterval
         guard Date() > Date.init(timeInterval: intervalBeforeNag, since: firstHeardOfNewVersionDate) else {
-            Logger.info("\(logTag) in \(#function) firstHeardOfNewVersionDate: \(firstHeardOfNewVersionDate) not nagging for new release yet.")
+            Logger.info("firstHeardOfNewVersionDate: \(firstHeardOfNewVersionDate) not nagging for new release yet.")
             return
         }
 
         if let lastNagDate = self.lastNagDate {
             let intervalBetweenNags = 14 * kDayInterval
             guard Date() > Date.init(timeInterval: intervalBetweenNags, since: lastNagDate) else {
-                Logger.info("\(logTag) in \(#function) lastNagDate: \(lastNagDate) not nagging again so soon.")
+                Logger.info("lastNagDate: \(lastNagDate) not nagging again so soon.")
                 return
             }
         }
@@ -110,7 +110,7 @@ class AppUpdateNag: NSObject {
         // Only show nag if we are "at rest" in the home view or registration view without any
         // alerts or dialogs showing.
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("\(self.logTag) in \(#function) frontmostViewController was unexpectedly nil")
+            owsFail("frontmostViewController was unexpectedly nil")
             return
         }
 
@@ -120,7 +120,7 @@ class AppUpdateNag: NSObject {
             self.clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)
         default:
-            Logger.debug("\(logTag) in \(#function) not presenting alert due to frontmostViewController: \(frontmostViewController)")
+            Logger.debug("not presenting alert due to frontmostViewController: \(frontmostViewController)")
             break
         }
     }
@@ -150,7 +150,7 @@ class AppUpdateNag: NSObject {
     }
 
     func showAppStore(appStoreURL: URL) {
-        Logger.debug("\(logTag) in \(#function)")
+        Logger.debug("")
         UIApplication.shared.openURL(appStoreURL)
     }
 
@@ -199,13 +199,13 @@ class AppStoreVersionService: NSObject {
     // MARK: 
 
     func fetchLatestVersion(lookupURL: URL) -> Promise<AppStoreRecord> {
-        Logger.debug("\(logTag) in \(#function) lookupURL:\(lookupURL)")
+        Logger.debug("lookupURL:\(lookupURL)")
 
         let (promise, fulfill, reject) = Promise<AppStoreRecord>.pending()
 
         let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, error) in
             guard let data = data else {
-                Logger.warn("\(self.logTag) in \(#function) data was unexpectedly nil")
+                Logger.warn("data was unexpectedly nil")
                 reject(OWSErrorMakeUnableToProcessServerResponseError())
                 return
             }
@@ -214,7 +214,7 @@ class AppStoreVersionService: NSObject {
                 let decoder = JSONDecoder()
                 let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
                 guard let appStoreRecord = resultSet.results.first else {
-                    Logger.warn("\(self.logTag) in \(#function) record was unexpectedly nil")
+                    Logger.warn("record was unexpectedly nil")
                     reject(OWSErrorMakeUnableToProcessServerResponseError())
                     return
                 }

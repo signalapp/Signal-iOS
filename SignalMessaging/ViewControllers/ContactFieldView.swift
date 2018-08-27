@@ -26,7 +26,7 @@ public class ContactFieldView: UIView {
 
         let addSpacerRow = {
             guard let prevRow = lastRow else {
-                owsFail("\(self.logTag) missing last row")
+                owsFail("missing last row")
                 return
             }
             let row = UIView()

@@ -22,7 +22,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private var viewMode = ViewMode.idle {
         didSet {
-            Logger.info("\(logTag) viewMode: \(viewMode)")
+            Logger.info("viewMode: \(viewMode)")
 
             updateContents()
         }
@@ -81,7 +81,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     @objc func didBecomeActive() {
         AssertIsOnMainThread()
 
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         // Prod cells to try to load when app becomes active.
         ensureCellState()
@@ -90,7 +90,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     @objc func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("")
 
         // Prod cells to try to load when connectivity changes.
         ensureCellState()
@@ -99,7 +99,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     func ensureCellState() {
         for cell in self.collectionView.visibleCells {
             guard let cell = cell as? GifPickerCell else {
-                owsFail("\(logTag) unexpected cell.")
+                owsFail("unexpected cell.")
                 return
             }
             cell.ensureCellState()
@@ -301,13 +301,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
 
         guard indexPath.row < imageInfos.count else {
-            Logger.warn("\(logTag) indexPath: \(indexPath.row) out of range for imageInfo count: \(imageInfos.count) ")
+            Logger.warn("indexPath: \(indexPath.row) out of range for imageInfo count: \(imageInfos.count) ")
             return cell
         }
         let imageInfo = imageInfos[indexPath.row]
 
         guard let gifCell = cell as? GifPickerCell else {
-            owsFail("\(logTag) Unexpected cell type.")
+            owsFail("Unexpected cell type.")
             return cell
         }
         gifCell.imageInfo = imageInfo
@@ -319,18 +319,18 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
-            owsFail("\(logTag) unexpected cell.")
+            owsFail("unexpected cell.")
             return
         }
 
         guard cell.stillAsset != nil || cell.animatedAsset != nil else {
             // we don't want to let the user blindly select a gray cell
-            Logger.debug("\(logTag) ignoring selection of cell with no preview")
+            Logger.debug("ignoring selection of cell with no preview")
             return
         }
 
         guard self.hasSelectedCell == false else {
-            owsFail("\(logTag) Already selected cell")
+            owsFail("Already selected cell")
             return
         }
         self.hasSelectedCell = true
@@ -363,14 +363,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         GiphyDownloader.sharedInstance.cancelAllRequests()
         cell.requestRenditionForSending().then { [weak self] (asset: GiphyAsset) -> Void in
             guard let strongSelf = self else {
-                Logger.info("\(GifPickerViewController.logTag()) ignoring send, since VC was dismissed before fetching finished.")
+                Logger.info("ignoring send, since VC was dismissed before fetching finished.")
                 return
             }
 
             let filePath = asset.filePath
             guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath,
                 shouldDeleteOnDeallocation: false) else {
-                owsFail("\(strongSelf.logTag) couldn't load asset.")
+                owsFail("couldn't load asset.")
                 return
             }
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: asset.rendition.utiType, imageQuality: .original)
@@ -381,7 +381,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
         }.catch { [weak self] error in
             guard let strongSelf = self else {
-                Logger.info("\(GifPickerViewController.logTag()) ignoring failure, since VC was dismissed before fetching finished.")
+                Logger.info("ignoring failure, since VC was dismissed before fetching finished.")
                 return
             }
 
@@ -402,7 +402,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GifPickerCell else {
-            owsFail("\(logTag) unexpected cell.")
+            owsFail("unexpected cell.")
             return
         }
         // We only want to load the cells which are on-screen.
@@ -411,7 +411,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GifPickerCell else {
-            owsFail("\(logTag) unexpected cell.")
+            owsFail("unexpected cell.")
             return
         }
         cell.isCellVisible = false
@@ -463,7 +463,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         let query = (text as String).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
         if (viewMode == .searching || viewMode == .results) && lastQuery == query {
-            Logger.info("\(logTag) ignoring duplicate search: \(query)")
+            Logger.info("ignoring duplicate search: \(query)")
             return
         }
 
@@ -471,7 +471,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     private func search(query: String) {
-        Logger.info("\(logTag) searching: \(query)")
+        Logger.info("searching: \(query)")
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
@@ -482,7 +482,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         GiphyAPI.sharedInstance.search(query: query, success: { [weak self] imageInfos in
             guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) search complete")
+            Logger.info("search complete")
             strongSelf.imageInfos = imageInfos
             if imageInfos.count > 0 {
                 strongSelf.viewMode = .results
@@ -492,7 +492,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         },
             failure: { [weak self] _ in
                 guard let strongSelf = self else { return }
-                Logger.info("\(strongSelf.logTag) search failed.")
+                Logger.info("search failed.")
                 // TODO: Present this error to the user.
                 strongSelf.viewMode = .error
         })
