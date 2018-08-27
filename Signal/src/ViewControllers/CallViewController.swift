@@ -136,7 +136,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     required init(call: SignalCall) {

@@ -8,7 +8,7 @@ public class ContactFieldView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     public required init(rows: [UIView], hMargin: CGFloat) {

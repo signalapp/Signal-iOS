@@ -11,7 +11,7 @@ public class TappableView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     public required init(actionBlock : @escaping () -> Void) {

@@ -47,7 +47,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     @objc

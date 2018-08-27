@@ -34,7 +34,7 @@ public class OWSFlatButton: UIView {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     private func createContent() {

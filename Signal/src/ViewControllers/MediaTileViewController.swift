@@ -65,7 +65,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: View Lifecycle Overrides
@@ -791,7 +791,7 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
 
     @available(*, unavailable, message: "Unimplemented")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     public func configure(title: String) {
@@ -824,7 +824,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     public func configure(title: String) {
@@ -917,7 +917,7 @@ private class MediaGalleryCell: UICollectionViewCell {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     public func configure(item: MediaGalleryItem) {

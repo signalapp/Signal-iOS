@@ -75,7 +75,7 @@ class AttachmentPointerView: UIStackView {
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     private static var vSpacing: CGFloat = 5

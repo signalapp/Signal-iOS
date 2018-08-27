@@ -159,7 +159,7 @@ class ContactShareFieldView: UIStackView {
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
@@ -236,7 +236,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     @available(*, unavailable, message:"use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("unimplemented")
+        notImplemented()
     }
 
     @objc

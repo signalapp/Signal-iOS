@@ -31,7 +31,7 @@ class ColorView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 }
 
@@ -66,7 +66,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override func loadView() {

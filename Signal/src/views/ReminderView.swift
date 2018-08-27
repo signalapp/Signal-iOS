@@ -32,12 +32,12 @@ class ReminderView: UIView {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
     override init(frame: CGRect) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     private init(mode: ReminderViewMode,

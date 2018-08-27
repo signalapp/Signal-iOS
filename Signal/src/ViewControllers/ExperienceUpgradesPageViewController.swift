@@ -418,7 +418,7 @@ private class ExperienceUpgradeViewController: OWSViewController {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override func loadView() {
@@ -508,7 +508,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     @available(*, unavailable, message:"unavailable, use initWithExperienceUpgrade instead")
     @objc
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("unimplemented")
+        notImplemented()
     }
 
     // MARK: - View lifecycle

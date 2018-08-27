@@ -217,7 +217,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.

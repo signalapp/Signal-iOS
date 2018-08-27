@@ -45,7 +45,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     @objc

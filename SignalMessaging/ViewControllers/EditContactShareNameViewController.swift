@@ -26,7 +26,7 @@ class ContactNameFieldView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
+        notImplemented()
     }
 
     required init(name: String, value: String?, delegate: ContactNameFieldViewDelegate) {
@@ -136,7 +136,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
     @available(*, unavailable, message:"use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("unimplemented")
+        notImplemented()
     }
 
     @objc

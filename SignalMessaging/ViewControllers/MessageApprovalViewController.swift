@@ -28,7 +28,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("unimplemented")
+        notImplemented()
     }
 
     @objc

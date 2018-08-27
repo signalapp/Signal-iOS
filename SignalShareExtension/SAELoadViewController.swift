@@ -50,7 +50,7 @@ class SAELoadViewController: UIViewController {
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        fatalError("\(#function) is unimplemented.")
+        notImplemented()
     }
 
     override func loadView() {

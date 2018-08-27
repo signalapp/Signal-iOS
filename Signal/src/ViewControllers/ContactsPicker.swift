@@ -87,7 +87,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: - Lifecycle Methods

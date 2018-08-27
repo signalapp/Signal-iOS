@@ -52,7 +52,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: View LifeCycle
@@ -304,7 +304,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("not implemented")
+        notImplemented()
     }
 
     @objc
@@ -486,6 +486,6 @@ class MenuActionView: UIButton {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("not implemented")
+        notImplemented()
     }
 }

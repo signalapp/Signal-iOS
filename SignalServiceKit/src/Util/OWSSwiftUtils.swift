@@ -20,10 +20,8 @@ public func assertOnQueue(_ queue: DispatchQueue) {
 public func AssertIsOnMainThread(file: String = #file,
                                  function: String = #function,
                                  line: Int = #line) {
-    guard Thread.isMainThread else {
-        let filename = (file as NSString).lastPathComponent
-        owsFail("\(filename):\(line) in \(function): Must be on main thread.")
-        return
+    if !Thread.isMainThread {
+        owsFail("Must be on main thread.", file: file, function: function, line: line)
     }
 }
 
@@ -33,11 +31,10 @@ public func owsFail(_ logMessage: String,
                     file: String = #file,
                     function: String = #function,
                     line: Int = #line) {
-    // TODO: Format using owsFormatLogMessage() once it is merged.
-    let message = "\(file) \(function) \(line): \(logMessage)"
-    Logger.error(message)
+    Logger.error(logMessage, file: file, function: function, line: line)
     Logger.flush()
-    assertionFailure(message)
+    let formattedMessage = owsFormatLogMessage(logMessage, file: file, function: function, line: line)
+    assertionFailure(formattedMessage)
 }
 
 // Once we're on Swift4.2 we can mark this as inlineable
@@ -45,8 +42,17 @@ public func owsFail(_ logMessage: String,
 public func owsProdExit(_ logMessage: String,
                         file: String = #file,
                         function: String = #function,
-                        line: Int = #line) {
+                        line: Int = #line) -> Never {
 
     owsFail(logMessage, file: file, function: function, line: line)
-    fatalError(logMessage)
+    let formattedMessage = owsFormatLogMessage(logMessage, file: file, function: function, line: line)
+    fatalError(formattedMessage)
+}
+
+// Once we're on Swift4.2 we can mark this as inlineable
+// @inlinable
+public func notImplemented(file: String = #file,
+                           function: String = #function,
+                           line: Int = #line) -> Never {
+    owsProdExit("Method not implemented.", file: file, function: function, line: line)
 }
