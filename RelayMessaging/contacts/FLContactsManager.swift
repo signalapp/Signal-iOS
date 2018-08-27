@@ -10,38 +10,33 @@ import Foundation
 import YapDatabase
 import RelayServiceKit
 
-@objc public class FLContactsManager: NSObject, NSCacheDelegate {
+@objc public class FLContactsManager: NSObject {
     
     @objc public static let shared = FLContactsManager()
     
     @objc public var allRecipients: [RelayRecipient] = []
     @objc public var activeRecipients: [RelayRecipient] = []
     
-    private let avatarCache: NSCache<NSString, UIImage>
-
     private let readConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadConnection }()
     private let readWriteConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadWriteConnection }()
     private var latestRecipientsById: [AnyHashable : Any] = [:]
     private var activeRecipientsBacker: [SignalRecipient] = []
     private var visibleRecipientsPredicate: NSCompoundPredicate?
     
+    private let avatarCache: NSCache<NSString, UIImage>
     private let recipientCache: NSCache<NSString, RelayRecipient>
     private let tagCache: NSCache<NSString, FLTag>
 
     // TODO: require for gravatar implementation
 //    private var prefs: PropertyListPreferences?
 
-    required override public init() {
-        
+    override init() {
         avatarCache = NSCache<NSString, UIImage>()
-        avatarCache.delegate = self
         recipientCache = NSCache<NSString, RelayRecipient>()
-        recipientCache.delegate = self
         tagCache = NSCache<NSString, FLTag>()
-        tagCache.delegate = self
-        
+
         super.init()
-        
+
         // Prepopulate the caches?
 //        DispatchQueue.global(qos: .default).async(execute: {
 //            self.readConnection.asyncRead({ transaction in
@@ -57,9 +52,14 @@ import RelayServiceKit
 //                })
 //            })
 //        })
+
         NotificationCenter.default.addObserver(self, selector: #selector(self.processRecipientsBlob), name: NSNotification.Name(rawValue: FLCCSMUsersUpdated), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.processTagsBlob), name: NSNotification.Name(rawValue: FLCCSMTagsUpdated), object: nil)
 
+
+        avatarCache.delegate = self
+        recipientCache.delegate = self
+        tagCache.delegate = self
     }
     
     deinit {
@@ -78,11 +78,20 @@ import RelayServiceKit
     }
     
     @objc public class func recipientComparator() -> Comparator {
-    }
-    
-    @objc public func getObservableContacts() -> ObservableValue? {
-    }
-    
+        return { obj1, obj2 in
+            let contact1 = obj1 as? RelayRecipient
+            let contact2 = obj2 as? RelayRecipient
+            
+            // Use lastname sorting
+//            let firstNameOrdering = false // ABPersonGetSortOrdering() == kABPersonCompositeNameFormatFirstNameFirst ? YES : NO;
+//
+//            if firstNameOrdering {
+//                return (contact1?.firstName.caseInsensitiveCompare(contact2?.firstName ?? ""))!
+//            } else {
+                return (contact1?.lastName.caseInsensitiveCompare(contact2?.lastName ?? ""))!
+//            }
+        }    }
+        
     @objc public func doAfterEnvironmentInitSetup() {
     }
     
@@ -231,10 +240,14 @@ import RelayServiceKit
     }
     
     // MARK: - Helpers
+
 }
 
 
 
-//extension FLContactsManager : NSCacheDelegate {
-//
-//}
+extension FLContactsManager : NSCacheDelegate {
+
+    public func cache(_ cache: NSCache<AnyObject, AnyObject>, willEvictObject obj: Any) {
+        // called when objects evicted from any of the caches
+    }
+}
