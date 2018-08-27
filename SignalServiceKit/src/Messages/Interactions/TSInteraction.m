@@ -138,7 +138,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (OWSInteractionType)interactionType
 {
-    OWSFailDebug(@"%@ unknown interaction type.", self.logTag);
+    OWSFailDebug(@"unknown interaction type.");
 
     return OWSInteractionType_Unknown;
 }

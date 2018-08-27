@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
         YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
         options.corruptAction = YapDatabaseCorruptAction_Fail;
         if (databasePassword) {
-            OWSLogInfo(@"%@ Using password.", self.logTag);
+            OWSLogInfo(@"Using password.");
             options.cipherKeyBlock = ^{
                 return databasePassword;
             };
@@ -89,13 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
         options.enableMultiProcessSupport = YES;
 
         if (databaseSalt) {
-            OWSLogInfo(@"%@ Using salt & unencrypted header.", self.logTag);
+            OWSLogInfo(@"Using salt & unencrypted header.");
             options.cipherSaltBlock = ^{
                 return databaseSalt;
             };
             options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
         } else if (databaseKeySpec) {
-            OWSLogInfo(@"%@ Using key spec & unencrypted header.", self.logTag);
+            OWSLogInfo(@"Using key spec & unencrypted header.");
             options.cipherKeySpecBlock = ^{
                 return databaseKeySpec;
             };
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary *fileAttributes =
         [[NSFileManager defaultManager] attributesOfItemAtPath:databaseFilePath error:&error];
     OWSAssert(fileAttributes && !error);
-    OWSLogVerbose(@"%@ test database file size: %@", self.logTag, fileAttributes[NSFileSize]);
+    OWSLogVerbose(@"test database file size: %@", fileAttributes[NSFileSize]);
 }
 
 - (BOOL)verifyTestDatabase:(NSString *)databaseFilePath
@@ -233,7 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *databaseFilePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
 
-    OWSLogInfo(@"%@ databaseFilePath: %@", self.logTag, databaseFilePath);
+    OWSLogInfo(@"databaseFilePath: %@", databaseFilePath);
     [DDLog flushLog];
 
     return databaseFilePath;
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"error: %@", error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -360,7 +360,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"error: %@", error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -452,7 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"error: %@", error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -487,7 +487,7 @@ NS_ASSUME_NONNULL_BEGIN
     YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
-        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+        XCTFail(@"No conversion should be necessary");
         return NO;
     };
 
@@ -495,7 +495,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"error: %@", error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);
@@ -520,7 +520,7 @@ NS_ASSUME_NONNULL_BEGIN
     YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(saltData);
 
-        XCTFail(@"%s No conversion should be necessary", __PRETTY_FUNCTION__);
+        XCTFail(@"No conversion should be necessary");
         return NO;
     };
 
@@ -528,7 +528,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  databasePassword:databasePassword
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
-        OWSLogError(@"%s error: %@", __PRETTY_FUNCTION__, error);
+        OWSLogError(@"error: %@", error);
     }
     XCTAssertNil(error);
     XCTAssertFalse([YapDatabaseCryptoUtils doesDatabaseNeedToBeConverted:databaseFilePath]);

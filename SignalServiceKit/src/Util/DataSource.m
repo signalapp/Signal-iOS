@@ -188,8 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
             if ([self writeToPath:filePath]) {
                 self.cachedFilePath = filePath;
             } else {
-                OWSLogDebug(@"%@ Could not write data to disk: %@", self.logTag, self.fileExtension);
-                OWSFailDebug(@"%@ Could not write data to disk.", self.logTag);
+                OWSLogDebug(@"Could not write data to disk: %@", self.fileExtension);
+                OWSFailDebug(@"Could not write data to disk.");
             }
         }
 
@@ -220,8 +220,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL success = [dataCopy writeToFile:dstFilePath atomically:YES];
     if (!success) {
-        OWSLogDebug(@"%@ Could not write data to disk: %@", self.logTag, dstFilePath);
-        OWSFailDebug(@"%@ Could not write data to disk.", self.logTag);
+        OWSLogDebug(@"Could not write data to disk: %@", dstFilePath);
+        OWSFailDebug(@"Could not write data to disk.");
         return NO;
     } else {
         return YES;
@@ -316,12 +316,12 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!self.cachedData) {
-            OWSLogError(@"%@ ---- reading data", self.logTag);
+            OWSLogError(@"---- reading data");
             self.cachedData = [NSData dataWithContentsOfFile:self.filePath];
         }
         if (!self.cachedData) {
-            OWSLogDebug(@"%@ Could not read data from disk: %@", self.logTag, self.filePath);
-            OWSFailDebug(@"%@ Could not read data from disk.", self.logTag);
+            OWSLogDebug(@"Could not read data from disk: %@", self.filePath);
+            OWSFailDebug(@"Could not read data from disk.");
             self.cachedData = [NSData new];
         }
         return self.cachedData;
@@ -360,8 +360,8 @@ NS_ASSUME_NONNULL_BEGIN
             NSDictionary<NSFileAttributeKey, id> *_Nullable attributes =
                 [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:&error];
             if (!attributes || error) {
-                OWSLogDebug(@"%@ Could not read data length from disk: %@, %@", self.logTag, self.filePath, error);
-                OWSFailDebug(@"%@ Could not read data length from disk with error: %@", self.logTag, error);
+                OWSLogDebug(@"Could not read data length from disk: %@, %@", self.filePath, error);
+                OWSFailDebug(@"Could not read data length from disk with error: %@", error);
                 self.cachedDataLength = @(0);
             } else {
                 uint64_t fileSize = [attributes fileSize];
@@ -379,9 +379,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
     if (!success || error) {
-        OWSLogDebug(
-            @"%@ Could not write data from path: %@, to path: %@, %@", self.logTag, self.filePath, dstFilePath, error);
-        OWSFailDebug(@"%@ Could not write data with error: %@", self.logTag, error);
+        OWSLogDebug(@"Could not write data from path: %@, to path: %@, %@", self.filePath, dstFilePath, error);
+        OWSFailDebug(@"Could not write data with error: %@", error);
         return NO;
     } else {
         return YES;

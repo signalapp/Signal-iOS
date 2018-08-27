@@ -133,7 +133,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
         }];
 
         if (!messageData) {
-            OWSFailDebug(@"%@ Failed to serialize contacts sync message.", self.logTag);
+            OWSFailDebug(@"Failed to serialize contacts sync message.");
             return;
         }
 
@@ -149,7 +149,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{
-                OWSLogInfo(@"%@ Successfully sent contacts sync message.", self.logTag);
+                OWSLogInfo(@"Successfully sent contacts sync message.");
 
                 [self.editingDatabaseConnection setObject:messageData
                                                    forKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
@@ -160,7 +160,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                 });
             }
             failure:^(NSError *error) {
-                OWSLogError(@"%@ Failed to send contacts sync message with error: %@", self.logTag, error);
+                OWSLogError(@"Failed to send contacts sync message with error: %@", error);
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;

@@ -69,19 +69,19 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
         pceSvn = parser.nextShort;
     } else {
         if (![parser readZero:2]) {
-            OWSFailDebug(@"%@ non-zero pceSvn.", self.logTag);
+            OWSFailDebug(@"non-zero pceSvn.");
             return nil;
         }
     }
 
     if (![parser readZero:4]) {
-        OWSFailDebug(@"%@ non-zero xeid.", self.logTag);
+        OWSFailDebug(@"non-zero xeid.");
         return nil;
     }
 
     NSData *_Nullable basename = [parser readBytes:32];
     if (!basename) {
-        OWSFailDebug(@"%@ couldn't read basename.", self.logTag);
+        OWSFailDebug(@"couldn't read basename.");
         return nil;
     }
 
@@ -89,69 +89,69 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 
     NSData *_Nullable cpuSvn = [parser readBytes:16];
     if (!cpuSvn) {
-        OWSFailDebug(@"%@ couldn't read cpuSvn.", self.logTag);
+        OWSFailDebug(@"couldn't read cpuSvn.");
         return nil;
     }
     if (![parser readZero:4]) {
-        OWSFailDebug(@"%@ non-zero misc_select.", self.logTag);
+        OWSFailDebug(@"non-zero misc_select.");
         return nil;
     }
     if (![parser readZero:28]) {
-        OWSFailDebug(@"%@ non-zero reserved1.", self.logTag);
+        OWSFailDebug(@"non-zero reserved1.");
         return nil;
     }
 
     uint64_t flags = parser.nextLong;
     if ((flags & SGX_FLAGS_RESERVED) != 0 || (flags & SGX_FLAGS_INITTED) == 0 || (flags & SGX_FLAGS_MODE64BIT) == 0) {
-        OWSFailDebug(@"%@ invalid flags.", self.logTag);
+        OWSFailDebug(@"invalid flags.");
         return nil;
     }
 
     uint64_t xfrm = parser.nextLong;
     if ((xfrm & SGX_XFRM_RESERVED) != 0) {
-        OWSFailDebug(@"%@ invalid xfrm.", self.logTag);
+        OWSFailDebug(@"invalid xfrm.");
         return nil;
     }
 
     NSData *_Nullable mrenclave = [parser readBytes:32];
     if (!mrenclave) {
-        OWSFailDebug(@"%@ couldn't read mrenclave.", self.logTag);
+        OWSFailDebug(@"couldn't read mrenclave.");
         return nil;
     }
     if (![parser readZero:32]) {
-        OWSFailDebug(@"%@ non-zero reserved2.", self.logTag);
+        OWSFailDebug(@"non-zero reserved2.");
         return nil;
     }
     NSData *_Nullable mrsigner = [parser readBytes:32];
     if (!mrsigner) {
-        OWSFailDebug(@"%@ couldn't read mrsigner.", self.logTag);
+        OWSFailDebug(@"couldn't read mrsigner.");
         return nil;
     }
     if (![parser readZero:96]) {
-        OWSFailDebug(@"%@ non-zero reserved3.", self.logTag);
+        OWSFailDebug(@"non-zero reserved3.");
         return nil;
     }
     uint16_t isvProdId = parser.nextShort;
     uint16_t isvSvn = parser.nextShort;
     if (![parser readZero:60]) {
-        OWSFailDebug(@"%@ non-zero reserved4.", self.logTag);
+        OWSFailDebug(@"non-zero reserved4.");
         return nil;
     }
     NSData *_Nullable reportData = [parser readBytes:64];
     if (!reportData) {
-        OWSFailDebug(@"%@ couldn't read reportData.", self.logTag);
+        OWSFailDebug(@"couldn't read reportData.");
         return nil;
     }
 
     // quote signature
     uint32_t signatureLength = parser.nextInt;
     if (signatureLength != quoteData.length - 436) {
-        OWSFailDebug(@"%@ invalid signatureLength.", self.logTag);
+        OWSFailDebug(@"invalid signatureLength.");
         return nil;
     }
     NSData *_Nullable signature = [parser readBytes:signatureLength];
     if (!signature) {
-        OWSFailDebug(@"%@ couldn't read signature.", self.logTag);
+        OWSFailDebug(@"couldn't read signature.");
         return nil;
     }
 

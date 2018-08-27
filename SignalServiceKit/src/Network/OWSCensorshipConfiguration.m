@@ -152,12 +152,12 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         NSError *error;
         NSData *certData = [self certificateDataWithName:certName error:&error];
         if (error) {
-            OWSLogError(@"%@ reading data for certificate: %@ failed with error: %@", self.logTag, certName, error);
+            OWSLogError(@"reading data for certificate: %@ failed with error: %@", certName, error);
             OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
         }
 
         if (!certData) {
-            OWSLogError(@"%@ No data for certificate: %@", self.logTag, certName);
+            OWSLogError(@"No data for certificate: %@", certName);
             OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
         }
         [certificates addObject:certData];
@@ -186,12 +186,12 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
     NSData *_Nullable certData = [NSData dataWithContentsOfFile:path options:0 error:error];
 
     if (*error != nil) {
-        OWSFailDebug(@"%@ Failed to read cert file with path: %@", self.logTag, path);
+        OWSFailDebug(@"Failed to read cert file with path: %@", path);
         return nil;
     }
 
     if (certData.length == 0) {
-        OWSFailDebug(@"%@ empty certData for name: %@", self.logTag, name);
+        OWSFailDebug(@"empty certData for name: %@", name);
         return nil;
     }
 

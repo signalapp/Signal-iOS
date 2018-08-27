@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contactsViewHelper.contactsManager
         userRequestedSystemContactsRefreshWithCompletion:^(NSError *_Nullable error) {
             if (error) {
-                OWSLogError(@"%@ refreshing contacts failed with error: %@", self.logTag, error);
+                OWSLogError(@"refreshing contacts failed with error: %@", error);
             }
             [refreshControl endRefreshing];
         }];

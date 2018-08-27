@@ -232,17 +232,16 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem
             itemWithTitle:@"Request Bogus group info"
               actionBlock:^{
-                  OWSLogInfo(@"%@ Requesting bogus group info for thread: %@", self.logTag, thread);
+                  OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
                   OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
                       [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
                                                                   groupId:[Randomness generateRandomBytes:16]];
                   [[Environment current].messageSender enqueueMessage:syncGroupsRequestMessage
                       success:^{
-                          OWSLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
+                          OWSLogWarn(@"Successfully sent Request Group Info message.");
                       }
                       failure:^(NSError *error) {
-                          OWSLogError(
-                              @"%@ Failed to send Request Group Info message with error: %@", self.logTag, error);
+                          OWSLogError(@"Failed to send Request Group Info message with error: %@", error);
                       }];
               }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
@@ -311,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
-    OWSLogInfo(@"%@ sendTextMessageInThread: %zd", self.logTag, counter);
+    OWSLogInfo(@"sendTextMessageInThread: %zd", counter);
     [DDLog flushLog];
 
     NSString *randomText = [self randomText];
@@ -319,7 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment current].messageSender;
     TSOutgoingMessage *message =
         [ThreadUtil sendMessageWithText:text inThread:thread quotedReplyModel:nil messageSender:messageSender];
-    OWSLogError(@"%@ sendTextMessageInThread timestamp: %llu.", self.logTag, message.timestamp);
+    OWSLogError(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
 }
 
 + (void)sendNTextMessagesInThread:(TSThread *)thread
@@ -1989,7 +1988,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    quotedMessage:nil
                                                      transaction:transaction];
                 OWSAssert(messageToQuote);
-                OWSLogVerbose(@"%@ %@", self.logTag, label);
+                OWSLogVerbose(@"%@", label);
                 [DDLog flushLog];
                 ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
                                                                                      isGroupThread:thread.isGroupThread
@@ -3139,7 +3138,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             ActionSuccessBlock success,
             ActionFailureBlock failure) {
             OWSContact *contact = contactBlock(transaction);
-            OWSLogVerbose(@"%@ sending contact: %@", self.logTag, contact.debugDescription);
+            OWSLogVerbose(@"sending contact: %@", contact.debugDescription);
             OWSMessageSender *messageSender = [Environment current].messageSender;
             [ThreadUtil sendMessageWithContactShare:contact inThread:thread messageSender:messageSender completion:nil];
 
@@ -3396,7 +3395,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             TSContactThread *contactThread = (TSContactThread *)thread;
             return contactThread.contactIdentifier;
         } else {
-            OWSFailDebug(@"%@ failure: unknown thread type", self.logTag);
+            OWSFailDebug(@"failure: unknown thread type");
             return @"unknown-source-id";
         }
     }();
@@ -3409,7 +3408,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
     if (error || !envelope) {
-        OWSFailDebug(@"%@ Could not construct envelope: %@.", self.logTag, error);
+        OWSFailDebug(@"Could not construct envelope: %@.", error);
         return nil;
     }
     return envelope;
@@ -3932,7 +3931,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSError *error;
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
     if (error || !envelopeData) {
-        OWSFailDebug(@"%@ Could not serialize envelope: %@.", self.logTag, error);
+        OWSFailDebug(@"Could not serialize envelope: %@.", error);
         return;
     }
 
@@ -4013,7 +4012,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                       thread:(TSThread *)thread
                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSLogInfo(@"%@ deleteRandomMessages: %zd", self.logTag, count);
+    OWSLogInfo(@"deleteRandomMessages: %zd", count);
 
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     NSUInteger messageCount = [interactionsByThread numberOfItemsInGroup:thread.uniqueId];
@@ -4043,7 +4042,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                     thread:(TSThread *)thread
                transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSLogInfo(@"%@ deleteLastMessages", self.logTag);
+    OWSLogInfo(@"deleteLastMessages");
 
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     NSUInteger messageCount = (NSUInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
@@ -4069,7 +4068,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                             thread:(TSThread *)thread
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSLogInfo(@"%@ deleteRandomRecentMessages: %zd", self.logTag, count);
+    OWSLogInfo(@"deleteRandomRecentMessages: %zd", count);
 
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     NSInteger messageCount = (NSInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
@@ -4102,7 +4101,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                     thread:(TSThread *)thread
                                transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSLogInfo(@"%@ insertAndDeleteNewOutgoingMessages: %zd", self.logTag, count);
+    OWSLogInfo(@"insertAndDeleteNewOutgoingMessages: %zd", count);
 
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
@@ -4115,7 +4114,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                     messageBody:text
                                                                    attachmentId:nil
                                                                expiresInSeconds:expiresInSeconds];
-        OWSLogError(@"%@ insertAndDeleteNewOutgoingMessages timestamp: %llu.", self.logTag, message.timestamp);
+        OWSLogError(@"insertAndDeleteNewOutgoingMessages timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4131,7 +4130,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                thread:(TSThread *)thread
                           transaction:(YapDatabaseReadWriteTransaction *)initialTransaction
 {
-    OWSLogInfo(@"%@ resurrectNewOutgoingMessages1.1: %zd", self.logTag, count);
+    OWSLogInfo(@"resurrectNewOutgoingMessages1.1: %zd", count);
 
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
@@ -4145,7 +4144,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                     messageBody:text
                                                                    attachmentId:nil
                                                                expiresInSeconds:expiresInSeconds];
-        OWSLogError(@"%@ resurrectNewOutgoingMessages1 timestamp: %llu.", self.logTag, message.timestamp);
+        OWSLogError(@"resurrectNewOutgoingMessages1 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4154,7 +4153,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     }
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        OWSLogInfo(@"%@ resurrectNewOutgoingMessages1.2: %zd", self.logTag, count);
+        OWSLogInfo(@"resurrectNewOutgoingMessages1.2: %zd", count);
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message removeWithTransaction:transaction];
@@ -4170,7 +4169,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                thread:(TSThread *)thread
                           transaction:(YapDatabaseReadWriteTransaction *)initialTransaction
 {
-    OWSLogInfo(@"%@ resurrectNewOutgoingMessages2.1: %zd", self.logTag, count);
+    OWSLogInfo(@"resurrectNewOutgoingMessages2.1: %zd", count);
 
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
@@ -4189,7 +4188,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                             groupMetaMessage:TSGroupMessageUnspecified
                                quotedMessage:nil
                                 contactShare:nil];
-        OWSLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
+        OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4199,14 +4198,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     }
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        OWSLogInfo(@"%@ resurrectNewOutgoingMessages2.2: %zd", self.logTag, count);
+        OWSLogInfo(@"resurrectNewOutgoingMessages2.2: %zd", count);
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message removeWithTransaction:transaction];
             }
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            OWSLogInfo(@"%@ resurrectNewOutgoingMessages2.3: %zd", self.logTag, count);
+            OWSLogInfo(@"resurrectNewOutgoingMessages2.3: %zd", count);
             [OWSPrimaryStorage.dbReadWriteConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     for (TSOutgoingMessage *message in messages) {
@@ -4312,7 +4311,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *string in strings) {
                 // DO NOT log these strings with the debugger attached.
-                //        OWSLogInfo(@"%@ %@", self.logTag, string);
+                //        OWSLogInfo(@"%@", string);
 
                 {
                     [self createFakeIncomingMessage:thread
@@ -4351,7 +4350,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *string in strings) {
-                OWSLogInfo(@"%@ sending zalgo", self.logTag);
+                OWSLogInfo(@"sending zalgo");
 
                 {
                     [self createFakeIncomingMessage:thread
@@ -4454,7 +4453,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [label appendString:@" (Sent)"];
         }
     } else {
-        OWSFailDebug(@"%@ unknown message state.", self.logTag);
+        OWSFailDebug(@"unknown message state.");
     }
     return label;
 }

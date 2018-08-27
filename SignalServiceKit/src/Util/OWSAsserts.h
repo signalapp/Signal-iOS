@@ -52,14 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define OWSFailNoFormat(message)                                                                                       \
     do {                                                                                                               \
-        OWSLogError(@"%s %@", __PRETTY_FUNCTION__, message);                                                           \
+        OWSLogError(@"%@", message);                                                                                   \
         [DDLog flushLog];                                                                                              \
         NSAssert(0, message);                                                                                          \
     } while (NO)
 
 #define OWSCFailNoFormat(message)                                                                                      \
     do {                                                                                                               \
-        OWSLogError(@"%s %@", __PRETTY_FUNCTION__, message);                                                           \
+        OWSLogError(@"%@", message);                                                                                   \
         [DDLog flushLog];                                                                                              \
         NSCAssert(0, message);                                                                                         \
     } while (NO)

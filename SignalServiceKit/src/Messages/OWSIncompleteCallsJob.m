@@ -71,7 +71,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
         if ([call isKindOfClass:[TSCall class]]) {
             block(call);
         } else {
-            OWSLogError(@"%@ unexpected object: %@", self.logTag, call);
+            OWSLogError(@"unexpected object: %@", call);
         }
     }
 }
@@ -87,16 +87,16 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
                 if (call.timestamp <= cutoffTimestamp) {
-                    OWSLogInfo(@"%@ ignoring new call: %@", self.logTag, call.uniqueId);
+                    OWSLogInfo(@"ignoring new call: %@", call.uniqueId);
                     return;
                 }
 
                 if (call.callType == RPRecentCallTypeOutgoingIncomplete) {
-                    OWSLogDebug(@"%@ marking call as missed: %@", self.logTag, call.uniqueId);
+                    OWSLogDebug(@"marking call as missed: %@", call.uniqueId);
                     [call updateCallType:RPRecentCallTypeOutgoingMissed transaction:transaction];
                     OWSAssert(call.callType == RPRecentCallTypeOutgoingMissed);
                 } else if (call.callType == RPRecentCallTypeIncomingIncomplete) {
-                    OWSLogDebug(@"%@ marking call as missed: %@", self.logTag, call.uniqueId);
+                    OWSLogDebug(@"marking call as missed: %@", call.uniqueId);
                     [call updateCallType:RPRecentCallTypeIncomingMissed transaction:transaction];
                     OWSAssert(call.callType == RPRecentCallTypeIncomingMissed);
                 } else {
@@ -109,7 +109,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
                                   transaction:transaction];
     }];
 
-    OWSLogInfo(@"%@ Marked %u calls as missed", self.logTag, count);
+    OWSLogInfo(@"Marked %u calls as missed", count);
 }
 
 #pragma mark - YapDatabaseExtension

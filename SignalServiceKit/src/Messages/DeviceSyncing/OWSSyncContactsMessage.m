@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoAttachmentPointer *_Nullable attachmentProto =
         [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
     if (!attachmentProto) {
-        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+        OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoSyncMessageContacts *_Nullable contactsProto = [contactsBuilder buildAndReturnError:&error];
     if (error || !contactsProto) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     [dataOutputStream close];
 
     if (contactsOutputStream.hasError) {
-        OWSFailDebug(@"%@ Could not write contacts sync stream.", self.logTag);
+        OWSFailDebug(@"Could not write contacts sync stream.");
         return nil;
     }
 

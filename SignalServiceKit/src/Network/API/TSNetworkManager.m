@@ -84,11 +84,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
-    OWSLogInfo(@"%@ Making request: %@", self.logTag, request);
+    OWSLogInfo(@"Making request: %@", request);
 
     // TODO: Remove this logging when the call connection issues have been resolved.
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"%@ request succeeded : %@", self.logTag, request);
+        OWSLogInfo(@"request succeeded : %@", request);
 
         if (request.shouldHaveAuthorizationHeaders) {
             [TSAccountManager.sharedInstance setIsDeregistered:NO];

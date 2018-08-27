@@ -175,7 +175,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSLogVerbose(@"");
 
     if (![self ensureJobTempDir]) {
-        OWSFailDebug(@"%@ Could not create jobTempDirPath.", self.logTag);
+        OWSFailDebug(@"Could not create jobTempDirPath.");
         return NO;
     }
 
@@ -266,24 +266,24 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 return;
             }
             if (item.recordName.length < 1) {
-                OWSLogError(@"%@ attachment was not downloaded.", self.logTag);
+                OWSLogError(@"attachment was not downloaded.");
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
             if (item.attachmentId.length < 1) {
-                OWSLogError(@"%@ attachment missing attachment id.", self.logTag);
+                OWSLogError(@"attachment missing attachment id.");
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
             if (item.relativeFilePath.length < 1) {
-                OWSLogError(@"%@ attachment missing relative file path.", self.logTag);
+                OWSLogError(@"attachment missing relative file path.");
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
             TSAttachmentStream *_Nullable attachment =
                 [TSAttachmentStream fetchObjectWithUniqueID:item.attachmentId transaction:transaction];
             if (!attachment) {
-                OWSLogError(@"%@ attachment to restore could not be found.", self.logTag);
+                OWSLogError(@"attachment to restore could not be found.");
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
@@ -295,7 +295,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
     }];
 
-    OWSLogError(@"%@ enqueued lazy restore of %zd files.", self.logTag, count);
+    OWSLogError(@"enqueued lazy restore of %zd files.", count);
 }
 
 - (void)restoreDatabaseWithCompletion:(OWSBackupJobBoolCompletion)completion
@@ -310,7 +310,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
     if (!dbConnection) {
-        OWSFailDebug(@"%@ Could not create dbConnection.", self.logTag);
+        OWSFailDebug(@"Could not create dbConnection.");
         return completion(NO);
     }
 
@@ -334,7 +334,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 continue;
             }
             if ([transaction numberOfKeysInCollection:collection] > 0) {
-                OWSLogError(@"%@ unexpected contents in database (%@).", self.logTag, collection);
+                OWSLogError(@"unexpected contents in database (%@).", collection);
             }
         }
 
@@ -356,14 +356,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 return;
             }
             if (item.recordName.length < 1) {
-                OWSLogError(@"%@ database snapshot was not downloaded.", self.logTag);
+                OWSLogError(@"database snapshot was not downloaded.");
                 // Attachment-related errors are recoverable and can be ignored.
                 // Database-related errors are unrecoverable.
                 aborted = YES;
                 return completion(NO);
             }
             if (!item.uncompressedDataLength || item.uncompressedDataLength.unsignedIntValue < 1) {
-                OWSLogError(@"%@ database snapshot missing size.", self.logTag);
+                OWSLogError(@"database snapshot missing size.");
                 // Attachment-related errors are recoverable and can be ignored.
                 // Database-related errors are unrecoverable.
                 aborted = YES;
@@ -395,13 +395,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 SignalIOSProtoBackupSnapshot *_Nullable entities =
                     [SignalIOSProtoBackupSnapshot parseData:uncompressedData error:&error];
                 if (!entities || error) {
-                    OWSLogError(@"%@ could not parse proto: %@.", self.logTag, error);
+                    OWSLogError(@"could not parse proto: %@.", error);
                     // Database-related errors are unrecoverable.
                     aborted = YES;
                     return completion(NO);
                 }
                 if (!entities || entities.entity.count < 1) {
-                    OWSLogError(@"%@ missing entities.", self.logTag);
+                    OWSLogError(@"missing entities.");
                     // Database-related errors are unrecoverable.
                     aborted = YES;
                     return completion(NO);
@@ -409,7 +409,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 for (SignalIOSProtoBackupSnapshotBackupEntity *entity in entities.entity) {
                     NSData *_Nullable entityData = entity.entityData;
                     if (entityData.length < 1) {
-                        OWSLogError(@"%@ missing entity data.", self.logTag);
+                        OWSLogError(@"missing entity data.");
                         // Database-related errors are unrecoverable.
                         aborted = YES;
                         return completion(NO);
@@ -420,13 +420,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                         NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:entityData];
                         object = [unarchiver decodeObjectForKey:@"root"];
                         if (![object isKindOfClass:[object class]]) {
-                            OWSLogError(@"%@ invalid decoded entity: %@.", self.logTag, [object class]);
+                            OWSLogError(@"invalid decoded entity: %@.", [object class]);
                             // Database-related errors are unrecoverable.
                             aborted = YES;
                             return completion(NO);
                         }
                     } @catch (NSException *exception) {
-                        OWSLogError(@"%@ could not decode entity.", self.logTag);
+                        OWSLogError(@"could not decode entity.");
                         // Database-related errors are unrecoverable.
                         aborted = YES;
                         return completion(NO);
@@ -447,9 +447,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 
     for (NSString *collection in restoredEntityCounts) {
-        OWSLogInfo(@"%@ copied %@: %@", self.logTag, collection, restoredEntityCounts[collection]);
+        OWSLogInfo(@"copied %@: %@", collection, restoredEntityCounts[collection]);
     }
-    OWSLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
+    OWSLogInfo(@"copiedEntities: %llu", copiedEntities);
 
     [self.primaryStorage logFileSizes];
 

@@ -140,16 +140,16 @@ NS_ASSUME_NONNULL_BEGIN
                                               sourceFilename:self.sourceFilename
                                                     inFolder:attachmentsFolder];
     if (!filePath) {
-        OWSFailDebug(@"%@ Could not generate path for attachment.", self.logTag);
+        OWSFailDebug(@"Could not generate path for attachment.");
         return;
     }
     if (![filePath hasPrefix:attachmentsFolder]) {
-        OWSFailDebug(@"%@ Attachment paths should all be in the attachments folder.", self.logTag);
+        OWSFailDebug(@"Attachment paths should all be in the attachments folder.");
         return;
     }
     NSString *localRelativeFilePath = [filePath substringFromIndex:attachmentsFolder.length];
     if (localRelativeFilePath.length < 1) {
-        OWSFailDebug(@"%@ Empty local relative attachment paths.", self.logTag);
+        OWSFailDebug(@"Empty local relative attachment paths.");
         return;
     }
 
@@ -164,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
+        OWSFailDebug(@"Missing path for attachment.");
         return nil;
     }
     return [NSData dataWithContentsOfFile:filePath options:0 error:error];
@@ -177,10 +177,10 @@ NS_ASSUME_NONNULL_BEGIN
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
+        OWSFailDebug(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
+    OWSLogInfo(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
@@ -190,10 +190,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
+        OWSFailDebug(@"Missing path for attachment.");
         return NO;
     }
-    OWSLogInfo(@"%@ Writing attachment to file: %@", self.logTag, filePath);
+    OWSLogInfo(@"Writing attachment to file: %@", filePath);
     return [dataSource writeToPath:filePath];
 }
 
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)filePath
 {
     if (!self.localRelativeFilePath) {
-        OWSFailDebug(@"%@ Attachment missing local file path.", self.logTag);
+        OWSFailDebug(@"Attachment missing local file path.");
         return nil;
     }
 
@@ -241,7 +241,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *filePath = self.filePath;
     if (!filePath) {
-        OWSFailDebug(@"%@ Attachment missing local file path.", self.logTag);
+        OWSFailDebug(@"Attachment missing local file path.");
         return nil;
     }
 
@@ -260,7 +260,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
+        OWSFailDebug(@"Missing path for attachment.");
         return nil;
     }
     return [NSURL fileURLWithPath:filePath];
@@ -275,19 +275,19 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
 
         if (error) {
-            OWSLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
+            OWSLogError(@"remove thumbnail errored with: %@", error);
         }
     }
 
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
-        OWSFailDebug(@"%@ Missing path for attachment.", self.logTag);
+        OWSFailDebug(@"Missing path for attachment.");
         return;
     }
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
-        OWSLogError(@"%@ remove file errored with: %@", self.logTag, error);
+        OWSLogError(@"remove file errored with: %@", error);
     }
 }
 
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
         // This isn't true for some useful edge cases tested by the Debug UI.
-        OWSLogError(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+        OWSLogError(@"missing thumbnail for attachmentId: %@", self.uniqueId);
 
         return nil;
     }
@@ -410,7 +410,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        OWSFailDebug(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+        OWSFailDebug(@"missing thumbnail for attachmentId: %@", self.uniqueId);
 
         return nil;
     }
@@ -431,7 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        OWSLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        OWSLogError(@"while generating thumbnail, source file doesn't exist: %@", self.mediaURL);
         // If we're not lazy-restoring this message, the attachment should exist on disk.
         OWSAssert(self.lazyRestoreFragmentId);
         return;
@@ -443,7 +443,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable result;
     if (self.isImage || self.isAnimated) {
         if (![self isValidImage]) {
-            OWSLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
+            OWSLogWarn(@"skipping thumbnail generation for invalid image at path: %@", self.filePath);
             return;
         }
 
@@ -464,14 +464,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (self.isVideo) {
         result = [self videoStillImageWithMaxSize:CGSizeMake(thumbnailSize, thumbnailSize)];
     } else {
-        OWSFailDebug(@"%@ trying to generate thumnail for unexpected attachment: %@ of type: %@",
-            self.logTag,
-            self.uniqueId,
-            self.contentType);
+        OWSFailDebug(
+            @"trying to generate thumnail for unexpected attachment: %@ of type: %@", self.uniqueId, self.contentType);
     }
 
     if (result == nil) {
-        OWSFailDebug(@"%@ Unable to build thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+        OWSFailDebug(@"Unable to build thumbnail for attachmentId: %@", self.uniqueId);
         return;
     }
 
@@ -544,7 +542,7 @@ NS_ASSUME_NONNULL_BEGIN
         // With CGImageSource we avoid loading the whole image into memory.
         CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)mediaUrl, NULL);
         if (!source) {
-            OWSFailDebug(@"%@ Could not load image: %@", self.logTag, mediaUrl);
+            OWSFailDebug(@"Could not load image: %@", mediaUrl);
             return CGSizeZero;
         }
 
@@ -567,7 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
                         [self applyImageOrientation:(UIImageOrientation)orientation.intValue toImageSize:imageSize];
                 }
             } else {
-                OWSFailDebug(@"%@ Could not determine size of image: %@", self.logTag, mediaUrl);
+                OWSFailDebug(@"Could not determine size of image: %@", mediaUrl);
             }
         }
         CFRelease(source);
@@ -629,7 +627,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // This message has not yet been saved or has been deleted; do nothing.
                 // This isn't an error per se, but these race conditions should be
                 // _very_ rare.
-                OWSFailDebug(@"%@ Attachment not yet saved.", self.logTag);
+                OWSFailDebug(@"Attachment not yet saved.");
             }
         }];
 
@@ -678,7 +676,7 @@ NS_ASSUME_NONNULL_BEGIN
             // This message has not yet been saved or has been deleted; do nothing.
             // This isn't an error per se, but these race conditions should be
             // _very_ rare.
-            OWSFailDebug(@"%@ Attachment not yet saved.", self.logTag);
+            OWSFailDebug(@"Attachment not yet saved.");
         }
     }];
 
@@ -701,13 +699,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)readOversizeText
 {
     if (!self.isOversizeText) {
-        OWSFailDebug(@"%@ oversize text attachment has unexpected content type.", self.logTag);
+        OWSFailDebug(@"oversize text attachment has unexpected content type.");
         return nil;
     }
     NSError *error;
     NSData *_Nullable data = [self readDataFromFileWithError:&error];
     if (error || !data) {
-        OWSFailDebug(@"%@ could not read oversize text attachment: %@.", self.logTag, error);
+        OWSFailDebug(@"could not read oversize text attachment: %@.", error);
         return nil;
     }
     NSString *_Nullable string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
@@ -762,7 +760,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
     if (!success || error) {
-        OWSLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+        OWSLogError(@"Couldn't copy attachment data for message sent to self: %@.", error);
         return nil;
     }
 
@@ -798,7 +796,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
-    OWSLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, self.sourceFilename);
+    OWSLogVerbose(@"Sending attachment with filename: '%@'", self.sourceFilename);
     builder.fileName = self.sourceFilename;
 
     builder.size = self.byteCount;
@@ -821,7 +819,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoAttachmentPointer *_Nullable attachmentProto = [builder buildAndReturnError:&error];
     if (error || !attachmentProto) {
-        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
     return attachmentProto;

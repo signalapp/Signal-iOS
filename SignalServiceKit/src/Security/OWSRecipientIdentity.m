@@ -166,17 +166,17 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 
 + (void)printAllIdentities
 {
-    OWSLogInfo(@"%@ ### All Recipient Identities ###", self.logTag);
+    OWSLogInfo(@"### All Recipient Identities ###");
     __block int count = 0;
     [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
         count++;
         if (![obj isKindOfClass:[self class]]) {
-            OWSFailDebug(@"%@ unexpected object in collection: %@", self.logTag, obj);
+            OWSFailDebug(@"unexpected object in collection: %@", obj);
             return;
         }
         OWSRecipientIdentity *recipientIdentity = (OWSRecipientIdentity *)obj;
 
-        OWSLogInfo(@"%@ Identity %d: %@", self.logTag, count, recipientIdentity.debugDescription);
+        OWSLogInfo(@"Identity %d: %@", count, recipientIdentity.debugDescription);
     }];
 }
 

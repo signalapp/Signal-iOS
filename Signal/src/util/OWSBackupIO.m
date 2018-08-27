@@ -53,7 +53,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
 {
     NSString *filePath = [self generateTempFilePath];
     if (![OWSFileSystem ensureFileExists:filePath]) {
-        OWSFailDebug(@"%@ could not create temp file.", self.logTag);
+        OWSFailDebug(@"could not create temp file.");
         return nil;
     }
     return filePath;
@@ -80,7 +80,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         // TODO: Encrypt the file without loading it into memory.
         NSData *_Nullable srcData = [NSData dataWithContentsOfFile:srcFilePath];
         if (srcData.length < 1) {
-            OWSFailDebug(@"%@ could not load file into memory for encryption.", self.logTag);
+            OWSFailDebug(@"could not load file into memory for encryption.");
             return nil;
         }
         return [self encryptDataAsTempFile:srcData encryptionKey:encryptionKey];
@@ -114,7 +114,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         NSError *error;
         BOOL success = [encryptedData writeToFile:dstFilePath options:NSDataWritingAtomic error:&error];
         if (!success || error) {
-            OWSFailDebug(@"%@ error writing encrypted data: %@", self.logTag, error);
+            OWSFailDebug(@"error writing encrypted data: %@", error);
             return nil;
         }
         [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
@@ -146,7 +146,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         NSError *error;
         BOOL success = [data writeToFile:dstFilePath options:NSDataWritingAtomic error:&error];
         if (!success || error) {
-            OWSFailDebug(@"%@ error writing decrypted data: %@", self.logTag, error);
+            OWSFailDebug(@"error writing decrypted data: %@", error);
             return NO;
         }
         [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
@@ -163,13 +163,13 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     @autoreleasepool {
 
         if (![NSFileManager.defaultManager fileExistsAtPath:srcFilePath]) {
-            OWSLogError(@"%@ missing downloaded file.", self.logTag);
+            OWSLogError(@"missing downloaded file.");
             return nil;
         }
 
         NSData *_Nullable srcData = [NSData dataWithContentsOfFile:srcFilePath];
         if (srcData.length < 1) {
-            OWSFailDebug(@"%@ could not load file into memory for decryption.", self.logTag);
+            OWSFailDebug(@"could not load file into memory for decryption.");
             return nil;
         }
 
@@ -201,7 +201,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     @autoreleasepool {
 
         if (!srcData) {
-            OWSFailDebug(@"%@ missing unencrypted data.", self.logTag);
+            OWSFailDebug(@"missing unencrypted data.");
             return nil;
         }
 
@@ -213,7 +213,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         size_t dstBufferLength = srcLength + 64 * 1024;
         NSMutableData *dstBufferData = [NSMutableData dataWithLength:dstBufferLength];
         if (!dstBufferData) {
-            OWSFailDebug(@"%@ Failed to allocate buffer.", self.logTag);
+            OWSFailDebug(@"Failed to allocate buffer.");
             return nil;
         }
 
@@ -238,7 +238,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     @autoreleasepool {
 
         if (!srcData) {
-            OWSFailDebug(@"%@ missing unencrypted data.", self.logTag);
+            OWSFailDebug(@"missing unencrypted data.");
             return nil;
         }
 
@@ -248,7 +248,7 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         size_t dstBufferLength = uncompressedDataLength + 1024;
         NSMutableData *dstBufferData = [NSMutableData dataWithLength:dstBufferLength];
         if (!dstBufferData) {
-            OWSFailDebug(@"%@ Failed to allocate buffer.", self.logTag);
+            OWSFailDebug(@"Failed to allocate buffer.");
             return nil;
         }
 

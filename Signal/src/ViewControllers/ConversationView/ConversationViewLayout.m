@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ConversationViewLayoutDelegate> delegate = self.delegate;
     if (!delegate) {
-        OWSFailDebug(@"%@ Missing delegate", self.logTag);
+        OWSFailDebug(@"Missing delegate");
         [self clearState];
         return;
     }
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.hasLayout = YES;
 
     // TODO: Remove this log statement after we've reduced the invalidation churn.
-    OWSLogVerbose(@"%@ prepareLayout", self.logTag);
+    OWSLogVerbose(@"prepareLayout");
 
     [self prepareLayoutOfItems];
 }

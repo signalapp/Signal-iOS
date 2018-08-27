@@ -34,10 +34,10 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     OWSAssert(encryptionKey.length > 0);
     if (byteCount <= 0) {
         // This will fail with legacy iOS clients which don't upload attachment size.
-        OWSLogWarn(@"%@ Missing byteCount for attachment with serverId: %lld", self.logTag, serverId);
+        OWSLogWarn(@"Missing byteCount for attachment with serverId: %lld", serverId);
     }
     if (contentType.length < 1) {
-        OWSLogWarn(@"%@ incoming attachment has invalid content type", self.logTag);
+        OWSLogWarn(@"incoming attachment has invalid content type");
 
         contentType = OWSMimeTypeApplicationOctetStream;
     }
@@ -66,7 +66,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
                      sourceFilename:(nullable NSString *)sourceFilename
 {
     if (contentType.length < 1) {
-        OWSLogWarn(@"%@ outgoing attachment has invalid content type", self.logTag);
+        OWSLogWarn(@"outgoing attachment has invalid content type");
 
         contentType = OWSMimeTypeApplicationOctetStream;
     }
@@ -76,7 +76,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if (!self) {
         return self;
     }
-    OWSLogVerbose(@"%@ init attachment with uniqueId: %@", self.logTag, self.uniqueId);
+    OWSLogVerbose(@"init attachment with uniqueId: %@", self.uniqueId);
 
     _contentType = contentType;
     _byteCount = byteCount;
@@ -95,7 +95,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     OWSAssert(pointer.encryptionKey.length > 0);
     if (pointer.byteCount <= 0) {
         // This will fail with legacy iOS clients which don't upload attachment size.
-        OWSLogWarn(@"%@ Missing pointer.byteCount for attachment with serverId: %lld", self.logTag, pointer.serverId);
+        OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);
     }
     OWSAssert(pointer.contentType.length > 0);
 
@@ -111,7 +111,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _sourceFilename = pointer.sourceFilename;
     NSString *contentType = pointer.contentType;
     if (contentType.length < 1) {
-        OWSLogWarn(@"%@ incoming attachment has invalid content type", self.logTag);
+        OWSLogWarn(@"incoming attachment has invalid content type");
 
         contentType = OWSMimeTypeApplicationOctetStream;
     }
@@ -141,7 +141,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     }
 
     if (_contentType.length < 1) {
-        OWSLogWarn(@"%@ legacy attachment has invalid content type", self.logTag);
+        OWSLogWarn(@"legacy attachment has invalid content type");
 
         _contentType = OWSMimeTypeApplicationOctetStream;
     }

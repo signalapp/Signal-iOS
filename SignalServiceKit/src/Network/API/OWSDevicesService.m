@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (devices) {
                 successCallback(devices);
             } else {
-                OWSLogError(@"%@ unable to parse devices response:%@", self.logTag, responseObject);
+                OWSLogError(@"unable to parse devices response:%@", responseObject);
                 NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                 failureCallback(error);
             }

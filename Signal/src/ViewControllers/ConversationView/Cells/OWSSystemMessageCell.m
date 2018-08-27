@@ -280,7 +280,7 @@ typedef void (^SystemMessageActionBlock)(void);
                     areDisappearingMessagesEnabled
                         = ((OWSDisappearingConfigurationUpdateInfoMessage *)interaction).configurationIsEnabled;
                 } else {
-                    OWSFailDebug(@"%@ unexpected interaction type: %@", self.logTag, interaction.class);
+                    OWSFailDebug(@"unexpected interaction type: %@", interaction.class);
                 }
                 result = (areDisappearingMessagesEnabled
                         ? [UIImage imageNamed:@"system_message_disappearing_messages"]
@@ -447,7 +447,7 @@ typedef void (^SystemMessageActionBlock)(void);
                                                   }];
     }
 
-    OWSLogWarn(@"%@ Unhandled tap for error message:%@", self.logTag, message);
+    OWSLogWarn(@"Unhandled tap for error message:%@", message);
     return nil;
 }
 
@@ -495,7 +495,7 @@ typedef void (^SystemMessageActionBlock)(void);
                           }];
     }
 
-    OWSLogInfo(@"%@ Unhandled tap for info message: %@", self.logTag, message);
+    OWSLogInfo(@"Unhandled tap for info message: %@", message);
     return nil;
 }
 
@@ -561,7 +561,7 @@ typedef void (^SystemMessageActionBlock)(void);
 - (void)buttonWasPressed:(id)sender
 {
     if (!self.action.block) {
-        OWSFailDebug(@"%@ Missing action", self.logTag);
+        OWSFailDebug(@"Missing action");
     } else {
         self.action.block();
     }

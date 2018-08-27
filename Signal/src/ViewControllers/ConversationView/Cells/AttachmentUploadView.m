@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.lastProgress = (CGFloat)progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
-            OWSFailDebug(@"%@ Invalid attachment progress.", self.logTag);
+            OWSFailDebug(@"Invalid attachment progress.");
             self.isAttachmentReady = YES;
         }
     }

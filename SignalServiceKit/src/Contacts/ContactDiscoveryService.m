@@ -77,16 +77,16 @@ NS_ASSUME_NONNULL_BEGIN
         derivedMaterial =
             [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
     } @catch (NSException *exception) {
-        OWSLogError(@"%@ could not derive service key: %@", self.logTag, exception);
+        OWSLogError(@"could not derive service key: %@", exception);
         return NO;
     }
 
     if (!derivedMaterial) {
-        OWSFailDebug(@"%@ missing derived service key.", self.logTag);
+        OWSFailDebug(@"missing derived service key.");
         return NO;
     }
     if (derivedMaterial.length != kAES256_KeyByteLength * 2) {
-        OWSFailDebug(@"%@ derived service key has unexpected length.", self.logTag);
+        OWSFailDebug(@"derived service key has unexpected length.");
         return NO;
     }
 
@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
         [derivedMaterial subdataWithRange:NSMakeRange(kAES256_KeyByteLength * 0, kAES256_KeyByteLength)];
     OWSAES256Key *_Nullable clientKey = [OWSAES256Key keyWithData:clientKeyData];
     if (!clientKey) {
-        OWSFailDebug(@"%@ clientKey has unexpected length.", self.logTag);
+        OWSFailDebug(@"clientKey has unexpected length.");
         return NO;
     }
 
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
         [derivedMaterial subdataWithRange:NSMakeRange(kAES256_KeyByteLength * 1, kAES256_KeyByteLength)];
     OWSAES256Key *_Nullable serverKey = [OWSAES256Key keyWithData:serverKeyData];
     if (!serverKey) {
-        OWSFailDebug(@"%@ serverKey has unexpected length.", self.logTag);
+        OWSFailDebug(@"serverKey has unexpected length.");
         return NO;
     }
 
@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable valueString = self[key];
     if (![valueString isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"%@ couldn't parse string for key: %@", self.logTag, key);
+        OWSFailDebug(@"couldn't parse string for key: %@", key);
         return nil;
     }
     return valueString;
@@ -182,12 +182,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *_Nullable valueString = self[key];
     if (![valueString isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"%@ couldn't parse base 64 value for key: %@", self.logTag, key);
+        OWSFailDebug(@"couldn't parse base 64 value for key: %@", key);
         return nil;
     }
     NSData *_Nullable valueData = [[NSData alloc] initWithBase64EncodedString:valueString options:0];
     if (!valueData) {
-        OWSFailDebug(@"%@ couldn't decode base 64 value for key: %@", self.logTag, key);
+        OWSFailDebug(@"couldn't decode base 64 value for key: %@", key);
         return nil;
     }
     return valueData;
@@ -197,8 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *_Nullable valueData = [self base64DataForKey:key];
     if (valueData && valueData.length != expectedLength) {
-        OWSLogDebug(@"%@ decoded base 64 value for key: %@, has unexpected length: %zd != %zd",
-            self.logTag,
+        OWSLogDebug(@"decoded base 64 value for key: %@, has unexpected length: %zd != %zd",
             key,
             valueData.length,
             expectedLength);
@@ -271,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];
                 if (!auth) {
-                    OWSLogError(@"%@ remote attestation auth could not be parsed: %@", self.logTag, responseDict);
+                    OWSLogError(@"remote attestation auth could not be parsed: %@", responseDict);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                     failureHandler(error);
                     return;
@@ -282,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            OWSLogVerbose(@"%@ remote attestation auth failure: %zd", self.logTag, response.statusCode);
+            OWSLogVerbose(@"remote attestation auth failure: %zd", response.statusCode);
             failureHandler(error);
         }];
 }
@@ -296,13 +295,13 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary *responseDict = response;
     NSString *_Nullable password = [responseDict stringForKey:@"password"];
     if (password.length < 1) {
-        OWSFailDebug(@"%@ missing or empty password.", self.logTag);
+        OWSFailDebug(@"missing or empty password.");
         return nil;
     }
 
     NSString *_Nullable username = [responseDict stringForKey:@"username"];
     if (username.length < 1) {
-        OWSFailDebug(@"%@ missing or empty username.", self.logTag);
+        OWSFailDebug(@"missing or empty username.");
         return nil;
     }
 
@@ -346,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            OWSLogVerbose(@"%@ remote attestation failure: %zd", self.logTag, response.statusCode);
+            OWSLogVerbose(@"remote attestation failure: %zd", response.statusCode);
             failureHandler(error);
         }];
 }
@@ -363,14 +362,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(enclaveId.length > 0);
 
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-        OWSFailDebug(@"%@ unexpected response type.", self.logTag);
+        OWSFailDebug(@"unexpected response type.");
         return nil;
     }
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSArray<NSHTTPCookie *> *cookies =
         [NSHTTPCookie cookiesWithResponseHeaderFields:httpResponse.allHeaderFields forURL:[NSURL new]];
     if (cookies.count < 1) {
-        OWSFailDebug(@"%@ couldn't parse cookie.", self.logTag);
+        OWSFailDebug(@"couldn't parse cookie.");
         return nil;
     }
 
@@ -381,52 +380,52 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable serverEphemeralPublic =
         [responseDict base64DataForKey:@"serverEphemeralPublic" expectedLength:32];
     if (!serverEphemeralPublic) {
-        OWSFailDebug(@"%@ couldn't parse serverEphemeralPublic.", self.logTag);
+        OWSFailDebug(@"couldn't parse serverEphemeralPublic.");
         return nil;
     }
     NSData *_Nullable serverStaticPublic = [responseDict base64DataForKey:@"serverStaticPublic" expectedLength:32];
     if (!serverStaticPublic) {
-        OWSFailDebug(@"%@ couldn't parse serverStaticPublic.", self.logTag);
+        OWSFailDebug(@"couldn't parse serverStaticPublic.");
         return nil;
     }
     NSData *_Nullable encryptedRequestId = [responseDict base64DataForKey:@"ciphertext"];
     if (!encryptedRequestId) {
-        OWSFailDebug(@"%@ couldn't parse encryptedRequestId.", self.logTag);
+        OWSFailDebug(@"couldn't parse encryptedRequestId.");
         return nil;
     }
     NSData *_Nullable encryptedRequestIv = [responseDict base64DataForKey:@"iv" expectedLength:12];
     if (!encryptedRequestIv) {
-        OWSFailDebug(@"%@ couldn't parse encryptedRequestIv.", self.logTag);
+        OWSFailDebug(@"couldn't parse encryptedRequestIv.");
         return nil;
     }
     NSData *_Nullable encryptedRequestTag = [responseDict base64DataForKey:@"tag" expectedLength:16];
     if (!encryptedRequestTag) {
-        OWSFailDebug(@"%@ couldn't parse encryptedRequestTag.", self.logTag);
+        OWSFailDebug(@"couldn't parse encryptedRequestTag.");
         return nil;
     }
     NSData *_Nullable quoteData = [responseDict base64DataForKey:@"quote"];
     if (!quoteData) {
-        OWSFailDebug(@"%@ couldn't parse quote data.", self.logTag);
+        OWSFailDebug(@"couldn't parse quote data.");
         return nil;
     }
     NSString *_Nullable signatureBody = [responseDict stringForKey:@"signatureBody"];
     if (![signatureBody isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"%@ couldn't parse signatureBody.", self.logTag);
+        OWSFailDebug(@"couldn't parse signatureBody.");
         return nil;
     }
     NSData *_Nullable signature = [responseDict base64DataForKey:@"signature"];
     if (!signature) {
-        OWSFailDebug(@"%@ couldn't parse signature.", self.logTag);
+        OWSFailDebug(@"couldn't parse signature.");
         return nil;
     }
     NSString *_Nullable encodedCertificates = [responseDict stringForKey:@"certificates"];
     if (![encodedCertificates isKindOfClass:[NSString class]]) {
-        OWSFailDebug(@"%@ couldn't parse encodedCertificates.", self.logTag);
+        OWSFailDebug(@"couldn't parse encodedCertificates.");
         return nil;
     }
     NSString *_Nullable certificates = [encodedCertificates stringByRemovingPercentEncoding];
     if (!certificates) {
-        OWSFailDebug(@"%@ couldn't parse certificates.", self.logTag);
+        OWSFailDebug(@"couldn't parse certificates.");
         return nil;
     }
 
@@ -434,13 +433,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                             serverEphemeralPublic:serverEphemeralPublic
                                                                serverStaticPublic:serverStaticPublic];
     if (!keys) {
-        OWSFailDebug(@"%@ couldn't derive keys.", self.logTag);
+        OWSFailDebug(@"couldn't derive keys.");
         return nil;
     }
 
     CDSQuote *_Nullable quote = [CDSQuote parseQuoteFromData:quoteData];
     if (!quote) {
-        OWSFailDebug(@"%@ couldn't parse quote.", self.logTag);
+        OWSFailDebug(@"couldn't parse quote.");
         return nil;
     }
     NSData *_Nullable requestId = [self decryptRequestId:encryptedRequestId
@@ -448,12 +447,12 @@ NS_ASSUME_NONNULL_BEGIN
                                      encryptedRequestTag:encryptedRequestTag
                                                     keys:keys];
     if (!requestId) {
-        OWSFailDebug(@"%@ couldn't decrypt request id.", self.logTag);
+        OWSFailDebug(@"couldn't decrypt request id.");
         return nil;
     }
 
     if (![self verifyServerQuote:quote keys:keys enclaveId:enclaveId]) {
-        OWSFailDebug(@"%@ couldn't verify quote.", self.logTag);
+        OWSFailDebug(@"couldn't verify quote.");
         return nil;
     }
 
@@ -461,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     signatureBody:signatureBody
                                         signature:signature
                                         quoteData:quoteData]) {
-        OWSFailDebug(@"%@ couldn't verify ias signature.", self.logTag);
+        OWSFailDebug(@"couldn't verify ias signature.");
         return nil;
     }
 
@@ -472,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
     result.enclaveId = enclaveId;
     result.auth = auth;
 
-    OWSLogVerbose(@"%@ remote attestation complete.", self.logTag);
+    OWSLogVerbose(@"remote attestation complete.");
 
     return result;
 }
@@ -489,42 +488,42 @@ NS_ASSUME_NONNULL_BEGIN
 
     CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:certificates];
     if (!certificate) {
-        OWSFailDebug(@"%@ could not parse signing certificate.", self.logTag);
+        OWSFailDebug(@"could not parse signing certificate.");
         return NO;
     }
     if (![certificate verifySignatureOfBody:signatureBody signature:signature]) {
-        OWSFailDebug(@"%@ could not verify signature.", self.logTag);
+        OWSFailDebug(@"could not verify signature.");
         return NO;
     }
 
     SignatureBodyEntity *_Nullable signatureBodyEntity = [self parseSignatureBodyEntity:signatureBody];
     if (!signatureBodyEntity) {
-        OWSFailDebug(@"%@ could not parse signature body.", self.logTag);
+        OWSFailDebug(@"could not parse signature body.");
         return NO;
     }
 
     // Compare the first N bytes of the quote data with the signed quote body.
     const NSUInteger kQuoteBodyComparisonLength = 432;
     if (signatureBodyEntity.isvEnclaveQuoteBody.length < kQuoteBodyComparisonLength) {
-        OWSFailDebug(@"%@ isvEnclaveQuoteBody has unexpected length.", self.logTag);
+        OWSFailDebug(@"isvEnclaveQuoteBody has unexpected length.");
         return NO;
     }
     if (quoteData.length < kQuoteBodyComparisonLength) {
-        OWSFailDebug(@"%@ quoteData has unexpected length.", self.logTag);
+        OWSFailDebug(@"quoteData has unexpected length.");
         return NO;
     }
     NSData *isvEnclaveQuoteBodyForComparison =
         [signatureBodyEntity.isvEnclaveQuoteBody subdataWithRange:NSMakeRange(0, kQuoteBodyComparisonLength)];
     NSData *quoteDataForComparison = [quoteData subdataWithRange:NSMakeRange(0, kQuoteBodyComparisonLength)];
     if (![isvEnclaveQuoteBodyForComparison ows_constantTimeIsEqualToData:quoteDataForComparison]) {
-        OWSFailDebug(@"%@ isvEnclaveQuoteBody and quoteData do not match.", self.logTag);
+        OWSFailDebug(@"isvEnclaveQuoteBody and quoteData do not match.");
         return NO;
     }
 
     // TODO: Before going to production, remove GROUP_OUT_OF_DATE.
     if (![@"OK" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]
         && ![@"GROUP_OUT_OF_DATE" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]) {
-        OWSFailDebug(@"%@ invalid isvEnclaveQuoteStatus: %@.", self.logTag, signatureBodyEntity.isvEnclaveQuoteStatus);
+        OWSFailDebug(@"invalid isvEnclaveQuoteStatus: %@.", signatureBodyEntity.isvEnclaveQuoteStatus);
         return NO;
     }
 
@@ -534,7 +533,7 @@ NS_ASSUME_NONNULL_BEGIN
     [dateFormatter setDateFormat:@"yyy-MM-dd'T'HH:mm:ss.SSSSSS"];
     NSDate *timestampDate = [dateFormatter dateFromString:signatureBodyEntity.timestamp];
     if (!timestampDate) {
-        OWSFailDebug(@"%@ could not parse signature body timestamp.", self.logTag);
+        OWSFailDebug(@"could not parse signature body timestamp.");
         return NO;
     }
 
@@ -548,7 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
 
     if (isExpired) {
-        OWSFailDebug(@"%@ Signature is expired.", self.logTag);
+        OWSFailDebug(@"Signature is expired.");
         return NO;
     }
 
@@ -565,22 +564,22 @@ NS_ASSUME_NONNULL_BEGIN
                                         options:0
                                           error:&error];
     if (error || ![jsonDict isKindOfClass:[NSDictionary class]]) {
-        OWSFailDebug(@"%@ could not parse signature body JSON: %@.", self.logTag, error);
+        OWSFailDebug(@"could not parse signature body JSON: %@.", error);
         return nil;
     }
     NSString *_Nullable timestamp = [jsonDict stringForKey:@"timestamp"];
     if (timestamp.length < 1) {
-        OWSFailDebug(@"%@ could not parse signature timestamp.", self.logTag);
+        OWSFailDebug(@"could not parse signature timestamp.");
         return nil;
     }
     NSData *_Nullable isvEnclaveQuoteBody = [jsonDict base64DataForKey:@"isvEnclaveQuoteBody"];
     if (isvEnclaveQuoteBody.length < 1) {
-        OWSFailDebug(@"%@ could not parse signature isvEnclaveQuoteBody.", self.logTag);
+        OWSFailDebug(@"could not parse signature isvEnclaveQuoteBody.");
         return nil;
     }
     NSString *_Nullable isvEnclaveQuoteStatus = [jsonDict stringForKey:@"isvEnclaveQuoteStatus"];
     if (isvEnclaveQuoteStatus.length < 1) {
-        OWSFailDebug(@"%@ could not parse signature isvEnclaveQuoteStatus.", self.logTag);
+        OWSFailDebug(@"could not parse signature isvEnclaveQuoteStatus.");
         return nil;
     }
 
@@ -598,21 +597,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(enclaveId.length > 0);
 
     if (quote.reportData.length < keys.serverStaticPublic.length) {
-        OWSFailDebug(@"%@ reportData has unexpected length: %zd != %zd.",
-            self.logTag,
-            quote.reportData.length,
-            keys.serverStaticPublic.length);
+        OWSFailDebug(
+            @"reportData has unexpected length: %zd != %zd.", quote.reportData.length, keys.serverStaticPublic.length);
         return NO;
     }
 
     NSData *_Nullable theirServerPublicStatic =
         [quote.reportData subdataWithRange:NSMakeRange(0, keys.serverStaticPublic.length)];
     if (theirServerPublicStatic.length != keys.serverStaticPublic.length) {
-        OWSFailDebug(@"%@ could not extract server public static.", self.logTag);
+        OWSFailDebug(@"could not extract server public static.");
         return NO;
     }
     if (![keys.serverStaticPublic ows_constantTimeIsEqualToData:theirServerPublicStatic]) {
-        OWSFailDebug(@"%@ server public statics do not match.", self.logTag);
+        OWSFailDebug(@"server public statics do not match.");
         return NO;
     }
     // It's easier to compare as hex data than parsing hexadecimal.
@@ -621,12 +618,12 @@ NS_ASSUME_NONNULL_BEGIN
         [quote.mrenclave.hexadecimalString dataUsingEncoding:NSUTF8StringEncoding];
     if (!ourEnclaveIdHexData || !theirEnclaveIdHexData
         || ![ourEnclaveIdHexData ows_constantTimeIsEqualToData:theirEnclaveIdHexData]) {
-        OWSFailDebug(@"%@ enclave ids do not match.", self.logTag);
+        OWSFailDebug(@"enclave ids do not match.");
         return NO;
     }
     // TODO: Reverse this condition in production.
     if (!quote.isDebugQuote) {
-        OWSFailDebug(@"%@ quote has invalid isDebugQuote value.", self.logTag);
+        OWSFailDebug(@"quote has invalid isDebugQuote value.");
         return NO;
     }
     return YES;
@@ -644,7 +641,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAES256Key *_Nullable key = keys.serverKey;
     if (!key) {
-        OWSFailDebug(@"%@ invalid server key.", self.logTag);
+        OWSFailDebug(@"invalid server key.");
         return nil;
     }
     NSData *_Nullable decryptedData = [Cryptography decryptAESGCMWithInitializationVector:encryptedRequestIv
@@ -653,7 +650,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   authTag:encryptedRequestTag
                                                                                       key:key];
     if (!decryptedData) {
-        OWSFailDebug(@"%@ couldn't decrypt request id.", self.logTag);
+        OWSFailDebug(@"couldn't decrypt request id.");
         return nil;
     }
     return decryptedData;

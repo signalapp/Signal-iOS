@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        OWSLogError(@"%@ PhotoLibrary ImagePicker source not available", self.logTag);
+        OWSLogError(@"PhotoLibrary ImagePicker source not available");
         completionCallback(NO);
     }
 

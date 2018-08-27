@@ -43,10 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *previousVersion = AppVersion.sharedInstance.lastAppVersion;
     NSString *currentVersion = AppVersion.sharedInstance.currentAppVersion;
 
-    OWSLogInfo(@"%@ Checking migrations. currentVersion: %@, lastRanVersion: %@",
-        self.logTag,
-        currentVersion,
-        previousVersion);
+    OWSLogInfo(@"Checking migrations. currentVersion: %@, lastRanVersion: %@", currentVersion, previousVersion);
 
     if (!previousVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
-            OWSFail(@"%@ could not compile regular expression: %@", self.logTag, error);
+            OWSFail(@"could not compile regular expression: %@", error);
         }
     });
     return regex;
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
-            OWSFail(@"%@ could not compile regular expression: %@", self.logTag, error);
+            OWSFail(@"could not compile regular expression: %@", error);
         }
     });
     return regex;
@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
-            OWSFail(@"%@ could not compile regular expression: %@", self.logTag, error);
+            OWSFail(@"could not compile regular expression: %@", error);
         }
     });
     return regex;

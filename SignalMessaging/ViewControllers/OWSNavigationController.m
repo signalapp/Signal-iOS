@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self pushViewController:rootViewController animated:NO];
 
     if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"%@ navigationBar was unexpected class: %@", self.logTag, self.navigationBar);
+        OWSFailDebug(@"navigationBar was unexpected class: %@", self.navigationBar);
         return self;
     }
 

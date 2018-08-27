@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable cipherText = [self encrypt:dataToEncrypt withKey:cipherKey];
     if (cipherText == nil) {
-        OWSFailDebug(@"%@ Provisioning cipher failed.", self.logTag);
+        OWSFailDebug(@"Provisioning cipher failed.");
         return nil;
     }
     
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable mac = [self macForMessage:message withKey:macKey];
     if (mac == nil) {
-        OWSFailDebug(@"%@ mac failed.", self.logTag);
+        OWSFailDebug(@"mac failed.");
         return nil;
     }
     [message appendData:mac];
@@ -89,11 +89,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *iv = self.initializationVector;
     if (iv.length != kCCBlockSizeAES128) {
-        OWSFailDebug(@"%@ Unexpected length for iv", self.logTag);
+        OWSFailDebug(@"Unexpected length for iv");
         return nil;
     }
     if (dataToEncrypt.length >= SIZE_MAX - (kCCBlockSizeAES128 + iv.length)) {
-        OWSFailDebug(@"%@ data is too long to encrypt.", self.logTag);
+        OWSFailDebug(@"data is too long to encrypt.");
         return nil;
     }
 

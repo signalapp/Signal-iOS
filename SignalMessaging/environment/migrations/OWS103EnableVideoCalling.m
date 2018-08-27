@@ -22,13 +22,13 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
 {
     OWSAssert(completion);
 
-    OWSLogWarn(@"%@ running migration...", self.logTag);
+    OWSLogWarn(@"running migration...");
     if ([TSAccountManager isRegistered]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             TSRequest *request = [OWSRequestFactory updateAttributesRequestWithManualMessageFetching:NO];
             [[TSNetworkManager sharedManager] makeRequest:request
                 success:^(NSURLSessionDataTask *task, id responseObject) {
-                    OWSLogInfo(@"%@ successfully ran", self.logTag);
+                    OWSLogInfo(@"successfully ran");
                     [self save];
 
                     completion();
@@ -37,14 +37,14 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
                     if (!IsNSErrorNetworkFailure(error)) {
                         OWSProdError([OWSAnalyticsEvents errorEnableVideoCallingRequestFailed]);
                     }
-                    OWSLogError(@"%@ failed with error: %@", self.logTag, error);
+                    OWSLogError(@"failed with error: %@", error);
 
                     completion();
                 }];
         });
     } else {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            OWSLogInfo(@"%@ skipping; not registered", self.logTag);
+            OWSLogInfo(@"skipping; not registered");
             [self save];
 
             completion();

@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (hashData) {
             [hashData getBytes:&hashValue length:sizeof(hashValue)];
         } else {
-            OWSFailDebug(@"%@ could not compute hash for avatar.", self.logTag);
+            OWSFailDebug(@"could not compute hash for avatar.");
         }
         _imageHash = hashValue;
     } else {
@@ -310,15 +310,15 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     NSArray<CNContact *> *_Nullable contacts = [CNContactVCardSerialization contactsWithData:data error:&error];
     if (!contacts || error) {
-        OWSFailDebug(@"%@ could not parse vcard: %@", self.logTag, error);
+        OWSFailDebug(@"could not parse vcard: %@", error);
         return nil;
     }
     if (contacts.count < 1) {
-        OWSFailDebug(@"%@ empty vcard: %@", self.logTag, error);
+        OWSFailDebug(@"empty vcard: %@", error);
         return nil;
     }
     if (contacts.count > 1) {
-        OWSFailDebug(@"%@ more than one contact in vcard: %@", self.logTag, error);
+        OWSFailDebug(@"more than one contact in vcard: %@", error);
     }
     return contacts.firstObject;
 }

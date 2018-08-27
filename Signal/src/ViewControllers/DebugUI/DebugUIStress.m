@@ -466,10 +466,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment current].messageSender;
     [messageSender enqueueMessage:message
         success:^{
-            OWSLogInfo(@"%@ Successfully sent message.", self.logTag);
+            OWSLogInfo(@"Successfully sent message.");
         }
         failure:^(NSError *error) {
-            OWSLogWarn(@"%@ Failed to deliver message with error: %@", self.logTag, error);
+            OWSLogWarn(@"Failed to deliver message with error: %@", error);
         }];
 }
 

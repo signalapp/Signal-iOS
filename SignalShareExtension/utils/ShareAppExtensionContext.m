@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
 {
-    OWSLogDebug(@"%@ Ignoring request to block sleep.", self.logTag);
+    OWSLogDebug(@"Ignoring request to block sleep.");
 }
 
 - (void)setMainAppBadgeNumber:(NSInteger)value
@@ -209,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
 {
-    OWSFailDebug(@"%@ cannot run main app active blocks in share extension.", self.logTag);
+    OWSFailDebug(@"cannot run main app active blocks in share extension.");
 }
 
 @end

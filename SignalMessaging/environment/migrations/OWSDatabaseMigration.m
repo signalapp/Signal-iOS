@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSLogInfo(@"%@ marking migration as complete.", self.logTag);
+    OWSLogInfo(@"marking migration as complete.");
 
     [super saveWithTransaction:transaction];
 }

@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
                     // followed by an Indic (Telugu, Bengali, Devanagari) vowel
                     // and replace it with 0xFFFD, the Unicode "replacement character."
                     [filteredForIndic appendFormat:@"\uFFFD"];
-                    OWSLogError(@"%@ Filtered unsafe Indic script.", self.logTag);
+                    OWSLogError(@"Filtered unsafe Indic script.");
                     // Then discard the vowel too.
                     index++;
                     continue;
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:&error];
     if (error || !regex) {
-        OWSFailDebug(@"%@ could not compile regex: %@", self.logTag, error);
+        OWSFailDebug(@"could not compile regex: %@", error);
         return NO;
     }
     return [regex rangeOfFirstMatchInString:self options:0 range:NSMakeRange(0, self.length)].location != NSNotFound;

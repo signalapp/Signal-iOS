@@ -207,7 +207,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    OWSFailDebug(@"%@ Tried to save object from unknown collection", self.logTag);
+    OWSFailDebug(@"Tried to save object from unknown collection");
 
     return [super encodeWithCoder:aCoder];
 }
@@ -224,21 +224,21 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFailDebug(@"%@ Tried to save unknown object", self.logTag);
+    OWSFailDebug(@"Tried to save unknown object");
 
     // No-op.
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFailDebug(@"%@ Tried to touch unknown object", self.logTag);
+    OWSFailDebug(@"Tried to touch unknown object");
 
     // No-op.
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSFailDebug(@"%@ Tried to remove unknown object", self.logTag);
+    OWSFailDebug(@"Tried to remove unknown object");
 
     // No-op.
 }
@@ -260,9 +260,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                   originalClasses:(NSArray<NSString *> *)classNames
 {
     if ([name isEqualToString:@"TSRecipient"]) {
-        OWSLogError(@"%@ Could not decode object: %@", self.logTag, name);
+        OWSLogError(@"Could not decode object: %@", name);
     } else {
-        OWSFailDebug(@"%@ Could not decode object: %@", self.logTag, name);
+        OWSFailDebug(@"Could not decode object: %@", name);
     }
     OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
@@ -315,7 +315,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         //
         // The best we can try to do is to discard the current database
         // and behave like a clean install.
-        OWSFailDebug(@"%@ Could not load database", self.logTag);
+        OWSFailDebug(@"Could not load database");
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
         // Try to reset app by deleting all databases.
@@ -324,7 +324,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // [OWSStorage deleteDatabaseFiles];
 
         if (![self tryToLoadDatabase]) {
-            OWSFailDebug(@"%@ Could not load database (second try)", self.logTag);
+            OWSFailDebug(@"Could not load database (second try)");
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
 
             // Sleep to give analytics events time to be delivered.
@@ -482,7 +482,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
         if (!data || data.length <= 0) {
-            OWSFailDebug(@"%@ can't deserialize null object: %@", self.logTag, collection);
+            OWSFailDebug(@"can't deserialize null object: %@", collection);
             return [OWSUnknownDBObject new];
         }
 
@@ -492,7 +492,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSFailDebug(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
+            OWSFailDebug(@"error deserializing object: %@, %@", collection, exception);
             OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
@@ -542,7 +542,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     if (versionSuffix) {
         NSString *result =
             [NSString stringWithFormat:@"%@.%@", (versionTag.length < 1 ? @"0" : versionTag), versionSuffix];
-        OWSLogWarn(@"%@ database extension version: %@ + %@ -> %@", self.logTag, versionTag, versionSuffix, result);
+        OWSLogWarn(@"database extension version: %@ + %@ -> %@", versionTag, versionSuffix, result);
         return result;
     }
     return versionTag;
@@ -592,7 +592,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // This method needs to be able to update the versionTag of all extensions.
         // If we start using other extension types, we need to modify this method to
         // handle them as well.
-        OWSFailDebug(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
+        OWSFailDebug(@"Unknown extension type: %@", [extension class]);
 
         return extension;
     }
@@ -627,9 +627,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                                  withName:extensionName
                           completionBlock:^(BOOL ready) {
                               if (!ready) {
-                                  OWSFailDebug(@"%@ asyncRegisterExtension failed: %@", self.logTag, extensionName);
+                                  OWSFailDebug(@"asyncRegisterExtension failed: %@", extensionName);
                               } else {
-                                  OWSLogVerbose(@"%@ asyncRegisterExtension succeeded: %@", self.logTag, extensionName);
+                                  OWSLogVerbose(@"asyncRegisterExtension succeeded: %@", extensionName);
                               }
 
                               dispatch_async(dispatch_get_main_queue(), ^{
@@ -748,7 +748,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)removeLegacyPassphrase
 {
-    OWSLogInfo(@"%@ removing legacy passphrase", self.logTag);
+    OWSLogInfo(@"removing legacy passphrase");
 
     [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
 }
@@ -773,7 +773,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             errorDescription = [errorDescription
                 stringByAppendingFormat:@", ApplicationState: %@", NSStringForUIApplicationState(applicationState)];
         }
-        OWSLogError(@"%@ %@", self.logTag, errorDescription);
+        OWSLogError(@"%@", errorDescription);
         [DDLog flushLog];
 
         if (CurrentAppContext().isMainApp) {
@@ -792,7 +792,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // "known good state" and behave like a new install.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFailDebug(@"%@ Could not load database metadata", self.logTag);
+            OWSFailDebug(@"Could not load database metadata");
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
@@ -810,7 +810,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     NSData *_Nullable keySpec = [[self class] tryToLoadDatabaseCipherKeySpec:&error];
 
     if (error) {
-        OWSLogError(@"%@ failed to fetch databaseKeySpec with error: %@", self.logTag, error);
+        OWSLogError(@"failed to fetch databaseKeySpec with error: %@", error);
         [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible"];
     }
 
@@ -873,7 +873,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
     BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
     if (!success || error) {
-        OWSFailDebug(@"%@ Could not store database metadata", self.logTag);
+        OWSFailDebug(@"Could not store database metadata");
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
 
         // Sleep to give analytics events time to be delivered.
@@ -882,15 +882,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         OWSRaiseException(
             OWSStorageExceptionName_DatabasePasswordUnwritable, @"Setting keychain value failed with error: %@", error);
     } else {
-        OWSLogWarn(@"%@ Successfully set new keychain value.", self.logTag);
+        OWSLogWarn(@"Successfully set new keychain value.");
     }
 }
 
 - (void)logFileSizes
 {
-    OWSLogInfo(@"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
-    OWSLogInfo(@"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
-    OWSLogInfo(@"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
+    OWSLogInfo(@"Database file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
+    OWSLogInfo(@"\t SHM file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
+    OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
 }
 
 @end

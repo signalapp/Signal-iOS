@@ -499,7 +499,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (void)logHierarchyUpwardLaterWithLabel:(NSString *)label
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        OWSLogVerbose(@"%@ %@ ----", self.logTag, label);
+        OWSLogVerbose(@"%@ ----", label);
     });
 
     UIResponder *responder = self;

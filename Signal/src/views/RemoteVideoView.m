@@ -101,20 +101,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat aspectRatio = remoteVideoSize.width / remoteVideoSize.height;
 
-    OWSLogVerbose(@"%@ Remote video size: width: %f height: %f ratio: %f",
-        self.logTag,
+    OWSLogVerbose(@"Remote video size: width: %f height: %f ratio: %f",
         remoteVideoSize.width,
         remoteVideoSize.height,
         aspectRatio);
 
     UIView *containingView = self.superview;
     if (containingView == nil) {
-        OWSLogDebug(@"%@ Cannot layout video view without superview", self.logTag);
+        OWSLogDebug(@"Cannot layout video view without superview");
         return;
     }
 
     if (![self.videoRenderer isKindOfClass:[RTCEAGLVideoView class]]) {
-        OWSFailDebug(@"%@ Unexpected video renderer: %@", self.logTag, self.videoRenderer);
+        OWSFailDebug(@"Unexpected video renderer: %@", self.videoRenderer);
         return;
     }
 

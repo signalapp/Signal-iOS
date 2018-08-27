@@ -156,8 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)readTimestamp) / 1000;
-    OWSLogDebug(@"%@ marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
-        self.logTag,
+    OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
         self.uniqueId,
         self.timestamp,
         secondsAgoRead);

@@ -176,10 +176,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([TSAccountManager isRegistered]);
     OWSAssert(CurrentAppContext().isMainApp);
 
-    OWSLogInfo(@"%@ handling decrypted envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+    OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
 
     if (!envelope.source.isValidE164) {
-        OWSFailDebug(@"%@ incoming envelope has invalid source", self.logTag);
+        OWSFailDebug(@"incoming envelope has invalid source");
         return;
     }
 
@@ -192,8 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (plaintextData) {
                 [self handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
             } else {
-                OWSFailDebug(
-                    @"%@ missing decrypted data for envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+                OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
             }
             break;
         case SSKProtoEnvelopeTypeReceipt:
@@ -252,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
             // like group updates, so these errors are expected to a certain extent.
             //
             // TODO: persist "early" delivery receipts.
-            OWSLogInfo(@"%@ Missing message for delivery receipt: %llu", self.logTag, timestamp);
+            OWSLogInfo(@"Missing message for delivery receipt: %llu", timestamp);
         } else {
             if (messages.count > 1) {
                 OWSLogInfo(@"%@ More than one message (%lu) for delivery receipt: %llu",
@@ -296,10 +295,10 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
         if (error || !contentProto) {
-            OWSFailDebug(@"%@ could not parse proto: %@", self.logTag, error);
+            OWSFailDebug(@"could not parse proto: %@", error);
             return;
         }
-        OWSLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:contentProto]);
+        OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
 
         if (contentProto.syncMessage) {
             [self handleIncomingEnvelope:envelope withSyncMessage:contentProto.syncMessage transaction:transaction];
@@ -310,24 +309,22 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (contentProto.callMessage) {
             [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage];
         } else if (contentProto.nullMessage) {
-            OWSLogInfo(@"%@ Received null message.", self.logTag);
+            OWSLogInfo(@"Received null message.");
         } else if (contentProto.receiptMessage) {
             [self handleIncomingEnvelope:envelope
                       withReceiptMessage:contentProto.receiptMessage
                              transaction:transaction];
         } else {
-            OWSLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.logTag);
+            OWSLogWarn(@"Ignoring envelope. Content with no known payload");
         }
     } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
         NSError *error;
         SSKProtoDataMessage *_Nullable dataMessageProto = [SSKProtoDataMessage parseData:plaintextData error:&error];
         if (error || !dataMessageProto) {
-            OWSFailDebug(@"%@ could not parse proto: %@", self.logTag, error);
+            OWSFailDebug(@"could not parse proto: %@", error);
             return;
         }
-        OWSLogInfo(@"%@ handling message: <DataMessage: %@ />",
-            self.logTag,
-            [self descriptionForDataMessage:dataMessageProto]);
+        OWSLogInfo(@"handling message: <DataMessage: %@ />", [self descriptionForDataMessage:dataMessageProto]);
 
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessageProto transaction:transaction];
     } else {
@@ -345,13 +342,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (dataMessage.hasTimestamp) {
         if (dataMessage.timestamp <= 0) {
-            OWSLogError(@"%@ Ignoring message with invalid data message timestamp: %@", self.logTag, envelope.source);
+            OWSLogError(@"Ignoring message with invalid data message timestamp: %@", envelope.source);
             return;
         }
         // This prevents replay attacks by the service.
         if (dataMessage.timestamp != envelope.timestamp) {
-            OWSLogError(
-                @"%@ Ignoring message with non-matching data message timestamp: %@", self.logTag, envelope.source);
+            OWSLogError(@"Ignoring message with non-matching data message timestamp: %@", envelope.source);
             return;
         }
     }
@@ -379,7 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
-                OWSLogInfo(@"%@ Ignoring group message for unknown group from: %@", self.logTag, envelope.source);
+                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.source);
                 return;
             }
         }
@@ -397,7 +393,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleReceivedTextMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
 
         if ([self isDataMessageGroupAvatarUpdate:dataMessage]) {
-            OWSLogVerbose(@"%@ Data message had group avatar attachment", self.logTag);
+            OWSLogVerbose(@"Data message had group avatar attachment");
             [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
         }
     }
@@ -426,10 +422,10 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
     [self.messageSender enqueueMessage:syncGroupsRequestMessage
         success:^{
-            OWSLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
+            OWSLogWarn(@"Successfully sent Request Group Info message.");
         }
         failure:^(NSError *error) {
-            OWSLogError(@"%@ Failed to send Request Group Info message with error: %@", self.logTag, error);
+            OWSLogError(@"Failed to send Request Group Info message with error: %@", error);
         }];
 }
 
@@ -450,14 +446,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (receiptMessage.type) {
         case SSKProtoReceiptMessageTypeDelivery:
-            OWSLogVerbose(@"%@ Processing receipt message with delivery receipts.", self.logTag);
+            OWSLogVerbose(@"Processing receipt message with delivery receipts.");
             [self processDeliveryReceiptsFromRecipientId:envelope.source
                                           sentTimestamps:sentTimestamps
                                        deliveryTimestamp:@(envelope.timestamp)
                                              transaction:transaction];
             return;
         case SSKProtoReceiptMessageTypeRead:
-            OWSLogVerbose(@"%@ Processing receipt message with read receipts.", self.logTag);
+            OWSLogVerbose(@"Processing receipt message with read receipts.");
             [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipientId:envelope.source
                                                                      sentTimestamps:sentTimestamps
                                                                       readTimestamp:envelope.timestamp];
@@ -493,7 +489,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.source];
             }
         } else if (callMessage.hangup) {
-            OWSLogVerbose(@"%@ Received CallMessage with Hangup.", self.logTag);
+            OWSLogVerbose(@"Received CallMessage with Hangup.");
             [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.source];
         } else if (callMessage.busy) {
             [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.source];
@@ -514,7 +510,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupThread *_Nullable groupThread =
         [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
     if (!groupThread) {
-        OWSFailDebug(@"%@ Missing group for group avatar update", self.logTag);
+        OWSFailDebug(@"Missing group for group avatar update");
         return;
     }
 
@@ -525,7 +521,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       transaction:transaction];
 
     if (!attachmentsProcessor.hasSupportedAttachments) {
-        OWSLogWarn(@"%@ received unsupported group avatar envelope", self.logTag);
+        OWSLogWarn(@"received unsupported group avatar envelope");
         return;
     }
     [attachmentsProcessor fetchAttachmentsForMessage:nil
@@ -534,8 +530,7 @@ NS_ASSUME_NONNULL_BEGIN
             [groupThread updateAvatarWithAttachmentStream:attachmentStream];
         }
         failure:^(NSError *error) {
-            OWSLogError(@"%@ failed to fetch attachments for group avatar sent at: %llu. with error: %@",
-                self.logTag,
+            OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
                 envelope.timestamp,
                 error);
         }];
@@ -551,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailDebug(@"%@ ignoring media message for unknown group.", self.logTag);
+        OWSFailDebug(@"ignoring media message for unknown group.");
         return;
     }
 
@@ -560,7 +555,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    networkManager:self.networkManager
                                                       transaction:transaction];
     if (!attachmentsProcessor.hasSupportedAttachments) {
-        OWSLogWarn(@"%@ received unsupported media envelope", self.logTag);
+        OWSLogWarn(@"received unsupported media envelope");
         return;
     }
 
@@ -573,19 +568,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogDebug(@"%@ incoming attachment message: %@", self.logTag, createdMessage.debugDescription);
+    OWSLogDebug(@"incoming attachment message: %@", createdMessage.debugDescription);
 
     [attachmentsProcessor fetchAttachmentsForMessage:createdMessage
         transaction:transaction
         success:^(TSAttachmentStream *attachmentStream) {
-            OWSLogDebug(@"%@ successfully fetched attachment: %@ for message: %@",
-                self.logTag,
-                attachmentStream,
-                createdMessage);
+            OWSLogDebug(@"successfully fetched attachment: %@ for message: %@", attachmentStream, createdMessage);
         }
         failure:^(NSError *error) {
-            OWSLogError(
-                @"%@ failed to fetch attachments for message: %@ with error: %@", self.logTag, createdMessage, error);
+            OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", createdMessage, error);
         }];
 }
 
@@ -632,7 +623,7 @@ NS_ASSUME_NONNULL_BEGIN
                     TSGroupThread *_Nullable groupThread =
                         [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
                     if (!groupThread) {
-                        OWSFailDebug(@"%@ ignoring sync group avatar update for unknown group.", self.logTag);
+                        OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
                         return;
                     }
 
@@ -643,7 +634,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [recordJob
                 runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
-                    OWSLogDebug(@"%@ successfully fetched transcript attachment: %@", self.logTag, attachmentStream);
+                    OWSLogDebug(@"successfully fetched transcript attachment: %@", attachmentStream);
                 }
                              transaction:transaction];
         }
@@ -665,7 +656,7 @@ NS_ASSUME_NONNULL_BEGIN
                     syncData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
                 }];
                 if (!syncData) {
-                    OWSFailDebug(@"%@ Failed to serialize contacts sync message.", self.logTag);
+                    OWSFailDebug(@"Failed to serialize contacts sync message.");
                     return;
                 }
                 DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
@@ -673,18 +664,17 @@ NS_ASSUME_NONNULL_BEGIN
                     contentType:OWSMimeTypeApplicationOctetStream
                     inMessage:syncContactsMessage
                     success:^{
-                        OWSLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.logTag);
+                        OWSLogInfo(@"Successfully sent Contacts response syncMessage.");
                     }
                     failure:^(NSError *error) {
-                        OWSLogError(
-                            @"%@ Failed to send Contacts response syncMessage with error: %@", self.logTag, error);
+                        OWSLogError(@"Failed to send Contacts response syncMessage with error: %@", error);
                     }];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             if (!syncData) {
-                OWSFailDebug(@"%@ Failed to serialize groups sync message.", self.logTag);
+                OWSFailDebug(@"Failed to serialize groups sync message.");
                 return;
             }
             DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
@@ -692,13 +682,13 @@ NS_ASSUME_NONNULL_BEGIN
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage
                 success:^{
-                    OWSLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.logTag);
+                    OWSLogInfo(@"Successfully sent Groups response syncMessage.");
                 }
                 failure:^(NSError *error) {
-                    OWSLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.logTag, error);
+                    OWSLogError(@"Failed to send Groups response syncMessage with error: %@", error);
                 }];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
-            OWSLogInfo(@"%@ Received request for block list", self.logTag);
+            OWSLogInfo(@"Received request for block list");
             [_blockingManager syncBlockedPhoneNumbers];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             BOOL areReadReceiptsEnabled =
@@ -707,14 +697,13 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
             [self.messageSender enqueueMessage:syncConfigurationMessage
                 success:^{
-                    OWSLogInfo(@"%@ Successfully sent Configuration response syncMessage.", self.logTag);
+                    OWSLogInfo(@"Successfully sent Configuration response syncMessage.");
                 }
                 failure:^(NSError *error) {
-                    OWSLogError(
-                        @"%@ Failed to send Configuration response syncMessage with error: %@", self.logTag, error);
+                    OWSLogError(@"Failed to send Configuration response syncMessage with error: %@", error);
                 }];
         } else {
-            OWSLogWarn(@"%@ ignoring unsupported sync request message", self.logTag);
+            OWSLogWarn(@"ignoring unsupported sync request message");
         }
     } else if (syncMessage.blocked) {
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
@@ -727,10 +716,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    readTimestamp:envelope.timestamp
                                                                      transaction:transaction];
     } else if (syncMessage.verified) {
-        OWSLogInfo(@"%@ Received verification state for %@", self.logTag, syncMessage.verified.destination);
+        OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else {
-        OWSLogWarn(@"%@ Ignoring unsupported sync message.", self.logTag);
+        OWSLogWarn(@"Ignoring unsupported sync message.");
     }
 }
 
@@ -761,7 +750,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailDebug(@"%@ ignoring expiring messages update for unknown group.", self.logTag);
+        OWSFailDebug(@"ignoring expiring messages update for unknown group.");
         return;
     }
 
@@ -776,7 +765,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    enabled:YES
                                                            durationSeconds:dataMessage.expireTimer];
     } else {
-        OWSLogInfo(@"%@ Expiring messages have been turned off for thread %@", self.logTag, thread);
+        OWSLogInfo(@"Expiring messages have been turned off for thread %@", thread);
         disappearingMessagesConfiguration = [[OWSDisappearingMessagesConfiguration alloc]
             initWithThreadId:thread.uniqueId
                      enabled:NO
@@ -843,18 +832,18 @@ NS_ASSUME_NONNULL_BEGIN
             contentType:OWSMimeTypeImagePng
             inMessage:message
             success:^{
-                OWSLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);
+                OWSLogDebug(@"Successfully sent group update with avatar");
             }
             failure:^(NSError *error) {
-                OWSLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
+                OWSLogError(@"Failed to send group avatar update with error: %@", error);
             }];
     } else {
         [self.messageSender enqueueMessage:message
             success:^{
-                OWSLogDebug(@"%@ Successfully sent group update", self.logTag);
+                OWSLogDebug(@"Successfully sent group update");
             }
             failure:^(NSError *error) {
-                OWSLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
+                OWSLogError(@"Failed to send group update with error: %@", error);
             }];
     }
 }
@@ -874,19 +863,17 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogWarn(
-        @"%@ Received 'Request Group Info' message for group: %@ from: %@", self.logTag, groupId, envelope.source);
+    OWSLogWarn(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.source);
 
     TSGroupThread *_Nullable gThread = [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
     if (!gThread) {
-        OWSLogWarn(@"%@ Unknown group: %@", self.logTag, groupId);
+        OWSLogWarn(@"Unknown group: %@", groupId);
         return;
     }
 
     // Ensure sender is in the group.
     if (![gThread.groupModel.groupMemberIds containsObject:envelope.source]) {
-        OWSLogWarn(@"%@ Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
-            self.logTag,
+        OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
             envelope.source,
             gThread.groupModel.groupMemberIds);
         return;
@@ -896,7 +883,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([TSAccountManager isRegistered]);
     NSString *localNumber = [TSAccountManager localNumber];
     if (![gThread.groupModel.groupMemberIds containsObject:localNumber]) {
-        OWSLogWarn(@"%@ Ignoring 'Request Group Info' message for group we no longer belong to.", self.logTag);
+        OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
         return;
     }
 
@@ -938,10 +925,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
         for (NSString *recipientId in newMemberIds) {
             if (!recipientId.isValidE164) {
-                OWSLogVerbose(@"%@ incoming group update has invalid group member: %@",
-                    self.logTag,
-                    [self descriptionForEnvelope:envelope]);
-                OWSFailDebug(@"%@ incoming group update has invalid group member", self.logTag);
+                OWSLogVerbose(
+                    @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
+                OWSFailDebug(@"incoming group update has invalid group member");
                 return nil;
             }
         }
@@ -993,7 +979,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case SSKProtoGroupContextTypeQuit: {
                 if (!oldGroupThread) {
-                    OWSLogInfo(@"%@ ignoring quit group message from unknown group.", self.logTag);
+                    OWSLogInfo(@"ignoring quit group message from unknown group.");
                     return nil;
                 }
                 [newMemberIds removeObject:envelope.source];
@@ -1011,7 +997,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case SSKProtoGroupContextTypeDeliver: {
                 if (!oldGroupThread) {
-                    OWSFailDebug(@"%@ ignoring deliver group message from unknown group.", self.logTag);
+                    OWSFailDebug(@"ignoring deliver group message from unknown group.");
                     return nil;
                 }
 
@@ -1108,11 +1094,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([TSAccountManager isRegistered]);
 
     if (!thread) {
-        OWSFailDebug(@"%@ Can't finalize without thread", self.logTag);
+        OWSFailDebug(@"Can't finalize without thread");
         return;
     }
     if (!incomingMessage) {
-        OWSFailDebug(@"%@ Can't finalize missing message", self.logTag);
+        OWSFailDebug(@"Can't finalize missing message");
         return;
     }
 

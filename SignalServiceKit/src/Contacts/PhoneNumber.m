@@ -80,7 +80,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     countryCode = [locale objectForKey:NSLocaleCountryCode];
 #endif
     if (!countryCode) {
-        OWSFailDebug(@"%@ Could not identify country code for locale: %@", self.logTag, locale);
+        OWSFailDebug(@"Could not identify country code for locale: %@", locale);
         countryCode = @"US";
     }
     return countryCode;
@@ -140,24 +140,24 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     PhoneNumber *_Nullable parsedPhoneNumber = [self tryParsePhoneNumberFromE164:phoneNumber];
     if (!parsedPhoneNumber) {
-        OWSLogWarn(@"%@ could not parse phone number.", self.logTag);
+        OWSLogWarn(@"could not parse phone number.");
         return phoneNumber;
     }
     NSNumber *_Nullable countryCode = [parsedPhoneNumber getCountryCode];
     if (!countryCode) {
-        OWSLogWarn(@"%@ parsed phone number has no country code.", self.logTag);
+        OWSLogWarn(@"parsed phone number has no country code.");
         return phoneNumber;
     }
     NSString *countryCodeString = [self formatIntAsEN:countryCode.intValue];
     if (countryCodeString.length < 1) {
-        OWSLogWarn(@"%@ invalid country code.", self.logTag);
+        OWSLogWarn(@"invalid country code.");
         return phoneNumber;
     }
     NSString *_Nullable formattedPhoneNumber =
         [self bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber
                                                      withSpecifiedRegionCode:countryCodeString];
     if (!countryCode) {
-        OWSLogWarn(@"%@ could not format phone number.", self.logTag);
+        OWSLogWarn(@"could not format phone number.");
         return phoneNumber;
     }
     return formattedPhoneNumber;
@@ -379,7 +379,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
                                                               numberFormat:NBEPhoneNumberFormatNATIONAL
                                                                      error:&error];
     if (error) {
-        OWSLogVerbose(@"%@ error parsing number into national format: %@", self.logTag, error);
+        OWSLogVerbose(@"error parsing number into national format: %@", error);
         return nil;
     }
 

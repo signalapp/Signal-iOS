@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *_Nullable preKeyPublic;
 
         if (!preKeyDict) {
-            OWSLogInfo(@"%@ No one-time prekey included in the bundle.", self.logTag);
+            OWSLogInfo(@"No one-time prekey included in the bundle.");
             prekeyId = -1;
         } else {
             prekeyId = [[preKeyDict objectForKey:@"keyId"] intValue];

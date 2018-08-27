@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
         if (error) {
-            OWSLogError(@"%@ error: %@", self.logTag, error);
+            OWSLogError(@"error: %@", error);
             [self stop];
 
             if ([error.domain isEqualToString:NSOSStatusErrorDomain]

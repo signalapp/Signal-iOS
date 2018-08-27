@@ -1300,13 +1300,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearSignalAccountCache
 {
-    OWSLogWarn(@"%@ Deleting all signal accounts.", self.logTag);
+    OWSLogWarn(@"Deleting all signal accounts.");
     [SignalAccount removeAllObjectsInCollection];
 }
 
 + (void)clearSignalRecipientCache
 {
-    OWSLogWarn(@"%@ Deleting all signal recipients.", self.logTag);
+    OWSLogWarn(@"Deleting all signal recipients.");
     [SignalRecipient removeAllObjectsInCollection];
 }
 

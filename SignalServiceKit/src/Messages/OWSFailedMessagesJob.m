@@ -69,7 +69,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
             block(message);
         } else {
-            OWSLogError(@"%@ unexpected object: %@", self.logTag, message);
+            OWSLogError(@"unexpected object: %@", message);
         }
     }
 }
@@ -90,7 +90,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                     return;
                 }
 
-                OWSLogDebug(@"%@ marking message as unsent: %@", self.logTag, message.uniqueId);
+                OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
                 [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
                 OWSAssert(message.messageState == TSOutgoingMessageStateFailed);
 
@@ -99,7 +99,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                                               transaction:transaction];
         }];
 
-    OWSLogDebug(@"%@ Marked %u messages as unsent", self.logTag, count);
+    OWSLogDebug(@"Marked %u messages as unsent", count);
 }
 
 #pragma mark - YapDatabaseExtension

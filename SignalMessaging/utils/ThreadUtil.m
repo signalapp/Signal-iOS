@@ -61,10 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
         quotedReplyModel:quotedReplyModel
         messageSender:messageSender
         success:^{
-            OWSLogInfo(@"%@ Successfully sent message.", self.logTag);
+            OWSLogInfo(@"Successfully sent message.");
         }
         failure:^(NSError *error) {
-            OWSLogWarn(@"%@ Failed to deliver message with error: %@", self.logTag, error);
+            OWSLogWarn(@"Failed to deliver message with error: %@", error);
         }];
 }
 
@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
         sourceFilename:attachment.filenameOrDefault
         inMessage:message
         success:^{
-            OWSLogDebug(@"%@ Successfully sent message attachment.", self.logTag);
+            OWSLogDebug(@"Successfully sent message attachment.");
             if (completion) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     completion(nil);
@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         failure:^(NSError *error) {
-            OWSLogError(@"%@ Failed to send message attachment with error: %@", self.logTag, error);
+            OWSLogError(@"Failed to send message attachment with error: %@", error);
             if (completion) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     completion(error);
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [messageSender enqueueMessage:message
         success:^{
-            OWSLogDebug(@"%@ Successfully sent contact share.", self.logTag);
+            OWSLogDebug(@"Successfully sent contact share.");
             if (completion) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     completion(nil);
@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
         failure:^(NSError *error) {
-            OWSLogError(@"%@ Failed to send contact share with error: %@", self.logTag, error);
+            OWSLogError(@"Failed to send contact share with error: %@", error);
             if (completion) {
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     completion(error);
@@ -434,8 +434,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
                 || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
                 || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
-                OWSLogInfo(@"%@ Removing stale contact offers: %@ (%llu)",
-                    self.logTag,
+                OWSLogInfo(@"Removing stale contact offers: %@ (%llu)",
                     existingContactOffers.uniqueId,
                     existingContactOffers.timestampForSorting);
                 // Preserve the timestamp of the existing "contact offers" so that
@@ -447,8 +446,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (existingContactOffers && !shouldHaveContactOffers) {
-            OWSLogInfo(@"%@ Removing contact offers: %@ (%llu)",
-                self.logTag,
+            OWSLogInfo(@"Removing contact offers: %@ (%llu)",
                 existingContactOffers.uniqueId,
                 existingContactOffers.timestampForSorting);
             [existingContactOffers removeWithTransaction:transaction];
@@ -464,10 +462,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         recipientId:recipientId];
             [offersMessage saveWithTransaction:transaction];
 
-            OWSLogInfo(@"%@ Creating contact offers: %@ (%llu)",
-                self.logTag,
-                offersMessage.uniqueId,
-                offersMessage.timestampForSorting);
+            OWSLogInfo(
+                @"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
         }
 
         [self ensureUnreadIndicator:result
@@ -615,7 +611,7 @@ NS_ASSUME_NONNULL_BEGIN
         missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
                      unreadIndicatorPosition:unreadIndicatorPosition
              firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp.unsignedLongLongValue];
-    OWSLogInfo(@"%@ Creating Unread Indicator: %llu", self.logTag, dynamicInteractions.unreadIndicator.timestamp);
+    OWSLogInfo(@"Creating Unread Indicator: %llu", dynamicInteractions.unreadIndicator.timestamp);
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread
@@ -635,16 +631,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (!success) {
         // This might happen if the focus message has disappeared
         // before this view could appear.
-        OWSFailDebug(@"%@ failed to find focus message index.", self.logTag);
+        OWSFailDebug(@"failed to find focus message index.");
         return nil;
     }
     if (![group isEqualToString:thread.uniqueId]) {
-        OWSFailDebug(@"%@ focus message has invalid group.", self.logTag);
+        OWSFailDebug(@"focus message has invalid group.");
         return nil;
     }
     NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
     if (index >= count) {
-        OWSFailDebug(@"%@ focus message has invalid index.", self.logTag);
+        OWSFailDebug(@"focus message has invalid index.");
         return nil;
     }
     NSUInteger position = (count - index) - 1;
@@ -729,7 +725,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSString *> *_Nullable uniqueIds = [transaction allKeysInCollection:collection];
     if (!uniqueIds) {
-        OWSFailDebug(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
+        OWSFailDebug(@"couldn't load uniqueIds for collection: %@.", collection);
         return;
     }
     OWSLogInfo(@"%@ Deleting %lu objects from: %@", self.logTag, (unsigned long)uniqueIds.count, collection);
@@ -739,7 +735,7 @@ NS_ASSUME_NONNULL_BEGIN
         // work.
         TSYapDatabaseObject *_Nullable object = [class fetchObjectWithUniqueID:uniqueId transaction:transaction];
         if (!object) {
-            OWSFailDebug(@"%@ couldn't load object for deletion: %@.", self.logTag, collection);
+            OWSFailDebug(@"couldn't load object for deletion: %@.", collection);
             continue;
         }
         [object removeWithTransaction:transaction];
@@ -764,7 +760,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *localNumber = [TSAccountManager localNumber];
     if (localNumber.length < 1) {
-        OWSFailDebug(@"%@ missing long number.", self.logTag);
+        OWSFailDebug(@"missing long number.");
         return nil;
     }
 
@@ -796,7 +792,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (interactions.count > 1) {
         // In case of collision, take the first.
-        OWSLogError(@"%@ more than one matching interaction in thread.", self.logTag);
+        OWSLogError(@"more than one matching interaction in thread.");
     }
     return interactions.firstObject;
 }

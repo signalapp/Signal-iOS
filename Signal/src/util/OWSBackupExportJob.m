@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:object];
     if (!data) {
-        OWSFailDebug(@"%@ couldn't serialize database object: %@", self.logTag, [object class]);
+        OWSFailDebug(@"couldn't serialize database object: %@", [object class]);
         return NO;
     }
 
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SignalIOSProtoBackupSnapshotBackupEntity *_Nullable entity = [entityBuilder buildAndReturnError:&error];
     if (!entity || error) {
-        OWSFailDebug(@"%@ couldn't build proto: %@", self.logTag, error);
+        OWSFailDebug(@"couldn't build proto: %@", error);
         return NO;
     }
 
@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder buildSerializedDataAndReturnError:&error];
         if (!uncompressedData || error) {
-            OWSFailDebug(@"%@ couldn't serialize proto: %@", self.logTag, error);
+            OWSFailDebug(@"couldn't serialize proto: %@", error);
             return NO;
         }
 
@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.backupSnapshotBuilder = nil;
         self.cachedItemCount = 0;
         if (!uncompressedData) {
-            OWSFailDebug(@"%@ couldn't convert database snapshot to data.", self.logTag);
+            OWSFailDebug(@"couldn't convert database snapshot to data.");
             return NO;
         }
 
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptDataAsTempFile:compressedData];
         if (!encryptedItem) {
-            OWSFailDebug(@"%@ couldn't encrypt database snapshot.", self.logTag);
+            OWSFailDebug(@"couldn't encrypt database snapshot.");
             return NO;
         }
 
@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
     if (![self.attachmentFilePath hasPrefix:attachmentsDirPath]) {
-        OWSFailDebug(@"%@ attachment has unexpected path: %@", self.logTag, self.attachmentFilePath);
+        OWSFailDebug(@"attachment has unexpected path: %@", self.attachmentFilePath);
         return NO;
     }
     NSString *relativeFilePath = [self.attachmentFilePath substringFromIndex:attachmentsDirPath.length];
@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptFileAsTempFile:self.attachmentFilePath];
     if (!encryptedItem) {
-        OWSFailDebug(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
+        OWSFailDebug(@"attachment could not be encrypted: %@", self.attachmentFilePath);
         return NO;
     }
     self.encryptedItem = encryptedItem;
@@ -399,7 +399,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"");
 
     if (![self ensureJobTempDir]) {
-        OWSFailDebug(@"%@ Could not create jobTempDirPath.", self.logTag);
+        OWSFailDebug(@"Could not create jobTempDirPath.");
         return completion(NO);
     }
 
@@ -421,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             // TODO: We may want to surface this in the UI.
-            OWSLogError(@"%@ could not verify account status: %@.", self.logTag, error);
+            OWSLogError(@"could not verify account status: %@.", error);
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completion(NO);
             });
@@ -471,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
     if (!dbConnection) {
-        OWSFailDebug(@"%@ Could not create dbConnection.", self.logTag);
+        OWSFailDebug(@"Could not create dbConnection.");
         return NO;
     }
 
@@ -501,7 +501,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              return;
                                          }
                                          if (![object isKindOfClass:expectedClass]) {
-                                             OWSFailDebug(@"%@ unexpected class: %@", self.logTag, [object class]);
+                                             OWSFailDebug(@"unexpected class: %@", [object class]);
                                              return;
                                          }
                                          TSYapDatabaseObject *entity = object;
@@ -541,7 +541,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSAttachmentStream *attachmentStream = object;
                 NSString *_Nullable filePath = attachmentStream.filePath;
                 if (!filePath) {
-                    OWSLogError(@"%@ attachment is missing file.", self.logTag);
+                    OWSLogError(@"attachment is missing file.");
                     return NO;
                     OWSAssert(attachmentStream.uniqueId.length > 0);
                 }
@@ -598,7 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     @autoreleasepool {
         if (![exportStream flush]) {
-            OWSFailDebug(@"%@ Could not flush database snapshots.", self.logTag);
+            OWSFailDebug(@"Could not flush database snapshots.");
             return NO;
         }
     }
@@ -607,11 +607,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Should we do a database checkpoint?
 
-    OWSLogInfo(@"%@ copiedThreads: %zd", self.logTag, copiedThreads);
-    OWSLogInfo(@"%@ copiedMessages: %zd", self.logTag, copiedInteractions);
-    OWSLogInfo(@"%@ copiedAttachments: %zd", self.logTag, copiedAttachments);
-    OWSLogInfo(@"%@ copiedMigrations: %zd", self.logTag, copiedMigrations);
-    OWSLogInfo(@"%@ copiedEntities: %zd", self.logTag, exportStream.totalItemCount);
+    OWSLogInfo(@"copiedThreads: %zd", copiedThreads);
+    OWSLogInfo(@"copiedMessages: %zd", copiedInteractions);
+    OWSLogInfo(@"copiedAttachments: %zd", copiedAttachments);
+    OWSLogInfo(@"copiedMigrations: %zd", copiedMigrations);
+    OWSLogInfo(@"copiedEntities: %zd", exportStream.totalItemCount);
 
     return YES;
 }
@@ -632,8 +632,7 @@ NS_ASSUME_NONNULL_BEGIN
         for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
             databaseFileSize += [OWSFileSystem fileSizeOfPath:item.encryptedItem.filePath].unsignedLongLongValue;
         }
-        OWSLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.",
-            self.logTag,
+        OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.",
             @"database items",
             self.unsavedDatabaseItems.count,
             databaseFileSize);
@@ -646,15 +645,14 @@ NS_ASSUME_NONNULL_BEGIN
             attachmentFileSize +=
                 [OWSFileSystem fileSizeOfPath:attachmentExport.attachmentFilePath].unsignedLongLongValue;
         }
-        OWSLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.",
-            self.logTag,
+        OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.",
             @"attachment items",
             self.unsavedAttachmentExports.count,
             attachmentFileSize);
         totalFileSize += attachmentFileSize;
         totalFileCount += self.unsavedAttachmentExports.count;
     }
-    OWSLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.", self.logTag, @"all items", totalFileCount, totalFileSize);
+    OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.", @"all items", totalFileCount, totalFileSize);
 
     [self saveNextFileToCloudWithCompletion:completion];
 }
@@ -768,8 +766,7 @@ NS_ASSUME_NONNULL_BEGIN
             exportItem.attachmentExport = attachmentExport;
             [self.savedAttachmentItems addObject:exportItem];
 
-            OWSLogVerbose(@"%@ recycled attachment: %@ as %@",
-                self.logTag,
+            OWSLogVerbose(@"recycled attachment: %@ as %@",
                 attachmentExport.attachmentFilePath,
                 attachmentExport.relativeFilePath);
             [self saveNextFileToCloudWithCompletion:completion];
@@ -792,11 +789,11 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentExport.attachmentId
         fileUrlBlock:^{
             if (attachmentExport.encryptedItem.filePath.length < 1) {
-                OWSLogError(@"%@ attachment export missing temp file path", self.logTag);
+                OWSLogError(@"attachment export missing temp file path");
                 return (NSURL *)nil;
             }
             if (attachmentExport.relativeFilePath.length < 1) {
-                OWSLogError(@"%@ attachment export missing relative file path", self.logTag);
+                OWSLogError(@"attachment export missing relative file path");
                 return (NSURL *)nil;
             }
             return [NSURL fileURLWithPath:attachmentExport.encryptedItem.filePath];
@@ -810,7 +807,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 if (![attachmentExport cleanUp]) {
-                    OWSLogError(@"%@ couldn't clean up attachment export.", self.logTag);
+                    OWSLogError(@"couldn't clean up attachment export.");
                     // Attachment files are non-critical so any error uploading them is recoverable.
                 }
 
@@ -829,8 +826,7 @@ NS_ASSUME_NONNULL_BEGIN
                 backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
                 [backupFragment save];
 
-                OWSLogVerbose(@"%@ saved attachment: %@ as %@",
-                    self.logTag,
+                OWSLogVerbose(@"saved attachment: %@ as %@",
                     attachmentExport.attachmentFilePath,
                     attachmentExport.relativeFilePath);
                 [strongSelf saveNextFileToCloudWithCompletion:completion];
@@ -840,7 +836,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 if (![attachmentExport cleanUp]) {
-                    OWSLogError(@"%@ couldn't clean up attachment export.", self.logTag);
+                    OWSLogError(@"couldn't clean up attachment export.");
                     // Attachment files are non-critical so any error uploading them is recoverable.
                 }
 
@@ -906,13 +902,13 @@ NS_ASSUME_NONNULL_BEGIN
         kOWSBackup_ManifestKey_AttachmentFiles : [self jsonForItems:self.savedAttachmentItems],
     };
 
-    OWSLogVerbose(@"%@ json: %@", self.logTag, json);
+    OWSLogVerbose(@"json: %@", json);
 
     NSError *error;
     NSData *_Nullable jsonData =
         [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:&error];
     if (!jsonData || error) {
-        OWSFailDebug(@"%@ error encoding manifest file: %@", self.logTag, error);
+        OWSFailDebug(@"error encoding manifest file: %@", error);
         return nil;
     }
     return [self.backupIO encryptDataAsTempFile:jsonData encryptionKey:self.delegate.backupEncryptionKey];
@@ -1030,8 +1026,7 @@ NS_ASSUME_NONNULL_BEGIN
             [obsoleteRecordNames addObjectsFromArray:recordNames];
             [obsoleteRecordNames minusSet:activeRecordNames];
 
-            OWSLogVerbose(@"%@ recordNames: %zd - activeRecordNames: %zd = obsoleteRecordNames: %zd",
-                self.logTag,
+            OWSLogVerbose(@"recordNames: %zd - activeRecordNames: %zd = obsoleteRecordNames: %zd",
                 recordNames.count,
                 activeRecordNames.count,
                 obsoleteRecordNames.count);

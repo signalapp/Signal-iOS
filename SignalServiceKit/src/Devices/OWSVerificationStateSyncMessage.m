@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
         self.verificationForRecipientId, self.identityKey, self.verificationState, self.paddingBytesLength);
     if (!verifiedProto) {
-        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+        OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
@@ -94,13 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
         self.verificationForRecipientId, self.identityKey, self.verificationState, 0);
     if (!verifiedProto) {
-        OWSFailDebug(@"%@ could not build protobuf.", self.logTag);
+        OWSFailDebug(@"could not build protobuf.");
         return 0;
     }
     NSError *error;
     NSData *_Nullable verifiedData = [verifiedProto serializedDataAndReturnError:&error];
     if (error || !verifiedData) {
-        OWSFailDebug(@"%@ could not serialize protobuf.", self.logTag);
+        OWSFailDebug(@"could not serialize protobuf.");
         return 0;
     }
     return verifiedData.length;

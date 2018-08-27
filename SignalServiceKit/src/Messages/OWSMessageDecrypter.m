@@ -118,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
           };
 
     @try {
-        OWSLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+        OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
 
         OWSAssert(envelope.source.length > 0);
         if ([self isEnvelopeBlocked:envelope]) {
-            OWSLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
+            OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
             failureBlock();
             return;
         }
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-                        OWSLogDebug(@"%@ decrypted secure message.", self.logTag);
+                        OWSLogDebug(@"decrypted secure message.");
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-                        OWSLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
+                        OWSLogDebug(@"decrypted pre-key whisper message");
                         successBlock(plaintextData, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     } @catch (NSException *exception) {
-        OWSFailDebug(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+        OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
@@ -280,11 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope
 {
-    OWSLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
-        self.logTag,
-        exception.description,
-        exception.name,
-        exception.reason);
+    OWSLogError(
+        @"Got exception: %@ of type: %@ with reason: %@", exception.description, exception.name, exception.reason);
 
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

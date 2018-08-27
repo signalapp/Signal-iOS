@@ -547,7 +547,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
-            OWSLogError(@"%@ Error when requesting contacts: %@", self.logTag, error);
+            OWSLogError(@"Error when requesting contacts: %@", error);
         }
         // Even if there is an error fetching contacts we proceed to the next screen.
         // As the compose view will present the proper thing depending on contact access.
@@ -899,9 +899,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
-    OWSLogInfo(@"%@ beggining refreshing.", self.logTag);
+    OWSLogInfo(@"beggining refreshing.");
     [SignalApp.sharedApp.messageFetcherJob run].always(^{
-        OWSLogInfo(@"%@ ending refreshing.", self.logTag);
+        OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
     });
 }
@@ -1143,7 +1143,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    OWSLogInfo(@"%@ %s %ld %ld", self.logTag, __PRETTY_FUNCTION__, (long)indexPath.row, (long)indexPath.section);
+    OWSLogInfo(@"%ld %ld", (long)indexPath.row, (long)indexPath.section);
 
     [self.searchBar resignFirstResponder];
     HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;

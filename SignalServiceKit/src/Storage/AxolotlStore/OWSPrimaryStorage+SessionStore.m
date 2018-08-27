@@ -75,7 +75,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
-    OWSFailDebug(@"%@ subDevicesSessions is deprecated", self.logTag);
+    OWSFailDebug(@"subDevicesSessions is deprecated");
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -202,7 +202,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 {
     OWSAssert(transaction);
 
-    OWSLogWarn(@"%@ resetting session store", self.logTag);
+    OWSLogWarn(@"resetting session store");
 
     [transaction removeAllObjectsInCollection:OWSPrimaryStorageSessionStoreCollection];
 }

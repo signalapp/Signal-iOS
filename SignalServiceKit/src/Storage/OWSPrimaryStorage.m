@@ -182,7 +182,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     OWSAssert(completion);
     OWSAssert(self.database);
 
-    OWSLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
+    OWSLogVerbose(@"async registrations enqueuing.");
 
     // Asynchronously register other extensions.
     //
@@ -215,7 +215,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                                              completionBlock:^{
                                                  OWSAssertIsOnMainThread();
                                                  OWSAssert(!self.areAsyncRegistrationsComplete);
-                                                 OWSLogVerbose(@"%@ async registrations complete.", self.logTag);
+                                                 OWSLogVerbose(@"async registrations complete.");
                                                  self.areAsyncRegistrationsComplete = YES;
 
                                                  completion();
@@ -231,12 +231,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (void)protectFiles
 {
-    OWSLogInfo(
-        @"%@ Database file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
-    OWSLogInfo(
-        @"%@ \t SHM file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
-    OWSLogInfo(
-        @"%@ \t WAL file size: %@", self.logTag, [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
+    OWSLogInfo(@"Database file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath]);
+    OWSLogInfo(@"\t SHM file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_SHM]);
+    OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.sharedDataDatabaseFilePath_WAL]);
 
     // Protect the entire new database directory.
     [OWSFileSystem protectFileOrFolderAtPath:self.sharedDataDatabaseDirPath];
@@ -320,8 +317,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     NSFileManager *fileManager = [NSFileManager defaultManager];
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(
-                @"%@ before migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            OWSLogInfo(@"before migrateToSharedData: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
 
@@ -374,7 +370,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     for (NSString *path in paths) {
         if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(@"%@ after migrateToSharedData: %@, %@", self.logTag, path, [OWSFileSystem fileSizeOfPath:path]);
+            OWSLogInfo(@"after migrateToSharedData: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
         }
     }
 
@@ -383,7 +379,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (NSString *)databaseFilePath
 {
-    OWSLogVerbose(@"%@ databasePath: %@", self.logTag, OWSPrimaryStorage.sharedDataDatabaseFilePath);
+    OWSLogVerbose(@"databasePath: %@", OWSPrimaryStorage.sharedDataDatabaseFilePath);
 
     return self.sharedDataDatabaseFilePath;
 }

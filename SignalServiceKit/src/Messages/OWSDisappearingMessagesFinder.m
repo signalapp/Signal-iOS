@@ -55,10 +55,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         enumerateKeysAndObjectsMatchingQuery:query
                                   usingBlock:^void(NSString *collection, NSString *key, id object, BOOL *stop) {
                                       if (![object isKindOfClass:[TSMessage class]]) {
-                                          OWSFailDebug(@"%@ in %s object was unexpected class: %@",
-                                              self.logTag,
-                                              __PRETTY_FUNCTION__,
-                                              [object class]);
+                                          OWSFailDebug(@"Object was unexpected class: %@", [object class]);
                                           return;
                                       }
                                       
@@ -138,7 +135,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         if ([message isKindOfClass:[TSMessage class]]) {
             block(message);
         } else {
-            OWSFailDebug(@"%@ unexpected object: %@", self.logTag, [message class]);
+            OWSFailDebug(@"unexpected object: %@", [message class]);
         }
     }
 }
@@ -152,12 +149,12 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 
         TSMessage *_Nullable message = [TSMessage fetchObjectWithUniqueID:expiringMessageId transaction:transaction];
         if (![message isKindOfClass:[TSMessage class]]) {
-            OWSFailDebug(@"%@ unexpected object: %@", self.logTag, [message class]);
+            OWSFailDebug(@"unexpected object: %@", [message class]);
             continue;
         }
 
         if (![message shouldStartExpireTimerWithTransaction:transaction]) {
-            OWSFailDebug(@"%@ object: %@ shouldn't expire.", self.logTag, message);
+            OWSFailDebug(@"object: %@ shouldn't expire.", message);
             continue;
         }
 
@@ -197,7 +194,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         if ([message isKindOfClass:[TSMessage class]]) {
             block(message);
         } else {
-            OWSLogError(@"%@ unexpected object: %@", self.logTag, message);
+            OWSLogError(@"unexpected object: %@", message);
         }
     }
 }

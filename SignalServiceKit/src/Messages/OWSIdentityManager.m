@@ -217,7 +217,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
 
     if (existingIdentity == nil) {
-        OWSLogInfo(@"%@ saving first use identity for recipient: %@", self.logTag, recipientId);
+        OWSLogInfo(@"saving first use identity for recipient: %@", recipientId);
         [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
                                                identityKey:identityKey
                                            isFirstKnownKey:YES
@@ -457,8 +457,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
             return YES;
         } else {
-            OWSFailDebug(@"%@ Wrong identity: %@ for local key: %@, recipientId: %@",
-                self.logTag,
+            OWSFailDebug(@"Wrong identity: %@ for local key: %@, recipientId: %@",
                 identityKey,
                 localIdentityKeyPair.publicKey,
                 recipientId);
@@ -492,7 +491,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
     if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
-        OWSLogWarn(@"%@ key mismatch for recipient: %@", self.logTag, recipientIdentity.recipientId);
+        OWSLogWarn(@"key mismatch for recipient: %@", recipientIdentity.recipientId);
         return NO;
     }
 
@@ -505,8 +504,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
                 < kIdentityKeyStoreNonBlockingSecondsThreshold);
             if (isNew) {
-                OWSLogWarn(
-                    @"%@ not trusting new identity for recipient: %@", self.logTag, recipientIdentity.recipientId);
+                OWSLogWarn(@"not trusting new identity for recipient: %@", recipientIdentity.recipientId);
                 return NO;
             } else {
                 return YES;
@@ -515,9 +513,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         case OWSVerificationStateVerified:
             return YES;
         case OWSVerificationStateNoLongerVerified:
-            OWSLogWarn(@"%@ not trusting no longer verified identity for recipient: %@",
-                self.logTag,
-                recipientIdentity.recipientId);
+            OWSLogWarn(@"not trusting no longer verified identity for recipient: %@", recipientIdentity.recipientId);
             return NO;
     }
 }
@@ -643,10 +639,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                    verificationStateSyncMessage:message];
     [self.messageSender enqueueMessage:nullMessage
         success:^{
-            OWSLogInfo(@"%@ Successfully sent verification state NullMessage", self.logTag);
+            OWSLogInfo(@"Successfully sent verification state NullMessage");
             [self.messageSender enqueueMessage:message
                 success:^{
-                    OWSLogInfo(@"%@ Successfully sent verification state sync message", self.logTag);
+                    OWSLogInfo(@"Successfully sent verification state sync message");
 
                     // Record that this verification state was successfully synced.
                     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
@@ -654,16 +650,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     }];
                 }
                 failure:^(NSError *error) {
-                    OWSLogError(
-                        @"%@ Failed to send verification state sync message with error: %@", self.logTag, error);
+                    OWSLogError(@"Failed to send verification state sync message with error: %@", error);
                 }];
         }
         failure:^(NSError *_Nonnull error) {
-            OWSLogError(@"%@ Failed to send verification state NullMessage with error: %@", self.logTag, error);
+            OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
             if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
-                OWSLogInfo(
-                    @"%@ Removing retries for syncing verification state, since user is no longer registered: %@",
-                    self.logTag,
+                OWSLogInfo(@"Removing retries for syncing verification state, since user is no longer registered: %@",
                     message.verificationForRecipientId);
                 // Otherwise this will fail forever.
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {

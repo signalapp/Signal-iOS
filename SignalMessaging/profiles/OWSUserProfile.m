@@ -184,8 +184,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
 
             if ([beforeSnapshot isEqual:afterSnapshot]) {
-                OWSLogVerbose(
-                    @"%@ Ignoring redundant update in %s: %@", self.logTag, functionName, self.debugDescription);
+                OWSLogVerbose(@"Ignoring redundant update in %s: %@", functionName, self.debugDescription);
                 didChange = NO;
             } else {
                 [latestInstance saveWithTransaction:transaction];
@@ -329,28 +328,28 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (YapDatabaseConnection *)dbReadConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadConnection;
 }
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadConnection;
 }
 
 - (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadWriteConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSFailDebug(@"%@ UserProfile should always use OWSProfileManager's database connection.", self.logTag);
+    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
 
     return TSYapDatabaseObject.dbReadWriteConnection;
 }
@@ -446,9 +445,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             enumerateCollectionObjectsWithTransaction:transaction
                                            usingBlock:^(id object, BOOL *stop) {
                                                if (![object isKindOfClass:[OWSUserProfile class]]) {
-                                                   OWSFailDebug(@"%@ unexpected object in user profiles: %@",
-                                                       self.logTag,
-                                                       [object class]);
+                                                   OWSFailDebug(
+                                                       @"unexpected object in user profiles: %@", [object class]);
                                                    return;
                                                }
                                                OWSUserProfile *userProfile = object;

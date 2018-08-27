@@ -65,10 +65,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
 
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
-    OWSLogDebug(@"%@ Recording transcript: %@", self.logTag, transcript);
+    OWSLogDebug(@"Recording transcript: %@", transcript);
 
     if (transcript.isEndSessionMessage) {
-        OWSLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
+        OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
         [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:transcript.thread
@@ -163,9 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
                        transaction:transaction
                            success:attachmentHandler
                            failure:^(NSError *_Nonnull error) {
-                               OWSLogError(@"%@ failed to fetch transcripts attachments for message: %@",
-                                   self.logTag,
-                                   outgoingMessage);
+                               OWSLogError(@"failed to fetch transcripts attachments for message: %@", outgoingMessage);
                            }];
 }
 

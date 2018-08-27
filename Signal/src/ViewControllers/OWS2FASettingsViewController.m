@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     switch (self.mode) {
         case OWS2FASettingsMode_Status:
-            OWSFailDebug(@"%@ status mode should not have a next button.", self.logTag);
+            OWSFailDebug(@"status mode should not have a next button.");
             return;
         case OWS2FASettingsMode_SelectPIN: {
             OWSAssert(self.hasValidPin);

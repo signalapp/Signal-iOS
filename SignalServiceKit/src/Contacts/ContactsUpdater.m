@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
                  failure:(void (^)(NSError *error))failure
 {
     if (identifiers.count < 1) {
-        OWSFailDebug(@"%@ Cannot lookup zero identifiers", self.logTag);
+        OWSFailDebug(@"Cannot lookup zero identifiers");
         DispatchMainThreadSafe(^{
             failure(
                 OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));

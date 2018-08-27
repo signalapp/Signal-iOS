@@ -133,7 +133,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         // * There's no network available.
         // * There's already a sync request in flight.
         if (!self.reachability.isReachable) {
-            OWSLogVerbose(@"%@ Not reachable", self.logTag);
+            OWSLogVerbose(@"Not reachable");
             return;
         }
         if (self.hasRequestInFlight) {
@@ -174,10 +174,10 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         [self submitEvent:eventDictionary
             eventKey:eventKey
             success:^{
-                OWSLogDebug(@"%@ sendEvent[critical] succeeded: %@", self.logTag, eventKey);
+                OWSLogDebug(@"sendEvent[critical] succeeded: %@", eventKey);
             }
             failure:^{
-                OWSLogError(@"%@ sendEvent[critical] failed: %@", self.logTag, eventKey);
+                OWSLogError(@"sendEvent[critical] failed: %@", eventKey);
             }];
     } else {
         self.hasRequestInFlight = YES;
@@ -189,7 +189,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                     return;
                 }
                 isComplete = YES;
-                OWSLogDebug(@"%@ sendEvent succeeded: %@", self.logTag, eventKey);
+                OWSLogDebug(@"sendEvent succeeded: %@", eventKey);
                 dispatch_async(self.serialQueue, ^{
                     self.hasRequestInFlight = NO;
 
@@ -210,7 +210,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                     return;
                 }
                 isComplete = YES;
-                OWSLogError(@"%@ sendEvent failed: %@", self.logTag, eventKey);
+                OWSLogError(@"sendEvent failed: %@", eventKey);
                 dispatch_async(self.serialQueue, ^{
                     self.hasRequestInFlight = NO;
 
@@ -233,7 +233,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     OWSAssert(eventKey);
     AssertOnDispatchQueue(self.serialQueue);
 
-    OWSLogDebug(@"%@ submitting: %@", self.logTag, eventKey);
+    OWSLogDebug(@"submitting: %@", eventKey);
 
     __block OWSBackgroundTask *backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__
@@ -320,7 +320,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         NSDictionary *eventDictionary = [eventProperties copy];
         OWSAssert(eventDictionary);
         NSString *eventKey = [NSUUID UUID].UUIDString;
-        OWSLogDebug(@"%@ enqueuing event: %@", self.logTag, eventKey);
+        OWSLogDebug(@"enqueuing event: %@", eventKey);
 
         if (isCritical) {
             // Critical events should not be serialized or enqueued - they should be submitted immediately.
@@ -330,7 +330,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 const int kMaxQueuedEvents = 5000;
                 if ([transaction numberOfKeysInCollection:kOWSAnalytics_EventsCollection] > kMaxQueuedEvents) {
-                    OWSLogError(@"%@ Event queue overflow.", self.logTag);
+                    OWSLogError(@"Event queue overflow.");
                     return;
                 }
 

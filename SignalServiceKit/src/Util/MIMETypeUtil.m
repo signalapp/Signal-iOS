@@ -456,7 +456,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     for (NSString *mimeType in mimeTypes) {
         NSString *_Nullable utiType = [self utiTypeForMIMEType:mimeType];
         if (!utiType) {
-            OWSFailDebug(@"%@ unknown utiType for mimetype: %@", self.logTag, mimeType);
+            OWSFailDebug(@"unknown utiType for mimetype: %@", mimeType);
             continue;
         }
         [result addObject:utiType];

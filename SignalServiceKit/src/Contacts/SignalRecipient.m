@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([devices isSubsetOfSet:latest.devices.set]) {
         return;
     }
-    OWSLogDebug(@"%@ adding devices: %@, to recipient: %@", self.logTag, devices, latest.recipientId);
+    OWSLogDebug(@"adding devices: %@, to recipient: %@", devices, latest.recipientId);
 
     [latest addDevices:devices];
     [latest saveWithTransaction_internal:transaction];
@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![devices intersectsSet:latest.devices.set]) {
         return;
     }
-    OWSLogDebug(@"%@ removing devices: %@, from registered recipient: %@", self.logTag, devices, latest.recipientId);
+    OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, latest.recipientId);
 
     [latest removeDevices:devices];
     [latest saveWithTransaction_internal:transaction];
@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
     // be strict about using persisted SignalRecipients as a cache to
     // reflect "last known registration status".  Forcing our codebase to
     // use those methods helps ensure that we update the cache deliberately.
-    OWSFailDebug(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
+    OWSFailDebug(@"Don't call saveWithTransaction from outside this class.");
 
     [self saveWithTransaction_internal:transaction];
 }
@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super saveWithTransaction:transaction];
 
-    OWSLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
+    OWSLogVerbose(@"saved signal recipient: %@", self.recipientId);
 }
 
 + (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
 
     if (!instance) {
-        OWSLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
+        OWSLogDebug(@"creating recipient: %@", recipientId);
 
         instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
         [instance saveWithTransaction_internal:transaction];
@@ -233,10 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
     if (![recipient.devices containsObject:@(deviceId)]) {
-        OWSLogDebug(@"%@ in %s adding device %u to existing recipient.",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            (unsigned int)deviceId);
+        OWSLogDebug(@"Adding device %u to existing recipient.", (unsigned int)deviceId);
 
         [recipient addDevices:[NSSet setWithObject:@(deviceId)]];
         [recipient saveWithTransaction_internal:transaction];
@@ -252,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!instance) {
         return;
     }
-    OWSLogDebug(@"%@ removing recipient: %@", self.logTag, recipientId);
+    OWSLogDebug(@"removing recipient: %@", recipientId);
     [instance removeWithTransaction:transaction];
 }
 

@@ -302,17 +302,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         OWSAssert(recipientIdsForIntersection);
 
         if (recipientIdsForIntersection.count < 1) {
-            OWSLogInfo(@"%@ Skipping intersection; no contacts to intersect.", self.logTag);
+            OWSLogInfo(@"Skipping intersection; no contacts to intersect.");
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completion(nil);
             });
             return;
         } else if (isFullIntersection) {
-            OWSLogInfo(
-                @"%@ Doing full intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
+            OWSLogInfo(@"Doing full intersection with %zu contacts.", recipientIdsForIntersection.count);
         } else {
-            OWSLogInfo(
-                @"%@ Doing delta intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
+            OWSLogInfo(@"Doing delta intersection with %zu contacts.", recipientIdsForIntersection.count);
         }
 
         [self intersectContacts:recipientIdsForIntersection
@@ -363,7 +361,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssert(failureParameter);
 
     void (^success)(NSArray<SignalRecipient *> *) = ^(NSArray<SignalRecipient *> *registeredRecipientIds) {
-        OWSLogInfo(@"%@ Successfully intersected contacts.", self.logTag);
+        OWSLogInfo(@"Successfully intersected contacts.");
         successParameter([NSSet setWithArray:registeredRecipientIds]);
     };
     void (^failure)(NSError *) = ^(NSError *error) {
@@ -374,7 +372,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             return;
         }
 
-        OWSLogWarn(@"%@ Failed to intersect contacts with error: %@. Rescheduling", self.logTag, error);
+        OWSLogWarn(@"Failed to intersect contacts with error: %@. Rescheduling", error);
 
         // Retry with exponential backoff.
         //
@@ -517,14 +515,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             OWSLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
-                OWSLogVerbose(@"%@ Saving SignalAccount: %@", self.logTag, signalAccount);
+                OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
                 [signalAccount saveWithTransaction:transaction];
             }
 
             if (shouldClearStaleCache) {
                 OWSLogInfo(@"%@ Removing %lu old SignalAccounts.", self.logTag, (unsigned long)oldSignalAccounts.count);
                 for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
-                    OWSLogVerbose(@"%@ Removing old SignalAccount: %@", self.logTag, signalAccount);
+                    OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount);
                     [signalAccount removeWithTransaction:transaction];
                 }
             } else {
@@ -539,8 +537,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                         self.logTag,
                         (unsigned long)oldSignalAccounts.count);
                     for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
-                        OWSLogVerbose(
-                            @"%@ Ensuring old SignalAccount is not inadvertently lost: %@", self.logTag, signalAccount);
+                        OWSLogVerbose(@"Ensuring old SignalAccount is not inadvertently lost: %@", signalAccount);
                         [signalAccounts addObject:signalAccount];
                     }
 
@@ -592,7 +589,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        OWSLogDebug(@"%@ no signal account", self.logTag);
+        OWSLogDebug(@"no signal account");
         Contact *_Nullable nonSignalContact = self.allContactsMap[recipientId];
         if (!nonSignalContact) {
             return nil;

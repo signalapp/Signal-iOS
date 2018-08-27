@@ -94,13 +94,13 @@ NS_ASSUME_NONNULL_BEGIN
         // Saving normally returns you to the "Show Contact" view
         // which we're not interested in, so we skip it here. There is
         // an unfortunate blip of the "Show Contact" view on slower devices.
-        OWSLogDebug(@"%@ completed editing contact.", self.logTag);
+        OWSLogDebug(@"completed editing contact.");
         [self dismissViewControllerAnimated:NO
                                  completion:^{
                                      [self.navigationController popViewControllerAnimated:YES];
                                  }];
     } else {
-        OWSLogDebug(@"%@ canceled editing contact.", self.logTag);
+        OWSLogDebug(@"canceled editing contact.");
         [self dismissViewControllerAnimated:YES
                                  completion:^{
                                      [self.navigationController popViewControllerAnimated:YES];
@@ -190,12 +190,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.recipientId);
 
     if (!self.contactsManager.supportsContactEditing) {
-        OWSFailDebug(@"%@ Contact editing not supported", self.logTag);
+        OWSFailDebug(@"Contact editing not supported");
         return;
     }
     CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     if (!cnContact) {
-        OWSFailDebug(@"%@ Could not load system contact.", self.logTag);
+        OWSFailDebug(@"Could not load system contact.");
         return;
     }
     [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId

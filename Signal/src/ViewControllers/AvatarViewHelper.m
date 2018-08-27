@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
         if (!granted) {
-            OWSLogWarn(@"%@ Camera permission denied.", self.logTag);
+            OWSLogWarn(@"Camera permission denied.");
             return;
         }
 
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
-            OWSLogWarn(@"%@ Media Library permission denied.", self.logTag);
+            OWSLogWarn(@"Media Library permission denied.");
             return;
         }
 

@@ -51,14 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.messageSender enqueueMessage:message
         success:^{
-            OWSLogDebug(
-                @"%@ Successfully notified %@ of new disappearing messages configuration", self.logTag, self.thread);
+            OWSLogDebug(@"Successfully notified %@ of new disappearing messages configuration", self.thread);
         }
         failure:^(NSError *error) {
-            OWSLogError(@"%@ Failed to notify %@ of new disappearing messages configuration with error: %@",
-                self.logTag,
-                self.thread,
-                error);
+            OWSLogError(
+                @"Failed to notify %@ of new disappearing messages configuration with error: %@", self.thread, error);
         }];
 }
 

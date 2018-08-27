@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Also, it's less obvious whats being "shared" at this point,
             // so just disable sharing when in capture mode.
 
-            OWSLogInfo(@"%@ Showing Scanner", self.logTag);
+            OWSLogInfo(@"Showing Scanner");
 
             [self.qrScanningController startCapture];
         } else {

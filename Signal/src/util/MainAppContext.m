@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             OWSLogInfo(@"%@", logString);
         } else {
-            OWSLogInfo(@"%@ Unblocking Sleep.", self.logTag);
+            OWSLogInfo(@"Unblocking Sleep.");
         }
     }
     UIApplication.sharedApplication.idleTimerDisabled = shouldBeBlocking;

@@ -69,7 +69,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             block(attachment);
         } else {
-            OWSLogError(@"%@ unexpected object: %@", self.logTag, attachment);
+            OWSLogError(@"unexpected object: %@", attachment);
         }
     }
 }
@@ -90,7 +90,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                                                  transaction:transaction];
         }];
 
-    OWSLogDebug(@"%@ Marked %u attachments as unsent", self.logTag, count);
+    OWSLogDebug(@"Marked %u attachments as unsent", count);
 }
 
 #pragma mark - YapDatabaseExtension

@@ -196,8 +196,8 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     // We'll accept any 2xx status code.
     NSInteger statusCodeClass = statusCode - (statusCode % 100);
     if (statusCodeClass != 200) {
-        OWSLogError(@"%@ statusCode: %zd, %zd", self.logTag, statusCode, statusCodeClass);
-        OWSLogError(@"%@ headers: %@", self.logTag, httpResponse.allHeaderFields);
+        OWSLogError(@"statusCode: %zd, %zd", statusCode, statusCodeClass);
+        OWSLogError(@"headers: %@", httpResponse.allHeaderFields);
         [self failWithError:[NSError errorWithDomain:@"PastelogKit"
                                                 code:10001
                                             userInfo:@{ NSLocalizedDescriptionKey : @"Invalid response code." }]];

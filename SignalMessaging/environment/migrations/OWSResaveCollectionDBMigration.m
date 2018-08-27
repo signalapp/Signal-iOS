@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dbConnection);
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s: %lu", self.logTag, __PRETTY_FUNCTION__, (unsigned long)recordIds.count);
+    OWSLogVerbose(@"%lu", (unsigned long)recordIds.count);
 
     if (recordIds.count < 1) {
         completion();

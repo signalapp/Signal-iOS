@@ -123,12 +123,11 @@ void AssertIsOnDisappearingMessagesQueue()
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
-                OWSFailDebug(
-                    @"%@ Refusing to remove message which doesn't expire until: %lld", self.logTag, message.expiresAt);
+                OWSFailDebug(@"Refusing to remove message which doesn't expire until: %lld", message.expiresAt);
                 return;
             }
 
-            OWSLogInfo(@"%@ Removing message which expired at: %lld", self.logTag, message.expiresAt);
+            OWSLogInfo(@"Removing message which expired at: %lld", message.expiresAt);
             [message removeWithTransaction:transaction];
             expirationCount++;
         }
@@ -145,7 +144,7 @@ void AssertIsOnDisappearingMessagesQueue()
 // deletes any expired messages and schedules the next run.
 - (NSUInteger)runLoop
 {
-    OWSLogVerbose(@"%@ in runLoop", self.logTag);
+    OWSLogVerbose(@"in runLoop");
     AssertIsOnDisappearingMessagesQueue();
 
     NSUInteger deletedCount = [self deleteExpiredMessages];
@@ -157,7 +156,7 @@ void AssertIsOnDisappearingMessagesQueue()
     }];
 
     if (!nextExpirationTimestampNumber) {
-        OWSLogDebug(@"%@ No more expiring messages.", self.logTag);
+        OWSLogDebug(@"No more expiring messages.");
         return deletedCount;
     }
 
@@ -179,7 +178,7 @@ void AssertIsOnDisappearingMessagesQueue()
     }
 
     NSTimeInterval startedSecondsAgo = ([NSDate ows_millisecondTimeStamp] - expirationStartedAt) / 1000.0;
-    OWSLogDebug(@"%@ Starting expiration for message read %f seconds ago", self.logTag, startedSecondsAgo);
+    OWSLogDebug(@"Starting expiration for message read %f seconds ago", startedSecondsAgo);
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
@@ -242,8 +241,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    OWSLogInfo(@"%@ becoming consistent with disappearing message configuration: %@",
-        self.logTag,
+    OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
         disappearingMessagesConfiguration.dictionaryValue);
 
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
@@ -341,7 +339,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
-        OWSFailDebug(@"%@ Disappearing messages job timer fired while main app inactive.", self.logTag);
+        OWSFailDebug(@"Disappearing messages job timer fired while main app inactive.");
         return;
     }
 
@@ -363,7 +361,7 @@ void AssertIsOnDisappearingMessagesQueue()
     }
 
     if (!CurrentAppContext().isMainAppAndActive) {
-        OWSLogInfo(@"%@ Ignoring fallbacktimer for app which is not main and active.", self.logTag);
+        OWSLogInfo(@"Ignoring fallbacktimer for app which is not main and active.");
         return;
     }
 
@@ -375,7 +373,7 @@ void AssertIsOnDisappearingMessagesQueue()
         // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
         // is inevitable.
         if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
-            OWSFailDebug(@"%@ unexpectedly deleted disappearing messages via fallback timer.", self.logTag);
+            OWSFailDebug(@"unexpectedly deleted disappearing messages via fallback timer.");
         }
     });
 }

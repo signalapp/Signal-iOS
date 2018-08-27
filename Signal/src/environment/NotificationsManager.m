@@ -57,7 +57,7 @@
  */
 - (void)presentIncomingCall:(SignalCall *)call callerName:(NSString *)callerName
 {
-    OWSLogDebug(@"%@ incoming call from: %@", self.logTag, call.remotePhoneNumber);
+    OWSLogDebug(@"incoming call from: %@", call.remotePhoneNumber);
 
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesIncomingCall;
@@ -208,7 +208,7 @@
     OWSAssert(message);
 
     if (!thread) {
-        OWSFailDebug(@"%@ unexpected notification not associated with a thread: %@.", self.logTag, [message class]);
+        OWSFailDebug(@"unexpected notification not associated with a thread: %@.", [message class]);
         [self notifyUserForThreadlessErrorMessage:message transaction:transaction];
         return;
     }
@@ -449,7 +449,7 @@
 
     DispatchMainThreadSafe(^{
         if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
-            OWSLogWarn(@"%@ skipping notification; app is in foreground and active.", self.logTag);
+            OWSLogWarn(@"skipping notification; app is in foreground and active.");
             return;
         }
 
@@ -460,7 +460,7 @@
         }
 
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-        OWSLogDebug(@"%@ presenting notification with identifier: %@", self.logTag, identifier);
+        OWSLogDebug(@"presenting notification with identifier: %@", identifier);
 
         self.currentNotifications[identifier] = notification;
     });
@@ -471,8 +471,7 @@
     DispatchMainThreadSafe(^{
         UILocalNotification *notification = self.currentNotifications[identifier];
         if (!notification) {
-            OWSLogWarn(
-                @"%@ Couldn't cancel notification because none was found with identifier: %@", self.logTag, identifier);
+            OWSLogWarn(@"Couldn't cancel notification because none was found with identifier: %@", identifier);
             return;
         }
         [self.currentNotifications removeObjectForKey:identifier];

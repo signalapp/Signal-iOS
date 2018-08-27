@@ -137,7 +137,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     NSData *data = self.attachment.data;
     OWSAssert(data.length < kOversizeTextMessageSizeThreshold);
     NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    OWSLogVerbose(@"%@ messageTextForAttachment: %@", self.logTag, messageText);
+    OWSLogVerbose(@"messageTextForAttachment: %@", messageText);
     return [messageText filterStringForDisplay];
 }
 
@@ -182,7 +182,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     Contact *_Nullable contact = [[Contact alloc] initWithSystemContact:cnContact];
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
     if (!contactShareRecord) {
-        OWSLogError(@"%@ Could not convert system contact.", self.logTag);
+        OWSLogError(@"Could not convert system contact.");
         return;
     }
 
@@ -212,13 +212,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 // override
 - (void)dismissPressed:(id)sender
 {
-    OWSLogDebug(@"%@ tapped dismiss share button", self.logTag);
+    OWSLogDebug(@"tapped dismiss share button");
     [self cancelShareExperience];
 }
 
 - (void)didTapCancelShareButton
 {
-    OWSLogDebug(@"%@ tapped cancel share button", self.logTag);
+    OWSLogDebug(@"tapped cancel share button");
     [self cancelShareExperience];
 }
 
@@ -372,7 +372,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 [fromViewController
                     dismissViewControllerAnimated:YES
                                        completion:^(void) {
-                                           OWSLogInfo(@"%@ Sending message failed with error: %@", self.logTag, error);
+                                           OWSLogInfo(@"Sending message failed with error: %@", error);
                                            [self showSendFailureAlertWithError:error
                                                                        message:message
                                                             fromViewController:fromViewController];
@@ -380,7 +380,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 return;
             }
 
-            OWSLogInfo(@"%@ Sending message succeeded.", self.logTag);
+            OWSLogInfo(@"Sending message succeeded.");
             [self.shareViewDelegate shareViewWasCompleted];
         });
     };
@@ -437,7 +437,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         } else {
             // This shouldn't happen, but if it does we won't offer the user the ability to confirm.
             // They may have to return to the main app to accept the identity change.
-            OWSFailDebug(@"%@ Untrusted recipient error is missing recipient id.", self.logTag);
+            OWSFailDebug(@"Untrusted recipient error is missing recipient id.");
         }
 
         [fromViewController presentViewController:failureAlert animated:YES completion:nil];
@@ -476,7 +476,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     OWSAssert(recipientId.length > 0);
     OWSAssert(fromViewController);
 
-    OWSLogDebug(@"%@ Confirming identity for recipient: %@", self.logTag, recipientId);
+    OWSLogDebug(@"Confirming identity for recipient: %@", recipientId);
 
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection asyncReadWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *transaction) {
@@ -484,7 +484,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
         switch (verificationState) {
             case OWSVerificationStateVerified: {
-                OWSFailDebug(@"%@ Shouldn't need to confirm identity if it was already verified", self.logTag);
+                OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
                 break;
             }
             case OWSVerificationStateDefault: {
@@ -493,11 +493,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 // We don't want to redundantly set status to "default" because we would create a
                 // "You marked Alice as unverified" notice, which wouldn't make sense if Alice was never
                 // marked as "Verified".
-                OWSLogInfo(@"%@ recipient has acceptable verification status. Next send will succeed.", self.logTag);
+                OWSLogInfo(@"recipient has acceptable verification status. Next send will succeed.");
                 break;
             }
             case OWSVerificationStateNoLongerVerified: {
-                OWSLogInfo(@"%@ marked recipient: %@ as default verification status.", self.logTag, recipientId);
+                OWSLogInfo(@"marked recipient: %@ as default verification status.", recipientId);
                 NSData *identityKey =
                     [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId transaction:transaction];
                 OWSAssert(identityKey);
@@ -540,7 +540,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                    completion:^(void) {
                        [self.messageSender enqueueMessage:message
                            success:^(void) {
-                               OWSLogInfo(@"%@ Resending attachment succeeded.", self.logTag);
+                               OWSLogInfo(@"Resending attachment succeeded.");
                                dispatch_async(dispatch_get_main_queue(), ^(void) {
                                    [self.shareViewDelegate shareViewWasCompleted];
                                });
@@ -550,9 +550,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                    [fromViewController
                                        dismissViewControllerAnimated:YES
                                                           completion:^(void) {
-                                                              OWSLogInfo(@"%@ Sending attachment failed with error: %@",
-                                                                  self.logTag,
-                                                                  error);
+                                                              OWSLogInfo(
+                                                                  @"Sending attachment failed with error: %@", error);
                                                               [self showSendFailureAlertWithError:error
                                                                                           message:message
                                                                                fromViewController:fromViewController];
@@ -564,18 +563,18 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)attachmentUploadProgress:(NSNotification *)notification
 {
-    OWSLogDebug(@"%@ upload progress.", self.logTag);
+    OWSLogDebug(@"upload progress.");
     OWSAssertIsOnMainThread();
     OWSAssert(self.progressView);
 
     if (!self.outgoingMessage) {
-        OWSLogDebug(@"%@ Ignoring upload progress until there is an outgoing message.", self.logTag);
+        OWSLogDebug(@"Ignoring upload progress until there is an outgoing message.");
         return;
     }
 
     NSString *_Nullable attachmentRecordId = self.outgoingMessage.attachmentIds.firstObject;
     if (!attachmentRecordId) {
-        OWSLogDebug(@"%@ Ignoring upload progress until outgoing message has an attachment record id", self.logTag);
+        OWSLogDebug(@"Ignoring upload progress until outgoing message has an attachment record id");
         return;
     }
 
@@ -587,7 +586,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         if (!isnan(progress)) {
             [self.progressView setProgress:progress animated:YES];
         } else {
-            OWSFailDebug(@"%@ Invalid attachment progress.", self.logTag);
+            OWSFailDebug(@"Invalid attachment progress.");
         }
     }
 }
