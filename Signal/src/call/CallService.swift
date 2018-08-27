@@ -407,6 +407,8 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "Missing peerConnectionClient in \(#function)")
             }
 
+            Logger.info("session description for outgoing call: \(call.identifiersForLogs), sdp: \(sessionDescription.logSafeDescription).")
+
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 do {
                     let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder(id: call.signalingId,
@@ -708,11 +710,11 @@ private class SignalCallData: NSObject {
             // Find a sessionDescription compatible with my constraints and the remote sessionDescription
             return peerConnectionClient.negotiateSessionDescription(remoteDescription: offerSessionDescription, constraints: constraints)
         }.then { (negotiatedSessionDescription: HardenedRTCSessionDescription) in
-            Logger.debug("\(self.logTag) set the remote description for: \(newCall.identifiersForLogs)")
-
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
+
+            Logger.info("session description for incoming call: \(newCall.identifiersForLogs), sdp: \(negotiatedSessionDescription.logSafeDescription).")
 
             do {
                 let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder(id: newCall.signalingId,
