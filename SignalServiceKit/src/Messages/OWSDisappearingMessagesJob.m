@@ -123,7 +123,7 @@ void AssertIsOnDisappearingMessagesQueue()
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
-                OWSFail(
+                OWSFailDebug(
                     @"%@ Refusing to remove message which doesn't expire until: %lld", self.logTag, message.expiresAt);
                 return;
             }
@@ -341,7 +341,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
-        OWSFail(@"%@ Disappearing messages job timer fired while main app inactive.", self.logTag);
+        OWSFailDebug(@"%@ Disappearing messages job timer fired while main app inactive.", self.logTag);
         return;
     }
 
@@ -375,7 +375,7 @@ void AssertIsOnDisappearingMessagesQueue()
         // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
         // is inevitable.
         if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
-            OWSFail(@"%@ unexpectedly deleted disappearing messages via fallback timer.", self.logTag);
+            OWSFailDebug(@"%@ unexpectedly deleted disappearing messages via fallback timer.", self.logTag);
         }
     });
 }
@@ -395,7 +395,8 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
-            OWSFail(@"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
+            OWSFailDebug(
+                @"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
             uint64_t readTimeBestGuess = message.timestampForSorting;

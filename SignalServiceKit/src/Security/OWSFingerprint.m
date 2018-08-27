@@ -97,7 +97,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     FingerprintProtoLogicalFingerprints *_Nullable logicalFingerprints;
     logicalFingerprints = [FingerprintProtoLogicalFingerprints parseData:data error:error];
     if (!logicalFingerprints || *error) {
-        OWSFail(@"%@ fingerprint failure: %@", self.logTag, *error);
+        OWSFailDebug(@"%@ fingerprint failure: %@", self.logTag, *error);
 
         NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", @"alert body");
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
@@ -283,7 +283,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     FingerprintProtoLogicalFingerprint *_Nullable remoteFingerprint =
         [remoteFingerprintBuilder buildAndReturnError:&error];
     if (!remoteFingerprint || error) {
-        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not build proto: %@", self.logTag, error);
         return nil;
     }
 
@@ -293,7 +293,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     FingerprintProtoLogicalFingerprint *_Nullable localFingerprint =
         [localFingerprintBuilder buildAndReturnError:&error];
     if (!localFingerprint || error) {
-        OWSFail(@"%@ could not build proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not build proto: %@", self.logTag, error);
         return nil;
     }
 
@@ -305,7 +305,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     // Build ByteMode QR (Latin-1 encodable data)
     NSData *_Nullable fingerprintData = [logicalFingerprintsBuilder buildSerializedDataAndReturnError:&error];
     if (!fingerprintData || error) {
-        OWSFail(@"%@ could not serialize proto: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not serialize proto: %@", self.logTag, error);
         return nil;
     }
 

@@ -137,7 +137,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     // Clamp to ensure view has reasonable aspect ratio.
     CGFloat clampedRatio = CGFloatClamp(ratio, 0.05f, 95.0f);
     if (clampedRatio != ratio) {
-        OWSFail(@"Invalid aspect ratio: %f for view: %@", ratio, self);
+        OWSFailDebug(@"Invalid aspect ratio: %f for view: %@", ratio, self);
     }
 
     self.translatesAutoresizingMaskIntoConstraints = NO;

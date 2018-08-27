@@ -100,7 +100,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
             [logPathSet addObject:logPath];
         }
         if (error) {
-            OWSFail(@"%@ Failed to find log files: %@", self.logTag, error);
+            OWSFailDebug(@"%@ Failed to find log files: %@", self.logTag, error);
         }
     }
     // To be extra conservative, also add all logs from log file manager.
@@ -124,7 +124,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     for (NSString *logFilePath in logFilePaths) {
         BOOL success = [fileManager removeItemAtPath:logFilePath error:&error];
         if (!success || error) {
-            OWSFail(@"%@ Failed to delete log file: %@", self.logTag, error);
+            OWSFailDebug(@"%@ Failed to delete log file: %@", self.logTag, error);
         }
     }
 

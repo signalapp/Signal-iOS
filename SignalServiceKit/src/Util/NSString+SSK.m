@@ -212,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
             return YES;
         } else if (range.location != index || range.length < 1) {
             // This should never happen.
-            OWSFail(@"%@ unexpected composed character sequence: %lu, %@",
+            OWSFailDebug(@"%@ unexpected composed character sequence: %lu, %@",
                 self.logTag,
                 (unsigned long)index,
                 NSStringFromRange(range));
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:&error];
     if (error || !regex) {
-        OWSFail(@"%@ could not compile regex: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not compile regex: %@", self.logTag, error);
         return NO;
     }
     return [regex rangeOfFirstMatchInString:self options:0 range:NSMakeRange(0, self.length)].location != NSNotFound;

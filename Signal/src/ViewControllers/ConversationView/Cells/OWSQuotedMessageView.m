@@ -335,12 +335,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     DDLogDebug(@"%@ in didTapFailedThumbnailDownload", self.logTag);
 
     if (!self.quotedMessage.thumbnailDownloadFailed) {
-        OWSFail(@"%@ in %s thumbnailDownloadFailed was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"%@ in %s thumbnailDownloadFailed was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 
     if (!self.quotedMessage.thumbnailAttachmentPointer) {
-        OWSFail(@"%@ in %s thumbnailAttachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"%@ in %s thumbnailAttachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
 

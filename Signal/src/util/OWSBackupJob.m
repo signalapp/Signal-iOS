@@ -84,7 +84,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     self.jobTempDirPath = [temporaryDirectory stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
 
     if (![OWSFileSystem ensureDirectoryExists:self.jobTempDirPath]) {
-        OWSFail(@"%@ Could not create jobTempDirPath.", self.logTag);
+        OWSFailDebug(@"%@ Could not create jobTempDirPath.", self.logTag);
         return NO;
     }
     return YES;
@@ -126,7 +126,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (void)failWithError:(NSError *)error
 {
-    OWSFail(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSFailDebug(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         OWSAssert(!self.hasSucceeded);
@@ -178,7 +178,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         failure:^(NSError *error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // The manifest file is critical so any error downloading it is unrecoverable.
-                OWSCFail(@"%@ Could not download manifest.", weakSelf.logTag);
+                OWSCFailDebug(@"%@ Could not download manifest.", weakSelf.logTag);
                 failure(error);
             });
         }];
@@ -203,7 +203,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     NSData *_Nullable manifestDataDecrypted =
         [backupIO decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
     if (!manifestDataDecrypted) {
-        OWSFail(@"%@ Could not decrypt manifest.", self.logTag);
+        OWSFailDebug(@"%@ Could not decrypt manifest.", self.logTag);
         return failure();
     }
 
@@ -211,7 +211,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     NSDictionary<NSString *, id> *_Nullable json =
         [NSJSONSerialization JSONObjectWithData:manifestDataDecrypted options:0 error:&error];
     if (![json isKindOfClass:[NSDictionary class]]) {
-        OWSFail(@"%@ Could not download manifest.", self.logTag);
+        OWSFailDebug(@"%@ Could not download manifest.", self.logTag);
         return failure();
     }
 
@@ -241,18 +241,18 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     OWSAssert(key.length);
 
     if (![json isKindOfClass:[NSDictionary class]]) {
-        OWSFail(@"%@ manifest has invalid data.", self.logTag);
+        OWSFailDebug(@"%@ manifest has invalid data.", self.logTag);
         return nil;
     }
     NSArray *itemMaps = json[key];
     if (![itemMaps isKindOfClass:[NSArray class]]) {
-        OWSFail(@"%@ manifest has invalid data.", self.logTag);
+        OWSFailDebug(@"%@ manifest has invalid data.", self.logTag);
         return nil;
     }
     NSMutableArray<OWSBackupFragment *> *items = [NSMutableArray new];
     for (NSDictionary *itemMap in itemMaps) {
         if (![itemMap isKindOfClass:[NSDictionary class]]) {
-            OWSFail(@"%@ manifest has invalid item.", self.logTag);
+            OWSFailDebug(@"%@ manifest has invalid item.", self.logTag);
             return nil;
         }
         NSString *_Nullable recordName = itemMap[kOWSBackup_ManifestKey_RecordName];
@@ -261,33 +261,33 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         NSString *_Nullable attachmentId = itemMap[kOWSBackup_ManifestKey_AttachmentId];
         NSNumber *_Nullable uncompressedDataLength = itemMap[kOWSBackup_ManifestKey_DataSize];
         if (![recordName isKindOfClass:[NSString class]]) {
-            OWSFail(@"%@ manifest has invalid recordName: %@.", self.logTag, recordName);
+            OWSFailDebug(@"%@ manifest has invalid recordName: %@.", self.logTag, recordName);
             return nil;
         }
         if (![encryptionKeyString isKindOfClass:[NSString class]]) {
-            OWSFail(@"%@ manifest has invalid encryptionKey.", self.logTag);
+            OWSFailDebug(@"%@ manifest has invalid encryptionKey.", self.logTag);
             return nil;
         }
         // relativeFilePath is an optional field.
         if (relativeFilePath && ![relativeFilePath isKindOfClass:[NSString class]]) {
             DDLogDebug(@"%@ manifest has invalid relativeFilePath: %@.", self.logTag, relativeFilePath);
-            OWSFail(@"%@ manifest has invalid relativeFilePath", self.logTag);
+            OWSFailDebug(@"%@ manifest has invalid relativeFilePath", self.logTag);
             return nil;
         }
         // attachmentId is an optional field.
         if (attachmentId && ![attachmentId isKindOfClass:[NSString class]]) {
             DDLogDebug(@"%@ manifest has invalid attachmentId: %@.", self.logTag, attachmentId);
-            OWSFail(@"%@ manifest has invalid attachmentId", self.logTag);
+            OWSFailDebug(@"%@ manifest has invalid attachmentId", self.logTag);
             return nil;
         }
         NSData *_Nullable encryptionKey = [NSData dataFromBase64String:encryptionKeyString];
         if (!encryptionKey) {
-            OWSFail(@"%@ manifest has corrupt encryptionKey", self.logTag);
+            OWSFailDebug(@"%@ manifest has corrupt encryptionKey", self.logTag);
             return nil;
         }
         // uncompressedDataLength is an optional field.
         if (uncompressedDataLength && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
-            OWSFail(@"%@ manifest has invalid uncompressedDataLength: %@.", self.logTag, uncompressedDataLength);
+            OWSFailDebug(@"%@ manifest has invalid uncompressedDataLength: %@.", self.logTag, uncompressedDataLength);
             return nil;
         }
 

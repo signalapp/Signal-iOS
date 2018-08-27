@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
     if (error || envelope == nil) {
-        OWSFail(@"%@ failed to parase envelope with error: %@", self.logTag, error);
+        OWSFailDebug(@"%@ failed to parase envelope with error: %@", self.logTag, error);
         return nil;
     }
 
@@ -158,13 +158,13 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             id object2) {
 
             if (![object1 isKindOfClass:[OWSMessageDecryptJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
+                OWSFailDebug(@"Unexpected object: %@ in collection: %@", [object1 class], collection1);
                 return NSOrderedSame;
             }
             OWSMessageDecryptJob *job1 = (OWSMessageDecryptJob *)object1;
 
             if (![object2 isKindOfClass:[OWSMessageDecryptJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
+                OWSFailDebug(@"Unexpected object: %@ in collection: %@", [object2 class], collection2);
                 return NSOrderedSame;
             }
             OWSMessageDecryptJob *job2 = (OWSMessageDecryptJob *)object2;
@@ -178,7 +178,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             NSString *_Nonnull key,
             id _Nonnull object) {
             if (![object isKindOfClass:[OWSMessageDecryptJob class]]) {
-                OWSFail(@"Unexpected object: %@ in collection: %@", object, collection);
+                OWSFailDebug(@"Unexpected object: %@ in collection: %@", object, collection);
                 return nil;
             }
 
@@ -208,7 +208,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     YapDatabaseView *existingView = [storage registeredExtension:OWSMessageDecryptJobFinderExtensionName];
     if (existingView) {
-        OWSFail(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
+        OWSFailDebug(@"%@ was already initialized.", OWSMessageDecryptJobFinderExtensionName);
         // already initialized
         return;
     }
@@ -330,7 +330,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     SSKProtoEnvelope *_Nullable envelope = job.envelopeProto;
     if (!envelope) {
-        OWSFail(@"%@ Could not parse proto.", self.logTag);
+        OWSFailDebug(@"%@ Could not parse proto.", self.logTag);
         // TODO: Add analytics.
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]

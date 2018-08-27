@@ -311,7 +311,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     [self ensureDisplayName];
 
     if (_displayName.length < 1) {
-        OWSFail(@"%@ could not derive a valid display name.", self.logTag);
+        OWSFailDebug(@"%@ could not derive a valid display name.", self.logTag);
         return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
     }
     return _displayName;
@@ -569,7 +569,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
 {
     if (!systemContact) {
-        OWSFail(@"%@ Missing contact.", self.logTag);
+        OWSFailDebug(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
@@ -664,7 +664,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 + (nullable CNContact *)systemContactForContact:(OWSContact *)contact imageData:(nullable NSData *)imageData
 {
     if (!contact) {
-        OWSFail(@"%@ Missing contact.", self.logTag);
+        OWSFailDebug(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
@@ -917,11 +917,11 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     SSKProtoDataMessageContact *_Nullable contactProto = [contactBuilder buildAndReturnError:&error];
     if (error || !contactProto) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        OWSFailDebug(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
     if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
-        OWSFail(@"%@ contact has neither phone, email or address.", self.logTag);
+        OWSFailDebug(@"%@ contact has neither phone, email or address.", self.logTag);
         return nil;
     }
     return contactProto;
@@ -1008,7 +1008,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             contact.avatarAttachmentId = attachmentPointer.uniqueId;
             contact.isProfileAvatar = avatarInfo.isProfile;
         } else {
-            OWSFail(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+            OWSFailDebug(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
         }
     }
 

@@ -605,7 +605,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     OWSTableSection *_Nullable section = [self sectionForIndex:sectionIndex];
 
     if (!section) {
-        OWSFail(@"Section index out of bounds.");
+        OWSFailDebug(@"Section index out of bounds.");
         return 0;
     }
 
@@ -623,7 +623,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 {
     OWSTableSection *_Nullable section = [self sectionForIndex:sectionIndex];
     if (!section) {
-        OWSFail(@"Section index out of bounds.");
+        OWSFailDebug(@"Section index out of bounds.");
         return 0;
     }
 

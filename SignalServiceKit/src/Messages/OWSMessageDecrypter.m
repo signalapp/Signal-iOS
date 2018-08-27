@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     } @catch (NSException *exception) {
-        OWSFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+        OWSFailDebug(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // Should no longer get here, since we now record the new identity for incoming messages.
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-            OWSFail(
+            OWSFailDebug(
                 @"%@ Failed to trust identity on incoming message from: %@", self.logTag, envelopeAddress(envelope));
             return;
         } else {

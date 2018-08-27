@@ -324,7 +324,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         || image.size.height != kOWSProfileManager_MaxAvatarDiameter) {
         // To help ensure the user is being shown the same cropping of their avatar as
         // everyone else will see, we want to be sure that the image was resized before this point.
-        OWSFail(@"Avatar image should have been resized before trying to upload");
+        OWSFailDebug(@"Avatar image should have been resized before trying to upload");
         image = [image resizedImageToFillPixelSize:CGSizeMake(kOWSProfileManager_MaxAvatarDiameter,
                                                        kOWSProfileManager_MaxAvatarDiameter)];
     }
@@ -333,7 +333,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     if (data.length > kMaxAvatarBytes) {
         // Our avatar dimensions are so small that it's incredibly unlikely we wouldn't be able to fit our profile
         // photo. e.g. generating pure noise at our resolution compresses to ~200k.
-        OWSFail(@"Suprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
+        OWSFailDebug(@"Suprised to find profile avatar was too large. Was it scaled properly? image: %@", image);
     }
 
     return data;
@@ -713,7 +713,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
         if (profileKey == nil) {
-            OWSFail(@"Failed to make profile key for key data");
+            OWSFailDebug(@"Failed to make profile key for key data");
             return;
         }
 
@@ -804,7 +804,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (userProfile.avatarUrlPath.length < 1) {
-            OWSFail(@"%@ Malformed avatar URL: %@", self.logTag, userProfile.avatarUrlPath);
+            OWSFailDebug(@"%@ Malformed avatar URL: %@", self.logTag, userProfile.avatarUrlPath);
             return;
         }
         NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
@@ -1053,7 +1053,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     NSData *nameData = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (nameData.length > kOWSProfileManager_NameDataLength) {
-        OWSFail(@"%@ name data is too long with length:%lu", self.logTag, (unsigned long)nameData.length);
+        OWSFailDebug(@"%@ name data is too long with length:%lu", self.logTag, (unsigned long)nameData.length);
         return nil;
     }
 

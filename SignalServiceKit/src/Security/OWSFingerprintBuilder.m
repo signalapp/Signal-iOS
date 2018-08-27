@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable theirIdentityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:theirSignalId];
 
     if (theirIdentityKey == nil) {
-        OWSFail(@"%@ Missing their identity key", self.logTag);
+        OWSFailDebug(@"%@ Missing their identity key", self.logTag);
         return nil;
     }
 

@@ -291,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
                               OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
                               [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
-                              OWSFail(@"Unexpected dynamic interaction type: %@", [object class]);
+                              OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
                           }
                       }];
 
@@ -535,7 +535,7 @@ NS_ASSUME_NONNULL_BEGIN
                   usingBlock:^(
                       NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
                       if (![object isKindOfClass:[TSInteraction class]]) {
-                          OWSFail(@"Expected a TSInteraction: %@", [object class]);
+                          OWSFailDebug(@"Expected a TSInteraction: %@", [object class]);
                           return;
                       }
 
@@ -591,7 +591,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
             if (newIdentityKey == nil) {
-                OWSFail(@"Safety number change was missing it's new identity key.");
+                OWSFailDebug(@"Safety number change was missing it's new identity key.");
                 continue;
             }
 
@@ -635,16 +635,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (!success) {
         // This might happen if the focus message has disappeared
         // before this view could appear.
-        OWSFail(@"%@ failed to find focus message index.", self.logTag);
+        OWSFailDebug(@"%@ failed to find focus message index.", self.logTag);
         return nil;
     }
     if (![group isEqualToString:thread.uniqueId]) {
-        OWSFail(@"%@ focus message has invalid group.", self.logTag);
+        OWSFailDebug(@"%@ focus message has invalid group.", self.logTag);
         return nil;
     }
     NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
     if (index >= count) {
-        OWSFail(@"%@ focus message has invalid index.", self.logTag);
+        OWSFailDebug(@"%@ focus message has invalid index.", self.logTag);
         return nil;
     }
     NSUInteger position = (count - index) - 1;
@@ -729,7 +729,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSString *> *_Nullable uniqueIds = [transaction allKeysInCollection:collection];
     if (!uniqueIds) {
-        OWSFail(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
+        OWSFailDebug(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
         return;
     }
     DDLogInfo(@"%@ Deleting %lu objects from: %@", self.logTag, (unsigned long)uniqueIds.count, collection);
@@ -739,7 +739,7 @@ NS_ASSUME_NONNULL_BEGIN
         // work.
         TSYapDatabaseObject *_Nullable object = [class fetchObjectWithUniqueID:uniqueId transaction:transaction];
         if (!object) {
-            OWSFail(@"%@ couldn't load object for deletion: %@.", self.logTag, collection);
+            OWSFailDebug(@"%@ couldn't load object for deletion: %@.", self.logTag, collection);
             continue;
         }
         [object removeWithTransaction:transaction];
@@ -760,7 +760,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *localNumber = [TSAccountManager localNumber];
     if (localNumber.length < 1) {
-        OWSFail(@"%@ missing long number.", self.logTag);
+        OWSFailDebug(@"%@ missing long number.", self.logTag);
         return nil;
     }
 

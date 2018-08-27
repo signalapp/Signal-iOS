@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 #define CONVERT_TO_STRING(X) #X
 #define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
 
-// OWSAssert() and OWSFail() should be used in Obj-C methods.
-// OWSCAssert() and OWSCFail() should be used in free functions.
+// OWSAssert() and OWSFailDebug() should be used in Obj-C methods.
+// OWSCAssert() and OWSCFailDebug() should be used in free functions.
 
 #define OWSAssert(X)                                                                                                   \
     do {                                                                                                               \
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWSAbstractMethod() OWSFail(@"%@ Method needs to be implemented by subclasses.", self.logTag)
+#define OWSAbstractMethod() OWSFailDebug(@"%@ Method needs to be implemented by subclasses.", self.logTag)
 
 #pragma mark - Singleton Asserts
 
@@ -124,14 +124,14 @@ NS_ASSUME_NONNULL_BEGIN
 // This macro is intended for use in Objective-C.
 #define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])
 
-#define OWSFail(_messageFormat, ...)                                                                                   \
+#define OWSFailDebug(_messageFormat, ...)                                                                              \
     do {                                                                                                               \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
         OWSFailWithoutLogging(_messageFormat, ##__VA_ARGS__);                                                          \
     } while (0)
 
-#define OWSCFail(_messageFormat, ...)                                                                                  \
+#define OWSCFailDebug(_messageFormat, ...)                                                                             \
     do {                                                                                                               \
         DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
         [DDLog flushLog];                                                                                              \
@@ -139,15 +139,15 @@ NS_ASSUME_NONNULL_BEGIN
     } while (NO)
 
 
-#define OWSProdExit(_messageFormat, ...)                                                                               \
+#define OWSFail(_messageFormat, ...)                                                                                   \
     do {                                                                                                               \
-        OWSFail(_messageFormat, ##__VA_ARGS__);                                                                        \
+        OWSFailDebug(_messageFormat, ##__VA_ARGS__);                                                                   \
         exit(0);                                                                                                       \
     } while (0)
 
-#define OWSCProdExit(_messageFormat, ...)                                                                              \
+#define OWSCFail(_messageFormat, ...)                                                                                  \
     do {                                                                                                               \
-        OWSCFail(_messageFormat, ##__VA_ARGS__);                                                                       \
+        OWSCFailDebug(_messageFormat, ##__VA_ARGS__);                                                                  \
         exit(0);                                                                                                       \
     } while (NO)
 

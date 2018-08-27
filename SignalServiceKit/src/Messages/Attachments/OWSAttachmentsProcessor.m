@@ -185,7 +185,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                             // downloading attachments with low server ids".
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                             NSInteger statusCode = [httpResponse statusCode];
-                            OWSFail(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                            OWSFailDebug(@"%@ %d Failure with suspicious attachment id: %llu, %@",
                                 self.logTag,
                                 (int)statusCode,
                                 (unsigned long long)attachment.serverId,
@@ -207,7 +207,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 // downloading attachments with low server ids".
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                 NSInteger statusCode = [httpResponse statusCode];
-                OWSFail(@"%@ %d Failure with suspicious attachment id: %llu, %@",
+                OWSFailDebug(@"%@ %d Failure with suspicious attachment id: %llu, %@",
                     self.logTag,
                     (int)statusCode,
                     (unsigned long long)attachment.serverId,
@@ -282,7 +282,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             }
 
             void (^abortDownload)(void) = ^{
-                OWSFail(@"%@ Download aborted.", self.logTag);
+                OWSFailDebug(@"%@ Download aborted.", self.logTag);
                 [task cancel];
             };
 

@@ -156,7 +156,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     uint32_t maxExpirationDuration = [OWSDisappearingMessagesConfiguration maxDurationSeconds];
     if (expiresInSeconds > maxExpirationDuration) {
-        OWSFail(@"%@ in %s using `maxExpirationDuration` instead of: %u",
+        OWSFailDebug(@"%@ in %s using `maxExpirationDuration` instead of: %u",
             self.logTag,
             __PRETTY_FUNCTION__,
             maxExpirationDuration);
@@ -304,7 +304,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
     } else {
-        OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
+        OWSFailDebug(@"%@ message has neither body nor attachment.", self.logTag);
         // TODO: We should do better here.
         return @"";
     }
@@ -319,7 +319,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (!attachment) {
-            OWSFail(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
+            OWSFailDebug(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
             continue;
         }
         [attachment removeWithTransaction:transaction];

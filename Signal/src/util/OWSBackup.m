@@ -278,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (lastExportFailureDate) {
             backupExportState = OWSBackupState_Failed;
         } else {
-            OWSFail(@"%@ unexpected condition.", self.logTag);
+            OWSFailDebug(@"%@ unexpected condition.", self.logTag);
         }
     }
 
@@ -492,7 +492,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
         if (!ext) {
-            OWSFail(@"%@ Could not load database view.", self.logTag);
+            OWSFailDebug(@"%@ Could not load database view.", self.logTag);
             return;
         }
 
@@ -500,7 +500,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  usingBlock:^(
                                      NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                      if (![object isKindOfClass:[TSAttachmentStream class]]) {
-                                         OWSFail(@"%@ Unexpected object: %@ in collection:%@",
+                                         OWSFailDebug(@"%@ Unexpected object: %@ in collection:%@",
                                              self.logTag,
                                              [object class],
                                              collection);
@@ -508,7 +508,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      }
                                      TSAttachmentStream *attachmentStream = object;
                                      if (!attachmentStream.lazyRestoreFragment) {
-                                         OWSFail(@"%@ Invalid object: %@ in collection:%@",
+                                         OWSFailDebug(@"%@ Invalid object: %@ in collection:%@",
                                              self.logTag,
                                              [object class],
                                              collection);
@@ -526,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
         if (!ext) {
-            OWSFail(@"%@ Could not load database view.", self.logTag);
+            OWSFailDebug(@"%@ Could not load database view.", self.logTag);
             return;
         }
 

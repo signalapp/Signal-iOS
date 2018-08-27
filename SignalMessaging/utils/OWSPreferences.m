@@ -197,7 +197,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     if (@available(iOS 11, *)) {
         // do nothing
     } else {
-        OWSFail(@"%@ Call Logging can only be configured on iOS11+", self.logTag);
+        OWSFailDebug(@"%@ Call Logging can only be configured on iOS11+", self.logTag);
         return NO;
     }
 
@@ -210,7 +210,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     if (@available(iOS 11, *)) {
         // do nothing
     } else {
-        OWSFail(@"%@ Call Logging can only be configured on iOS11+", self.logTag);
+        OWSFailDebug(@"%@ Call Logging can only be configured on iOS11+", self.logTag);
         return;
     }
 
@@ -267,7 +267,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (BOOL)isCallKitEnabled
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit is always enabled for iOS11+", self.logTag);
+        OWSFailDebug(@"%@ CallKit is always enabled for iOS11+", self.logTag);
         return YES;
     }
 
@@ -278,7 +278,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setIsCallKitEnabled:(BOOL)flag
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit is always enabled for iOS11+", self.logTag);
+        OWSFailDebug(@"%@ CallKit is always enabled for iOS11+", self.logTag);
         return;
     }
 
@@ -289,7 +289,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (BOOL)isCallKitEnabledSet
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit is always enabled for iOS11+", self.logTag);
+        OWSFailDebug(@"%@ CallKit is always enabled for iOS11+", self.logTag);
         return NO;
     }
 
@@ -300,7 +300,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (BOOL)isCallKitPrivacyEnabled
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        OWSFailDebug(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
         return NO;
     }
 
@@ -316,7 +316,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setIsCallKitPrivacyEnabled:(BOOL)flag
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        OWSFailDebug(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
         return;
     }
 
@@ -326,7 +326,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (BOOL)isCallKitPrivacySet
 {
     if (@available(iOS 11, *)) {
-        OWSFail(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
+        OWSFailDebug(@"%@ CallKit privacy is irrelevant for iOS11+", self.logTag);
         return NO;
     }
 

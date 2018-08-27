@@ -177,7 +177,7 @@ void AssertIsOnSendingQueue()
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
-        OWSFail(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
+        OWSFailDebug(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
     }
 
     self.successHandler();
@@ -305,7 +305,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
                     contactShareAvatarAttachment = (TSAttachmentStream *)avatarAttachment;
                 } else {
-                    OWSFail(@"%@ in %s unexpected avatarAttachment: %@",
+                    OWSFailDebug(@"%@ in %s unexpected avatarAttachment: %@",
                         self.logTag,
                         __PRETTY_FUNCTION__,
                         avatarAttachment);
@@ -570,7 +570,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                 failure:failureHandler];
         } else {
             // Neither a group nor contact thread? This should never happen.
-            OWSFail(@"%@ Unknown message type: %@", self.logTag, [message class]);
+            OWSFailDebug(@"%@ Unknown message type: %@", self.logTag, [message class]);
 
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             [error setIsRetryable:NO];
@@ -897,7 +897,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // of new secondary devices via 409 "Mismatched devices" response.
             DDLogWarn(@"%@ account has secondary devices, but sync message has no device messages", self.logTag);
         } else if (!mayHaveLinkedDevices && hasDeviceMessages) {
-            OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
+            OWSFailDebug(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
         }
     } else {
         OWSAssert(deviceMessages.count > 0);

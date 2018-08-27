@@ -39,7 +39,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
             DDLogVerbose(@"Verifying database extension: %@", extensionName);
             YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:extensionName];
             if (!viewTransaction) {
-                OWSCFail(@"VerifyRegistrationsForPrimaryStorage missing database extension: %@", extensionName);
+                OWSCFailDebug(@"VerifyRegistrationsForPrimaryStorage missing database extension: %@", extensionName);
 
                 [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
             }
