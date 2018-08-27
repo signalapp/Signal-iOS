@@ -357,7 +357,7 @@ static NSTimeInterval launchStartedAt;
 
 - (nullable NSError *)convertDatabaseIfNecessary
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     NSString *databaseFilePath = [OWSPrimaryStorage legacyDatabaseFilePath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
@@ -432,7 +432,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -445,7 +445,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -466,7 +466,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -482,7 +482,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return NO;
     }
 
@@ -523,7 +523,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -661,7 +661,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -686,7 +686,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -735,7 +735,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return NO;
     }
 
@@ -879,7 +879,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -893,7 +893,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -907,11 +907,11 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
-    OWSLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
+    OWSLogInfo(@"%@", notification);
     [AppReadiness runNowOrWhenAppIsReady:^{
         [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
     }];
@@ -925,7 +925,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 
@@ -954,7 +954,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
+        OWSFailDebug(@"app launch failed");
         return;
     }
 

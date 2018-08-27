@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert(!self.isAppReady);
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.isAppReady = YES;
 

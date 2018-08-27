@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 

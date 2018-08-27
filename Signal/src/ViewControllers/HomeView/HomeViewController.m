@@ -541,7 +541,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     NewContactThreadViewController *viewController = [NewContactThreadViewController new];
 
@@ -1263,7 +1263,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -1284,7 +1284,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 

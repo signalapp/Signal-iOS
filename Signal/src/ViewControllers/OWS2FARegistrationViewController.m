@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.verificationCode.length > 0);
     OWSAssert(pinCode.length > 0);
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     __weak OWS2FARegistrationViewController *weakSelf = self;
 

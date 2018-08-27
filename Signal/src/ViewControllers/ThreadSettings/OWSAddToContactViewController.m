@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didFinishEditingContact
 {
-    OWSLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     [self dismissViewControllerAnimated:NO
                              completion:^{
                                  [self.navigationController popViewControllerAnimated:YES];

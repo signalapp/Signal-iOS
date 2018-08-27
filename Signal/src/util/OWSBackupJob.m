@@ -75,7 +75,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (BOOL)ensureJobTempDir
 {
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     // TODO: Exports should use a new directory each time, but imports
     // might want to use a predictable directory so that repeated
@@ -101,7 +101,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (void)succeed
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
@@ -126,7 +126,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (void)failWithError:(NSError *)error
 {
-    OWSFailDebug(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSFailDebug(@"%@", error);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         OWSAssert(!self.hasSucceeded);
@@ -140,7 +140,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
 - (void)updateProgressWithDescription:(nullable NSString *)description progress:(nullable NSNumber *)progress
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
@@ -160,7 +160,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     OWSAssert(failure);
     OWSAssert(backupIO);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     __weak OWSBackupJob *weakSelf = self;
     [OWSBackupAPI downloadManifestFromCloudWithSuccess:^(NSData *data) {
@@ -198,7 +198,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         return;
     }
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     NSData *_Nullable manifestDataDecrypted =
         [backupIO decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];

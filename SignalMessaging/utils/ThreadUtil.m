@@ -702,7 +702,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteAllContent
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

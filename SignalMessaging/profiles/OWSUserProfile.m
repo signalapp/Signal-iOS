@@ -405,7 +405,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 + (nullable NSError *)migrateToSharedData
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     return [OWSFileSystem moveAppFilePath:self.legacyProfileAvatarsDirPath
                        sharedDataFilePath:self.sharedDataProfileAvatarsDirPath];

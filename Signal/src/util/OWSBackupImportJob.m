@@ -39,7 +39,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
@@ -172,7 +172,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 - (BOOL)configureImport
 {
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (![self ensureJobTempDir]) {
         OWSFailDebug(@"%@ Could not create jobTempDirPath.", self.logTag);
@@ -190,7 +190,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssert(items.count > 0);
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self downloadNextItemFromCloud:items recordCount:items.count completion:completion];
 }
@@ -256,7 +256,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 - (void)restoreAttachmentFiles
 {
-    OWSLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentsItems.count);
+    OWSLogVerbose(@": %zd", self.attachmentsItems.count);
 
     __block NSUInteger count = 0;
     YapDatabaseConnection *dbConnection = self.primaryStorage.newDatabaseConnection;
@@ -302,7 +302,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 {
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (self.isComplete) {
         return completion(NO);
@@ -460,7 +460,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 {
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_FINALIZING",
                                             @"Indicates that the backup import data is being finalized.")

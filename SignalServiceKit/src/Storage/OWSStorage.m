@@ -401,7 +401,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 {
     OWSAssert(self.isStorageReady);
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -513,7 +513,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)incrementVersionOfDatabaseExtension:(NSString *)extensionName
 {
-    OWSLogError(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, extensionName);
+    OWSLogError(@"%@", extensionName);
 
     NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
     OWSAssert(appUserDefaults);

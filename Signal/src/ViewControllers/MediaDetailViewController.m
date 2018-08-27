@@ -455,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.isVideo);
     OWSAssert(self.videoPlayer);
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self stopVideo];
 }

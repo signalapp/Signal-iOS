@@ -2518,7 +2518,7 @@ typedef enum : NSUInteger {
 
 - (void)didFinishEditingContact
 {
-    OWSLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
 
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -3208,7 +3208,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -3243,7 +3243,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
     OWSAssert([notifications isKindOfClass:[NSArray class]]);
@@ -4079,7 +4079,7 @@ typedef enum : NSUInteger {
 
 - (void)didPasteAttachment:(SignalAttachment *_Nullable)attachment
 {
-    OWSLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogError(@"");
 
     [self tryToSendAttachmentIfApproved:attachment];
 }
@@ -4092,7 +4092,7 @@ typedef enum : NSUInteger {
 - (void)tryToSendAttachmentIfApproved:(SignalAttachment *_Nullable)attachment
                    skipApprovalDialog:(BOOL)skipApprovalDialog
 {
-    OWSLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogError(@"");
 
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
@@ -4138,7 +4138,7 @@ typedef enum : NSUInteger {
     // `willChange` is the correct keyboard notifiation to observe when adjusting contentInset
     // in lockstep with the keyboard presentation animation. `didChange` results in the contentInset
     // not adjusting until after the keyboard is fully up.
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
     [self handleKeyboardNotification:notification];
 }
 
@@ -4260,7 +4260,7 @@ typedef enum : NSUInteger {
     NSString *errorMessage
         = (attachment ? [attachment localizedErrorDescription] : [SignalAttachment missingDataErrorMessage]);
 
-    OWSLogError(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, errorMessage);
+    OWSLogError(@": %@", errorMessage);
 
     [OWSAlerts showAlertWithTitle:NSLocalizedString(
                                       @"ATTACHMENT_ERROR_ALERT_TITLE", @"The title of the 'attachment error' alert.")

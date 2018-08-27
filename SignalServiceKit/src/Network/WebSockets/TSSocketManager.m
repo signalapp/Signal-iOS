@@ -125,7 +125,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
-    OWSLogError(@"%@ %s didFailWithStatusCode: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+    OWSLogError(@"didFailWithStatusCode: %zd, %@", statusCode, error);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);

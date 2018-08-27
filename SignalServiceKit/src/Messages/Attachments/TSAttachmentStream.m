@@ -209,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSError *)migrateToSharedData
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     return [OWSFileSystem moveAppFilePath:self.legacyAttachmentsDirPath
                        sharedDataFilePath:self.sharedDataAttachmentsDirPath];

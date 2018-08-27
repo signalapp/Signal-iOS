@@ -283,7 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)show2FASettings
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
     vc.mode = OWS2FASettingsMode_Status;
@@ -306,14 +306,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)screenLockDidChange:(NSNotification *)notification
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [self updateTableContents];
 }
 
 - (void)showScreenLockTimeoutUI
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     UIAlertController *controller = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",

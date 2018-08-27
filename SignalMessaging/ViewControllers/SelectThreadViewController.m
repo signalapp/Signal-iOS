@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self updateTableContents];

@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.reportedApplicationState = UIApplicationStateActive;
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     self.reportedApplicationState = UIApplicationStateBackground;
@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.reportedApplicationState = UIApplicationStateInactive;
 

@@ -220,7 +220,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     NSArray *notifications = [self.dbConnection beginLongLivedReadTransaction];
     [self setupEditButton];

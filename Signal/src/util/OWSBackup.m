@@ -295,7 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [OWSBackupAPI checkForManifestInCloudWithSuccess:^(BOOL value) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -368,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s.", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@".");
 
     if (self.backupImportJob == backupJob) {
         self.backupImportJob = nil;
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s: %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSLogInfo(@": %@", error);
 
     if (self.backupImportJob == backupJob) {
         self.backupImportJob = nil;
@@ -418,7 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     // TODO: Should we consolidate this state?
     BOOL didChange;
@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [OWSBackupAPI
         fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
@@ -465,7 +465,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [OWSBackupAPI
         fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {

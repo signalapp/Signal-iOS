@@ -196,7 +196,7 @@ const CGFloat kIconViewLength = 24;
 {
     [self updateTableContents];
 
-    OWSLogDebug(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogDebug(@"");
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 

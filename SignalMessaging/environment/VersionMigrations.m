@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.

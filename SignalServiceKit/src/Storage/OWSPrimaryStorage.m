@@ -126,7 +126,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
     [self updateUIDatabaseConnectionToLatest];
 }
 
@@ -305,7 +305,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (nullable NSError *)migrateToSharedData
 {
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.

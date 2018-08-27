@@ -258,7 +258,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                 NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
                 BOOL shouldUpdateSignedPrekey = NO;
                 if (!currentSignedPrekeyId) {
-                    OWSLogError(@"%@ %s Couldn't find current signed prekey id", self.logTag, __PRETTY_FUNCTION__);
+                    OWSLogError(@"Couldn't find current signed prekey id");
                     shouldUpdateSignedPrekey = YES;
                 } else {
                     SignedPreKeyRecord *currentRecord =
@@ -355,7 +355,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         SignedPreKeyRecord *currentRecord = [primaryStorage loadSignedPrekeyOrNil:keyId.intValue];
         if (!currentRecord) {
-            OWSFailDebug(@"%@ %s Couldn't find signed prekey for id: %@", self.logTag, __PRETTY_FUNCTION__, keyId);
+            OWSFailDebug(@"Couldn't find signed prekey for id: %@", keyId);
         }
         NSArray *allSignedPrekeys = [primaryStorage loadSignedPreKeys];
         NSArray *oldSignedPrekeys

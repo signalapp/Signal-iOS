@@ -314,7 +314,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
@@ -396,7 +396,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (![self ensureJobTempDir]) {
         OWSFailDebug(@"%@ Could not create jobTempDirPath.", self.logTag);
@@ -436,7 +436,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
@@ -463,7 +463,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.backupIO);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_DATABASE_EXPORT",
                                             @"Indicates that the database data is being exported.")
@@ -620,7 +620,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     self.savedDatabaseItems = [NSMutableArray new];
     self.savedAttachmentItems = [NSMutableArray new];
@@ -954,7 +954,7 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(nil);
     }
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CLEAN_UP",
                                             @"Indicates that the cloud is being cleaned up.")
@@ -1057,7 +1057,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(obsoleteRecordNames);
     OWSAssert(completion);
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     if (obsoleteRecordNames.count < 1) {
         // No more records to delete; cleanup is complete.

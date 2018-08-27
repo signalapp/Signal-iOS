@@ -206,7 +206,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     [self failWithError:error];
 }
@@ -215,7 +215,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 {
     OWSAssert(error);
 
-    OWSLogError(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
+    OWSLogError(@"%@", error);
 
     DispatchMainThreadSafe(^{
         // Call the completions exactly once.
@@ -231,7 +231,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 {
     OWSAssert(url);
 
-    OWSLogVerbose(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, url);
+    OWSLogVerbose(@"%@", url);
 
     DispatchMainThreadSafe(^{
         // Call the completions exactly once.

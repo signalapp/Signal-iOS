@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateBackground;
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillResignActiveNotification object:nil];
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateActive;
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
 
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
     [DDLog flushLog];
 }
 

@@ -511,7 +511,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    OWSLogVerbose(@"");
 
     // Any database write by the main app might reflect a deregistration,
     // so clear the cached "is registered" state.  This will significantly
