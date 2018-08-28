@@ -15,7 +15,10 @@
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
-#import <YapDatabase/YapDatabase.h>
+//#import <YapDatabase/YapDatabase.h>
+#import "TSAccountManager.h"
+
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -494,6 +497,23 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 {
     // FIXME: Not yet implemented
     return [NSArray new];
+}
+
+-(BOOL)isOneOnOne
+{
+    return (self.participantIds.count == 2 && [self.participantIds containsObject:TSAccountManager.localUID]);
+}
+
+-(nullable NSString *)otherParticipantId
+{
+    if (self.isOneOnOne) {
+        for (NSString *uid in self.participantIds) {
+            if (![uid isEqualToString:TSAccountManager.localUID]) {
+                return uid;
+            }
+        }
+    }
+    return nil;
 }
 
 @end
