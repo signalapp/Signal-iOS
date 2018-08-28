@@ -3458,6 +3458,40 @@ typedef enum : NSUInteger {
             exception.name,
             exception.reason,
             exception.userInfo);
+
+        for (YapDatabaseViewRowChange *rowChange in rowChanges) {
+            switch (rowChange.type) {
+                case YapDatabaseViewChangeDelete:
+                    OWSLogWarn(@"YapDatabaseViewChangeDelete collectionKey: %@, indexPath: %@, finalIndex: %lu",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        (unsigned long)rowChange.finalIndex);
+                    break;
+                case YapDatabaseViewChangeInsert:
+                    OWSLogWarn(@"YapDatabaseViewChangeInsert collectionKey: %@, newIndexPath: %@, finalIndex: %lu",
+                        rowChange.collectionKey,
+                        rowChange.newIndexPath,
+                        (unsigned long)rowChange.finalIndex);
+                    break;
+                case YapDatabaseViewChangeMove:
+                    OWSLogWarn(@"YapDatabaseViewChangeMove collectionKey: %@, indexPath: %@, finalIndex: %@, "
+                               @"finalIndex: %lu",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        rowChange.newIndexPath,
+                        (unsigned long)rowChange.finalIndex);
+                    break;
+                case YapDatabaseViewChangeUpdate:
+                    OWSLogWarn(@"YapDatabaseViewChangeUpdate collectionKey: %@, indexPath: %@, finalIndex: %lu, "
+                               @"isDependency: %d",
+                        rowChange.collectionKey,
+                        rowChange.indexPath,
+                        (unsigned long)rowChange.finalIndex,
+                        rowChange.changes == YapDatabaseViewChangedDependency);
+                    break;
+            }
+        }
+
         @throw exception;
     }
 
