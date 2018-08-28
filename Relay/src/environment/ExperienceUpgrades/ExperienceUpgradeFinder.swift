@@ -80,7 +80,7 @@ enum ExperienceUpgradeId: String {
     // MARK: - Instance Methods
 
     @objc public func allUnseen(transaction: YapDatabaseReadTransaction) -> [ExperienceUpgrade] {
-        return allExperienceUpgrades.filter { ExperienceUpgrade.fetch(uniqueId: $0.uniqueId!, transaction: transaction) == nil }
+        return allExperienceUpgrades.filter { ExperienceUpgrade.fetch(uniqueId: $0.uniqueId, transaction: transaction) == nil }
     }
 
     @objc public func markAllAsSeen(transaction: YapDatabaseReadWriteTransaction) {
