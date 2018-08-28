@@ -1133,11 +1133,11 @@ private class SignalCallData: NSObject {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
-            Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
+        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {_ in
+            Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.uniqueId)")
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
-            Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
+            Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.uniqueId) with error: \(error)")
         }
         sendPromise.retainUntilComplete()
 
