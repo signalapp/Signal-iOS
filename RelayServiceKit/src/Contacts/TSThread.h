@@ -173,6 +173,8 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 @property (readonly, nonnull) NSString *displayName;
 @property (nonnull) NSCountedSet *monitorIds;
 @property (nullable) NSNumber *pinPosition;
+@property (readonly, assign) BOOL isOneOnOne;
+@property (readonly, nullable) NSString *otherParticipantId;
 
 /**
  *  Get or create thread with array of participant UUIDs
