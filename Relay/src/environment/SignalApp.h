@@ -39,7 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 //- (void)presentConversationForRecipientId:(NSString *)recipientId;
 //- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action;
+
 - (void)presentConversationForThreadId:(NSString *)threadId;
+- (void)presentConversationForThreadId:(NSString *)threadId action:(ConversationViewAction)action;
+
 - (void)presentConversationForThread:(TSThread *)thread;
 - (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action;
 - (void)presentConversationForThread:(TSThread *)thread

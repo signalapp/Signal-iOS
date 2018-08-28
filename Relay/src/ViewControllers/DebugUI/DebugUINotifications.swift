@@ -61,14 +61,14 @@ class DebugUINotifications: DebugUIPage {
             }
         ]
 
-        if let contactThread = thread as? TSThread {
+        if thread.participantIds.count == 2 && thread.participantIds.contains(TSAccountManager.localUID()!) {
             sectionItems += [
                 OWSTableItem(title: "Call Missed") { [weak self] in
                     guard let strongSelf = self else {
                         return
                     }
 
-                    strongSelf.delayedNotificationDispatchWithFakeCall(thread: contactThread) { call in
+                    strongSelf.delayedNotificationDispatchWithFakeCall(thread: thread) { call in
                         strongSelf.notificationsAdapter.presentMissedCall(call, callerName: thread.title!)
                     }
                 },
@@ -77,7 +77,7 @@ class DebugUINotifications: DebugUIPage {
                         return
                     }
 
-                    strongSelf.delayedNotificationDispatchWithFakeCall(thread: contactThread) { call in
+                    strongSelf.delayedNotificationDispatchWithFakeCall(thread: thread) { call in
                         strongSelf.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.title!)
                     }
                 },
@@ -86,7 +86,7 @@ class DebugUINotifications: DebugUIPage {
                         return
                     }
 
-                    strongSelf.delayedNotificationDispatchWithFakeCall(thread: contactThread) { call in
+                    strongSelf.delayedNotificationDispatchWithFakeCall(thread: thread) { call in
                         strongSelf.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.title!)
                     }
                 }
@@ -119,7 +119,7 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func delayedNotificationDispatchWithFakeCall(thread: TSThread, callBlock: @escaping (SignalCall) -> Void) {
-        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: 0)
+        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.uniqueId, signalingId: 0)
 
         delayedNotificationDispatch {
             callBlock(call)
