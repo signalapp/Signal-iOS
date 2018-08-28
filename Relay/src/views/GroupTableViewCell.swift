@@ -44,14 +44,14 @@ import RelayServiceKit
     }
 
     @objc
-    public func configure(thread: TSGroupThread, contactsManager: OWSContactsManager) {
-        if let groupName = thread.groupModel.groupName, !groupName.isEmpty {
+    public func configure(thread: TSThread, contactsManager: OWSContactsManager) {
+        if let groupName = thread.title, !groupName.isEmpty {
             self.nameLabel.text = groupName
         } else {
             self.nameLabel.text = MessageStrings.newGroupDefaultTitle
         }
 
-        let groupMemberIds: [String] = thread.groupModel.groupMemberIds
+        let groupMemberIds: [String] = thread.participantIds
         let groupMemberNames = groupMemberIds.map { (recipientId: String) in
             contactsManager.displayName(forPhoneIdentifier: recipientId)
         }.joined(separator: ", ")

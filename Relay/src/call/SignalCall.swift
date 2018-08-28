@@ -162,7 +162,7 @@ protocol CallObserver: class {
         self.signalingId = signalingId
         self.state = state
         self.remotePhoneNumber = remotePhoneNumber
-        self.thread = TSThread.getOrCreateThread(Id: remotePhoneNumber)
+        self.thread = TSThread.getOrCreateThread(withId: remotePhoneNumber)
         self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remotePhoneNumber)")
     }
 

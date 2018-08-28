@@ -144,7 +144,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     required init(call: SignalCall) {
         contactsManager = Environment.current().contactsManager
         self.call = call
-        self.thread = TSThread.getOrCreateThread(contactId: call.remotePhoneNumber)
+        self.thread = TSThread.getOrCreateThread(withId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
@@ -198,7 +198,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contactNameLabel.text = contactsManager.stringForConversationTitle(withPhoneIdentifier: thread.contactIdentifier())
+        contactNameLabel.text = self.thread.displayName
         updateAvatarImage()
         NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }

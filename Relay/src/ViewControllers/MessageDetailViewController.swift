@@ -205,8 +205,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         // Recipient(s)
         if let outgoingMessage = message as? TSOutgoingMessage {
 
-            let isGroupThread = thread.isGroupThread()
-
             let recipientStatusGroups: [MessageReceiptStatus] = [
                 .read,
                 .uploading,
@@ -242,10 +240,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     }
 
                     if groupRows.count < 1 {
-                        if isGroupThread {
+//                        if isGroupThread {
                             groupRows.append(valueRow(name: string(for: recipientStatusGroup),
                                                       value: ""))
-                        }
+//                        }
 
                         addDivider()
                     }
