@@ -72,6 +72,17 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     return self;
 }
 
++(instancetype)getOrCreateThreadWithId:(nonnull NSString *)threadId
+{
+    __block TSThread *thread = nil;
+    
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
+    }];
+    
+    return thread;
+}
+
 +(instancetype)getOrCreateThreadWithId:(NSString *)threadId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSThread *thread = [self fetchObjectWithUniqueID:threadId transaction:transaction];

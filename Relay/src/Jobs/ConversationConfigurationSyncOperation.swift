@@ -40,13 +40,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     override public func run() {
-        if let contactThread = thread as? TSThread {
-            sync(contactThread: contactThread)
-//        } else if let groupThread = thread as? TSGroupThread {
-//            sync(groupThread: groupThread)
-        } else {
-            self.reportAssertionError(description: "unknown thread type")
-        }
+            sync(thread: thread)
     }
 
     private func reportAssertionError(description: String) {
@@ -54,28 +48,29 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         self.reportError(error)
     }
 
-    private func sync(contactThread: TSThread) {
-        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(forRecipientId: contactThread.contactIdentifier()) else {
-            reportAssertionError(description: "unable to find signalAccount")
-            return
-        }
-
-        let syncMessage: OWSSyncContactsMessage = OWSSyncContactsMessage(signalAccounts: [signalAccount],
-                                                                                 identityManager: self.identityManager,
-                                                                                 profileManager: self.profileManager)
-
-        var dataSource: DataSource? = nil
-        self.dbConnection.readWrite { transaction in
-            let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-        }
-
-        guard let attachmentDataSource = dataSource else {
-            self.reportAssertionError(description: "unable to build attachment data source")
-            return
-        }
-
-        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+    private func sync(thread: TSThread) {
+        // TODO: retool this to be work with control messages
+//        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(forRecipientId: contactThread.contactIdentifier()) else {
+//            reportAssertionError(description: "unable to find signalAccount")
+//            return
+//        }
+//
+//        let syncMessage: OWSSyncContactsMessage = OWSSyncContactsMessage(signalAccounts: [signalAccount],
+//                                                                                 identityManager: self.identityManager,
+//                                                                                 profileManager: self.profileManager)
+//
+//        var dataSource: DataSource? = nil
+//        self.dbConnection.readWrite { transaction in
+//            let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
+//            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
+//        }
+//
+//        guard let attachmentDataSource = dataSource else {
+//            self.reportAssertionError(description: "unable to build attachment data source")
+//            return
+//        }
+//
+//        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
     }
 
 //    private func sync(groupThread: TSGroupThread) {

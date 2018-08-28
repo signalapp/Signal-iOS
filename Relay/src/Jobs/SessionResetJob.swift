@@ -44,7 +44,7 @@ public class SessionResetJob: NSObject {
                     Logger.info("\(self.TAG) successfully sent EndSessionMessage.")
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,
-                                                messageType: TSInfoMessageType.typeSessionDidEnd)
+                                                infoMessageType: TSInfoMessageType.typeSessionDidEnd)
                     message.save()
                 }, failure: {error in
                     dbConnection.asyncReadWrite { (transaction) in
@@ -64,11 +64,15 @@ public class SessionResetJob: NSObject {
             }
         }
 
-    @objc public class func run(contactThread: TSThread, messageSender: MessageSender, primaryStorage: OWSPrimaryStorage) {
-        let job = self.init(recipientId: contactThread.contactIdentifier(),
-                            thread: contactThread,
-                            messageSender: messageSender,
-                            primaryStorage: primaryStorage)
-        job.run()
+    @objc public class func run(thread: TSThread, messageSender: MessageSender, primaryStorage: OWSPrimaryStorage) {
+        for uid in thread.participantIds {
+            if uid != TSAccountManager.localUID() {
+                let job = self.init(recipientId: uid,
+                                    thread: thread,
+                                    messageSender: messageSender,
+                                    primaryStorage: primaryStorage)
+                job.run()
+           }
+        }
     }
 }

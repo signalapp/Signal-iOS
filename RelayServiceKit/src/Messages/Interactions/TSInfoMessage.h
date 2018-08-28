@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)contact
+                         inThread:(TSThread *)thread
                       infoMessageType:(TSInfoMessageType)infoMessageType NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
