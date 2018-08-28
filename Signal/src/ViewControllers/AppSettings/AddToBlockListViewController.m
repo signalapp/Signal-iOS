@@ -6,7 +6,9 @@
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
 #import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -78,6 +80,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Cannot add already blocked user to block list.");
         return;
     }
+
+    if ([signalAccount.recipientId isEqual:TSAccountManager.localNumber]) {
+        [self showCannotBlockSelfAlert];
+        return;
+    }
+
     [BlockListUIUtils showBlockSignalAccountActionSheet:signalAccount
                                      fromViewController:self
                                         blockingManager:helper.blockingManager
@@ -87,6 +95,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                 [weakSelf.navigationController popViewControllerAnimated:YES];
                                             }
                                         }];
+}
+
+- (void)showCannotBlockSelfAlert
+{
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    NSString *alertBody = NSLocalizedString(
+        @"BLOCK_LIST_VIEW_SELF_BLOCK_ALERT_BODY", @"Alert body when trying to block yourself, which isn't allowed.");
+    [OWSAlerts showAlertWithTitle:nil message:alertBody];
 }
 
 - (BOOL)shouldHideLocalNumber
