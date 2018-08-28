@@ -519,10 +519,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         SwiftAssertIsOnMainThread(#function)
 
         self.uiDatabaseConnection.read { transaction in
-            guard let uniqueId = self.message.uniqueId else {
-                Logger.error("\(self.logTag) Message is missing uniqueId.")
-                return
-            }
+            let uniqueId = self.message.uniqueId
             guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
                 Logger.error("\(self.logTag) Couldn't reload message.")
                 return
@@ -542,10 +539,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         let notifications = self.uiDatabaseConnection.beginLongLivedReadTransaction()
 
-        guard let uniqueId = self.message.uniqueId else {
-            Logger.error("\(self.logTag) Message is missing uniqueId.")
-            return
-        }
+        let uniqueId = self.message.uniqueId
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {

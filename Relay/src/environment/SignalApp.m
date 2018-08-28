@@ -170,15 +170,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentConversationForThreadId:(NSString *)threadId
 {
+    [self presentConversationForThreadId:threadId action:ConversationViewActionNone];
+}
+
+- (void)presentConversationForThreadId:(NSString *)threadId action:(ConversationViewAction)action
+{
     OWSAssert(threadId.length > 0);
-
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
-    if (thread == nil) {
-        OWSFail(@"%@ unable to find thread with id: %@", self.logTag, threadId);
-        return;
-    }
-
-    [self presentConversationForThread:thread];
+    
+    DispatchMainThreadSafe(^{
+        __block TSThread *thread = nil;
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+            thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction]
+        }]
+        
+        [self presentConversationForThread:thread action:action];
+    });
 }
 
 - (void)presentConversationForThread:(TSThread *)thread
