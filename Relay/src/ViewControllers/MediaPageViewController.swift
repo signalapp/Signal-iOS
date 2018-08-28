@@ -475,12 +475,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         Logger.debug("\(logTag) in \(#function) cache miss.")
         var fetchedItem: ConversationViewItem? = nil
+        // We generally adobt group thread behavior
         self.uiDatabaseConnection.read { transaction in
             let message = galleryItem.message
             let thread = message.thread(with: transaction)
             let conversationStyle = ConversationStyle(thread: thread)
             fetchedItem = ConversationViewItem(interaction: message,
-                                               isGroupThread: thread.isGroupThread(),
+                                               isGroupThread: true,
                                                transaction: transaction,
                                                conversationStyle: conversationStyle)
         }

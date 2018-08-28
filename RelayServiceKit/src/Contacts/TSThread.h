@@ -182,6 +182,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 /**
  *  Get or create thread with thread UUID
  */
++(instancetype)getOrCreateThreadWithId:(nonnull NSString *)threadId;
 +(instancetype)getOrCreateThreadWithId:(nonnull NSString *)threadId
                            transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 

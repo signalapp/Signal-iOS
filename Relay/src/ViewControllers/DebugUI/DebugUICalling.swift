@@ -21,9 +21,16 @@ class DebugUICalling: DebugUIPage {
     }
 
     override func section(thread aThread: TSThread?) -> OWSTableSection? {
-        guard let thread = aThread as? TSThread else {
+        guard aThread?.participantIds.count == 2 else {
             owsFail("Calling is only valid for contact thread, got thread: \(String(describing: aThread))")
             return nil
+        }
+        
+        var contactId = ""
+        for uid in (aThread?.participantIds)! {
+            if contactId != TSAccountManager.localUID() {
+                contactId = uid
+            }
         }
 
         let sectionItems = [
@@ -32,12 +39,12 @@ class DebugUICalling: DebugUIPage {
 
                 let kFakeCallId = UInt64(12345)
                 let hangupMessage = OWSCallHangupMessage(callId: kFakeCallId)
-                let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
+                let callMessage = OWSOutgoingCallMessage(thread: aThread!, hangupMessage: hangupMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).then {
-                    Logger.debug("\(strongSelf.logTag) Successfully sent hangup call message to \(thread.contactIdentifier())")
+                    Logger.debug("\(strongSelf.logTag) Successfully sent hangup call message to \(contactId)")
                 }.catch { error in
-                    Logger.error("\(strongSelf.logTag) failed to send hangup call message to \(thread.contactIdentifier()) with error: \(error)")
+                    Logger.error("\(strongSelf.logTag) failed to send hangup call message to \(contactId) with error: \(error)")
                 }
             },
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
@@ -45,12 +52,12 @@ class DebugUICalling: DebugUIPage {
 
                 let kFakeCallId = UInt64(12345)
                 let busyMessage = OWSCallBusyMessage(callId: kFakeCallId)
-                let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
+                let callMessage = OWSOutgoingCallMessage(thread: aThread!, busyMessage: busyMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).then {
-                    Logger.debug("\(strongSelf.logTag) Successfully sent busy call message to \(thread.contactIdentifier())")
+                    Logger.debug("\(strongSelf.logTag) Successfully sent busy call message to \(contactId)")
                 }.catch { error in
-                    Logger.error("\(strongSelf.logTag) failed to send busy call message to \(thread.contactIdentifier()) with error: \(error)")
+                    Logger.error("\(strongSelf.logTag) failed to send busy call message to \(contactId) with error: \(error)")
                 }
             }
         ]

@@ -40,7 +40,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             return
         }
 
-        let thread = TSThread.getOrCreateThread(contactId: callerId)
+        let thread = TSThread.getOrCreateThread(withId: callerId)
         self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
     }
 
@@ -51,7 +51,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             return
         }
 
-        let thread = TSThread.getOrCreateThread(Id: callerId)
+        let thread = TSThread.getOrCreateThread(withId: callerId)
         self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
     }
 
@@ -62,7 +62,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             return
         }
 
-        let thread = TSThread.getOrCreateThread(Id: callerId)
+        let thread = TSThread.getOrCreateThread(withId: callerId)
 
         // Discrepency between our protobuf's sdpMlineIndex, which is unsigned, 
         // while the RTC iOS API requires a signed int.
@@ -78,7 +78,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             return
         }
 
-        let thread = TSThread.getOrCreateThread(Id: callerId)
+        let thread = TSThread.getOrCreateThread(withId: callerId)
         self.callService.handleRemoteHangup(thread: thread, callId: hangup.id)
     }
 
@@ -89,7 +89,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             return
         }
 
-        let thread = TSThread.getOrCreateThread(Id: callerId)
+        let thread = TSThread.getOrCreateThread(withId: callerId)
         self.callService.handleRemoteBusy(thread: thread, callId: busy.id)
     }
 

@@ -40,7 +40,7 @@ class ValidationViewController: UITableViewController {
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateInfoLabelWithNotification),
-                                               name: NSNotification.Name.FLRegistrationStatusUpdate,
+                                               name: NSNotification.Name(rawValue: FLRegistrationStatusUpdateNotification),
                                                object: nil)
         self.infoLabel.text = ""
         

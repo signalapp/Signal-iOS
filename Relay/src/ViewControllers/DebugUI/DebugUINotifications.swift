@@ -50,12 +50,7 @@ class DebugUINotifications: DebugUIPage {
                             return
                         }
 
-                        guard let threadId = thread.uniqueId else {
-                            owsFail("thread had no uniqueId")
-                            return
-                        }
-
-                        guard let incomingMessage = viewTransaction.lastObject(inGroup: threadId) as? TSIncomingMessage else {
+                        guard let incomingMessage = viewTransaction.lastObject(inGroup: (aThread?.uniqueId)!  ) as? TSIncomingMessage else {
                             owsFail("last message was not an incoming message.")
                             return
                         }
@@ -74,7 +69,7 @@ class DebugUINotifications: DebugUIPage {
                     }
 
                     strongSelf.delayedNotificationDispatchWithFakeCall(thread: contactThread) { call in
-                        strongSelf.notificationsAdapter.presentMissedCall(call, callerName: thread.name())
+                        strongSelf.notificationsAdapter.presentMissedCall(call, callerName: thread.title!)
                     }
                 },
                 OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
@@ -83,7 +78,7 @@ class DebugUINotifications: DebugUIPage {
                     }
 
                     strongSelf.delayedNotificationDispatchWithFakeCall(thread: contactThread) { call in
-                        strongSelf.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
+                        strongSelf.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.title!)
                     }
                 },
                 OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
@@ -92,7 +87,7 @@ class DebugUINotifications: DebugUIPage {
                     }
 
                     strongSelf.delayedNotificationDispatchWithFakeCall(thread: contactThread) { call in
-                        strongSelf.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
+                        strongSelf.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.title!)
                     }
                 }
             ]
