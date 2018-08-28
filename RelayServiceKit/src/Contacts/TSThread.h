@@ -12,6 +12,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 @class OWSDisappearingMessagesConfiguration;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
+@class TSAttachmentStream;
 
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
@@ -202,7 +203,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 /**
  *  Validate and update a thread
  */
--(void)validateWithTransaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
+-(void)validate;
 
 -(void)updateWithPayload:(nonnull NSDictionary *)payload;
 

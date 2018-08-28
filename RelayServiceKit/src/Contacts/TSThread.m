@@ -17,6 +17,9 @@
 #import "TSOutgoingMessage.h"
 //#import <YapDatabase/YapDatabase.h>
 #import "TSAccountManager.h"
+#import "TSAttachmentStream.h"
+#import "CCSMKeys.h"
+#import "CCSMCommunication.h"
 
 @import YapDatabase;
 
@@ -493,6 +496,19 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
                              }];
 }
 
+-(void)removeMembers:(nonnull NSSet *)leavingMemberIds
+         transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction
+{
+    if (leavingMemberIds.count > 0) {
+        NSMutableArray *tmpArray = self.participantIds.mutableCopy;
+        for (NSString *uid in leavingMemberIds) {
+            [tmpArray removeObject:uid];
+        }
+
+        [self saveWithTransaction:transaction];
+    }
+}
+
 +(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction
 {
     // FIXME: Not yet implemented
@@ -514,6 +530,90 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
         }
     }
     return nil;
+}
+
++(instancetype)getOrCreateThreadWithParticipants:(NSArray <NSString *> *)participantIDs
+{
+    __block TSThread *thread = nil;
+    [[OWSPrimaryStorage.sharedManager dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithParticipants:participantIDs transaction:transaction];
+    }];
+    
+    return thread;
+}
+
++(instancetype)getOrCreateThreadWithParticipants:(NSArray <NSString *> *)participantIDs
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    __block TSThread *thread = nil;
+    __block NSCountedSet *testSet = [NSCountedSet setWithArray:participantIDs];
+    [transaction enumerateKeysAndObjectsInCollection:[self collection] usingBlock:^(NSString *key, TSThread *aThread, BOOL *stop) {
+        NSCountedSet *aSet = [NSCountedSet setWithArray:aThread.participantIds];
+        if ([aSet isEqual:testSet]) {
+            thread = aThread;
+            *stop = YES;
+        }
+    }];
+    
+    if (thread == nil) {
+        thread = [TSThread getOrCreateThreadWithId:[[NSUUID UUID] UUIDString] transaction:transaction];
+        thread.participantIds = [participantIDs copy];
+        [thread saveWithTransaction:transaction];
+    }
+    
+    return thread;
+}
+
+-(void)updateWithPayload:(NSDictionary *)payload
+{
+    NSString *threadId = [payload objectForKey:FLThreadIDKey];
+    if (!threadId) {
+        DDLogDebug(@"%@ - Attempted to retrieve thread with payload without a UID.", self.logTag);
+        return;
+    }
+    NSString *threadExpression = [(NSDictionary *)[payload objectForKey:FLDistributionKey] objectForKey:FLExpressionKey];
+    NSString *threadType = [payload objectForKey:FLThreadTypeKey];
+    NSString *threadTitle = [payload objectForKey:FLThreadTitleKey];
+    self.title = ((threadTitle.length > 0) ? threadTitle : nil );
+    self.type = ((threadType.length > 0) ? threadType : nil );
+    self.universalExpression = threadExpression;
+    
+    [self updateWithExpression:self.universalExpression];
+}
+
+-(void)validate
+{
+    [self updateWithExpression:self.universalExpression];
+}
+
+-(void)updateWithExpression:(NSString *)expression
+{
+    [CCSMCommManager asyncTagLookupWithString:expression
+                                      success:^(NSDictionary * _Nonnull lookupDict) {
+                                          if (lookupDict) {
+                                              self.participantIds = [lookupDict objectForKey:@"userids"];
+                                              self.prettyExpression = [lookupDict objectForKey:@"pretty"];
+                                              self.universalExpression = [lookupDict objectForKey:@"universal"];
+                                              if ([lookupDict objectForKey:@"monitorids"]) {
+                                                  self.monitorIds = [NSCountedSet setWithArray:[lookupDict objectForKey:@"monitorids"]];
+                                              }
+                                          }
+                                          [self save];
+                                          
+                                      } failure:^(NSError * _Nonnull error) {
+                                          DDLogDebug(@"%@: TagMath query for expression failed.  Error: %@", self.logTag, error.localizedDescription);
+                                          [self save];
+                                      }];
+}
+
+- (void)updateImageWithAttachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    [self setImage:[attachmentStream image]];
+    [self save];
+    
+    // Avatars are stored directly in the database, so there's no need
+    // to keep the attachment around after assigning the image.
+    [attachmentStream remove];
 }
 
 @end
