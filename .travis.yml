@@ -1,7 +1,7 @@
 language: objective-c
 cache: cocoapods # pod install somtimes takes >20 minutes, so lets cache this
 
-osx_image: xcode8.3
+osx_image: xcode9.4
 
 env:
   -EARLY_START_SIMULATOR=1 # early starting simulator reduces false negatives due to test timeouts
@@ -12,5 +12,6 @@ before_install:
     - bundle
     - bundle exec pod repo update --silent # log output is too long without --silent
 
+install: make dependencies
 script: make ci
 
