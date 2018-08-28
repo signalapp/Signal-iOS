@@ -8,7 +8,7 @@ XCODE_BUILD := xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEM
 
 default: test
 
-ci: test
+ci: dependencies test
 	$(XCODE_BUILD) build
 
 update_dependencies:

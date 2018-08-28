@@ -10,7 +10,4 @@ env:
 before_install:
 - brew update
 - brew outdated xctool || brew upgrade xctool
-- bundle
-- bundle exec pod repo update --silent
-install: make dependencies
 script: make ci
