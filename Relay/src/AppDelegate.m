@@ -25,7 +25,7 @@
 #import <RelayMessaging/AppSetup.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
-#import <RelayMessaging/OWSContactsSyncing.h>
+//#import <RelayMessaging/OWSContactsSyncing.h>
 #import <RelayMessaging/OWSMath.h>
 #import <RelayMessaging/OWSNavigationController.h>
 #import <RelayMessaging/OWSPreferences.h>
@@ -198,7 +198,7 @@ static NSTimeInterval launchStartedAt;
     [OWSScreenLockUI.sharedManager startObserving];
 
     // Ensure OWSContactsSyncing is instantiated.
-    [OWSContactsSyncing sharedManager];
+//    [OWSContactsSyncing sharedManager];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(storageIsReady)

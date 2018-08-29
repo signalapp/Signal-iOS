@@ -220,7 +220,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
                     UILocalNotification *failedSendNotif = [[UILocalNotification alloc] init];
                     failedSendNotif.alertBody =
-                        [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), [thread name]]
+                        [NSString stringWithFormat:NSLocalizedString(@"NOTIFICATION_SEND_FAILED", nil), thread.title]
                             .filterStringForDisplay;
                     failedSendNotif.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
                     [self presentNotification:failedSendNotif checkForCancel:NO];
