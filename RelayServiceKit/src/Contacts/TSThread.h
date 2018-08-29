@@ -180,6 +180,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 /**
  *  Get or create thread with array of participant UUIDs
  */
++(instancetype)getOrCreateThreadWithParticipants:(nonnull NSArray <NSString *> *)participantIDs;
 +(instancetype)getOrCreateThreadWithParticipants:(nonnull NSArray <NSString *> *)participantIDs
                                      transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 /**

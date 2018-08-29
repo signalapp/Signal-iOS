@@ -1351,10 +1351,14 @@ NS_ASSUME_NONNULL_BEGIN
         validRecipientId,
         [TSAccountManager localUID],
     ] mutableCopy];
-    NSData *groupId = [SecurityUtils generateRandomBytes:16];
-    TSGroupModel *model =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
-    TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
+    
+    TSThread *thread = [TSThread getOrCreateThreadWithParticipants:recipientIds];
+    thread.title = groupName;
+    
+//    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+//    TSGroupModel *model =
+//        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+//    TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
     [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
