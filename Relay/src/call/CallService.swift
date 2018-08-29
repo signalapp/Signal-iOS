@@ -471,7 +471,7 @@ private class SignalCallData: NSObject {
      * Called by the call initiator after receiving a CallAnswer from the callee.
      */
     public func handleReceivedAnswer(thread: TSThread, callId: UInt64, sessionDescription: String) {
-        Logger.info("\(self.logTag) received call answer for call: \(callId) thread: \(thread.contactIdentifier())")
+        Logger.info("\(self.logTag) received call answer for call: \(callId) thread: \(thread.uniqueId)")
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
@@ -519,7 +519,7 @@ private class SignalCallData: NSObject {
             }
         } else {
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                     withCallNumber: call.thread.contactIdentifier(),
+                                     withCallNumber: call.thread.uniqueId,
                                      callType: RPRecentCallTypeIncomingMissed,
                                      in: call.thread)
         }
@@ -534,7 +534,7 @@ private class SignalCallData: NSObject {
      * Received a call while already in another call.
      */
     private func handleLocalBusyCall(_ call: SignalCall) {
-        Logger.info("\(self.logTag) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
+        Logger.info("\(self.logTag) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.uniqueId)")
         SwiftAssertIsOnMainThread(#function)
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
@@ -549,7 +549,7 @@ private class SignalCallData: NSObject {
      * The callee was already in another call.
      */
     public func handleRemoteBusy(thread: TSThread, callId: UInt64) {
-        Logger.info("\(self.logTag) \(#function) for thread: \(thread.contactIdentifier())")
+        Logger.info("\(self.logTag) \(#function) for thread: \(thread.uniqueId)")
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
@@ -562,7 +562,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactIdentifier() == call.remotePhoneNumber else {
+        guard thread.uniqueId == call.remotePhoneNumber else {
             Logger.warn("\(self.logTag) ignoring obsolete call in \(#function)")
             return
         }
@@ -579,16 +579,16 @@ private class SignalCallData: NSObject {
     public func handleReceivedOffer(thread: TSThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
+        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.uniqueId, signalingId: callId)
 
         Logger.info("\(self.logTag) receivedCallOffer: \(newCall.identifiersForLogs)")
 
-        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
+        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.uniqueId)
 
         guard untrustedIdentity == nil else {
             Logger.warn("\(self.logTag) missed a call due to untrusted identity: \(newCall.identifiersForLogs)")
 
-            let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.contactIdentifier())
+            let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.uniqueId)
 
             switch untrustedIdentity!.verificationState {
             case .verified:
@@ -601,7 +601,7 @@ private class SignalCallData: NSObject {
             }
 
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                    withCallNumber: thread.contactIdentifier(),
+                                    withCallNumber: thread.uniqueId,
                                     callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
@@ -682,7 +682,7 @@ private class SignalCallData: NSObject {
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let isUnknownCaller = !self.contactsManager.hasSignalAccount(forRecipientId: thread.contactIdentifier())
+            let isUnknownCaller = !self.contactsManager.hasSignalAccount(forRecipientId: thread.uniqueId)
 
             let useTurnOnly = isUnknownCaller || Environment.current().preferences.doCallsHideIPAddress()
 
@@ -776,7 +776,7 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+            guard thread.uniqueId == call.thread.uniqueId else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
                 return
             }
@@ -913,10 +913,10 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+        guard thread.uniqueId == call.thread.uniqueId else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
-            Logger.warn("\(self.logTag) ignoring hangup for thread: \(thread.contactIdentifier()) which is not the current call: \(call.identifiersForLogs)")
+            Logger.warn("\(self.logTag) ignoring hangup for thread: \(thread.uniqueId) which is not the current call: \(call.identifiersForLogs)")
             return
         }
 
@@ -1133,11 +1133,11 @@ private class SignalCallData: NSObject {
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
-            Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.contactIdentifier())")
+        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {_ in
+            Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.uniqueId)")
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
-            Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
+            Logger.error("\(self.logTag) failed to send hangup call message to \(call.thread.uniqueId) with error: \(error)")
         }
         sendPromise.retainUntilComplete()
 
