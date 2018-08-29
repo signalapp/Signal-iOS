@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 DDLogError(@"Flipping identity Key. Flip again to return.");
 
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-                                NSString *recipientId = [thread contactIdentifier];
+                                NSString *recipientId = [thread otherParticipantId];
 
                                 NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
                                 NSMutableData *flippedKey = [NSMutableData new];
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 [OWSPrimaryStorage.sharedManager.newDatabaseConnection
                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                         [[OWSPrimaryStorage sharedManager]
-                                            deleteAllSessionsForContact:thread.contactIdentifier
+                                            deleteAllSessionsForContact:thread.otherParticipantId
                                                         protocolContext:transaction];
                                     }];
                             }],
@@ -63,13 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
                                 [OWSPrimaryStorage.sharedManager.newDatabaseConnection
                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                         [[OWSPrimaryStorage sharedManager]
-                                            archiveAllSessionsForContact:thread.contactIdentifier
+                                            archiveAllSessionsForContact:thread.otherParticipantId
                                                          protocolContext:transaction];
                                     }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
-                                [OWSSessionResetJob runWithContactThread:thread
+                                [OWSSessionResetJob runWithThread:thread
                                                            messageSender:[Environment current].messageSender
                                                           primaryStorage:[OWSPrimaryStorage sharedManager]];
                             }],

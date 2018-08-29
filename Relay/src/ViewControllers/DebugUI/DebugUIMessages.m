@@ -17,7 +17,7 @@
 #import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <RelayServiceKit/OWSMessageUtils.h>
 #import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <RelayServiceKit/OWSSyncGroupsRequestMessage.h>
+//#import <RelayServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
 #import <RelayServiceKit/TSIncomingMessage.h>
 #import <RelayServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
@@ -227,17 +227,17 @@ NS_ASSUME_NONNULL_BEGIN
             itemWithTitle:@"Request Bogus group info"
               actionBlock:^{
                   DDLogInfo(@"%@ Requesting bogus group info for thread: %@", self.logTag, thread);
-                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
-                      [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
-                                                                  groupId:[Randomness generateRandomBytes:16]];
-                  [[Environment current].messageSender enqueueMessage:syncGroupsRequestMessage
-                      success:^{
-                          DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
-                      }
-                      failure:^(NSError *error) {
-                          DDLogError(
-                              @"%@ Failed to send Request Group Info message with error: %@", self.logTag, error);
-                      }];
+//                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
+//                      [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
+//                                                                  groupId:[Randomness generateRandomBytes:16]];
+//                  [[Environment current].messageSender enqueueMessage:syncGroupsRequestMessage
+//                      success:^{
+//                          DDLogWarn(@"%@ Successfully sent Request Group Info message.", self.logTag);
+//                      }
+//                      failure:^(NSError *error) {
+//                          DDLogError(
+//                              @"%@ Failed to send Request Group Info message with error: %@", self.logTag, error);
+//                      }];
               }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
                         actionBlock:^{
@@ -269,9 +269,8 @@ NS_ASSUME_NONNULL_BEGIN
                         }],
     ]];
 
-    if ([thread isKindOfClass:[TSThread class]]) {
-        TSThread *contactThread = (TSThread *)thread;
-        NSString *recipientId = contactThread.contactIdentifier;
+    if (thread.isOneOnOne) {
+        NSString *recipientId = thread.otherParticipantId;
         [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
                                          actionBlock:^{
                                              [DebugUIMessages createNewGroups:10 recipientId:recipientId];
@@ -285,8 +284,8 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMessages createNewGroups:1000 recipientId:recipientId];
                                          }]];
     }
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
+    if (thread.participantIds.count > 2) {
+        TSThread *groupThread = (TSThread *)thread;
         [items addObject:[OWSTableItem itemWithTitle:@"Send message to all members"
                                          actionBlock:^{
                                              [DebugUIMessages sendMessages:1 toAllMembersOfGroup:groupThread];
@@ -295,9 +294,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-+ (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
++ (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSThread *)thread
 {
-    for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
+    for (NSString *recipientId in thread.participantIds) {
         TSThread *contactThread = [TSThread getOrCreateThreadWithId:recipientId];
         [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
@@ -1986,7 +1985,7 @@ NS_ASSUME_NONNULL_BEGIN
                 DDLogVerbose(@"%@ %@", self.logTag, label);
                 [DDLog flushLog];
                 ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
-                                                                                     isGroupThread:thread.isGroupThread
+                                                                                     isGroupThread:!thread.isOneOnOne
                                                                                        transaction:transaction
                                                                                  conversationStyle:conversationStyle];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
@@ -2003,7 +2002,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert(messageToQuote);
 
                 ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
-                                                                                     isGroupThread:thread.isGroupThread
+                                                                                     isGroupThread:!thread.isOneOnOne
                                                                                        transaction:transaction
                                                                                  conversationStyle:conversationStyle];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
@@ -3378,16 +3377,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
     NSString *source = ^{
-        if ([thread isKindOfClass:[TSGroupThread class]]) {
-            TSGroupThread *gThread = (TSGroupThread *)thread;
-            return gThread.groupModel.groupMemberIds[0];
-        } else if ([thread isKindOfClass:[TSThread class]]) {
-            TSThread *contactThread = (TSThread *)thread;
-            return contactThread.contactIdentifier;
-        } else {
-            OWSFail(@"%@ failure: unknown thread type", self.logTag);
-            return @"unknown-source-id";
-        }
+        return thread.participantIds[0];
     }();
 
     SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
@@ -3499,19 +3489,19 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }
 
         [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:@"+19174054215"]];
-
+        
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                           inThread:thread
-                                                       messageType:TSInfoMessageTypeSessionDidEnd]];
+                                                   infoMessageType:TSInfoMessageTypeSessionDidEnd]];
         // TODO: customMessage?
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                           inThread:thread
-                                                       messageType:TSInfoMessageTypeGroupUpdate]];
+                                                   infoMessageType:TSInfoMessageTypeConversationUpdate]];
         // TODO: customMessage?
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                           inThread:thread
-                                                       messageType:TSInfoMessageTypeGroupQuit]];
-
+                                                   infoMessageType:TSInfoMessageTypeConversationQuit]];
+        
         [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                                 thread:thread
                                                                            recipientId:@"+19174054215"
@@ -3798,19 +3788,15 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         return;
     }
 
-    NSString *groupName = [NSUUID UUID].UUIDString;
     NSMutableArray<NSString *> *recipientIds = [@[
         recipientId,
         [TSAccountManager localUID],
     ] mutableCopy];
-    NSData *groupId = [SecurityUtils generateRandomBytes:16];
-    TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
-    __block TSGroupThread *thread;
+    __block TSThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+            thread = [TSThread getOrCreateThreadWithParticipants:recipientIds transaction:transaction];
         }];
     OWSAssert(thread);
 
@@ -3862,13 +3848,13 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     OWSSignalServiceProtosDataMessageBuilder *dataMessageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
     [dataMessageBuilder setBody:text];
 
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-        [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
-        [groupBuilder setId:groupThread.groupModel.groupId];
-        [dataMessageBuilder setGroup:groupBuilder.build];
-    }
+//    if ([thread isKindOfClass:[TSGroupThread class]]) {
+//        TSGroupThread *groupThread = (TSGroupThread *)thread;
+//        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+//        [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+//        [groupBuilder setId:groupThread.groupModel.groupId];
+//        [dataMessageBuilder setGroup:groupBuilder.build];
+//    }
 
     OWSSignalServiceProtosContentBuilder *payloadBuilder = [OWSSignalServiceProtosContentBuilder new];
     [payloadBuilder setDataMessage:dataMessageBuilder.build];
@@ -4286,17 +4272,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                 }
                 {
                     NSString *recipientId = @"+19174054215";
-                    NSString *groupName = string;
+//                    NSString *groupName = string;
                     NSMutableArray<NSString *> *recipientIds = [@[
                         recipientId,
                         [TSAccountManager localUID],
                     ] mutableCopy];
-                    NSData *groupId = [SecurityUtils generateRandomBytes:16];
-                    TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    TSThread *groupThread =
+                        [TSThread getOrCreateThreadWithParticipants:recipientIds transaction:transaction];
                     OWSAssert(groupThread);
                 }
             }
@@ -4325,17 +4308,13 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                 }
                 {
                     NSString *recipientId = @"+19174054215";
-                    NSString *groupName = string;
+//                    NSString *groupName = string;
                     NSMutableArray<NSString *> *recipientIds = [@[
                         recipientId,
                         [TSAccountManager localUID],
                     ] mutableCopy];
-                    NSData *groupId = [SecurityUtils generateRandomBytes:16];
-                    TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
-
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    TSThread *groupThread =
+                    [TSThread getOrCreateThreadWithParticipants:recipientIds transaction:transaction];
                     OWSAssert(groupThread);
                 }
             }

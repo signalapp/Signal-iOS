@@ -29,7 +29,6 @@
 #import <RelayServiceKit/OWSMessageSender.h>
 #import <RelayServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
 #import <RelayServiceKit/OWSPrimaryStorage.h>
-#import <RelayServiceKit/TSGroupThread.h>
 #import <RelayServiceKit/TSOutgoingMessage.h>
 #import <RelayServiceKit/TSThread.h>
 

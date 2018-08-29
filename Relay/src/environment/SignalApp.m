@@ -180,8 +180,8 @@ NS_ASSUME_NONNULL_BEGIN
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-            thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction]
-        }]
+            thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
+        }];
         
         [self presentConversationForThread:thread action:action];
     });

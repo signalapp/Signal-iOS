@@ -17,10 +17,10 @@
 #import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <RelayServiceKit/OWSPrimaryStorage.h>
 #import <RelayServiceKit/OWSReadReceiptManager.h>
-#import <RelayServiceKit/OWSSyncConfigurationMessage.h>
-#import <RelayServiceKit/OWSSyncContactsMessage.h>
-#import <RelayServiceKit/OWSSyncGroupsMessage.h>
-#import <RelayServiceKit/OWSSyncGroupsRequestMessage.h>
+//#import <RelayServiceKit/OWSSyncConfigurationMessage.h>
+//#import <RelayServiceKit/OWSSyncContactsMessage.h>
+//#import <RelayServiceKit/OWSSyncGroupsMessage.h>
+//#import <RelayServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
 #import <RelayServiceKit/SecurityUtils.h>
 #import <RelayServiceKit/TSCall.h>
@@ -95,45 +95,47 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendContactsSyncMessage
 {
-    OWSSyncContactsMessage *syncContactsMessage =
-        [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
-                                               identityManager:self.identityManager
-                                                profileManager:self.profileManager];
-    __block DataSource *dataSource;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncContactsMessage
-                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
-    }];
-
-    [self.messageSender enqueueTemporaryAttachment:dataSource
-        contentType:OWSMimeTypeApplicationOctetStream
-        inMessage:syncContactsMessage
-        success:^{
-            DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.logTag);
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.logTag, error);
-        }];
+    // TODO: Replace with control message functionality
+//    OWSSyncContactsMessage *syncContactsMessage =
+//        [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+//                                               identityManager:self.identityManager
+//                                                profileManager:self.profileManager];
+//    __block DataSource *dataSource;
+//    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+//        dataSource = [DataSourceValue
+//            dataSourceWithSyncMessageData:[syncContactsMessage
+//                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
+//    }];
+//
+//    [self.messageSender enqueueTemporaryAttachment:dataSource
+//        contentType:OWSMimeTypeApplicationOctetStream
+//        inMessage:syncContactsMessage
+//        success:^{
+//            DDLogInfo(@"%@ Successfully sent Contacts response syncMessage.", self.logTag);
+//        }
+//        failure:^(NSError *error) {
+//            DDLogError(@"%@ Failed to send Contacts response syncMessage with error: %@", self.logTag, error);
+//        }];
 }
 
 + (void)sendGroupSyncMessage
 {
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-    __block DataSource *dataSource;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
-    }];
-    [self.messageSender enqueueTemporaryAttachment:dataSource
-        contentType:OWSMimeTypeApplicationOctetStream
-        inMessage:syncGroupsMessage
-        success:^{
-            DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.logTag);
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.logTag, error);
-        }];
+    // TODO: Replace with control message send
+//    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+//    __block DataSource *dataSource;
+//    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//        dataSource = [DataSourceValue
+//            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
+//    }];
+//    [self.messageSender enqueueTemporaryAttachment:dataSource
+//        contentType:OWSMimeTypeApplicationOctetStream
+//        inMessage:syncGroupsMessage
+//        success:^{
+//            DDLogInfo(@"%@ Successfully sent Groups response syncMessage.", self.logTag);
+//        }
+//        failure:^(NSError *error) {
+//            DDLogError(@"%@ Failed to send Groups response syncMessage with error: %@", self.logTag, error);
+//        }];
 }
 
 + (void)sendBlockListSyncMessage
@@ -143,21 +145,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendConfigurationSyncMessage
 {
-    __block BOOL areReadReceiptsEnabled;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        areReadReceiptsEnabled =
-            [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
-    }];
-
-    OWSSyncConfigurationMessage *syncConfigurationMessage =
-        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
-    [self.messageSender enqueueMessage:syncConfigurationMessage
-        success:^{
-            DDLogInfo(@"%@ Successfully sent Configuration response syncMessage.", self.logTag);
-        }
-        failure:^(NSError *error) {
-            DDLogError(@"%@ Failed to send Configuration response syncMessage with error: %@", self.logTag, error);
-        }];
+    DDLogDebug(@"Called unimplemented method: sendConfigurationSyncMessage");
+//    __block BOOL areReadReceiptsEnabled;
+//    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//        areReadReceiptsEnabled =
+//            [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
+//    }];
+//
+//    OWSSyncConfigurationMessage *syncConfigurationMessage =
+//        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
+//    [self.messageSender enqueueMessage:syncConfigurationMessage
+//        success:^{
+//            DDLogInfo(@"%@ Successfully sent Configuration response syncMessage.", self.logTag);
+//        }
+//        failure:^(NSError *error) {
+//            DDLogError(@"%@ Failed to send Configuration response syncMessage with error: %@", self.logTag, error);
+//        }];
 }
 
 @end

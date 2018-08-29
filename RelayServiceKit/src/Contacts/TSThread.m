@@ -512,7 +512,16 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 +(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction
 {
     // FIXME: Not yet implemented
-    return [NSArray new];
+    NSMutableArray *results = [NSMutableArray new];
+    [transaction enumerateKeysAndObjectsInCollection:[TSThread collection]
+                                          usingBlock:^(NSString * _Nonnull key, id  _Nonnull object, BOOL * _Nonnull stop) {
+                                              TSThread *thread = (TSThread *)object;
+                                              if ([thread.participantIds containsObject:participantId]) {
+                                                  [results addObject:thread];
+                                              }
+                                          }];
+    
+    return [NSArray arrayWithArray:results];
 }
 
 -(BOOL)isOneOnOne
