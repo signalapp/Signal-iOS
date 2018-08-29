@@ -346,10 +346,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     BOOL isBlocked = NO;
-    if (!thread.isGroupThread) {
-        NSString *contactIdentifier = thread.contactIdentifier;
-        isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
-    }
+//    if (!thread.isGroupThread) {
+//        NSString *contactIdentifier = thread.contactIdentifier;
+//        isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
+//    }
     BOOL hasUnreadMessages = thread.hasUnreadMessages;
 
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
@@ -503,17 +503,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSAttributedString *name;
-    if (thread.isGroupThread) {
-        if (thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
-        } else {
+//    if (thread.isGroupThread) {
+//        if (thread.name.length == 0) {
+//            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+//        } else {
             name = [[NSAttributedString alloc] initWithString:thread.name];
-        }
-    } else {
-        name = [contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-                                                                     primaryFont:self.nameFont
-                                                                   secondaryFont:self.nameSecondaryFont];
-    }
+//        }
+//    } else {
+//        name = [contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
+//                                                                     primaryFont:self.nameFont
+//                                                                   secondaryFont:self.nameSecondaryFont];
+//    }
 
     self.nameLabel.attributedText = name;
 }

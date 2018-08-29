@@ -211,9 +211,11 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             // We populate an initial (empty) profile on launch of a new install, but until
             // we have a registered account, syncing will fail (and there could not be any
             // linked device to sync to at this point anyway).
-            if ([TSAccountManager isRegistered]) {
-                [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:self.profileKey];
-            }
+
+            // This should not be necessary in Forsta land
+//            if ([TSAccountManager isRegistered]) {
+//                [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:self.profileKey];
+//            }
 
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
                                                                      object:nil

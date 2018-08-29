@@ -37,38 +37,39 @@ import RelayMessaging
     }
 
     func run(retryDelay: TimeInterval = 1) {
-        guard let localUID = TSAccountManager.localUID() else {
-            owsFail("\(self.TAG) localUID was unexpectedly nil")
-            return
-        }
-
-        let localSignalAccount = SignalAccount(recipientId: localUID)
-        localSignalAccount.contact = Contact()
-        let syncContactsMessage = OWSSyncContactsMessage(signalAccounts: [localSignalAccount],
-                                                        identityManager: self.identityManager,
-                                                        profileManager: self.profileManager)
-
-        var dataSource: DataSource? = nil
-        self.editingDatabaseConnection.readWrite { transaction in
-             dataSource = DataSourceValue.dataSource(withSyncMessageData: syncContactsMessage.buildPlainTextAttachmentData(with: transaction))
-        }
-
-        guard let attachmentDataSource = dataSource else {
-            owsFail("\(self.logTag) in \(#function) dataSource was unexpectedly nil")
-            return
-        }
-
-        self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,
-            contentType: OWSMimeTypeApplicationOctetStream,
-            in: syncContactsMessage,
-            success: {
-                Logger.info("\(self.TAG) Successfully synced profile key")
-            },
-            failure: { error in
-                Logger.error("\(self.TAG) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
-                after(interval: retryDelay).then {
-                    self.run(retryDelay: retryDelay * 2)
-                }.retainUntilComplete()
-            })
+        Logger.debug("MultiDeviceProfileKeyUpdateJob called.  This shouldn't be required in Forsta environment.")
+//        guard let localUID = TSAccountManager.localUID() else {
+//            owsFail("\(self.TAG) localUID was unexpectedly nil")
+//            return
+//        }
+//
+//        let localSignalAccount = SignalAccount(recipientId: localUID)
+//        localSignalAccount.contact = Contact()
+//        let syncContactsMessage = OWSSyncContactsMessage(signalAccounts: [localSignalAccount],
+//                                                        identityManager: self.identityManager,
+//                                                        profileManager: self.profileManager)
+//
+//        var dataSource: DataSource? = nil
+//        self.editingDatabaseConnection.readWrite { transaction in
+//             dataSource = DataSourceValue.dataSource(withSyncMessageData: syncContactsMessage.buildPlainTextAttachmentData(with: transaction))
+//        }
+//
+//        guard let attachmentDataSource = dataSource else {
+//            owsFail("\(self.logTag) in \(#function) dataSource was unexpectedly nil")
+//            return
+//        }
+//
+//        self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,
+//            contentType: OWSMimeTypeApplicationOctetStream,
+//            in: syncContactsMessage,
+//            success: {
+//                Logger.info("\(self.TAG) Successfully synced profile key")
+//            },
+//            failure: { error in
+//                Logger.error("\(self.TAG) in \(#function) failed with error: \(error) retrying in \(retryDelay)s.")
+//                after(interval: retryDelay).then {
+//                    self.run(retryDelay: retryDelay * 2)
+//                }.retainUntilComplete()
+//            })
     }
 }
