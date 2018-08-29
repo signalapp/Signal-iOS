@@ -1065,49 +1065,34 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
 {
-    if (indexPath.section != HomeViewControllerSectionConversations) {
-        OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-
-        TSGroupThread *gThread = (TSGroupThread *)thread;
-        if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localUID]]) {
-            UIAlertController *removingFromGroup = [UIAlertController
-                alertControllerWithTitle:[NSString
-                                             stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
-                                 message:nil
-                          preferredStyle:UIAlertControllerStyleAlert];
-            [self presentViewController:removingFromGroup animated:YES completion:nil];
-
-            TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                   groupMetaMessage:TSGroupMessageQuit
-                                                                   expiresInSeconds:0];
-            [self.messageSender enqueueMessage:message
-                success:^{
-                    [self dismissViewControllerAnimated:YES
-                                             completion:^{
-                                                 [self deleteThread:thread];
-                                             }];
-                }
-                failure:^(NSError *error) {
-                    [self dismissViewControllerAnimated:YES
-                                             completion:^{
-                                                 [OWSAlerts
-                                                     showAlertWithTitle:
-                                                         NSLocalizedString(@"GROUP_REMOVING_FAILED",
-                                                             @"Title of alert indicating that group deletion failed.")
-                                                                message:error.localizedRecoverySuggestion];
-                                             }];
-                }];
-        } else {
-            [self deleteThread:thread];
-        }
-    } else {
-        [self deleteThread:thread];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __block TSThread *thread = [self threadForIndexPath:indexPath];
+        
+        NSString *alertMessage = [NSString stringWithFormat:NSLocalizedString(@"DELETE_THREAD_VALIDATION_MESSAGE", nil), thread.displayName];
+        UIAlertController *validationAlert = [UIAlertController alertControllerWithTitle:nil
+                                                                                 message:alertMessage
+                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
+        [validationAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"YES", nil)
+                                                            style:UIAlertActionStyleDestructive
+                                                          handler:^(UIAlertAction * _Nonnull action) {
+                                                              OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
+                                                                                                                                   controlType:FLControlMessageThreadUpdateKey];
+                                                              [self.messageSender enqueueMessage:message
+                                                                                          success:^{
+                                                                                              [self deleteThread:thread];
+                                                                                          }
+                                                                                          failure:^(NSError * _Nonnull error) {
+                                                                                              DDLogDebug(@"Failed to delete thread.  Error: %@", error.localizedDescription);
+                                                                                              [self deleteThread:thread];
+                                                                                          }];
+                                                          }]];
+        [validationAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"NO", nil)
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction * _Nonnull action) {
+                                                              //
+                                                          }]];
+        [self.navigationController presentViewController:validationAlert animated:YES completion:nil];
+    });
 }
 
 - (void)deleteThread:(TSThread *)thread

@@ -56,10 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [ExperienceUpgrade removeAllObjectsInCollection];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
-                                     actionBlock:^{
-                                         [DebugUIMisc clearHasDismissedOffers];
-                                     }]];
+//    [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
+//                                     actionBlock:^{
+//                                         [DebugUIMisc clearHasDismissedOffers];
+//                                     }]];
 
     [items addObject:[OWSTableItem itemWithTitle:@"Delete disappearing messages config"
                                      actionBlock:^{
@@ -187,26 +187,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            NSMutableArray<TSThread *> *contactThreads = [NSMutableArray new];
-            [transaction
-                enumerateKeysAndObjectsInCollection:[TSThread collection]
-                                         usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
-                                             TSThread *thread = object;
-                                             if (thread.isGroupThread) {
-                                                 return;
-                                             }
-                                             TSThread *contactThread = object;
-                                             [contactThreads addObject:contactThread];
-                                         }];
-            for (TSThread *contactThread in contactThreads) {
-                if (contactThread.hasDismissedOffers) {
-                    contactThread.hasDismissedOffers = NO;
-                    [contactThread saveWithTransaction:transaction];
-                }
-            }
-        }];
+//    [OWSPrimaryStorage.dbReadWriteConnection
+//        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+//            NSMutableArray<TSThread *> *contactThreads = [NSMutableArray new];
+//            [transaction
+//                enumerateKeysAndObjectsInCollection:[TSThread collection]
+//                                         usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
+//                                             TSThread *thread = object;
+//                                             if (thread.isGroupThread) {
+//                                                 return;
+//                                             }
+//                                             TSThread *contactThread = object;
+//                                             [contactThreads addObject:contactThread];
+//                                         }];
+//            for (TSThread *contactThread in contactThreads) {
+//                if (contactThread.hasDismissedOffers) {
+//                    contactThread.hasDismissedOffers = NO;
+//                    [contactThread saveWithTransaction:transaction];
+//                }
+//            }
+//        }];
 }
 
 + (void)sendEncryptedDatabase:(TSThread *)thread
