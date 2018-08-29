@@ -154,12 +154,15 @@ static NSTimeInterval launchStartedAt;
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [AppSetup setupEnvironmentWithMigrationCompletion:^{
-        OWSAssertIsOnMainThread();
+    [AppSetup
+        setupEnvironmentWithAppSpecificSingletonBlock:^{
+            [SignalApp.sharedApp createSingletons];
+        }
+        migrationCompletion:^{
+            OWSAssertIsOnMainThread();
 
-        [self versionMigrationsDidComplete];
-    }];
-    [SignalApp.sharedApp createSingletons];
+            [self versionMigrationsDidComplete];
+        }];
 
     [UIUtil setupSignalAppearence];
 

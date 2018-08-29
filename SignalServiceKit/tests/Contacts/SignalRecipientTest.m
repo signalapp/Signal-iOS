@@ -28,8 +28,6 @@
 {
     [super setUp];
 
-    [MockSSKEnvironment activate];
-
     self.localNumber = @"+13231231234";
     [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber];
 }

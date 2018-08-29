@@ -100,6 +100,14 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     return self;
 }
 
+- (void)dealloc
+{
+    // Surface memory leaks by logging the deallocation of this class.
+    OWSLogVerbose(@"Dealloc: %@", self.class);
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
     // Notify observers we're about to update the database connection

@@ -16,8 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AppSetup
 
-+ (void)setupEnvironmentWithMigrationCompletion:(dispatch_block_t)migrationCompletion
++ (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
+                                  migrationCompletion:(dispatch_block_t)migrationCompletion
 {
+    OWSAssert(appSpecificSingletonBlock);
     OWSAssert(migrationCompletion);
 
     __block OWSBackgroundTask *_Nullable backgroundTask =
@@ -55,6 +57,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    primaryStorage:primaryStorage
                                                                   contactsUpdater:contactsUpdater
                                                                    networkManager:networkManager]];
+
+        appSpecificSingletonBlock();
+
+        OWSAssert(SSKEnvironment.shared.isComplete);
 
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];

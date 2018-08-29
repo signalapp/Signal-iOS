@@ -23,8 +23,6 @@
 - (void)setUp
 {
     [super setUp];
-
-    [MockSSKEnvironment activate];
 }
 
 - (void)tearDown

@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageSender;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
+@class YapDatabaseConnection;
 
 @protocol ContactsManagerProtocol;
 @protocol NotificationsProtocol;
@@ -43,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;
 @property (atomic, nullable) id<NotificationsProtocol> notificationsManager;
+
+@property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
+
+- (BOOL)isComplete;
 
 @end
 

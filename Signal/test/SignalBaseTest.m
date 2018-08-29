@@ -4,6 +4,7 @@
 
 #import "SignalBaseTest.h"
 #import "Environment.h"
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TestAppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    NSLog(@"[%@] setUp", self.class);
+    NSLog(@"%@ setUp", self.logTag);
 
     [super setUp];
 
@@ -28,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
+    NSLog(@"%@ tearDown", self.logTag);
+
+    [SSKEnvironment.shared.primaryStorage closeStorageForTests];
+
     ClearCurrentAppContextForTests();
     [Environment clearSharedForTests];
     [SSKEnvironment clearSharedForTests];

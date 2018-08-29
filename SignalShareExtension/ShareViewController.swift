@@ -88,7 +88,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(migrationCompletion: { [weak self] in
+        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
+            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
+            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+            },
+            migrationCompletion: { [weak self] in
                                     AssertIsOnMainThread()
 
                                     guard let strongSelf = self else { return }
@@ -97,8 +101,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                     // upgrade process may depend on Environment.
                                     strongSelf.versionMigrationsDidComplete()
         })
-        SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
-        SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
 
         // We don't need to use "screen protection" in the SAE.
 

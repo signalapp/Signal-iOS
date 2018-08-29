@@ -3,6 +3,7 @@
 //
 
 #import "SSKBaseTest.h"
+#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TestAppContext.h"
 
@@ -12,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
+    NSLog(@"%@ setUp", self.logTag);
+
     [super setUp];
 
     ClearCurrentAppContextForTests();
@@ -22,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
+    NSLog(@"%@ tearDown", self.logTag);
+
+    [SSKEnvironment.shared.primaryStorage closeStorageForTests];
+
     ClearCurrentAppContextForTests();
     [SSKEnvironment clearSharedForTests];
 

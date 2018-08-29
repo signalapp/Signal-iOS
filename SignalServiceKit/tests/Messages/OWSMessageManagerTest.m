@@ -61,8 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp
 {
     [super setUp];
-
-    [MockSSKEnvironment activate];
 }
 
 - (void)testIncomingSyncContactMessage
@@ -82,6 +80,10 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequestBuilder new];
     [requestBuilder setType:SSKProtoSyncMessageRequestTypeGroups];
     [messageBuilder setRequest:[requestBuilder buildIgnoringErrors]];
+    [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
+    [envelopeBuilder setSource:@"+13213214321"];
+    [envelopeBuilder setSourceDevice:1];
+    [envelopeBuilder setTimestamp:12345];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
                             withSyncMessage:[messageBuilder buildIgnoringErrors]];

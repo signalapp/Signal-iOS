@@ -4,6 +4,7 @@
 
 #import "SSKEnvironment.h"
 #import "AppContext.h"
+#import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +14,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 @synthesize callMessageHandler = _callMessageHandler;
 @synthesize notificationsManager = _notificationsManager;
+@synthesize objectReadWriteConnection = _objectReadWriteConnection;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                           messageSender:(OWSMessageSender *)messageSender
@@ -103,6 +105,20 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
+- (BOOL)isComplete
+{
+    return (self.callMessageHandler != nil && self.notificationsManager != nil);
+}
+
+- (YapDatabaseConnection *)objectReadWriteConnection
+{
+    @synchronized(self) {
+        if (!_objectReadWriteConnection) {
+            _objectReadWriteConnection = self.primaryStorage.newDatabaseConnection;
+        }
+        return _objectReadWriteConnection;
+    }
+}
 @end
 
 NS_ASSUME_NONNULL_END

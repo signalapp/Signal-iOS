@@ -662,6 +662,13 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
 }
 
+- (void)closeStorageForTests
+{
+    [self resetStorage];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)resetStorage
 {
     self.database = nil;

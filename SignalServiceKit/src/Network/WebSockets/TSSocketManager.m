@@ -986,6 +986,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     OWSAssertIsOnMainThread();
 
+#ifdef DEBUG
+    if (CurrentAppContext().isRunningTests) {
+        OWSLogWarn(@"Suppressing socket in tests.");
+        return;
+    }
+#endif
+
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{

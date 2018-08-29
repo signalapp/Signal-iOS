@@ -48,8 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setUp];
 
-    [MockSSKEnvironment activate];
-
     self.dbConnection = self.primaryStorage.newDatabaseConnection;
 
     [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.primaryStorage];
