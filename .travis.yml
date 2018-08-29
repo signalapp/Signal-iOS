@@ -1,16 +1,13 @@
 language: objective-c
-cache: cocoapods # pod install somtimes takes >20 minutes, so lets cache this
-
-osx_image: xcode8.3
-
+cache: cocoapods
+osx_image: xcode9.4
 env:
-  -EARLY_START_SIMULATOR=1 # early starting simulator reduces false negatives due to test timeouts
-
+  matrix:
+  - "-EARLY_START_SIMULATOR=1"
+  global:
+  - secure: E9VfXnnCpRpCuZiMdVhObA8TFNSr5Dufofv/v9uW0SxxvHFrQWyx+vxfEGTaHMYX0GRn4vE5lVGJ6vn43YQKNnCq2uzEbEtRzyctJK1F1zYZwqs8POVetzbCv29YB+vrfhKK5hd0IWy9NLK0jqT3KtRH/wUgPwe3gCc4wD1UrfL+HJIgZjY6gR8ltC3mU37W/CXcwQ/xBC8PAyZZdPnx0720nYXjN9qtAthrJsfOGn+4CQTFZcqgVaWW/qUx+i6kPBi+qBG3pqfrqSC3iIdr0fA39ToM2EbKfDEmbx8i0fG27iKsDVxY4oMOByMGFNSgb2YFZQpo6gM6ELxZez/o8mwsM1F9L4gwXFr7EQqmMQolQToAJ/chOXeJMeyENfV6Si1GALX0+89RnwGQmCho8+fUdyvk0+UE9PkS0VRiDQ70rb9UBmEevfXkdm100waWrLbY3MCZGES+2wo15kJY50KpzBPOIjvvK6QqnqS3Ad6iD7HpGt5YUgetlwfubkBvzL6rd5c7TD4xxDSEuSftYydiww+Nf9TjFgkVh90/8Fje6ogyVDl8zwyjkWGC7CwiUudFJZ+F6aNsTfRK5WuhYYftXBx28XqarNdrxIKbldHYt2x1l8wj+aASImeL5/hLEQVfz2gA4GCkc4T6blF7D0Jw+mRi+TZpVgjKfnLVwpo=
+  - secure: sjlz25ra0ilYlMk+iNmGrWBfuaEkpVuIAD5JwxrZ0Q77b6Trwax9EFUhlO/M3qUVXEUw7fJwjCJBOedhLeD02Szcd6og7XwG5JDTbWhkDv8BjOrqvL5wGjKupXraqzWQUU8md915OLNmsCCVv/3LSNTz9J70iPNyTrEQHsfA6pi4ihWFsKCzdgXqygDKBWVJTmM/njqm0mRSEAm5l2tq7/pXcNRfJfcZ+daMwbtmezUzdnoa6h/kRTlQAcxK9X5OHQUG2+F9ALFRFG1DJUzxV+y9w+rnpmi9TSsdCZO+KIROhdZvMRdOkPeTVaYieg1C9H1DNJO8OEfI8uHcLrR7Kk5KqofFA8Uj2hvyWOTS55FbRfN9fbTmGGPTW7oryVp6UTJBCVeO+nbraE0fx9drLPfj5kh1Y/cdG5hrhLTG6GDmsclNNCzOY27omJY7GX6NyH8e8nFhs5+pBssA5RMS2Fpw064zD2WwTEHrjTD2OM2tq5m0vgzh2BCuqJ8GUf94i658kC/pzjbMLsrFkgeRSUiyts5HN/qOKRZc2zqRGC/hGTRbxjuuVUsn/zlxmktqxEXxZZehGeQRHv5QhnBxbzTwl9iQ7c1o0/HaWmkcPvIg4vjuOhzw31MQFD7c7tg9syzxkzHxW8ytYGVYeEYOPd4cN9BBbj8pPSuOWj6XKjQ=
 before_install:
-    - brew update # we may not be running the latest version so always update
-    - brew outdated xctool || brew upgrade xctool # only upgrade if outdated (saves 2 minutes)
-    - bundle
-    - bundle exec pod repo update --silent # log output is too long without --silent
-
+- brew update
+- brew outdated xctool || brew upgrade xctool
 script: make ci
-
