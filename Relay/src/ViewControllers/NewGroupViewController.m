@@ -432,83 +432,84 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 {
     OWSAssertIsOnMainThread();
 
-    TSGroupModel *model = [self makeGroup];
-
-    __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-        }];
-    OWSAssert(thread);
-    
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-
-    void (^successHandler)(void) = ^{
-        DDLogError(@"Group creation successful.");
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES
-                                     completion:^{
-                                         // Pop to new group thread.
-                                         [SignalApp.sharedApp presentConversationForThread:thread];
-                                     }];
-
-        });
-    };
-
-    void (^failureHandler)(NSError *error) = ^(NSError *error) {
-        DDLogError(@"Group creation failed: %@", error);
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES
-                                     completion:^{
-                                         // Add an error message to the new group indicating
-                                         // that group creation didn't succeed.
-                                         [[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                           inThread:thread
-                                                                  failedMessageType:TSErrorMessageGroupCreationFailed]
-                                             save];
-
-                                         [SignalApp.sharedApp presentConversationForThread:thread];
-                                     }];
-        });
-    };
-
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                             groupMetaMessage:TSGroupMessageNew
-                                                                             expiresInSeconds:0];
-
-                      [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
-
-                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                          if (model.groupImage) {
-                              NSData *data = UIImagePNGRepresentation(model.groupImage);
-                              DataSource *_Nullable dataSource =
-                                  [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-                              [self.messageSender enqueueTemporaryAttachment:dataSource
-                                                                 contentType:OWSMimeTypeImagePng
-                                                                   inMessage:message
-                                                                     success:successHandler
-                                                                     failure:failureHandler];
-                          } else {
-                              [self.messageSender enqueueMessage:message success:successHandler failure:failureHandler];
-                          }
-                      });
-                  }];
+//    TSGroupModel *model = [self makeGroup];
+//
+//    __block TSGroupThread *thread;
+//    [OWSPrimaryStorage.dbReadWriteConnection
+//        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+//            thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+//        }];
+//    OWSAssert(thread);
+//
+//    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+//
+//    void (^successHandler)(void) = ^{
+//        DDLogError(@"Group creation successful.");
+//
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self dismissViewControllerAnimated:YES
+//                                     completion:^{
+//                                         // Pop to new group thread.
+//                                         [SignalApp.sharedApp presentConversationForThread:thread];
+//                                     }];
+//
+//        });
+//    };
+//
+//    void (^failureHandler)(NSError *error) = ^(NSError *error) {
+//        DDLogError(@"Group creation failed: %@", error);
+//
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self dismissViewControllerAnimated:YES
+//                                     completion:^{
+//                                         // Add an error message to the new group indicating
+//                                         // that group creation didn't succeed.
+//                                         [[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+//                                                                           inThread:thread
+//                                                                  failedMessageType:TSErrorMessageGroupCreationFailed]
+//                                             save];
+//
+//                                         [SignalApp.sharedApp presentConversationForThread:thread];
+//                                     }];
+//        });
+//    };
+//
+//    [ModalActivityIndicatorViewController
+//        presentFromViewController:self
+//                        canCancel:NO
+//                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+//                      TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
+//                                                                             groupMetaMessage:TSGroupMessageNew
+//                                                                             expiresInSeconds:0];
+//
+//                      [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
+//
+//                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//                          if (model.groupImage) {
+//                              NSData *data = UIImagePNGRepresentation(model.groupImage);
+//                              DataSource *_Nullable dataSource =
+//                                  [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+//                              [self.messageSender enqueueTemporaryAttachment:dataSource
+//                                                                 contentType:OWSMimeTypeImagePng
+//                                                                   inMessage:message
+//                                                                     success:successHandler
+//                                                                     failure:failureHandler];
+//                          } else {
+//                              [self.messageSender enqueueMessage:message success:successHandler failure:failureHandler];
+//                          }
+//                      });
+//                  }];
 }
 
-- (TSGroupModel *)makeGroup
-{
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
-    [recipientIds addObject:[self.contactsViewHelper localUID]];
-    NSData *groupId = [SecurityUtils generateRandomBytes:16];
-    return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
-}
+
+//- (TSGroupModel *)makeGroup
+//{
+//    NSString *groupName = [self.groupNameTextField.text ows_stripped];
+//    NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
+//    [recipientIds addObject:[self.contactsViewHelper localUID]];
+//    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+//    return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
+//}
 
 #pragma mark - Group Avatar
 

@@ -576,8 +576,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *groupSection = [OWSTableSection new];
     groupSection.headerTitle = NSLocalizedString(
         @"COMPOSE_MESSAGE_GROUP_SECTION_TITLE", @"Table section header for group listing when composing a new message");
-    NSArray<TSGroupThread *> *filteredGroupThreads = [self filteredGroupThreads];
-    for (TSGroupThread *thread in filteredGroupThreads) {
+    NSArray<TSThread *> *filteredGroupThreads = [self filteredGroupThreads];
+    for (TSThread *thread in filteredGroupThreads) {
         hasSearchResults = YES;
 
         [groupSection addItem:[OWSTableItem
@@ -649,15 +649,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [helper signalAccountsMatchingSearchString:searchString];
 }
 
-- (NSArray<TSGroupThread *> *)filteredGroupThreads
+- (NSArray<TSThread *> *)filteredGroupThreads
 {
-    NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
-    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        if (![obj isKindOfClass:[TSGroupThread class]]) {
+    NSMutableArray<TSThread *> *groupThreads = [NSMutableArray new];
+    [TSThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
+        if (![obj isKindOfClass:[TSThread class]]) {
             // group and contact threads are in the same collection.
             return;
         }
-        TSGroupThread *groupThread = (TSGroupThread *)obj;
+        TSThread *groupThread = (TSThread *)obj;
         [groupThreads addObject:groupThread];
     }];
 
