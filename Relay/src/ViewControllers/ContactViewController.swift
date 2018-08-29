@@ -536,27 +536,28 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        if let e164 = phoneNumber.tryToConvertToE164() {
-            if contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager).contains(e164) {
-                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
-                                                                             comment: "Label for 'send message' button in contact view."),
-                                                    style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .compose)
-                })
-                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
-                                                                             comment: "Label for 'audio call' button in contact view."),
-                                                    style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .audioCall)
-                })
-                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
-                                                                             comment: "Label for 'video call' button in contact view."),
-                                                    style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .videoCall)
-                })
-            } else {
-                // TODO: We could offer callPhoneNumberWithSystemCall.
-            }
-        }
+        actionSheet.message = "Currently unimplemented."
+//        if let e164 = phoneNumber.tryToConvertToE164() {
+//            if contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager).contains(e164) {
+//                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
+//                                                                             comment: "Label for 'send message' button in contact view."),
+//                                                    style: .default) { _ in
+//                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .compose)
+//                })
+//                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
+//                                                                             comment: "Label for 'audio call' button in contact view."),
+//                                                    style: .default) { _ in
+//                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .audioCall)
+//                })
+//                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
+//                                                                             comment: "Label for 'video call' button in contact view."),
+//                                                    style: .default) { _ in
+//                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .videoCall)
+//                })
+//            } else {
+//                // TODO: We could offer callPhoneNumberWithSystemCall.
+//            }
+//        }
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
                                                                      comment: "Short name for edit menu item to copy contents of media message."),
                                             style: .default) { _ in
