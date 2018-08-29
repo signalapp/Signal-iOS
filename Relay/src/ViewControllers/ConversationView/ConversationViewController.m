@@ -358,7 +358,7 @@ typedef enum : NSUInteger {
     OWSAssert(self.thread);
 
 //    return self.thread.isGroupThread;
-    
+    return !self.thread.isOneOnOne;
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
@@ -505,12 +505,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)userLeftGroup
 {
-    if (![_thread isKindOfClass:[TSGroupThread class]]) {
-        return NO;
-    }
-
-    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    return ![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localUID]];
+    return ![self.thread.participantIds containsObject:[TSAccountManager localUID]];
 }
 
 - (void)hideInputIfNeeded
@@ -1054,44 +1049,44 @@ typedef enum : NSUInteger {
 
 - (void)showUnblockContactUI:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
-
-    self.userHasScrolled = NO;
-
-    // To avoid "noisy" animations (hiding the keyboard before showing
-    // the action sheet, re-showing it after), hide the keyboard before
-    // showing the "unblock" action sheet.
-    //
-    // Unblocking is a rare interaction, so it's okay to leave the keyboard
-    // hidden.
-    [self dismissKeyBoard];
-
-    NSString *contactIdentifier = ((TSThread *)self.thread).contactIdentifier;
-    [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                     fromViewController:self
-                                        blockingManager:_blockingManager
-                                        contactsManager:_contactsManager
-                                        completionBlock:completionBlock];
+    DDLogDebug(@"Unimplemented method called: showUnblockContactUI");
+//    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
+//
+//    self.userHasScrolled = NO;
+//
+//    // To avoid "noisy" animations (hiding the keyboard before showing
+//    // the action sheet, re-showing it after), hide the keyboard before
+//    // showing the "unblock" action sheet.
+//    //
+//    // Unblocking is a rare interaction, so it's okay to leave the keyboard
+//    // hidden.
+//    [self dismissKeyBoard];
+//
+//    NSString *contactIdentifier = ((TSThread *)self.thread).contactIdentifier;
+//    [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
+//                                     fromViewController:self
+//                                        blockingManager:_blockingManager
+//                                        contactsManager:_contactsManager
+//                                        completionBlock:completionBlock];
 }
 
 - (BOOL)isBlockedContactConversation
 {
-    if (![self.thread isKindOfClass:[TSThread class]]) {
-        return NO;
-    }
-    NSString *contactIdentifier = ((TSThread *)self.thread).contactIdentifier;
-    return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
+    return NO;
+//    if (![self.thread isKindOfClass:[TSThread class]]) {
+//        return NO;
+//    }
+//    NSString *contactIdentifier = ((TSThread *)self.thread).contactIdentifier;
+//    return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
 }
 
 - (int)blockedGroupMemberCount
 {
     OWSAssert(self.isGroupConversation);
-    OWSAssert([self.thread isKindOfClass:[TSGroupThread class]]);
 
-    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     int blockedMemberCount = 0;
     NSArray<NSString *> *blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
-    for (NSString *contactIdentifier in groupThread.groupModel.groupMemberIds) {
+    for (NSString *contactIdentifier in self.thread.participantIds) {
         if ([blockedPhoneNumbers containsObject:contactIdentifier]) {
             blockedMemberCount++;
         }
@@ -1520,13 +1515,12 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier isVideo:isVideo];
+    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.otherParticipantId isVideo:isVideo];
 }
 
 - (BOOL)canCall
 {
-    return !(self.isGroupConversation ||
-        [((TSThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localUID]]);
+    return self.thread.isOneOnOne;
 }
 
 #pragma mark - Dynamic Text
@@ -1836,7 +1830,6 @@ typedef enum : NSUInteger {
         DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
         return;
         
-        }
     }
     
     NSString *signalId = signalIdParam;
@@ -1847,7 +1840,7 @@ typedef enum : NSUInteger {
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
 {
     NSString *alertMessage = [NSString
-        stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.name];
+        stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.title];
 
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
                                                                              message:alertMessage
@@ -1864,10 +1857,9 @@ typedef enum : NSUInteger {
                         DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
                         return;
                     }
-                    TSThread *contactThread = (TSThread *)self.thread;
-                    [OWSSessionResetJob runWithContactThread:contactThread
-                                               messageSender:self.messageSender
-                                              primaryStorage:self.primaryStorage];
+                    [OWSSessionResetJob runWithThread:self.thread
+                                        messageSender:self.messageSender
+                                       primaryStorage:self.primaryStorage];
                 }];
     [alertController addAction:resetSessionAction];
 
@@ -1925,8 +1917,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    TSThread *contactThread = (TSThread *)self.thread;
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:contactThread.contactIdentifier];
+    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:self.thread.otherParticipantId];
 
     UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:[CallStrings callBackAlertTitle]
@@ -2089,21 +2080,21 @@ typedef enum : NSUInteger {
 
     [actionSheetController addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *blockAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(
-                            @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
-                  style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *action) {
-                    DDLogInfo(@"%@ Blocking an unknown user.", self.logTag);
-                    [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
-                    // Delete the offers.
-                    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        contactThread.hasDismissedOffers = YES;
-                        [contactThread saveWithTransaction:transaction];
-                        [interaction removeWithTransaction:transaction];
-                    }];
-                }];
-    [actionSheetController addAction:blockAction];
+//    UIAlertAction *blockAction = [UIAlertAction
+//        actionWithTitle:NSLocalizedString(
+//                            @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
+//                  style:UIAlertActionStyleDestructive
+//                handler:^(UIAlertAction *action) {
+//                    DDLogInfo(@"%@ Blocking an unknown user.", self.logTag);
+//                    [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
+//                    // Delete the offers.
+//                    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//                        contactThread.hasDismissedOffers = YES;
+//                        [contactThread saveWithTransaction:transaction];
+//                        [interaction removeWithTransaction:transaction];
+//                    }];
+//                }];
+//    [actionSheetController addAction:blockAction];
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
@@ -2111,44 +2102,44 @@ typedef enum : NSUInteger {
 
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
 {
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.logTag);
-        return;
-    }
-    if (![self.thread isKindOfClass:[TSThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
-        return;
-    }
-    TSThread *contactThread = (TSThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
-
-    // Delete the offers.
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        contactThread.hasDismissedOffers = YES;
-        [contactThread saveWithTransaction:transaction];
-        [interaction removeWithTransaction:transaction];
-    }];
+//    if (!self.contactsManager.supportsContactEditing) {
+//        OWSFail(@"%@ Contact editing not supported", self.logTag);
+//        return;
+//    }
+//    if (![self.thread isKindOfClass:[TSThread class]]) {
+//        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+//        return;
+//    }
+//    TSThread *contactThread = (TSThread *)self.thread;
+//    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+//                                                     fromViewController:self
+//                                                        editImmediately:YES];
+//
+//    // Delete the offers.
+//    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//        contactThread.hasDismissedOffers = YES;
+//        [contactThread saveWithTransaction:transaction];
+//        [interaction removeWithTransaction:transaction];
+//    }];
 }
 
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
 {
-    // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
-    if (![self.thread isKindOfClass:[TSThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
-        return;
-    }
-    TSThread *contactThread = (TSThread *)self.thread;
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        // Delete the offers.
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            contactThread.hasDismissedOffers = YES;
-            [contactThread saveWithTransaction:transaction];
-            [interaction removeWithTransaction:transaction];
-        }];
-    }];
+//    // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
+//    if (![self.thread isKindOfClass:[TSThread class]]) {
+//        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+//        return;
+//    }
+//    TSThread *contactThread = (TSThread *)self.thread;
+//
+//    [self presentAddThreadToProfileWhitelistWithSuccess:^() {
+//        // Delete the offers.
+//        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+//            contactThread.hasDismissedOffers = YES;
+//            [contactThread saveWithTransaction:transaction];
+//            [interaction removeWithTransaction:transaction];
+//        }];
+//    }];
 }
 
 - (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
@@ -3250,23 +3241,17 @@ typedef enum : NSUInteger {
     
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
-
-    if (self.isGroupConversation) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            TSGroupThread *gThread = (TSGroupThread *)self.thread;
-
-            if (gThread.groupModel) {
-                TSGroupThread *_Nullable updatedThread =
-                    [TSGroupThread threadWithGroupId:gThread.groupModel.groupId transaction:transaction];
-                if (updatedThread) {
-                    self.thread = updatedThread;
-                } else {
-                    OWSFail(@"%@ Could not reload thread.", self.logTag);
-                }
-            }
-        }];
-        [self updateNavigationTitle];
-    }
+    
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        
+        TSThread *_Nullable updatedThread = [TSThread fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+        if (updatedThread) {
+            self.thread = updatedThread;
+        } else {
+            OWSFail(@"%@ Could not reload thread.", self.logTag);
+        }
+    }];
+    [self updateNavigationTitle];
 
     [self updateDisappearingMessagesConfiguration];
 
@@ -4306,17 +4291,9 @@ typedef enum : NSUInteger {
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
     OWSAssertIsOnMainThread();
-    OWSAssert([_thread isKindOfClass:[TSGroupThread class]]);
     OWSAssert(message);
 
-    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    TSGroupModel *groupModel = groupThread.groupModel;
-    [self updateGroupModelTo:groupModel
-           successCompletion:^{
-               DDLogInfo(@"Group updated, removing group creation error.");
-               
-               [message remove];
-           }];
+    // TODO:  Implement control message send.
 }
 
 - (void)conversationColorWasUpdated
@@ -4327,14 +4304,13 @@ typedef enum : NSUInteger {
     self.lastReloadDate = [NSDate new];
 }
 
-- (void)groupWasUpdated:(TSGroupModel *)groupModel
+- (void)groupWasUpdated
 {
-    OWSAssert(groupModel);
-
-    NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
-    [groupMemberIds addObject:[TSAccountManager localUID]];
-    groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
-    [self updateGroupModelTo:groupModel successCompletion:nil];
+    // TODO: Retool if needed after control message handling implemented.
+//    NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
+//    [groupMemberIds addObject:[TSAccountManager localUID]];
+//    groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
+//    [self updateGroupModelTo:groupModel successCompletion:nil];
 }
 
 - (void)popAllConversationSettingsViews
