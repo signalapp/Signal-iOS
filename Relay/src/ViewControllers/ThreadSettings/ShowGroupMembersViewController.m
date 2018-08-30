@@ -14,8 +14,7 @@
 #import <RelayMessaging/UIUtil.h>
 #import <RelayServiceKit/OWSBlockingManager.h>
 #import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSGroupModel.h>
-#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 
 @import ContactsUI;
 
@@ -23,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ShowGroupMembersViewController () <ContactsViewHelperDelegate, ContactEditingDelegate>
 
-@property (nonatomic, readonly) TSGroupThread *thread;
+@property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic, nullable) NSSet<NSString *> *memberRecipientIds;
@@ -82,16 +81,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
-- (void)configWithThread:(TSGroupThread *)thread
+- (void)configWithThread:(TSThread *)thread
 {
 
     _thread = thread;
 
     OWSAssert(self.thread);
-    OWSAssert(self.thread.groupModel);
-    OWSAssert(self.thread.groupModel.groupMemberIds);
-
-    self.memberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
+ 
+    self.memberRecipientIds = [NSSet setWithArray:self.thread.participantIds];
 }
 
 - (void)viewDidLoad
@@ -100,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
-    self.title = _thread.groupModel.groupName;
+    self.title = _thread.displayName;
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 45;

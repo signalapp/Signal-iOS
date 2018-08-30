@@ -509,10 +509,10 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     }
 }
 
-+(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction
++(NSArray<TSThread *> *)threadsContainingParticipant:(NSString *)participantId transaction:transaction
 {
     // FIXME: Not yet implemented
-    NSMutableArray *results = [NSMutableArray new];
+    NSMutableArray<TSThread *> *results = [NSMutableArray<TSThread *> new];
     [transaction enumerateKeysAndObjectsInCollection:[TSThread collection]
                                           usingBlock:^(NSString * _Nonnull key, id  _Nonnull object, BOOL * _Nonnull stop) {
                                               TSThread *thread = (TSThread *)object;
@@ -521,7 +521,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
                                               }
                                           }];
     
-    return [NSArray arrayWithArray:results];
+    return [NSArray<TSThread *> arrayWithArray:results];
 }
 
 -(BOOL)isOneOnOne

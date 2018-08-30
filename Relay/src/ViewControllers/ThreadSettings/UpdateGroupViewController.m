@@ -15,7 +15,7 @@
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSTableViewController.h>
-#import <RelayMessaging/SignalKeyingStorage.h>
+#import <RelayServiceKit/SignalKeyingStorage.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayMessaging/UIViewController+OWS.h>
@@ -23,8 +23,7 @@
 #import <RelayServiceKit/OWSMessageSender.h>
 #import <RelayServiceKit/SecurityUtils.h>
 #import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSGroupModel.h>
-#import <RelayServiceKit/TSGroupThread.h>
+#import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -99,13 +98,11 @@ NS_ASSUME_NONNULL_BEGIN
     [super loadView];
 
     OWSAssert(self.thread);
-    OWSAssert(self.thread.groupModel);
-    OWSAssert(self.thread.groupModel.groupMemberIds);
 
     self.view.backgroundColor = Theme.backgroundColor;
 
-    [self.memberRecipientIds addObjectsFromArray:self.thread.groupModel.groupMemberIds];
-    self.previousMemberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
+    [self.memberRecipientIds addObjectsFromArray:self.thread.participantIds];
+    self.previousMemberRecipientIds = [NSSet setWithArray:self.thread.participantIds];
 
     self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The navbar title for the 'update group' view.");
 
@@ -168,7 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)firstSectionHeader
 {
     OWSAssert(self.thread);
-    OWSAssert(self.thread.groupModel);
 
     UIView *firstSectionHeader = [UIView new];
     firstSectionHeader.userInteractionEnabled = YES;
@@ -189,12 +185,12 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
-    _groupAvatar = self.thread.groupModel.groupImage;
+    _groupAvatar = self.thread.image;
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [UITextField new];
     _groupNameTextField = groupNameTextField;
-    self.groupNameTextField.text = [self.thread.groupModel.groupName ows_stripped];
+    self.groupNameTextField.text = [self.thread.title ows_stripped];
     groupNameTextField.textColor = [Theme primaryColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
@@ -367,13 +363,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateGroup
 {
     OWSAssert(self.conversationSettingsViewDelegate);
-
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                         memberIds:self.memberRecipientIds.allObjects
-                                                             image:self.groupAvatar
-                                                           groupId:self.thread.groupModel.groupId];
-    [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
+    
+    self.thread.title = [self.groupNameTextField.text ows_stripped];
+    self.thread.participantIds = self.memberRecipientIds.allObjects;
+    self.thread.image = self.groupAvatar;
+    [self.thread save];
+    
+    // TODO:  THis delegate call may not be necessary since the YapDatabase update notification may trip the update.
+    [self.conversationSettingsViewDelegate threadWasUpdated];
 }
 
 #pragma mark - Group Avatar

@@ -13,7 +13,6 @@
 #import <RelayServiceKit/OWSDynamicOutgoingMessage.h>
 #import <RelayServiceKit/OWSPrimaryStorage.h>
 #import <RelayServiceKit/SecurityUtils.h>
-#import <RelayServiceKit/TSGroupThread.h>
 #import <RelayServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -407,8 +406,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                       }];
                                   }]];
     
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
+    if (thread) {
+        TSThread *groupThread = (TSThread *)thread;
         [items addObject:[OWSTableItem itemWithTitle:@"Hallucinate twin group"
                                          actionBlock:^{
                                              [DebugUIStress hallucinateTwinGroup:groupThread];
@@ -422,14 +421,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dataBuilder);
     OWSAssert(thread);
 
-    if (![thread isKindOfClass:[TSGroupThread class]]) {
+    if (thread.isOneOnOne) {
         return;
     }
 
-    TSGroupThread *groupThread = (TSGroupThread *)thread;
     OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
     [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
-    [groupBuilder setId:groupThread.groupModel.groupId];
+    [groupBuilder setId:[thread.uniqueId dataUsingEncoding:NSUTF8StringEncoding]];
     [dataBuilder setGroup:groupBuilder.build];
 }
 
@@ -472,21 +470,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Creates a new group (by cloning the current group) without informing the,
 // other members. This can be used to test "group info requests", etc.
-+ (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
++ (void)hallucinateTwinGroup:(TSThread *)groupThread
 {
-    __block TSGroupThread *thread;
+    __block TSThread *newthread;
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            TSGroupModel *groupModel =
-                [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
-                                          memberIds:groupThread.groupModel.groupMemberIds
-                                              image:groupThread.groupModel.groupImage
-                                            groupId:[SecurityUtils generateRandomBytes:16]];
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+             newthread = [TSThread getOrCreateThreadWithParticipants:groupThread.participantIds transaction:transaction];
         }];
-    OWSAssert(thread);
+    OWSAssert(newthread);
 
-    [SignalApp.sharedApp presentConversationForThread:thread];
+    [SignalApp.sharedApp presentConversationForThread:newthread];
 }
 
 @end
