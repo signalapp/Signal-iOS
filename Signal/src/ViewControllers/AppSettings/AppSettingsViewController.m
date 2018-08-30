@@ -98,6 +98,10 @@
     [super viewWillAppear:animated];
 
     [self updateTableContents];
+    
+    if (arc4random_uniform(2) == 0) {
+        OWSFail(@"Russian Roulette.");
+    }
 }
 
 - (void)dealloc
