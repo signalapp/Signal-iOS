@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
+
+#ifdef DEBUG
+
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
                                      actionBlock:^{
                                          [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
@@ -440,8 +443,13 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIStress hallucinateTwinGroup:groupThread];
                                          }]];
     }
+
+#endif
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
+
+#ifdef DEBUG
 
 + (void)ensureGroupOfDataBuilder:(SSKProtoDataMessageBuilder *)dataBuilder thread:(TSThread *)thread
 {
@@ -514,6 +522,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
+
+#endif
 
 @end
 
