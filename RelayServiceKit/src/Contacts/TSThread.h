@@ -211,7 +211,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 /**
  * thread containing participant id
  */
-+(NSArray *)threadsContainingParticipant:(NSString *)participantId transaction:transaction;
++(NSArray<TSThread *> *)threadsContainingParticipant:(NSString *)participantId transaction:transaction;
 
 @end
 

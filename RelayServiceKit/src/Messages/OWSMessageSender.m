@@ -1397,12 +1397,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 //    } else if (message.groupMetaMessage == TSGroupMessageQuit) {
 //        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
 //                                         inThread:thread
-//                                      messageType:TSInfoMessageTypeGroupQuit
+//                                      messageType:TSInfoMessageTypeConversationQuit
 //                                    customMessage:message.customMessage] save];
 //    } else {
 //        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
 //                                         inThread:thread
-//                                      messageType:TSInfoMessageTypeGroupUpdate
+//                                      messageType:TSInfoMessageTypeConversationUpdate
 //                                    customMessage:message.customMessage] save];
 //    }
 }

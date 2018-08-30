@@ -235,7 +235,7 @@
 
                    NSString *alertBodyString = @"";
 
-                   NSString *authorName = [thread name];
+                   NSString *authorName = [thread title];
                    switch (self.notificationPreviewType) {
                        case NotificationNamePreview:
                        case NotificationNameNoPreview:
@@ -320,7 +320,7 @@
         BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
         NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
-        NSString *groupName = [thread.name ows_stripped];
+        NSString *groupName = [thread.title ows_stripped];
         if (groupName.length < 1) {
             groupName = [MessageStrings newGroupDefaultTitle];
         }
@@ -356,10 +356,10 @@
                     notification.category = Signal_Full_New_Message_Category;
                     notification.userInfo =
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
-                    if ([name isEqualToString:thread.displayName]) {
-                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", name, messageDescription];
+                    if ([senderName isEqualToString:thread.displayName]) {
+                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, message.description];
                     } else {
-                        notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), name, thread.displayName, messageDescription];
+                        notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), senderName, thread.displayName, message.description];
                     }
 
                     break;
@@ -367,7 +367,7 @@
                 case NotificationNameNoPreview: {
                     notification.userInfo = @{Signal_Thread_UserInfo_Key : thread.uniqueId};
                     notification.alertBody =
-                    [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), name];
+                    [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"APN_MESSAGE_FROM", nil), senderName];
                     break;
                 }
                 case NotificationNoNameNoPreview:

@@ -37,8 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Convenience Methods
 
-//- (void)presentConversationForRecipientId:(NSString *)recipientId;
-//- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action;
+- (void)presentConversationForRecipientId:(NSString *)recipientId;
+- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action;
 
 - (void)presentConversationForThreadId:(NSString *)threadId;
 - (void)presentConversationForThreadId:(NSString *)threadId action:(ConversationViewAction)action;

@@ -958,7 +958,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 //                [[[TSInfoMessage alloc] initWithTimestamp:now
 //                                                 inThread:newGroupThread
-//                                              messageType:TSInfoMessageTypeGroupUpdate
+//                                              messageType:TSInfoMessageTypeConversationUpdate
 //                                            customMessage:updateGroupInfo] saveWithTransaction:transaction];
 //
 //                if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
@@ -987,7 +987,7 @@ NS_ASSUME_NONNULL_BEGIN
 //                    [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
 //                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
 //                                                 inThread:oldGroupThread
-//                                              messageType:TSInfoMessageTypeGroupUpdate
+//                                              messageType:TSInfoMessageTypeConversationUpdate
 //                                            customMessage:updateGroupInfo] saveWithTransaction:transaction];
 //                return nil;
 //            }

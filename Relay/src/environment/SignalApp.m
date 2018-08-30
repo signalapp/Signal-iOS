@@ -151,22 +151,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Convenience Methods
 
-//- (void)presentConversationForRecipientId:(NSString *)recipientId
-//{
-//    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone];
-//}
+- (void)presentConversationForRecipientId:(NSString *)recipientId
+{
+    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone];
+}
 
-//- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action
-//{
-//    DispatchMainThreadSafe(^{
-//        __block TSThread *thread = nil;
-//        [OWSPrimaryStorage.dbReadWriteConnection
-//            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-//                thread = [TSThread getOrCreateThreadWithId:recipientId transaction:transaction];
-//            }];
-//        [self presentConversationForThread:thread action:action];
-//    });
-//}
+- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action
+{
+    DispatchMainThreadSafe(^{
+        __block TSThread *thread = nil;
+        [OWSPrimaryStorage.dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                
+                NSArray<TSThread *> *possibleThreads = [TSThread threadsContainingParticipant:recipientId transaction:transaction];
+                
+                for (TSThread *athread in possibleThreads) {
+                    if ([recipientId isEqualToString:athread.otherParticipantId]) {
+                        thread = athread;
+                        break;
+                    }
+                }
+                
+                if (thread == nil) {
+                    thread = [TSThread getOrCreateThreadWithParticipants:@[recipientId, TSAccountManager.localUID]
+                                                             transaction:transaction];
+                }
+            }];
+        [self presentConversationForThread:thread action:action];
+    });
+}
 
 - (void)presentConversationForThreadId:(NSString *)threadId
 {

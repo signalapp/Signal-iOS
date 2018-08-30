@@ -25,7 +25,6 @@
 #import <RelayMessaging/AppSetup.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSContactsManager.h>
-//#import <RelayMessaging/OWSContactsSyncing.h>
 #import <RelayMessaging/OWSMath.h>
 #import <RelayMessaging/OWSNavigationController.h>
 #import <RelayMessaging/OWSPreferences.h>

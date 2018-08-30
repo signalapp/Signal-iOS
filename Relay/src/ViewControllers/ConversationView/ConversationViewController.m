@@ -4304,7 +4304,7 @@ typedef enum : NSUInteger {
     self.lastReloadDate = [NSDate new];
 }
 
-- (void)groupWasUpdated
+- (void)threadWasUpdated
 {
     // TODO: Retool if needed after control message handling implemented.
 //    NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];

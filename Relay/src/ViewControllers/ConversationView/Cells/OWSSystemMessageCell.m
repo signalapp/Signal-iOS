@@ -265,15 +265,15 @@ typedef void (^SystemMessageActionBlock)(void);
                 return nil;
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        switch (((TSInfoMessage *)interaction).messageType) {
+        switch (((TSInfoMessage *)interaction).infoMessageType) {
             case TSInfoMessageUserNotRegistered:
             case TSInfoMessageTypeSessionDidEnd:
             case TSInfoMessageTypeUnsupportedMessage:
             case TSInfoMessageAddToContactsOffer:
             case TSInfoMessageAddUserToProfileWhitelistOffer:
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
-            case TSInfoMessageTypeGroupUpdate:
-            case TSInfoMessageTypeGroupQuit:
+            case TSInfoMessageTypeConversationUpdate:
+            case TSInfoMessageTypeConversationQuit:
                 return nil;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
                 BOOL areDisappearingMessagesEnabled = YES;
@@ -495,7 +495,7 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssert(message);
 
     __weak OWSSystemMessageCell *weakSelf = self;
-    switch (message.messageType) {
+    switch (message.infoMessageType) {
         case TSInfoMessageUserNotRegistered:
         case TSInfoMessageTypeSessionDidEnd:
             return nil;
@@ -514,9 +514,9 @@ typedef void (^SystemMessageActionBlock)(void);
             // Unused.
             OWSFail(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
             return nil;
-        case TSInfoMessageTypeGroupUpdate:
+        case TSInfoMessageTypeConversationUpdate:
             return nil;
-        case TSInfoMessageTypeGroupQuit:
+        case TSInfoMessageTypeConversationQuit:
             return nil;
         case TSInfoMessageTypeDisappearingMessagesUpdate:
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",

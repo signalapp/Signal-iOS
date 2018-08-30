@@ -134,20 +134,20 @@ const CGFloat kIconViewLength = 24;
 
 - (NSString *)threadName
 {
-    NSString *threadName = self.thread.name;
-    if (self.thread.contactIdentifier &&
-        [threadName isEqualToString:self.thread.contactIdentifier]) {
-        threadName =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
-    } else if (threadName.length == 0 && [self isGroupThread]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
-    }
+    NSString *threadName = self.thread.title;
+//    if (self.thread.contactIdentifier &&
+//        [threadName isEqualToString:self.thread.contactIdentifier]) {
+//        threadName =
+//            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
+//    } else if (threadName.length == 0 && [self isGroupThread]) {
+//        threadName = [MessageStrings newGroupDefaultTitle];
+//    }
     return threadName;
 }
 
 - (BOOL)isGroupThread
 {
-    return [self.thread isKindOfClass:[TSGroupThread class]];
+    return !self.thread.isOneOnOne;
 }
 
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
@@ -184,8 +184,7 @@ const CGFloat kIconViewLength = 24;
 - (BOOL)hasExistingContact
 {
     OWSAssert([self.thread isKindOfClass:[TSThread class]]);
-    TSThread *contactThread = (TSThread *)self.thread;
-    NSString *recipientId = contactThread.contactIdentifier;
+    NSString *recipientId = self.thread.otherParticipantId;
     return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
 }
 
@@ -319,7 +318,7 @@ const CGFloat kIconViewLength = 24;
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssert(strongSelf);
                                      TSThread *contactThread = (TSThread *)strongSelf.thread;
-                                     NSString *recipientId = contactThread.contactIdentifier;
+                                     NSString *recipientId = contactThread.otherParticipantId;
                                      [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
     }
@@ -619,7 +618,7 @@ const CGFloat kIconViewLength = 24;
     // Block user section.
 
     if (!self.isGroupThread) {
-        BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
+        BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.otherParticipantId];
 
         OWSTableSection *section = [OWSTableSection new];
         section.footerTitle = NSLocalizedString(
@@ -767,9 +766,9 @@ const CGFloat kIconViewLength = 24;
             lastTitleView = subtitleLabel;
         };
 
-        NSString *recipientId = self.thread.contactIdentifier;
+        NSString *recipientId = self.thread.otherParticipantId;
 
-        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
+        BOOL hasName = ![self.thread.title isEqualToString:recipientId];
         if (hasName) {
             NSAttributedString *subtitle = [[NSAttributedString alloc]
                 initWithString:[PhoneNumber
@@ -901,7 +900,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showVerificationView
 {
-    NSString *recipientId = self.thread.contactIdentifier;
+    NSString *recipientId = self.thread.otherParticipantId;
     OWSAssert(recipientId.length > 0);
 
     [FingerprintViewController presentFromViewController:self recipientId:recipientId];
@@ -920,7 +919,7 @@ const CGFloat kIconViewLength = 24;
 
     UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
     updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
-    updateGroupViewController.thread = (TSGroupThread *)self.thread;
+    updateGroupViewController.thread = self.thread;
     updateGroupViewController.mode = mode;
     [self.navigationController pushViewController:updateGroupViewController animated:YES];
 }
@@ -937,7 +936,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     TSThread *contactThread = (TSThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
+    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.otherParticipantId
                                                      fromViewController:self
                                                         editImmediately:YES];
 }
@@ -988,21 +987,20 @@ const CGFloat kIconViewLength = 24;
 
 - (void)leaveGroup
 {
-    TSGroupThread *gThread = (TSGroupThread *)self.thread;
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
-    [self.messageSender enqueueMessage:message
-        success:^{
-            DDLogInfo(@"%@ Successfully left group.", self.logTag);
-        }
-        failure:^(NSError *error) {
-            DDLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
-        }];
+    // TODO: Send control message
+//    TSOutgoingMessage *message =
+//        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
+//    [self.messageSender enqueueMessage:message
+//        success:^{
+//            DDLogInfo(@"%@ Successfully left group.", self.logTag);
+//        }
+//        failure:^(NSError *error) {
+//            DDLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
+//        }];
 
-    NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-    [newGroupMemberIds removeObject:[self.accountManager localUID]];
-    gThread.groupModel.groupMemberIds = newGroupMemberIds;
-    [gThread save];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [self.thread removeMembers:[NSSet setWithObject:TSAccountManager.localUID ] transaction:transaction];
+    }];
 
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -1025,14 +1023,14 @@ const CGFloat kIconViewLength = 24;
     }
     UISwitch *blockUserSwitch = (UISwitch *)sender;
 
-    BOOL isCurrentlyBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
+    BOOL isCurrentlyBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.otherParticipantId];
 
     if (blockUserSwitch.isOn) {
         OWSAssert(!isCurrentlyBlocked);
         if (isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showBlockPhoneNumberActionSheet:self.thread.contactIdentifier
+        [BlockListUIUtils showBlockPhoneNumberActionSheet:self.thread.otherParticipantId
                                        fromViewController:self
                                           blockingManager:_blockingManager
                                           contactsManager:_contactsManager
@@ -1045,7 +1043,7 @@ const CGFloat kIconViewLength = 24;
         if (!isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:self.thread.contactIdentifier
+        [BlockListUIUtils showUnblockPhoneNumberActionSheet:self.thread.otherParticipantId
                                          fromViewController:self
                                             blockingManager:_blockingManager
                                             contactsManager:_contactsManager
@@ -1249,7 +1247,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssert(recipientId.length > 0);
 
     if (recipientId.length > 0 && [self.thread isKindOfClass:[TSThread class]] &&
-        [self.thread.contactIdentifier isEqualToString:recipientId]) {
+        [self.thread.otherParticipantId isEqualToString:recipientId]) {
         [self updateTableContents];
     }
 }
