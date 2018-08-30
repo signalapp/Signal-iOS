@@ -134,7 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                   NSData *_Nullable data =
                                                       [NSKeyedArchiver archivedDataWithRootObject:interaction];
                                                   OWSAssertDebug(data);
-                                                  interactionSizeTotal += data.length;
+                                                  ows_add_overflow(
+                                                      interactionSizeTotal, data.length, &interactionSizeTotal);
                                               }];
         [transaction enumerateKeysAndObjectsInCollection:[TSAttachment collection]
                                               usingBlock:^(NSString *key, id object, BOOL *stop) {
@@ -143,7 +144,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                   NSData *_Nullable data =
                                                       [NSKeyedArchiver archivedDataWithRootObject:attachment];
                                                   OWSAssertDebug(data);
-                                                  attachmentSizeTotal += data.length;
+                                                  ows_add_overflow(
+                                                      attachmentSizeTotal, data.length, &attachmentSizeTotal);
                                               }];
     }];
 
