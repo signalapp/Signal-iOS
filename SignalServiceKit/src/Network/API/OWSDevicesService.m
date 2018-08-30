@@ -76,8 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<OWSDevice *> *devices = [NSMutableArray new];
     for (NSDictionary *deviceAttributes in devicesAttributes) {
         NSError *error;
-        OWSDevice *device = [OWSDevice deviceFromJSONDictionary:deviceAttributes error:&error];
-        if (error) {
+        OWSDevice *_Nullable device = [OWSDevice deviceFromJSONDictionary:deviceAttributes error:&error];
+        if (error || !device) {
             OWSLogError(@"Failed to build device from dictionary with error: %@", error);
         } else {
             [devices addObject:device];

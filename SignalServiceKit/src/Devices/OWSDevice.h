@@ -33,7 +33,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) NSDate *lastSeenAt;
 
-+ (instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error;
++ (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error;
 
 /**
  * Set local database of devices to `devices`.

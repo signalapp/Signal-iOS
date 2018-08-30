@@ -503,8 +503,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
               plaintextData:(NSData *_Nullable)plaintextData
                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssertDebug(envelopeData);
-    OWSAssertDebug(transaction);
+    if (envelopeData.length < 1) {
+        OWSFailDebug(@"Empty envelope.");
+        return;
+    }
+    OWSAssert(transaction);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];

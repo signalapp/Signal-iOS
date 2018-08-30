@@ -108,11 +108,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (avatarData) {
         NSUInteger hashValue = 0;
         NSData *_Nullable hashData = [Cryptography computeSHA256Digest:avatarData truncatedToBytes:sizeof(hashValue)];
-        if (hashData) {
-            [hashData getBytes:&hashValue length:sizeof(hashValue)];
-        } else {
+        if (!hashData) {
             OWSFailDebug(@"could not compute hash for avatar.");
         }
+        [hashData getBytes:&hashValue length:sizeof(hashValue)];
         _imageHash = hashValue;
     } else {
         _imageHash = 0;
@@ -131,6 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
     CNContact *_Nullable cnContact = [self cnContactWithVCardData:data];
 
     if (!cnContact) {
+        OWSLogError(@"Could not parse vcard data.");
         return nil;
     }
 

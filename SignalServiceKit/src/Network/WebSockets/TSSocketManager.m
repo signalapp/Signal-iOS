@@ -728,6 +728,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            BOOL success = NO;
             @try {
                 NSData *_Nullable decryptedPayload =
                     [Cryptography decryptAppleMessagePayload:message.body
@@ -735,17 +736,16 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
-                    [self sendWebSocketMessageAcknowledgement:message];
-                    OWSAssertDebug(backgroundTask);
-                    backgroundTask = nil;
-                    return;
+                } else {
+                    [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
+                    success = YES;
                 }
-
-                [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
             } @catch (NSException *exception) {
                 OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
                 // TODO: Add analytics.
+            }
 
+            if (!success) {
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
                     YapDatabaseReadWriteTransaction *transaction) {
                     TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];

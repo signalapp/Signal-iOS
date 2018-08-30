@@ -112,9 +112,14 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 @implementation OWSDevice
 
-+ (instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
++ (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
 {
-    return [MTLJSONAdapter modelOfClass:[self class] fromJSONDictionary:deviceAttributes error:error];
+    OWSDevice *device = [MTLJSONAdapter modelOfClass:[self class] fromJSONDictionary:deviceAttributes error:error];
+    if (device.deviceId < OWSDevicePrimaryDeviceId) {
+        OWSFailDebug(@"Invalid device id: %lu", (unsigned long)device.deviceId);
+        return nil;
+    }
+    return device;
 }
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey

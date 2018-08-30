@@ -8,6 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSData (OWS)
 
++ (NSData *)join:(NSArray<NSData *> *)datas
+{
+    OWSAssert(datas);
+
+    NSMutableData *result = [NSMutableData new];
+    for (NSData *data in datas) {
+        [result appendData:data];
+    }
+    return result;
+}
+
 - (NSData *)dataByAppendingData:(NSData *)data
 {
     NSMutableData *result = [self mutableCopy];

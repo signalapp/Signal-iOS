@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSData (OWS)
 
++ (NSData *)join:(NSArray<NSData *> *)datas;
+
 - (NSData *)dataByAppendingData:(NSData *)data;
 
 - (NSString *)hexadecimalString;

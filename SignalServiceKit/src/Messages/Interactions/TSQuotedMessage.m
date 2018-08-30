@@ -187,11 +187,15 @@ NS_ASSUME_NONNULL_BEGIN
                 (unsigned long)timestamp);
 
             SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
-            TSAttachmentPointer *thumbnailPointer =
+            TSAttachmentPointer *_Nullable thumbnailPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto];
-            [thumbnailPointer saveWithTransaction:transaction];
+            if (thumbnailPointer) {
+                [thumbnailPointer saveWithTransaction:transaction];
 
-            attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
+                attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
+            } else {
+                OWSFailDebug(@"Invalid thumbnail attachment.");
+            }
         } else {
             OWSLogDebug(@"No thumbnail for quoted message: %@:%lu", thread.uniqueId, (unsigned long)timestamp);
         }

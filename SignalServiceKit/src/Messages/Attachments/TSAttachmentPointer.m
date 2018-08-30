@@ -51,14 +51,23 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-+ (TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
++ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
 {
-    OWSAssertDebug(attachmentProto.id != 0);
-    OWSAssertDebug(attachmentProto.key != nil);
-    OWSAssertDebug(attachmentProto.contentType != nil);
+    if (attachmentProto.id < 1) {
+        OWSFailDebug("Invalid attachment id.");
+        return nil;
+    }
+    if (attachmentProto.key.length < 1) {
+        OWSFailDebug("Invalid attachment key.");
+        return nil;
+    }
+    if (attachmentProto.contentType.length < 1) {
+        OWSFailDebug("Invalid attachment content type.");
+        return nil;
+    }
 
     // digest will be empty for old clients.
-    NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
+    NSData *_Nullable digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
 
     TSAttachmentType attachmentType = TSAttachmentTypeDefault;
     if ([attachmentProto hasFlags]) {
