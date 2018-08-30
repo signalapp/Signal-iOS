@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Voice Memo
 
+- (void)ensureTextViewHeight;
 - (void)showVoiceMemoUI;
 
 - (void)hideVoiceMemoUI:(BOOL)animated;
