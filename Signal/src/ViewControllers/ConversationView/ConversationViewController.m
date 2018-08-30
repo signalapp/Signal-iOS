@@ -1209,6 +1209,18 @@ typedef enum : NSUInteger {
     self.isUserScrolling = NO;
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    // We resize the inputToolbar whenever it's text is modified, including when setting saved draft-text.
+    // However it's possible this draft-text is set before the inputToolbar (an inputAccessoryView) is mounted
+    // in the view hierarchy. Since it's not in the view hierarchy, it hasn't been laid out and has no width,
+    // which is used to determine height.
+    // So here we unsure the proper height once we know everything's been layed out.
+    [self.inputToolbar ensureTextViewHeight];
+}
+
 #pragma mark - Initiliazers
 
 - (void)updateNavigationTitle
