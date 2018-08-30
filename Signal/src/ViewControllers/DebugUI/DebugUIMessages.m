@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Messages";
 }
 
+#ifdef DEBUG
+
 - (NSArray<OWSTableItem *> *)itemsForActions:(NSArray<DebugUIMessagesAction *> *)actions
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
@@ -75,11 +77,15 @@ NS_ASSUME_NONNULL_BEGIN
     return items;
 }
 
+#endif
+
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     OWSAssert(thread);
 
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
+
+#ifdef DEBUG
 
     [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
                                      actionBlock:^{
@@ -297,8 +303,13 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMessages sendMessages:1 toAllMembersOfGroup:groupThread];
                                          }]];
     }
+
+#endif
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
+
+#ifdef DEBUG
 
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
@@ -4654,6 +4665,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         return attachmentPointer;
     }
 }
+
+#endif
 
 @end
 
