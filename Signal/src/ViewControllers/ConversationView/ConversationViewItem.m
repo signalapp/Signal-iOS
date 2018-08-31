@@ -481,6 +481,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {
+                    if (![self.attachmentStream isValidImage]) {
+                        DDLogWarn(@"Treating invalid image as generic attachment.");
+                        self.messageCellType = OWSMessageCellType_GenericAttachment;
+                        return;
+                    }
+
                     self.messageCellType = OWSMessageCellType_AnimatedImage;
                 } else if ([self.attachmentStream isImage]) {
                     if (![self.attachmentStream isValidImage]) {
