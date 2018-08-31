@@ -11,7 +11,7 @@ class DebugUICalling: DebugUIPage {
     // MARK: Dependencies
 
     var messageSender: MessageSender {
-        return Environment.shared().messageSender
+        return Environment.shared.messageSender
     }
 
     // MARK: Overrides 

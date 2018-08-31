@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Order matters here.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        [Environment setCurrent:[Release releaseEnvironment]];
+        [Environment setShared:[Release releaseEnvironment]];
 
         id<OWSCallMessageHandler> callMessageHandler = callMessageHandlerBlock();
         id<NotificationsProtocol> notificationsManager = notificationsManagerBlock();

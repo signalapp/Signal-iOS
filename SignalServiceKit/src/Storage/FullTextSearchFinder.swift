@@ -154,7 +154,7 @@ public class FullTextSearchFinder: NSObject {
     // MARK: - Index Building
 
     private class var contactsManager: ContactsManagerProtocol {
-        return SSKEnvironment.shared().contactsManager
+        return SSKEnvironment.shared.contactsManager
     }
 
     private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread, transaction: YapDatabaseReadTransaction) in

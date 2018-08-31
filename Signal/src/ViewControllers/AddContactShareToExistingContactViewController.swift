@@ -58,7 +58,7 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
     func contactsPicker(_: ContactsPicker, didSelectContact oldContact: Contact) {
         Logger.debug("")
 
-        let contactsManager = Environment.shared().contactsManager
+        let contactsManager = Environment.shared.contactsManager
         guard let oldCNContact = contactsManager?.cnContact(withId: oldContact.cnContactId) else {
             owsFailDebug("could not load old CNContact.")
             return

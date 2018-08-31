@@ -140,7 +140,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     required init(call: SignalCall) {
-        contactsManager = Environment.shared().contactsManager
+        contactsManager = Environment.shared.contactsManager
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
@@ -942,7 +942,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     private func markSettingsNagAsComplete() {
         Logger.info("")
 
-        let preferences = Environment.shared().preferences!
+        let preferences = Environment.shared.preferences!
 
         preferences.setIsCallKitEnabled(preferences.isCallKitEnabled())
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
@@ -1064,13 +1064,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         } else if !ignoreNag &&
             call.direction == .incoming &&
             UIDevice.current.supportsCallKit &&
-            (!Environment.shared().preferences.isCallKitEnabled() ||
-                Environment.shared().preferences.isCallKitPrivacyEnabled()) {
+            (!Environment.shared.preferences.isCallKitEnabled() ||
+                Environment.shared.preferences.isCallKitPrivacyEnabled()) {
 
             isShowingSettingsNag = true
 
             // Update the nag view's copy to reflect the settings state.
-            if Environment.shared().preferences.isCallKitEnabled() {
+            if Environment.shared.preferences.isCallKitEnabled() {
                 settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY",
                                                                      comment: "Reminder to the user of the benefits of disabling CallKit privacy.")
             } else {
@@ -1079,8 +1079,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             }
             settingsNagDescriptionLabel.superview?.setNeedsLayout()
 
-            if Environment.shared().preferences.isCallKitEnabledSet() ||
-                Environment.shared().preferences.isCallKitPrivacySet() {
+            if Environment.shared.preferences.isCallKitEnabledSet() ||
+                Environment.shared.preferences.isCallKitPrivacySet() {
                 // User has already touched these preferences, only show
                 // the "fleeting" nag, not the "blocking" nag.
 

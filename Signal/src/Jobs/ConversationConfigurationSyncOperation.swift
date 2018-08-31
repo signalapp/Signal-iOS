@@ -16,11 +16,11 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private var messageSender: MessageSender {
-        return Environment.shared().messageSender
+        return Environment.shared.messageSender
     }
 
     private var contactsManager: OWSContactsManager {
-        return Environment.shared().contactsManager
+        return Environment.shared.contactsManager
     }
 
     private var profileManager: OWSProfileManager {

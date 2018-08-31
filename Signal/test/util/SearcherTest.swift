@@ -118,7 +118,7 @@ class ConversationSearcherTest: XCTestCase {
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
-        originalEnvironment = SSKEnvironment.shared()
+        originalEnvironment = SSKEnvironment.shared
         assert(originalEnvironment != nil)
 
         let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
@@ -375,7 +375,7 @@ class ConversationSearcherTest: XCTestCase {
     private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!
         self.dbConnection.read { transaction in
-            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared().contactsManager)
+            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared.contactsManager)
         }
         return results
     }
