@@ -626,7 +626,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
-            Logger.verbose("\(strongSelf.logTag) setting remote description: \(sessionDescription)")
+            Logger.info("\(strongSelf.logTag) setting remote description: \(HardenedRTCSessionDescription.filterForLogging(sdp: sessionDescription.sdp))")
             peerConnection.setRemoteDescription(sessionDescription,
                                                 completionHandler: { error in
                                                     if let error = error {
@@ -1114,11 +1114,15 @@ class HardenedRTCSessionDescription {
         #if DEBUG
         return sdp
         #else
-        return redactIPV6(sdp: redactIcePwd(sdp: sdp))
+        return HardenedRTCSessionDescription.filterForLogging(sdp: sdp)
         #endif
     }
 
-    private func redactIcePwd(sdp: String) -> String {
+    class func filterForLogging(sdp: String) -> String {
+        return redactIPV6(sdp: redactIcePwd(sdp: sdp))
+    }
+
+    private class func redactIcePwd(sdp: String) -> String {
         #if DEBUG
         return sdp
         #else
@@ -1137,7 +1141,7 @@ class HardenedRTCSessionDescription {
         #endif
     }
 
-    private func redactIPV6(sdp: String) -> String {
+    private class func redactIPV6(sdp: String) -> String {
         #if DEBUG
         return sdp
         #else
