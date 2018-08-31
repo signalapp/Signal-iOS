@@ -198,7 +198,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         avatarImage = [self.cnContactAvatarCache objectForKey:contactId];
         if (!avatarImage) {
             NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
-            if (avatarData) {
+            if (avatarData && [avatarData ows_isValidImage]) {
                 avatarImage = [UIImage imageWithData:avatarData];
             }
             if (avatarImage) {
