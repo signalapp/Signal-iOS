@@ -88,10 +88,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self clearBloomFilterCache];
     }
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-            runAllOutstandingWithCompletion:completion];
-    });
+    // TODO: Migrations should not be necessary in our environment.  Consider leveraging this mechanism in the future.
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
+//            runAllOutstandingWithCompletion:completion];
+//    });
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString
