@@ -4,6 +4,7 @@
 
 #import "Environment.h"
 #import "DebugLogger.h"
+#import "OWSPreferences.h"
 #import "SignalKeyingStorage.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/ContactsUpdater.h>
@@ -99,13 +100,6 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(_messageSender);
 
     return _messageSender;
-}
-
-+ (OWSPreferences *)preferences
-{
-    OWSAssertDebug(Environment.shared.preferences);
-
-    return Environment.shared.preferences;
 }
 
 // TODO: Convert to singleton?

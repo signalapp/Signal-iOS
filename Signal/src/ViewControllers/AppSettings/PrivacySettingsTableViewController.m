@@ -113,10 +113,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
     screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
-    [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
-                                                               isOn:[Environment.preferences screenSecurityIsEnabled]
-                                                             target:weakSelf
-                                                           selector:@selector(didToggleScreenSecuritySwitch:)]];
+    [screenSecuritySection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
+                                            isOn:[Environment.shared.preferences screenSecurityIsEnabled]
+                                          target:weakSelf
+                                        selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
     
     // Allow calls to connect directly vs. using TURN exclusively
@@ -128,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
     [callingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
                                                                  @"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
                                                                  @"Table cell label")
-                                                        isOn:[Environment.preferences doCallsHideIPAddress]
+                                                        isOn:[Environment.shared.preferences doCallsHideIPAddress]
                                                       target:weakSelf
                                                     selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
     [contents addSection:callingSection];
@@ -139,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
                                                          @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                                                          @"Short table cell label")
-                                                isOn:[Environment.preferences isSystemCallLogEnabled]
+                                                isOn:[Environment.shared.preferences isSystemCallLogEnabled]
                                               target:weakSelf
                                             selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
         callKitSection.footerTitle = NSLocalizedString(
@@ -151,14 +152,14 @@ NS_ASSUME_NONNULL_BEGIN
             = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
         [callKitSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_TITLE",
                                                                      @"Short table cell label")
-                                                            isOn:[Environment.preferences isCallKitEnabled]
+                                                            isOn:[Environment.shared.preferences isCallKitEnabled]
                                                           target:weakSelf
                                                         selector:@selector(didToggleEnableCallKitSwitch:)]];
-        if (Environment.preferences.isCallKitEnabled) {
+        if (Environment.shared.preferences.isCallKitEnabled) {
             [callKitSection
                 addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
                                                              @"Label for 'CallKit privacy' preference")
-                                                    isOn:![Environment.preferences isCallKitPrivacyEnabled]
+                                                    isOn:![Environment.shared.preferences isCallKitPrivacyEnabled]
                                                   target:weakSelf
                                                 selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
         }
@@ -234,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
-    [Environment.preferences setScreenSecurity:enabled];
+    [Environment.shared.preferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
@@ -248,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled callsHideIPAddress: %@", enabled ? @"ON" : @"OFF");
-    [Environment.preferences setDoCallsHideIPAddress:enabled];
+    [Environment.shared.preferences setDoCallsHideIPAddress:enabled];
 }
 
 - (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender

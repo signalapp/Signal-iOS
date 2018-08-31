@@ -676,7 +676,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)hideBackgroundView
 {
-    [[Environment preferences] setHasDeclinedNoContactsView:YES];
+    [Environment.shared.preferences setHasDeclinedNoContactsView:YES];
 
     [self showContactAppropriateViews];
 }
@@ -693,7 +693,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.contactsViewHelper.contactsManager.isSystemContactsAuthorized) {
         if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.contactsViewHelper.signalAccounts.count < 1
-            && ![[Environment preferences] hasDeclinedNoContactsView]) {
+            && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
             self.isNoContactsModeActive = YES;
         } else {
             self.isNoContactsModeActive = NO;

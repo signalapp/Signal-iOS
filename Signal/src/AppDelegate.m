@@ -627,7 +627,7 @@ static NSTimeInterval launchStartedAt;
                 // restart the app, so we check every activation for users who haven't yet registered.
                 __unused AnyPromise *promise =
                     [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
-                                                    preferences:[Environment preferences]];
+                                                    preferences:Environment.shared.preferences];
             }
 
             if ([OWS2FAManager sharedManager].isDueForReminder) {
@@ -1034,7 +1034,7 @@ static NSTimeInterval launchStartedAt;
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =
             [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
-                                            preferences:[Environment preferences]];
+                                            preferences:Environment.shared.preferences];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
@@ -1048,7 +1048,7 @@ static NSTimeInterval launchStartedAt;
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
-    if (!Environment.preferences.hasGeneratedThumbnails) {
+    if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection
             asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
                 [TSAttachmentStream enumerateCollectionObjectsUsingBlock:^(id _Nonnull obj, BOOL *_Nonnull stop){
@@ -1056,7 +1056,7 @@ static NSTimeInterval launchStartedAt;
                 }];
             }
             completionBlock:^{
-                [Environment.preferences setHasGeneratedThumbnails:YES];
+                [Environment.shared.preferences setHasGeneratedThumbnails:YES];
             }];
     }
 

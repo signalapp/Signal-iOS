@@ -2,7 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPreferences.h"
 #import <SignalServiceKit/TSStorageHeaders.h>
 
 /**
@@ -17,6 +16,7 @@
 @class OWSContactsManager;
 @class OWSMessageSender;
 @class OWSNavigationController;
+@class OWSPreferences;
 @class TSGroupThread;
 @class TSNetworkManager;
 @class TSThread;
@@ -38,7 +38,5 @@
 
 // Should only be called by tests.
 + (void)clearCurrentForTests;
-
-+ (OWSPreferences *)preferences;
 
 @end

@@ -6,6 +6,7 @@
 #import "CodeVerificationViewController.h"
 #import "OWSNavigationController.h"
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 

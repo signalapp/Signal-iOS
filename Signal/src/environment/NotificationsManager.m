@@ -248,7 +248,7 @@
 
                    [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
                } else {
-                   if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                   if (shouldPlaySound && [Environment.shared.preferences soundInForeground]) {
                        OWSSound sound = [OWSSounds notificationSoundForThread:thread];
                        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
@@ -282,7 +282,7 @@
 
                    [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
                } else {
-                   if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                   if (shouldPlaySound && [Environment.shared.preferences soundInForeground]) {
                        OWSSound sound = [OWSSounds globalNotificationSound];
                        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
@@ -389,7 +389,7 @@
 
             [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
         } else {
-            if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+            if (shouldPlaySound && [Environment.shared.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
                 SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                 // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
