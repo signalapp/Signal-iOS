@@ -1,20 +1,16 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
-
 #import "Cryptography.h"
-#import "TSThread.h"
+#import "OWSPrimaryStorage.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
-
-#import "TSStorageManager.h"
-
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
-
+#import "TSThread.h"
+#import <XCTest/XCTest.h>
 
 @interface TSMessageStorageTests : XCTestCase
 
@@ -28,14 +24,14 @@
 {
     [super setUp];
 
-    [[TSStorageManager sharedManager].dbReadWriteConnection
+    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
 
             [self.thread saveWithTransaction:transaction];
         }];
 
-    TSStorageManager *manager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *manager = [OWSPrimaryStorage sharedManager];
     [manager purgeCollection:[TSMessage collection]];
 }
 
@@ -49,8 +45,8 @@
 {
     __block NSInteger messageInt;
     NSString *body = @"I don't see myself as a hero because what I'm doing is self-interested: I don't want to live in a world where there's no privacy and therefore no room for intellectual exploration and creativity.";
-    [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        
+    [[OWSPrimaryStorage sharedManager].newDatabaseConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
         NSString* messageId;
         
         for (uint64_t i = 0; i<50; i++) {
@@ -59,7 +55,7 @@
             [newMessage saveWithTransaction:transaction];
             if (i == 0) {
                 messageId = newMessage.uniqueId;
-             }
+            }
         }
         
         messageInt = [messageId integerValue];
@@ -72,7 +68,7 @@
         }
     }];
 
-    [[TSStorageManager sharedManager].newDatabaseConnection
+    [[OWSPrimaryStorage sharedManager].newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             TSOutgoingMessage *deletedmessage =
                 [TSOutgoingMessage fetchObjectWithUniqueID:[@(messageInt + 49) stringValue]];
@@ -101,11 +97,12 @@
                                                                         authorId:[self.thread contactIdentifier]
                                                                   sourceDeviceId:1
                                                                      messageBody:body];
-    [[TSStorageManager sharedManager].newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [newMessage saveWithTransaction:transaction];
-        messageId = newMessage.uniqueId;
-    }];
-    
+    [[OWSPrimaryStorage sharedManager].newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [newMessage saveWithTransaction:transaction];
+            messageId = newMessage.uniqueId;
+        }];
+
     TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:messageId];
 
     XCTAssertEqualObjects(body, fetchedMessage.body);
@@ -155,7 +152,7 @@
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     __block TSGroupThread *thread;
-    [[TSStorageManager sharedManager].dbReadWriteConnection readWriteWithBlock:^(
+    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWriteWithBlock:^(
         YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
                                                                                           memberIds:[@[] mutableCopy]
@@ -166,7 +163,7 @@
         [thread saveWithTransaction:transaction];
     }];
 
-    TSStorageManager *manager         = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *manager = [OWSPrimaryStorage sharedManager];
     [manager purgeCollection:[TSMessage collection]];
 
     NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];

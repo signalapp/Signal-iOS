@@ -1,16 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
-#import <25519/Curve25519.h>
-
+#import "OWSIdentityManager.h"
+#import "OWSPrimaryStorage.h"
+#import "OWSRecipientIdentity.h"
 #import "OWSUnitTestEnvironment.h"
 #import "SecurityUtils.h"
-#import "OWSIdentityManager.h"
-#import "OWSRecipientIdentity.h"
-#import "TSStorageManager.h"
 #import "TextSecureKitEnv.h"
+#import <Curve25519Kit/Curve25519.h>
+#import <XCTest/XCTest.h>
 
 @interface TSStorageIdentityKeyStoreTests : XCTestCase
 
@@ -20,8 +19,8 @@
 
 - (void)setUp {
     [super setUp];
-    
-    [[TSStorageManager sharedManager] purgeCollection:@"TSStorageManagerTrustedKeysCollection"];
+
+    [[OWSPrimaryStorage sharedManager] purgeCollection:OWSPrimaryStorageTrustedKeysCollection];
     [OWSRecipientIdentity removeAllObjectsInCollection];
 }
 

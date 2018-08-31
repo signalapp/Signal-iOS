@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDevice.h"
 #import "OWSIncomingMessageFinder.h"
+#import "OWSDevice.h"
+#import "OWSPrimaryStorage.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 #import <XCTest/XCTest.h>
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *sourceId;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) OWSIncomingMessageFinder *finder;
+@property (nonatomic) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -33,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = [TSContactThread getOrCreateThreadWithContactId:self.sourceId];
     self.finder = [OWSIncomingMessageFinder new];
     [self.finder registerExtension];
+    self.dbConnection = [OWSPrimaryStorage sharedManager].dbReadConnection;
 }
 
 - (void)tearDown
@@ -41,62 +44,90 @@ NS_ASSUME_NONNULL_BEGIN
     [super tearDown];
 }
 
+
+- (void)createIncomingMessageWithTimestamp:(uint64_t)timestamp
+                                  authorId:(NSString *)authorId
+                            sourceDeviceId:(uint32_t)sourceDeviceId
+{
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                                                            inThread:self.thread
+                                                                                            authorId:authorId
+                                                                                      sourceDeviceId:sourceDeviceId
+                                                                                         messageBody:@"foo"
+                                                                                       attachmentIds:@[]
+                                                                                    expiresInSeconds:0
+                                                                                       quotedMessage:nil
+                                                                                        contactShare:nil];
+    [incomingMessage save];
+}
+
 - (void)testExistingMessages
 {
 
     uint64_t timestamp = 1234;
-    BOOL result = [self.finder existsMessageWithTimestamp:timestamp
-                                                 sourceId:self.sourceId
-                                           sourceDeviceId:OWSDevicePrimaryDeviceId];
+    __block BOOL result;
+
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        result = [self.finder existsMessageWithTimestamp:timestamp
+                                                sourceId:self.sourceId
+                                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                                             transaction:transaction];
+    }];
+
 
     // Sanity check.
     XCTAssertFalse(result);
 
     // Different timestamp
-    [[[TSIncomingMessage alloc] initWithTimestamp:timestamp + 1
-                                         inThread:self.thread
-                                         authorId:self.sourceId
-                                   sourceDeviceId:OWSDevicePrimaryDeviceId
-                                      messageBody:@"foo"] save];
-    result = [self.finder existsMessageWithTimestamp:timestamp
-                                            sourceId:self.sourceId
-                                      sourceDeviceId:OWSDevicePrimaryDeviceId];
+    [self createIncomingMessageWithTimestamp:timestamp + 1
+                                    authorId:self.sourceId
+                              sourceDeviceId:OWSDevicePrimaryDeviceId];
+
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        result = [self.finder existsMessageWithTimestamp:timestamp
+                                                sourceId:self.sourceId
+                                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                                             transaction:transaction];
+    }];
+
     XCTAssertFalse(result);
 
     // Different authorId
-    [[[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                         inThread:self.thread
-                                         authorId:@"some-other-author-id"
-                                   sourceDeviceId:OWSDevicePrimaryDeviceId
-                                      messageBody:@"foo"] save];
+    [self createIncomingMessageWithTimestamp:timestamp
+                                    authorId:@"some-other-author-id"
+                              sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    result = [self.finder existsMessageWithTimestamp:timestamp
-                                            sourceId:self.sourceId
-                                      sourceDeviceId:OWSDevicePrimaryDeviceId];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        result = [self.finder existsMessageWithTimestamp:timestamp
+                                                sourceId:self.sourceId
+                                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                                             transaction:transaction];
+    }];
     XCTAssertFalse(result);
 
     // Different device
-    [[[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                         inThread:self.thread
-                                         authorId:self.sourceId
-                                   sourceDeviceId:OWSDevicePrimaryDeviceId + 1
-                                      messageBody:@"foo"] save];
+    [self createIncomingMessageWithTimestamp:timestamp
+                                    authorId:self.sourceId
+                              sourceDeviceId:OWSDevicePrimaryDeviceId + 1];
 
-    result = [self.finder existsMessageWithTimestamp:timestamp
-                                            sourceId:self.sourceId
-                                      sourceDeviceId:OWSDevicePrimaryDeviceId];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        result = [self.finder existsMessageWithTimestamp:timestamp
+                                                sourceId:self.sourceId
+                                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                                             transaction:transaction];
+    }];
     XCTAssertFalse(result);
 
     // The real deal...
-    [[[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                         inThread:self.thread
-                                         authorId:self.sourceId
-                                   sourceDeviceId:OWSDevicePrimaryDeviceId
-                                      messageBody:@"foo"] save];
+    [self createIncomingMessageWithTimestamp:timestamp authorId:self.sourceId sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    result = [self.finder existsMessageWithTimestamp:timestamp
-                                            sourceId:self.sourceId
-                                      sourceDeviceId:OWSDevicePrimaryDeviceId];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        result = [self.finder existsMessageWithTimestamp:timestamp
+                                                sourceId:self.sourceId
+                                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                                             transaction:transaction];
+    }];
+
     XCTAssertTrue(result);
 }
 
