@@ -50,6 +50,15 @@ import YapDatabase
         }
     }
     
+    @objc public class func getOrCreateRecipient(withUserDictionary userDict: NSDictionary) -> RelayRecipient? {
+        var recipient: RelayRecipient?
+        
+        OWSPrimaryStorage.dbReadWriteConnection().readWrite { (transaction) in
+            recipient = self.getOrCreateRecipient(withUserDictionary: userDict, transaction: transaction)
+        }
+        return recipient
+    }
+    
     @objc public class func getOrCreateRecipient(withUserDictionary userDict: NSDictionary, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
 
         if let uid = userDict["id"] as? String {
@@ -174,7 +183,7 @@ import YapDatabase
     private class func recipient(uid: String?) -> RelayRecipient {
         assert((TSAccountManager.localUID()?.count)! > 0)
         
-        let recipient = super.init(uniqueId: uid) as! RelayRecipient
+        let recipient = RelayRecipient.init(uniqueId: uid)
         
         if (TSAccountManager.localUID() == uid) {
             // Default to no devices.

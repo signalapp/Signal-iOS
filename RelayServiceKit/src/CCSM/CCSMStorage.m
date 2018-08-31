@@ -10,7 +10,7 @@
 #import "Constraints.h"
 #import "TSStorageHeaders.h"
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface CCSMStorage()
 

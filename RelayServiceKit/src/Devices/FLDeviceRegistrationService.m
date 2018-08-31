@@ -11,15 +11,12 @@
 #import "OWSDeviceProvisioner.h"
 #import "ECKeyPair+OWSPrivateKey.h"
 #import "NSData+Base64.h"
-//#import <AxolotlKit/NSData+keyVersionByte.h>
 #import "Cryptography.h"
 #import "SRWebSocket.h"
-//#import "SubProtocol.pb.h"
 #import "WebSocketResources.pb.h"
 #import "OWSProvisioningCipher.h"
 #import "OWSProvisioningProtos.pb.h"
 #import "NSData+keyVersionByte.h"
-//#import <Curve25519Kit/Curve25519.h>
 #import "Curve25519+keyPairFromPrivateKey.h"
 #import "SignalKeyingStorage.h"
 #import "SecurityUtils.h"
