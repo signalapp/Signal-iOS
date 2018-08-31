@@ -13,7 +13,7 @@
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
 #import <Curve25519Kit/Randomness.h>
-#import <SAMKeychain/SAMKeychain.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
@@ -750,7 +750,13 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 {
     OWSLogInfo(@"removing legacy passphrase");
 
-    [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
+    NSError *_Nullable error;
+    BOOL result = [CurrentAppContext().keychainStorage removeWithKey:keychainDBLegacyPassphrase
+                                                             service:keychainService
+                                                               error:&error];
+    if (error || !result) {
+        OWSFailDebug(@"could not remove legacy passphrase.");
+    }
 }
 
 - (void)ensureDatabaseKeySpecExists
@@ -837,8 +843,19 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)deleteDBKeys
 {
-    [SAMKeychain deletePasswordForService:keychainService account:keychainDBLegacyPassphrase];
-    [SAMKeychain deletePasswordForService:keychainService account:keychainDBCipherKeySpec];
+    NSError *_Nullable error;
+    BOOL result = [CurrentAppContext().keychainStorage removeWithKey:keychainDBLegacyPassphrase
+                                                             service:keychainService
+                                                               error:&error];
+    if (error || !result) {
+        OWSFailDebug(@"could not remove legacy passphrase.");
+    }
+    result = [CurrentAppContext().keychainStorage removeWithKey:keychainDBCipherKeySpec
+                                                        service:keychainService
+                                                          error:&error];
+    if (error || !result) {
+        OWSFailDebug(@"could not remove cipher key spec.");
+    }
 }
 
 - (unsigned long long)databaseFileSize
@@ -861,7 +878,12 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAssertDebug(keychainKey.length > 0);
     OWSAssertDebug(errorHandle);
 
-    return [SAMKeychain passwordDataForService:keychainService account:keychainKey error:errorHandle];
+    NSData *_Nullable data =
+        [CurrentAppContext().keychainStorage dataForKey:keychainKey service:keychainService error:errorHandle];
+    if (*errorHandle || !data) {
+        OWSLogWarn(@"could not load keychain value.");
+    }
+    return data;
 }
 
 + (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey
@@ -870,8 +892,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAssertDebug(data.length > 0);
 
     NSError *error;
-    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
+    BOOL success =
+        [CurrentAppContext().keychainStorage setWithData:data forKey:keychainKey service:keychainService error:&error];
     if (!success || error) {
         OWSFailDebug(@"Could not store database metadata");
         OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
