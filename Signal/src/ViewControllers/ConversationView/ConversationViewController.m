@@ -3953,7 +3953,7 @@ typedef enum : NSUInteger {
 
         uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
         message = [TSOutgoingMessage outgoingMessageInThread:groupThread
-                                            groupMetaMessage:TSGroupMessageUpdate
+                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                             expiresInSeconds:expiresInSeconds];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];

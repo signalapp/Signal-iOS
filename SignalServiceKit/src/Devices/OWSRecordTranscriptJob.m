@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:transcript.expirationDuration
                                                     expireStartedAt:transcript.expirationStartedAt
                                                      isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageUnspecified
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact];
 

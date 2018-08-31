@@ -478,7 +478,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                             groupMetaMessage:TSGroupMessageNew
+                                                                             groupMetaMessage:TSGroupMetaMessageNew
                                                                              expiresInSeconds:0];
 
                       [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
