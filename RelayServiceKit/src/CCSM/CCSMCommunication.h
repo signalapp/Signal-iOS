@@ -9,7 +9,7 @@
 #ifndef CCSMCommunication_h
 #define CCSMCommunication_h
 
-@class SignalRecipient;
+@class RelayRecipient;
 
 @interface CCSMCommManager : NSObject
 

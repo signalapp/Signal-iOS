@@ -18,7 +18,6 @@
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import "CCSMStorage.h"
-//#import <YapDatabase/YapDatabase.h>
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 @import YapDatabase;
@@ -135,7 +134,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             return YES;
         } else {
             // Cache this once it's true since it's called alot, involves a dbLookup, and once set - it doesn't change.
-            _isRegistered = [self storedLocalUID] != nil;
+            _isRegistered = ([self storedLocalUID] != nil && self.serverAuthToken.length > 0 && self.signalingKey.length > 0);
         }
     }
     return _isRegistered;

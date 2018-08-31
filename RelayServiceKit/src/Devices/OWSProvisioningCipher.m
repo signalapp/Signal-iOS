@@ -23,6 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSProvisioningCipher
 
+-(instancetype)init
+{
+    if (self = [super init]) {
+        _ourKeyPair = [Curve25519 generateKeyPair]; 
+    }
+    return self;
+}
+
 - (instancetype)initWithTheirPublicKey:(NSData *)theirPublicKey
 {
     return [self initWithTheirPublicKey:theirPublicKey

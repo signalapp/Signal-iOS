@@ -16,10 +16,7 @@
 #import "TSPreKeyManager.h"
 #import "AFNetworking.h"
 #import "FLDeviceRegistrationService.h"
-//#import "SignalApp.h"
-
-// TODO: migrate away from this:
-//#import "HttpRequest.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 
 #define FLTagMathPath @"/v1/directory/user/"
@@ -403,8 +400,7 @@
         
         [CCSMStorage.sharedInstance setUserInfo:userDict];
         // TODO: Bring this in
-//        [SignalRecipient getOrCreateRecipientWithUserDictionary:userDict];
-//        [TSAccountManager.sharedInstance myself];
+        [RelayRecipient getOrCreateRecipientWithUserDictionary:userDict];
         
         NSDictionary *orgDict = [userDict objectForKey:@"org"];
         [CCSMStorage.sharedInstance setOrgInfo:orgDict];
