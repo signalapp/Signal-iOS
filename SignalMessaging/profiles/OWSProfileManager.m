@@ -79,8 +79,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (instancetype)initDefault
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = [Environment current].messageSender;
-    TSNetworkManager *networkManager = [Environment current].networkManager;
+    OWSMessageSender *messageSender = Environment.shared.messageSender;
+    TSNetworkManager *networkManager = Environment.shared.networkManager;
 
     return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender networkManager:networkManager];
 }

@@ -39,13 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSCallMessageHandler> callMessageHandler = callMessageHandlerBlock();
         id<NotificationsProtocol> notificationsManager = notificationsManagerBlock();
 
-        SSKEnvironment *sharedEnv =
-            [[SSKEnvironment alloc] initWithCallMessageHandler:callMessageHandler
-                                               contactsManager:[Environment current].contactsManager
-                                                 messageSender:[Environment current].messageSender
-                                          notificationsManager:notificationsManager
-                                                profileManager:OWSProfileManager.sharedManager];
-        [SSKEnvironment setSharedEnv:sharedEnv];
+        SSKEnvironment *shared = [[SSKEnvironment alloc] initWithCallMessageHandler:callMessageHandler
+                                                                    contactsManager:Environment.shared.contactsManager
+                                                                      messageSender:Environment.shared.messageSender
+                                                               notificationsManager:notificationsManager
+                                                                     profileManager:OWSProfileManager.sharedManager];
+        [SSKEnvironment setShared:shared];
 
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];

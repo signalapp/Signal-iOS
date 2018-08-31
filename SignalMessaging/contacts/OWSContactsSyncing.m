@@ -47,9 +47,9 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
 - (instancetype)initDefault
 {
-    return [self initWithContactsManager:Environment.current.contactsManager
+    return [self initWithContactsManager:Environment.shared.contactsManager
                          identityManager:OWSIdentityManager.sharedManager
-                           messageSender:Environment.current.messageSender
+                           messageSender:Environment.shared.messageSender
                           profileManager:OWSProfileManager.sharedManager];
 }
 

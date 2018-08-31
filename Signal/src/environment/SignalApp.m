@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
             _callMessageHandler =
                 [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
                                                                 callService:self.callService
-                                                              messageSender:Environment.current.messageSender];
+                                                              messageSender:Environment.shared.messageSender];
         }
     }
 
@@ -76,13 +76,13 @@ NS_ASSUME_NONNULL_BEGIN
     {
         if (!_callService) {
             OWSAssertDebug(self.accountManager);
-            OWSAssertDebug(Environment.current.contactsManager);
-            OWSAssertDebug(Environment.current.messageSender);
+            OWSAssertDebug(Environment.shared.contactsManager);
+            OWSAssertDebug(Environment.shared.messageSender);
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCallLoggingPreference:) name:OWSPreferencesCallLoggingDidChangeNotification object:nil];
-            
+
             _callService = [[CallService alloc] initWithAccountManager:self.accountManager
-                                                       contactsManager:Environment.current.contactsManager
-                                                         messageSender:Environment.current.messageSender
+                                                       contactsManager:Environment.shared.contactsManager
+                                                         messageSender:Environment.shared.messageSender
                                                   notificationsAdapter:[OWSCallNotificationsAdapter new]];
         }
     }
@@ -100,11 +100,11 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!_outboundCallInitiator) {
-            OWSAssertDebug(Environment.current.contactsManager);
-            OWSAssertDebug(Environment.current.contactsUpdater);
+            OWSAssertDebug(Environment.shared.contactsManager);
+            OWSAssertDebug(Environment.shared.contactsUpdater);
             _outboundCallInitiator =
-                [[OutboundCallInitiator alloc] initWithContactsManager:Environment.current.contactsManager
-                                                       contactsUpdater:Environment.current.contactsUpdater];
+                [[OutboundCallInitiator alloc] initWithContactsManager:Environment.shared.contactsManager
+                                                       contactsUpdater:Environment.shared.contactsUpdater];
         }
     }
 
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!_messageFetcherJob) {
             _messageFetcherJob =
                 [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
-                                                       networkManager:Environment.current.networkManager
+                                                       networkManager:Environment.shared.networkManager
                                                         signalService:[OWSSignalService sharedInstance]];
         }
     }
@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
     {
         if (!_accountManager) {
             _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                           preferences:Environment.current.preferences];
+                                                                           preferences:Environment.shared.preferences];
         }
     }
 

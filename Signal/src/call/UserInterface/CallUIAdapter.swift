@@ -106,7 +106,7 @@ extension CallUIAdaptee {
             let useSystemCallLog = Environment.preferences().isSystemCallLogEnabled()
 
             adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
-        } else if #available(iOS 10.0, *), Environment.current().preferences.isCallKitEnabled() {
+        } else if #available(iOS 10.0, *), Environment.shared().preferences.isCallKitEnabled() {
             Logger.info("choosing callkit adaptee for iOS10")
             let hideNames = Environment.preferences().isCallKitPrivacyEnabled() || Environment.preferences().notificationPreviewType() == .noNameNoPreview
             let showNames = !hideNames

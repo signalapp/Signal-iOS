@@ -520,7 +520,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         return;
     }
     NSString *recipientId = [TSAccountManager localNumber];
-    OWSMessageSender *messageSender = Environment.current.messageSender;
+    OWSMessageSender *messageSender = Environment.shared.messageSender;
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
@@ -549,7 +549,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     }];
     DispatchMainThreadSafe(^{
         if (thread) {
-            OWSMessageSender *messageSender = Environment.current.messageSender;
+            OWSMessageSender *messageSender = Environment.shared.messageSender;
             [ThreadUtil sendMessageWithText:url.absoluteString
                                    inThread:thread
                            quotedReplyModel:nil

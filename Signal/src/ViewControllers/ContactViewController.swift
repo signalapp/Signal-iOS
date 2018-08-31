@@ -50,7 +50,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     @objc
     required init(contactShare: ContactShareViewModel) {
-        contactsManager = Environment.current().contactsManager
+        contactsManager = Environment.shared().contactsManager
         self.contactShare = contactShare
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
 

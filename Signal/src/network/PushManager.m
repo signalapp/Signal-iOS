@@ -57,7 +57,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 {
     return [self initWithMessageFetcherJob:SignalApp.sharedApp.messageFetcherJob
                             primaryStorage:[OWSPrimaryStorage sharedManager]
-                             messageSender:[Environment current].messageSender
+                             messageSender:Environment.shared.messageSender
                       notificationsManager:SignalApp.sharedApp.notificationsManager];
 }
 

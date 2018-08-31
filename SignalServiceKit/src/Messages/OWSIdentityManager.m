@@ -79,7 +79,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (instancetype)initDefault
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = [SSKEnvironment sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment shared].messageSender;
 
     return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
 }
@@ -540,9 +540,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [message saveWithTransaction:transaction];
     }
 
-    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
-                                                                        thread:contactThread
-                                                                   transaction:transaction];
+    [[SSKEnvironment shared].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                     thread:contactThread
+                                                                transaction:transaction];
 }
 
 - (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId

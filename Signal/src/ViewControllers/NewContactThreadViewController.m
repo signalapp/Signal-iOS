@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)stringForCollation
 {
-    OWSContactsManager *contactsManager = [Environment current].contactsManager;
+    OWSContactsManager *contactsManager = Environment.shared.contactsManager;
     return [contactsManager comparableNameForSignalAccount:self];
 }
 

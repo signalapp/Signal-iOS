@@ -36,7 +36,7 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     private var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+        return Environment.shared().contactsManager
     }
 
     enum SearchSection: Int {

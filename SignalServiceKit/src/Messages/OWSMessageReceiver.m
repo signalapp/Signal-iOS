@@ -335,8 +335,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [[SSKEnvironment sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                         transaction:transaction];
+                [[SSKEnvironment shared].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                      transaction:transaction];
             }];
 
         dispatch_async(self.serialQueue, ^{

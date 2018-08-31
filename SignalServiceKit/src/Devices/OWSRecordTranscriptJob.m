@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         networkManager:TSNetworkManager.sharedManager
                                         primaryStorage:OWSPrimaryStorage.sharedManager
                                     readReceiptManager:OWSReadReceiptManager.sharedManager
-                                       contactsManager:[SSKEnvironment sharedEnv].contactsManager];
+                                       contactsManager:[SSKEnvironment shared].contactsManager];
 }
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript

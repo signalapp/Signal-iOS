@@ -182,8 +182,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [[SSKEnvironment sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                         transaction:transaction];
+                [[SSKEnvironment shared].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                      transaction:transaction];
             }];
     }
 
@@ -323,9 +323,9 @@ NS_ASSUME_NONNULL_BEGIN
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
-                                                                        thread:contactThread
-                                                                   transaction:transaction];
+    [[SSKEnvironment shared].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                     thread:contactThread
+                                                                transaction:transaction];
 }
 
 @end

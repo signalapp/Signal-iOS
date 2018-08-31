@@ -49,14 +49,14 @@ static SSKEnvironment *sharedSSKEnvironment;
     return self;
 }
 
-+ (instancetype)sharedEnv
++ (instancetype)shared
 {
     OWSAssertDebug(sharedSSKEnvironment);
 
     return sharedSSKEnvironment;
 }
 
-+ (void)setSharedEnv:(SSKEnvironment *)env
++ (void)setShared:(SSKEnvironment *)env
 {
     OWSAssertDebug(env);
     OWSAssertDebug(!sharedSSKEnvironment || CurrentAppContext().isRunningTests);

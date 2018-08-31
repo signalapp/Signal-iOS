@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.sharedEnv.contactsManager;
+    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
 
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,

@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Fetch system contacts"
                                      actionBlock:^() {
-                                         [Environment.current.contactsManager requestSystemContactsOnce];
+                                         [Environment.shared.contactsManager requestSystemContactsOnce];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[Environment current].preferences unsetRecordedAPNSTokens];
+    [Environment.shared.preferences unsetRecordedAPNSTokens];
 
     RegistrationViewController *viewController = [RegistrationViewController new];
     OWSNavigationController *navigationController =
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = Environment.shared.messageSender;
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = Environment.shared.messageSender;
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];

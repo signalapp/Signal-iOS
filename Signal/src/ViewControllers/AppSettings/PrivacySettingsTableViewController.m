@@ -254,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment current].preferences setIsSystemCallLogEnabled:sender.isOn];
+    [Environment.shared.preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
@@ -263,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment current].preferences setIsCallKitEnabled:sender.isOn];
+    [Environment.shared.preferences setIsCallKitEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit vs not changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
@@ -275,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [[Environment current].preferences setIsCallKitPrivacyEnabled:!sender.isOn];
+    [Environment.shared.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];

@@ -201,7 +201,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
                 // We don't need to use the TSSocketManager in the SAE.
 
-                Environment.current().contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+                Environment.shared().contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // We don't need to fetch messages in the SAE.
 
@@ -267,8 +267,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
 
-        Environment.current().contactsManager.loadSignalAccountsFromCache()
-        Environment.current().contactsManager.startObserving()
+        Environment.shared().contactsManager.loadSignalAccountsFromCache()
+        Environment.shared().contactsManager.startObserving()
 
         ensureRootViewController()
 

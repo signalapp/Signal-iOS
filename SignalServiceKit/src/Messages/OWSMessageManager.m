@@ -84,10 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    id<ContactsManagerProtocol> contactsManager = [SSKEnvironment sharedEnv].contactsManager;
-    id<OWSCallMessageHandler> callMessageHandler = [SSKEnvironment sharedEnv].callMessageHandler;
+    id<ContactsManagerProtocol> contactsManager = [SSKEnvironment shared].contactsManager;
+    id<OWSCallMessageHandler> callMessageHandler = [SSKEnvironment shared].callMessageHandler;
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-    OWSMessageSender *messageSender = [SSKEnvironment sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment shared].messageSender;
 
 
     return [self initWithNetworkManager:networkManager
@@ -429,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<ProfileManagerProtocol>)profileManager
 {
-    return [SSKEnvironment sharedEnv].profileManager;
+    return [SSKEnvironment shared].profileManager;
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -798,7 +798,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    id<ProfileManagerProtocol> profileManager = [SSKEnvironment sharedEnv].profileManager;
+    id<ProfileManagerProtocol> profileManager = [SSKEnvironment shared].profileManager;
     [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
 }
 
@@ -1168,10 +1168,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Update thread preview in inbox
     [thread touchWithTransaction:transaction];
 
-    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                         inThread:thread
-                                                                  contactsManager:self.contactsManager
-                                                                      transaction:transaction];
+    [[SSKEnvironment shared].notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                      inThread:thread
+                                                               contactsManager:self.contactsManager
+                                                                   transaction:transaction];
 }
 
 #pragma mark - helpers

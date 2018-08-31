@@ -390,8 +390,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 YapDatabaseReadWriteTransaction *transaction) {
                 // TODO: Add analytics.
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [[SSKEnvironment sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                         transaction:transaction];
+                [[SSKEnvironment shared].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                      transaction:transaction];
             };
 
             @try {

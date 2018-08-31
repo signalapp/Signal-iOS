@@ -216,7 +216,7 @@ public class ConversationSearcher: NSObject {
     }
 
     private var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+        return Environment.shared().contactsManager
     }
 
     private func indexingString(recipientId: String) -> String {

@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
     _conversationSearcher = ConversationSearcher.shared;
 
-    _contactsManager = [Environment current].contactsManager;
+    _contactsManager = Environment.shared.contactsManager;
     _profileManager = [OWSProfileManager sharedManager];
 
     // We don't want to notify the delegate in the `updateContacts`.

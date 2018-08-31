@@ -439,7 +439,7 @@
 
 - (NotificationType)notificationPreviewType
 {
-    OWSPreferences *prefs = [Environment current].preferences;
+    OWSPreferences *prefs = Environment.shared.preferences;
     return prefs.notificationPreviewType;
 }
 

@@ -749,8 +749,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
                     YapDatabaseReadWriteTransaction *transaction) {
                     TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                             transaction:transaction];
+                    [[SSKEnvironment shared].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                          transaction:transaction];
                 }];
             }
 

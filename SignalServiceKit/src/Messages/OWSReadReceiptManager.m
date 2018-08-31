@@ -156,7 +156,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (instancetype)initDefault
 {
-    OWSMessageSender *messageSender = [SSKEnvironment sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment shared].messageSender;
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
     return [self initWithMessageSender:messageSender primaryStorage:primaryStorage];
