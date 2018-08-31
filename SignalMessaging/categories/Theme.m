@@ -30,7 +30,6 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
                                                            inCollection:ThemeCollection
                                                            defaultValue:NO];
-#endif
 }
 
 + (void)setIsDarkThemeEnabled:(BOOL)value
