@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 import CloudKit
+import SignalMessaging
 
 // We don't worry about atomic writes.  Each backup export
 // will diff against last successful backup.

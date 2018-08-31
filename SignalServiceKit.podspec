@@ -57,4 +57,7 @@ An Objective-C library for communicating with the Signal messaging service.
   # > so we advise sticking with version 4 for the time being.
   s.dependency 'PromiseKit', "~> 4.0"
 
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'SignalServiceKit/tests/**/*.{h,m,swift}'
+  end
 end

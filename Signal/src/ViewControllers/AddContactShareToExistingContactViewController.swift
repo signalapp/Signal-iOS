@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import ContactsUI
+import SignalMessaging
 
 class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPickerDelegate, CNContactViewControllerDelegate {
 
@@ -58,7 +59,7 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
     func contactsPicker(_: ContactsPicker, didSelectContact oldContact: Contact) {
         Logger.debug("")
 
-        let contactsManager = Environment.current().contactsManager
+        let contactsManager = Environment.shared.contactsManager
         guard let oldCNContact = contactsManager?.cnContact(withId: oldContact.cnContactId) else {
             owsFailDebug("could not load old CNContact.")
             return

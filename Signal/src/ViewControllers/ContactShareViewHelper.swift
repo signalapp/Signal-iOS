@@ -6,6 +6,7 @@ import Foundation
 import SignalServiceKit
 import ContactsUI
 import MessageUI
+import SignalMessaging
 
 @objc
 public protocol ContactShareViewHelperDelegate: class {

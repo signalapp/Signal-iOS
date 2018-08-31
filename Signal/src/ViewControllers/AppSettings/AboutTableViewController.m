@@ -128,7 +128,7 @@
 
     [contents addSection:debugSection];
 
-    OWSPreferences *preferences = [Environment preferences];
+    OWSPreferences *preferences = Environment.shared.preferences;
     NSString *_Nullable pushToken = [preferences getPushToken];
     NSString *_Nullable voipToken = [preferences getVoipToken];
     [debugSection

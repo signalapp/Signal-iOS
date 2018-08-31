@@ -13,10 +13,10 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
+#import "SSKEnvironment.h"
 #import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
-#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -335,7 +335,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                [[SSKEnvironment shared].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                            transaction:transaction];
             }];
 

@@ -13,12 +13,18 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class OWSAES256Key;
 @class OWSMessageSender;
+@class OWSPrimaryStorage;
+@class TSNetworkManager;
 @class TSThread;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+                         messageSender:(OWSMessageSender *)messageSender
+                        networkManager:(TSNetworkManager *)networkManager;
 
 + (instancetype)sharedManager;
 

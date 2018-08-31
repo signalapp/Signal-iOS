@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1115976DB2D993FB7AAB33CEBB52F472"
+               BlueprintIdentifier = "237277EA071A0C42090E0E10F34EFC45"
                BuildableName = "SignalServiceKit.framework"
                BlueprintName = "SignalServiceKit"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -50,6 +50,16 @@
                BuildableName = "SignalTests.xctest"
                BlueprintName = "SignalTests"
                ReferencedContainer = "container:Signal.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CCAA778433A3BEDA4D69B6CB634C6EAC"
+               BuildableName = "SignalServiceKit-Unit-Tests.xctest"
+               BlueprintName = "SignalServiceKit-Unit-Tests"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

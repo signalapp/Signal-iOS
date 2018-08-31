@@ -6,6 +6,7 @@
 #import "CodeVerificationViewController.h"
 #import "OWSNavigationController.h"
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
@@ -41,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[Environment current].preferences unsetRecordedAPNSTokens];
+    [Environment.shared.preferences unsetRecordedAPNSTokens];
 
     [ModalActivityIndicatorViewController
         presentFromViewController:fromViewController

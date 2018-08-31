@@ -7,9 +7,9 @@
 #import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "PhoneNumber.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
-#import "TextSecureKitEnv.h"
 
 @import Contacts;
 

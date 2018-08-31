@@ -1,11 +1,14 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalRecipient.h"
+#import "MockSSKEnvironment.h"
+#import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
 #import "TSAccountManager.h"
-#import "TSStorageManager+keyingMaterial.h"
-#import <XCTest/XCTest.h>
+#import "TestAppContext.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface TSAccountManager (Testing)
 
@@ -13,7 +16,7 @@
 
 @end
 
-@interface SignalRecipientTest : XCTestCase
+@interface SignalRecipientTest : SSKBaseTest
 
 @property (nonatomic) NSString *localNumber;
 
@@ -24,32 +27,47 @@
 - (void)setUp
 {
     [super setUp];
+
     self.localNumber = @"+13231231234";
     [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber];
+}
+
+- (void)tearDown
+{
+    [super tearDown];
 }
 
 - (void)testSelfRecipientWithExistingRecord
 {
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
-    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber relay:nil] save];
-    XCTAssertNotNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
-    SignalRecipient *me = [SignalRecipient selfRecipient];
-    XCTAssert(me);
-    XCTAssertEqualObjects(self.localNumber, me.uniqueId);
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
+
+            XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
+
+            SignalRecipient *me = [SignalRecipient selfRecipientWithTransaction:transaction];
+            XCTAssertNotNil(me);
+            XCTAssertEqualObjects(self.localNumber, me.uniqueId);
+        }];
 }
 
 - (void)testSelfRecipientWithoutExistingRecord
 {
     XCTAssertNotNil(self.localNumber);
-    [[SignalRecipient fetchObjectWithUniqueID:self.localNumber] remove];
-    // Sanity Check that there's no existing user.
-    XCTAssertNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
-    SignalRecipient *me = [SignalRecipient selfRecipient];
-    XCTAssert(me);
-    XCTAssertEqualObjects(self.localNumber, me.uniqueId);
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [[SignalRecipient fetchObjectWithUniqueID:self.localNumber] removeWithTransaction:transaction];
+
+            XCTAssertFalse([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
+
+            SignalRecipient *me = [SignalRecipient selfRecipientWithTransaction:transaction];
+            XCTAssertNil(me);
+            XCTAssertEqualObjects(self.localNumber, me.uniqueId);
+        }];
 }
 
 @end

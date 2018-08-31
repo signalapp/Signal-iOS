@@ -3,40 +3,21 @@
 //
 
 #import "Environment.h"
-#import "DebugLogger.h"
-#import "SignalKeyingStorage.h"
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/Threading.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 
 static Environment *sharedEnvironment = nil;
 
-@interface Environment ()
-
-@property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) ContactsUpdater *contactsUpdater;
-@property (nonatomic) TSNetworkManager *networkManager;
-@property (nonatomic) OWSMessageSender *messageSender;
-@property (nonatomic) OWSPreferences *preferences;
-
-@end
-
-#pragma mark -
-
 @implementation Environment
 
-+ (Environment *)current
++ (Environment *)shared
 {
     OWSAssert(sharedEnvironment);
 
     return sharedEnvironment;
 }
 
-+ (void)setCurrent:(Environment *)environment
++ (void)setShared:(Environment *)environment
 {
     // The main app environment should only be set once.
     //
@@ -48,25 +29,21 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = environment;
 }
 
-+ (void)clearCurrentForTests
++ (void)clearSharedForTests
 {
     sharedEnvironment = nil;
 }
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
-                         networkManager:(TSNetworkManager *)networkManager
-                          messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithPreferences:(OWSPreferences *)preferences
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _contactsManager = contactsManager;
-    _contactsUpdater = contactsUpdater;
-    _networkManager = networkManager;
-    _messageSender = messageSender;
+    OWSAssert(preferences);
+
+    _preferences = preferences;
 
     OWSSingletonAssert();
 
@@ -75,50 +52,9 @@ static Environment *sharedEnvironment = nil;
 
 - (OWSContactsManager *)contactsManager
 {
-    OWSAssert(_contactsManager);
+    OWSAssert(SSKEnvironment.shared.contactsManager);
 
-    return _contactsManager;
-}
-
-- (ContactsUpdater *)contactsUpdater
-{
-    OWSAssert(_contactsUpdater);
-
-    return _contactsUpdater;
-}
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssert(_networkManager);
-
-    return _networkManager;
-}
-
-- (OWSMessageSender *)messageSender
-{
-    OWSAssert(_messageSender);
-
-    return _messageSender;
-}
-
-+ (OWSPreferences *)preferences
-{
-    OWSAssert([Environment current].preferences);
-
-    return [Environment current].preferences;
-}
-
-// TODO: Convert to singleton?
-- (OWSPreferences *)preferences
-{
-    @synchronized(self)
-    {
-        if (!_preferences) {
-            _preferences = [OWSPreferences new];
-        }
-    }
-
-    return _preferences;
+    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
 }
 
 @end

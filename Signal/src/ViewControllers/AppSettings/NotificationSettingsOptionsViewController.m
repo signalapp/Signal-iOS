@@ -27,7 +27,7 @@
     OWSTableSection *section = [OWSTableSection new];
     section.footerTitle = NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
 
-    OWSPreferences *prefs = [Environment preferences];
+    OWSPreferences *prefs = Environment.shared.preferences;
     NotificationType selectedNotifType = [prefs notificationPreviewType];
     for (NSNumber *option in
         @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ]) {
@@ -53,7 +53,7 @@
 
 - (void)setNotificationType:(NotificationType)notificationType
 {
-    [Environment.preferences setNotificationPreviewType:notificationType];
+    [Environment.shared.preferences setNotificationPreviewType:notificationType];
 
     // rebuild callUIAdapter since notification configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];

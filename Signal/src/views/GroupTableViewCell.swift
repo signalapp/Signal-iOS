@@ -4,6 +4,7 @@
 
 import UIKit
 import SignalServiceKit
+import SignalMessaging
 
 @objc class GroupTableViewCell: UITableViewCell {
 

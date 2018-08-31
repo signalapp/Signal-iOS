@@ -23,7 +23,7 @@ static NSString *const OWS108CallLoggingPreferenceId = @"108";
 {
     OWSAssert(transaction);
 
-    [[Environment preferences] applyCallLoggingSettingsForLegacyUsersWithTransaction:transaction];
+    [Environment.shared.preferences applyCallLoggingSettingsForLegacyUsersWithTransaction:transaction];
 }
 
 @end

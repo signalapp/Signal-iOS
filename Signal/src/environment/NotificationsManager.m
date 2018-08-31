@@ -16,7 +16,6 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -248,7 +247,7 @@
 
                    [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
                } else {
-                   if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                   if (shouldPlaySound && [Environment.shared.preferences soundInForeground]) {
                        OWSSound sound = [OWSSounds notificationSoundForThread:thread];
                        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
@@ -282,7 +281,7 @@
 
                    [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
                } else {
-                   if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                   if (shouldPlaySound && [Environment.shared.preferences soundInForeground]) {
                        OWSSound sound = [OWSSounds globalNotificationSound];
                        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
@@ -389,7 +388,7 @@
 
             [[PushManager sharedManager] presentNotification:notification checkForCancel:YES];
         } else {
-            if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+            if (shouldPlaySound && [Environment.shared.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
                 SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                 // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
@@ -439,7 +438,7 @@
 
 - (NotificationType)notificationPreviewType
 {
-    OWSPreferences *prefs = [Environment current].preferences;
+    OWSPreferences *prefs = Environment.shared.preferences;
     return prefs.notificationPreviewType;
 }
 

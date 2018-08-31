@@ -55,97 +55,90 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Singletons
 
+- (void)createSingletons
+{
+    OWSAssert(SSKEnvironment.shared.messageSender);
+    OWSAssert(Environment.shared.contactsManager);
+    OWSAssert(Environment.shared.preferences);
+    OWSAssert(SSKEnvironment.shared.networkManager);
+    OWSAssert(SSKEnvironment.shared.contactsUpdater);
+
+    _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                                                   preferences:Environment.shared.preferences];
+
+    _notificationsManager = [NotificationsManager new];
+    SSKEnvironment.shared.notificationsManager = self.notificationsManager;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didChangeCallLoggingPreference:)
+                                                 name:OWSPreferencesCallLoggingDidChangeNotification
+                                               object:nil];
+    _callService = [[CallService alloc]
+        initWithAccountManager:self.accountManager
+               contactsManager:Environment.shared.contactsManager
+                 messageSender:SSKEnvironment.shared.messageSender
+          notificationsAdapter:[[OWSCallNotificationsAdapter alloc] initWithAdaptee:self.notificationsManager]];
+
+    _callMessageHandler =
+        [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
+                                                        callService:self.callService
+                                                      messageSender:SSKEnvironment.shared.messageSender];
+    SSKEnvironment.shared.callMessageHandler = self.callMessageHandler;
+
+    _outboundCallInitiator =
+        [[OutboundCallInitiator alloc] initWithContactsManager:Environment.shared.contactsManager
+                                               contactsUpdater:SSKEnvironment.shared.contactsUpdater];
+
+    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
+                                                                networkManager:SSKEnvironment.shared.networkManager
+                                                                 signalService:[OWSSignalService sharedInstance]];
+}
+
 - (OWSWebRTCCallMessageHandler *)callMessageHandler
 {
-    @synchronized(self)
-    {
-        if (!_callMessageHandler) {
-            _callMessageHandler =
-                [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
-                                                                callService:self.callService
-                                                              messageSender:Environment.current.messageSender];
-        }
-    }
+    OWSAssert(_callMessageHandler);
 
     return _callMessageHandler;
 }
 
 - (CallService *)callService
 {
-    @synchronized(self)
-    {
-        if (!_callService) {
-            OWSAssert(self.accountManager);
-            OWSAssert(Environment.current.contactsManager);
-            OWSAssert(Environment.current.messageSender);
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCallLoggingPreference:) name:OWSPreferencesCallLoggingDidChangeNotification object:nil];
-            
-            _callService = [[CallService alloc] initWithAccountManager:self.accountManager
-                                                       contactsManager:Environment.current.contactsManager
-                                                         messageSender:Environment.current.messageSender
-                                                  notificationsAdapter:[OWSCallNotificationsAdapter new]];
-        }
-    }
+    OWSAssert(_callService);
 
     return _callService;
 }
 
 - (CallUIAdapter *)callUIAdapter
 {
+    OWSAssert(self.callService.callUIAdapter);
+
     return self.callService.callUIAdapter;
 }
 
 - (OutboundCallInitiator *)outboundCallInitiator
 {
-    @synchronized(self)
-    {
-        if (!_outboundCallInitiator) {
-            OWSAssert(Environment.current.contactsManager);
-            OWSAssert(Environment.current.contactsUpdater);
-            _outboundCallInitiator =
-                [[OutboundCallInitiator alloc] initWithContactsManager:Environment.current.contactsManager
-                                                       contactsUpdater:Environment.current.contactsUpdater];
-        }
-    }
+    OWSAssert(_outboundCallInitiator);
 
     return _outboundCallInitiator;
 }
 
 - (OWSMessageFetcherJob *)messageFetcherJob
 {
-    @synchronized(self)
-    {
-        if (!_messageFetcherJob) {
-            _messageFetcherJob =
-                [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
-                                                       networkManager:Environment.current.networkManager
-                                                        signalService:[OWSSignalService sharedInstance]];
-        }
-    }
+    OWSAssert(_messageFetcherJob);
+
     return _messageFetcherJob;
 }
 
 - (NotificationsManager *)notificationsManager
 {
-    @synchronized(self)
-    {
-        if (!_notificationsManager) {
-            _notificationsManager = [NotificationsManager new];
-        }
-    }
+    OWSAssert(_notificationsManager);
 
     return _notificationsManager;
 }
 
 - (AccountManager *)accountManager
 {
-    @synchronized(self)
-    {
-        if (!_accountManager) {
-            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                           preferences:Environment.current.preferences];
-        }
-    }
+    OWSAssert(_accountManager);
 
     return _accountManager;
 }
@@ -236,7 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
-    [Environment.preferences clear];
+    [Environment.shared.preferences clear];
 
     [self clearAllNotifications];
 

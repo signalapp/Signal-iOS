@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 protocol ConversationSearchViewDelegate: class {
@@ -36,7 +37,7 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     private var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+        return Environment.shared.contactsManager
     }
 
     enum SearchSection: Int {

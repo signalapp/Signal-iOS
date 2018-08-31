@@ -9,6 +9,7 @@
  */
 import Foundation
 import UserNotifications
+import SignalMessaging
 
 @available(iOS 10.0, *)
 struct AppNotifications {
@@ -66,7 +67,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
     private let center: UNUserNotificationCenter
 
     var previewType: NotificationType {
-        return Environment.current().preferences.notificationPreviewType()
+        return Environment.shared.preferences.notificationPreviewType()
     }
 
     override init() {
@@ -117,7 +118,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
             case .noNameNoPreview:
                 return CallStrings.missedCallNotificationBodyWithoutCallerName
             case .nameNoPreview, .namePreview:
-                return (Environment.current().preferences.isCallKitPrivacyEnabled()
+                return (Environment.shared.preferences.isCallKitPrivacyEnabled()
                     ? CallStrings.missedCallNotificationBodyWithoutCallerName
                     : String(format: CallStrings.missedCallNotificationBodyWithCallerName, callerName))
         }}()
@@ -143,7 +144,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
             case .noNameNoPreview:
                 return CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
             case .nameNoPreview, .namePreview:
-                return (Environment.current().preferences.isCallKitPrivacyEnabled()
+                return (Environment.shared.preferences.isCallKitPrivacyEnabled()
                     ? CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
                     : String(format: CallStrings.missedCallWithIdentityChangeNotificationBodyWithCallerName, callerName))
             }}()
@@ -169,7 +170,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
             case .noNameNoPreview:
                 return CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
             case .nameNoPreview, .namePreview:
-                return (Environment.current().preferences.isCallKitPrivacyEnabled()
+                return (Environment.shared.preferences.isCallKitPrivacyEnabled()
                     ? CallStrings.missedCallWithIdentityChangeNotificationBodyWithoutCallerName
                     : String(format: CallStrings.missedCallWithIdentityChangeNotificationBodyWithCallerName, callerName))
             }}()

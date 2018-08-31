@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @class ImageCache;
+@class OWSPrimaryStorage;
 @class SignalAccount;
 @class UIFont;
 
@@ -19,6 +20,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
 #pragma mark - Setup
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
 - (void)startObserving;
 

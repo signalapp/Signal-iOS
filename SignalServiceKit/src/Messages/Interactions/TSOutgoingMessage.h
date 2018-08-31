@@ -41,12 +41,12 @@ typedef NS_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
 NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientState value);
 
 typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
-    TSGroupMessageUnspecified,
-    TSGroupMessageNew,
-    TSGroupMessageUpdate,
-    TSGroupMessageDeliver,
-    TSGroupMessageQuit,
-    TSGroupMessageRequestInfo,
+    TSGroupMetaMessageUnspecified,
+    TSGroupMetaMessageNew,
+    TSGroupMetaMessageUpdate,
+    TSGroupMetaMessageDeliver,
+    TSGroupMetaMessageQuit,
+    TSGroupMetaMessageRequestInfo,
 };
 
 @class SSKProtoAttachmentPointer;

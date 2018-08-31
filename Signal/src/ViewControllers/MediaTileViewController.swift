@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public protocol MediaTileViewControllerDelegate: class {
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)

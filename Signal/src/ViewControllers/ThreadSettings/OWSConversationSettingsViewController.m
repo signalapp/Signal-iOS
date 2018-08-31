@@ -103,8 +103,8 @@ const CGFloat kIconViewLength = 24;
 - (void)commonInit
 {
     _accountManager = [TSAccountManager sharedInstance];
-    _contactsManager = [Environment current].contactsManager;
-    _messageSender = [Environment current].messageSender;
+    _contactsManager = Environment.shared.contactsManager;
+    _messageSender = SSKEnvironment.shared.messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
@@ -987,7 +987,7 @@ const CGFloat kIconViewLength = 24;
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
+        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
     [self.messageSender enqueueMessage:message
         success:^{
             OWSLogInfo(@"Successfully left group.");

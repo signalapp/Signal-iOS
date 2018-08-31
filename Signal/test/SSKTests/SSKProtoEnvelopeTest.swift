@@ -7,7 +7,7 @@ import XCTest
 import SignalServiceKit
 import SwiftProtobuf
 
-class SSKProtoEnvelopeTest: XCTestCase {
+class SSKProtoEnvelopeTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()

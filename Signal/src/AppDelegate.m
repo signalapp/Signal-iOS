@@ -29,7 +29,6 @@
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalMessaging/Release.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -48,7 +47,6 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/sysctl.h>
 
@@ -156,11 +154,9 @@ static NSTimeInterval launchStartedAt;
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [AppSetup setupEnvironmentWithCallMessageHandlerBlock:^{
-        return SignalApp.sharedApp.callMessageHandler;
-    }
-        notificationsProtocolBlock:^{
-            return SignalApp.sharedApp.notificationsManager;
+    [AppSetup
+        setupEnvironmentWithAppSpecificSingletonBlock:^{
+            [SignalApp.sharedApp createSingletons];
         }
         migrationCompletion:^{
             OWSAssertIsOnMainThread();
@@ -615,7 +611,7 @@ static NSTimeInterval launchStartedAt;
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
             [TSSocketManager requestSocketOpen];
-            [[Environment current].contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
+            [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
 
@@ -627,7 +623,7 @@ static NSTimeInterval launchStartedAt;
                 // restart the app, so we check every activation for users who haven't yet registered.
                 __unused AnyPromise *promise =
                     [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
-                                                    preferences:[Environment preferences]];
+                                                    preferences:Environment.shared.preferences];
             }
 
             if ([OWS2FAManager sharedManager].isDueForReminder) {
@@ -1034,21 +1030,21 @@ static NSTimeInterval launchStartedAt;
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =
             [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
-                                            preferences:[Environment preferences]];
+                                            preferences:Environment.shared.preferences];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
 
     [AppVersion.sharedInstance mainAppLaunchDidComplete];
 
-    [Environment.current.contactsManager loadSignalAccountsFromCache];
-    [Environment.current.contactsManager startObserving];
+    [Environment.shared.contactsManager loadSignalAccountsFromCache];
+    [Environment.shared.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
-    if (!Environment.preferences.hasGeneratedThumbnails) {
+    if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection
             asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
                 [TSAttachmentStream enumerateCollectionObjectsUsingBlock:^(id _Nonnull obj, BOOL *_Nonnull stop){
@@ -1056,7 +1052,7 @@ static NSTimeInterval launchStartedAt;
                 }];
             }
             completionBlock:^{
-                [Environment.preferences setHasGeneratedThumbnails:YES];
+                [Environment.shared.preferences setHasGeneratedThumbnails:YES];
             }];
     }
 

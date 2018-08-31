@@ -273,11 +273,10 @@ typedef enum : NSUInteger {
 
 - (void)commonInit
 {
-
     _viewControllerCreatedAt = CACurrentMediaTime();
-    _contactsManager = [Environment current].contactsManager;
-    _contactsUpdater = [Environment current].contactsUpdater;
-    _messageSender = [Environment current].messageSender;
+    _contactsManager = Environment.shared.contactsManager;
+    _contactsUpdater = SSKEnvironment.shared.contactsUpdater;
+    _messageSender = SSKEnvironment.shared.messageSender;
     _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
     _primaryStorage = [OWSPrimaryStorage sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
@@ -2783,10 +2782,10 @@ typedef enum : NSUInteger {
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
 
-    if (!Environment.preferences.hasSentAMessage) {
-        [Environment.preferences setHasSentAMessage:YES];
+    if (!Environment.shared.preferences.hasSentAMessage) {
+        [Environment.shared.preferences setHasSentAMessage:YES];
     }
-    if ([Environment.preferences soundInForeground]) {
+    if ([Environment.shared.preferences soundInForeground]) {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
         AudioServicesPlaySystemSound(soundId);
     }
@@ -3953,7 +3952,7 @@ typedef enum : NSUInteger {
 
         uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
         message = [TSOutgoingMessage outgoingMessageInThread:groupThread
-                                            groupMetaMessage:TSGroupMessageUpdate
+                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                             expiresInSeconds:expiresInSeconds];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];

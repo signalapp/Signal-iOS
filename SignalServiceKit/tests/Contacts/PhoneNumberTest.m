@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
 #import "PhoneNumber.h"
+#import "SSKBaseTest.h"
 
-@interface PhoneNumberTest : XCTestCase
+@interface PhoneNumberTest : SSKBaseTest
 
 @end
 
@@ -14,19 +14,19 @@
 @implementation PhoneNumberTest
 
 -(void)testE164 {
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"+1 (902) 555-5555" fromRegion:@"US"] toE164]);
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"1 (902) 555-5555" fromRegion:@"US"] toE164]);
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"1-902-555-5555" fromRegion:@"US"] toE164]);
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"1-902-５５５-5555" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"+1 (902) 555-5555"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1 (902) 555-5555"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1-902-555-5555"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"1-902-５５５-5555"] toE164]);
 
     // Phone numbers missing a calling code.
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"9025555555" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"9025555555"] toE164]);
 
     // Phone numbers with a calling code but without a plus
-    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromText:@"19025555555" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(@"+19025555555", [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"19025555555"] toE164]);
 
     // Empty input.
-    XCTAssertEqualObjects(nil, [[PhoneNumber tryParsePhoneNumberFromText:@"" fromRegion:@"US"] toE164]);
+    XCTAssertEqualObjects(nil, [[PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@""] toE164]);
 }
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedTextAssumesLocalRegion {

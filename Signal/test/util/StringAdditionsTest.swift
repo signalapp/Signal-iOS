@@ -4,7 +4,7 @@
 
 import XCTest
 
-class StringAdditionsTest: XCTestCase {
+class StringAdditionsTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()

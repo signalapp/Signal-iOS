@@ -1,14 +1,10 @@
 //
-//  TSStorageSignedPreKeyStore.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 07/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
 
-@interface TSStorageSignedPreKeyStore : XCTestCase
+@interface TSStorageSignedPreKeyStore : SSKBaseTest
 
 @end
 
@@ -23,7 +19,5 @@
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }
-
-
 
 @end

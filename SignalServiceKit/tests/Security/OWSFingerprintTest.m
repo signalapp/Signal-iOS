@@ -1,11 +1,12 @@
-//  Created by Michael Kirk on 9/14/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSFingerprint.h"
-#import <25519/Curve25519.h>
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
+#import <Curve25519Kit/Curve25519.h>
 
-@interface OWSFingerprintTest : XCTestCase
+@interface OWSFingerprintTest : SSKBaseTest
 
 
 @end

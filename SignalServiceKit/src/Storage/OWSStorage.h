@@ -60,6 +60,10 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 + (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
 
+#ifdef DEBUG
+- (void)closeStorageForTests;
+#endif
+
 + (void)resetAllStorage;
 
 - (YapDatabaseConnection *)newDatabaseConnection;
