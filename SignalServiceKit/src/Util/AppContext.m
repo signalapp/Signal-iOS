@@ -43,6 +43,11 @@ void SetCurrentAppContext(id<AppContext> appContext)
     currentAppContext = appContext;
 }
 
+void ClearCurrentAppContextForTests()
+{
+    currentAppContext = nil;
+}
+
 void ExitShareExtension(void)
 {
     OWSLogInfo(@"ExitShareExtension");
