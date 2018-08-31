@@ -14,6 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const CGFloat kMaxVideoStillSize = 1 * 1024;
+
 @interface TSAttachmentStream ()
 
 // We only want to generate the file path for this attachment once, so that
@@ -315,19 +317,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Image Validation
 
-- (BOOL)isValidImageWithData:(NSData *)data
-{
-    OWSAssert(self.isImage || self.isAnimated);
-    OWSAssert(data);
-
-    return [data ows_isValidImageWithMimeType:self.contentType];
-}
-
 - (BOOL)isValidImage
 {
     OWSAssert(self.isImage || self.isAnimated);
 
     return [NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType];
+}
+
+- (BOOL)isValidVideo
+{
+    OWSAssert(self.isVideo);
+
+    return [NSData ows_isValidVideoAtURL:self.mediaURL];
 }
 
 #pragma mark -
@@ -341,11 +342,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (!mediaUrl) {
             return nil;
         }
-        NSData *data = [NSData dataWithContentsOfURL:mediaUrl];
-        if (![self isValidImageWithData:data]) {
+        if (![self isValidImage]) {
             return nil;
         }
-        return [UIImage imageWithData:data];
+        return [[UIImage alloc] initWithContentsOfFile:self.filePath];
     } else {
         return nil;
     }
@@ -362,17 +362,12 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSURL *_Nullable mediaUrl = [self mediaURL];
-    if (!mediaUrl) {
+    if (![NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType]) {
+        OWSFail(@"%@ skipping invalid image", self.logTag);
         return nil;
     }
 
-    NSData *data = [NSData dataWithContentsOfURL:mediaUrl];
-    if (![self isValidImageWithData:data]) {
-        return nil;
-    }
-
-    return data;
+    return [NSData dataWithContentsOfFile:self.filePath];
 }
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType
@@ -462,6 +457,11 @@ NS_ASSUME_NONNULL_BEGIN
         CGImageRelease(thumbnail);
 
     } else if (self.isVideo) {
+        if (![self isValidVideo]) {
+            DDLogWarn(@"%@ skipping thumbnail for invalid video at path: %@", self.logTag, self.filePath);
+            return;
+        }
+
         result = [self videoStillImageWithMaxSize:CGSizeMake(thumbnailSize, thumbnailSize)];
     } else {
         OWSFail(@"%@ trying to generate thumnail for unexpected attachment: %@ of type: %@",
@@ -471,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (result == nil) {
-        OWSFail(@"%@ Unable to build thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+        DDLogError(@"Unable to build thumbnail for attachmentId: %@", self.uniqueId);
         return;
     }
 
@@ -484,12 +484,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)videoStillImage
 {
+    if (![self isValidVideo]) {
+        return nil;
+    }
     // Uses the assets intrinsic size by default
-    return [self videoStillImageWithMaxSize:CGSizeZero];
+    return [self videoStillImageWithMaxSize:CGSizeMake(kMaxVideoStillSize, kMaxVideoStillSize)];
 }
 
 - (nullable UIImage *)videoStillImageWithMaxSize:(CGSize)maxSize
 {
+    maxSize.width = MIN(maxSize.width, kMaxVideoStillSize);
+    maxSize.height = MIN(maxSize.height, kMaxVideoStillSize);
+
     NSURL *_Nullable mediaUrl = [self mediaURL];
     if (!mediaUrl) {
         return nil;
@@ -502,6 +508,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *err = NULL;
     CMTime time = CMTimeMake(1, 60);
     CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
+    if (imgRef == NULL) {
+        DDLogError(@"Could not generate video still: %@", self.filePath.pathExtension);
+        return nil;
+    }
 
     return [[UIImage alloc] initWithCGImage:imgRef];
 }
@@ -531,6 +541,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)calculateImageSize
 {
     if ([self isVideo]) {
+        if (![self isValidVideo]) {
+            return CGSizeZero;
+        }
         return [self videoStillImage].size;
     } else if ([self isImage] || [self isAnimated]) {
         NSURL *_Nullable mediaUrl = [self mediaURL];

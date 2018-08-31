@@ -12,6 +12,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
+#import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
 
@@ -482,8 +483,20 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 if ([self.attachmentStream isAnimated]) {
                     self.messageCellType = OWSMessageCellType_AnimatedImage;
                 } else if ([self.attachmentStream isImage]) {
+                    if (![self.attachmentStream isValidImage]) {
+                        DDLogWarn(@"Treating invalid image as generic attachment.");
+                        self.messageCellType = OWSMessageCellType_GenericAttachment;
+                        return;
+                    }
+
                     self.messageCellType = OWSMessageCellType_StillImage;
                 } else if ([self.attachmentStream isVideo]) {
+                    if (![self.attachmentStream isValidVideo]) {
+                        DDLogWarn(@"Treating invalid video as generic attachment.");
+                        self.messageCellType = OWSMessageCellType_GenericAttachment;
+                        return;
+                    }
+
                     self.messageCellType = OWSMessageCellType_Video;
                 } else {
                     OWSFail(@"%@ unexpected attachment type.", self.logTag);
