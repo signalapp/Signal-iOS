@@ -22,9 +22,6 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 {
     OWSAssertIsOnMainThread();
 
-#ifndef THEME_ENABLED
-    return NO;
-#else
     if (!CurrentAppContext().isMainApp) {
         // Ignore theme in app extensions.
         return NO;
