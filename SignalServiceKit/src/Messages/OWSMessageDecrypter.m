@@ -13,12 +13,12 @@
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSPreKeyManager.h"
-#import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -182,8 +182,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                           transaction:transaction];
+                [[SSKEnvironment sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                         transaction:transaction];
             }];
     }
 
@@ -323,9 +323,9 @@ NS_ASSUME_NONNULL_BEGIN
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
-                                                                          thread:contactThread
-                                                                     transaction:transaction];
+    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                        thread:contactThread
+                                                                   transaction:transaction];
 }
 
 @end

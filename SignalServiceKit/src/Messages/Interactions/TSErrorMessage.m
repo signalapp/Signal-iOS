@@ -6,9 +6,9 @@
 #import "ContactsManagerProtocol.h"
 #import "NSDate+OWS.h"
 #import "OWSMessageManager.h"
+#import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import "TextSecureKitEnv.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -125,7 +125,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                     @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
                 NSString *recipientDisplayName =
-                    [[TextSecureKitEnv sharedEnv].contactsManager displayNameForPhoneIdentifier:self.recipientId];
+                    [[SSKEnvironment sharedEnv].contactsManager displayNameForPhoneIdentifier:self.recipientId];
                 return [NSString stringWithFormat:messageFormat, recipientDisplayName];
             } else {
                 // recipientId will be nil for legacy errors

@@ -12,11 +12,11 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalServiceKit/NSString+SSK.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

@@ -2,14 +2,14 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TextSecureKitEnv.h"
+#import "SSKEnvironment.h"
 #import "AppContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-static TextSecureKitEnv *sharedTextSecureKitEnv;
+static SSKEnvironment *sharedSSKEnvironment;
 
-@interface TextSecureKitEnv ()
+@interface SSKEnvironment ()
 
 @property (nonatomic) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic) id<ContactsManagerProtocol> contactsManager;
@@ -21,7 +21,7 @@ static TextSecureKitEnv *sharedTextSecureKitEnv;
 
 #pragma mark -
 
-@implementation TextSecureKitEnv
+@implementation SSKEnvironment
 
 - (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                            contactsManager:(id<ContactsManagerProtocol>)contactsManager
@@ -51,17 +51,17 @@ static TextSecureKitEnv *sharedTextSecureKitEnv;
 
 + (instancetype)sharedEnv
 {
-    OWSAssertDebug(sharedTextSecureKitEnv);
+    OWSAssertDebug(sharedSSKEnvironment);
 
-    return sharedTextSecureKitEnv;
+    return sharedSSKEnvironment;
 }
 
-+ (void)setSharedEnv:(TextSecureKitEnv *)env
++ (void)setSharedEnv:(SSKEnvironment *)env
 {
     OWSAssertDebug(env);
-    OWSAssertDebug(!sharedTextSecureKitEnv || CurrentAppContext().isRunningTests);
+    OWSAssertDebug(!sharedSSKEnvironment || CurrentAppContext().isRunningTests);
 
-    sharedTextSecureKitEnv = env;
+    sharedSSKEnvironment = env;
 }
 
 @end

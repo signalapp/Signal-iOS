@@ -33,6 +33,7 @@
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
@@ -46,7 +47,6 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
-#import "TextSecureKitEnv.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -84,10 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    id<ContactsManagerProtocol> contactsManager = [TextSecureKitEnv sharedEnv].contactsManager;
-    id<OWSCallMessageHandler> callMessageHandler = [TextSecureKitEnv sharedEnv].callMessageHandler;
+    id<ContactsManagerProtocol> contactsManager = [SSKEnvironment sharedEnv].contactsManager;
+    id<OWSCallMessageHandler> callMessageHandler = [SSKEnvironment sharedEnv].callMessageHandler;
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-    OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment sharedEnv].messageSender;
 
 
     return [self initWithNetworkManager:networkManager
@@ -429,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<ProfileManagerProtocol>)profileManager
 {
-    return [TextSecureKitEnv sharedEnv].profileManager;
+    return [SSKEnvironment sharedEnv].profileManager;
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -798,7 +798,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+    id<ProfileManagerProtocol> profileManager = [SSKEnvironment sharedEnv].profileManager;
     [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
 }
 
@@ -1168,10 +1168,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Update thread preview in inbox
     [thread touchWithTransaction:transaction];
 
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                           inThread:thread
-                                                                    contactsManager:self.contactsManager
-                                                                        transaction:transaction];
+    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                         inThread:thread
+                                                                  contactsManager:self.contactsManager
+                                                                      transaction:transaction];
 }
 
 #pragma mark - helpers

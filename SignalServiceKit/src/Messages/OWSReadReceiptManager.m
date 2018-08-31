@@ -13,11 +13,11 @@
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "OWSStorage.h"
 #import "OWSSyncConfigurationMessage.h"
+#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
-#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -156,7 +156,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (instancetype)initDefault
 {
-    OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment sharedEnv].messageSender;
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
 
     return [self initWithMessageSender:messageSender primaryStorage:primaryStorage];

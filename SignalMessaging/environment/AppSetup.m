@@ -12,7 +12,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,13 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSCallMessageHandler> callMessageHandler = callMessageHandlerBlock();
         id<NotificationsProtocol> notificationsManager = notificationsManagerBlock();
 
-        TextSecureKitEnv *sharedEnv =
-            [[TextSecureKitEnv alloc] initWithCallMessageHandler:callMessageHandler
-                                                 contactsManager:[Environment current].contactsManager
-                                                   messageSender:[Environment current].messageSender
-                                            notificationsManager:notificationsManager
-                                                  profileManager:OWSProfileManager.sharedManager];
-        [TextSecureKitEnv setSharedEnv:sharedEnv];
+        SSKEnvironment *sharedEnv =
+            [[SSKEnvironment alloc] initWithCallMessageHandler:callMessageHandler
+                                               contactsManager:[Environment current].contactsManager
+                                                 messageSender:[Environment current].messageSender
+                                          notificationsManager:notificationsManager
+                                                profileManager:OWSProfileManager.sharedManager];
+        [SSKEnvironment setSharedEnv:sharedEnv];
 
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];

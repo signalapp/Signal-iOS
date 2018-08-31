@@ -16,11 +16,11 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalService.h"
 #import "OWSWebsocketSecurityPolicy.h"
+#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSErrorMessage.h"
 #import "TSRequest.h"
-#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -749,8 +749,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
                     YapDatabaseReadWriteTransaction *transaction) {
                     TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                               transaction:transaction];
+                    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                             transaction:transaction];
                 }];
             }
 

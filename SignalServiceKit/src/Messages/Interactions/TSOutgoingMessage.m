@@ -10,13 +10,13 @@
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
 #import "ProtoUtils.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSQuotedMessage.h"
-#import "TextSecureKitEnv.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

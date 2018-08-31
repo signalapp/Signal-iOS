@@ -1,16 +1,18 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ContactsManagerProtocol;
+
 @class OWSMessageSender;
+
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
 @protocol ProfileManagerProtocol;
 
-@interface TextSecureKitEnv : NSObject
+@interface SSKEnvironment : NSObject
 
 - (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                            contactsManager:(id<ContactsManagerProtocol>)contactsManager
@@ -21,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedEnv;
-+ (void)setSharedEnv:(TextSecureKitEnv *)env;
++ (void)setSharedEnv:(SSKEnvironment *)env;
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;

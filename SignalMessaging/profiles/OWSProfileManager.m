@@ -20,12 +20,12 @@
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN

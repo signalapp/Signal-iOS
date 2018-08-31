@@ -5,7 +5,7 @@
 #import "OWSProfileKeyMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "ProtoUtils.h"
-#import "TextSecureKitEnv.h"
+#import "SSKEnvironment.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (recipientId.length > 0) {
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
-        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        id<ProfileManagerProtocol> profileManager = [SSKEnvironment sharedEnv].profileManager;
         [profileManager addUserToProfileWhitelist:recipientId];
     }
 

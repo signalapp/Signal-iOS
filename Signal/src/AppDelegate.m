@@ -44,11 +44,11 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/sysctl.h>
 

@@ -9,11 +9,11 @@
 #import "OWSContactsOutputStream.h"
 #import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import "TextSecureKitEnv.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    id<ContactsManagerProtocol> contactsManager = TextSecureKitEnv.sharedEnv.contactsManager;
+    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.sharedEnv.contactsManager;
 
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,

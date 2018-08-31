@@ -17,11 +17,11 @@
 #import "OWSRecipientIdentity.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
+#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
-#import "TextSecureKitEnv.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
@@ -79,7 +79,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (instancetype)initDefault
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment sharedEnv].messageSender;
 
     return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
 }
@@ -540,9 +540,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [message saveWithTransaction:transaction];
     }
 
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
-                                                                          thread:contactThread
-                                                                     transaction:transaction];
+    [[SSKEnvironment sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                        thread:contactThread
+                                                                   transaction:transaction];
 }
 
 - (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId
