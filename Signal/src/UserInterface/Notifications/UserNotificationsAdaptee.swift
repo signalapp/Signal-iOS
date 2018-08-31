@@ -9,6 +9,7 @@
  */
 import Foundation
 import UserNotifications
+import SignalMessaging
 
 @available(iOS 10.0, *)
 struct AppNotifications {

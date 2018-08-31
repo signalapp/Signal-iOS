@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // There's no UTI type for webp!
 enum GiphyFormat {

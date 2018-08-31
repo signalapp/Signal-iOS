@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalMessaging
 
 // Objc wrapper for the MediaGalleryItem struct
 @objc

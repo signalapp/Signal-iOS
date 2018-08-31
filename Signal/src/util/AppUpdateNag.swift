@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalMessaging
 
 @objc
 class AppUpdateNag: NSObject {
