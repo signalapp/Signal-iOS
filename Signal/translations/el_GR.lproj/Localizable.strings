@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ στην ομάδα %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Το Signal δεν μπορεί να εκκινηθεί. Παρακαλούμε να στείλετε τα αρχεία καταγραφής σφαλμάτων στην ομάδα μας, ώστε να μπορέσουμε να προσπαθήσουμε να επιλύσουμε το πρόβλημα.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Το Signal δεν μπορεί να εκκινηθεί. Παρακαλούμε να στείλετε τα αρχεία καταγραφής σφαλμάτων στην ομάδα μας, ώστε να προσπαθήσουμε να επιλύσουμε το πρόβλημα.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Σφάλμα";
@@ -78,7 +78,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Εισάγετε το όνομά σας";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Όχι Τώρα";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Η έκδοση %@ είναι τώρα διαθέσιμη στο App Store.";
@@ -132,7 +132,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Αδυναμία επεξεργασίας βίντεο.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Δεν ήταν δυνατή η ανάλυση του συνημμένου εικόνας.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Δεν ήταν δυνατή η ανάλυση της συνημμένης εικόνας.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Αδυναμία κατάργησης μεταδεδομένων από την εικόνα.";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Αποτυχία επιλογής εγγράφου.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Το Signal δεν μπορεί να διαχειριστεί αυτό το αρχείο ως έχει. Δοκιμάστε να το  συμπιέσετε πριν από την αποστολή.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Μη υποστηριζόμενο αρχείο";
@@ -255,7 +255,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Ο χρήστης αποκλείστηκε";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Δεν μπορείς να αποκλείσεις τον εαυτό σου.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Δεν μπορείτε να αποκλείσετε τον εαυτό σας.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Σφάλμα";
@@ -291,7 +291,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Επανάκληση";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Το Signal χρειάζεται πρόσβαση στο μικρόφωνό σου για να πραγματοποιήσει κλήσεις και να ηχογραφήσει μηνύματα φωνής. Μπορείτε να επιτρέψετε την πρόσβαση πηγαίνοντας στις Ρυθμίσεις.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Το Signal χρειάζεται πρόσβαση στο μικρόφωνό σας για να πραγματοποιήσει κλήσεις και να ηχογραφήσει ηχητικά μηνύματα. Μπορείτε να επιτρέψετε την πρόσβαση πηγαίνοντας στις Ρυθμίσεις.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Απαιτείται πρόσβαση στο μικρόφωνο";
@@ -444,10 +444,10 @@
 "CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Συνοικία";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "Ταχυδρομική Θυρίδα";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Τ.Θ.";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Τ.Κ.";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "Περιοχή";
@@ -561,25 +561,25 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Αναίρεση Σίγασης";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Αυτή η ομάδα μπορεί να δει το προφίλ σου.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Η ομάδα μπορεί να δει το προφίλ σας.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Αυτός ο χρήστης μπορεί να δει το προφίλ σου.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ο χρήστης μπορεί να δει το προφίλ σας.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Κοινή Χρήση Προφίλ";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Κοινή Χρήση του Προφίλ σου";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Κοινή Χρήση του Προφίλ σας";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Κοινή Χρήση του Προφίλ σου";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Κοινή Χρήση του Προφίλ σας";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Προσθήκη στις Επαφές";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Κοινή Χρήση του Προφίλ σου με Αυτόν τον Χρήστη";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Κοινή Χρήση του Προφίλ σας με Αυτόν τον Χρήστη";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Αυτός ο χρήστης δεν βρίσκεται στις επαφές σας.";
@@ -612,10 +612,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Βελτιστοποίηση βάσης δεδομένων";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@Ώρα/ες Πρίν";
+"DATE_HOURS_AGO_FORMAT" = "%@ Ώρες Πρίν";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@Λεπτό/ά Πρίν";
+"DATE_MINUTES_AGO_FORMAT" = "%@ Λεπτά Πρίν";
 
 /* The present; the current time. */
 "DATE_NOW" = "Τώρα";
@@ -624,7 +624,7 @@
 "DATE_TODAY" = "Σήμερα ";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Χθές";
+"DATE_YESTERDAY" = "Εχθές";
 
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Δεν ήταν δυνατή η αντιγραφή των αρχείων αποσφαλμάτωσης.";
@@ -648,7 +648,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Αντιγραφή Συνδέσμου";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email στην υποστήριξη";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email στην Υποστήριξη";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Αποστολή στο τελευταίο Thread";
@@ -694,7 +694,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Όταν ενεργοποιηθεί, τα μηνύματα σε αυτή τη συνομιλία θα εξαφανίζονται αυτόματα αφού ανοιχθούν.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Τώρα τα μηνύματα εξαφανίζονται μετά από %@";
+"DISAPPEARING_MESSAGES_HINT" = "Τα μηνύματα εξαφανίζονται μετά από %@";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Ρυθμίσεις μηνυμάτων που εξαφανίζονται";
@@ -763,10 +763,10 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Γιατί δεν προσκαλείτε κάποιον;";
 
 /* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
+"EMPTY_INBOX_NEW_USER_TEXT" = "Πατήστε το κουμπί σύνταξης.";
 
 /* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
+"EMPTY_INBOX_NEW_USER_TITLE" = "Αρχίστε την πρώτη συνομιλία σας στο Signal!";
 
 /* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "Κανένα. Τίποτα. Μηδέν.";
@@ -808,7 +808,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy";
+"END_CALL_RESPONDER_IS_BUSY" = "Κατειλλημένο";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Η κλήση απέτυχε.";
@@ -1012,7 +1012,7 @@
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Δεν βρέθηκαν αποτελέσματα για '%@'";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Αρχειοθέτηση";
+"HOME_VIEW_TITLE_ARCHIVE" = "Αρχειοθετημένα";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -1033,7 +1033,7 @@
 "IN_CALL_TERMINATED" = "Η Κλήση Τερματίστηκε.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Αυτές οι συνομιλίες είναι αρχειοθετημένες. Θα εμφανιστούν στα εισερχόμενα, αν ληφθούν νέα μηνύματα.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Αυτές οι συνομιλίες είναι αρχειοθετημένες. Θα εμφανιστούν στα εισερχόμενα, αν λάβετε νέα μηνύματα.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Για να δείτε τα ονόματα των επαφών σας, ενημερώστε τις ρυθμίσεις του συστήματός ώστε να επιτρέπεται η πρόσβαση στις επαφές σας.";
@@ -1063,7 +1063,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Να Επιτρέπεται η Πρόσβαση στις Επαφές";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Προσκληση φίλων στο Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Πρόσκληση Φίλων στο Signal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Αναζήτηση";
@@ -1075,7 +1075,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Προσκαλώντας πολλαπλούς χρήστες την ίδια στιγμή θα σταλεί ένα ομαδικό μήνυμα του οποίου οι παραλήπτες θα μπορούν να δουν ο ένας τον άλλον.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Τα μηνύματα εξαφανίζονται μετά από %@.";
+"KEEP_MESSAGES_DURATION" = "Εξαφάνιση μηνυμάτων μετά από %@.";
 
 /* Slider label when disappearing messages is off */
 "KEEP_MESSAGES_FOREVER" = "Τα μηνύματα δεν εξαφανίζονται.";
@@ -1111,7 +1111,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Σύνδεση Νέας Συσκευής";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Συνδεδεμένες Συσκευές";
+"LINKED_DEVICES_TITLE" = "Συσχετισμένες Συσκευές";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Αποτυχία Σύνδεσης Συσκευής";
@@ -1207,7 +1207,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Παραλείφθηκε";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Μεταφορτώνεται";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Μεταφόρτωση";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Το μήνυμα δεν έχει περιεχόμενο ή συνημμένο.";
@@ -1252,7 +1252,7 @@
 "MESSAGE_STATUS_SENT" = "Στάλθηκε";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Μεταφορτώνεται...";
+"MESSAGE_STATUS_UPLOADING" = "Μεταφόρτωση...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "Ο/Η %@ δεν είναι πλέον σημειωμένος/η ως επιβεβαιωμένος. Πατήστε για επιλογές.";
@@ -1263,12 +1263,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "Ο/Η %@ δεν είναι πλέον σημειωμένος/η ως επιβεβαιωμένος. Πατήστε για επιλογές.";
 
-/* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Αποτυχία Λήψης.";
-
-/* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Επανάληψη Λήψης";
-
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Αποκλείσατε 1 μέλος αυτής της ομάδας";
 
@@ -1276,7 +1270,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Αποκλείσατε %@ Μέλη αυτής της Ομάδας";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Διαμοιρασμός του προφίλ σου με αυτή την ομάδα;";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Διαμοιρασμός του προφίλ σας με αυτή την ομάδα;";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Πάνω από ένα μέλη αυτής της ομάδας δεν είναι πλέον σημειωμένα ως επιβεβαιωμένα. Πατήστε για επιλογές.";
@@ -1320,10 +1314,10 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Αναπάντητη κλήση απο τον/την %@.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Δεν μπορείτε να συνδέσετε περισσότερες συσκευές.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Έχετε φτάσει το μέγιστο αριθμό συσκευών που μπορείτε να συνδέσετε στο λογαριασμό σας. Καταργήστε μια συσκευή ή δοκιμάστε ξανά αργότερα.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Δεν θα λαμβάνετε ειδοποιήσεις για συνομιλίες με σίγαση.";
@@ -1371,7 +1365,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Μέλος";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Ονόμασε την ομαδική συνομιλία";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Όνομα ομάδας";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Άλλοι Χρήστες";
@@ -1401,13 +1395,13 @@
 "NOTIFICATION_SEND_FAILED" = "Αποτυχία αποστολής μηνύματος στον/στην %@.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Λόγω κάποιου γνωστού σφάλματος στο σύστημα Ειδοποιήσεων της Apple, η προεπισκόπηση των μηνυμάτων θα προβάλλεται αν το μήνυμα ληφθεί μέσα σε 30 δευτερόλεπτα αφού αποσταλεί. Ως αποτέλεσμα ο μετρητής ειδοποιήσεων της εφαρμογής μπορεί να μην είναι ακριβής.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Λόγω γνωστών σφαλμάτων στο πλαίσιο ειδοποιήσεων της Apple, οι προεπισκοπήσεις μηνυμάτων θα εμφανίζονται μόνο αν το μήνυμα ανακτηθεί εντός 30 δευτερολέπτων από την αποστολή. Κατά συνέπεια, ο μετρητής ειδοποιήσεων της εφαρμογής μπορεί να μην είναι ακριβής.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Κανένα Όνομα ή Περιεχόμενο";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Αναπαραγωγή οσο η εφαρμογή είναι ανοιχτή";
+"NOTIFICATIONS_SECTION_INAPP" = "Ήχοι εντός εφαρμογής";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Ήχοι";
@@ -1419,7 +1413,7 @@
 "NOTIFICATIONS_SENDER_ONLY" = "Μόνο Όνομα";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Προβολή";
+"NOTIFICATIONS_SHOW" = "Εμφάνιση";
 
 /* No comment provided by engineer. */
 "OK" = "ΟΚ";
@@ -1500,7 +1494,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "Ο/Η %@ είναι επιβεβαιωμένος/η.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Μάθε περισσότερα";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Μάθετε περισσότερα";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Πατήστε για Σάρωση";
@@ -1530,7 +1524,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Ο σαρωμένος κωδικός δεν μοιάζει με κωδικό αριθμό ασφαλείας. Είστε και οι δύο σε μια ενημερωμένη έκδοση του Signal;";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Αν επιθυμείτε να επιβεβαιώσετε την ασφάλεια της κρυπτογράφησης από άκρο σε άκρο με τον/την %@, συγκρίνετε τους παραπάνω αριθμούς με τους αριθμούς στην συσκευή τους.\n\nΕναλλακτικά, μπορείτε να σαρώσετε τον κωδικό στο τηλέφωνό τους ή να τους ζητήσετε να σαρώσουν τον κωδικό σας.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Αν επιθυμείτε να επιβεβαιώσετε την ασφάλεια της κρυπτογράφησης από άκρο σε άκρο με τον/την %@, συγκρίνετε τους παραπάνω αριθμούς με τους αριθμούς στην συσκευή τους.\n\nΕναλλακτικά, μπορείτε να σαρώσετε τον κωδικό στο τηλέφωνό τους ή να τους ζητήσετε να σαρώσουν τον δικό σας.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Επιβεβαίωση Αριθμού Ασφαλείας";
@@ -1608,10 +1602,13 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Απάντηση στον Εαυτό σας";
 
 /* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Το αρχικό μήνυμα δεν βρέθηκε.";
 
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
-"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Συνημμένο";
@@ -1752,7 +1749,7 @@
 "REREGISTER_FOR_PUSH" = "Επανεγγραφή για λήψη ειδοποιήσεων";
 
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Δοκίμασε ξανά";
+"RETRY_BUTTON_TEXT" = "Προσπαθήστε ξανά";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Προσθήκη στην ομάδα παρ'όλα αυτά";
@@ -1797,7 +1794,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Πρέπει να ενεργοποιήσετε έναν κωδικό πρόσβασης στις Ρυθμίσεις του iOS για να χρησιμοποιήσετε το Κλείδωμα Οθόνης.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Επαληθεύστε την ταυτότητα σας για να ανοίξετε το Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Επαλήθευση ταυτότητας για άνοιγμα του Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Η Tαυτοποίηση Aπέτυχε";
@@ -1836,7 +1833,7 @@
 "SEND_BUTTON_TITLE" = "Αποστολή";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Η αποστολή της πρόσκλησης απέτυχε, παρακαλώ δοκίμασε ξανά αργότερα.";
+"SEND_INVITE_FAILURE" = "Η αποστολή της πρόσκλησης απέτυχε, παρακαλώ δοκιμάστε ξανά αργότερα.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Προσκάλεσες τον/την φίλο/η σου να χρησιμοποιήσει το Signal!";
@@ -1851,7 +1848,7 @@
 "SEND_SMS_INVITE_TITLE" = "Θέλεις να προσκαλέσεις τον ακόλουθο αριθμό στο Signal:";
 
 /* Navbar title */
-"SETTINGS_ABOUT" = "Για εμάς";
+"SETTINGS_ABOUT" = "Σχετικά";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Αποκλεισμός Επαφής";
@@ -1884,13 +1881,13 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Παράκαμψη Λογοκρισίας";
 
 /* Label for setting that enables dark theme. */
-"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+"SETTINGS_ADVANCED_DARK_THEME" = "Σκούρο Θέμα";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Kαταγραφή Aποσφαλμάτωσης";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Υποβολή καταγραφής αποσφαλμάτωσης";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Υποβολή Αρχείου Αποσφαλμάτωσης";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Για προχωρημένους";
@@ -1941,10 +1938,10 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Δεν βρέθηκαν αποτελέσματα";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Αποκλεισμένοι";
+"SETTINGS_BLOCK_LIST_TITLE" = "Λίστα Αποκλεισμού";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Aναμετάδοση όλων των κλήσεων ";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Αναμετάδοση Όλων των Κλήσεων ";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Αναμετάδοση όλων των κλήσεων μέσω του διακομιστή Signal για να αποφύγετε την αποκάλυψη της IP διεύθυνσής σας στην επαφή σας. Η ενεργοποίηση θα μειώσει την ποιότητα των κλήσεων.";
@@ -1983,7 +1980,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "Μπορείτε να επικοινωνήσετε μαζί μου χρησιμοποιώντας το @signalapp. Κατεβάστε το τώρα: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Ήχος Μηνυμάτων";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Ήχος Μηνύματος";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Όροι & Πολιτική Απορρήτου";
@@ -1992,10 +1989,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Ρυθμίσεις";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Οι ειδοποιήσεις κλήσεων και μηνυμάτων μπορούν να εμφανιστούν ενώ το τηλέφωνό σας είναι κλειδωμένο. Ενδέχεται να θέλετε να περιορίσετε αυτό που εμφανίζεται στις ειδοποιήσεις αυτές.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Οι ειδοποιήσεις κλήσεων και μηνυμάτων μπορούν να εμφανίζονται ενώ το τηλέφωνό σας είναι κλειδωμένο. Ενδέχεται να θέλετε να περιορίσετε τι εμφανίζεται στις ειδοποιήσεις αυτές.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Περιεχόμενο ειδοποιήσεων";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Περιεχόμενο Ειδοποιήσεων";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Ειδοποιήσεις";
@@ -2028,7 +2025,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Αυτόματο Kλείδωμα Oθόνης";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ξεκλειδώστε την οθόνη του Signal χρησιμοποιώντας το Touch ID, το Face ID ή τον κωδικό πρόσβασης της iOS συσκευής σας. Μπορείτε να απαντήσετε στις εισερχόμενες κλήσεις και να λάβετε ειδοποιήσεις μηνυμάτων ενώ είναι ενεργοποιημένη η λειτουργία Κλειδώματος Οθόνης. Οι ρυθμίσεις ειδοποιήσεων του Signal σάς επιτρέπουν να προσαρμόσετε τις πληροφορίες που εμφανίζονται.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ξεκλειδώστε την οθόνη του Signal χρησιμοποιώντας το Touch ID, το Face ID ή τον κωδικό πρόσβασης της iOS συσκευής σας. Μπορείτε να απαντήσετε στις εισερχόμενες κλήσεις και να λάβετε ειδοποιήσεις μηνυμάτων ενώ είναι ενεργοποιημένη η λειτουργία Κλειδώματος Οθόνης. Οι ρυθμίσεις ειδοποιήσεων του Signal σας επιτρέπουν να προσαρμόσετε τις πληροφορίες που εμφανίζονται.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Κλείδωμα Οθόνης";
@@ -2076,7 +2073,7 @@
 "SETTINGS_VERSION" = "Έκδοση";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Ηλεκτρονικό ταχυδρομείο";
+"SHARE_ACTION_MAIL" = "Email";
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "Μήνυμα";
@@ -2235,7 +2232,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Η απάντηση στις κλήσεις από την οθόνη κλειδώματος είναι εύκολη με την ενσωμάτωση κλήσεων iOS. Ως προεπιλογή ανωνυμοποιούμε αυτόν που καλεί, οπότε είναι και ασφαλές για την ιδιωτικότητα. ";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Μάθε περισσότερα στις ρυθμίσεις απορρήτου.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Μάθετε περισσότερα στις ρυθμίσεις απορρήτου.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Σύρετε για Απάντηση";

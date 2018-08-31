@@ -78,7 +78,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "プロフィール名を入力してください";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "後にする";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "バージョン%@がApp Storeで入手できます";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "ドキュメントの選択に失敗しました";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "ファイルはそのままでは扱えません。圧縮してください。";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "未対応ファイル";
@@ -372,7 +372,7 @@
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "バックアップのためのiCloudとの連携に失敗しました。";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "バックアップの為のicloudアカウントがありません。";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "バックアップの為のiCloudアカウントがありません。";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "SignalにiCloudアカウントへのアクセス権限がありません。";
@@ -447,7 +447,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "私書箱";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "郵便番号";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "都道府県";
@@ -531,7 +531,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "消音";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "消音しない";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "消音されていません";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "１日消音する";
@@ -561,10 +561,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "消音をやめる";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "あなたのプロフィールを閲覧可能";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "このグループがあなたのプロフィールを閲覧可能";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "あなたのプロフィールを閲覧可能";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "このユーザーがあなたのプロフィールを閲覧可能";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "プロフィールを共有する";
@@ -579,10 +579,10 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "連絡先に追加";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "自分のプロフィールをこの人と共有する";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "自分のプロフィールをこのユーザーと共有する";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "この人は連絡先に載っていません";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "このユーザーは連絡先に載っていません";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "メッセージを読込中";
@@ -591,7 +591,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "詳細はここにタップ";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "このユーザをブロックする";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "このユーザーをブロックする";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "セッションをリセットすると，今後%@から来るメッセージは受信しますが，破損した過去のメッセージは回復しません。";
@@ -636,7 +636,7 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "ログのアップロードに失敗しました";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "デバッグ・ログをどうしますか？";
+"DEBUG_LOG_ALERT_MESSAGE" = "デバッグ・ログのリンクをどうしますか？";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "ログが見つかりません";
@@ -697,7 +697,7 @@
 "DISAPPEARING_MESSAGES_HINT" = "メッセージは%@後に消えます";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "メッセージが消える時間の設定";
+"DISAPPEARING_MESSAGES_LABEL" = "消えるメッセージの設定";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "キャンセル";
@@ -736,7 +736,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "グループへの変更を保存しますか？";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "変更が保存されていません";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "保存されていない変更";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "コピー";
@@ -751,7 +751,7 @@
 "EMAIL_INVITE_SUBJECT" = "チャットアプリをSignalに変更しましょう。";
 
 /* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "受信箱内で休眠中の会話をここに移動して保管できます（受信箱で名前を左スワイプしてください）";
+"EMPTY_ARCHIVE_TEXT" = "受信箱内で休眠中の会話をここに移動して保管できます";
 
 /* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "会話を整理しよう";
@@ -760,13 +760,13 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "連絡先にSignalユーザーはいないようです";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "だれかを招待しませんか";
+"EMPTY_CONTACTS_LABEL_LINE2" = "誰かを招待しませんか？";
 
 /* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
+"EMPTY_INBOX_NEW_USER_TEXT" = "作成ボタンを押して下さい";
 
 /* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
+"EMPTY_INBOX_NEW_USER_TITLE" = "最初のSignal会話を始めましょう！";
 
 /* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "受信箱は空";
@@ -808,7 +808,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "登録鍵";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy";
+"END_CALL_RESPONDER_IS_BUSY" = "話し中";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "通話に失敗しました";
@@ -823,7 +823,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "プライバシー情報が古くて送信できません。";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "相手をブロックしているのでメッセージを送れませんでした";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "このユーザーをブロックしているのでメッセージを送れませんでした";
 
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "添付ファイルの書き込み失敗による送信失敗";
@@ -1263,12 +1263,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@は要確認です。タップして選択肢をご覧ください。";
 
-/* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "ダウンロード失敗";
-
-/* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "再びダウンロードする";
-
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "グループ内の1人をブロックしました";
 
@@ -1320,10 +1314,10 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "不在着信：%@";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "これ以上のデバイスは追加できません。";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "１つのアカウントで使用できるデバイス数の上限を超えています。デバイスをどれか削除してからデバイスの追加を再度行ってください。";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "消音にすると通知が行われなくなります。";
@@ -1608,10 +1602,13 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "あなた自身に返信しています";
 
 /* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "元のメッセージが見つかりません。";
 
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
-"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "添付";
@@ -1884,7 +1881,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "検閲回避";
 
 /* Label for setting that enables dark theme. */
-"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+"SETTINGS_ADVANCED_DARK_THEME" = "ナイトモード";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "デバッグログを有効にする";
