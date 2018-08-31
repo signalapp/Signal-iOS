@@ -129,12 +129,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    OWSFail(@"Do not load this from the storyboard.");
+//    OWSFail(@"Do not load this from the storyboard.");
 
     self = [super initWithCoder:aDecoder];
     if (!self) {
         return self;
     }
+
+    _homeViewMode = HomeViewMode_Inbox;
 
     [self commonInit];
 

@@ -1131,7 +1131,7 @@ static NSTimeInterval launchStartedAt;
         [[OWSProfileManager sharedManager] ensureLocalProfileCached];
 
         // For non-legacy users, read receipts are on by default.
-        [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
+        [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:NO];
     }
 }
 

@@ -137,7 +137,9 @@ class ValidationViewController: UITableViewController {
             TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }
-        self.performSegue(withIdentifier: "mainSegue", sender: self)
+        DispatchQueue.main.async {
+            self.performSegue(withIdentifier: "mainSegue", sender: self)
+        }
     }
     
     
