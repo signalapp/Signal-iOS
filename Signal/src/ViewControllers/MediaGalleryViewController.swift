@@ -33,13 +33,9 @@ public struct MediaGalleryItem: Equatable, Hashable {
         return attachmentStream.isImage()
     }
 
-    var thumbnailImage: UIImage {
-        guard let image = attachmentStream.thumbnailImage() else {
-            owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment thumbnail")
-            return UIImage()
-        }
-
-        return image
+    public typealias AsyncThumbnailBlock = (UIImage) -> Void
+    func thumbnailImage(async:@escaping AsyncThumbnailBlock) -> UIImage? {
+        return attachmentStream.thumbnailImageSmall(completion: async)
     }
 
     var fullSizedImage: UIImage {

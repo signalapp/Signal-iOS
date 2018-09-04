@@ -922,7 +922,24 @@ private class MediaGalleryCell: UICollectionViewCell {
 
     public func configure(item: MediaGalleryItem) {
         self.item = item
-        self.imageView.image = item.thumbnailImage
+        if let image = item.thumbnailImage(async: {
+            [weak self] (image) in
+            guard let strongSelf = self else {
+                return
+            }
+            guard strongSelf.item == item else {
+                return
+            }
+            strongSelf.imageView.image = image
+            strongSelf.imageView.backgroundColor = UIColor.clear
+        }) {
+            self.imageView.image = image
+            self.imageView.backgroundColor = UIColor.clear
+        } else {
+            // TODO: Show a placeholder?
+            self.imageView.backgroundColor = Theme.offBackgroundColor
+        }
+
         if item.isVideo {
             self.contentTypeBadgeView.isHidden = false
             self.contentTypeBadgeView.image = MediaGalleryCell.videoBadgeImage

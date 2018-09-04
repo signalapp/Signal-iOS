@@ -142,17 +142,17 @@ private struct OWSThumbnailRequest {
         var thumbnailSize = CGSize.zero
         if originalSize.width > originalSize.height {
             thumbnailSize.width = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
-            thumbnailSize.height = round(CGFloat(thumbnailRequest.thumbnailDimensionPoints) * thumbnailSize.height / thumbnailSize.width)
+            thumbnailSize.height = round(CGFloat(thumbnailRequest.thumbnailDimensionPoints) * originalSize.height / originalSize.width)
         } else {
-            thumbnailSize.width = round(CGFloat(thumbnailRequest.thumbnailDimensionPoints) * thumbnailSize.width / thumbnailSize.height)
+            thumbnailSize.width = round(CGFloat(thumbnailRequest.thumbnailDimensionPoints) * originalSize.width / originalSize.height)
             thumbnailSize.height = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
         }
         guard thumbnailSize.width > 0 && thumbnailSize.height > 0 else {
             owsFail("Thumbnail has invalid size.")
             return nil
         }
-        guard originalSize.width < thumbnailSize.width &&
-                originalSize.height < thumbnailSize.height else {
+        guard originalSize.width > thumbnailSize.width &&
+                originalSize.height > thumbnailSize.height else {
                 owsFail("Thumbnail isn't smaller than the original.")
                 return nil
         }

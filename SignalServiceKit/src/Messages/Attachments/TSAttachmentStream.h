@@ -67,9 +67,9 @@ typedef void (^OWSThumbnailCompletion)(UIImage *image);
 - (nullable NSURL *)originalMediaURL;
 
 // TODO: Rename to legacy...
-- (nullable UIImage *)thumbnailImage;
-- (nullable NSData *)thumbnailData;
-- (nullable NSString *)thumbnailPath;
+- (nullable UIImage *)legacyThumbnailImage;
+//- (nullable NSData *)legacyThumbnailData;
+- (nullable NSString *)legacyThumbnailPath;
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
 

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kMaxVideoStillSize = 1 * 1024;
 
-const NSUInteger kThumbnailDimensionPointsSmall = 200;
+const NSUInteger kThumbnailDimensionPointsSmall = 300;
 const NSUInteger kThumbnailDimensionPointsMedium = 800;
 // This size is large enough to render full screen.
 const NSUInteger ThumbnailDimensionPointsLarge() {
@@ -129,7 +129,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
     }
 
     // This is going to be slow the first time it runs.
-    [self ensureThumbnail];
+    [self ensureLegacyThumbnail];
 
     return self;
 }
@@ -137,7 +137,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super saveWithTransaction:transaction];
-    [self ensureThumbnail];
+    [self ensureLegacyThumbnail];
 }
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
@@ -271,7 +271,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
     return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.localRelativeFilePath];
 }
 
-- (nullable NSString *)thumbnailPath
+- (nullable NSString *)legacyThumbnailPath
 {
     NSString *filePath = self.originalFilePath;
     if (!filePath) {
@@ -326,9 +326,9 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
         }
     }
 
-    NSString *_Nullable thumbnailPath = self.thumbnailPath;
-    if (thumbnailPath) {
-        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
+    NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
+    if (legacyThumbnailPath) {
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:legacyThumbnailPath error:&error];
 
         if (error || !success) {
             DDLogError(@"%@ remove legacy thumbnail failed with: %@", self.logTag, error);
@@ -429,28 +429,9 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
         [MIMETypeUtil isAnimated:contentType]);
 }
 
-- (nullable UIImage *)thumbnailImage
+- (nullable NSData *)legacyThumbnailData
 {
-    NSString *thumbnailPath = self.thumbnailPath;
-    if (!thumbnailPath) {
-        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
-
-        return nil;
-    }
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        // This isn't true for some useful edge cases tested by the Debug UI.
-        DDLogError(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
-
-        return nil;
-    }
-
-    return [UIImage imageWithContentsOfFile:self.thumbnailPath];
-}
-
-- (nullable NSData *)thumbnailData
-{
-    NSString *thumbnailPath = self.thumbnailPath;
+    NSString *thumbnailPath = self.legacyThumbnailPath;
     if (!thumbnailPath) {
         OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
 
@@ -463,12 +444,12 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
         return nil;
     }
 
-    return [NSData dataWithContentsOfFile:self.thumbnailPath];
+    return [NSData dataWithContentsOfFile:thumbnailPath];
 }
 
-- (void)ensureThumbnail
+- (void)ensureLegacyThumbnail
 {
-    NSString *thumbnailPath = self.thumbnailPath;
+    NSString *thumbnailPath = self.legacyThumbnailPath;
     if (!thumbnailPath) {
         return;
     }
@@ -877,7 +858,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
 {
-    NSData *thumbnailData = self.thumbnailData;
+    NSData *thumbnailData = self.legacyThumbnailData;
     //  Only some media types have thumbnails
     if (!thumbnailData) {
         return nil;
