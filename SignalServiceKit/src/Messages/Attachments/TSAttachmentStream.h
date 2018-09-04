@@ -37,9 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *creationTimestamp;
 
 #if TARGET_OS_IPHONE
-- (nullable UIImage *)originalImage;
-- (nullable UIImage *)thumbnailImage;
-- (nullable NSData *)thumbnailData;
 - (nullable NSData *)validStillImageData;
 #endif
 
@@ -48,12 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isVideo;
 - (BOOL)isAudio;
 
-+ (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
-
+- (nullable UIImage *)originalImage;
 - (nullable NSString *)originalFilePath;
 - (nullable NSURL *)originalMediaURL;
 
+- (nullable UIImage *)thumbnailImage;
+- (nullable NSData *)thumbnailData;
 - (nullable NSString *)thumbnailPath;
+
++ (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
