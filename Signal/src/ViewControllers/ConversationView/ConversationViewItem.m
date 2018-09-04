@@ -482,7 +482,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {
                     if (![self.attachmentStream isValidImage]) {
-                        DDLogWarn(@"Treating invalid image as generic attachment.");
+                        OWSLogWarn(@"Treating invalid image as generic attachment.");
                         self.messageCellType = OWSMessageCellType_GenericAttachment;
                         return;
                     }
@@ -490,7 +490,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     self.messageCellType = OWSMessageCellType_AnimatedImage;
                 } else if ([self.attachmentStream isImage]) {
                     if (![self.attachmentStream isValidImage]) {
-                        DDLogWarn(@"Treating invalid image as generic attachment.");
+                        OWSLogWarn(@"Treating invalid image as generic attachment.");
                         self.messageCellType = OWSMessageCellType_GenericAttachment;
                         return;
                     }
@@ -498,7 +498,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     self.messageCellType = OWSMessageCellType_StillImage;
                 } else if ([self.attachmentStream isVideo]) {
                     if (![self.attachmentStream isValidVideo]) {
-                        DDLogWarn(@"Treating invalid video as generic attachment.");
+                        OWSLogWarn(@"Treating invalid video as generic attachment.");
                         self.messageCellType = OWSMessageCellType_GenericAttachment;
                         return;
                     }

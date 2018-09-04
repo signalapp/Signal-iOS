@@ -197,7 +197,7 @@ class GifPickerCell: UICollectionViewCell {
             return
         }
         guard NSData.ows_isValidImage(atPath: asset.filePath, mimeType: OWSMimeTypeImageGif) else {
-            owsFail("\(logTag) invalid asset.")
+            owsFailDebug("invalid asset.")
             clearViewState()
             return
         }

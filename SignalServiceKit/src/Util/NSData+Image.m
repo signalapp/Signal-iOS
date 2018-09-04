@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     }
 
     if (![self ows_hasValidImageDimensionsAtPath:filePath]) {
-        DDLogError(@"%@ image had invalid dimensions.", self.logTag);
+        OWSLogError(@"image had invalid dimensions.");
         return NO;
     }
 
@@ -96,14 +96,14 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
     NSNumber *widthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelWidth];
     if (!widthNumber) {
-        DDLogError(@"widthNumber was unexpectedly nil");
+        OWSLogError(@"widthNumber was unexpectedly nil");
         return NO;
     }
     CGFloat width = widthNumber.floatValue;
 
     NSNumber *heightNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelHeight];
     if (!heightNumber) {
-        DDLogError(@"heightNumber was unexpectedly nil");
+        OWSLogError(@"heightNumber was unexpectedly nil");
         return NO;
     }
     CGFloat height = heightNumber.floatValue;
@@ -112,7 +112,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
      * key is a CFNumberRef. */
     NSNumber *depthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyDepth];
     if (!depthNumber) {
-        DDLogError(@"depthNumber was unexpectedly nil");
+        OWSLogError(@"depthNumber was unexpectedly nil");
         return NO;
     }
     NSUInteger depthBits = depthNumber.unsignedIntegerValue;
@@ -122,12 +122,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
      * The value of this key is CFStringRef. */
     NSString *colorModel = imageProperties[(__bridge NSString *)kCGImagePropertyColorModel];
     if (!colorModel) {
-        DDLogError(@"colorModel was unexpectedly nil");
+        OWSLogError(@"colorModel was unexpectedly nil");
         return NO;
     }
     if (![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelRGB]
         && ![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelGray]) {
-        DDLogError(@"Invalid colorModel: %@", colorModel);
+        OWSLogError(@"Invalid colorModel: %@", colorModel);
         return NO;
     }
 
@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     CGFloat kMaxBytes = kMaxDimension * kMaxDimension * kExpectedBytePerPixel;
     CGFloat actualBytes = width * height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {
-        DDLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f", width, height, bytesPerPixel);
+        OWSLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f", width, height, bytesPerPixel);
         return NO;
     }
 
@@ -273,12 +273,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         maxSize.height = MAX(maxSize.height, trackSize.height);
     }
     if (maxSize.width < 1.f || maxSize.height < 1.f) {
-        DDLogError(@"Invalid video size: %@", NSStringFromCGSize(maxSize));
+        OWSLogError(@"Invalid video size: %@", NSStringFromCGSize(maxSize));
         return NO;
     }
     const CGFloat kMaxSize = 3 * 1024.f;
     if (maxSize.width > kMaxSize || maxSize.height > kMaxSize) {
-        DDLogError(@"Invalid video dimensions: %@", NSStringFromCGSize(maxSize));
+        OWSLogError(@"Invalid video dimensions: %@", NSStringFromCGSize(maxSize));
         return NO;
     }
     return YES;
