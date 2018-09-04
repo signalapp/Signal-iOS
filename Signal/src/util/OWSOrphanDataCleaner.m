@@ -316,7 +316,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
                                          TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
                                          attachmentStreamCount++;
-                                         NSString *_Nullable filePath = [attachmentStream filePath];
+                                         NSString *_Nullable filePath = [attachmentStream originalFilePath];
                                          if (filePath) {
                                              [allAttachmentFilePaths addObject:filePath];
                                          } else {

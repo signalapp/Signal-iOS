@@ -382,7 +382,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     return [self displayableTextForCacheKey:displayableTextCacheKey
                                   textBlock:^{
-                                      NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
+                                      NSData *textData =
+                                          [NSData dataWithContentsOfURL:attachmentStream.originalMediaURL];
                                       NSString *text =
                                           [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
                                       return text;
@@ -733,7 +734,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 OWSFail(@"%@ Unknown MIME type: %@", self.logTag, self.attachmentStream.contentType);
                 utiType = (NSString *)kUTTypeGIF;
             }
-            NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream mediaURL]];
+            NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream originalMediaURL]];
             if (!data) {
                 OWSFail(@"%@ Could not load attachment data", self.logTag);
                 return;
@@ -814,7 +815,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Audio:
             return NO;
         case OWSMessageCellType_Video:
-            return UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.mediaURL.path);
+            return UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.originalFilePath);
         case OWSMessageCellType_GenericAttachment:
             return NO;
         case OWSMessageCellType_DownloadingAttachment: {
@@ -834,7 +835,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             break;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage: {
-            NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream mediaURL]];
+            NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream originalMediaURL]];
             if (!data) {
                 OWSFail(@"%@ Could not load image data", self.logTag);
                 return;
@@ -853,8 +854,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFail(@"%@ Cannot save media data.", self.logTag);
             break;
         case OWSMessageCellType_Video:
-            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.mediaURL.path)) {
-                UISaveVideoAtPathToSavedPhotosAlbum(self.attachmentStream.mediaURL.path, self, nil, nil);
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.originalFilePath)) {
+                UISaveVideoAtPathToSavedPhotosAlbum(self.attachmentStream.originalFilePath, self, nil, nil);
             } else {
                 OWSFail(@"%@ Could not save incompatible video data.", self.logTag);
             }

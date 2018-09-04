@@ -156,7 +156,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     }
 
     self.localRelativeFilePath = localRelativeFilePath;
-    OWSAssert(self.filePath);
+    OWSAssert(self.originalFilePath);
 }
 
 #pragma mark - File Management
@@ -164,7 +164,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error
 {
     *error = nil;
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return nil;
@@ -177,7 +177,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     OWSAssert(data);
 
     *error = nil;
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return NO;
@@ -190,7 +190,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     OWSAssert(dataSource);
 
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return NO;
@@ -229,7 +229,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return attachmentsFolder;
 }
 
-- (nullable NSString *)filePath
+- (nullable NSString *)originalFilePath
 {
     if (!self.localRelativeFilePath) {
         OWSFail(@"%@ Attachment missing local file path.", self.logTag);
@@ -241,7 +241,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 - (nullable NSString *)thumbnailPath
 {
-    NSString *filePath = self.filePath;
+    NSString *filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Attachment missing local file path.", self.logTag);
         return nil;
@@ -258,9 +258,9 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return [[containingDir stringByAppendingPathComponent:newFilename] stringByAppendingPathExtension:@"jpg"];
 }
 
-- (nullable NSURL *)mediaURL
+- (nullable NSURL *)originalMediaURL
 {
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return nil;
@@ -281,7 +281,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         }
     }
 
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return;
@@ -321,14 +321,14 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     OWSAssert(self.isImage || self.isAnimated);
 
-    return [NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType];
+    return [NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType];
 }
 
 - (BOOL)isValidVideo
 {
     OWSAssert(self.isVideo);
 
-    return [NSData ows_isValidVideoAtURL:self.mediaURL];
+    return [NSData ows_isValidVideoAtURL:self.originalMediaURL];
 }
 
 #pragma mark -
@@ -338,14 +338,14 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     if ([self isVideo]) {
         return [self videoStillImage];
     } else if ([self isImage] || [self isAnimated]) {
-        NSURL *_Nullable mediaUrl = [self mediaURL];
+        NSURL *_Nullable mediaUrl = self.originalMediaURL;
         if (!mediaUrl) {
             return nil;
         }
         if (![self isValidImage]) {
             return nil;
         }
-        return [[UIImage alloc] initWithContentsOfFile:self.filePath];
+        return [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
     } else {
         return nil;
     }
@@ -362,12 +362,12 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         return nil;
     }
 
-    if (![NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType]) {
+    if (![NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType]) {
         OWSFail(@"%@ skipping invalid image", self.logTag);
         return nil;
     }
 
-    return [NSData dataWithContentsOfFile:self.filePath];
+    return [NSData dataWithContentsOfFile:self.originalFilePath];
 }
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType
@@ -425,8 +425,8 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         return;
     }
 
-    if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.originalMediaURL.path]) {
+        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.originalMediaURL);
         // If we're not lazy-restoring this message, the attachment should exist on disk.
         OWSAssert(self.lazyRestoreFragmentId);
         return;
@@ -438,11 +438,12 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     UIImage *_Nullable result;
     if (self.isImage || self.isAnimated) {
         if (![self isValidImage]) {
-            DDLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
+            DDLogWarn(
+                @"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.originalFilePath);
             return;
         }
 
-        CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.mediaURL, NULL);
+        CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.originalMediaURL, NULL);
         OWSAssert(imageSource != NULL);
         NSDictionary *imageOptions = @{
             (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
@@ -458,7 +459,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
     } else if (self.isVideo) {
         if (![self isValidVideo]) {
-            DDLogWarn(@"%@ skipping thumbnail for invalid video at path: %@", self.logTag, self.filePath);
+            DDLogWarn(@"%@ skipping thumbnail for invalid video at path: %@", self.logTag, self.originalFilePath);
             return;
         }
 
@@ -496,7 +497,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     maxSize.width = MIN(maxSize.width, kMaxVideoStillSize);
     maxSize.height = MIN(maxSize.height, kMaxVideoStillSize);
 
-    NSURL *_Nullable mediaUrl = [self mediaURL];
+    NSURL *_Nullable mediaUrl = self.originalMediaURL;
     if (!mediaUrl) {
         return nil;
     }
@@ -509,7 +510,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     CMTime time = CMTimeMake(1, 60);
     CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
     if (imgRef == NULL) {
-        DDLogError(@"Could not generate video still: %@", self.filePath.pathExtension);
+        DDLogError(@"Could not generate video still: %@", self.originalFilePath.pathExtension);
         return nil;
     }
 
@@ -546,7 +547,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         }
         return [self videoStillImage].size;
     } else if ([self isImage] || [self isAnimated]) {
-        NSURL *_Nullable mediaUrl = [self mediaURL];
+        NSURL *_Nullable mediaUrl = self.originalMediaURL;
         if (!mediaUrl) {
             return CGSizeZero;
         }
@@ -656,7 +657,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     OWSAssert([self isAudio]);
 
     NSError *error;
-    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
+    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.originalMediaURL error:&error];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
         && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
         // Ignore "invalid audio file" errors.
@@ -665,7 +666,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
-        DDLogError(@"Could not find audio duration: %@", self.mediaURL);
+        DDLogError(@"Could not find audio duration: %@", self.originalMediaURL);
         return 0;
     }
 }

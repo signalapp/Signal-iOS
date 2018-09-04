@@ -677,7 +677,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
         }
     } else {
-        DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
+        DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream originalMediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
         [self showAttachmentErrorViewWithMediaView:mediaView];
     }
@@ -851,7 +851,8 @@ NS_ASSUME_NONNULL_BEGIN
         // TODO: Don't use full size images in the message cells.
         const NSUInteger kMaxCachableSize = 1024 * 1024;
         BOOL shouldSkipCache =
-            [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.filePath].unsignedIntegerValue < kMaxCachableSize;
+            [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.originalFilePath].unsignedIntegerValue
+            < kMaxCachableSize;
         stillImageView.image = [strongSelf tryToLoadCellMedia:^{
             OWSCAssert([strongSelf.attachmentStream isImage]);
             return strongSelf.attachmentStream.image;
@@ -897,7 +898,7 @@ NS_ASSUME_NONNULL_BEGIN
         animatedImageView.image = [strongSelf tryToLoadCellMedia:^{
             OWSCAssert([strongSelf.attachmentStream isAnimated]);
 
-            NSString *_Nullable filePath = [strongSelf.attachmentStream filePath];
+            NSString *_Nullable filePath = [strongSelf.attachmentStream originalFilePath];
             YYImage *_Nullable animatedImage = nil;
             if (strongSelf.attachmentStream.isValidImage && filePath) {
                 animatedImage = [YYImage imageWithContentsOfFile:filePath];

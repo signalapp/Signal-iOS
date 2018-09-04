@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSURL *_Nullable)attachmentUrl
 {
-    return self.attachmentStream.mediaURL;
+    return self.attachmentStream.originalMediaURL;
 }
 
 - (NSData *)fileData
