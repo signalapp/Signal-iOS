@@ -30,7 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(key.length > 0);
     OWSAssert(service.length > 0);
 
-    *error = nil;
+    if (error) {
+        *error = nil;
+    }
 
     NSString *mapKey = [NSString stringWithFormat:@"%@-%@", service, key];
     NSData *_Nullable data = self.dataMap[mapKey];
@@ -52,7 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(key.length > 0);
     OWSAssert(service.length > 0);
 
-    *error = nil;
+    if (error) {
+        *error = nil;
+    }
 
     NSLog(@"setWithString:%@ service:%@ -> %@", key, service, string);
 
@@ -67,7 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(key.length > 0);
     OWSAssert(service.length > 0);
 
-    *error = nil;
+    if (error) {
+        *error = nil;
+    }
 
     NSString *mapKey = [NSString stringWithFormat:@"%@-%@", service, key];
     NSData *_Nullable data = self.dataMap[mapKey];
@@ -84,7 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(key.length > 0);
     OWSAssert(service.length > 0);
 
-    *error = nil;
+    if (error) {
+        *error = nil;
+    }
 
     NSLog(@"setWithData:%@ service:%@ -> %@", key, service, data.hexadecimalString);
 
@@ -99,7 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(key.length > 0);
     OWSAssert(service.length > 0);
 
-    *error = nil;
+    if (error) {
+        *error = nil;
+    }
 
     NSLog(@"removeWithKey:%@ service:%@", key, service);
 

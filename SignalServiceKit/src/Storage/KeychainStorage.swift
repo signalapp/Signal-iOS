@@ -13,15 +13,15 @@ public enum KeychainStorageError: Error {
 
 @objc public protocol KeychainStorage: class {
 
-    @objc func string(forKey key: String, service: String) throws -> String
+    @objc func string(forService service: String, key: String) throws -> String
 
-    @objc func set(string: String, forKey key: String, service: String) throws
+    @objc func set(string: String, service: String, key: String) throws
 
-    @objc func data(forKey key: String, service: String) throws -> Data
+    @objc func data(forService service: String, key: String) throws -> Data
 
-    @objc func set(data: Data, forKey key: String, service: String) throws
+    @objc func set(data: Data, service: String, key: String) throws
 
-    @objc func remove(key: String, service: String) throws
+    @objc func remove(service: String, key: String) throws
 }
 
 // MARK: -
@@ -38,66 +38,66 @@ public class SSKKeychainStorage: NSObject, KeychainStorage {
         SwiftSingletons.register(self)
     }
 
-    @objc public func string(forKey key: String, service: String) throws -> String {
+    @objc public func string(forService service: String, key: String) throws -> String {
         var error: NSError?
         let result = SAMKeychain.password(forService: service, account: key, error: &error)
         if let error = error {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) error retrieving string: \(error)")
+            throw KeychainStorageError.failure(description: "\(logTag) error retrieving string: \(error)")
         }
         guard let string = result else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) could not retrieve string")
+            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve string")
         }
         return string
     }
 
-    @objc public func set(string: String, forKey key: String, service: String) throws {
+    @objc public func set(string: String, service: String, key: String) throws {
 
         SAMKeychain.setAccessibilityType(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
 
         var error: NSError?
         let result = SAMKeychain.setPassword(string, forService: service, account: key, error: &error)
         if let error = error {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) error setting string: \(error)")
+            throw KeychainStorageError.failure(description: "\(logTag) error setting string: \(error)")
         }
         guard result else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) could not set string")
+            throw KeychainStorageError.failure(description: "\(logTag) could not set string")
         }
     }
 
-    @objc public func data(forKey key: String, service: String) throws -> Data {
+    @objc public func data(forService service: String, key: String) throws -> Data {
         var error: NSError?
         let result = SAMKeychain.passwordData(forService: service, account: key, error: &error)
         if let error = error {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) error retrieving data: \(error)")
+            throw KeychainStorageError.failure(description: "\(logTag) error retrieving data: \(error)")
         }
         guard let data = result else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) could not retrieve data")
+            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve data")
         }
         return data
     }
 
-    @objc public func set(data: Data, forKey key: String, service: String) throws {
+    @objc public func set(data: Data, service: String, key: String) throws {
 
         SAMKeychain.setAccessibilityType(kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
 
         var error: NSError?
         let result = SAMKeychain.setPasswordData(data, forService: service, account: key, error: &error)
         if let error = error {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) error setting data: \(error)")
+            throw KeychainStorageError.failure(description: "\(logTag) error setting data: \(error)")
         }
         guard result else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) could not set data")
+            throw KeychainStorageError.failure(description: "\(logTag) could not set data")
         }
     }
 
-    @objc public func remove(key: String, service: String) throws {
+    @objc public func remove(service: String, key: String) throws {
         var error: NSError?
         let result = SAMKeychain.deletePassword(forService: service, account: key, error: &error)
         if let error = error {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) error removing data: \(error)")
+            throw KeychainStorageError.failure(description: "\(logTag) error removing data: \(error)")
         }
         guard result else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) could not remove data")
+            throw KeychainStorageError.failure(description: "\(logTag) could not remove data")
         }
     }
 }

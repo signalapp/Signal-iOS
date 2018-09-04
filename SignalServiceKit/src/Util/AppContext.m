@@ -43,10 +43,12 @@ void SetCurrentAppContext(id<AppContext> appContext)
     currentAppContext = appContext;
 }
 
+#ifdef DEBUG
 void ClearCurrentAppContextForTests()
 {
     currentAppContext = nil;
 }
+#endif
 
 void ExitShareExtension(void)
 {

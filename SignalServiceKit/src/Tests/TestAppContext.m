@@ -10,8 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TestAppContext ()
 
 @property (nonatomic) TestKeychainStorage *testKeychainStorage;
-@property (nonatomic) NSString *appDocumentDirPath;
-@property (nonatomic) NSString *appSharedDataDirPath;
+@property (nonatomic) NSString *mockAppDocumentDirectoryPath;
+@property (nonatomic) NSString *mockAppSharedDataDirectoryPath;
 
 @end
 
@@ -32,8 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.testKeychainStorage = [TestKeychainStorage new];
 
     NSString *temporaryDirectory = NSTemporaryDirectory();
-    self.appDocumentDirPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
-    self.appSharedDataDirPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
+    self.mockAppDocumentDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
+    self.mockAppSharedDataDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
 
     _appLaunchTime = [NSDate new];
 
@@ -140,12 +140,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)appDocumentDirectoryPath
 {
-    return self.appDocumentDirPath;
+    return self.mockAppDocumentDirectoryPath
 }
 
 - (NSString *)appSharedDataDirectoryPath
 {
-    return self.appSharedDataDirPath;
+    return self.mockAppSharedDataDirectoryPath;
 }
 
 @end

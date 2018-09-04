@@ -567,9 +567,10 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     NSError *error;
     NSString *_Nullable value =
-        [CurrentAppContext().keychainStorage stringForKey:key service:kKeychainService_LastRegistered error:&error];
+        [CurrentAppContext().keychainStorage stringForService:kKeychainService_LastRegistered key:key error:&error];
     if (error || !value) {
         DDLogWarn(@"Could not retrieve 'last registered' value from keychain: %@.", error);
+        return nil;
     }
     return value;
 }
@@ -582,8 +583,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     NSError *error;
     BOOL success = [CurrentAppContext().keychainStorage setWithString:value
-                                                               forKey:key
                                                               service:kKeychainService_LastRegistered
+                                                                  key:key
                                                                 error:&error];
     if (!success || error) {
         OWSLogError(@"Error persisting 'last registered' value in keychain: %@", error);
