@@ -363,7 +363,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     }
 
     if (![NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType]) {
-        OWSFail(@"%@ skipping invalid image", self.logTag);
+        OWSFailDebug(@"%@ skipping invalid image", self.logTag);
         return nil;
     }
 
@@ -458,7 +458,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
     } else if (self.isVideo) {
         if (![self isValidVideo]) {
-            DDLogWarn(@"%@ skipping thumbnail for invalid video at path: %@", self.logTag, self.filePath);
+            OWSLogWarn(@"Skipping thumbnail for invalid video at path: %@", self.filePath);
             return;
         }
 
@@ -507,7 +507,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     CMTime time = CMTimeMake(1, 60);
     CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
     if (imgRef == NULL) {
-        DDLogError(@"Could not generate video still: %@", self.filePath.pathExtension);
+        OWSLogError(@"Could not generate video still: %@", self.filePath.pathExtension);
         return nil;
     }
 
