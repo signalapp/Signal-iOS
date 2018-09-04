@@ -141,6 +141,11 @@ public class SignalAttachment: NSObject {
         return dataSource.isValidImage()
     }
 
+    @objc
+    public var isValidVideo: Bool {
+        return dataSource.isValidVideo()
+    }
+
     // This flag should be set for text attachments that can be sent as text messages.
     @objc
     public var isConvertibleToTextMessage = false

@@ -11,4 +11,6 @@
 - (BOOL)ows_isValidImage;
 - (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType;
 
++ (BOOL)ows_isValidVideoAtURL:(NSURL *)url;
+
 @end

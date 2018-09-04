@@ -73,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [data ows_isValidImage];
 }
 
+- (BOOL)isValidVideo
+{
+    return [NSData ows_isValidVideoAtURL:self.dataUrl];
+}
+
 - (void)setSourceFilename:(nullable NSString *)sourceFilename
 {
     _sourceFilename = sourceFilename.filterFilename;

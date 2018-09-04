@@ -4,6 +4,7 @@
 
 #import "NSData+Image.h"
 #import "MIMETypeUtil.h"
+#import <AVFoundation/AVFoundation.h>
 
 typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
@@ -23,18 +24,127 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 - (BOOL)ows_isValidImage
 {
-    return [self ows_isValidImageWithMimeType:nil];
+    if (![self ows_isValidImageWithMimeType:nil]) {
+        return NO;
+    }
+
+    if (![self ows_hasValidImageDimensions]) {
+        return NO;
+    }
+
+    return YES;
 }
 
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
     NSError *error = nil;
-    NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
-    if (error) {
-        OWSLogError(@"could not read image data: %@", error);
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+    if (!data || error) {
+        OWSLogError(@"Could not read image data: %@", error);
+        return NO;
     }
 
-    return [data ows_isValidImageWithMimeType:mimeType];
+    if (![data ows_isValidImageWithMimeType:mimeType]) {
+        return NO;
+    }
+
+    if (![self ows_hasValidImageDimensionsAtPath:filePath]) {
+        DDLogError(@"%@ image had invalid dimensions.", self.logTag);
+        return NO;
+    }
+
+    return YES;
+}
+
+- (BOOL)ows_hasValidImageDimensions
+{
+    CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
+    if (imageSource == NULL) {
+        return NO;
+    }
+    BOOL result = [NSData ows_hasValidImageDimensionWithImageSource:imageSource];
+    CFRelease(imageSource);
+    return result;
+}
+
++ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path
+{
+    NSURL *url = [NSURL fileURLWithPath:path];
+    if (!url) {
+        return NO;
+    }
+
+    CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
+    if (imageSource == NULL) {
+        return NO;
+    }
+    BOOL result = [self ows_hasValidImageDimensionWithImageSource:imageSource];
+    CFRelease(imageSource);
+    return result;
+}
+
++ (BOOL)ows_hasValidImageDimensionWithImageSource:(CGImageSourceRef)imageSource
+{
+    OWSAssert(imageSource);
+
+    NSDictionary *imageProperties
+        = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, NULL);
+
+    if (!imageProperties) {
+        return NO;
+    }
+
+    NSNumber *widthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelWidth];
+    if (!widthNumber) {
+        DDLogError(@"widthNumber was unexpectedly nil");
+        return NO;
+    }
+    CGFloat width = widthNumber.floatValue;
+
+    NSNumber *heightNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelHeight];
+    if (!heightNumber) {
+        DDLogError(@"heightNumber was unexpectedly nil");
+        return NO;
+    }
+    CGFloat height = heightNumber.floatValue;
+
+    /* The number of bits in each color sample of each pixel. The value of this
+     * key is a CFNumberRef. */
+    NSNumber *depthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyDepth];
+    if (!depthNumber) {
+        DDLogError(@"depthNumber was unexpectedly nil");
+        return NO;
+    }
+    NSUInteger depthBits = depthNumber.unsignedIntegerValue;
+    CGFloat depthBytes = (CGFloat)ceil(depthBits / 8.f);
+
+    /* The color model of the image such as "RGB", "CMYK", "Gray", or "Lab".
+     * The value of this key is CFStringRef. */
+    NSString *colorModel = imageProperties[(__bridge NSString *)kCGImagePropertyColorModel];
+    if (!colorModel) {
+        DDLogError(@"colorModel was unexpectedly nil");
+        return NO;
+    }
+    if (![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelRGB]
+        && ![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelGray]) {
+        DDLogError(@"Invalid colorModel: %@", colorModel);
+        return NO;
+    }
+
+    // We only support (A)RGB and (A)Grayscale, so worst case is 4.
+    CGFloat kWorseCastComponentsPerPixel = 4;
+    CGFloat bytesPerPixel = kWorseCastComponentsPerPixel * depthBytes;
+
+    CGFloat kMaxDimension = 2 * 1024;
+    CGFloat kExpectedBytePerPixel = 4;
+    CGFloat kMaxBytes = kMaxDimension * kMaxDimension * kExpectedBytePerPixel;
+    CGFloat actualBytes = width * height * bytesPerPixel;
+    if (actualBytes > kMaxBytes) {
+        DDLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f", width, height, bytesPerPixel);
+        return NO;
+    }
+
+    return YES;
 }
 
 - (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType
@@ -149,6 +259,29 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     const NSUInteger kMaxValidSize = 1 << 18;
 
     return (width > 0 && width < kMaxValidSize && height > 0 && height < kMaxValidSize);
+}
+
++ (BOOL)ows_isValidVideoAtURL:(NSURL *)url
+{
+    OWSAssert(url);
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
+
+    CGSize maxSize = CGSizeZero;
+    for (AVAssetTrack *track in [asset tracksWithMediaType:AVMediaTypeVideo]) {
+        CGSize trackSize = track.naturalSize;
+        maxSize.width = MAX(maxSize.width, trackSize.width);
+        maxSize.height = MAX(maxSize.height, trackSize.height);
+    }
+    if (maxSize.width < 1.f || maxSize.height < 1.f) {
+        DDLogError(@"Invalid video size: %@", NSStringFromCGSize(maxSize));
+        return NO;
+    }
+    const CGFloat kMaxSize = 3 * 1024.f;
+    if (maxSize.width > kMaxSize || maxSize.height > kMaxSize) {
+        DDLogError(@"Invalid video dimensions: %@", NSStringFromCGSize(maxSize));
+        return NO;
+    }
+    return YES;
 }
 
 @end
