@@ -1083,7 +1083,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             [self presentViewController:removingFromGroup animated:YES completion:nil];
 
             TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                   groupMetaMessage:TSGroupMessageQuit
+                                                                   groupMetaMessage:TSGroupMetaMessageQuit
                                                                    expiresInSeconds:0];
             [self.messageSender enqueueMessage:message
                 success:^{

@@ -886,7 +886,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
     TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
-                                                           groupMetaMessage:TSGroupMessageUpdate
+                                                           groupMetaMessage:TSGroupMetaMessageUpdate
                                                            expiresInSeconds:expiresInSeconds];
 
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction];

@@ -3857,7 +3857,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     OWSAssert(thread);
 
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew expiresInSeconds:0];
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageNew expiresInSeconds:0];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
@@ -4193,7 +4193,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                             expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
                                                                       : 0)expireStartedAt:0
                               isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMessageUnspecified
+                            groupMetaMessage:TSGroupMetaMessageUnspecified
                                quotedMessage:nil
                                 contactShare:nil];
         OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
@@ -4273,7 +4273,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                 expireStartedAt:0
                                                                  isVoiceMessage:NO
-                                                               groupMetaMessage:TSGroupMessageUnspecified
+                                                               groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                   quotedMessage:nil
                                                                    contactShare:nil];
                 [message saveWithTransaction:transaction];
@@ -4532,7 +4532,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    expiresInSeconds:0
                                                     expireStartedAt:0
                                                      isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMessageUnspecified
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:quotedMessage
                                                        contactShare:contactShare];
 
