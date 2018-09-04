@@ -24,6 +24,7 @@
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import "WebSocketResources.pb.h"
+#import "OWSDevice.h"
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -393,12 +394,26 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             [self resetSocket];
             
             // Create a new web socket.
-            NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
-            NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
             
-            SRWebSocket *socket = [[SRWebSocket alloc] initWithURLRequest:request
-                                                           securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
+            NSString *tssAPI = nil;
+            NSString *TSSUrlString = [[CCSMStorage new] textSecureURL];
+            if (TSSUrlString.length > 0) {
+                tssAPI = [TSSUrlString stringByAppendingString:@"/v1/websocket/"];
+            } else {
+                tssAPI = textSecureWebSocketAPI;
+            }
+            tssAPI = [tssAPI stringByReplacingOccurrencesOfString:@"http"
+                                                       withString:@"ws"];
+            NSString *webSocketConnect =
+            [tssAPI stringByAppendingString:[self webSocketAuthenticationString]];
+            SRWebSocket *socket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:webSocketConnect]];
+//            NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
+//            NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
+//            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
+//
+//            SRWebSocket *socket = [[SRWebSocket alloc] initWithURLRequest:request
+//                                                           securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
+            
             socket.delegate = self;
             
             [self setWebsocket:socket];
@@ -860,9 +875,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (NSString *)webSocketAuthenticationString {
-    return [NSString stringWithFormat:@"?login=%@&password=%@",
-                     [[TSAccountManager localUID] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                     [TSAccountManager serverAuthToken]];
+//    return [NSString stringWithFormat:@"?login=%@&password=%@",
+//                     [[TSAccountManager localUID] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
+//                     [TSAccountManager serverAuthToken]];
+    return [NSString
+            stringWithFormat:@"?login=%@.%d&password=%@",
+            [TSAccountManager.localUID stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
+            OWSDeviceManager.sharedManager.currentDeviceId,
+            TSAccountManager.serverAuthToken];
 }
 
 #pragma mark - Socket LifeCycle

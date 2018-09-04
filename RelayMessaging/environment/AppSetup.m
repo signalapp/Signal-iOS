@@ -53,13 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             // Don't start database migrations until storage is ready.
-            [VersionMigrations performUpdateCheckWithCompletion:^() {
+//            [VersionMigrations performUpdateCheckWithCompletion:^() {
                 OWSAssertIsOnMainThread();
 
                 migrationCompletion();
 
                 backgroundTask = nil;
-            }];
+//            }];
         }];
     });
 }
