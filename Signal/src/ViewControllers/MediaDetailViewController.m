@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     _galleryItemBox = galleryItemBox;
     _viewItem = viewItem;
     // We cache the image data in case the attachment stream is deleted.
-    _image = galleryItemBox.attachmentStream.image;
+    _image = galleryItemBox.attachmentStream.originalImage;
 
     return self;
 }

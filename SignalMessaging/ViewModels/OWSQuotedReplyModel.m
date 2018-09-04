@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSAttachmentStream *attachmentStream;
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             attachmentStream = (TSAttachmentStream *)attachment;
-            thumbnailImage = attachmentStream.image;
+            thumbnailImage = attachmentStream.originalImage;
         }
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.

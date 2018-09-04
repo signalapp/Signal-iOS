@@ -855,7 +855,7 @@ NS_ASSUME_NONNULL_BEGIN
             < kMaxCachableSize;
         stillImageView.image = [strongSelf tryToLoadCellMedia:^{
             OWSCAssert([strongSelf.attachmentStream isImage]);
-            return strongSelf.attachmentStream.image;
+            return strongSelf.attachmentStream.originalImage;
         }
                                                     mediaView:stillImageView
                                                      cacheKey:strongSelf.attachmentStream.uniqueId
@@ -979,7 +979,7 @@ NS_ASSUME_NONNULL_BEGIN
         stillImageView.image = [strongSelf tryToLoadCellMedia:^{
             OWSCAssert([strongSelf.attachmentStream isVideo]);
 
-            return strongSelf.attachmentStream.image;
+            return strongSelf.attachmentStream.originalImage;
         }
                                                     mediaView:stillImageView
                                                      cacheKey:strongSelf.attachmentStream.uniqueId

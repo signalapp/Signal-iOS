@@ -333,7 +333,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 #pragma mark -
 
-- (nullable UIImage *)image
+- (nullable UIImage *)originalImage
 {
     if ([self isVideo]) {
         return [self videoStillImage];

@@ -43,7 +43,7 @@ public struct MediaGalleryItem: Equatable, Hashable {
     }
 
     var fullSizedImage: UIImage {
-        guard let image = attachmentStream.image() else {
+        guard let image = attachmentStream.originalImage() else {
             owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment image")
             return UIImage()
         }

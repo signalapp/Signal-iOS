@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *creationTimestamp;
 
 #if TARGET_OS_IPHONE
-- (nullable UIImage *)image;
+- (nullable UIImage *)originalImage;
 - (nullable UIImage *)thumbnailImage;
 - (nullable NSData *)thumbnailData;
 - (nullable NSData *)validStillImageData;
