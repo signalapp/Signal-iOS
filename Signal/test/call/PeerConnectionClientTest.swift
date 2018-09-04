@@ -130,7 +130,7 @@ class PeerConnectionClientTest: XCTestCase {
         XCTAssertEqual(1, clientDelegate.dataChannelMessages.count)
 
         let dataChannelMessageProto = clientDelegate.dataChannelMessages[0]
-        XCTAssert(dataChannelMessageProto.hasHangup)
+        XCTAssertNotNil(dataChannelMessageProto.hangup)
 
         let hangupProto = dataChannelMessageProto.hangup!
         XCTAssertEqual(123, hangupProto.id)
