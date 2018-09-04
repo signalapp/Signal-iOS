@@ -194,6 +194,11 @@ const CGFloat kMaxTextViewHeight = 98;
     self.inputTextView.text = value;
 
     [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated];
+    [self ensureTextViewHeight];
+}
+
+- (void)ensureTextViewHeight
+{
     [self updateHeightWithTextView:self.inputTextView];
 }
 
