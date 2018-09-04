@@ -37,7 +37,7 @@
 
 // Source: https://github.com/AliSoftware/UIImage-Resize
 
-- (UIImage *)resizedImageToSize:(CGSize)dstSize
+- (nullable UIImage *)resizedImageToSize:(CGSize)dstSize
 {
     CGImageRef imgRef = self.CGImage;
     // the below values are regardless of orientation : for UIImages from Camera, width>height (landscape)
@@ -106,10 +106,10 @@
     UIGraphicsBeginImageContextWithOptions(dstSize, NO, self.scale);
 
     CGContextRef context = UIGraphicsGetCurrentContext();
-
     if (!context) {
         return nil;
     }
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
 
     if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
         CGContextScaleCTM(context, -scaleRatio, scaleRatio);
@@ -124,7 +124,7 @@
     // we use srcSize (and not dstSize) as the size to specify is in user space (and we use the CTM to apply a
     // scaleRatio)
     CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, srcSize.width, srcSize.height), imgRef);
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *_Nullable resizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
     return resizedImage;

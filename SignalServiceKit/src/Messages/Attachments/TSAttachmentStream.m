@@ -16,6 +16,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kMaxVideoStillSize = 1 * 1024;
 
+const NSUInteger kThumbnailDimensionPointsSmall = 200;
+const NSUInteger kThumbnailDimensionPointsMedium = 800;
+// This size is large enough to render full screen.
+const NSUInteger ThumbnailDimensionPointsLarge() {
+    CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
+    return MAX(screenSizePoints.width, screenSizePoints.height);
+}
+
+@implementation TSAttachmentThumbnail
+
+- (instancetype)initWithFilename:(NSString *)filename
+                            size:(CGSize)size
+        thumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _filename = filename;
+    _size = size;
+    _thumbnailDimensionPoints = thumbnailDimensionPoints;
+
+    return self;
+}
+
+@end
+
+#pragma mark -
+
 @interface TSAttachmentStream ()
 
 // We only want to generate the file path for this attachment once, so that
@@ -31,6 +61,8 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 // Optional property.  Only set for attachments which need "lazy backup restore."
 @property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
+
+@property (nonatomic, nullable) NSArray<TSAttachmentThumbnail *> *thumbnails;
 
 @end
 
@@ -258,6 +290,18 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return [[containingDir stringByAppendingPathComponent:newFilename] stringByAppendingPathExtension:@"jpg"];
 }
 
+- (nullable NSString *)pathForThumbnail:(TSAttachmentThumbnail *)thumbnail
+{
+    NSString *filePath = self.originalFilePath;
+    if (!filePath) {
+        OWSFail(@"%@ Attachment missing local file path.", self.logTag);
+        return nil;
+    }
+
+    NSString *containingDir = filePath.stringByDeletingLastPathComponent;
+    return [containingDir stringByAppendingPathComponent:thumbnail.filename];
+}
+
 - (nullable NSURL *)originalMediaURL
 {
     NSString *_Nullable filePath = self.originalFilePath;
@@ -272,12 +316,22 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     NSError *error;
 
+    for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
+        NSString *_Nullable thumbnailPath = [self pathForThumbnail:thumbnail];
+        if (thumbnailPath) {
+            BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
+            if (error || !success) {
+                DDLogError(@"%@ remove thumbnail failed with: %@", self.logTag, error);
+            }
+        }
+    }
+
     NSString *_Nullable thumbnailPath = self.thumbnailPath;
     if (thumbnailPath) {
-        [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
 
-        if (error) {
-            DDLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
+        if (error || !success) {
+            DDLogError(@"%@ remove legacy thumbnail failed with: %@", self.logTag, error);
         }
     }
 
@@ -286,10 +340,9 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return;
     }
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-
-    if (error) {
-        DDLogError(@"%@ remove file errored with: %@", self.logTag, error);
+    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+    if (error || !success) {
+        DDLogError(@"%@ remove file failed with: %@", self.logTag, error);
     }
 }
 
@@ -728,6 +781,70 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return string;
 }
 
+#pragma mark - Thumbnails
+
+- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint completion:(OWSThumbnailCompletion)completion
+{
+    CGFloat maxDimensionHint = MAX(sizeHint.width, sizeHint.height);
+    NSUInteger thumbnailDimensionPoints;
+    if (maxDimensionHint <= kThumbnailDimensionPointsSmall) {
+        thumbnailDimensionPoints = kThumbnailDimensionPointsSmall;
+    } else if (maxDimensionHint <= kThumbnailDimensionPointsMedium) {
+        thumbnailDimensionPoints = kThumbnailDimensionPointsMedium;
+    } else {
+        thumbnailDimensionPoints = ThumbnailDimensionPointsLarge();
+    }
+
+    return [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints completion:completion];
+}
+
+- (nullable UIImage *)thumbnailImageSmallWithCompletion:(OWSThumbnailCompletion)completion
+{
+    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall completion:completion];
+}
+
+- (nullable UIImage *)thumbnailImageMediumWithCompletion:(OWSThumbnailCompletion)completion
+{
+    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium completion:completion];
+}
+
+- (nullable UIImage *)thumbnailImageLargeWithCompletion:(OWSThumbnailCompletion)completion
+{
+    return [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge() completion:completion];
+}
+
+- (nullable UIImage *)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                                                      completion:(OWSThumbnailCompletion)completion
+{
+    CGSize originalSize = self.imageSize;
+    if (originalSize.width < 1 || originalSize.height < 1) {
+        return nil;
+    }
+    if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
+        // There's no point in generating a thumbnail if the original is smaller than the
+        // thumbnail size.
+        return self.originalImage;
+    }
+
+    for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
+        if (thumbnail.thumbnailDimensionPoints != thumbnailDimensionPoints) {
+            continue;
+        }
+        NSString *_Nullable thumbnailPath = [self pathForThumbnail:thumbnail];
+        if (!thumbnailPath) {
+            OWSFail(@"Missing thumbnail path.");
+            continue;
+        }
+        UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
+        return image;
+    }
+
+    [OWSThumbnailService.shared ensureThumbnailForAttachmentIdWithAttachmentId:self.uniqueId
+                                                      thumbnailDimensionPoints:thumbnailDimensionPoints
+                                                                    completion:completion];
+    return nil;
+}
+
 #pragma mark - Update With... Methods
 
 - (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
@@ -781,6 +898,40 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     }
 
     return thumbnailAttachment;
+}
+
+- (void)updateWithNewThumbnail:(NSString *)tempFilePath
+      thumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                          size:(CGSize)size
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(tempFilePath.length > 0);
+    OWSAssert(thumbnailDimensionPoints > 0);
+    OWSAssert(size.width > 0 && size.height);
+    OWSAssert(transaction);
+
+    NSString *filename = tempFilePath.lastPathComponent;
+    NSString *containingDir = self.originalFilePath.stringByDeletingLastPathComponent;
+    NSString *filePath = [containingDir stringByAppendingPathComponent:filename];
+
+    NSError *_Nullable error;
+    BOOL success = [[NSFileManager defaultManager] moveItemAtPath:tempFilePath toPath:filePath error:&error];
+    if (error || !success) {
+        OWSFail(@"Could not move new thumbnail image: %@.", error);
+        return;
+    }
+    TSAttachmentThumbnail *newThumbnail = [[TSAttachmentThumbnail alloc] initWithFilename:filename
+                                                                                     size:size
+                                                                 thumbnailDimensionPoints:thumbnailDimensionPoints];
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSAttachmentStream *attachment) {
+                                 NSMutableArray<TSAttachmentThumbnail *> *thumbnails
+                                     = (attachment.thumbnails ? [attachment.thumbnails mutableCopy]
+                                                              : [NSMutableArray new]);
+                                 [thumbnails addObject:newThumbnail];
+                                 [attachment setThumbnails:thumbnails];
+                             }];
 }
 
 // MARK: Protobuf serialization
