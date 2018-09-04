@@ -655,6 +655,7 @@ NS_ASSUME_NONNULL_BEGIN
                         mediaView:(UIView *)mediaView
                          cacheKey:(NSString *)cacheKey
                   shouldSkipCache:(BOOL)shouldSkipCache
+                     canLoadAsync:(BOOL)canLoadAsync
 {
     OWSAssert(self.attachmentStream);
     OWSAssert(mediaView);
@@ -676,7 +677,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!shouldSkipCache) {
             [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
         }
-    } else {
+    } else if (!canLoadAsync) {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream originalMediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
         [self showAttachmentErrorViewWithMediaView:mediaView];
@@ -836,6 +837,8 @@ NS_ASSUME_NONNULL_BEGIN
     stillImageView.backgroundColor = [UIColor whiteColor];
     [self addAttachmentUploadViewIfNecessary];
 
+    __weak UIImageView *weakImageView = stillImageView;
+
     __weak OWSMessageBubbleView *weakSelf = self;
     self.loadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
@@ -853,13 +856,17 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL shouldSkipCache =
             [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.originalFilePath].unsignedIntegerValue
             < kMaxCachableSize;
-        stillImageView.image = [strongSelf tryToLoadCellMedia:^{
-            OWSCAssert([strongSelf.attachmentStream isImage]);
-            return strongSelf.attachmentStream.originalImage;
-        }
-                                                    mediaView:stillImageView
-                                                     cacheKey:strongSelf.attachmentStream.uniqueId
-                                              shouldSkipCache:shouldSkipCache];
+        stillImageView.image = [strongSelf
+            tryToLoadCellMedia:^{
+                OWSCAssert([strongSelf.attachmentStream isImage]);
+                return [strongSelf.attachmentStream thumbnailImageMediumWithCompletion:^(UIImage *image) {
+                    weakImageView.image = image;
+                }];
+            }
+                     mediaView:stillImageView
+                      cacheKey:strongSelf.attachmentStream.uniqueId
+               shouldSkipCache:shouldSkipCache
+                  canLoadAsync:YES];
     };
     self.unloadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
@@ -895,19 +902,21 @@ NS_ASSUME_NONNULL_BEGIN
         if (animatedImageView.image) {
             return;
         }
-        animatedImageView.image = [strongSelf tryToLoadCellMedia:^{
-            OWSCAssert([strongSelf.attachmentStream isAnimated]);
+        animatedImageView.image = [strongSelf
+            tryToLoadCellMedia:^{
+                OWSCAssert([strongSelf.attachmentStream isAnimated]);
 
-            NSString *_Nullable filePath = [strongSelf.attachmentStream originalFilePath];
-            YYImage *_Nullable animatedImage = nil;
-            if (strongSelf.attachmentStream.isValidImage && filePath) {
-                animatedImage = [YYImage imageWithContentsOfFile:filePath];
+                NSString *_Nullable filePath = [strongSelf.attachmentStream originalFilePath];
+                YYImage *_Nullable animatedImage = nil;
+                if (strongSelf.attachmentStream.isValidImage && filePath) {
+                    animatedImage = [YYImage imageWithContentsOfFile:filePath];
+                }
+                return animatedImage;
             }
-            return animatedImage;
-        }
-                                                       mediaView:animatedImageView
-                                                        cacheKey:strongSelf.attachmentStream.uniqueId
-                                                 shouldSkipCache:NO];
+                     mediaView:animatedImageView
+                      cacheKey:strongSelf.attachmentStream.uniqueId
+               shouldSkipCache:NO
+                  canLoadAsync:NO];
     };
     self.unloadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
@@ -976,14 +985,16 @@ NS_ASSUME_NONNULL_BEGIN
         if (stillImageView.image) {
             return;
         }
-        stillImageView.image = [strongSelf tryToLoadCellMedia:^{
-            OWSCAssert([strongSelf.attachmentStream isVideo]);
+        stillImageView.image = [strongSelf
+            tryToLoadCellMedia:^{
+                OWSCAssert([strongSelf.attachmentStream isVideo]);
 
-            return strongSelf.attachmentStream.originalImage;
-        }
-                                                    mediaView:stillImageView
-                                                     cacheKey:strongSelf.attachmentStream.uniqueId
-                                              shouldSkipCache:NO];
+                return strongSelf.attachmentStream.originalImage;
+            }
+                     mediaView:stillImageView
+                      cacheKey:strongSelf.attachmentStream.uniqueId
+               shouldSkipCache:NO
+                  canLoadAsync:NO];
     };
     self.unloadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
