@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
                                                      isVoiceMessage:[attachment isVoiceMessage]
-                                                   groupMetaMessage:TSGroupMessageUnspecified
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil];
 
@@ -187,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
                                                      isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageUnspecified
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:contactShare];
 

@@ -268,7 +268,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                       expiresInSeconds:expiresInSeconds
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
-                                                      groupMetaMessage:TSGroupMessageUnspecified
+                                                      groupMetaMessage:TSGroupMetaMessageUnspecified
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil];
 }
@@ -316,15 +316,15 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     if ([thread isKindOfClass:TSGroupThread.class]) {
         // Unless specified, we assume group messages are "Delivery" i.e. normal messages.
-        if (groupMetaMessage == TSGroupMessageUnspecified) {
-            _groupMetaMessage = TSGroupMessageDeliver;
+        if (groupMetaMessage == TSGroupMetaMessageUnspecified) {
+            _groupMetaMessage = TSGroupMetaMessageDeliver;
         } else {
             _groupMetaMessage = groupMetaMessage;
         }
     } else {
-        OWSAssert(groupMetaMessage == TSGroupMessageUnspecified);
+        OWSAssert(groupMetaMessage == TSGroupMetaMessageUnspecified);
         // Specifying a group meta message only makes sense for Group threads
-        _groupMetaMessage = TSGroupMessageUnspecified;
+        _groupMetaMessage = TSGroupMetaMessageUnspecified;
     }
 
     _isVoiceMessage = isVoiceMessage;
@@ -436,7 +436,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (BOOL)shouldBeSaved
 {
-    if (self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageUnspecified) {
+    if (self.groupMetaMessage == TSGroupMetaMessageDeliver || self.groupMetaMessage == TSGroupMetaMessageUnspecified) {
         return YES;
     }
 
@@ -827,11 +827,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContextBuilder new];
 
         switch (self.groupMetaMessage) {
-            case TSGroupMessageQuit:
+            case TSGroupMetaMessageQuit:
                 [groupBuilder setType:SSKProtoGroupContextTypeQuit];
                 break;
-            case TSGroupMessageUpdate:
-            case TSGroupMessageNew: {
+            case TSGroupMetaMessageUpdate:
+            case TSGroupMetaMessageNew: {
                 if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                     attachmentWasGroupAvatar = YES;
                     SSKProtoAttachmentPointer *_Nullable attachmentProto =

@@ -207,6 +207,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
 
     private func createImagePreview() {
+        guard attachment.isValidImage else {
+            createGenericPreview()
+            return
+        }
         guard let image = attachment.image() else {
             createGenericPreview()
             return
@@ -225,6 +229,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
 
     private func createVideoPreview() {
+        guard attachment.isValidVideo else {
+            createGenericPreview()
+            return
+        }
         guard let image = attachment.videoPreview() else {
             createGenericPreview()
             return

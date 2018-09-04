@@ -164,7 +164,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:TSMessage.collection]];
 
-    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
+    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"2" options:options];
 }
 
 + (BOOL)attachmentIdShouldAppearInMediaGallery:(NSString *)attachmentId transaction:(YapDatabaseReadTransaction *)transaction
@@ -176,8 +176,20 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
         return NO;
     }
-    
-    return attachment.isImage || attachment.isVideo || attachment.isAnimated;
+
+    if (attachment.isImage && attachment.isValidImage) {
+        return YES;
+    }
+
+    if (attachment.isVideo && attachment.isValidVideo) {
+        return YES;
+    }
+
+    if (attachment.isAnimated && attachment.isValidImage) {
+        return YES;
+    }
+
+    return NO;
 }
 
 @end

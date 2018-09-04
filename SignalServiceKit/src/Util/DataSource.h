@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isValidImage;
 
+- (BOOL)isValidVideo;
+
 @end
 
 #pragma mark -

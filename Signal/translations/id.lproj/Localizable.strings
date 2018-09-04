@@ -1263,12 +1263,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@tidak lagi ditandai sudah terverifikasi. Ketuk untuk pilihan.";
 
-/* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Mengunduh Gagal.";
-
-/* Action sheet button text */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Unduh Lagi";
-
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Anda Memblokir 1 Anggota dari Grup ini";
 
@@ -1610,8 +1604,11 @@
 /* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
 
-/* Toast alert text shown when tapping on a quoted message which we cannot scroll to, because the local copy of the message doesn't exist. */
-"QUOTED_REPLY_MISSING_ORIGINAL_MESSAGE" = "Original message not found.";
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+
+/* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Lampiran";

@@ -987,7 +987,7 @@ const CGFloat kIconViewLength = 24;
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
+        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
     [self.messageSender enqueueMessage:message
         success:^{
             OWSLogInfo(@"Successfully left group.");
