@@ -5,16 +5,19 @@
 import Foundation
 
 private struct OWSThumbnailRequest {
-    public typealias CompletionBlock = (UIImage) -> Void
+    public typealias SuccessBlock = (UIImage) -> Void
+    public typealias FailureBlock = () -> Void
 
     let attachmentId: String
     let thumbnailDimensionPoints: UInt
-    let completion: CompletionBlock
+    let success: SuccessBlock
+    let failure: FailureBlock
 
-    init(attachmentId: String, thumbnailDimensionPoints: UInt, completion: @escaping CompletionBlock) {
+    init(attachmentId: String, thumbnailDimensionPoints: UInt, success: @escaping SuccessBlock, failure: @escaping FailureBlock) {
         self.attachmentId = attachmentId
         self.thumbnailDimensionPoints = thumbnailDimensionPoints
-        self.completion = completion
+        self.success = success
+        self.failure = failure
     }
 }
 
@@ -25,7 +28,8 @@ private struct OWSThumbnailRequest {
     @objc(shared)
     public static let shared = OWSThumbnailService()
 
-    public typealias CompletionBlock = (UIImage) -> Void
+    public typealias SuccessBlock = (UIImage) -> Void
+    public typealias FailureBlock = () -> Void
 
     private let serialQueue = DispatchQueue(label: "OWSThumbnailService")
 
@@ -35,8 +39,7 @@ private struct OWSThumbnailRequest {
     //
     // We want to process requests in _reverse_ order in which they
     // arrive so that we prioritize the most recent view state.
-    // This data structure is actually used like a stack.
-    private var thumbnailRequestQueue = [OWSThumbnailRequest]()
+    private var thumbnailRequestStack = [OWSThumbnailRequest]()
 
     private override init() {
 
@@ -64,14 +67,18 @@ private struct OWSThumbnailRequest {
     // completion will be called async on the main thread.
     @objc public func ensureThumbnailForAttachmentId(attachmentId: String,
                                                      thumbnailDimensionPoints: UInt,
-                                                     completion:@escaping CompletionBlock) {
+                                                     success: @escaping SuccessBlock,
+                                                     failure: @escaping FailureBlock) {
         guard attachmentId.count > 0 else {
             owsFail("Empty attachment id.")
+            DispatchQueue.main.async {
+                failure()
+            }
             return
         }
         serialQueue.async {
-            let thumbnailRequest = OWSThumbnailRequest(attachmentId: attachmentId, thumbnailDimensionPoints: thumbnailDimensionPoints, completion: completion)
-            self.thumbnailRequestQueue.append(thumbnailRequest)
+            let thumbnailRequest = OWSThumbnailRequest(attachmentId: attachmentId, thumbnailDimensionPoints: thumbnailDimensionPoints, success: success, failure: failure)
+            self.thumbnailRequestStack.append(thumbnailRequest)
 
             self.processNextRequestSync()
         }
@@ -85,14 +92,18 @@ private struct OWSThumbnailRequest {
 
     // This should only be called on the serialQueue.
     private func processNextRequestSync() {
-        guard !thumbnailRequestQueue.isEmpty else {
+        guard !thumbnailRequestStack.isEmpty else {
             return
         }
-        let thumbnailRequest = thumbnailRequestQueue.removeLast()
+        let thumbnailRequest = thumbnailRequestStack.removeLast()
 
         if let image = process(thumbnailRequest: thumbnailRequest) {
             DispatchQueue.main.async {
-                thumbnailRequest.completion(image)
+                thumbnailRequest.success(image)
+            }
+        } else {
+            DispatchQueue.main.async {
+                thumbnailRequest.failure()
             }
         }
     }
