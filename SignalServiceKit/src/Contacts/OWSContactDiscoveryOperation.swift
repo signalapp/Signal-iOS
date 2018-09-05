@@ -390,11 +390,9 @@ class CDSBatchOperation: OWSOperation {
 
     func parseAndDecrypt(response: Any?, remoteAttestation: RemoteAttestation) throws -> Data {
 
-        guard let responseDict = response as? [String: AnyObject] else {
+        guard let params = ParamParser(responseObject: response) else {
             throw ContactDiscoveryError.parseError(description: "missing response dict")
         }
-
-        let params = ParamParser(dictionary: responseDict)
 
         let cipherText = try params.requiredBase64EncodedData(key: "data")
         let initializationVector = try params.requiredBase64EncodedData(key: "iv")

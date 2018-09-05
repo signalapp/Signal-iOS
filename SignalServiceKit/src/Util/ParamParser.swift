@@ -34,6 +34,14 @@ public class ParamParser {
         self.dictionary = dictionary
     }
 
+    public convenience init?(responseObject: Any?) {
+        guard let responseDict = responseObject as? [String: AnyObject] else {
+            return nil
+        }
+
+        self.init(dictionary: responseDict)
+    }
+
     // MARK: Errors
 
     public enum ParseError: Error {
