@@ -26,4 +26,8 @@ public class AccountManager: NSObject {
     public func setPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
         return serviceSocket.registerPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
     }
+
+    public func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void> {
+        return serviceSocket.setCurrentSignedPreKey(signedPreKey)
+    }
 }

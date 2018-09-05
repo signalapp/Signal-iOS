@@ -8,6 +8,7 @@ import PromiseKit
 protocol ServiceSocket {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
+    func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
 }
 
 class ServiceRestSocket: ServiceSocket {
@@ -56,6 +57,23 @@ class ServiceRestSocket: ServiceSocket {
 
         let (promise, fulfill, reject) = Promise<Void>.pending()
         let request = OWSRequestFactory.registerPrekeysRequest(withPrekeyArray: preKeyRecords, identityKey: identityKey, signedPreKey: signedPreKeyRecord)
+
+        networkManager.makeRequest(request,
+                                   success: { (_, _) in
+                                    Logger.debug("success")
+                                    fulfill(())
+
+        },
+                                   failure: { (_, error) in
+                                    Logger.debug("error: \(error)")
+                                    reject(error)
+        })
+        return promise
+    }
+
+    public func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void> {
+        let (promise, fulfill, reject) = Promise<Void>.pending()
+        let request = OWSRequestFactory.registerSignedPrekeyRequest(with: signedPreKey)
 
         networkManager.makeRequest(request,
                                    success: { (_, _) in

@@ -96,114 +96,82 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     }
     OWSAssertDebug(CurrentAppContext().isMainAppAndActive);
 
-    // Update the prekey check timestamp.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
+    if (!TSAccountManager.isRegistered) {
+        return;
+    }
+
+    NSBlockOperation *checkIfPreKeyRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
         BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
             || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
-        if (shouldCheck) {
-            // Optimistically mark the prekeys as checked. This
-            // de-bounces prekey checks.
-            //
-            // If the check or key registration fails, the prekeys
-            // will be marked as _NOT_ checked.
-            //
-            // Note: [TSPreKeyManager checkPreKeys] will also
-            //       optimistically mark them as checked. This
-            //       redundancy is fine and precludes a race
-            //       condition.
-            lastPreKeyCheckTimestamp = [NSDate date];
+        if (!shouldCheck) {
+            return;
+        }
 
-            if ([TSAccountManager isRegistered]) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [TSPreKeyManager checkPreKeys];
-                });
-            }
+        SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
+        // Run inline instead of enqueuing to ensure we don't have multiple "check" operations
+        // that in turn enqueue multiple "refresh" operations.
+        [refreshOperation run];
+    }];
+
+    NSBlockOperation *checkIfSignedRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
+        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+        SignedPreKeyRecord *_Nullable signedPreKey = [primaryStorage currentSignedPreKey];
+
+        BOOL shouldCheck
+            = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
+        if (!shouldCheck) {
+            return;
+        }
+
+        SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
+        // Run inline instead of enqueuing to ensure we don't have multiple "check" operations
+        // that in turn enqueue multiple "refresh" operations.
+        [rotationOperation run];
+    }];
+
+    // Order matters here.
+    // We add the PreKeyRefresh first - if it *does* upload new keys, it'll upload a new SignedPreKey
+    // In that case our SPK rotation will be a no-op.
+    [self.operationQueue
+            addOperations:@[ checkIfPreKeyRefreshNecessaryOperation, checkIfSignedRotationNecessaryOperation ]
+        waitUntilFinished:NO];
+}
+
++ (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        SSKCreatePreKeysOperation *operation = [SSKCreatePreKeysOperation new];
+        [self.operationQueue addOperations:@[ operation ] waitUntilFinished:YES];
+
+        NSError *_Nullable error = operation.failingError;
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failureHandler(error);
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successHandler();
+            });
         }
     });
 }
 
-+ (void)registerPreKeysWithMode:(RefreshPreKeysMode)mode
-                        success:(void (^)(void))successHandler
-                        failure:(void (^)(NSError *error))failureHandler
++ (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
-    // We use prekeyQueue to serialize this logic and ensure that only
-    // one thread is "registering" or "clearing" prekeys at a time.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        // Mark the prekeys as checked every time we try to register prekeys.
-        lastPreKeyCheckTimestamp = [NSDate date];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        SSKRotateSignedPreKeyOperation *operation = [SSKRotateSignedPreKeyOperation new];
+        [self.operationQueue addOperations:@[ operation ] waitUntilFinished:YES];
 
-        RefreshPreKeysMode modeCopy = mode;
-        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-        ECKeyPair *identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
-
-        if (!identityKeyPair) {
-            [[OWSIdentityManager sharedManager] generateNewIdentityKey];
-            identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
-
-            // Switch modes if necessary.
-            modeCopy = RefreshPreKeysMode_SignedAndOneTime;
-        }
-
-        SignedPreKeyRecord *signedPreKey = [primaryStorage generateRandomSignedRecord];
-        // Store the new signed key immediately, before it is sent to the
-        // service to prevent race conditions and other edge cases.
-        [primaryStorage storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
-
-        NSArray *preKeys = nil;
-        TSRequest *request;
-        NSString *description;
-        if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
-            description = @"signed and one-time prekeys";
-            preKeys = [primaryStorage generatePreKeyRecords];
-            // Store the new one-time keys immediately, before they are sent to the
-            // service to prevent race conditions and other edge cases.
-            [primaryStorage storePreKeyRecords:preKeys];
-
-            request = [OWSRequestFactory registerPrekeysRequestWithPrekeyArray:preKeys
-                                                                   identityKey:identityKeyPair.publicKey
-                                                                  signedPreKey:signedPreKey];
-        } else {
-            description = @"just signed prekey";
-            request = [OWSRequestFactory registerSignedPrekeyRequestWithSignedPreKeyRecord:signedPreKey];
-        }
-
-        [[TSNetworkManager sharedManager] makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                OWSLogInfo(@"Successfully registered %@.", description);
-
-                // Mark signed prekey as accepted by service.
-                [signedPreKey markAsAcceptedByService];
-                [primaryStorage storeSignedPreKey:signedPreKey.Id signedPreKeyRecord:signedPreKey];
-
-                // On success, update the "current" signed prekey state.
-                [primaryStorage setCurrentSignedPrekeyId:signedPreKey.Id];
-
-                successHandler();
-
-                [TSPreKeyManager clearPreKeyUpdateFailureCount];
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                if (!IsNSErrorNetworkFailure(error)) {
-                    if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
-                        OWSProdError([OWSAnalyticsEvents errorPrekeysUpdateFailedSignedAndOnetime]);
-                    } else {
-                        OWSProdError([OWSAnalyticsEvents errorPrekeysUpdateFailedJustSigned]);
-                    }
-                }
-
+        NSError *_Nullable error = operation.failingError;
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 failureHandler(error);
-
-                NSInteger statusCode = 0;
-                if ([task.response isKindOfClass:[NSHTTPURLResponse class]]) {
-                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                    statusCode = httpResponse.statusCode;
-                }
-                if (statusCode >= 400 && statusCode <= 599) {
-                    // Only treat 4xx and 5xx errors from the service as failures.
-                    // Ignore network failures, for example.
-                    [TSPreKeyManager incrementPreKeyUpdateFailureCount];
-                }
-            }];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                successHandler();
+            });
+        }
     });
 }
 

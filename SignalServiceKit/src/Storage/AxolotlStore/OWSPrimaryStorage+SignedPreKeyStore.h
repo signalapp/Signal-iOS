@@ -19,6 +19,7 @@ extern NSString *const OWSPrimaryStorageSignedPreKeyStoreCollection;
 // Returns nil if no current signed prekey id is found.
 - (nullable NSNumber *)currentSignedPrekeyId;
 - (void)setCurrentSignedPrekeyId:(int)value;
+- (nullable SignedPreKeyRecord *)currentSignedPreKey;
 
 #pragma mark - Prekey update failures
 

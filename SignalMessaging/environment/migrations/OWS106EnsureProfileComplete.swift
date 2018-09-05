@@ -101,13 +101,12 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
                     Logger.warn("detected incomplete profile for \(localRecipientId) error: \(description)")
                     // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.
-                    TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
-                                                    success: {
-                                                        Logger.info("successfully uploaded pre-keys. Profile should be fixed.")
-                                                        fulfill(())
+                    TSPreKeyManager.createPreKeys(success: {
+                        Logger.info("successfully uploaded pre-keys. Profile should be fixed.")
+                        fulfill(())
                     },
-                                                    failure: { _ in
-                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error"))
+                                                  failure: { _ in
+                                                    reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error"))
                     })
                 default:
                     reject(error)

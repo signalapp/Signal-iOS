@@ -21,9 +21,9 @@ typedef NS_ENUM(NSInteger, RefreshPreKeysMode) {
 
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures;
 
-+ (void)registerPreKeysWithMode:(RefreshPreKeysMode)mode
-                        success:(void (^)(void))successHandler
-                        failure:(void (^)(NSError *error))failureHandler;
++ (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
+
++ (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 
 + (void)checkPreKeys;
 
