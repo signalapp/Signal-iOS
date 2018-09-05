@@ -13,8 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kThumbnailDimensionPointsSmall = 300;
-const NSUInteger kThumbnailDimensionPointsMedium = 800;
+const NSUInteger kThumbnailDimensionPointsSmall = 200;
+const NSUInteger kThumbnailDimensionPointsMedium = 450;
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
