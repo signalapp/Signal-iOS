@@ -40,7 +40,7 @@
     return preKeyRecords;
 }
 
-- (void)storePreKeyRecords:(NSArray *)preKeyRecords
+- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
 {
     for (PreKeyRecord *record in preKeyRecords) {
         [self.dbReadWriteConnection setObject:record

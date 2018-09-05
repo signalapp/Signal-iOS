@@ -8,6 +8,6 @@
 @interface OWSPrimaryStorage (PreKeyStore) <PreKeyStore>
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
-- (void)storePreKeyRecords:(NSArray *)preKeyRecords;
+- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords NS_SWIFT_NAME(storePreKeyRecords(_:));
 
 @end

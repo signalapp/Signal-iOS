@@ -11,6 +11,7 @@
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import "TSStorageHeaders.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 // Time before deletion of signed prekeys (measured in seconds)
 #define kSignedPreKeysDeletionTime (7 * kDayInterval)
@@ -20,10 +21,6 @@
 
 // How often we check prekey state on app activation.
 #define kPreKeyCheckFrequencySeconds (12 * kHourInterval)
-
-// We generate 100 one-time prekeys at a time.  We should replenish
-// whenever ~2/3 of them have been consumed.
-static const NSUInteger kEphemeralPreKeysMinimumCount = 35;
 
 // This global should only be accessed on prekeyQueue.
 static NSDate *lastPreKeyCheckTimestamp = nil;
@@ -79,6 +76,17 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         queue = dispatch_queue_create("org.whispersystems.signal.prekeyQueue", NULL);
     });
     return queue;
+}
+
++ (NSOperationQueue *)operationQueue
+{
+    static dispatch_once_t onceToken;
+    static NSOperationQueue *operationQueue;
+    dispatch_once(&onceToken, ^{
+        operationQueue = [NSOperationQueue new];
+        operationQueue.maxConcurrentOperationCount = 1;
+    });
+    return operationQueue;
 }
 
 + (void)checkPreKeysIfNecessary
@@ -183,9 +191,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                     }
                 }
 
-                // Mark the prekeys as _NOT_ checked on failure.
-                [self markPreKeysAsNotChecked];
-
                 failureHandler(error);
 
                 NSInteger statusCode = 0;
@@ -208,207 +213,83 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         return;
     }
 
-    // Optimistically mark the prekeys as checked. This
-    // de-bounces prekey checks.
-    //
-    // If the check or key registration fails, the prekeys
-    // will be marked as _NOT_ checked.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        lastPreKeyCheckTimestamp = [NSDate date];
-    });
-
-    // We want to update prekeys if either the one-time or signed prekeys need an update, so
-    // we check the status of both.
-    //
-    // Most users will refresh their signed prekeys much more often than their
-    // one-time PreKeys, so we use a "signed only" mode to avoid updating the
-    // one-time keys in this case.
-    //
-    // We do not need a "one-time only" mode.
-    TSRequest *preKeyCountRequest = [OWSRequestFactory availablePreKeysCountRequest];
-    [[TSNetworkManager sharedManager] makeRequest:preKeyCountRequest
-        success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-            NSString *preKeyCountKey = @"count";
-            NSNumber *count = [responseObject objectForKey:preKeyCountKey];
-
-            BOOL didUpdatePreKeys = NO;
-            void (^updatePreKeys)(RefreshPreKeysMode) = ^(RefreshPreKeysMode mode) {
-                [self registerPreKeysWithMode:mode
-                    success:^{
-                        OWSLogInfo(@"New prekeys registered with server.");
-
-                        [self clearSignedPreKeyRecords];
-                    }
-                    failure:^(NSError *error) {
-                        OWSLogWarn(@"Failed to update prekeys with the server: %@", error);
-                    }];
-            };
-
-            BOOL shouldUpdateOneTimePreKeys = count.integerValue <= kEphemeralPreKeysMinimumCount;
-
-            if (shouldUpdateOneTimePreKeys) {
-                OWSLogInfo(@"Updating one-time and signed prekeys due to shortage of one-time prekeys.");
-                updatePreKeys(RefreshPreKeysMode_SignedAndOneTime);
-                didUpdatePreKeys = YES;
-            } else {
-                OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-                NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
-                BOOL shouldUpdateSignedPrekey = NO;
-                if (!currentSignedPrekeyId) {
-                    OWSLogError(@"Couldn't find current signed prekey id");
-                    shouldUpdateSignedPrekey = YES;
-                } else {
-                    SignedPreKeyRecord *currentRecord =
-                        [primaryStorage loadSignedPrekeyOrNil:currentSignedPrekeyId.intValue];
-                    if (!currentRecord) {
-                        OWSFailDebug(@"Couldn't find signed prekey for id: %@", currentSignedPrekeyId);
-                        shouldUpdateSignedPrekey = YES;
-                    } else {
-                        shouldUpdateSignedPrekey
-                        = fabs([currentRecord.generatedAt timeIntervalSinceNow]) >= kSignedPreKeyRotationTime;
-                    }
-                }
-                
-                if (shouldUpdateSignedPrekey) {
-                    OWSLogInfo(@"Updating signed prekey due to rotation period.");
-                    updatePreKeys(RefreshPreKeysMode_SignedOnly);
-                    didUpdatePreKeys = YES;
-                } else {
-                    OWSLogDebug(@"Not updating prekeys.");
-                }
-            }
-
-            if (!didUpdatePreKeys) {
-                // If we didn't update the prekeys, our local "current signed key" state should
-                // agree with the service's "current signed key" state.  Let's verify that,
-                // since it's closely related to the issues we saw with the 2.7.0.10 release.
-                TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
-                [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
-                    success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-                        NSString *keyIdDictKey = @"keyId";
-                        NSNumber *keyId = [responseObject objectForKey:keyIdDictKey];
-                        OWSAssertDebug(keyId);
-
-                        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-                        NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
-
-                        if (!keyId || !currentSignedPrekeyId || ![currentSignedPrekeyId isEqualToNumber:keyId]) {
-                            OWSLogError(@"Local and service 'current signed prekey ids' did not match. %@ == %@ == %d.",
-                                keyId,
-                                currentSignedPrekeyId,
-                                [currentSignedPrekeyId isEqualToNumber:keyId]);
-                        }
-                    }
-                    failure:^(NSURLSessionDataTask *task, NSError *error) {
-                        if (!IsNSErrorNetworkFailure(error)) {
-                            OWSProdError([OWSAnalyticsEvents errorPrekeysCurrentSignedPrekeyRequestFailed]);
-                        }
-                        OWSLogWarn(@"Could not retrieve current signed key from the service.");
-
-                        // Mark the prekeys as _NOT_ checked on failure.
-                        [self markPreKeysAsNotChecked];
-                    }];
-            }
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents errorPrekeysAvailablePrekeysRequestFailed]);
-            }
-            OWSLogError(@"Failed to retrieve the number of available prekeys.");
-
-            // Mark the prekeys as _NOT_ checked on failure.
-            [self markPreKeysAsNotChecked];
-        }];
-}
-
-+ (void)markPreKeysAsNotChecked
-{
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        lastPreKeyCheckTimestamp = nil;
-    });
+    SSKRefreshPreKeysOperation *operation = [SSKRefreshPreKeysOperation new];
+    [self.operationQueue addOperation:operation];
 }
 
 + (void)clearSignedPreKeyRecords {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
-    [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId success:nil];
+    [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId];
 }
 
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)(void))successHandler
++ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId
 {
     if (!keyId) {
         OWSFailDebug(@"Ignoring request to clear signed preKeys since no keyId was specified");
         return;
     }
 
-    // We use prekeyQueue to serialize this logic and ensure that only
-    // one thread is "registering" or "clearing" prekeys at a time.
-    dispatch_async(TSPreKeyManager.prekeyQueue, ^{
-        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-        SignedPreKeyRecord *currentRecord = [primaryStorage loadSignedPrekeyOrNil:keyId.intValue];
-        if (!currentRecord) {
-            OWSFailDebug(@"Couldn't find signed prekey for id: %@", keyId);
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    SignedPreKeyRecord *currentRecord = [primaryStorage loadSignedPrekeyOrNil:keyId.intValue];
+    if (!currentRecord) {
+        OWSFailDebug(@"Couldn't find signed prekey for id: %@", keyId);
+    }
+    NSArray *allSignedPrekeys = [primaryStorage loadSignedPreKeys];
+    NSArray *oldSignedPrekeys
+        = (currentRecord != nil ? [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys]
+                                : allSignedPrekeys);
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+    dateFormatter.timeStyle = NSDateFormatterMediumStyle;
+    dateFormatter.locale = [NSLocale systemLocale];
+
+    // Sort the signed prekeys in ascending order of generation time.
+    oldSignedPrekeys = [oldSignedPrekeys sortedArrayUsingComparator:^NSComparisonResult(
+        SignedPreKeyRecord *_Nonnull left, SignedPreKeyRecord *_Nonnull right) {
+        return [left.generatedAt compare:right.generatedAt];
+    }];
+
+    NSUInteger oldSignedPreKeyCount = oldSignedPrekeys.count;
+
+    int oldAcceptedSignedPreKeyCount = 0;
+    for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
+        if (signedPrekey.wasAcceptedByService) {
+            oldAcceptedSignedPreKeyCount++;
         }
-        NSArray *allSignedPrekeys = [primaryStorage loadSignedPreKeys];
-        NSArray *oldSignedPrekeys
-            = (currentRecord != nil ? [self removeCurrentRecord:currentRecord fromRecords:allSignedPrekeys]
-                                    : allSignedPrekeys);
+    }
 
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateStyle = NSDateFormatterMediumStyle;
-        dateFormatter.timeStyle = NSDateFormatterMediumStyle;
-        dateFormatter.locale = [NSLocale systemLocale];
-
-        // Sort the signed prekeys in ascending order of generation time.
-        oldSignedPrekeys = [oldSignedPrekeys sortedArrayUsingComparator:^NSComparisonResult(
-            SignedPreKeyRecord *_Nonnull left, SignedPreKeyRecord *_Nonnull right) {
-            return [left.generatedAt compare:right.generatedAt];
-        }];
-
-        NSUInteger oldSignedPreKeyCount = oldSignedPrekeys.count;
-
-        int oldAcceptedSignedPreKeyCount = 0;
-        for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
-            if (signedPrekey.wasAcceptedByService) {
-                oldAcceptedSignedPreKeyCount++;
-            }
+    // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
+    for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
+        // Always keep at least 3 keys, accepted or otherwise.
+        if (oldSignedPreKeyCount <= 3) {
+            continue;
         }
 
-        // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
-        for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
-            // Always keep at least 3 keys, accepted or otherwise.
-            if (oldSignedPreKeyCount <= 3) {
+        // Never delete signed prekeys until they are N days old.
+        if (fabs([signedPrekey.generatedAt timeIntervalSinceNow]) < kSignedPreKeysDeletionTime) {
+            continue;
+        }
+
+        // We try to keep a minimum of 3 "old, accepted" signed prekeys.
+        if (signedPrekey.wasAcceptedByService) {
+            if (oldAcceptedSignedPreKeyCount <= 3) {
                 continue;
-            }
-
-            // Never delete signed prekeys until they are N days old.
-            if (fabs([signedPrekey.generatedAt timeIntervalSinceNow]) < kSignedPreKeysDeletionTime) {
-                continue;
-            }
-
-            // We try to keep a minimum of 3 "old, accepted" signed prekeys.
-            if (signedPrekey.wasAcceptedByService) {
-                if (oldAcceptedSignedPreKeyCount <= 3) {
-                    continue;
-                } else {
-                    oldAcceptedSignedPreKeyCount--;
-                }
-            }
-
-            if (signedPrekey.wasAcceptedByService) {
-                OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldAcceptedSignedPrekey]);
             } else {
-                OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldUnacceptedSignedPrekey]);
+                oldAcceptedSignedPreKeyCount--;
             }
-
-            oldSignedPreKeyCount--;
-            [primaryStorage removeSignedPreKey:signedPrekey.Id];
         }
 
-        if (successHandler) {
-            successHandler();
+        if (signedPrekey.wasAcceptedByService) {
+            OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldAcceptedSignedPrekey]);
+        } else {
+            OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldUnacceptedSignedPrekey]);
         }
-    });
+
+        oldSignedPreKeyCount--;
+        [primaryStorage removeSignedPreKey:signedPrekey.Id];
+    }
 }
 
 + (NSArray *)removeCurrentRecord:(SignedPreKeyRecord *)currentRecord fromRecords:(NSArray *)allRecords {
