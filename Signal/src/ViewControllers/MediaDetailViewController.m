@@ -83,11 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.galleryItemBox.attachmentStream;
 }
 
-- (NSURL *_Nullable)attachmentUrl
-{
-    return self.attachmentStream.originalMediaURL;
-}
-
 - (BOOL)isAnimated
 {
     return self.attachmentStream.isAnimated;
@@ -178,10 +173,16 @@ NS_ASSUME_NONNULL_BEGIN
             animatedView.image = animatedGif;
             self.mediaView = animatedView;
         } else {
-            self.mediaView = [UIImageView new];
+            self.mediaView = [UIView new];
+            self.mediaView.backgroundColor = Theme.offBackgroundColor;
         }
     } else if (self.isVideo) {
-        self.mediaView = [self buildVideoPlayerView];
+        if (self.attachmentStream.isValidVideo) {
+            self.mediaView = [self buildVideoPlayerView];
+        } else {
+            self.mediaView = [UIView new];
+            self.mediaView.backgroundColor = Theme.offBackgroundColor;
+        }
     } else {
         // Present the static image using standard UIImageView
         UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
@@ -249,12 +250,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIView *)buildVideoPlayerView
 {
+    NSURL *_Nullable attachmentUrl = self.attachmentStream.originalMediaURL;
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:[self.attachmentUrl path]]) {
+    if (![fileManager fileExistsAtPath:[attachmentUrl path]]) {
         OWSFail(@"%@ Missing video file", self.logTag);
     }
 
-    OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
+    OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:attachmentUrl];
     [player seekToTime:kCMTimeZero];
     player.delegate = self;
     self.videoPlayer = player;
