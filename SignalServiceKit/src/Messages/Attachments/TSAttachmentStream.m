@@ -41,6 +41,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 // Optional property.  Only set for attachments which need "lazy backup restore."
 @property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
 
+@property (atomic, nullable) NSNumber *isValidImageCached;
+@property (atomic, nullable) NSNumber *isValidVideoCached;
+
 @end
 
 #pragma mark -
@@ -347,14 +350,33 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSAssert(self.isImage || self.isAnimated);
 
-    return [NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType];
+    if (self.lazyRestoreFragment) {
+        return NO;
+    }
+
+    @synchronized(self) {
+        if (!self.isValidImageCached) {
+            self.isValidImageCached =
+                @([NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType]);
+        }
+        return self.isValidImageCached.boolValue;
+    }
 }
 
 - (BOOL)isValidVideo
 {
     OWSAssert(self.isVideo);
 
-    return [OWSMediaUtils isValidVideoWithPath:self.originalFilePath];
+    if (self.lazyRestoreFragment) {
+        return NO;
+    }
+
+    @synchronized(self) {
+        if (!self.isValidVideoCached) {
+            self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+        }
+        return self.isValidVideoCached.boolValue;
+    }
 }
 
 #pragma mark -
