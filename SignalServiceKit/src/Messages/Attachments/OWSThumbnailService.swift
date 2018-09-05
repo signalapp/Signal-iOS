@@ -38,13 +38,13 @@ private struct OWSThumbnailRequest {
     public typealias SuccessBlock = (OWSLoadedThumbnail) -> Void
     public typealias FailureBlock = () -> Void
 
-    let attachmentId: String
+    let attachment: TSAttachmentStream
     let thumbnailDimensionPoints: UInt
     let success: SuccessBlock
     let failure: FailureBlock
 
-    init(attachmentId: String, thumbnailDimensionPoints: UInt, success: @escaping SuccessBlock, failure: @escaping FailureBlock) {
-        self.attachmentId = attachmentId
+    init(attachment: TSAttachmentStream, thumbnailDimensionPoints: UInt, success: @escaping SuccessBlock, failure: @escaping FailureBlock) {
+        self.attachment = attachment
         self.thumbnailDimensionPoints = thumbnailDimensionPoints
         self.success = success
         self.failure = failure
@@ -86,19 +86,12 @@ private struct OWSThumbnailRequest {
 
     // completion will only be called on success.
     // completion will be called async on the main thread.
-    @objc public func ensureThumbnail(forAttachmentId attachmentId: String,
+    @objc public func ensureThumbnail(forAttachment attachment: TSAttachmentStream,
                                                      thumbnailDimensionPoints: UInt,
                                                      success: @escaping SuccessBlock,
                                                      failure: @escaping FailureBlock) {
-        guard attachmentId.count > 0 else {
-            owsFail("Empty attachment id.")
-            DispatchQueue.main.async {
-                failure()
-            }
-            return
-        }
         serialQueue.async {
-            let thumbnailRequest = OWSThumbnailRequest(attachmentId: attachmentId, thumbnailDimensionPoints: thumbnailDimensionPoints, success: success, failure: failure)
+            let thumbnailRequest = OWSThumbnailRequest(attachment: attachment, thumbnailDimensionPoints: thumbnailDimensionPoints, success: success, failure: failure)
             self.thumbnailRequestStack.append(thumbnailRequest)
 
             self.processNextRequestSync()
@@ -133,29 +126,28 @@ private struct OWSThumbnailRequest {
     }
 
     // This should only be called on the serialQueue.
+    //
+    // It should be safe to assume that an attachment will never end up with two thumbnails of
+    // the same size since:
+    //
+    // * Thumbnails are only added by this method.
+    // * This method checks for an existing thumbnail using the same connection.
+    // * This method is performed on the serial queue.
     private func process(thumbnailRequest: OWSThumbnailRequest) throws -> OWSLoadedThumbnail {
-        var possibleAttachment: TSAttachmentStream?
-        self.dbConnection.read({ (transaction) in
-            possibleAttachment = TSAttachmentStream.fetch(uniqueId: thumbnailRequest.attachmentId, transaction: transaction)
-        })
-        guard let attachment = possibleAttachment else {
-            throw OWSThumbnailError.failure(description: "Could not load attachment for thumbnailing.")
-        }
+        let attachment = thumbnailRequest.attachment
         guard canThumbnailAttachment(attachment: attachment) else {
             throw OWSThumbnailError.failure(description: "Cannot thumbnail attachment.")
         }
-        if let thumbnails = attachment.thumbnails {
-            for thumbnail in thumbnails {
-                if thumbnail.thumbnailDimensionPoints == thumbnailRequest.thumbnailDimensionPoints {
-                    guard let filePath = attachment.path(for: thumbnail) else {
-                        throw OWSThumbnailError.failure(description: "Could not determine thumbnail path.")
-                    }
-                    guard let image = UIImage(contentsOfFile: filePath) else {
-                        throw OWSThumbnailError.failure(description: "Could not load thumbnail.")
-                    }
-                    return OWSLoadedThumbnail(image: image, filePath: filePath)
-                }
+        let thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
+        if FileManager.default.fileExists(atPath: thumbnailPath) {
+            guard let image = UIImage(contentsOfFile: thumbnailPath) else {
+                throw OWSThumbnailError.failure(description: "Could not load thumbnail.")
             }
+            return OWSLoadedThumbnail(image: image, filePath: thumbnailPath)
+        }
+        let thumbnailDirPath = (thumbnailPath as NSString).deletingLastPathComponent
+        if !FileManager.default.fileExists(atPath: thumbnailDirPath) {
+            try FileManager.default.createDirectory(atPath: thumbnailDirPath, withIntermediateDirectories: true, attributes: nil)
         }
         guard let originalFilePath = attachment.originalFilePath else {
             throw OWSThumbnailError.failure(description: "Missing original file path.")
@@ -170,30 +162,14 @@ private struct OWSThumbnailRequest {
         } else {
             throw OWSThumbnailError.failure(description: "Invalid attachment type.")
         }
-        let thumbnailSize = thumbnailImage.size
         guard let thumbnailData = UIImageJPEGRepresentation(thumbnailImage, 0.85) else {
             throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
         }
-        let temporaryDirectory = NSTemporaryDirectory()
-        let thumbnailFilename = "\(NSUUID().uuidString).jpg"
-        let thumbnailFilePath = (temporaryDirectory as NSString).appendingPathComponent(thumbnailFilename)
         do {
-            try thumbnailData.write(to: NSURL.fileURL(withPath: thumbnailFilePath), options: .atomicWrite)
+            try thumbnailData.write(to: NSURL.fileURL(withPath: thumbnailPath), options: .atomicWrite)
         } catch let error as NSError {
-            throw OWSThumbnailError.failure(description: "File write failed: \(thumbnailFilePath), \(error)")
+            throw OWSThumbnailError.failure(description: "File write failed: \(thumbnailPath), \(error)")
         }
-        // It should be safe to assume that an attachment will never end up with two thumbnails of
-        // the same size since:
-        //
-        // * Thumbnails are only added by this method.
-        // * This method checks for an existing thumbnail using the same connection.
-        // * This method is performed on the serial queue.
-        self.dbConnection.readWrite({ (transaction) in
-            attachment.update(withNewThumbnail: thumbnailFilePath,
-                              thumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints,
-                              size: thumbnailSize,
-                              transaction: transaction)
-        })
         return OWSLoadedThumbnail(image: thumbnailImage, data: thumbnailData)
     }
 }

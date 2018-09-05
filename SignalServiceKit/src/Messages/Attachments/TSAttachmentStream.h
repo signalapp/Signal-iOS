@@ -20,19 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);
 
-@interface TSAttachmentThumbnail : MTLModel
-
-@property (nonatomic, readonly) NSString *filename;
-@property (nonatomic, readonly) CGSize size;
-// The length of the longer side.
-@property (nonatomic, readonly) NSUInteger thumbnailDimensionPoints;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-@end
-
-#pragma mark -
-
 @interface TSAttachmentStream : TSAttachment
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -51,8 +38,6 @@ typedef void (^OWSThumbnailFailure)(void);
 @property (atomic) BOOL isUploaded;
 
 @property (nonatomic, readonly) NSDate *creationTimestamp;
-
-@property (nonatomic, nullable, readonly) NSArray<TSAttachmentThumbnail *> *thumbnails;
 
 #if TARGET_OS_IPHONE
 - (nullable NSData *)validStillImageData;
@@ -107,7 +92,7 @@ typedef void (^OWSThumbnailFailure)(void);
 - (nullable UIImage *)thumbnailImageSmallSync;
 
 // This method should only be invoked by OWSThumbnailService.
-- (nullable NSString *)pathForThumbnail:(TSAttachmentThumbnail *)thumbnail;
+- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
 
 #pragma mark - Validation
 
@@ -124,11 +109,6 @@ typedef void (^OWSThumbnailFailure)(void);
 
 // TODO: Review.
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
-
-- (void)updateWithNewThumbnail:(NSString *)tempFilePath
-      thumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
-                          size:(CGSize)size
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Protobuf
 

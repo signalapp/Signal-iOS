@@ -35,6 +35,35 @@
     return resized;
 }
 
+- (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
+{
+    CGSize originalSize = self.size;
+    if (originalSize.width < 1 || originalSize.height < 1) {
+        DDLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
+        return nil;
+    }
+    CGSize thumbnailSize = CGSizeZero;
+    if (originalSize.width > originalSize.height) {
+        thumbnailSize.width = maxDimensionPoints;
+        thumbnailSize.height = round(maxDimensionPoints * originalSize.height / originalSize.width);
+    } else {
+        thumbnailSize.width = round(maxDimensionPoints * originalSize.width / originalSize.height);
+        thumbnailSize.height = maxDimensionPoints;
+    }
+    if (thumbnailSize.width < 1 || thumbnailSize.height < 1) {
+        DDLogError(@"Invalid thumbnail size: %@", NSStringFromCGSize(thumbnailSize));
+        return nil;
+    }
+
+    UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    [self drawInRect:CGRectMake(0, 0, thumbnailSize.width, thumbnailSize.height)];
+    UIImage *_Nullable resized = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resized;
+}
+
 // Source: https://github.com/AliSoftware/UIImage-Resize
 
 - (nullable UIImage *)resizedImageToSize:(CGSize)dstSize

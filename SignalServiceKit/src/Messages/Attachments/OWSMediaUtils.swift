@@ -26,56 +26,15 @@ public enum OWSMediaError: Error {
         guard let originalImage = UIImage(contentsOfFile: path) else {
             throw OWSMediaError.failure(description: "Could not load original image.")
         }
-        let originalSize = originalImage.size
-        guard originalSize.width > 0 && originalSize.height > 0 else {
-            throw OWSMediaError.failure(description: "Original image has invalid size.")
-        }
-        var thumbnailSize = CGSize.zero
-        if originalSize.width > originalSize.height {
-            thumbnailSize.width = CGFloat(maxDimension)
-            thumbnailSize.height = round(CGFloat(maxDimension) * originalSize.height / originalSize.width)
-        } else {
-            thumbnailSize.width = round(CGFloat(maxDimension) * originalSize.width / originalSize.height)
-            thumbnailSize.height = CGFloat(maxDimension)
-        }
-        guard thumbnailSize.width > 0 && thumbnailSize.height > 0 else {
-            throw OWSMediaError.failure(description: "Thumbnail has invalid size.")
-        }
-        guard originalSize.width > thumbnailSize.width &&
-            originalSize.height > thumbnailSize.height else {
-                throw OWSMediaError.failure(description: "Thumbnail isn't smaller than the original.")
-        }
         // We use UIGraphicsBeginImageContextWithOptions() to scale.
         // Core Image would provide better quality (e.g. Lanczos) but
-        // at perf cost we don't want to pay.  We could also use
+        // at a perf cost we don't want to pay.  We could also use
         // CoreGraphics directly, but I'm not sure there's any benefit.
-        guard let thumbnailImage = originalImage.resizedImage(to: thumbnailSize) else {
+        guard let thumbnailImage = originalImage.resized(withMaxDimensionPoints: maxDimension) else {
             throw OWSMediaError.failure(description: "Could not thumbnail image.")
         }
         return thumbnailImage
     }
-
-//    @objc public class func thumbnail(forImageAtPath path: String, maxDimension : CGFloat) throws -> UIImage {
-//        guard FileManager.default.fileExists(atPath: path) else {
-//            throw OWSMediaError.failure(description: "Media file missing.")
-//        }
-//        guard NSData.ows_isValidImage(atPath: path) else {
-//            throw OWSMediaError.failure(description: "Invalid image.")
-//        }
-//        let url = URL(fileURLWithPath: path)
-//        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
-//            throw OWSMediaError.failure(description: "Could not create image source.")
-//        }
-//        let imageOptions : [String :Any] = [
-//            kCGImageSourceCreateThumbnailFromImageIfAbsent as String: kCFBooleanTrue as NSNumber,
-//            kCGImageSourceThumbnailMaxPixelSize as String: maxDimension,
-//            kCGImageSourceCreateThumbnailWithTransform as String: kCFBooleanTrue as NSNumber]
-//        guard let thumbnail = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, imageOptions as CFDictionary) else {
-//            throw OWSMediaError.failure(description: "Could not create image thumbnail.")
-//        }
-//        let image = UIImage(cgImage: thumbnail)
-//        return image
-//    }
 
     private static let kMaxVideoStillSize: CGFloat = 1024
 

@@ -19,28 +19,6 @@ const NSUInteger kThumbnailDimensionPointsMedium = 800;
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
-@implementation TSAttachmentThumbnail
-
-- (instancetype)initWithFilename:(NSString *)filename
-                            size:(CGSize)size
-        thumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _filename = filename;
-    _size = size;
-    _thumbnailDimensionPoints = thumbnailDimensionPoints;
-
-    return self;
-}
-
-@end
-
-#pragma mark -
-
 @interface TSAttachmentStream ()
 
 // We only want to generate the file path for this attachment once, so that
@@ -56,8 +34,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // Optional property.  Only set for attachments which need "lazy backup restore."
 @property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
-
-@property (nonatomic, nullable) NSArray<TSAttachmentThumbnail *> *thumbnails;
 
 @end
 
@@ -287,9 +263,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [[[self class] attachmentsFolder] stringByAppendingPathComponent:dirName];
 }
 
-- (nullable NSString *)pathForThumbnail:(TSAttachmentThumbnail *)thumbnail
+- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
 {
-    return [self.thumbnailsDirPath stringByAppendingPathComponent:thumbnail.filename];
+    NSString *filename = [NSString stringWithFormat:@"thumbnail-%lu.jpg", (unsigned long)thumbnailDimensionPoints];
+    return [self.thumbnailsDirPath stringByAppendingPathComponent:filename];
 }
 
 - (nullable NSURL *)originalMediaURL
@@ -697,27 +674,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return [[OWSLoadedThumbnail alloc] initWithImage:self.originalImage filePath:self.originalFilePath];
     }
 
-    for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
-        if (thumbnail.thumbnailDimensionPoints != thumbnailDimensionPoints) {
-            continue;
-        }
-        NSString *_Nullable thumbnailPath = [self pathForThumbnail:thumbnail];
-        if (!thumbnailPath) {
-            OWSFail(@"Missing thumbnail path.");
-            continue;
-        }
+    NSString *thumbnailPath = [self pathForThumbnailDimensionPoints:thumbnailDimensionPoints];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
         UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
         if (!image) {
             OWSFail(@"couldn't load image.");
-            continue;
+            return nil;
         }
         return [[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath];
     }
 
-    [OWSThumbnailService.shared ensureThumbnailForAttachmentId:self.uniqueId
-                                      thumbnailDimensionPoints:thumbnailDimensionPoints
-                                                       success:success
-                                                       failure:failure];
+    [OWSThumbnailService.shared ensureThumbnailForAttachment:self
+                                    thumbnailDimensionPoints:thumbnailDimensionPoints
+                                                     success:success
+                                                     failure:failure];
     return nil;
 }
 
@@ -762,14 +732,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (NSArray<NSString *> *)allThumbnailPaths
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
-        NSString *_Nullable thumbnailPath = [self pathForThumbnail:thumbnail];
-        if (!thumbnailPath) {
-            OWSFail(@"Missing thumbnail path.");
-            continue;
+
+    NSString *thumbnailsDirPath = self.thumbnailsDirPath;
+    NSError *error;
+    NSArray<NSString *> *_Nullable fileNames =
+        [[NSFileManager defaultManager] contentsOfDirectoryAtPath:thumbnailsDirPath error:&error];
+    if (error || !fileNames) {
+        OWSFail(@"contentsOfDirectoryAtPath failed with error: %@", error);
+    } else {
+        for (NSString *fileName in fileNames) {
+            NSString *filePath = [thumbnailsDirPath stringByAppendingPathComponent:fileName];
+            [result addObject:filePath];
         }
-        [result addObject:thumbnailPath];
     }
+
     NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
     if (legacyThumbnailPath && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
         [result addObject:legacyThumbnailPath];
@@ -831,40 +807,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     return thumbnailAttachment;
-}
-
-- (void)updateWithNewThumbnail:(NSString *)tempFilePath
-      thumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
-                          size:(CGSize)size
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(tempFilePath.length > 0);
-    OWSAssert(thumbnailDimensionPoints > 0);
-    OWSAssert(size.width > 0 && size.height);
-    OWSAssert(transaction);
-
-    NSString *filename = tempFilePath.lastPathComponent;
-    NSString *containingDir = self.originalFilePath.stringByDeletingLastPathComponent;
-    NSString *filePath = [containingDir stringByAppendingPathComponent:filename];
-
-    NSError *_Nullable error;
-    BOOL success = [[NSFileManager defaultManager] moveItemAtPath:tempFilePath toPath:filePath error:&error];
-    if (error || !success) {
-        OWSFail(@"Could not move new thumbnail image: %@.", error);
-        return;
-    }
-    TSAttachmentThumbnail *newThumbnail = [[TSAttachmentThumbnail alloc] initWithFilename:filename
-                                                                                     size:size
-                                                                 thumbnailDimensionPoints:thumbnailDimensionPoints];
-
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSAttachmentStream *attachment) {
-                                 NSMutableArray<TSAttachmentThumbnail *> *thumbnails
-                                     = (attachment.thumbnails ? [attachment.thumbnails mutableCopy]
-                                                              : [NSMutableArray new]);
-                                 [thumbnails addObject:newThumbnail];
-                                 [attachment setThumbnails:thumbnails];
-                             }];
 }
 
 // MARK: Protobuf serialization
