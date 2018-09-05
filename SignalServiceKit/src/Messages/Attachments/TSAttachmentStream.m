@@ -726,10 +726,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return [[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath];
     }
 
-    [OWSThumbnailService.shared ensureThumbnailForAttachmentIdWithAttachmentId:self.uniqueId
-                                                      thumbnailDimensionPoints:thumbnailDimensionPoints
-                                                                       success:success
-                                                                       failure:failure];
+    [OWSThumbnailService.shared ensureThumbnailForAttachmentId:self.uniqueId
+                                      thumbnailDimensionPoints:thumbnailDimensionPoints
+                                                       success:success
+                                                       failure:failure];
     return nil;
 }
 

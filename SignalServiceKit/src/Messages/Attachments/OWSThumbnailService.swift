@@ -86,7 +86,7 @@ private struct OWSThumbnailRequest {
 
     // completion will only be called on success.
     // completion will be called async on the main thread.
-    @objc public func ensureThumbnailForAttachmentId(attachmentId: String,
+    @objc public func ensureThumbnail(forAttachmentId attachmentId: String,
                                                      thumbnailDimensionPoints: UInt,
                                                      success: @escaping SuccessBlock,
                                                      failure: @escaping FailureBlock) {
