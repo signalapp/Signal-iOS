@@ -734,15 +734,17 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     NSMutableArray<NSString *> *result = [NSMutableArray new];
 
     NSString *thumbnailsDirPath = self.thumbnailsDirPath;
-    NSError *error;
-    NSArray<NSString *> *_Nullable fileNames =
-        [[NSFileManager defaultManager] contentsOfDirectoryAtPath:thumbnailsDirPath error:&error];
-    if (error || !fileNames) {
-        OWSFail(@"contentsOfDirectoryAtPath failed with error: %@", error);
-    } else {
-        for (NSString *fileName in fileNames) {
-            NSString *filePath = [thumbnailsDirPath stringByAppendingPathComponent:fileName];
-            [result addObject:filePath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
+        NSError *error;
+        NSArray<NSString *> *_Nullable fileNames =
+            [[NSFileManager defaultManager] contentsOfDirectoryAtPath:thumbnailsDirPath error:&error];
+        if (error || !fileNames) {
+            OWSFail(@"contentsOfDirectoryAtPath failed with error: %@", error);
+        } else {
+            for (NSString *fileName in fileNames) {
+                NSString *filePath = [thumbnailsDirPath stringByAppendingPathComponent:fileName];
+                [result addObject:filePath];
+            }
         }
     }
 

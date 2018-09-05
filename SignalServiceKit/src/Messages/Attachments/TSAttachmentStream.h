@@ -107,7 +107,6 @@ typedef void (^OWSThumbnailFailure)(void);
 // Marks attachment as having completed "lazy backup restore."
 - (void)updateWithLazyRestoreComplete;
 
-// TODO: Review.
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
 
 #pragma mark - Protobuf
