@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
-@property (nonatomic, readonly) UIImage *image;
+@property (nonatomic, nullable) UIImage *image;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
 @property (nonatomic, nullable) UIButton *playVideoButton;
@@ -72,8 +72,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     _galleryItemBox = galleryItemBox;
     _viewItem = viewItem;
+
     // We cache the image data in case the attachment stream is deleted.
-    _image = galleryItemBox.attachmentStream.originalImage;
+    __weak MediaDetailViewController *weakSelf = self;
+    _image = [galleryItemBox.attachmentStream
+        thumbnailImageLargeWithSuccess:^(UIImage *image) {
+            weakSelf.image = image;
+            [weakSelf createContents];
+        }
+        failure:^{
+            DDLogWarn(@"Could not load media.");
+        }];
 
     return self;
 }
@@ -149,6 +158,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents
 {
+    [self.mediaView removeFromSuperview];
+    [self.scrollView removeFromSuperview];
+
     UIScrollView *scrollView = [UIScrollView new];
     [self.view addSubview:scrollView];
     self.scrollView = scrollView;
@@ -176,6 +188,10 @@ NS_ASSUME_NONNULL_BEGIN
             self.mediaView = [UIView new];
             self.mediaView.backgroundColor = Theme.offBackgroundColor;
         }
+    } else if (!self.image) {
+        // Still loading thumbnail.
+        self.mediaView = [UIView new];
+        self.mediaView.backgroundColor = Theme.offBackgroundColor;
     } else if (self.isVideo) {
         if (self.attachmentStream.isValidVideo) {
             self.mediaView = [self buildVideoPlayerView];
@@ -186,7 +202,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         // Present the static image using standard UIImageView
         UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
-
         self.mediaView = imageView;
     }
 
