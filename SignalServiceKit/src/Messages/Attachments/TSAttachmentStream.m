@@ -7,6 +7,7 @@
 #import "NSData+Image.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
+#import "Threading.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -694,10 +695,16 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSLoadedThumbnail *_Nullable loadedThumbnail;
     loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
-                                                                success:^(OWSLoadedThumbnail *loadedThumbnail) {
-                                                                    success(loadedThumbnail.image);
-                                                                }
-                                                                failure:failure];
+        success:^(OWSLoadedThumbnail *loadedThumbnail) {
+            DispatchMainThreadSafe(^{
+                success(loadedThumbnail.image);
+            });
+        }
+        failure:^{
+            DispatchMainThreadSafe(^{
+                failure();
+            });
+        }];
     return loadedThumbnail.image;
 }
 
@@ -737,7 +744,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable OWSLoadedThumbnail *)loadedThumbnailSmallSync
 {
-    __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
     __block OWSLoadedThumbnail *_Nullable asyncLoadedThumbnail = nil;
     OWSLoadedThumbnail *_Nullable syncLoadedThumbnail = nil;
@@ -765,13 +772,23 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable UIImage *)thumbnailImageSmallSync
 {
-    return [self loadedThumbnailSmallSync].image;
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
+    if (!loadedThumbnail) {
+        DDLogInfo(@"Couldn't load small thumbnail sync.");
+        return nil;
+    }
+    return loadedThumbnail.image;
 }
 
 - (nullable NSData *)thumbnailDataSmallSync
 {
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
+    if (!loadedThumbnail) {
+        DDLogInfo(@"Couldn't load small thumbnail sync.");
+        return nil;
+    }
     NSError *error;
-    NSData *_Nullable data = [[self loadedThumbnailSmallSync] dataAndReturnError:&error];
+    NSData *_Nullable data = [loadedThumbnail dataAndReturnError:&error];
     if (error || !data) {
         OWSFail(@"Couldn't load thumbnail data: %@", error);
         return nil;
