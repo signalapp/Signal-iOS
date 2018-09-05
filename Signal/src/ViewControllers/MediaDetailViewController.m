@@ -35,8 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *replacingView;
 @property (nonatomic) UIButton *shareButton;
 
-@property (nonatomic) NSData *fileData;
-
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
 @property (nonatomic, readonly) UIImage *image;
@@ -54,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTrailingConstraint;
 
 @end
+
+#pragma mark -
 
 @implementation MediaDetailViewController
 
@@ -86,17 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSURL *_Nullable)attachmentUrl
 {
     return self.attachmentStream.originalMediaURL;
-}
-
-- (NSData *)fileData
-{
-    if (!_fileData) {
-        NSURL *_Nullable url = self.attachmentUrl;
-        if (url) {
-            _fileData = [NSData dataWithContentsOfURL:url];
-        }
-    }
-    return _fileData;
 }
 
 - (BOOL)isAnimated
@@ -184,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.isAnimated) {
         if (self.attachmentStream.isValidImage) {
-            YYImage *animatedGif = [YYImage imageWithData:self.fileData];
+            YYImage *animatedGif = [YYImage imageWithContentsOfFile:self.attachmentStream.originalFilePath];
             YYAnimatedImageView *animatedView = [YYAnimatedImageView new];
             animatedView.image = animatedGif;
             self.mediaView = animatedView;
