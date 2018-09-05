@@ -16,11 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kThumbnailDimensionPointsSmall = 300;
 const NSUInteger kThumbnailDimensionPointsMedium = 800;
-// This size is large enough to render full screen.
-const NSUInteger ThumbnailDimensionPointsLarge() {
-    CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
-    return MAX(screenSizePoints.width, screenSizePoints.height);
-}
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
@@ -654,10 +649,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     NSUInteger thumbnailDimensionPoints;
     if (maxDimensionHint <= kThumbnailDimensionPointsSmall) {
         thumbnailDimensionPoints = kThumbnailDimensionPointsSmall;
-    } else if (maxDimensionHint <= kThumbnailDimensionPointsMedium) {
-        thumbnailDimensionPoints = kThumbnailDimensionPointsMedium;
     } else {
-        thumbnailDimensionPoints = ThumbnailDimensionPointsLarge();
+        thumbnailDimensionPoints = kThumbnailDimensionPointsMedium;
     }
 
     return [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
@@ -673,13 +666,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
     return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium
-                                                    success:success
-                                                    failure:failure];
-}
-
-- (nullable UIImage *)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
-{
-    return [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge()
                                                     success:success
                                                     failure:failure];
 }
