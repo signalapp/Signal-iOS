@@ -837,9 +837,8 @@ NS_ASSUME_NONNULL_BEGIN
     stillImageView.backgroundColor = [UIColor whiteColor];
     [self addAttachmentUploadViewIfNecessary];
 
-    __weak UIImageView *weakImageView = stillImageView;
-
     __weak OWSMessageBubbleView *weakSelf = self;
+    __weak UIImageView *weakImageView = stillImageView;
     self.loadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
         if (!strongSelf) {
@@ -980,6 +979,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     __weak OWSMessageBubbleView *weakSelf = self;
+    __weak UIImageView *weakImageView = stillImageView;
     self.loadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
         if (!strongSelf) {
@@ -990,6 +990,22 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         stillImageView.image = [strongSelf
+            tryToLoadCellMedia:^{
+                OWSCAssert([strongSelf.attachmentStream isImage]);
+                return [strongSelf.attachmentStream
+                    thumbnailImageMediumWithSuccess:^(UIImage *image) {
+                        weakImageView.image = image;
+                    }
+                    failure:^{
+                        DDLogError(@"Could not load thumbnail.");
+                    }];
+            }
+                     mediaView:stillImageView
+                      cacheKey:strongSelf.attachmentStream.uniqueId
+               shouldSkipCache:shouldSkipCache
+                  canLoadAsync:YES];
+
+
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isVideo]);
 

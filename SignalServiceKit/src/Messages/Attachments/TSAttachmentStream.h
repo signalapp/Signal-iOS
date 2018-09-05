@@ -89,6 +89,7 @@ typedef void (^OWSThumbnailFailure)(void);
                                          failure:(OWSThumbnailFailure)failure;
 - (nullable UIImage *)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
 - (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
+- (nullable UIImage *)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
 - (nullable UIImage *)thumbnailImageSmallSync;
 
 // This method should only be invoked by OWSThumbnailService.
