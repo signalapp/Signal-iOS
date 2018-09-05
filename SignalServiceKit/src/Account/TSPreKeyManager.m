@@ -67,17 +67,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     [primaryStorage clearPrekeyUpdateFailureCount];
 }
 
-// We should never dispatch sync to this queue.
-+ (dispatch_queue_t)prekeyQueue
-{
-    static dispatch_once_t onceToken;
-    static dispatch_queue_t queue;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.prekeyQueue", NULL);
-    });
-    return queue;
-}
-
 + (NSOperationQueue *)operationQueue
 {
     static dispatch_once_t onceToken;
@@ -100,41 +89,36 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         return;
     }
 
-    NSBlockOperation *checkIfPreKeyRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
+    SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
+    NSBlockOperation *checkIfRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
         BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
-            || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
+                            || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
         if (!shouldCheck) {
-            return;
+            [refreshOperation cancel];
         }
-
-        SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
-        // Run inline instead of enqueuing to ensure we don't have multiple "check" operations
-        // that in turn enqueue multiple "refresh" operations.
-        [refreshOperation run];
     }];
-
-    NSBlockOperation *checkIfSignedRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
+    [refreshOperation addDependency:checkIfRefreshNecessaryOperation];
+    
+    SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
+    NSBlockOperation *checkIfRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
         OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         SignedPreKeyRecord *_Nullable signedPreKey = [primaryStorage currentSignedPreKey];
-
+        
         BOOL shouldCheck
-            = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
+        = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
         if (!shouldCheck) {
-            return;
+            [rotationOperation cancel];
         }
-
-        SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
-        // Run inline instead of enqueuing to ensure we don't have multiple "check" operations
-        // that in turn enqueue multiple "refresh" operations.
-        [rotationOperation run];
     }];
+    [rotationOperation addDependency:checkIfRotationNecessaryOperation];
 
-    // Order matters here.
-    // We add the PreKeyRefresh first - if it *does* upload new keys, it'll upload a new SignedPreKey
-    // In that case our SPK rotation will be a no-op.
-    [self.operationQueue
-            addOperations:@[ checkIfPreKeyRefreshNecessaryOperation, checkIfSignedRotationNecessaryOperation ]
-        waitUntilFinished:NO];
+    // Order matters here - if we rotated *before* refreshing, we'd risk uploading
+    // two SPK's in a row since RefreshPreKeysOperation can also upload a new SPK.
+    [checkIfRotationNecessaryOperation addDependency:refreshOperation];
+
+    NSArray<NSOperation *> *operations =
+        @[ checkIfRefreshNecessaryOperation, refreshOperation, checkIfRotationNecessaryOperation, rotationOperation ];
+    [self.operationQueue addOperations:operations waitUntilFinished:NO];
 }
 
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler

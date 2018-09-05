@@ -50,10 +50,12 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 {
     for (NSOperation *dependency in self.dependencies) {
         if (![dependency isKindOfClass:[OWSOperation class]]) {
-            NSString *errorDescription =
-                [NSString stringWithFormat:@"%@ unknown dependency: %@", self.logTag, dependency.class];
-
-            return OWSErrorMakeAssertionError(errorDescription);
+            // If you want an operation to have a cascading failure, it must
+            // subclass OWSOperation.
+            //
+            // Native operations like NSOperation or NSBlockOperation don't
+            // don't support this feature.
+            continue;
         }
 
         OWSOperation *dependentOperation = (OWSOperation *)dependency;
@@ -107,6 +109,11 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         return;
     }
 
+    if (self.isCancelled) {
+        [self reportCancelled];
+        return;
+    }
+    
     [self run];
 }
 
