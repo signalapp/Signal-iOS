@@ -739,11 +739,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-    __block OWSLoadedThumbnail *_Nullable loadedThumbnail = nil;
-    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+    __block OWSLoadedThumbnail *_Nullable asyncLoadedThumbnail = nil;
+    OWSLoadedThumbnail *_Nullable syncLoadedThumbnail = nil;
+    syncLoadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
         success:^(OWSLoadedThumbnail *asyncLoadedThumbnail) {
             @synchronized(self) {
-                loadedThumbnail = asyncLoadedThumbnail;
+                asyncLoadedThumbnail = asyncLoadedThumbnail;
             }
             dispatch_semaphore_signal(semaphore);
         }
@@ -751,10 +752,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             dispatch_semaphore_signal(semaphore);
         }];
 
+    if (syncLoadedThumbnail) {
+        return syncLoadedThumbnail;
+    }
+
     // Wait up to N seconds.
     dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)));
     @synchronized(self) {
-        return loadedThumbnail;
+        return asyncLoadedThumbnail;
     }
 }
 
