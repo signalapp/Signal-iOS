@@ -146,7 +146,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         NSString *description;
         if (modeCopy == RefreshPreKeysMode_SignedAndOneTime) {
             description = @"signed and one-time prekeys";
-            PreKeyRecord *lastResortPreKey = [primaryStorage getOrGenerateLastResortKey];
             preKeys = [primaryStorage generatePreKeyRecords];
             // Store the new one-time keys immediately, before they are sent to the
             // service to prevent race conditions and other edge cases.
@@ -154,8 +153,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
             request = [OWSRequestFactory registerPrekeysRequestWithPrekeyArray:preKeys
                                                                    identityKey:identityKeyPair.publicKey
-                                                                  signedPreKey:signedPreKey
-                                                              preKeyLastResort:lastResortPreKey];
+                                                                  signedPreKey:signedPreKey];
         } else {
             description = @"just signed prekey";
             request = [OWSRequestFactory registerSignedPrekeyRequestWithSignedPreKeyRecord:signedPreKey];

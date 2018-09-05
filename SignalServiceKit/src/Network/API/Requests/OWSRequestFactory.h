@@ -67,8 +67,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
                                          identityKey:(NSData *)identityKeyPublic
-                                        signedPreKey:(SignedPreKeyRecord *)signedPreKey
-                                    preKeyLastResort:(PreKeyRecord *)preKeyLastResort;
+                                        signedPreKey:(SignedPreKeyRecord *)signedPreKey;
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
                               enclaveId:(NSString *)enclaveId

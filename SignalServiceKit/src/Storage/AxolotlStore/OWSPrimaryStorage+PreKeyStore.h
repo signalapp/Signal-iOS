@@ -7,8 +7,7 @@
 
 @interface OWSPrimaryStorage (PreKeyStore) <PreKeyStore>
 
-- (NSArray *)generatePreKeyRecords;
-- (PreKeyRecord *)getOrGenerateLastResortKey;
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
 - (void)storePreKeyRecords:(NSArray *)preKeyRecords;
 
 @end
