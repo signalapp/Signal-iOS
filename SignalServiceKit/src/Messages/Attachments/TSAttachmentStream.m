@@ -8,7 +8,6 @@
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
-#import <ImageIO/ImageIO.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -706,7 +705,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         failure:^{
             dispatch_semaphore_signal(semaphore);
         }];
-    // Wait up to five seconds.
+
+    // Wait up to N seconds.
     dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)));
     @synchronized(self) {
         return loadedThumbnail;
