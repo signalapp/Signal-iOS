@@ -261,27 +261,4 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return (width > 0 && width < kMaxValidSize && height > 0 && height < kMaxValidSize);
 }
 
-+ (BOOL)ows_isValidVideoAtURL:(NSURL *)url
-{
-    OWSAssert(url);
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
-
-    CGSize maxSize = CGSizeZero;
-    for (AVAssetTrack *track in [asset tracksWithMediaType:AVMediaTypeVideo]) {
-        CGSize trackSize = track.naturalSize;
-        maxSize.width = MAX(maxSize.width, trackSize.width);
-        maxSize.height = MAX(maxSize.height, trackSize.height);
-    }
-    if (maxSize.width < 1.f || maxSize.height < 1.f) {
-        DDLogError(@"Invalid video size: %@", NSStringFromCGSize(maxSize));
-        return NO;
-    }
-    const CGFloat kMaxSize = 3 * 1024.f;
-    if (maxSize.width > kMaxSize || maxSize.height > kMaxSize) {
-        DDLogError(@"Invalid video dimensions: %@", NSStringFromCGSize(maxSize));
-        return NO;
-    }
-    return YES;
-}
-
 @end

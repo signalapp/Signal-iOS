@@ -22,15 +22,15 @@ public struct MediaGalleryItem: Equatable, Hashable {
     }
 
     var isVideo: Bool {
-        return attachmentStream.isVideo()
+        return attachmentStream.isVideo
     }
 
     var isAnimated: Bool {
-        return attachmentStream.isAnimated()
+        return attachmentStream.isAnimated
     }
 
     var isImage: Bool {
-        return attachmentStream.isImage()
+        return attachmentStream.isImage
     }
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
@@ -39,7 +39,7 @@ public struct MediaGalleryItem: Equatable, Hashable {
     }
 
     var fullSizedImage: UIImage {
-        guard let image = attachmentStream.originalImage() else {
+        guard let image = attachmentStream.originalImage else {
             owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment image")
             return UIImage()
         }

@@ -14,8 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kMaxVideoStillSize = 1 * 1024;
-
 const NSUInteger kThumbnailDimensionPointsSmall = 300;
 const NSUInteger kThumbnailDimensionPointsMedium = 800;
 // This size is large enough to render full screen.
@@ -374,7 +372,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSAssert(self.isVideo);
 
-    return [NSData ows_isValidVideoAtURL:self.originalMediaURL];
+    return [OWSMediaUtils isValidVideoWithPath:self.originalFilePath];
 }
 
 #pragma mark -
@@ -422,108 +420,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         [MIMETypeUtil isAnimated:contentType]);
 }
 
-- (void)ensureLegacyThumbnail
-{
-    NSString *thumbnailPath = self.legacyThumbnailPath;
-    if (!thumbnailPath) {
-        return;
-    }
-
-    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        // already exists
-        return;
-    }
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:self.originalMediaURL.path]) {
-        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.originalMediaURL);
-        // If we're not lazy-restoring this message, the attachment should exist on disk.
-        OWSAssert(self.lazyRestoreFragmentId);
-        return;
-    }
-
-    // TODO proper resolution?
-    CGFloat thumbnailSize = 200;
-
-    UIImage *_Nullable result;
-    if (self.isImage || self.isAnimated) {
-        if (![self isValidImage]) {
-            DDLogWarn(
-                @"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.originalFilePath);
-            return;
-        }
-
-        CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.originalMediaURL, NULL);
-        OWSAssert(imageSource != NULL);
-        NSDictionary *imageOptions = @{
-            (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
-            (NSString const *)kCGImageSourceThumbnailMaxPixelSize : @(thumbnailSize),
-            (NSString const *)kCGImageSourceCreateThumbnailWithTransform : (NSNumber const *)kCFBooleanTrue
-        };
-        CGImageRef thumbnail
-            = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)imageOptions);
-        CFRelease(imageSource);
-
-        result = [[UIImage alloc] initWithCGImage:thumbnail];
-        CGImageRelease(thumbnail);
-
-    } else if (self.isVideo) {
-        if (![self isValidVideo]) {
-            DDLogWarn(@"%@ skipping thumbnail for invalid video at path: %@", self.logTag, self.originalFilePath);
-            return;
-        }
-
-        result = [self videoStillImageWithMaxSize:CGSizeMake(thumbnailSize, thumbnailSize)];
-    } else {
-        OWSFail(@"%@ trying to generate thumnail for unexpected attachment: %@ of type: %@",
-            self.logTag,
-            self.uniqueId,
-            self.contentType);
-    }
-
-    if (result == nil) {
-        DDLogError(@"Unable to build thumbnail for attachmentId: %@", self.uniqueId);
-        return;
-    }
-
-    NSData *thumbnailData = UIImageJPEGRepresentation(result, 0.9);
-
-    OWSAssert(thumbnailData.length > 0);
-    DDLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
-    [thumbnailData writeToFile:thumbnailPath atomically:YES];
-}
-
 - (nullable UIImage *)videoStillImage
 {
-    if (![self isValidVideo]) {
+    NSError *error;
+    UIImage *_Nullable image = [OWSMediaUtils thumbnailForVideoAtPath:self.originalFilePath error:&error];
+    if (error || !image) {
+        DDLogError(@"Could not create video still: %@.", error);
         return nil;
     }
-    // Uses the assets intrinsic size by default
-    return [self videoStillImageWithMaxSize:CGSizeMake(kMaxVideoStillSize, kMaxVideoStillSize)];
-}
-
-- (nullable UIImage *)videoStillImageWithMaxSize:(CGSize)maxSize
-{
-    maxSize.width = MIN(maxSize.width, kMaxVideoStillSize);
-    maxSize.height = MIN(maxSize.height, kMaxVideoStillSize);
-
-    NSURL *_Nullable mediaUrl = self.originalMediaURL;
-    if (!mediaUrl) {
-        return nil;
-    }
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:mediaUrl options:nil];
-
-    AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generator.maximumSize = maxSize;
-    generator.appliesPreferredTrackTransform = YES;
-    NSError *err = NULL;
-    CMTime time = CMTimeMake(1, 60);
-    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
-    if (imgRef == NULL) {
-        DDLogError(@"Could not generate video still: %@", self.originalFilePath.pathExtension);
-        return nil;
-    }
-
-    return [[UIImage alloc] initWithCGImage:imgRef];
+    return image;
 }
 
 + (void)deleteAttachments

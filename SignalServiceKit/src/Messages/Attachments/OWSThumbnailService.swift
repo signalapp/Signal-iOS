@@ -3,6 +3,11 @@
 //
 
 import Foundation
+import AVFoundation
+
+public enum OWSThumbnailError: Error {
+    case failure(description: String)
+}
 
 @objc public class OWSLoadedThumbnail: NSObject {
     public typealias DataSourceBlock = () throws -> Data
@@ -76,16 +81,7 @@ private struct OWSThumbnailRequest {
     }
 
     private func canThumbnailAttachment(attachment: TSAttachmentStream) -> Bool {
-        guard attachment.isImage() else {
-            return false
-        }
-        guard !attachment.isAnimated() else {
-            return false
-        }
-        guard attachment.isValidImage() else {
-            return false
-        }
-        return true
+        return attachment.isImage || attachment.isAnimated || attachment.isVideo
     }
 
     // completion will only be called on success.
@@ -122,11 +118,14 @@ private struct OWSThumbnailRequest {
         }
         let thumbnailRequest = thumbnailRequestStack.removeLast()
 
-        if let loadedThumbnail = process(thumbnailRequest: thumbnailRequest) {
+        do {
+            let loadedThumbnail = try process(thumbnailRequest: thumbnailRequest)
             DispatchQueue.main.async {
                 thumbnailRequest.success(loadedThumbnail)
             }
-        } else {
+        } catch {
+            Logger.error("Could not create thumbnail: \(error)")
+
             DispatchQueue.main.async {
                 thumbnailRequest.failure()
             }
@@ -134,75 +133,46 @@ private struct OWSThumbnailRequest {
     }
 
     // This should only be called on the serialQueue.
-    private func process(thumbnailRequest: OWSThumbnailRequest) -> OWSLoadedThumbnail? {
+    private func process(thumbnailRequest: OWSThumbnailRequest) throws -> OWSLoadedThumbnail {
         var possibleAttachment: TSAttachmentStream?
         self.dbConnection.read({ (transaction) in
             possibleAttachment = TSAttachmentStream.fetch(uniqueId: thumbnailRequest.attachmentId, transaction: transaction)
         })
         guard let attachment = possibleAttachment else {
-            Logger.warn("Could not load attachment for thumbnailing.")
-            return nil
+            throw OWSThumbnailError.failure(description: "Could not load attachment for thumbnailing.")
         }
         guard canThumbnailAttachment(attachment: attachment) else {
-            Logger.warn("Cannot thumbnail attachment.")
-            return nil
+            throw OWSThumbnailError.failure(description: "Cannot thumbnail attachment.")
         }
         if let thumbnails = attachment.thumbnails {
             for thumbnail in thumbnails {
                 if thumbnail.thumbnailDimensionPoints == thumbnailRequest.thumbnailDimensionPoints {
                     guard let filePath = attachment.path(for: thumbnail) else {
-                        owsFail("Could not determine thumbnail path.")
-                        return nil
+                        throw OWSThumbnailError.failure(description: "Could not determine thumbnail path.")
                     }
                     guard let image = UIImage(contentsOfFile: filePath) else {
-                        owsFail("Could not load thumbnail.")
-                        return nil
+                        throw OWSThumbnailError.failure(description: "Could not load thumbnail.")
                     }
                     return OWSLoadedThumbnail(image: image, filePath: filePath)
                 }
             }
         }
-        guard let originalFilePath = attachment.originalFilePath() else {
-            owsFail("Could not determine thumbnail path.")
-            return nil
+        guard let originalFilePath = attachment.originalFilePath else {
+            throw OWSThumbnailError.failure(description: "Missing original file path.")
         }
-        guard let originalImage = UIImage(contentsOfFile: originalFilePath) else {
-            owsFail("Could not load original image.")
-            return nil
-        }
-        let originalSize = originalImage.size
-        guard originalSize.width > 0 && originalSize.height > 0 else {
-            owsFail("Original image has invalid size.")
-            return nil
-        }
-        var thumbnailSize = CGSize.zero
-        if originalSize.width > originalSize.height {
-            thumbnailSize.width = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
-            thumbnailSize.height = round(CGFloat(thumbnailRequest.thumbnailDimensionPoints) * originalSize.height / originalSize.width)
+        let maxDimension = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
+        let thumbnailImage: UIImage
+        if attachment.isImage || attachment.isAnimated {
+            thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath, maxDimension: maxDimension)
+        } else if attachment.isVideo {
+            let maxSize = CGSize(width: maxDimension, height: maxDimension)
+            thumbnailImage = try OWSMediaUtils.thumbnail(forVideoAtPath: originalFilePath, maxSize: maxSize)
         } else {
-            thumbnailSize.width = round(CGFloat(thumbnailRequest.thumbnailDimensionPoints) * originalSize.width / originalSize.height)
-            thumbnailSize.height = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
+            throw OWSThumbnailError.failure(description: "Invalid attachment type.")
         }
-        guard thumbnailSize.width > 0 && thumbnailSize.height > 0 else {
-            owsFail("Thumbnail has invalid size.")
-            return nil
-        }
-        guard originalSize.width > thumbnailSize.width &&
-                originalSize.height > thumbnailSize.height else {
-                owsFail("Thumbnail isn't smaller than the original.")
-                return nil
-        }
-        // We use UIGraphicsBeginImageContextWithOptions() to scale.
-        // Core Image would provide better quality (e.g. Lanczos) but
-        // at perf cost we don't want to pay.  We could also use
-        // CoreGraphics directly, but I'm not sure there's any benefit.
-        guard let thumbnailImage = originalImage.resizedImage(to: thumbnailSize) else {
-            owsFail("Could not thumbnail image.")
-            return nil
-        }
+        let thumbnailSize = thumbnailImage.size
         guard let thumbnailData = UIImageJPEGRepresentation(thumbnailImage, 0.85) else {
-            owsFail("Could not convert thumbnail to JPEG.")
-            return nil
+            throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
         }
         let temporaryDirectory = NSTemporaryDirectory()
         let thumbnailFilename = "\(NSUUID().uuidString).jpg"
@@ -210,8 +180,7 @@ private struct OWSThumbnailRequest {
         do {
             try thumbnailData.write(to: NSURL.fileURL(withPath: thumbnailFilePath), options: .atomicWrite)
         } catch let error as NSError {
-            owsFail("File write failed: \(thumbnailFilePath), \(error)")
-            return nil
+            throw OWSThumbnailError.failure(description: "File write failed: \(thumbnailFilePath), \(error)")
         }
         // It should be safe to assume that an attachment will never end up with two thumbnails of
         // the same size since:

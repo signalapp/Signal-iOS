@@ -58,14 +58,14 @@ typedef void (^OWSThumbnailFailure)(void);
 - (nullable NSData *)validStillImageData;
 #endif
 
-- (BOOL)isAnimated;
-- (BOOL)isImage;
-- (BOOL)isVideo;
-- (BOOL)isAudio;
+@property (nonatomic, readonly) BOOL isAnimated;
+@property (nonatomic, readonly) BOOL isImage;
+@property (nonatomic, readonly) BOOL isVideo;
+@property (nonatomic, readonly) BOOL isAudio;
 
-- (nullable UIImage *)originalImage;
-- (nullable NSString *)originalFilePath;
-- (nullable NSURL *)originalMediaURL;
+@property (nonatomic, readonly, nullable) UIImage *originalImage;
+@property (nonatomic, readonly, nullable) NSString *originalFilePath;
+@property (nonatomic, readonly, nullable) NSURL *originalMediaURL;
 
 - (NSArray<NSString *> *)allThumbnailPaths;
 
@@ -100,7 +100,7 @@ typedef void (^OWSThumbnailFailure)(void);
 // On cache miss, nil will be returned and the completion will be invoked async on main if
 // thumbnail can be generated.
 - (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
-                                      completion:(OWSThumbnailSuccess)success
+                                         success:(OWSThumbnailSuccess)success
                                          failure:(OWSThumbnailFailure)failure;
 - (nullable UIImage *)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
 - (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
