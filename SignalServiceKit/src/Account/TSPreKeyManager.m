@@ -90,16 +90,21 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     }
 
     SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
+
+    __weak SSKRefreshPreKeysOperation *weakRefreshOperation = refreshOperation;
     NSBlockOperation *checkIfRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
         BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
                             || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
         if (!shouldCheck) {
-            [refreshOperation cancel];
+            [weakRefreshOperation cancel];
         }
     }];
+
     [refreshOperation addDependency:checkIfRefreshNecessaryOperation];
     
     SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
+
+    __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
     NSBlockOperation *checkIfRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
         OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         SignedPreKeyRecord *_Nullable signedPreKey = [primaryStorage currentSignedPreKey];
@@ -107,9 +112,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         BOOL shouldCheck
         = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
         if (!shouldCheck) {
-            [rotationOperation cancel];
+            [weakRotationOperation cancel];
         }
     }];
+
     [rotationOperation addDependency:checkIfRotationNecessaryOperation];
 
     // Order matters here - if we rotated *before* refreshing, we'd risk uploading
