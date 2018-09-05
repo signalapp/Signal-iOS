@@ -848,6 +848,8 @@ NS_ASSUME_NONNULL_BEGIN
         stillImageView.image = [strongSelf
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isImage]);
+                OWSCAssert([strongSelf.attachmentStream isValidImage]);
+
                 return [strongSelf.attachmentStream
                     thumbnailImageMediumWithSuccess:^(UIImage *image) {
                         weakImageView.image = image;
@@ -897,6 +899,7 @@ NS_ASSUME_NONNULL_BEGIN
         animatedImageView.image = [strongSelf
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isAnimated]);
+                OWSCAssert([strongSelf.attachmentStream isValidImage]);
 
                 NSString *_Nullable filePath = [strongSelf.attachmentStream originalFilePath];
                 YYImage *_Nullable animatedImage = nil;
@@ -980,6 +983,8 @@ NS_ASSUME_NONNULL_BEGIN
         stillImageView.image = [strongSelf
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isVideo]);
+                OWSCAssert([strongSelf.attachmentStream isValidVideo]);
+
                 return [strongSelf.attachmentStream
                     thumbnailImageMediumWithSuccess:^(UIImage *image) {
                         weakImageView.image = image;
