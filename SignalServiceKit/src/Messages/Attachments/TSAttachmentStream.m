@@ -20,7 +20,7 @@ const NSUInteger ThumbnailDimensionPointsLarge()
 {
     CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
     const CGFloat kMinZoomFactor = 2.f;
-    return MAX(screenSizePoints.width * kMinZoomFactor, screenSizePoints.height * kMinZoomFactor);
+    return MAX(screenSizePoints.width, screenSizePoints.height) * kMinZoomFactor;
 }
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);

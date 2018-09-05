@@ -79,6 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
         thumbnailImageLargeWithSuccess:^(UIImage *image) {
             weakSelf.image = image;
             [weakSelf createContents];
+            [weakSelf updateMinZoomScale];
         }
         failure:^{
             DDLogWarn(@"Could not load media.");
@@ -127,6 +128,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateMinZoomScale
 {
+    if (!self.image) {
+        self.scrollView.minimumZoomScale = 1.f;
+        self.scrollView.maximumZoomScale = 1.f;
+        self.scrollView.zoomScale = 1.f;
+        return;
+    }
+
     CGSize viewSize = self.scrollView.bounds.size;
     UIImage *image = self.image;
     OWSAssert(image);

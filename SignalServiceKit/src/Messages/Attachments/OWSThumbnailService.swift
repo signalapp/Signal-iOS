@@ -146,6 +146,9 @@ private struct OWSThumbnailRequest {
             }
             return OWSLoadedThumbnail(image: image, filePath: thumbnailPath)
         }
+
+        Logger.verbose("Creating thumbnail of size: \(thumbnailRequest.thumbnailDimensionPoints)")
+
         let thumbnailDirPath = (thumbnailPath as NSString).deletingLastPathComponent
         guard OWSFileSystem.ensureDirectoryExists(thumbnailDirPath) else {
             throw OWSThumbnailError.failure(description: "Could not create attachment's thumbnail directory.")
