@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentPointer;
 @class YapDatabaseReadWriteTransaction;
 
-typedef void (^OWSThumbnailCompletion)(UIImage *image);
+typedef void (^OWSThumbnailSuccess)(UIImage *image);
+typedef void (^OWSThumbnailFailure)(void);
 
 @interface TSAttachmentThumbnail : MTLModel
 
@@ -66,10 +67,7 @@ typedef void (^OWSThumbnailCompletion)(UIImage *image);
 - (nullable NSString *)originalFilePath;
 - (nullable NSURL *)originalMediaURL;
 
-// TODO: Rename to legacy...
-- (nullable UIImage *)legacyThumbnailImage;
-//- (nullable NSData *)legacyThumbnailData;
-- (nullable NSString *)legacyThumbnailPath;
+- (NSArray<NSString *> *)allThumbnailPaths;
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
 
@@ -96,16 +94,18 @@ typedef void (^OWSThumbnailCompletion)(UIImage *image);
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragment;
 
-
 #pragma mark - Thumbnails
 
 // On cache hit, the thumbnail will be returned synchronously and completion will never be invoked.
 // On cache miss, nil will be returned and the completion will be invoked async on main if
 // thumbnail can be generated.
-- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint completion:(OWSThumbnailCompletion)completion;
-- (nullable UIImage *)thumbnailImageSmallWithCompletion:(OWSThumbnailCompletion)completion;
-- (nullable UIImage *)thumbnailImageMediumWithCompletion:(OWSThumbnailCompletion)completion;
-- (nullable UIImage *)thumbnailImageLargeWithCompletion:(OWSThumbnailCompletion)completion;
+- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
+                                      completion:(OWSThumbnailSuccess)success
+                                         failure:(OWSThumbnailFailure)failure;
+- (nullable UIImage *)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
+- (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
+- (nullable UIImage *)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure;
+- (nullable UIImage *)thumbnailImageSmallSync;
 
 // This method should only be invoked by OWSThumbnailService.
 - (nullable NSString *)pathForThumbnail:(TSAttachmentThumbnail *)thumbnail;

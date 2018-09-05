@@ -35,7 +35,7 @@ public struct MediaGalleryItem: Equatable, Hashable {
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
     func thumbnailImage(async:@escaping AsyncThumbnailBlock) -> UIImage? {
-        return attachmentStream.thumbnailImageSmall(completion: async)
+        return attachmentStream.thumbnailImageSmall(success: async, failure: {})
     }
 
     var fullSizedImage: UIImage {

@@ -859,9 +859,13 @@ NS_ASSUME_NONNULL_BEGIN
         stillImageView.image = [strongSelf
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isImage]);
-                return [strongSelf.attachmentStream thumbnailImageMediumWithCompletion:^(UIImage *image) {
-                    weakImageView.image = image;
-                }];
+                return [strongSelf.attachmentStream
+                    thumbnailImageMediumWithSuccess:^(UIImage *image) {
+                        weakImageView.image = image;
+                    }
+                    failure:^{
+                        DDLogError(@"Could not load thumbnail.");
+                    }];
             }
                      mediaView:stillImageView
                       cacheKey:strongSelf.attachmentStream.uniqueId

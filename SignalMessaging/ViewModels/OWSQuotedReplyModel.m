@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   authorId:authorId
                                       body:quotedText
                                 bodySource:TSQuotedMessageContentSourceLocal
-                            thumbnailImage:quotedAttachment.legacyThumbnailImage
+                            thumbnailImage:quotedAttachment.thumbnailImageSmallSync
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment

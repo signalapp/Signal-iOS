@@ -4,8 +4,33 @@
 
 import Foundation
 
+@objc public class OWSLoadedThumbnail: NSObject {
+    public typealias DataSourceBlock = () throws -> Data
+
+    @objc public let image: UIImage
+    let dataSourceBlock: DataSourceBlock
+
+    @objc public init(image: UIImage, filePath: String) {
+        self.image = image
+        self.dataSourceBlock = {
+            return try Data(contentsOf: URL(fileURLWithPath: filePath))
+        }
+    }
+
+    @objc public init(image: UIImage, data: Data) {
+        self.image = image
+        self.dataSourceBlock = {
+            return data
+        }
+    }
+
+    @objc public func data() throws -> Data {
+        return try dataSourceBlock()
+    }
+}
+
 private struct OWSThumbnailRequest {
-    public typealias SuccessBlock = (UIImage) -> Void
+    public typealias SuccessBlock = (OWSLoadedThumbnail) -> Void
     public typealias FailureBlock = () -> Void
 
     let attachmentId: String
@@ -28,7 +53,7 @@ private struct OWSThumbnailRequest {
     @objc(shared)
     public static let shared = OWSThumbnailService()
 
-    public typealias SuccessBlock = (UIImage) -> Void
+    public typealias SuccessBlock = (OWSLoadedThumbnail) -> Void
     public typealias FailureBlock = () -> Void
 
     private let serialQueue = DispatchQueue(label: "OWSThumbnailService")
@@ -97,9 +122,9 @@ private struct OWSThumbnailRequest {
         }
         let thumbnailRequest = thumbnailRequestStack.removeLast()
 
-        if let image = process(thumbnailRequest: thumbnailRequest) {
+        if let loadedThumbnail = process(thumbnailRequest: thumbnailRequest) {
             DispatchQueue.main.async {
-                thumbnailRequest.success(image)
+                thumbnailRequest.success(loadedThumbnail)
             }
         } else {
             DispatchQueue.main.async {
@@ -109,7 +134,7 @@ private struct OWSThumbnailRequest {
     }
 
     // This should only be called on the serialQueue.
-    private func process(thumbnailRequest: OWSThumbnailRequest) -> UIImage? {
+    private func process(thumbnailRequest: OWSThumbnailRequest) -> OWSLoadedThumbnail? {
         var possibleAttachment: TSAttachmentStream?
         self.dbConnection.read({ (transaction) in
             possibleAttachment = TSAttachmentStream.fetch(uniqueId: thumbnailRequest.attachmentId, transaction: transaction)
@@ -133,7 +158,7 @@ private struct OWSThumbnailRequest {
                         owsFail("Could not load thumbnail.")
                         return nil
                     }
-                    return image
+                    return OWSLoadedThumbnail(image: image, filePath: filePath)
                 }
             }
         }
@@ -200,6 +225,6 @@ private struct OWSThumbnailRequest {
                               size: thumbnailSize,
                               transaction: transaction)
         })
-        return thumbnailImage
+        return OWSLoadedThumbnail(image: thumbnailImage, data: thumbnailData)
     }
 }

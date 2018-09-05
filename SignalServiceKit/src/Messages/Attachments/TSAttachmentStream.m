@@ -24,6 +24,8 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
     return MAX(screenSizePoints.width, screenSizePoints.height);
 }
 
+typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
+
 @implementation TSAttachmentThumbnail
 
 - (instancetype)initWithFilename:(NSString *)filename
@@ -128,16 +130,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
         _creationTimestamp = [NSDate new];
     }
 
-    // This is going to be slow the first time it runs.
-    [self ensureLegacyThumbnail];
-
     return self;
-}
-
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [super saveWithTransaction:transaction];
-    [self ensureLegacyThumbnail];
 }
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
@@ -427,24 +420,6 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
 {
     return ([MIMETypeUtil isVideo:contentType] || [MIMETypeUtil isImage:contentType] ||
         [MIMETypeUtil isAnimated:contentType]);
-}
-
-- (nullable NSData *)legacyThumbnailData
-{
-    NSString *thumbnailPath = self.legacyThumbnailPath;
-    if (!thumbnailPath) {
-        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
-
-        return nil;
-    }
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        OWSFail(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
-
-        return nil;
-    }
-
-    return [NSData dataWithContentsOfFile:thumbnailPath];
 }
 
 - (void)ensureLegacyThumbnail
@@ -764,7 +739,9 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
 
 #pragma mark - Thumbnails
 
-- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint completion:(OWSThumbnailCompletion)completion
+- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
+                                         success:(OWSThumbnailSuccess)success
+                                         failure:(OWSThumbnailFailure)failure
 {
     CGFloat maxDimensionHint = MAX(sizeHint.width, sizeHint.height);
     NSUInteger thumbnailDimensionPoints;
@@ -776,26 +753,46 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
         thumbnailDimensionPoints = ThumbnailDimensionPointsLarge();
     }
 
-    return [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints completion:completion];
+    return [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageSmallWithCompletion:(OWSThumbnailCompletion)completion
+- (nullable UIImage *)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
-    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall completion:completion];
+    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+                                                    success:success
+                                                    failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageMediumWithCompletion:(OWSThumbnailCompletion)completion
+- (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
-    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium completion:completion];
+    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium
+                                                    success:success
+                                                    failure:failure];
 }
 
-- (nullable UIImage *)thumbnailImageLargeWithCompletion:(OWSThumbnailCompletion)completion
+- (nullable UIImage *)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
 {
-    return [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge() completion:completion];
+    return [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge()
+                                                    success:success
+                                                    failure:failure];
 }
 
 - (nullable UIImage *)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
-                                                      completion:(OWSThumbnailCompletion)completion
+                                                         success:(OWSThumbnailSuccess)success
+                                                         failure:(OWSThumbnailFailure)failure
+{
+    OWSLoadedThumbnail *_Nullable loadedThumbnail;
+    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
+                                                                success:^(OWSLoadedThumbnail *loadedThumbnail) {
+                                                                    success(loadedThumbnail.image);
+                                                                }
+                                                                failure:failure];
+    return loadedThumbnail.image;
+}
+
+- (nullable OWSLoadedThumbnail *)loadedThumbnailWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                                                                     success:(OWSLoadedThumbnailSuccess)success
+                                                                     failure:(OWSThumbnailFailure)failure
 {
     CGSize originalSize = self.imageSize;
     if (originalSize.width < 1 || originalSize.height < 1) {
@@ -804,7 +801,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
     if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
         // There's no point in generating a thumbnail if the original is smaller than the
         // thumbnail size.
-        return self.originalImage;
+        return [[OWSLoadedThumbnail alloc] initWithImage:self.originalImage filePath:self.originalFilePath];
     }
 
     for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
@@ -817,13 +814,75 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
             continue;
         }
         UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
-        return image;
+        if (!image) {
+            OWSFail(@"couldn't load image.");
+            continue;
+        }
+        return [[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath];
     }
 
     [OWSThumbnailService.shared ensureThumbnailForAttachmentIdWithAttachmentId:self.uniqueId
                                                       thumbnailDimensionPoints:thumbnailDimensionPoints
-                                                                    completion:completion];
+                                                                       success:success
+                                                                       failure:failure];
     return nil;
+}
+
+- (nullable OWSLoadedThumbnail *)loadedThumbnailSmallSync
+{
+    __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+    __block OWSLoadedThumbnail *_Nullable loadedThumbnail = nil;
+    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+        success:^(OWSLoadedThumbnail *asyncLoadedThumbnail) {
+            @synchronized(self) {
+                loadedThumbnail = asyncLoadedThumbnail;
+            }
+            dispatch_semaphore_signal(semaphore);
+        }
+        failure:^{
+            dispatch_semaphore_signal(semaphore);
+        }];
+    // Wait up to five seconds.
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)));
+    @synchronized(self) {
+        return loadedThumbnail;
+    }
+}
+
+- (nullable UIImage *)thumbnailImageSmallSync
+{
+    return [self loadedThumbnailSmallSync].image;
+}
+
+- (nullable NSData *)thumbnailDataSmallSync
+{
+    NSError *error;
+    NSData *_Nullable data = [[self loadedThumbnailSmallSync] dataAndReturnError:&error];
+    if (error || !data) {
+        OWSFail(@"Couldn't load thumbnail data: %@", error);
+        return nil;
+    }
+    return data;
+}
+
+- (NSArray<NSString *> *)allThumbnailPaths
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
+        NSString *_Nullable thumbnailPath = [self pathForThumbnail:thumbnail];
+        if (!thumbnailPath) {
+            OWSFail(@"Missing thumbnail path.");
+            continue;
+        }
+        [result addObject:thumbnailPath];
+    }
+    NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
+    if (legacyThumbnailPath && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
+        [result addObject:legacyThumbnailPath];
+    }
+
+    return result;
 }
 
 #pragma mark - Update With... Methods
@@ -858,7 +917,7 @@ const NSUInteger ThumbnailDimensionPointsLarge() {
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
 {
-    NSData *thumbnailData = self.legacyThumbnailData;
+    NSData *_Nullable thumbnailData = self.thumbnailDataSmallSync;
     //  Only some media types have thumbnails
     if (!thumbnailData) {
         return nil;

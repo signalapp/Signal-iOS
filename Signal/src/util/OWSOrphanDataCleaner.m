@@ -323,10 +323,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                              OWSFail(@"%@ attachment has no file path.", self.logTag);
                                          }
 
-                                         NSString *_Nullable thumbnailPath = [attachmentStream legacyThumbnailPath];
-                                         if (thumbnailPath.length > 0) {
-                                             [allAttachmentFilePaths addObject:thumbnailPath];
-                                         }
+                                         [allAttachmentFilePaths
+                                             addObjectsFromArray:attachmentStream.allThumbnailPaths];
                                      }];
 
         if (shouldAbort) {
