@@ -281,16 +281,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [[containingDir stringByAppendingPathComponent:newFilename] stringByAppendingPathExtension:@"jpg"];
 }
 
-- (nullable NSString *)pathForThumbnail:(TSAttachmentThumbnail *)thumbnail
+- (NSString *)thumbnailsDirPath
 {
-    NSString *filePath = self.originalFilePath;
-    if (!filePath) {
+    if (!self.localRelativeFilePath) {
         OWSFail(@"%@ Attachment missing local file path.", self.logTag);
         return nil;
     }
 
-    NSString *containingDir = filePath.stringByDeletingLastPathComponent;
-    return [containingDir stringByAppendingPathComponent:thumbnail.filename];
+    NSString *dirName = [NSString stringWithFormat:@"%@-thumbnails", self.uniqueId];
+    return [[[self class] attachmentsFolder] stringByAppendingPathComponent:dirName];
+}
+
+- (nullable NSString *)pathForThumbnail:(TSAttachmentThumbnail *)thumbnail
+{
+    return [self.thumbnailsDirPath stringByAppendingPathComponent:thumbnail.filename];
 }
 
 - (nullable NSURL *)originalMediaURL
@@ -307,13 +311,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     NSError *error;
 
-    for (TSAttachmentThumbnail *thumbnail in self.thumbnails) {
-        NSString *_Nullable thumbnailPath = [self pathForThumbnail:thumbnail];
-        if (thumbnailPath) {
-            BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
-            if (error || !success) {
-                DDLogError(@"%@ remove thumbnail failed with: %@", self.logTag, error);
-            }
+    NSString *thumbnailsDirPath = self.thumbnailsDirPath;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailsDirPath error:&error];
+        if (error || !success) {
+            DDLogError(@"%@ remove thumbnails dir failed with: %@", self.logTag, error);
         }
     }
 
