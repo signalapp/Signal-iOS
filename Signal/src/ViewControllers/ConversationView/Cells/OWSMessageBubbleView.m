@@ -654,7 +654,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)tryToLoadCellMedia:(nullable id (^)(void))loadCellMediaBlock
                         mediaView:(UIView *)mediaView
                          cacheKey:(NSString *)cacheKey
-                  shouldSkipCache:(BOOL)shouldSkipCache
                      canLoadAsync:(BOOL)canLoadAsync
 {
     OWSAssert(self.attachmentStream);
@@ -674,9 +673,7 @@ NS_ASSUME_NONNULL_BEGIN
     cellMedia = loadCellMediaBlock();
     if (cellMedia) {
         DDLogVerbose(@"%@ cell media cache miss", self.logTag);
-        if (!shouldSkipCache) {
-            [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
-        }
+        [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
     } else if (!canLoadAsync) {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream originalMediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
@@ -837,9 +834,8 @@ NS_ASSUME_NONNULL_BEGIN
     stillImageView.backgroundColor = [UIColor whiteColor];
     [self addAttachmentUploadViewIfNecessary];
 
-    __weak UIImageView *weakImageView = stillImageView;
-
     __weak OWSMessageBubbleView *weakSelf = self;
+    __weak UIImageView *weakImageView = stillImageView;
     self.loadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
         if (!strongSelf) {
@@ -849,13 +845,6 @@ NS_ASSUME_NONNULL_BEGIN
         if (stillImageView.image) {
             return;
         }
-        // Don't cache large still images.
-        //
-        // TODO: Don't use full size images in the message cells.
-        const NSUInteger kMaxCachableSize = 1024 * 1024;
-        BOOL shouldSkipCache =
-            [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.originalFilePath].unsignedIntegerValue
-            < kMaxCachableSize;
         stillImageView.image = [strongSelf
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isImage]);
@@ -869,7 +858,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
                      mediaView:stillImageView
                       cacheKey:strongSelf.attachmentStream.uniqueId
-               shouldSkipCache:shouldSkipCache
                   canLoadAsync:YES];
     };
     self.unloadCellContentBlock = ^{
@@ -919,7 +907,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
                      mediaView:animatedImageView
                       cacheKey:strongSelf.attachmentStream.uniqueId
-               shouldSkipCache:NO
                   canLoadAsync:NO];
     };
     self.unloadCellContentBlock = ^{
@@ -980,6 +967,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     __weak OWSMessageBubbleView *weakSelf = self;
+    __weak UIImageView *weakImageView = stillImageView;
     self.loadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
         if (!strongSelf) {
@@ -992,13 +980,17 @@ NS_ASSUME_NONNULL_BEGIN
         stillImageView.image = [strongSelf
             tryToLoadCellMedia:^{
                 OWSCAssert([strongSelf.attachmentStream isVideo]);
-
-                return strongSelf.attachmentStream.originalImage;
+                return [strongSelf.attachmentStream
+                    thumbnailImageMediumWithSuccess:^(UIImage *image) {
+                        weakImageView.image = image;
+                    }
+                    failure:^{
+                        DDLogError(@"Could not load thumbnail.");
+                    }];
             }
                      mediaView:stillImageView
                       cacheKey:strongSelf.attachmentStream.uniqueId
-               shouldSkipCache:NO
-                  canLoadAsync:NO];
+                  canLoadAsync:YES];
     };
     self.unloadCellContentBlock = ^{
         OWSMessageBubbleView *strongSelf = weakSelf;
