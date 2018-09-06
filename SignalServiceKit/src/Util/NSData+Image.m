@@ -136,7 +136,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     CGFloat bytesPerPixel = kWorseCastComponentsPerPixel * depthBytes;
 
     const CGFloat kExpectedBytePerPixel = 4;
-    const CGFloat kMaxValidImageDimension = 4 * 1024;
+    const CGFloat kMaxValidImageDimension = 8 * 1024;
     CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
     CGFloat actualBytes = width * height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {

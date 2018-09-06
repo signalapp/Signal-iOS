@@ -7,6 +7,7 @@
 #import "NSData+Image.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
+#import "Threading.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -20,7 +21,7 @@ const NSUInteger ThumbnailDimensionPointsLarge()
 {
     CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
     const CGFloat kMinZoomFactor = 2.f;
-    return MAX(screenSizePoints.width * kMinZoomFactor, screenSizePoints.height * kMinZoomFactor);
+    return MAX(screenSizePoints.width, screenSizePoints.height) * kMinZoomFactor;
 }
 
 typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
@@ -40,6 +41,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 // Optional property.  Only set for attachments which need "lazy backup restore."
 @property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
+
+@property (atomic, nullable) NSNumber *isValidImageCached;
+@property (atomic, nullable) NSNumber *isValidVideoCached;
 
 @end
 
@@ -347,14 +351,33 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSAssert(self.isImage || self.isAnimated);
 
-    return [NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType];
+    if (self.lazyRestoreFragment) {
+        return NO;
+    }
+
+    @synchronized(self) {
+        if (!self.isValidImageCached) {
+            self.isValidImageCached =
+                @([NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType]);
+        }
+        return self.isValidImageCached.boolValue;
+    }
 }
 
 - (BOOL)isValidVideo
 {
     OWSAssert(self.isVideo);
 
-    return [OWSMediaUtils isValidVideoWithPath:self.originalFilePath];
+    if (self.lazyRestoreFragment) {
+        return NO;
+    }
+
+    @synchronized(self) {
+        if (!self.isValidVideoCached) {
+            self.isValidVideoCached = @([OWSMediaUtils isValidVideoWithPath:self.originalFilePath]);
+        }
+        return self.isValidVideoCached.boolValue;
+    }
 }
 
 #pragma mark -
@@ -672,10 +695,16 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSLoadedThumbnail *_Nullable loadedThumbnail;
     loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
-                                                                success:^(OWSLoadedThumbnail *loadedThumbnail) {
-                                                                    success(loadedThumbnail.image);
-                                                                }
-                                                                failure:failure];
+        success:^(OWSLoadedThumbnail *loadedThumbnail) {
+            DispatchMainThreadSafe(^{
+                success(loadedThumbnail.image);
+            });
+        }
+        failure:^{
+            DispatchMainThreadSafe(^{
+                failure();
+            });
+        }];
     return loadedThumbnail.image;
 }
 
@@ -715,13 +744,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable OWSLoadedThumbnail *)loadedThumbnailSmallSync
 {
-    __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-    __block OWSLoadedThumbnail *_Nullable loadedThumbnail = nil;
-    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+    __block OWSLoadedThumbnail *_Nullable asyncLoadedThumbnail = nil;
+    OWSLoadedThumbnail *_Nullable syncLoadedThumbnail = nil;
+    syncLoadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
         success:^(OWSLoadedThumbnail *asyncLoadedThumbnail) {
             @synchronized(self) {
-                loadedThumbnail = asyncLoadedThumbnail;
+                asyncLoadedThumbnail = asyncLoadedThumbnail;
             }
             dispatch_semaphore_signal(semaphore);
         }
@@ -729,22 +759,36 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             dispatch_semaphore_signal(semaphore);
         }];
 
+    if (syncLoadedThumbnail) {
+        return syncLoadedThumbnail;
+    }
+
     // Wait up to N seconds.
     dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)));
     @synchronized(self) {
-        return loadedThumbnail;
+        return asyncLoadedThumbnail;
     }
 }
 
 - (nullable UIImage *)thumbnailImageSmallSync
 {
-    return [self loadedThumbnailSmallSync].image;
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
+    if (!loadedThumbnail) {
+        DDLogInfo(@"Couldn't load small thumbnail sync.");
+        return nil;
+    }
+    return loadedThumbnail.image;
 }
 
 - (nullable NSData *)thumbnailDataSmallSync
 {
+    OWSLoadedThumbnail *_Nullable loadedThumbnail = [self loadedThumbnailSmallSync];
+    if (!loadedThumbnail) {
+        DDLogInfo(@"Couldn't load small thumbnail sync.");
+        return nil;
+    }
     NSError *error;
-    NSData *_Nullable data = [[self loadedThumbnailSmallSync] dataAndReturnError:&error];
+    NSData *_Nullable data = [loadedThumbnail dataAndReturnError:&error];
     if (error || !data) {
         OWSFail(@"Couldn't load thumbnail data: %@", error);
         return nil;

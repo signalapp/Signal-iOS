@@ -8,7 +8,7 @@ public enum GalleryDirection {
     case before, after, around
 }
 
-public struct MediaGalleryItem: Equatable, Hashable {
+public class MediaGalleryItem: Equatable, Hashable {
     let logTag = "[MediaGalleryItem]"
 
     let message: TSMessage
@@ -36,15 +36,6 @@ public struct MediaGalleryItem: Equatable, Hashable {
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
     func thumbnailImage(async:@escaping AsyncThumbnailBlock) -> UIImage? {
         return attachmentStream.thumbnailImageSmall(success: async, failure: {})
-    }
-
-    var fullSizedImage: UIImage {
-        guard let image = attachmentStream.originalImage else {
-            owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment image")
-            return UIImage()
-        }
-
-        return image
     }
 
     // MARK: Equatable
@@ -304,7 +295,16 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         // loadView hasn't necessarily been called yet.
         self.loadViewIfNeeded()
-        self.presentationView.image = initialDetailItem.fullSizedImage
+
+        self.presentationView.image = initialDetailItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.presentationView.image = image
+            }, failure: {
+                Logger.warn("Could not load presentation image.")
+        })
+
         self.applyInitialMediaViewConstraints()
 
         // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
@@ -481,7 +481,14 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         // it sits on the screen in the conversation view.
         let changedItems = currentItem != self.initialDetailItem
         if changedItems {
-            self.presentationView.image = currentItem.fullSizedImage
+            self.presentationView.image = currentItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.presentationView.image = image
+                }, failure: {
+                    Logger.warn("Could not load presentation image.")
+            })
             self.applyOffscreenMediaViewConstraints()
         } else {
             self.applyInitialMediaViewConstraints()

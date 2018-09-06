@@ -85,8 +85,7 @@ private struct OWSThumbnailRequest {
         return attachment.isImage || attachment.isAnimated || attachment.isVideo
     }
 
-    // completion will only be called on success.
-    // completion will be called async on the main thread.
+    // success and failure will be called async _off_ the main thread.
     @objc
     public func ensureThumbnail(forAttachment attachment: TSAttachmentStream,
                                                      thumbnailDimensionPoints: UInt,
@@ -114,13 +113,13 @@ private struct OWSThumbnailRequest {
 
         do {
             let loadedThumbnail = try process(thumbnailRequest: thumbnailRequest)
-            DispatchQueue.main.async {
+            DispatchQueue.global().async {
                 thumbnailRequest.success(loadedThumbnail)
             }
         } catch {
             Logger.error("Could not create thumbnail: \(error)")
 
-            DispatchQueue.main.async {
+            DispatchQueue.global().async {
                 thumbnailRequest.failure(error)
             }
         }
@@ -146,6 +145,9 @@ private struct OWSThumbnailRequest {
             }
             return OWSLoadedThumbnail(image: image, filePath: thumbnailPath)
         }
+
+        Logger.verbose("Creating thumbnail of size: \(thumbnailRequest.thumbnailDimensionPoints)")
+
         let thumbnailDirPath = (thumbnailPath as NSString).deletingLastPathComponent
         guard OWSFileSystem.ensureDirectoryExists(thumbnailDirPath) else {
             throw OWSThumbnailError.failure(description: "Could not create attachment's thumbnail directory.")
