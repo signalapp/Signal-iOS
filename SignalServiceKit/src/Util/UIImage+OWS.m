@@ -63,7 +63,11 @@
     }
 
     UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
-    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
+    if (context == NULL) {
+        DDLogError(@"Couldn't create context.");
+        return nil;
+    }
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
     [self drawInRect:CGRectMake(0, 0, thumbnailSize.width, thumbnailSize.height)];
     UIImage *_Nullable resized = UIGraphicsGetImageFromCurrentImageContext();

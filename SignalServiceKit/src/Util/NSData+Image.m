@@ -2,9 +2,11 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSData+Image.h"
 #import "MIMETypeUtil.h"
+#import "NSData+Image.h"
+#import "OWSFileSystem.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
@@ -24,11 +26,23 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 - (BOOL)ows_isValidImage
 {
-    if (![self ows_isValidImageWithMimeType:nil]) {
+    ImageFormat imageFormat = [self ows_guessImageFormat];
+
+    BOOL isAnimated = imageFormat == ImageFormat_Gif;
+
+    const NSUInteger kMaxFileSize
+        = (isAnimated ? OWSMediaUtils.kMaxFileSizeAnimatedImage : OWSMediaUtils.kMaxFileSizeImage);
+    NSUInteger fileSize = self.length;
+    if (fileSize > kMaxFileSize) {
+        DDLogWarn(@"Oversize image.");
         return NO;
     }
 
-    if (![self ows_hasValidImageDimensions]) {
+    if (![self ows_isValidImageWithMimeType:nil imageFormat:imageFormat]) {
+        return NO;
+    }
+
+    if (![self ows_hasValidImageDimensions:isAnimated]) {
         return NO;
     }
 
@@ -37,6 +51,37 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
+    if (mimeType.length < 1) {
+        NSString *fileExtension = [filePath pathExtension].lowercaseString;
+        mimeType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
+    }
+    if (mimeType.length < 1) {
+        DDLogError(@"Image has unknown MIME type.");
+        return NO;
+    }
+    NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:filePath];
+    if (!fileSize) {
+        DDLogError(@"Could not determine file size.");
+        return NO;
+    }
+
+    BOOL isAnimated = NO;
+    if ([MIMETypeUtil isSupportedAnimatedMIMEType:mimeType]) {
+        isAnimated = YES;
+        if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeAnimatedImage) {
+            DDLogWarn(@"Oversize animated image.");
+            return NO;
+        }
+    } else if ([MIMETypeUtil isSupportedImageMIMEType:mimeType]) {
+        if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeImage) {
+            DDLogWarn(@"Oversize still image.");
+            return NO;
+        }
+    } else {
+        DDLogError(@"Image has unsupported MIME type.");
+        return NO;
+    }
+
     NSError *error = nil;
     NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     if (!data || error) {
@@ -48,7 +93,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
-    if (![self ows_hasValidImageDimensionsAtPath:filePath]) {
+    if (![self ows_hasValidImageDimensionsAtPath:filePath isAnimated:isAnimated]) {
         DDLogError(@"%@ image had invalid dimensions.", self.logTag);
         return NO;
     }
@@ -56,18 +101,18 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return YES;
 }
 
-- (BOOL)ows_hasValidImageDimensions
+- (BOOL)ows_hasValidImageDimensions:(BOOL)isAnimated
 {
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
     if (imageSource == NULL) {
         return NO;
     }
-    BOOL result = [NSData ows_hasValidImageDimensionWithImageSource:imageSource];
+    BOOL result = [NSData ows_hasValidImageDimensionWithImageSource:imageSource isAnimated:isAnimated];
     CFRelease(imageSource);
     return result;
 }
 
-+ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path
++ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path isAnimated:(BOOL)isAnimated
 {
     NSURL *url = [NSURL fileURLWithPath:path];
     if (!url) {
@@ -78,12 +123,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     if (imageSource == NULL) {
         return NO;
     }
-    BOOL result = [self ows_hasValidImageDimensionWithImageSource:imageSource];
+    BOOL result = [self ows_hasValidImageDimensionWithImageSource:imageSource isAnimated:isAnimated];
     CFRelease(imageSource);
     return result;
 }
 
-+ (BOOL)ows_hasValidImageDimensionWithImageSource:(CGImageSourceRef)imageSource
++ (BOOL)ows_hasValidImageDimensionWithImageSource:(CGImageSourceRef)imageSource isAnimated:(BOOL)isAnimated
 {
     OWSAssert(imageSource);
 
@@ -116,6 +161,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
     NSUInteger depthBits = depthNumber.unsignedIntegerValue;
+    // This should usually be 1.
     CGFloat depthBytes = (CGFloat)ceil(depthBits / 8.f);
 
     /* The color model of the image such as "RGB", "CMYK", "Gray", or "Lab".
@@ -136,7 +182,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     CGFloat bytesPerPixel = kWorseCastComponentsPerPixel * depthBytes;
 
     const CGFloat kExpectedBytePerPixel = 4;
-    const CGFloat kMaxValidImageDimension = 8 * 1024;
+    CGFloat kMaxValidImageDimension
+        = (isAnimated ? OWSMediaUtils.kMaxAnimatedImageDimensions : OWSMediaUtils.kMaxStillImageDimensions);
     CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
     CGFloat actualBytes = width * height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {
@@ -149,6 +196,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 - (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType
 {
+    ImageFormat imageFormat = [self ows_guessImageFormat];
+    return [self ows_isValidImageWithMimeType:mimeType imageFormat:imageFormat];
+}
+
+- (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType imageFormat:(ImageFormat)imageFormat
+{
     // Don't trust the file extension; iOS (e.g. UIKit, Core Graphics) will happily
     // load a .gif with a .png file extension.
     //
@@ -156,7 +209,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     //
     // If the image has a declared MIME type, ensure that agrees with the
     // deduced image format.
-    ImageFormat imageFormat = [self ows_guessImageFormat];
     switch (imageFormat) {
         case ImageFormat_Unknown:
             return NO;
