@@ -42,6 +42,13 @@
         DDLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
         return nil;
     }
+
+    CGFloat maxOriginalDimensionPoints = MAX(originalSize.width, originalSize.height);
+    if (maxOriginalDimension < maxDimensionPoints) {
+        // Don't bother scaling an image that is already smaller than the max dimension.
+        return self;
+    }
+
     CGSize thumbnailSize = CGSizeZero;
     if (originalSize.width > originalSize.height) {
         thumbnailSize.width = maxDimensionPoints;

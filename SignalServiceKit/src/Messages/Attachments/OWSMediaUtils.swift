@@ -26,26 +26,14 @@ public enum OWSMediaError: Error {
         guard let originalImage = UIImage(contentsOfFile: path) else {
             throw OWSMediaError.failure(description: "Could not load original image.")
         }
-        // We use UIGraphicsBeginImageContextWithOptions() to scale.
-        // Core Image would provide better quality (e.g. Lanczos) but
-        // at a perf cost we don't want to pay.  We could also use
-        // CoreGraphics directly, but I'm not sure there's any benefit.
         guard let thumbnailImage = originalImage.resized(withMaxDimensionPoints: maxDimension) else {
             throw OWSMediaError.failure(description: "Could not thumbnail image.")
         }
         return thumbnailImage
     }
 
-    private static let kMaxVideoStillSize: CGFloat = 1024
-
-    @objc public class func thumbnail(forVideoAtPath path: String) throws -> UIImage {
-        return try thumbnail(forVideoAtPath: path, maxSize: CGSize(width: kMaxVideoStillSize, height: kMaxVideoStillSize))
-    }
-
-    @objc public class func thumbnail(forVideoAtPath path: String, maxSize: CGSize) throws -> UIImage {
-        var maxSize = maxSize
-        maxSize.width = min(maxSize.width, kMaxVideoStillSize)
-        maxSize.height = min(maxSize.height, kMaxVideoStillSize)
+    @objc public class func thumbnail(forVideoAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
+        let maxSize = CGSize(width: maxDimension, height: maxDimension)
 
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")

@@ -132,12 +132,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     }
 
     // We only support (A)RGB and (A)Grayscale, so worst case is 4.
-    CGFloat kWorseCastComponentsPerPixel = 4;
+    const CGFloat kWorseCastComponentsPerPixel = 4;
     CGFloat bytesPerPixel = kWorseCastComponentsPerPixel * depthBytes;
 
-    CGFloat kMaxDimension = 4 * 1024;
-    CGFloat kExpectedBytePerPixel = 4;
-    CGFloat kMaxBytes = kMaxDimension * kMaxDimension * kExpectedBytePerPixel;
+    const CGFloat kExpectedBytePerPixel = 4;
+    const CGFloat kMaxValidImageDimension = 4 * 1024;
+    CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
     CGFloat actualBytes = width * height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {
         DDLogWarn(@"invalid dimensions width: %f, height %f, bytesPerPixel: %f", width, height, bytesPerPixel);

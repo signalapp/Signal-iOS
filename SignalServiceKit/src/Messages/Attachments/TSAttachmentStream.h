@@ -82,8 +82,10 @@ typedef void (^OWSThumbnailFailure)(void);
 #pragma mark - Thumbnails
 
 // On cache hit, the thumbnail will be returned synchronously and completion will never be invoked.
-// On cache miss, nil will be returned and the completion will be invoked async on main if
-// thumbnail can be generated.
+// On cache miss, nil will be returned and success will be invoked if thumbnail can be generated;
+// otherwise failure will be invoked.
+//
+// success and failure are invoked async on main.
 - (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
                                          success:(OWSThumbnailSuccess)success
                                          failure:(OWSThumbnailFailure)failure;

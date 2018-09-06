@@ -265,8 +265,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return nil;
     }
 
+    // Thumbnails are written to the caches directory, so that iOS can
+    // remove them if necessary.
     NSString *dirName = [NSString stringWithFormat:@"%@-thumbnails", self.uniqueId];
-    return [[[self class] attachmentsFolder] stringByAppendingPathComponent:dirName];
+    return [OWSFileSystem.cachesDirectoryPath stringByAppendingPathComponent:dirName];
 }
 
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
@@ -403,7 +405,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (nullable UIImage *)videoStillImage
 {
     NSError *error;
-    UIImage *_Nullable image = [OWSMediaUtils thumbnailForVideoAtPath:self.originalFilePath error:&error];
+    UIImage *_Nullable image = [OWSMediaUtils thumbnailForVideoAtPath:self.originalFilePath
+                                                         maxDimension:ThumbnailDimensionPointsLarge()
+                                                                error:&error];
     if (error || !image) {
         DDLogError(@"Could not create video still: %@.", error);
         return nil;
@@ -702,7 +706,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [OWSThumbnailService.shared ensureThumbnailForAttachment:self
                                     thumbnailDimensionPoints:thumbnailDimensionPoints
                                                      success:success
-                                                     failure:failure];
+                                                     failure:^(NSError *error) {
+                                                         DDLogError(@"Failed to create thumbnail: %@", error);
+                                                         failure();
+                                                     }];
     return nil;
 }
 

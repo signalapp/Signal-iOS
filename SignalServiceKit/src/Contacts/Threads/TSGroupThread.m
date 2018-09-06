@@ -191,7 +191,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssert(attachmentStream);
     OWSAssert(transaction);
 
-    self.groupModel.groupImage = [attachmentStream originalImage];
+    self.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
     [self saveWithTransaction:transaction];
 
     [transaction addCompletionQueue:nil
