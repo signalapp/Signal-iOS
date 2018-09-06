@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
-    if (![self ows_hasValidImageDimensions:isAnimated]) {
+    if (![self ows_hasValidImageDimensionsWithIsAnimated:isAnimated]) {
         return NO;
     }
 
@@ -65,9 +65,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
-    BOOL isAnimated = NO;
-    if ([MIMETypeUtil isSupportedAnimatedMIMEType:mimeType]) {
-        isAnimated = YES;
+    BOOL isAnimated = [MIMETypeUtil isSupportedAnimatedMIMEType:mimeType];
+    if (isAnimated) {
         if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeAnimatedImage) {
             DDLogWarn(@"Oversize animated image.");
             return NO;
@@ -101,7 +100,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return YES;
 }
 
-- (BOOL)ows_hasValidImageDimensions:(BOOL)isAnimated
+- (BOOL)ows_hasValidImageDimensionsWithIsAnimated:(BOOL)isAnimated
 {
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
     if (imageSource == NULL) {
