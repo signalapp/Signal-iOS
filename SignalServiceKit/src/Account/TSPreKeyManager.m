@@ -8,7 +8,6 @@
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
-#import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import "TSStorageHeaders.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
