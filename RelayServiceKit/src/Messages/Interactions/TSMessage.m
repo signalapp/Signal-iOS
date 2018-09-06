@@ -340,6 +340,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     if (_plainTextBody == nil) {
         if (self.forstaPayload) {
             _plainTextBody = [self plainBodyStringFromPayload];
+        } else {
+            return _body.filterStringForDisplay;
         }
     }
     return _plainTextBody.filterStringForDisplay;
