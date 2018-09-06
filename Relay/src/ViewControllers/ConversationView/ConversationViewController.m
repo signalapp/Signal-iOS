@@ -374,7 +374,7 @@ typedef enum : NSUInteger {
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssert(recipientId.length > 0);
-    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+    if (recipientId.length > 0 && [self.thread.participantIds containsObject:recipientId]) {
         if ([self.thread isKindOfClass:[TSThread class]]) {
             // update title with profile name
             [self updateNavigationTitle];
@@ -505,7 +505,9 @@ typedef enum : NSUInteger {
 
 - (BOOL)userLeftGroup
 {
-    return ![self.thread.participantIds containsObject:[TSAccountManager localUID]];
+    // FIXME: Temporary bandaid for demonstration
+//    return ![self.thread.participantIds containsObject:[TSAccountManager localUID]];
+    return NO;
 }
 
 - (void)hideInputIfNeeded
@@ -811,7 +813,7 @@ typedef enum : NSUInteger {
 - (NSArray<NSString *> *)noLongerVerifiedRecipientIds
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+    for (NSString *recipientId in self.thread.participantIds) {
         if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateNoLongerVerified) {
             [result addObject:recipientId];
@@ -1387,7 +1389,7 @@ typedef enum : NSUInteger {
     }
 
     BOOL isVerified = YES;
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+    for (NSString *recipientId in self.thread.participantIds) {
         if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             != OWSVerificationStateVerified) {
             isVerified = NO;
@@ -1439,7 +1441,7 @@ typedef enum : NSUInteger {
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
                                                          completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
-    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
+    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.participantIds
         confirmationText:confirmationText
         contactsManager:self.contactsManager
         completion:^(BOOL didShowAlert) {

@@ -255,8 +255,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     NSString *_Nullable bodyDescription = nil;
-    if (self.body.length > 0) {
-        bodyDescription = self.body;
+    if (self.plainTextBody.length > 0) {
+        bodyDescription = self.plainTextBody;
     }
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
@@ -331,11 +331,49 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return YES;
 }
 
-- (nullable NSString *)body
-{
-    return _body.filterStringForDisplay;
+//- (nullable NSString *)body
+//{
+//    return _body.filterStringForDisplay;
+//}
+
+-(nullable NSString *)plainTextBody {
+    if (_plainTextBody == nil) {
+        if (self.forstaPayload) {
+            _plainTextBody = [self plainBodyStringFromPayload];
+        }
+    }
+    return _plainTextBody.filterStringForDisplay;
 }
 
+-(nullable NSString *)plainBodyStringFromPayload
+{
+    NSString *returnString = nil;
+    if (self.forstaPayload) {
+        NSDictionary *data = [self.forstaPayload objectForKey:@"data"];
+        NSArray *body = [data objectForKey:@"body"];
+        for (NSDictionary *dict in body) {
+            if ([(NSString *)[dict objectForKey:@"type"] isEqualToString:@"text/plain"]) {
+                returnString = (NSString *)[dict objectForKey:@"value"];
+            }
+        }
+    }
+    return returnString;
+}
+
+-(NSString *)htmlBodyStringFromPayload;
+{
+    NSString *returnString = nil;
+    if (self.forstaPayload) {
+        NSDictionary *data = [self.forstaPayload objectForKey:@"data"];
+        NSArray *body = [data objectForKey:@"body"];
+        for (NSDictionary *dict in body) {
+            if ([(NSString *)[dict objectForKey:@"type"] isEqualToString:@"text/html"]) {
+                returnString = (NSString *)[dict objectForKey:@"value"];
+            }
+        }
+    }
+    return returnString;
+}
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
     OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);

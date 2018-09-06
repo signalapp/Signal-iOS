@@ -177,9 +177,9 @@ NSString *const kFLTSSURLKey = @"FLTSSURLKey";
     sessionManager.securityPolicy = [AFSecurityPolicy defaultPolicy];
 //    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-//    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
 //    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
     return sessionManager;
 }

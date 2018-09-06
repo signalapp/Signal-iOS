@@ -510,7 +510,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     if (!localUID) {
         return;
     }
-    [ProfileFetcherJob runWithRecipientId:localUID networkManager:self.networkManager ignoreThrottling:YES];
+    // TODO: Bend to the Forsta world
+//    [ProfileFetcherJob runWithRecipientId:localUID networkManager:self.networkManager ignoreThrottling:YES];
 }
 
 #pragma mark - Profile Whitelist
@@ -643,7 +644,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 //        // also add all current members to the profile whitelist
 //        // individually as well just in case delivery of the profile key
 //        // fails.
-//        for (NSString *recipientId in groupThread.recipientIdentifiers) {
+//        for (NSString *recipientId in groupThread.participantIds) {
 //            [self addUserToProfileWhitelist:recipientId];
 //        }
 //    } else {

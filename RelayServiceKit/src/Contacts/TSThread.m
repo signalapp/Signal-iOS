@@ -607,11 +607,11 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
                                                   self.monitorIds = [NSCountedSet setWithArray:[lookupDict objectForKey:@"monitorids"]];
                                               }
                                           }
-                                          [self save];
+//                                          [self save];
                                           
                                       } failure:^(NSError * _Nonnull error) {
                                           DDLogDebug(@"%@: TagMath query for expression failed.  Error: %@", self.logTag, error.localizedDescription);
-                                          [self save];
+//                                          [self save];
                                       }];
 }
 

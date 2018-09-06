@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *> *)noLongerVerifiedRecipientIds
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
+    for (NSString *recipientId in self.thread.participantIds) {
         if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateNoLongerVerified) {
             [result addObject:recipientId];

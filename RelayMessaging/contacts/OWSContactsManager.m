@@ -129,7 +129,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (void)requestSystemContactsOnceWithCompletion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
-    [self.systemContactsFetcher requestOnceWithCompletion:completion];
+    completion;
+//    [self.systemContactsFetcher requestOnceWithCompletion:completion];
 }
 
 - (void)fetchSystemContactsOnceIfAlreadyAuthorized

@@ -918,8 +918,10 @@
 
 +(NSMutableURLRequest *)tagMathRequestForString:(NSString *)lookupString
 {
-    NSString *homeURL = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CCSM_Home_URL"];
-    NSString *urlString = [NSString stringWithFormat:@"%@%@?expression=%@", homeURL, FLTagMathPath, lookupString];
+//    NSString *homeURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CCSM_Home_URL"];
+    // FIXME: Pull from appropriate location
+    NSString *homeURLString = @"https://ccsm-dev-api.forsta.io";
+    NSString *urlString = [NSString stringWithFormat:@"%@%@?expression=%@", homeURLString, FLTagMathPath, lookupString];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [self authRequestWithURL:url];
     [request setHTTPMethod:@"GET"];

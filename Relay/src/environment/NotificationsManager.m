@@ -338,7 +338,7 @@
                     // Don't reply from lockscreen if anyone in this conversation is
                     // "no longer verified".
                     BOOL isNoLongerVerified = NO;
-                    for (NSString *recipientId in thread.recipientIdentifiers) {
+                    for (NSString *recipientId in thread.participantIds) {
                         if ([OWSIdentityManager.sharedManager verificationStateForRecipientId:recipientId]
                             == OWSVerificationStateNoLongerVerified) {
                             isNoLongerVerified = YES;
