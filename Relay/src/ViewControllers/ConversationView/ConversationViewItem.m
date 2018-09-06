@@ -499,7 +499,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     // Ignore message body for oversize text attachments.
-    if (message.body.length > 0) {
+    if (message.plainTextBody.length > 0) {
         if (self.hasBodyText) {
             OWSFail(@"%@ oversize text message has unexpected caption.", self.logTag);
         }
@@ -510,7 +510,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSAssert(message.attachmentIds.count == 0);
             self.messageCellType = OWSMessageCellType_TextMessage;
         }
-        self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
+        self.displayableBodyText = [self displayableBodyTextForText:message.plainTextBody interactionId:message.uniqueId];
         OWSAssert(self.displayableBodyText);
     }
 

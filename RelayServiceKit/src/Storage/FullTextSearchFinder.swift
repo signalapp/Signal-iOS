@@ -176,23 +176,15 @@ public class FullTextSearchFinder: NSObject {
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
         let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-
-        let nationalNumber: String = { (recipientId: String) -> String in
-
-            guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
-                owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
-                return ""
-            }
-
-            guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
-                return ""
-            }
-
-            return String(String.UnicodeScalarView(digitScalars))
-        }(recipientId)
-
-        return "\(recipientId) \(nationalNumber) \(displayName)"
+        
+        var uuid = UUID.init(uuidString: recipientId)
+        
+        guard uuid != nil  else {
+            owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
+            return ""
+        }
+        
+        return "\(recipientId) \(displayName)"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in

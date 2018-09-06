@@ -386,7 +386,6 @@ NS_ASSUME_NONNULL_BEGIN
 //        return;
 //    }
 //
-//    // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
 //    DDLogInfo(@"%@ Sending group info request: %@", self.logTag, envelopeAddress(envelope));
 //
 //    NSString *recipientId = envelope.source;
@@ -1089,6 +1088,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
 //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [thread updateWithPayload:jsonPayload];
+    // TODO:  take this out once tagmath lookups are working again
+    thread.participantIds = @[ envelope.source, TSAccountManager.localUID ];
         [thread saveWithTransaction:transaction];
 //    });
 

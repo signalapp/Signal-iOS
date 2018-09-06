@@ -505,7 +505,9 @@ typedef enum : NSUInteger {
 
 - (BOOL)userLeftGroup
 {
-    return ![self.thread.participantIds containsObject:[TSAccountManager localUID]];
+    // FIXME: Temporary bandaid for demonstration
+//    return ![self.thread.participantIds containsObject:[TSAccountManager localUID]];
+    return NO;
 }
 
 - (void)hideInputIfNeeded
