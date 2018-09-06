@@ -167,6 +167,10 @@ public class RefreshPreKeysOperation: OWSOperation {
         }.retainUntilComplete()
     }
 
+    public override func didSucceed() {
+        TSPreKeyManager.refreshPreKeysDidSucceed()
+    }
+
     override public func didFail(error: Error) {
         switch error {
         case let networkManagerError as NetworkManagerError:

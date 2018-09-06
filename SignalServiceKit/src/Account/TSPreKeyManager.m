@@ -70,6 +70,11 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     [primaryStorage clearPrekeyUpdateFailureCount];
 }
 
++ (void)refreshPreKeysDidSucceed
+{
+    lastPreKeyCheckTimestamp = [NSDate new];
+}
+
 #pragma mark - Check/Request Initiation
 
 + (NSOperationQueue *)operationQueue

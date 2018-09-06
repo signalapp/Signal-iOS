@@ -16,6 +16,9 @@
 
 + (void)clearSignedPreKeyRecords;
 
+// This should only be called from the TSPreKeyManager.operationQueue
++ (void)refreshPreKeysDidSucceed;
+
 #pragma mark - Check/Request Initiation
 
 + (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
