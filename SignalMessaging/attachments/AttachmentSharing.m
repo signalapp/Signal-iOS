@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(stream);
 
-    [self showShareUIForURL:stream.mediaURL];
+    [self showShareUIForURL:stream.originalMediaURL];
 }
 
 + (void)showShareUIForURL:(NSURL *)url

@@ -316,17 +316,15 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
                                          TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
                                          attachmentStreamCount++;
-                                         NSString *_Nullable filePath = [attachmentStream filePath];
+                                         NSString *_Nullable filePath = [attachmentStream originalFilePath];
                                          if (filePath) {
                                              [allAttachmentFilePaths addObject:filePath];
                                          } else {
                                              OWSFail(@"%@ attachment has no file path.", self.logTag);
                                          }
 
-                                         NSString *_Nullable thumbnailPath = [attachmentStream thumbnailPath];
-                                         if (thumbnailPath.length > 0) {
-                                             [allAttachmentFilePaths addObject:thumbnailPath];
-                                         }
+                                         [allAttachmentFilePaths
+                                             addObjectsFromArray:attachmentStream.allThumbnailPaths];
                                      }];
 
         if (shouldAbort) {

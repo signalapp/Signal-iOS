@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = self.attachmentStream.sourceFilename;
     if (!filename) {
-        filename = [[self.attachmentStream filePath] lastPathComponent];
+        filename = [[self.attachmentStream originalFilePath] lastPathComponent];
     }
     NSString *fileExtension = filename.pathExtension;
     if (fileExtension.length < 1) {
@@ -149,7 +149,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *error;
     unsigned long long fileSize =
-        [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachmentStream filePath] error:&error].fileSize;
+        [[NSFileManager defaultManager] attributesOfItemAtPath:[self.attachmentStream originalFilePath] error:&error]
+            .fileSize;
     OWSAssert(!error);
     NSString *bottomText = [OWSFormat formatFileSize:fileSize];
     UILabel *bottomLabel = [UILabel new];

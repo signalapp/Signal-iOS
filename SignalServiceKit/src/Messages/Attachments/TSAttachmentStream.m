@@ -8,13 +8,22 @@
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
-#import <ImageIO/ImageIO.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kMaxVideoStillSize = 1 * 1024;
+const NSUInteger kThumbnailDimensionPointsSmall = 200;
+const NSUInteger kThumbnailDimensionPointsMedium = 450;
+// This size is large enough to render full screen.
+const NSUInteger ThumbnailDimensionPointsLarge()
+{
+    CGSize screenSizePoints = UIScreen.mainScreen.bounds.size;
+    const CGFloat kMinZoomFactor = 2.f;
+    return MAX(screenSizePoints.width * kMinZoomFactor, screenSizePoints.height * kMinZoomFactor);
+}
+
+typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 @interface TSAttachmentStream ()
 
@@ -96,16 +105,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         _creationTimestamp = [NSDate new];
     }
 
-    // This is going to be slow the first time it runs.
-    [self ensureThumbnail];
-
     return self;
-}
-
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [super saveWithTransaction:transaction];
-    [self ensureThumbnail];
 }
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
@@ -156,7 +156,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     }
 
     self.localRelativeFilePath = localRelativeFilePath;
-    OWSAssert(self.filePath);
+    OWSAssert(self.originalFilePath);
 }
 
 #pragma mark - File Management
@@ -164,7 +164,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error
 {
     *error = nil;
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return nil;
@@ -177,7 +177,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     OWSAssert(data);
 
     *error = nil;
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return NO;
@@ -190,7 +190,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     OWSAssert(dataSource);
 
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return NO;
@@ -229,7 +229,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return attachmentsFolder;
 }
 
-- (nullable NSString *)filePath
+- (nullable NSString *)originalFilePath
 {
     if (!self.localRelativeFilePath) {
         OWSFail(@"%@ Attachment missing local file path.", self.logTag);
@@ -239,9 +239,9 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.localRelativeFilePath];
 }
 
-- (nullable NSString *)thumbnailPath
+- (nullable NSString *)legacyThumbnailPath
 {
-    NSString *filePath = self.filePath;
+    NSString *filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Attachment missing local file path.", self.logTag);
         return nil;
@@ -258,9 +258,28 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return [[containingDir stringByAppendingPathComponent:newFilename] stringByAppendingPathExtension:@"jpg"];
 }
 
-- (nullable NSURL *)mediaURL
+- (NSString *)thumbnailsDirPath
 {
-    NSString *_Nullable filePath = self.filePath;
+    if (!self.localRelativeFilePath) {
+        OWSFail(@"%@ Attachment missing local file path.", self.logTag);
+        return nil;
+    }
+
+    // Thumbnails are written to the caches directory, so that iOS can
+    // remove them if necessary.
+    NSString *dirName = [NSString stringWithFormat:@"%@-thumbnails", self.uniqueId];
+    return [OWSFileSystem.cachesDirectoryPath stringByAppendingPathComponent:dirName];
+}
+
+- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+{
+    NSString *filename = [NSString stringWithFormat:@"thumbnail-%lu.jpg", (unsigned long)thumbnailDimensionPoints];
+    return [self.thumbnailsDirPath stringByAppendingPathComponent:filename];
+}
+
+- (nullable NSURL *)originalMediaURL
+{
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return nil;
@@ -272,24 +291,31 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     NSError *error;
 
-    NSString *_Nullable thumbnailPath = self.thumbnailPath;
-    if (thumbnailPath) {
-        [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
-
-        if (error) {
-            DDLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
+    NSString *thumbnailsDirPath = self.thumbnailsDirPath;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailsDirPath error:&error];
+        if (error || !success) {
+            DDLogError(@"%@ remove thumbnails dir failed with: %@", self.logTag, error);
         }
     }
 
-    NSString *_Nullable filePath = self.filePath;
+    NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
+    if (legacyThumbnailPath) {
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:legacyThumbnailPath error:&error];
+
+        if (error || !success) {
+            DDLogError(@"%@ remove legacy thumbnail failed with: %@", self.logTag, error);
+        }
+    }
+
+    NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return;
     }
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-
-    if (error) {
-        DDLogError(@"%@ remove file errored with: %@", self.logTag, error);
+    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+    if (error || !success) {
+        DDLogError(@"%@ remove file failed with: %@", self.logTag, error);
     }
 }
 
@@ -321,31 +347,31 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     OWSAssert(self.isImage || self.isAnimated);
 
-    return [NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType];
+    return [NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType];
 }
 
 - (BOOL)isValidVideo
 {
     OWSAssert(self.isVideo);
 
-    return [NSData ows_isValidVideoAtURL:self.mediaURL];
+    return [OWSMediaUtils isValidVideoWithPath:self.originalFilePath];
 }
 
 #pragma mark -
 
-- (nullable UIImage *)image
+- (nullable UIImage *)originalImage
 {
     if ([self isVideo]) {
         return [self videoStillImage];
     } else if ([self isImage] || [self isAnimated]) {
-        NSURL *_Nullable mediaUrl = [self mediaURL];
+        NSURL *_Nullable mediaUrl = self.originalMediaURL;
         if (!mediaUrl) {
             return nil;
         }
         if (![self isValidImage]) {
             return nil;
         }
-        return [[UIImage alloc] initWithContentsOfFile:self.filePath];
+        return [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
     } else {
         return nil;
     }
@@ -362,12 +388,12 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         return nil;
     }
 
-    if (![NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType]) {
+    if (![NSData ows_isValidImageAtPath:self.originalFilePath mimeType:self.contentType]) {
         OWSFail(@"%@ skipping invalid image", self.logTag);
         return nil;
     }
 
-    return [NSData dataWithContentsOfFile:self.filePath];
+    return [NSData dataWithContentsOfFile:self.originalFilePath];
 }
 
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType
@@ -376,144 +402,17 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         [MIMETypeUtil isAnimated:contentType]);
 }
 
-- (nullable UIImage *)thumbnailImage
-{
-    NSString *thumbnailPath = self.thumbnailPath;
-    if (!thumbnailPath) {
-        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
-
-        return nil;
-    }
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        // This isn't true for some useful edge cases tested by the Debug UI.
-        DDLogError(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
-
-        return nil;
-    }
-
-    return [UIImage imageWithContentsOfFile:self.thumbnailPath];
-}
-
-- (nullable NSData *)thumbnailData
-{
-    NSString *thumbnailPath = self.thumbnailPath;
-    if (!thumbnailPath) {
-        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
-
-        return nil;
-    }
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        OWSFail(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
-
-        return nil;
-    }
-
-    return [NSData dataWithContentsOfFile:self.thumbnailPath];
-}
-
-- (void)ensureThumbnail
-{
-    NSString *thumbnailPath = self.thumbnailPath;
-    if (!thumbnailPath) {
-        return;
-    }
-
-    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        // already exists
-        return;
-    }
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
-        // If we're not lazy-restoring this message, the attachment should exist on disk.
-        OWSAssert(self.lazyRestoreFragmentId);
-        return;
-    }
-
-    // TODO proper resolution?
-    CGFloat thumbnailSize = 200;
-
-    UIImage *_Nullable result;
-    if (self.isImage || self.isAnimated) {
-        if (![self isValidImage]) {
-            DDLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
-            return;
-        }
-
-        CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.mediaURL, NULL);
-        OWSAssert(imageSource != NULL);
-        NSDictionary *imageOptions = @{
-            (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
-            (NSString const *)kCGImageSourceThumbnailMaxPixelSize : @(thumbnailSize),
-            (NSString const *)kCGImageSourceCreateThumbnailWithTransform : (NSNumber const *)kCFBooleanTrue
-        };
-        CGImageRef thumbnail
-            = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)imageOptions);
-        CFRelease(imageSource);
-
-        result = [[UIImage alloc] initWithCGImage:thumbnail];
-        CGImageRelease(thumbnail);
-
-    } else if (self.isVideo) {
-        if (![self isValidVideo]) {
-            DDLogWarn(@"%@ skipping thumbnail for invalid video at path: %@", self.logTag, self.filePath);
-            return;
-        }
-
-        result = [self videoStillImageWithMaxSize:CGSizeMake(thumbnailSize, thumbnailSize)];
-    } else {
-        OWSFail(@"%@ trying to generate thumnail for unexpected attachment: %@ of type: %@",
-            self.logTag,
-            self.uniqueId,
-            self.contentType);
-    }
-
-    if (result == nil) {
-        DDLogError(@"Unable to build thumbnail for attachmentId: %@", self.uniqueId);
-        return;
-    }
-
-    NSData *thumbnailData = UIImageJPEGRepresentation(result, 0.9);
-
-    OWSAssert(thumbnailData.length > 0);
-    DDLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
-    [thumbnailData writeToFile:thumbnailPath atomically:YES];
-}
-
 - (nullable UIImage *)videoStillImage
 {
-    if (![self isValidVideo]) {
+    NSError *error;
+    UIImage *_Nullable image = [OWSMediaUtils thumbnailForVideoAtPath:self.originalFilePath
+                                                         maxDimension:ThumbnailDimensionPointsLarge()
+                                                                error:&error];
+    if (error || !image) {
+        DDLogError(@"Could not create video still: %@.", error);
         return nil;
     }
-    // Uses the assets intrinsic size by default
-    return [self videoStillImageWithMaxSize:CGSizeMake(kMaxVideoStillSize, kMaxVideoStillSize)];
-}
-
-- (nullable UIImage *)videoStillImageWithMaxSize:(CGSize)maxSize
-{
-    maxSize.width = MIN(maxSize.width, kMaxVideoStillSize);
-    maxSize.height = MIN(maxSize.height, kMaxVideoStillSize);
-
-    NSURL *_Nullable mediaUrl = [self mediaURL];
-    if (!mediaUrl) {
-        return nil;
-    }
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:mediaUrl options:nil];
-
-    AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generator.maximumSize = maxSize;
-    generator.appliesPreferredTrackTransform = YES;
-    NSError *err = NULL;
-    CMTime time = CMTimeMake(1, 60);
-    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
-    if (imgRef == NULL) {
-        DDLogError(@"Could not generate video still: %@", self.filePath.pathExtension);
-        return nil;
-    }
-
-    return [[UIImage alloc] initWithCGImage:imgRef];
+    return image;
 }
 
 + (void)deleteAttachments
@@ -546,7 +445,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         }
         return [self videoStillImage].size;
     } else if ([self isImage] || [self isAnimated]) {
-        NSURL *_Nullable mediaUrl = [self mediaURL];
+        NSURL *_Nullable mediaUrl = self.originalMediaURL;
         if (!mediaUrl) {
             return CGSizeZero;
         }
@@ -656,7 +555,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     OWSAssert([self isAudio]);
 
     NSError *error;
-    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
+    AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.originalMediaURL error:&error];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
         && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
         // Ignore "invalid audio file" errors.
@@ -665,7 +564,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
-        DDLogError(@"Could not find audio duration: %@", self.mediaURL);
+        DDLogError(@"Could not find audio duration: %@", self.originalMediaURL);
         return 0;
     }
 }
@@ -727,6 +626,159 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     return string;
 }
 
+#pragma mark - Thumbnails
+
+- (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint
+                                         success:(OWSThumbnailSuccess)success
+                                         failure:(OWSThumbnailFailure)failure
+{
+    CGFloat maxDimensionHint = MAX(sizeHint.width, sizeHint.height);
+    NSUInteger thumbnailDimensionPoints;
+    if (maxDimensionHint <= kThumbnailDimensionPointsSmall) {
+        thumbnailDimensionPoints = kThumbnailDimensionPointsSmall;
+    } else if (maxDimensionHint <= kThumbnailDimensionPointsMedium) {
+        thumbnailDimensionPoints = kThumbnailDimensionPointsMedium;
+    } else {
+        thumbnailDimensionPoints = ThumbnailDimensionPointsLarge();
+    }
+
+    return [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
+}
+
+- (nullable UIImage *)thumbnailImageSmallWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
+{
+    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+                                                    success:success
+                                                    failure:failure];
+}
+
+- (nullable UIImage *)thumbnailImageMediumWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
+{
+    return [self thumbnailImageWithThumbnailDimensionPoints:kThumbnailDimensionPointsMedium
+                                                    success:success
+                                                    failure:failure];
+}
+
+- (nullable UIImage *)thumbnailImageLargeWithSuccess:(OWSThumbnailSuccess)success failure:(OWSThumbnailFailure)failure
+{
+    return [self thumbnailImageWithThumbnailDimensionPoints:ThumbnailDimensionPointsLarge()
+                                                    success:success
+                                                    failure:failure];
+}
+
+- (nullable UIImage *)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                                                         success:(OWSThumbnailSuccess)success
+                                                         failure:(OWSThumbnailFailure)failure
+{
+    OWSLoadedThumbnail *_Nullable loadedThumbnail;
+    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
+                                                                success:^(OWSLoadedThumbnail *loadedThumbnail) {
+                                                                    success(loadedThumbnail.image);
+                                                                }
+                                                                failure:failure];
+    return loadedThumbnail.image;
+}
+
+- (nullable OWSLoadedThumbnail *)loadedThumbnailWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+                                                                     success:(OWSLoadedThumbnailSuccess)success
+                                                                     failure:(OWSThumbnailFailure)failure
+{
+    CGSize originalSize = self.imageSize;
+    if (originalSize.width < 1 || originalSize.height < 1) {
+        return nil;
+    }
+    if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
+        // There's no point in generating a thumbnail if the original is smaller than the
+        // thumbnail size.
+        return [[OWSLoadedThumbnail alloc] initWithImage:self.originalImage filePath:self.originalFilePath];
+    }
+
+    NSString *thumbnailPath = [self pathForThumbnailDimensionPoints:thumbnailDimensionPoints];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
+        UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
+        if (!image) {
+            OWSFail(@"couldn't load image.");
+            return nil;
+        }
+        return [[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath];
+    }
+
+    [OWSThumbnailService.shared ensureThumbnailForAttachment:self
+                                    thumbnailDimensionPoints:thumbnailDimensionPoints
+                                                     success:success
+                                                     failure:^(NSError *error) {
+                                                         DDLogError(@"Failed to create thumbnail: %@", error);
+                                                         failure();
+                                                     }];
+    return nil;
+}
+
+- (nullable OWSLoadedThumbnail *)loadedThumbnailSmallSync
+{
+    __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+    __block OWSLoadedThumbnail *_Nullable loadedThumbnail = nil;
+    loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
+        success:^(OWSLoadedThumbnail *asyncLoadedThumbnail) {
+            @synchronized(self) {
+                loadedThumbnail = asyncLoadedThumbnail;
+            }
+            dispatch_semaphore_signal(semaphore);
+        }
+        failure:^{
+            dispatch_semaphore_signal(semaphore);
+        }];
+
+    // Wait up to N seconds.
+    dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)));
+    @synchronized(self) {
+        return loadedThumbnail;
+    }
+}
+
+- (nullable UIImage *)thumbnailImageSmallSync
+{
+    return [self loadedThumbnailSmallSync].image;
+}
+
+- (nullable NSData *)thumbnailDataSmallSync
+{
+    NSError *error;
+    NSData *_Nullable data = [[self loadedThumbnailSmallSync] dataAndReturnError:&error];
+    if (error || !data) {
+        OWSFail(@"Couldn't load thumbnail data: %@", error);
+        return nil;
+    }
+    return data;
+}
+
+- (NSArray<NSString *> *)allThumbnailPaths
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+
+    NSString *thumbnailsDirPath = self.thumbnailsDirPath;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
+        NSError *error;
+        NSArray<NSString *> *_Nullable fileNames =
+            [[NSFileManager defaultManager] contentsOfDirectoryAtPath:thumbnailsDirPath error:&error];
+        if (error || !fileNames) {
+            OWSFail(@"contentsOfDirectoryAtPath failed with error: %@", error);
+        } else {
+            for (NSString *fileName in fileNames) {
+                NSString *filePath = [thumbnailsDirPath stringByAppendingPathComponent:fileName];
+                [result addObject:filePath];
+            }
+        }
+    }
+
+    NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
+    if (legacyThumbnailPath && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
+        [result addObject:legacyThumbnailPath];
+    }
+
+    return result;
+}
+
 #pragma mark - Update With... Methods
 
 - (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
@@ -759,7 +811,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
 {
-    NSData *thumbnailData = self.thumbnailData;
+    NSData *_Nullable thumbnailData = self.thumbnailDataSmallSync;
     //  Only some media types have thumbnails
     if (!thumbnailData) {
         return nil;

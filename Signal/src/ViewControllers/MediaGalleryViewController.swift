@@ -22,28 +22,24 @@ public struct MediaGalleryItem: Equatable, Hashable {
     }
 
     var isVideo: Bool {
-        return attachmentStream.isVideo()
+        return attachmentStream.isVideo
     }
 
     var isAnimated: Bool {
-        return attachmentStream.isAnimated()
+        return attachmentStream.isAnimated
     }
 
     var isImage: Bool {
-        return attachmentStream.isImage()
+        return attachmentStream.isImage
     }
 
-    var thumbnailImage: UIImage {
-        guard let image = attachmentStream.thumbnailImage() else {
-            owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment thumbnail")
-            return UIImage()
-        }
-
-        return image
+    public typealias AsyncThumbnailBlock = (UIImage) -> Void
+    func thumbnailImage(async:@escaping AsyncThumbnailBlock) -> UIImage? {
+        return attachmentStream.thumbnailImageSmall(success: async, failure: {})
     }
 
     var fullSizedImage: UIImage {
-        guard let image = attachmentStream.image() else {
+        guard let image = attachmentStream.originalImage else {
             owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment image")
             return UIImage()
         }

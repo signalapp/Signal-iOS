@@ -35,9 +35,45 @@
     return resized;
 }
 
+- (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints
+{
+    CGSize originalSize = self.size;
+    if (originalSize.width < 1 || originalSize.height < 1) {
+        DDLogError(@"Invalid original size: %@", NSStringFromCGSize(originalSize));
+        return nil;
+    }
+
+    CGFloat maxOriginalDimensionPoints = MAX(originalSize.width, originalSize.height);
+    if (maxOriginalDimensionPoints < maxDimensionPoints) {
+        // Don't bother scaling an image that is already smaller than the max dimension.
+        return self;
+    }
+
+    CGSize thumbnailSize = CGSizeZero;
+    if (originalSize.width > originalSize.height) {
+        thumbnailSize.width = maxDimensionPoints;
+        thumbnailSize.height = round(maxDimensionPoints * originalSize.height / originalSize.width);
+    } else {
+        thumbnailSize.width = round(maxDimensionPoints * originalSize.width / originalSize.height);
+        thumbnailSize.height = maxDimensionPoints;
+    }
+    if (thumbnailSize.width < 1 || thumbnailSize.height < 1) {
+        DDLogError(@"Invalid thumbnail size: %@", NSStringFromCGSize(thumbnailSize));
+        return nil;
+    }
+
+    UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
+    [self drawInRect:CGRectMake(0, 0, thumbnailSize.width, thumbnailSize.height)];
+    UIImage *_Nullable resized = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resized;
+}
+
 // Source: https://github.com/AliSoftware/UIImage-Resize
 
-- (UIImage *)resizedImageToSize:(CGSize)dstSize
+- (nullable UIImage *)resizedImageToSize:(CGSize)dstSize
 {
     CGImageRef imgRef = self.CGImage;
     // the below values are regardless of orientation : for UIImages from Camera, width>height (landscape)
@@ -106,10 +142,10 @@
     UIGraphicsBeginImageContextWithOptions(dstSize, NO, self.scale);
 
     CGContextRef context = UIGraphicsGetCurrentContext();
-
     if (!context) {
         return nil;
     }
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh);
 
     if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
         CGContextScaleCTM(context, -scaleRatio, scaleRatio);
@@ -124,7 +160,7 @@
     // we use srcSize (and not dstSize) as the size to specify is in user space (and we use the CTM to apply a
     // scaleRatio)
     CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, srcSize.width, srcSize.height), imgRef);
-    UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *_Nullable resizedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 
     return resizedImage;
