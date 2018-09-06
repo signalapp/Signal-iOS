@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     _image = [galleryItemBox.attachmentStream
         thumbnailImageLargeWithSuccess:^(UIImage *image) {
             weakSelf.image = image;
-            [weakSelf createContents];
+            [weakSelf updateContents];
             [weakSelf updateMinZoomScale];
         }
         failure:^{
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = [UIColor clearColor];
 
-    [self createContents];
+    [self updateContents];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -164,10 +164,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Initializers
 
-- (void)createContents
+- (void)updateContents
 {
     [self.mediaView removeFromSuperview];
     [self.scrollView removeFromSuperview];
+    [self.playVideoButton removeFromSuperview];
+    [self.videoProgressBar removeFromSuperview];
 
     UIScrollView *scrollView = [UIScrollView new];
     [self.view addSubview:scrollView];

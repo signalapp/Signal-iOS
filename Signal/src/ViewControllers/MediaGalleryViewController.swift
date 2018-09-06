@@ -15,21 +15,10 @@ public class MediaGalleryItem: Equatable, Hashable {
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate
 
-    var presentationImage: UIImage?
-
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
         self.message = message
         self.attachmentStream = attachmentStream
         self.galleryDate = GalleryDate(message: message)
-
-        self.presentationImage = attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
-            guard let strongSelf = self else {
-                return
-            }
-            strongSelf.presentationImage = image
-        }, failure: {
-            Logger.warn("Could not load presentation image.")
-        })
     }
 
     var isVideo: Bool {
@@ -306,7 +295,16 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         // loadView hasn't necessarily been called yet.
         self.loadViewIfNeeded()
-        self.presentationView.image = initialDetailItem.presentationImage
+
+        self.presentationView.image = initialDetailItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.presentationView.image = image
+            }, failure: {
+                Logger.warn("Could not load presentation image.")
+        })
+
         self.applyInitialMediaViewConstraints()
 
         // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
@@ -483,7 +481,14 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         // it sits on the screen in the conversation view.
         let changedItems = currentItem != self.initialDetailItem
         if changedItems {
-            self.presentationView.image = currentItem.presentationImage
+            self.presentationView.image = currentItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.presentationView.image = image
+                }, failure: {
+                    Logger.warn("Could not load presentation image.")
+            })
             self.applyOffscreenMediaViewConstraints()
         } else {
             self.applyInitialMediaViewConstraints()
