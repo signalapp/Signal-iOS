@@ -384,7 +384,7 @@
         NSDictionary *userDict = [payload objectForKey:@"user"];
         NSString *userID = [userDict objectForKey:@"id"];
         TSAccountManager.sharedInstance.phoneNumberAwaitingVerification = userID;
-        // Check to see if user changed.  If so, wiped the database.
+        // Check to see if user changed.  If so, wipe the database.
         if ([TSAccountManager localUID].length > 0 &&
             ![[TSAccountManager localUID] isEqualToString:userID]) {
             // FIXME: Skipping this until later
