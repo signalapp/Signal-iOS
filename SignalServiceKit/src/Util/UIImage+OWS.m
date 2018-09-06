@@ -44,7 +44,7 @@
     }
 
     CGFloat maxOriginalDimensionPoints = MAX(originalSize.width, originalSize.height);
-    if (maxOriginalDimension < maxDimensionPoints) {
+    if (maxOriginalDimensionPoints < maxDimensionPoints) {
         // Don't bother scaling an image that is already smaller than the max dimension.
         return self;
     }
