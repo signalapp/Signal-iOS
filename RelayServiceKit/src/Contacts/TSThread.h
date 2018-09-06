@@ -51,7 +51,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 /**
  * @returns recipientId for each recipient in the thread
  */
-@property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;
+//@property (nonatomic, readonly) NSArray<NSString *> *participantIds;
 
 #pragma mark Interactions
 

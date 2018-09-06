@@ -24,7 +24,7 @@ public class ProfileFetcherJob: NSObject {
 
     @objc
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
-        ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.recipientIdentifiers)
+        ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.participantIds)
     }
 
     @objc

@@ -3862,7 +3862,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
     // Try to use an arbitrary member of the current thread that isn't
     // ourselves as the sender.
-    NSString *_Nullable recipientId = [[thread recipientIdentifiers] firstObject];
+    NSString *_Nullable recipientId = [[thread participantIds] firstObject];
     // This might be an "empty" group with no other members.  If so, use a fake
     // sender id.
     if (!recipientId) {
@@ -4186,7 +4186,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         @(now - 1 * (long long)kMonthInMs),
         @(now - 2 * (long long)kMonthInMs),
     ];
-    NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
+    NSMutableArray<NSString *> *recipientIds = [thread.participantIds mutableCopy];
     [recipientIds removeObject:[TSAccountManager localUID]];
     NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
 
@@ -4235,7 +4235,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     TSIncomingMessage *message = [[TSIncomingMessage alloc]
         initIncomingMessageWithTimestamp:now
                                 inThread:thread
-                                authorId:thread.recipientIdentifiers.firstObject
+                                authorId:thread.participantIds.firstObject
                           sourceDeviceId:0
                              messageBody:[NSString
                                              stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
@@ -4476,14 +4476,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     [message saveWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {
-        NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
+        NSString *_Nullable recipientId = thread.participantIds.lastObject;
         OWSAssert(recipientId.length > 0);
         [message updateWithDeliveredRecipient:recipientId
                             deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
                                   transaction:transaction];
     }
     if (isRead) {
-        NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
+        NSString *_Nullable recipientId = thread.participantIds.lastObject;
         OWSAssert(recipientId.length > 0);
         [message updateWithReadRecipientId:recipientId
                              readTimestamp:[NSDate ows_millisecondTimeStamp]

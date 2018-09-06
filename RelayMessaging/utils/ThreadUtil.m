@@ -232,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL hasLocalProfile = [profileManager hasLocalProfile];
     BOOL isThreadInProfileWhitelist = [profileManager isThreadInProfileWhitelist:thread];
     BOOL hasUnwhitelistedMember = NO;
-    for (NSString *recipientId in thread.recipientIdentifiers) {
+    for (NSString *recipientId in thread.participantIds) {
         if (![profileManager isUserInProfileWhitelist:recipientId]) {
             hasUnwhitelistedMember = YES;
             break;
@@ -665,7 +665,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     BOOL hasUnwhitelistedMember = NO;
     NSArray<NSString *> *blockedPhoneNumbers = [blockingManager blockedPhoneNumbers];
-    for (NSString *recipientId in thread.recipientIdentifiers) {
+    for (NSString *recipientId in thread.participantIds) {
         if (![blockedPhoneNumbers containsObject:recipientId]
             && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:recipientId]) {
             hasUnwhitelistedMember = YES;
