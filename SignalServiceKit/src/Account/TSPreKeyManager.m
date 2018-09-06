@@ -37,6 +37,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 @implementation TSPreKeyManager
 
+#pragma mark - State Tracking
+
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures
 {
     // Only disable message sending if we have failed more than N times
@@ -53,6 +55,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     // Record a prekey update failure.
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     int failureCount = [primaryStorage incrementPrekeyUpdateFailureCount];
+    OWSLogInfo(@"new failureCount: %d", failureCount);
+    
     if (failureCount == 1 || ![primaryStorage firstPrekeyUpdateFailureDate]) {
         // If this is the "first" failure, record the timestamp of that
         // failure.
@@ -66,6 +70,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     [primaryStorage clearFirstPrekeyUpdateFailureDate];
     [primaryStorage clearPrekeyUpdateFailureCount];
 }
+
+#pragma mark - Check/Request Initiation
 
 + (NSOperationQueue *)operationQueue
 {

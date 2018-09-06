@@ -19,7 +19,17 @@ typedef NS_ENUM(NSInteger, RefreshPreKeysMode) {
 
 @interface TSPreKeyManager : NSObject
 
+#pragma mark - State Tracking
+
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures;
+
++ (void)incrementPreKeyUpdateFailureCount;
+
++ (void)clearPreKeyUpdateFailureCount;
+
++ (void)clearSignedPreKeyRecords;
+
+#pragma mark - Check/Request Initiation
 
 + (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 
@@ -28,6 +38,5 @@ typedef NS_ENUM(NSInteger, RefreshPreKeysMode) {
 + (void)checkPreKeys;
 
 + (void)checkPreKeysIfNecessary;
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId;
 
 @end

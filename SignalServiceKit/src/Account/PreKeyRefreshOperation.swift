@@ -80,6 +80,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
+            TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
         }.then { () -> Void in
             Logger.debug("done")
@@ -87,6 +88,25 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
+    }
+
+    override public func didFail(error: Error) {
+        switch error {
+        case let networkManagerError as NetworkManagerError:
+            guard !networkManagerError.isNetworkError else {
+                Logger.debug("don't report SPK rotation failure w/ network error")
+                return
+            }
+
+            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
+                Logger.debug("don't report SPK rotation failure w/ non application error")
+                return
+            }
+
+            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
+        default:
+            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+        }
     }
 }
 
@@ -136,6 +156,7 @@ public class RefreshPreKeysOperation: OWSOperation {
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
                 self.primaryStorage.storePreKeyRecords(preKeyRecords)
 
+                TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()
             }
         }.then { () -> Void in
@@ -144,5 +165,24 @@ public class RefreshPreKeysOperation: OWSOperation {
         }.catch { error in
             self.reportError(error)
         }.retainUntilComplete()
+    }
+
+    override public func didFail(error: Error) {
+        switch error {
+        case let networkManagerError as NetworkManagerError:
+            guard !networkManagerError.isNetworkError else {
+                Logger.debug("don't report SPK rotation failure w/ network error")
+                return
+            }
+
+            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
+                Logger.debug("don't report SPK rotation failure w/ non application error")
+                return
+            }
+
+            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
+        default:
+            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+        }
     }
 }
