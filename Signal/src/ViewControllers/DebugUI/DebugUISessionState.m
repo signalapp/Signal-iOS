@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     const char xorByte = currentKeyBytes[i] ^ 0xff;
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
-                                OWSAssert(flippedKey.length == currentKey.length);
+                                OWSAssertDebug(flippedKey.length == currentKey.length);
                                 [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"

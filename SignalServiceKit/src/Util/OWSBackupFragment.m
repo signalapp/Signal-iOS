@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(self.recordName.length > 0);
+    OWSAssertDebug(self.recordName.length > 0);
 
     if (!self.uniqueId) {
         self.uniqueId = self.recordName;

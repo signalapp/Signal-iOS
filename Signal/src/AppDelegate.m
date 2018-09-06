@@ -307,7 +307,7 @@ static NSTimeInterval launchStartedAt;
         return NO;
     }
 
-    OWSAssert(backgroundTask);
+    OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
 
     return YES;
@@ -781,7 +781,7 @@ static NSTimeInterval launchStartedAt;
             }
 
             OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
-            OWSAssert(outboundCallInitiator);
+            OWSAssertDebug(outboundCallInitiator);
             [outboundCallInitiator initiateCallWithHandle:phoneNumber];
         }];
         return YES;
@@ -824,7 +824,7 @@ static NSTimeInterval launchStartedAt;
             }
 
             OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
-            OWSAssert(outboundCallInitiator);
+            OWSAssertDebug(outboundCallInitiator);
             [outboundCallInitiator initiateCallWithHandle:phoneNumber];
         }];
         return YES;

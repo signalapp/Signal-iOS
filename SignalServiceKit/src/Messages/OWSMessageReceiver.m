@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
 {
-    OWSAssert(envelopeData);
+    OWSAssertDebug(envelopeData);
 
     self = [super initWithUniqueId:[NSUUID new].UUIDString];
     if (!self) {
@@ -123,7 +123,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     __block OWSMessageDecryptJob *_Nullable job = nil;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageDecryptJobFinderExtensionName];
-        OWSAssert(viewTransaction != nil);
+        OWSAssertDebug(viewTransaction != nil);
         job = [viewTransaction firstObjectInGroup:OWSMessageDecryptJobFinderExtensionGroup];
     }];
 
@@ -279,7 +279,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
-    OWSAssert(AppReadiness.isAppReady);
+    OWSAssertDebug(AppReadiness.isAppReady);
 
     // Don't decrypt messages in app extensions.
     if (!CurrentAppContext().isMainApp) {
@@ -317,7 +317,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
                   success ? @"decrypted" : @"failed to decrypt",
                   (unsigned long)[OWSMessageDecryptJob numberOfKeysInCollection]);
               [self drainQueueWorkStep];
-              OWSAssert(backgroundTask);
+              OWSAssertDebug(backgroundTask);
               backgroundTask = nil;
           }];
 }
@@ -325,7 +325,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion
 {
     AssertOnDispatchQueue(self.serialQueue);
-    OWSAssert(job);
+    OWSAssertDebug(job);
 
     SSKProtoEnvelope *_Nullable envelope = job.envelopeProto;
     if (!envelope) {
@@ -347,7 +347,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     [self.messageDecrypter decryptEnvelope:envelope
         successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-            OWSAssert(transaction);
+            OWSAssertDebug(transaction);
 
             // We persist the decrypted envelope data in the same transaction within which
             // it was decrypted to prevent data loss.  If the new job isn't persisted,

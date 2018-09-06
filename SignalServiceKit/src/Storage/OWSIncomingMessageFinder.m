@@ -31,7 +31,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
 - (instancetype)init
 {
-    OWSAssert([OWSPrimaryStorage sharedManager]);
+    OWSAssertDebug([OWSPrimaryStorage sharedManager]);
 
     return [self initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
 }

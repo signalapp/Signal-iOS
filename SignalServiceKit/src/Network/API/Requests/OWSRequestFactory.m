@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)enable2FARequestWithPin:(NSString *)pin
 {
-    OWSAssert(pin.length > 0);
+    OWSAssertDebug(pin.length > 0);
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecure2FAAPI]
                               method:@"PUT"
@@ -35,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp
 {
-    OWSAssert(source.length > 0);
-    OWSAssert(timestamp > 0);
+    OWSAssertDebug(source.length > 0);
+    OWSAssertDebug(timestamp > 0);
 
     NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", source, timestamp];
 
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)deleteDeviceRequestWithDevice:(OWSDevice *)device
 {
-    OWSAssert(device);
+    OWSAssertDebug(device);
 
     NSString *path = [NSString stringWithFormat:textSecureDevicesAPIFormat, @(device.deviceId)];
 
@@ -61,8 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)deviceProvisioningRequestWithMessageBody:(NSData *)messageBody ephemeralDeviceId:(NSString *)deviceId
 {
-    OWSAssert(messageBody.length > 0);
-    OWSAssert(deviceId.length > 0);
+    OWSAssertDebug(messageBody.length > 0);
+    OWSAssertDebug(deviceId.length > 0);
 
     NSString *path = [NSString stringWithFormat:textSecureDeviceProvisioningAPIFormat, deviceId];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId
 {
-    OWSAssert(attachmentId > 0);
+    OWSAssertDebug(attachmentId > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%llu", textSecureAttachmentsAPI, attachmentId];
 
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes
 {
-    OWSAssert(hashes.count > 0);
+    OWSAssertDebug(hashes.count > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureDirectoryAPI, @"tokens"];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
@@ -143,8 +143,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId
 {
-    OWSAssert(recipientNumber.length > 0);
-    OWSAssert(deviceId.length > 0);
+    OWSAssertDebug(recipientNumber.length > 0);
+    OWSAssertDebug(deviceId.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientNumber, deviceId];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
@@ -152,11 +152,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId
 {
-    OWSAssert(identifier.length > 0);
-    OWSAssert(voipId.length > 0);
+    OWSAssertDebug(identifier.length > 0);
+    OWSAssertDebug(voipId.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
-    OWSAssert(voipId);
+    OWSAssertDebug(voipId);
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:@{
@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
                                                    transport:(TSVerificationTransport)transport
 {
-    OWSAssert(phoneNumber.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
     NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?client=ios",
                                textSecureAccountsAPI,
                                [self stringForTransport:transport],
@@ -210,8 +210,8 @@ NS_ASSUME_NONNULL_BEGIN
                                        timeStamp:(uint64_t)timeStamp
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(timeStamp > 0);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(timeStamp > 0);
 
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
     NSDictionary *parameters = @{
@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey
 {
-    OWSAssert(signedPreKey);
+    OWSAssertDebug(signedPreKey);
 
     NSString *path = textSecureSignedKeysAPI;
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
@@ -237,10 +237,10 @@ NS_ASSUME_NONNULL_BEGIN
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey
                                     preKeyLastResort:(PreKeyRecord *)preKeyLastResort
 {
-    OWSAssert(prekeys.count > 0);
-    OWSAssert(identityKeyPublic.length > 0);
-    OWSAssert(signedPreKey);
-    OWSAssert(preKeyLastResort);
+    OWSAssertDebug(prekeys.count > 0);
+    OWSAssertDebug(identityKeyPublic.length > 0);
+    OWSAssertDebug(signedPreKey);
+    OWSAssertDebug(preKeyLastResort);
 
     NSString *path = textSecureKeysAPI;
     NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
@@ -280,10 +280,10 @@ NS_ASSUME_NONNULL_BEGIN
                            authUsername:(NSString *)authUsername
                            authPassword:(NSString *)authPassword
 {
-    OWSAssert(keyPair);
-    OWSAssert(enclaveId.length > 0);
-    OWSAssert(authUsername.length > 0);
-    OWSAssert(authPassword.length > 0);
+    OWSAssertDebug(keyPair);
+    OWSAssertDebug(enclaveId.length > 0);
+    OWSAssertDebug(authUsername.length > 0);
+    OWSAssertDebug(authPassword.length > 0);
 
     NSString *path =
         [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/attestation/%@", enclaveId];

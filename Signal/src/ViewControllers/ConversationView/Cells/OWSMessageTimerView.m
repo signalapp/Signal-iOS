@@ -89,8 +89,8 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
     if (self.initialDurationSeconds > 0) {
         progress = CGFloatClamp(secondsLeft / self.initialDurationSeconds, 0.f, 1.f);
     }
-    OWSAssert(progress >= 0.f);
-    OWSAssert(progress <= 1.f);
+    OWSAssertDebug(progress >= 0.f);
+    OWSAssertDebug(progress <= 1.f);
 
     self.progress12 = (NSInteger)round(CGFloatClamp(progress, 0.f, 1.f) * 12);
 }
@@ -113,8 +113,8 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 - (UIImage *)progressIcon
 {
-    OWSAssert(self.progress12 >= 0);
-    OWSAssert(self.progress12 <= 12);
+    OWSAssertDebug(self.progress12 >= 0);
+    OWSAssertDebug(self.progress12 <= 12);
 
     UIImage *_Nullable image;
     switch (self.progress12) {
@@ -159,9 +159,9 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
             image = [UIImage imageNamed:@"disappearing_message_60"];
             break;
     }
-    OWSAssert(image);
-    OWSAssert(image.size.width == kDisappearingMessageIconSize);
-    OWSAssert(image.size.height == kDisappearingMessageIconSize);
+    OWSAssertDebug(image);
+    OWSAssertDebug(image.size.width == kDisappearingMessageIconSize);
+    OWSAssertDebug(image.size.height == kDisappearingMessageIconSize);
     return image;
 }
 

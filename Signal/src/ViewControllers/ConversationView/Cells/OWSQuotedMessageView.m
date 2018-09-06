@@ -46,7 +46,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
                                                 isOutgoing:(BOOL)isOutgoing
                                               sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
-    OWSAssert(quotedMessage);
+    OWSAssertDebug(quotedMessage);
 
     return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
                                          displayableQuotedText:displayableQuotedText
@@ -59,7 +59,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
                                     conversationStyle:(ConversationStyle *)conversationStyle
 {
-    OWSAssert(quotedMessage);
+    OWSAssertDebug(quotedMessage);
 
     DisplayableText *_Nullable displayableQuotedText = nil;
     if (quotedMessage.body.length > 0) {
@@ -90,7 +90,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         return self;
     }
 
-    OWSAssert(quotedMessage);
+    OWSAssertDebug(quotedMessage);
 
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
@@ -156,7 +156,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (void)createContents
 {
     // Ensure only called once.
-    OWSAssert(self.subviews.count < 1);
+    OWSAssertDebug(self.subviews.count < 1);
 
     self.userInteractionEnabled = YES;
     self.layoutMargins = UIEdgeInsetsZero;
@@ -302,8 +302,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     UIImage *glyphImage =
         [[UIImage imageNamed:@"ic_broken_link"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    OWSAssert(glyphImage);
-    OWSAssert(CGSizeEqualToSize(
+    OWSAssertDebug(glyphImage);
+    OWSAssertDebug(CGSizeEqualToSize(
         CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength), glyphImage.size));
     UIImageView *glyphView = [[UIImageView alloc] initWithImage:glyphImage];
     glyphView.tintColor = Theme.secondaryColor;
@@ -362,7 +362,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIImageView *)imageViewForImage:(UIImage *)image
 {
-    OWSAssert(image);
+    OWSAssertDebug(image);
 
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
@@ -378,7 +378,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UILabel *)configureQuotedTextLabel
 {
-    OWSAssert(self.quotedTextLabel);
+    OWSAssertDebug(self.quotedTextLabel);
 
     UIColor *textColor = self.quotedTextColor;
     SUPPRESS_DEADSTORE_WARNING(textColor);
@@ -419,7 +419,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UILabel *)configureQuoteContentSourceLabel
 {
-    OWSAssert(self.quoteContentSourceLabel);
+    OWSAssertDebug(self.quoteContentSourceLabel);
 
     self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
     self.quoteContentSourceLabel.textColor = Theme.primaryColor;
@@ -479,7 +479,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UILabel *)configureQuotedAuthorLabel
 {
-    OWSAssert(self.quotedAuthorLabel);
+    OWSAssertDebug(self.quotedAuthorLabel);
 
     NSString *_Nullable localNumber = [TSAccountManager localNumber];
     NSString *quotedAuthorText;

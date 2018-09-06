@@ -56,19 +56,19 @@
 
 - (ConversationViewItem *)viewItemWithAttachmentMimetype:(NSString *)mimeType filename:(NSString *)filename
 {
-    OWSAssert(filename.length > 0);
+    OWSAssertDebug(filename.length > 0);
 
     NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
     NSString *filePath = [resourcePath stringByAppendingPathComponent:filename];
 
-    OWSAssert([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
+    OWSAssertDebug([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 
     DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
     TSAttachmentStream *attachment = [[TSAttachmentStream alloc] initWithContentType:mimeType
                                                                            byteCount:(UInt32)dataSource.dataLength
                                                                       sourceFilename:nil];
     BOOL success = [attachment writeDataSource:dataSource];
-    OWSAssert(success);
+    OWSAssertDebug(success);
     [attachment save];
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:nil attachmentId:attachment.uniqueId];

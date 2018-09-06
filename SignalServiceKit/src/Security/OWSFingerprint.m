@@ -37,8 +37,8 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                          theirName:(NSString *)theirName
                     hashIterations:(uint32_t)hashIterations
 {
-    OWSAssert(theirIdentityKeyWithoutKeyType.length == 32);
-    OWSAssert(myIdentityKeyWithoutKeyType.length == 32);
+    OWSAssertDebug(theirIdentityKeyWithoutKeyType.length == 32);
+    OWSAssertDebug(myIdentityKeyWithoutKeyType.length == 32);
 
     self = [super init];
     if (!self) {
@@ -90,8 +90,8 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (BOOL)matchesLogicalFingerprintsData:(NSData *)data error:(NSError **)error
 {
-    OWSAssert(data.length > 0);
-    OWSAssert(error);
+    OWSAssertDebug(data.length > 0);
+    OWSAssertDebug(error);
 
     *error = nil;
     FingerprintProtoLogicalFingerprints *_Nullable logicalFingerprints;
@@ -206,8 +206,8 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
  */
 - (NSData *)dataForStableId:(NSData *)stableIdData publicKey:(NSData *)publicKey
 {
-    OWSAssert(stableIdData);
-    OWSAssert(publicKey);
+    OWSAssertDebug(stableIdData);
+    OWSAssertDebug(publicKey);
 
     NSData *versionData = [self dataFromShort:OWSFingerprintHashingVersion];
     NSMutableData *hash = [versionData mutableCopy];
@@ -236,7 +236,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (NSString *)stringForFingerprintData:(NSData *)data
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     return [NSString stringWithFormat:@"%@%@%@%@%@%@",
                      [self encodedChunkFromData:data offset:0],
@@ -249,7 +249,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (NSString *)encodedChunkFromData:(NSData *)data offset:(uint)offset
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     uint8_t fiveBytes[5];
     [data getBytes:fiveBytes range:NSMakeRange(offset, 5)];

@@ -252,8 +252,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(self.tableView);
-    OWSAssert(self.searchBar);
+    OWSAssertDebug(self.tableView);
+    OWSAssertDebug(self.searchBar);
 
     self.view.backgroundColor = Theme.backgroundColor;
     self.tableView.backgroundColor = Theme.backgroundColor;
@@ -406,7 +406,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [searchBar sizeToFit];
 
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
-    OWSAssert(self.tableView.tableHeaderView == nil);
+    OWSAssertDebug(self.tableView.tableHeaderView == nil);
     self.tableView.tableHeaderView = self.searchBar;
     // Hide search bar by default.  User can pull down to search.
     self.tableView.contentOffset = CGPointMake(0, CGRectGetHeight(searchBar.frame));
@@ -579,10 +579,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
     if (isShowingSearchResults) {
-        OWSAssert(self.searchBar.text.ows_stripped.length > 0);
+        OWSAssertDebug(self.searchBar.text.ows_stripped.length > 0);
         [self scrollSearchBarToTopAnimated:NO];
     } else if (self.lastThread) {
-        OWSAssert(self.searchBar.text.ows_stripped.length == 0);
+        OWSAssertDebug(self.searchBar.text.ows_stripped.length == 0);
         
         // When returning to home view, try to ensure that the "last" thread is still
         // visible.  The threads often change ordering while in conversation view due
@@ -795,7 +795,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
 {
     TSThread *threadRecord = [self threadForIndexPath:indexPath];
-    OWSAssert(threadRecord);
+    OWSAssertDebug(threadRecord);
 
     ThreadViewModel *_Nullable cachedThreadViewModel = [self.threadViewModelCache objectForKey:threadRecord.uniqueId];
     if (cachedThreadViewModel) {
@@ -832,7 +832,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
 {
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
-    OWSAssert(cell);
+    OWSAssertDebug(cell);
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
     [cell configureWithThread:thread
@@ -845,7 +845,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (UITableViewCell *)cellForArchivedConversationsRow:(UITableView *)tableView
 {
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kArchivedConversationsReuseIdentifier];
-    OWSAssert(cell);
+    OWSAssertDebug(cell);
     [OWSTableItem configureCell:cell];
 
     for (UIView *subview in cell.contentView.subviews) {
@@ -853,7 +853,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
-    OWSAssert(disclosureImage);
+    OWSAssertDebug(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     disclosureImageView.tintColor = [UIColor colorWithRGBHex:0xd1d1d6];
@@ -1010,7 +1010,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.searchBar.text = nil;
 
     [self.searchBar resignFirstResponder];
-    OWSAssert(!self.searchBar.isFirstResponder);
+    OWSAssertDebug(!self.searchBar.isFirstResponder);
 
     [self updateSearchResultsVisibility];
 
@@ -1050,7 +1050,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     [self.searchBar resignFirstResponder];
-    OWSAssert(!self.searchBar.isFirstResponder);
+    OWSAssertDebug(!self.searchBar.isFirstResponder);
 }
 
 #pragma mark - ConversationSearchViewDelegate
@@ -1058,7 +1058,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)conversationSearchViewWillBeginDragging
 {
     [self.searchBar resignFirstResponder];
-    OWSAssert(!self.searchBar.isFirstResponder);
+    OWSAssertDebug(!self.searchBar.isFirstResponder);
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
@@ -1193,20 +1193,20 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (YapDatabaseViewMappings *)threadMappings
 {
-    OWSAssert(_threadMappings != nil);
+    OWSAssertDebug(_threadMappings != nil);
     return _threadMappings;
 }
 
 - (void)showInboxGrouping
 {
-    OWSAssert(self.homeViewMode == HomeViewMode_Archive);
+    OWSAssertDebug(self.homeViewMode == HomeViewMode_Archive);
 
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)showArchivedConversations
 {
-    OWSAssert(self.homeViewMode == HomeViewMode_Inbox);
+    OWSAssertDebug(self.homeViewMode == HomeViewMode_Inbox);
 
     // When showing archived conversations, we want to use a conventional "back" button
     // to return to the "inbox" home view.
@@ -1351,7 +1351,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         NSString *key = rowChange.collectionKey.key;
-        OWSAssert(key);
+        OWSAssertDebug(key);
         [self.threadViewModelCache removeObjectForKey:key];
 
         switch (rowChange.type) {
@@ -1447,7 +1447,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                 @"EMPTY_INBOX_NEW_USER_TEXT", @"Body text a new user sees when viewing an empty inbox");
         }
     } else {
-        OWSAssert(self.homeViewMode == HomeViewMode_Archive);
+        OWSAssertDebug(self.homeViewMode == HomeViewMode_Archive);
         firstLine = NSLocalizedString(
             @"EMPTY_ARCHIVE_TITLE", @"Header text an existing user sees when viewing an empty archive");
         secondLine = NSLocalizedString(

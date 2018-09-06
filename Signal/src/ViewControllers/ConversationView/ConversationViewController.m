@@ -360,7 +360,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)isGroupConversation
 {
-    OWSAssert(self.thread);
+    OWSAssertDebug(self.thread);
 
     return self.thread.isGroupThread;
 }
@@ -377,7 +377,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
         if ([self.thread isKindOfClass:[TSContactThread class]]) {
             // update title with profile name
@@ -441,7 +441,7 @@ typedef enum : NSUInteger {
                     action:(ConversationViewAction)action
             focusMessageId:(nullable NSString *)focusMessageId
 {
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
 
     OWSLogInfo(@"configureForThread.");
 
@@ -553,7 +553,7 @@ typedef enum : NSUInteger {
 
 - (void)createContents
 {
-    OWSAssert(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle);
 
     _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle];
     self.conversationStyle.viewWidth = self.view.width;
@@ -729,8 +729,8 @@ typedef enum : NSUInteger {
 
 - (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
 {
-    OWSAssert(self.focusMessageIdOnOpen);
-    OWSAssert(self.dynamicInteractions.focusMessagePosition);
+    OWSAssertDebug(self.focusMessageIdOnOpen);
+    OWSAssertDebug(self.dynamicInteractions.focusMessagePosition);
 
     if (!self.dynamicInteractions.focusMessagePosition) {
         // This might happen if the focus message has disappeared
@@ -901,8 +901,8 @@ typedef enum : NSUInteger {
 
 - (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
 {
-    OWSAssert(title.length > 0);
-    OWSAssert(bannerColor);
+    OWSAssertDebug(title.length > 0);
+    OWSAssertDebug(bannerColor);
 
     UIView *bannerView = [UIView containerView];
     bannerView.backgroundColor = bannerColor;
@@ -1035,14 +1035,14 @@ typedef enum : NSUInteger {
 
     NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
     for (NSString *recipientId in noLongerVerifiedRecipientIds) {
-        OWSAssert(recipientId.length > 0);
+        OWSAssertDebug(recipientId.length > 0);
 
         OWSRecipientIdentity *_Nullable recipientIdentity =
             [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
-        OWSAssert(recipientIdentity);
+        OWSAssertDebug(recipientIdentity);
 
         NSData *identityKey = recipientIdentity.identityKey;
-        OWSAssert(identityKey.length > 0);
+        OWSAssertDebug(identityKey.length > 0);
         if (identityKey.length < 1) {
             continue;
         }
@@ -1056,7 +1056,7 @@ typedef enum : NSUInteger {
 
 - (void)showUnblockContactUI:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
 
     self.userHasScrolled = NO;
 
@@ -1087,8 +1087,8 @@ typedef enum : NSUInteger {
 
 - (int)blockedGroupMemberCount
 {
-    OWSAssert(self.isGroupConversation);
-    OWSAssert([self.thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssertDebug(self.isGroupConversation);
+    OWSAssertDebug([self.thread isKindOfClass:[TSGroupThread class]]);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     int blockedMemberCount = 0;
@@ -1233,7 +1233,7 @@ typedef enum : NSUInteger {
             name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }
     } else {
-        OWSAssert(self.thread.contactIdentifier);
+        OWSAssertDebug(self.thread.contactIdentifier);
         name =
             [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
                                                                        primaryFont:self.headerView.titlePrimaryFont
@@ -1515,7 +1515,7 @@ typedef enum : NSUInteger {
 
 - (void)callWithVideo:(BOOL)isVideo
 {
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
 
     if (![self canCall]) {
         OWSLogWarn(@"Tried to initiate a call but thread is not callable.");
@@ -1724,10 +1724,10 @@ typedef enum : NSUInteger {
         // If this is the first time we're configuring the range length,
         // try to take into account the position of the unread indicator
         // and the "focus message".
-        OWSAssert(self.dynamicInteractions);
+        OWSAssertDebug(self.dynamicInteractions);
 
         if (self.focusMessageIdOnOpen) {
-            OWSAssert(self.dynamicInteractions.focusMessagePosition);
+            OWSAssertDebug(self.dynamicInteractions.focusMessagePosition);
             if (self.dynamicInteractions.focusMessagePosition) {
                 OWSLogVerbose(@"ensuring load of focus message: %@", self.dynamicInteractions.focusMessagePosition);
                 rangeLength = MAX(rangeLength, 1 + self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue);
@@ -1740,8 +1740,8 @@ typedef enum : NSUInteger {
 
             // If there is an unread indicator, increase the initial load window
             // to include it.
-            OWSAssert(unreadIndicatorPosition > 0);
-            OWSAssert(unreadIndicatorPosition <= kYapDatabaseRangeMaxLength);
+            OWSAssertDebug(unreadIndicatorPosition > 0);
+            OWSAssertDebug(unreadIndicatorPosition <= kYapDatabaseRangeMaxLength);
 
             // We'd like to include at least N seen messages,
             // to give the user the context of where they left off the conversation.
@@ -1919,7 +1919,7 @@ typedef enum : NSUInteger {
 
 - (void)handleCallTap:(TSCall *)call
 {
-    OWSAssert(call);
+    OWSAssertDebug(call);
 
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         OWSFailDebug(@"unexpected thread: %@", self.thread);
@@ -2061,7 +2061,7 @@ typedef enum : NSUInteger {
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
 }
@@ -2162,9 +2162,9 @@ typedef enum : NSUInteger {
                   imageView:(UIView *)imageView
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
-    OWSAssert(attachmentStream);
-    OWSAssert(imageView);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
+    OWSAssertDebug(imageView);
 
     [self dismissKeyBoard];
 
@@ -2193,8 +2193,8 @@ typedef enum : NSUInteger {
                   imageView:(UIImageView *)imageView
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
-    OWSAssert(attachmentStream);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
 
     [self dismissKeyBoard];
     // In case we were presenting edit menu, we need to become first responder before presenting another VC
@@ -2220,8 +2220,8 @@ typedef enum : NSUInteger {
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
-    OWSAssert(attachmentStream);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:[attachmentStream.mediaURL path]]) {
@@ -2249,8 +2249,8 @@ typedef enum : NSUInteger {
 - (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(conversationItem);
-    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(conversationItem);
+    OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
     LongTextViewController *view = [[LongTextViewController alloc] initWithViewItem:conversationItem];
     [self.navigationController pushViewController:view animated:YES];
@@ -2259,9 +2259,9 @@ typedef enum : NSUInteger {
 - (void)didTapContactShareViewItem:(ConversationViewItem *)conversationItem
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(conversationItem);
-    OWSAssert(conversationItem.contactShare);
-    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(conversationItem);
+    OWSAssertDebug(conversationItem.contactShare);
+    OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
     ContactViewController *view = [[ContactViewController alloc] initWithContactShare:conversationItem.contactShare];
     [self.navigationController pushViewController:view animated:YES];
@@ -2270,7 +2270,7 @@ typedef enum : NSUInteger {
 - (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     [self.contactShareViewHelper sendMessageWithContactShare:contactShare fromViewController:self];
 }
@@ -2278,7 +2278,7 @@ typedef enum : NSUInteger {
 - (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     [self.contactShareViewHelper showInviteContactWithContactShare:contactShare fromViewController:self];
 }
@@ -2286,7 +2286,7 @@ typedef enum : NSUInteger {
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     [self.contactShareViewHelper showAddToContactsWithContactShare:contactShare fromViewController:self];
 }
@@ -2295,8 +2295,8 @@ typedef enum : NSUInteger {
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
-    OWSAssert(attachmentPointer);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentPointer);
 
     // Restart failed downloads
     TSMessage *message = (TSMessage *)viewItem.interaction;
@@ -2306,7 +2306,7 @@ typedef enum : NSUInteger {
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     [self handleUnsentMessageTap:message];
 }
@@ -2316,8 +2316,8 @@ typedef enum : NSUInteger {
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
-    OWSAssert(attachmentPointer);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentPointer);
 
     TSMessage *message = (TSMessage *)viewItem.interaction;
     if (![message isKindOfClass:[TSMessage class]]) {
@@ -2352,10 +2352,10 @@ typedef enum : NSUInteger {
 - (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
-    OWSAssert(quotedReply);
-    OWSAssert(quotedReply.timestamp > 0);
-    OWSAssert(quotedReply.authorId.length > 0);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(quotedReply);
+    OWSAssertDebug(quotedReply.timestamp > 0);
+    OWSAssertDebug(quotedReply.authorId.length > 0);
 
     // We try to find the index of the item within the current thread's
     // interactions that includes the "quoted interaction".
@@ -2465,8 +2465,8 @@ typedef enum : NSUInteger {
 - (nullable NSNumber *)findGroupIndexOfThreadInteraction:(TSInteraction *)interaction
                                              transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(interaction);
-    OWSAssert(transaction);
+    OWSAssertDebug(interaction);
+    OWSAssertDebug(transaction);
 
     YapDatabaseAutoViewTransaction *_Nullable extension = [transaction extension:TSMessageDatabaseViewExtensionName];
     if (!extension) {
@@ -2487,8 +2487,8 @@ typedef enum : NSUInteger {
 - (void)showDetailViewForViewItem:(ConversationViewItem *)conversationItem
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(conversationItem);
-    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(conversationItem);
+    OWSAssertDebug([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
     MessageDetailViewController *view =
@@ -2575,7 +2575,7 @@ typedef enum : NSUInteger {
     NSIndexPath *_Nullable indexPathOfUnreadIndicator = [self indexPathOfUnreadMessagesIndicator];
     if (indexPathOfUnreadIndicator) {
         ConversationViewItem *oldIndicatorItem = [self viewItemForIndex:indexPathOfUnreadIndicator.row];
-        OWSAssert(oldIndicatorItem);
+        OWSAssertDebug(oldIndicatorItem);
 
         // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
         // to be cleared.
@@ -2689,7 +2689,7 @@ typedef enum : NSUInteger {
 
     if (self.viewItems.count > 0) {
         ConversationViewItem *lastViewItem = [self.viewItems lastObject];
-        OWSAssert(lastViewItem);
+        OWSAssertDebug(lastViewItem);
 
         if (lastViewItem.interaction.timestampForSorting > self.lastVisibleTimestamp) {
             shouldShowScrollDownButton = YES;
@@ -2747,7 +2747,7 @@ typedef enum : NSUInteger {
     menuController.delegate = self;
 
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
-    OWSAssert(takeMediaImage);
+    OWSAssertDebug(takeMediaImage);
     [menuController addOptionWithTitle:NSLocalizedString(
                                            @"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                                  image:takeMediaImage
@@ -2777,7 +2777,7 @@ typedef enum : NSUInteger {
 
 - (void)gifPickerDidSelectWithAttachment:(SignalAttachment *)attachment
 {
-    OWSAssert(attachment);
+    OWSAssertDebug(attachment);
 
     [self tryToSendAttachmentIfApproved:attachment];
 
@@ -2788,7 +2788,7 @@ typedef enum : NSUInteger {
 - (void)messageWasSent:(TSOutgoingMessage *)message
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
@@ -2859,8 +2859,8 @@ typedef enum : NSUInteger {
             @"ATTACHMENT_DEFAULT_FILENAME", @"Generic filename for an attachment with no known name");
     }
 
-    OWSAssert(type);
-    OWSAssert(filename);
+    OWSAssertDebug(type);
+    OWSAssertDebug(filename);
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
     if (!dataSource) {
         OWSFailDebug(@"attachment data was unexpectedly empty for picked document");
@@ -3100,9 +3100,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
     // TODO: Should we assume non-nil or should we check for non-nil?
-    OWSAssert(attachment != nil);
-    OWSAssert(![attachment hasError]);
-    OWSAssert([attachment mimeType].length > 0);
+    OWSAssertDebug(attachment != nil);
+    OWSAssertDebug(![attachment hasError]);
+    OWSAssertDebug([attachment mimeType].length > 0);
 
     OWSLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
         (unsigned long)[attachment dataLength],
@@ -3125,7 +3125,7 @@ typedef enum : NSUInteger {
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     OWSLogVerbose(@"Sending contact share.");
 
@@ -3169,7 +3169,7 @@ typedef enum : NSUInteger {
 
                       compressionResult.attachmentPromise.then(^(SignalAttachment *attachment) {
                           OWSAssertIsOnMainThread();
-                          OWSAssert([attachment isKindOfClass:[SignalAttachment class]]);
+                          OWSAssertDebug([attachment isKindOfClass:[SignalAttachment class]]);
 
                           if (modalActivityIndicator.wasCancelled) {
                               return;
@@ -3242,7 +3242,7 @@ typedef enum : NSUInteger {
     OWSLogVerbose(@"");
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    OWSAssert([notifications isKindOfClass:[NSArray class]]);
+    OWSAssertDebug([notifications isKindOfClass:[NSArray class]]);
     
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
@@ -3313,7 +3313,7 @@ typedef enum : NSUInteger {
                 } else if (rowChange.indexPath && rowChange.originalIndex < self.viewItems.count) {
                     // Do nothing, this is a pseudo-update generated due to
                     // setCellDrawingDependencyOffsets.
-                    OWSAssert(rowChange.changes == YapDatabaseViewChangedDependency);
+                    OWSAssertDebug(rowChange.changes == YapDatabaseViewChangedDependency);
                 } else {
                     hasMalformedRowChange = YES;
                 }
@@ -3378,7 +3378,7 @@ typedef enum : NSUInteger {
                         (unsigned long)rowChange.finalIndex);
                     [self.collectionView deleteItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     YapCollectionKey *collectionKey = rowChange.collectionKey;
-                    OWSAssert(collectionKey.key.length > 0);
+                    OWSAssertDebug(collectionKey.key.length > 0);
                     break;
                 }
                 case YapDatabaseViewChangeInsert: {
@@ -3513,7 +3513,7 @@ typedef enum : NSUInteger {
 - (BOOL)shouldAnimateRowUpdates:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
                oldViewItemCount:(NSUInteger)oldViewItemCount
 {
-    OWSAssert(rowChanges);
+    OWSAssertDebug(rowChanges);
 
     // If user sends a new outgoing message, don't animate the change.
     BOOL isOnlyModifyingLastMessage = YES;
@@ -3799,7 +3799,7 @@ typedef enum : NSUInteger {
                     [self takePictureOrVideo];
                 }];
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
-    OWSAssert(takeMediaImage);
+    OWSAssertDebug(takeMediaImage);
     [takeMediaAction setValue:takeMediaImage forKey:@"image"];
     [actionSheetController addAction:takeMediaAction];
 
@@ -3810,7 +3810,7 @@ typedef enum : NSUInteger {
                     [self chooseFromLibraryAsMedia];
                 }];
     UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
-    OWSAssert(chooseMediaImage);
+    OWSAssertDebug(chooseMediaImage);
     [chooseMediaAction setValue:chooseMediaImage forKey:@"image"];
     [actionSheetController addAction:chooseMediaAction];
 
@@ -3821,7 +3821,7 @@ typedef enum : NSUInteger {
                     [self showGifPicker];
                 }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
-    OWSAssert(gifImage);
+    OWSAssertDebug(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheetController addAction:gifAction];
 
@@ -3833,7 +3833,7 @@ typedef enum : NSUInteger {
                                    [self showAttachmentDocumentPickerMenu];
                                }];
     UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
-    OWSAssert(chooseDocumentImage);
+    OWSAssertDebug(chooseDocumentImage);
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheetController addAction:chooseDocumentAction];
 
@@ -3846,7 +3846,7 @@ typedef enum : NSUInteger {
                                        [self chooseContactForSending];
                                    }];
         UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_contact"];
-        OWSAssert(takeMediaImage);
+        OWSAssertDebug(takeMediaImage);
         [chooseContactAction setValue:chooseContactImage forKey:@"image"];
         [actionSheetController addAction:chooseContactAction];
     }
@@ -3916,7 +3916,7 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleTimestamp:(uint64_t)timestamp
 {
-    OWSAssert(timestamp > 0);
+    OWSAssertDebug(timestamp > 0);
 
     self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, timestamp);
 
@@ -4063,10 +4063,10 @@ typedef enum : NSUInteger {
     }
     _backButtonUnreadCount = unreadCount;
 
-    OWSAssert(_backButtonUnreadCountView != nil);
+    OWSAssertDebug(_backButtonUnreadCountView != nil);
     _backButtonUnreadCountView.hidden = unreadCount <= 0;
 
-    OWSAssert(_backButtonUnreadCountLabel != nil);
+    OWSAssertDebug(_backButtonUnreadCountLabel != nil);
 
     // Max out the unread count at 99+.
     const NSUInteger kMaxUnreadCount = 99;
@@ -4278,7 +4278,7 @@ typedef enum : NSUInteger {
 
 - (void)showErrorAlertForAttachment:(SignalAttachment *_Nullable)attachment
 {
-    OWSAssert(attachment == nil || [attachment hasError]);
+    OWSAssertDebug(attachment == nil || [attachment hasError]);
 
     NSString *errorMessage
         = (attachment ? [attachment localizedErrorDescription] : [SignalAttachment missingDataErrorMessage]);
@@ -4363,8 +4363,8 @@ typedef enum : NSUInteger {
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
     OWSAssertIsOnMainThread();
-    OWSAssert([_thread isKindOfClass:[TSGroupThread class]]);
-    OWSAssert(message);
+    OWSAssertDebug([_thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     TSGroupModel *groupModel = groupThread.groupModel;
@@ -4385,7 +4385,7 @@ typedef enum : NSUInteger {
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
 {
-    OWSAssert(groupModel);
+    OWSAssertDebug(groupModel);
 
     NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
     [groupMemberIds addObject:[TSAccountManager localNumber]];
@@ -4620,7 +4620,7 @@ typedef enum : NSUInteger {
         // bottom of content"; if the mapping's "window" size grows, it will grow
         // _upward_.
         CGFloat viewTopToContentBottom = 0;
-        OWSAssert([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]);
+        OWSAssertDebug([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]);
         ConversationViewLayout *conversationViewLayout
             = (ConversationViewLayout *)self.collectionView.collectionViewLayout;
         // To avoid laying out the collection view during initial view
@@ -4712,7 +4712,7 @@ typedef enum : NSUInteger {
 
 - (nullable NSIndexPath *)firstIndexPathAtViewHorizonTimestamp
 {
-    OWSAssert(self.shouldObserveDBModifications);
+    OWSAssertDebug(self.shouldObserveDBModifications);
 
     if (!self.viewHorizonTimestamp) {
         return nil;
@@ -4728,10 +4728,10 @@ typedef enum : NSUInteger {
     // If we converge on an item _before_ this cutoff, there was no interaction that fit our criteria.
     NSUInteger left = 0, right = self.viewItems.count - 1;
     while (left != right) {
-        OWSAssert(left < right);
+        OWSAssertDebug(left < right);
         NSUInteger mid = (left + right) / 2;
-        OWSAssert(left <= mid);
-        OWSAssert(mid < right);
+        OWSAssertDebug(left <= mid);
+        OWSAssertDebug(mid < right);
         ConversationViewItem *viewItem  = self.viewItems[mid];
         if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
             right = mid;
@@ -4740,7 +4740,7 @@ typedef enum : NSUInteger {
             left = mid + 1;
         }
     }
-    OWSAssert(left == right);
+    OWSAssertDebug(left == right);
     ConversationViewItem *viewItem  = self.viewItems[left];
     if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
         OWSLogInfo(@"firstIndexPathAtViewHorizonTimestamp: %zd / %zd", left, self.viewItems.count);
@@ -4884,7 +4884,7 @@ typedef enum : NSUInteger {
     __block BOOL hasError = NO;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-        OWSAssert(viewTransaction);
+        OWSAssertDebug(viewTransaction);
         for (NSUInteger row = 0; row < count; row++) {
             TSInteraction *interaction =
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
@@ -4913,7 +4913,7 @@ typedef enum : NSUInteger {
                                                            conversationStyle:self.conversationStyle];
             }
             [viewItems addObject:viewItem];
-            OWSAssert(!viewItemCache[interaction.uniqueId]);
+            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
             viewItemCache[interaction.uniqueId] = viewItem;
         }
     }];
@@ -4950,7 +4950,7 @@ typedef enum : NSUInteger {
         }
 
         uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
-        OWSAssert(viewItemTimestamp > 0);
+        OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
         if (previousViewItemTimestamp == 0) {
@@ -5063,14 +5063,14 @@ typedef enum : NSUInteger {
 
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
-            OWSAssert(incomingSenderId.length > 0);
+            OWSAssertDebug(incomingSenderId.length > 0);
             BOOL isDisappearingMessage = incomingMessage.isExpiringMessage;
 
             NSString *_Nullable nextIncomingSenderId = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
                 nextIncomingSenderId = nextIncomingMessage.authorId;
-                OWSAssert(nextIncomingSenderId.length > 0);
+                OWSAssertDebug(nextIncomingSenderId.length > 0);
             }
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
@@ -5115,7 +5115,7 @@ typedef enum : NSUInteger {
 
                     TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
                     NSString *previousIncomingSenderId = previousIncomingMessage.authorId;
-                    OWSAssert(previousIncomingSenderId.length > 0);
+                    OWSAssertDebug(previousIncomingSenderId.length > 0);
 
                     shouldShowSenderName
                         = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
@@ -5163,7 +5163,7 @@ typedef enum : NSUInteger {
 - (void)reloadInteractionForViewItem:(ConversationViewItem *)viewItem
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewItem);
+    OWSAssertDebug(viewItem);
 
     // This should never happen, but don't crash in production if we have a bug.
     if (!viewItem) {
@@ -5225,7 +5225,7 @@ typedef enum : NSUInteger {
        willDisplayCell:(UICollectionViewCell *)cell
     forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    OWSAssert([cell isKindOfClass:[ConversationViewCell class]]);
+    OWSAssertDebug([cell isKindOfClass:[ConversationViewCell class]]);
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = YES;
@@ -5235,7 +5235,7 @@ typedef enum : NSUInteger {
     didEndDisplayingCell:(nonnull UICollectionViewCell *)cell
       forItemAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    OWSAssert([cell isKindOfClass:[ConversationViewCell class]]);
+    OWSAssertDebug([cell isKindOfClass:[ConversationViewCell class]]);
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = NO;
@@ -5257,7 +5257,7 @@ typedef enum : NSUInteger {
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
 {
-    OWSAssert(contact);
+    OWSAssertDebug(contact);
 
     CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     if (!cnContact) {
@@ -5294,7 +5294,7 @@ typedef enum : NSUInteger {
         [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
                                                          contactsManager:self.contactsManager
                                                                 delegate:self];
-    OWSAssert(contactsPicker.navigationController);
+    OWSAssertDebug(contactsPicker.navigationController);
     [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }
 

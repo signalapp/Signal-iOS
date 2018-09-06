@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssert(groupId.length > 0);
+    OWSAssertDebug(groupId.length > 0);
     _groupId = groupId;
 
     return self;

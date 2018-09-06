@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
                                  frontingDomain:(nullable NSString *)frontingDomain
                                     countryCode:(NSString *)countryCode
 {
-    OWSAssert(name.length > 0);
-    OWSAssert(tld.length > 0);
-    OWSAssert(countryCode.length > 0);
+    OWSAssertDebug(name.length > 0);
+    OWSAssertDebug(tld.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
 
     OWSCountryMetadata *instance = [OWSCountryMetadata new];
     instance.name = name;
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSCountryMetadata *)countryMetadataForCountryCode:(NSString *)countryCode
 {
-    OWSAssert(countryCode.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
 
     return [self countryCodeToCountryMetadataMap][countryCode];
 }

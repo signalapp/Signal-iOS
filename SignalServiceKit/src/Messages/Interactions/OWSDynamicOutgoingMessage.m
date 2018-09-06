@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSData *plainTextData = self.block(recipient);
-    OWSAssert(plainTextData);
+    OWSAssertDebug(plainTextData);
     return plainTextData;
 }
 

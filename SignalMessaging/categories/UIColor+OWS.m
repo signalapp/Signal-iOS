@@ -110,14 +110,14 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL result =
 #endif
         [self getRed:&r0 green:&g0 blue:&b0 alpha:&a0];
-    OWSAssert(result);
+    OWSAssertDebug(result);
 
     CGFloat r1, g1, b1, a1;
 #ifdef DEBUG
     result =
 #endif
         [otherColor getRed:&r1 green:&g1 blue:&b1 alpha:&a1];
-    OWSAssert(result);
+    OWSAssertDebug(result);
 
     return [UIColor colorWithRed:CGFloatLerp(r0, r1, alpha)
                            green:CGFloatLerp(g0, g1, alpha)
@@ -306,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
 {
-    OWSAssert(colorName.length > 0);
+    OWSAssertDebug(colorName.length > 0);
 
     return [self.ows_conversationColorMap objectForKey:colorName];
 }

@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        timestamp:(uint64_t)timestamp
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     __block TSIncomingMessage *foundMessage;
     // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
                                      NSString *messageAuthorId = message.messageAuthorId;
-                                     OWSAssert(messageAuthorId.length > 0);
+                                     OWSAssertDebug(messageAuthorId.length > 0);
 
                                      if ([messageAuthorId isEqualToString:authorId]) {
                                          foundMessage = message;
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Contact Thread
         messageAuthorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
     }
-    OWSAssert(messageAuthorId.length > 0);
+    OWSAssertDebug(messageAuthorId.length > 0);
     return messageAuthorId;
 }
 
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
               sendReadReceipt:(BOOL)sendReadReceipt
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     if (_read && readTimestamp >= self.expireStartedAt) {
         return;

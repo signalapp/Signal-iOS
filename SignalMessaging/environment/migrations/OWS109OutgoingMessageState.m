@@ -22,7 +22,7 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
 // Override parent migration
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    OWSAssert(completion);
+    OWSAssertDebug(completion);
 
 
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;

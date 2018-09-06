@@ -211,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     changeBlock(self);
 

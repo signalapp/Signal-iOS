@@ -198,7 +198,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     // Ensure we call the success or failure handler exactly once.
     @synchronized(self)
     {
-        OWSAssert(self.operationState != OWSOperationStateFinished);
+        OWSAssertDebug(self.operationState != OWSOperationStateFinished);
 
         self.operationState = OWSOperationStateFinished;
     }

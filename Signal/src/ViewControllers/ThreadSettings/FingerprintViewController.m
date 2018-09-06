@@ -91,7 +91,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 + (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
@@ -140,7 +140,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)configureWithRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     self.recipientId = recipientId;
 
@@ -149,7 +149,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
-    OWSAssert(recipientIdentity);
+    OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
     self.identityKey = recipientIdentity.identityKey;
@@ -340,7 +340,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)updateVerificationStateLabel
 {
-    OWSAssert(self.recipientId.length > 0);
+    OWSAssertDebug(self.recipientId.length > 0);
 
     BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
         == OWSVerificationStateVerified;

@@ -93,8 +93,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         return self;
     }
 
-    OWSAssert(primaryStorage);
-    OWSAssert(messageSender);
+    OWSAssertDebug(primaryStorage);
+    OWSAssertDebug(messageSender);
 
     _primaryStorage = primaryStorage;
     _dbConnection = primaryStorage.newDatabaseConnection;
@@ -140,8 +140,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     return [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction].identityKey;
 }
@@ -159,7 +159,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 // Whenever possible, prefer to call the strongly typed variant: `identityKeyPairWithTransaction:`.
 - (nullable ECKeyPair *)identityKeyPair:(nullable id)protocolContext
 {
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadTransaction class]]);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadTransaction class]]);
 
     YapDatabaseReadTransaction *transaction = protocolContext;
 
@@ -168,7 +168,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (nullable ECKeyPair *)identityKeyPairWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     ECKeyPair *_Nullable identityKeyPair = [transaction keyPairForKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
                                                          inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
@@ -177,7 +177,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (int)localRegistrationId:(nullable id)protocolContext
 {
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -186,8 +186,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
 
     __block BOOL result;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -201,9 +201,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                recipientId:(NSString *)recipientId
            protocolContext:(nullable id)protocolContext
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -275,8 +275,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self setVerificationState:verificationState
@@ -293,9 +293,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
              protocolContext:(nullable id)protocolContext
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -312,9 +312,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     // Ensure a remote identity exists for this key. We may be learning about
     // it for the first time.
@@ -365,8 +365,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
                                             transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     OWSRecipientIdentity *_Nullable currentIdentity =
         [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
@@ -381,7 +381,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     __block OWSRecipientIdentity *_Nullable result;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
@@ -392,7 +392,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     __block OWSRecipientIdentity *_Nullable result;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
@@ -429,10 +429,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                    direction:(TSMessageDirection)direction
              protocolContext:(nullable id)protocolContext
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(direction != TSMessageDirectionUnknown);
-    OWSAssert([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(direction != TSMessageDirectionUnknown);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
@@ -444,10 +444,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                    direction:(TSMessageDirection)direction
                  transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(direction != TSMessageDirectionUnknown);
-    OWSAssert(transaction);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(direction != TSMessageDirectionUnknown);
+    OWSAssertDebug(transaction);
 
     if ([[TSAccountManager localNumber] isEqualToString:recipientId]) {
         ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairWithTransaction:transaction];
@@ -481,13 +481,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
 {
-    OWSAssert(identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
 
     if (recipientIdentity == nil) {
         return YES;
     }
 
-    OWSAssert(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
+    OWSAssertDebug(recipientIdentity.identityKey.length == kStoredIdentityKeyLength);
     if (![recipientIdentity.identityKey isEqualToData:identityKey]) {
         OWSLogWarn(@"key mismatch for recipient: %@", recipientIdentity.recipientId);
         return NO;
@@ -519,14 +519,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)createIdentityChangeInfoMessageForRecipientId:(NSString *)recipientId
                                           transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-    OWSAssert(contactThread != nil);
+    OWSAssertDebug(contactThread != nil);
 
     TSErrorMessage *errorMessage =
         [TSErrorMessage nonblockingIdentityChangeInThread:contactThread recipientId:recipientId];
@@ -548,8 +548,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId
                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     [transaction setObject:recipientId
                     forKey:recipientId
@@ -626,8 +626,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)sendSyncVerificationStateMessage:(OWSVerificationStateSyncMessage *)message
 {
-    OWSAssert(message);
-    OWSAssert(message.verificationForRecipientId.length > 0);
+    OWSAssertDebug(message);
+    OWSAssertDebug(message.verificationForRecipientId.length > 0);
 
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
     
@@ -667,8 +667,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)clearSyncMessageForRecipientId:(NSString *)recipientId
                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     [transaction removeObjectForKey:recipientId inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
 }
@@ -676,8 +676,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)processIncomingSyncMessage:(SSKProtoVerified *)verified
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(verified);
-    OWSAssert(transaction);
+    OWSAssertDebug(verified);
+    OWSAssertDebug(transaction);
 
     NSString *recipientId = verified.destination;
     if (recipientId.length < 1) {
@@ -724,8 +724,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                overwriteOnConflict:(BOOL)overwriteOnConflict
                                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     if (recipientId.length < 1) {
         OWSFailDebug(@"Verification state sync message missing recipientId.");
@@ -845,14 +845,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                            isLocalChange:(BOOL)isLocalChange
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-    OWSAssert(contactThread);
+    OWSAssertDebug(contactThread);
     [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                               thread:contactThread
                                                                          recipientId:recipientId
@@ -879,7 +879,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 #if DEBUG
 - (void)clearIdentityState:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
     [transaction enumerateKeysInCollection:OWSPrimaryStorageIdentityKeyStoreCollection
@@ -912,7 +912,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [transaction snapshotCollection:OWSPrimaryStorageIdentityKeyStoreCollection
                    snapshotFilePath:self.identityKeySnapshotFilePath];
@@ -922,7 +922,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [transaction restoreSnapshotOfCollection:OWSPrimaryStorageIdentityKeyStoreCollection
                             snapshotFilePath:self.identityKeySnapshotFilePath];

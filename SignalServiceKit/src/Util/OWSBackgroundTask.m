@@ -126,7 +126,7 @@ typedef NSNumber *OWSTaskId;
 // In that case expirationBlock will not be called.
 - (nullable OWSTaskId)addTaskWithExpirationBlock:(BackgroundTaskExpirationBlock)expirationBlock
 {
-    OWSAssert(expirationBlock);
+    OWSAssertDebug(expirationBlock);
 
     OWSTaskId _Nullable taskId;
 
@@ -150,11 +150,11 @@ typedef NSNumber *OWSTaskId;
 
 - (void)removeTask:(OWSTaskId)taskId
 {
-    OWSAssert(taskId);
+    OWSAssertDebug(taskId);
 
     @synchronized(self)
     {
-        OWSAssert(self.expirationMap[taskId] != nil);
+        OWSAssertDebug(self.expirationMap[taskId] != nil);
 
         [self.expirationMap removeObjectForKey:taskId];
 
@@ -212,11 +212,11 @@ typedef NSNumber *OWSTaskId;
 // Returns NO if the background task cannot be begun.
 - (BOOL)startBackgroundTask
 {
-    OWSAssert(CurrentAppContext().isMainApp);
+    OWSAssertDebug(CurrentAppContext().isMainApp);
 
     @synchronized(self)
     {
-        OWSAssert(self.backgroundTaskId == UIBackgroundTaskInvalid);
+        OWSAssertDebug(self.backgroundTaskId == UIBackgroundTaskInvalid);
 
         self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
             // Supposedly [UIApplication beginBackgroundTaskWithExpirationHandler]'s handler
@@ -225,7 +225,7 @@ typedef NSNumber *OWSTaskId;
             //
             // See:
             // https://developer.apple.com/documentation/uikit/uiapplication/1623031-beginbackgroundtaskwithexpiratio)
-            OWSAssert([NSThread isMainThread]);
+            OWSAssertDebug([NSThread isMainThread]);
 
             [self backgroundTaskExpired];
         }];
@@ -304,7 +304,7 @@ typedef NSNumber *OWSTaskId;
 
 + (OWSBackgroundTask *)backgroundTaskWithLabelStr:(const char *)labelStr
 {
-    OWSAssert(labelStr);
+    OWSAssertDebug(labelStr);
 
     NSString *label = [NSString stringWithFormat:@"%s", labelStr];
     return [[OWSBackgroundTask alloc] initWithLabel:label completionBlock:nil];
@@ -314,7 +314,7 @@ typedef NSNumber *OWSTaskId;
                                   completionBlock:(BackgroundTaskCompletionBlock)completionBlock
 {
 
-    OWSAssert(labelStr);
+    OWSAssertDebug(labelStr);
 
     NSString *label = [NSString stringWithFormat:@"%s", labelStr];
     return [[OWSBackgroundTask alloc] initWithLabel:label completionBlock:completionBlock];
@@ -339,7 +339,7 @@ typedef NSNumber *OWSTaskId;
         return self;
     }
 
-    OWSAssert(label.length > 0);
+    OWSAssertDebug(label.length > 0);
 
     _label = label;
     self.completionBlock = completionBlock;

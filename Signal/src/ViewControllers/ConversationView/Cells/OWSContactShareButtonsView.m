@@ -49,30 +49,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)hasSendTextButton:(ContactShareViewModel *)contactShare contactsManager:(OWSContactsManager *)contactsManager
 {
-    OWSAssert(contactShare);
-    OWSAssert(contactsManager);
+    OWSAssertDebug(contactShare);
+    OWSAssertDebug(contactsManager);
 
     return [contactShare systemContactsWithSignalAccountPhoneNumbers:contactsManager].count > 0;
 }
 
 + (BOOL)hasInviteButton:(ContactShareViewModel *)contactShare contactsManager:(OWSContactsManager *)contactsManager
 {
-    OWSAssert(contactShare);
-    OWSAssert(contactsManager);
+    OWSAssertDebug(contactShare);
+    OWSAssertDebug(contactsManager);
 
     return [contactShare systemContactPhoneNumbers:contactsManager].count > 0;
 }
 
 + (BOOL)hasAddToContactsButton:(ContactShareViewModel *)contactShare
 {
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     return [contactShare e164PhoneNumbers].count > 0;
 }
 
 + (BOOL)hasAnyButton:(ContactShareViewModel *)contactShare
 {
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     OWSContactsManager *contactsManager = [Environment current].contactsManager;
 
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)hasAnyButton:(ContactShareViewModel *)contactShare contactsManager:(OWSContactsManager *)contactsManager
 {
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     return ([self hasSendTextButton:contactShare contactsManager:contactsManager] ||
         [self hasInviteButton:contactShare contactsManager:contactsManager] ||
@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents
 {
-    OWSAssert([OWSContactShareButtonsView hasAnyButton:self.contactShare contactsManager:self.contactsManager]);
+    OWSAssertDebug([OWSContactShareButtonsView hasAnyButton:self.contactShare contactsManager:self.contactsManager]);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.backgroundColor = Theme.conversationButtonBackgroundColor;

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream
 {
-    OWSAssert(stream);
+    OWSAssertDebug(stream);
 
     [self showShareUIForURL:stream.mediaURL];
 }
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showShareUIForURL:(NSURL *)url completion:(nullable AttachmentSharingCompletion)completion
 {
-    OWSAssert(url);
+    OWSAssertDebug(url);
 
     [AttachmentSharing showShareUIForActivityItems:@[
         url,
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showShareUIForText:(NSString *)text completion:(nullable AttachmentSharingCompletion)completion
 {
-    OWSAssert(text);
+    OWSAssertDebug(text);
 
     [AttachmentSharing showShareUIForActivityItems:@[
         text,
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 #ifdef DEBUG
 + (void)showShareUIForUIImage:(UIImage *)image
 {
-    OWSAssert(image);
+    OWSAssertDebug(image);
 
     [AttachmentSharing showShareUIForActivityItems:@[
         image,
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)showShareUIForActivityItems:(NSArray *)activityItems completion:(nullable AttachmentSharingCompletion)completion
 {
-    OWSAssert(activityItems);
+    OWSAssertDebug(activityItems);
 
     DispatchMainThreadSafe(^{
         UIActivityViewController *activityViewController =
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
         while (fromViewController.presentedViewController) {
             fromViewController = fromViewController.presentedViewController;
         }
-        OWSAssert(fromViewController);
+        OWSAssertDebug(fromViewController);
         [fromViewController presentViewController:activityViewController animated:YES completion:nil];
     });
 }

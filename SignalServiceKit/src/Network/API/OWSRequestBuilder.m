@@ -27,7 +27,7 @@ const NSUInteger kEncodedNameLength = 72;
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, urlEncodedName];
     } else {
         // if name length doesn't match exactly, assume blank name
-        OWSAssert(encryptedPaddedName == nil);
+        OWSAssertDebug(encryptedPaddedName == nil);
         urlString = [NSString stringWithFormat:textSecureSetProfileNameAPIFormat, @""];
     }
     

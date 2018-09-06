@@ -27,8 +27,8 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 - (instancetype)initWithPhoneNumber:(NBPhoneNumber *)phoneNumber e164:(NSString *)e164
 {
     if (self = [self init]) {
-        OWSAssert(phoneNumber);
-        OWSAssert(e164.length > 0);
+        OWSAssertDebug(phoneNumber);
+        OWSAssertDebug(e164.length > 0);
 
         _phoneNumber = phoneNumber;
         _e164 = e164;
@@ -37,8 +37,8 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (PhoneNumber *)phoneNumberFromText:(NSString *)text andRegion:(NSString *)regionCode {
-    OWSAssert(text != nil);
-    OWSAssert(regionCode != nil);
+    OWSAssertDebug(text != nil);
+    OWSAssertDebug(regionCode != nil);
 
     PhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedThreadLocal];
 
@@ -60,7 +60,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text {
-    OWSAssert(text != nil);
+    OWSAssertDebug(text != nil);
 
     return [PhoneNumber phoneNumberFromText:text andRegion:[self defaultCountryCode]];
 }
@@ -87,11 +87,11 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (PhoneNumber *)phoneNumberFromE164:(NSString *)text {
-    OWSAssert(text != nil);
-    OWSAssert([text hasPrefix:COUNTRY_CODE_PREFIX]);
+    OWSAssertDebug(text != nil);
+    OWSAssertDebug([text hasPrefix:COUNTRY_CODE_PREFIX]);
     PhoneNumber *number = [PhoneNumber phoneNumberFromText:text andRegion:@"ZZ"];
 
-    OWSAssert(number != nil);
+    OWSAssertDebug(number != nil);
     return number;
 }
 
@@ -132,7 +132,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 + (NSString *)bestEffortLocalizedPhoneNumberWithE164:(NSString *)phoneNumber
 {
-    OWSAssert(phoneNumber);
+    OWSAssertDebug(phoneNumber);
 
     if (![phoneNumber hasPrefix:COUNTRY_CODE_PREFIX]) {
         return phoneNumber;
@@ -171,7 +171,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text {
-    OWSAssert(text != nil);
+    OWSAssertDebug(text != nil);
 
     if ([text isEqualToString:@""]) {
         return nil;
@@ -218,7 +218,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         }
         cachedClientPhoneNumber = [clientPhoneNumber copy];
     });
-    OWSAssert([cachedClientPhoneNumber isEqualToString:clientPhoneNumber]);
+    OWSAssertDebug([cachedClientPhoneNumber isEqualToString:clientPhoneNumber]);
     return result;
 }
 
@@ -268,7 +268,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 + (NSArray<PhoneNumber *> *)tryParsePhoneNumbersFromNormalizedText:(NSString *)text
                                                  clientPhoneNumber:(NSString *)clientPhoneNumber
 {
-    OWSAssert(text != nil);
+    OWSAssertDebug(text != nil);
 
     text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([text isEqualToString:@""]) {
@@ -276,7 +276,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     }
     
     NSString *sanitizedString = [self removeFormattingCharacters:text];
-    OWSAssert(sanitizedString != nil);
+    OWSAssertDebug(sanitizedString != nil);
 
     NSMutableArray *result = [NSMutableArray new];
     NSMutableSet *phoneNumberSet = [NSMutableSet new];
@@ -303,7 +303,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     // Order matters; better results should appear first so prefer
     // matches with the same country code as this client's phone number.
-    OWSAssert(clientPhoneNumber.length > 0);
+    OWSAssertDebug(clientPhoneNumber.length > 0);
     if (clientPhoneNumber.length > 0) {
         // Note that NBPhoneNumber uses "country code" to refer to what we call a
         // "calling code" (i.e. 44 in +44123123).  Within SSK we use "country code"
@@ -351,7 +351,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text {
-    OWSAssert(text != nil);
+    OWSAssertDebug(text != nil);
     if (![text hasPrefix:COUNTRY_CODE_PREFIX]) {
         return nil;
     }

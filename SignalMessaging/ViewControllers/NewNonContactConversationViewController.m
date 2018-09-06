@@ -48,21 +48,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)phoneNumberWasSelected:(NSString *)phoneNumber
 {
-    OWSAssert(phoneNumber.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
 
     [self selectRecipient:phoneNumber];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
+    OWSAssertDebug(signalAccount);
 
     [self selectRecipient:signalAccount.recipientId];
 }
 
 - (void)selectRecipient:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self.nonContactConversationDelegate recipientIdWasSelected:recipientId];
 }

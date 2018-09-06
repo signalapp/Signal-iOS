@@ -102,7 +102,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
         if (!self.recipientStateMap) {
             [self migrateRecipientStateMapWithCoder:coder];
-            OWSAssert(self.recipientStateMap);
+            OWSAssertDebug(self.recipientStateMap);
         }
     }
 
@@ -111,8 +111,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)migrateRecipientStateMapWithCoder:(NSCoder *)coder
 {
-    OWSAssert(!self.recipientStateMap);
-    OWSAssert(coder);
+    OWSAssertDebug(!self.recipientStateMap);
+    OWSAssertDebug(coder);
 
     // Determine the "overall message state."
     TSOutgoingMessageState oldMessageState = TSOutgoingMessageStateFailed;
@@ -200,7 +200,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             recipientState.state = OWSOutgoingMessageRecipientStateSent;
             recipientState.deliveryTimestamp = deliveryTimestamp;
         } else if (wasDeliveredToContact) {
-            OWSAssert(!isGroupThread);
+            OWSAssertDebug(!isGroupThread);
             recipientState.state = OWSOutgoingMessageRecipientStateSent;
             // Use message time as an estimate of delivery time.
             recipientState.deliveryTimestamp = @(self.timestamp);
@@ -322,7 +322,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             _groupMetaMessage = groupMetaMessage;
         }
     } else {
-        OWSAssert(groupMetaMessage == TSGroupMetaMessageUnspecified);
+        OWSAssertDebug(groupMetaMessage == TSGroupMetaMessageUnspecified);
         // Specifying a group meta message only makes sense for Group threads
         _groupMetaMessage = TSGroupMetaMessageUnspecified;
     }
@@ -337,7 +337,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     NSArray<NSString *> *recipientIds;
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         NSString *_Nullable localNumber = [TSAccountManager localNumber];
-        OWSAssert(localNumber);
+        OWSAssertDebug(localNumber);
         recipientIds = @[
             localNumber,
         ];
@@ -411,7 +411,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 + (TSOutgoingMessageState)messageStateForRecipientStates:(NSArray<TSOutgoingMessageRecipientState *> *)recipientStates
 {
-    OWSAssert(recipientStates);
+    OWSAssertDebug(recipientStates);
 
     // If there are any "sending" recipients, consider this message "sending".
     BOOL hasFailed = NO;
@@ -550,10 +550,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (nullable TSOutgoingMessageRecipientState *)recipientStateForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     TSOutgoingMessageRecipientState *_Nullable result = self.recipientStateMap[recipientId];
-    OWSAssert(result);
+    OWSAssertDebug(result);
     return [result copy];
 }
 
@@ -561,7 +561,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithSendingError:(NSError *)error
 {
-    OWSAssert(error);
+    OWSAssertDebug(error);
 
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
@@ -580,7 +580,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -596,7 +596,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -621,8 +621,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(customMessage);
-    OWSAssert(transaction);
+    OWSAssertDebug(customMessage);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -639,8 +639,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithSentRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -656,8 +656,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -675,8 +675,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     // If delivery notification doesn't include timestamp, use "now" as an estimate.
     if (!deliveryTimestamp) {
@@ -703,8 +703,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                     readTimestamp:(uint64_t)readTimestamp
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -724,7 +724,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -742,8 +742,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(singleGroupRecipient.length > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(singleGroupRecipient.length > 0);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -773,7 +773,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -801,7 +801,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
     TSThread *thread = self.thread;
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
     
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
@@ -959,7 +959,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
-    OWSAssert(self.thread);
+    OWSAssertDebug(self.thread);
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (!builder) {
         OWSFailDebug(@"could not build protobuf.");

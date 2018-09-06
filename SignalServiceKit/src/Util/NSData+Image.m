@@ -85,7 +85,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)ows_hasValidImageDimensionWithImageSource:(CGImageSourceRef)imageSource
 {
-    OWSAssert(imageSource);
+    OWSAssertDebug(imageSource);
 
     NSDictionary *imageProperties
         = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, NULL);
@@ -263,7 +263,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)ows_isValidVideoAtURL:(NSURL *)url
 {
-    OWSAssert(url);
+    OWSAssertDebug(url);
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:nil];
 
     CGSize maxSize = CGSizeZero;

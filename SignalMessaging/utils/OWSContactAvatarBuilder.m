@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
     UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
-    OWSAssert(color);
+    OWSAssertDebug(color);
     return [self initWithContactId:colorSeed
                               name:nonSignalName
                              color:color

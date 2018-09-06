@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     // or when deleting them.
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-    OWSAssert(interactionsByThread);
+    OWSAssertDebug(interactionsByThread);
     __block BOOL didDetectCorruption = NO;
     [interactionsByThread enumerateKeysInGroup:self.uniqueId
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
@@ -261,12 +261,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Just to be defensive, we'll also check for unread messages.
-    OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
+    OWSAssertDebug([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     __block NSUInteger missedCount = 0;
     __block TSInteraction *last = nil;
@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
      usingBlock:^(
                   NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
          
-         OWSAssert([object isKindOfClass:[TSInteraction class]]);
+         OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
 
          missedCount++;
          TSInteraction *interaction = (TSInteraction *)object;
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES IFF the interaction should show up in the inbox as the last message.
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
 {
-    OWSAssert(interaction);
+    OWSAssertDebug(interaction);
 
     if (interaction.isDynamicInteraction) {
         return NO;
@@ -343,8 +343,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssert(lastMessage);
-    OWSAssert(transaction);
+    OWSAssertDebug(lastMessage);
+    OWSAssertDebug(transaction);
 
     if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
         return;

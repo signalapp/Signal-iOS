@@ -27,7 +27,7 @@ static id<AppContext> currentAppContext = nil;
 
 id<AppContext> CurrentAppContext(void)
 {
-    OWSCAssert(currentAppContext);
+    OWSCAssertDebug(currentAppContext);
 
     return currentAppContext;
 }
@@ -38,7 +38,7 @@ void SetCurrentAppContext(id<AppContext> appContext)
     //
     // App extensions may be opened multiple times in the same process,
     // so statics will persist.
-    OWSCAssert(!currentAppContext || !currentAppContext.isMainApp);
+    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp);
 
     currentAppContext = appContext;
 }

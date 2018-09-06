@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithOutputStream:(NSOutputStream *)outputStream
 {
     if (self = [super init]) {
-        OWSAssert(outputStream);
+        OWSAssertDebug(outputStream);
         _outputStream = outputStream;
     }
 
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)writeData:(NSData *)data
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     if (data.length < 1) {
         return YES;

@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 // if a view has unsaved changes.
 - (BOOL)navigationBar:(UINavigationBar *)navigationBar shouldPopItem:(UINavigationItem *)item
 {
-    OWSAssert(self.interactivePopGestureRecognizer.delegate == self);
+    OWSAssertDebug(self.interactivePopGestureRecognizer.delegate == self);
     UIViewController *topViewController = self.topViewController;
 
     // wasBackButtonClicked is YES if the back button was pressed but not
@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 // if a view has unsaved changes.
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    OWSAssert(gestureRecognizer == self.interactivePopGestureRecognizer);
+    OWSAssertDebug(gestureRecognizer == self.interactivePopGestureRecognizer);
 
     UIViewController *topViewController = self.topViewController;
     if ([topViewController conformsToProtocol:@protocol(OWSNavigationView)]) {

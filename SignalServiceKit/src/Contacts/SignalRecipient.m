@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
                                              transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(recipientId.length > 0);
     
     SignalRecipient *_Nullable recipient = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
     if (!recipient) {
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssert([TSAccountManager localNumber].length > 0);
+    OWSAssertDebug([TSAccountManager localNumber].length > 0);
     if ([[TSAccountManager localNumber] isEqualToString:textSecureIdentifier]) {
         // Default to no devices.
         //
@@ -80,15 +80,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(recipientId.length > 0);
 
     return [self fetchObjectWithUniqueID:recipientId transaction:transaction];
 }
 
 + (nullable instancetype)recipientForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     __block SignalRecipient *recipient;
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addDevices:(NSSet *)devices
 {
-    OWSAssert(devices.count > 0);
+    OWSAssertDebug(devices.count > 0);
     
     if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [devices containsObject:@(1)]) {
         OWSFailDebug(@"adding self as recipient device");
@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeDevices:(NSSet *)devices
 {
-    OWSAssert(devices.count > 0);
+    OWSAssertDebug(devices.count > 0);
 
     NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
     [updatedDevices minusSet:devices];
@@ -132,8 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(devices.count > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(devices.count > 0);
     
     [self addDevices:devices];
 
@@ -151,8 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(devices.count > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(devices.count > 0);
 
     [self removeDevices:devices];
 
@@ -210,8 +210,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
                                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(recipientId.length > 0);
 
     SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
 
@@ -228,8 +228,8 @@ NS_ASSUME_NONNULL_BEGIN
                          deviceId:(UInt32)deviceId
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(recipientId.length > 0);
 
     SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
     if (![recipient.devices containsObject:@(deviceId)]) {
@@ -242,8 +242,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)removeUnregisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(recipientId.length > 0);
 
     SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
     if (!instance) {

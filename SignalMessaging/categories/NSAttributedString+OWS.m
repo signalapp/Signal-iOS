@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)rtlSafeAppend:(NSString *)text attributes:(NSDictionary *)attributes
 {
-    OWSAssert(text);
-    OWSAssert(attributes);
+    OWSAssertDebug(text);
+    OWSAssertDebug(attributes);
 
     NSAttributedString *substring = [[NSAttributedString alloc] initWithString:text attributes:attributes];
     return [self rtlSafeAppend:substring];
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)rtlSafeAppend:(NSAttributedString *)string
 {
-    OWSAssert(string);
+    OWSAssertDebug(string);
 
     NSMutableAttributedString *result = [NSMutableAttributedString new];
     if (CurrentAppContext().isRTL) {

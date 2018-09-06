@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
         CGSize layoutSize = CGSizeCeil([layoutItem cellSize]);
 
         // Ensure cell fits within view.
-        OWSAssert(layoutSize.width <= viewWidth);
+        OWSAssertDebug(layoutSize.width <= viewWidth);
         layoutSize.width = MIN(viewWidth, layoutSize.width);
 
         // All cells are "full width" and are responsible for aligning their own content.

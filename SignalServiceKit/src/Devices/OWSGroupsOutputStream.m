@@ -15,11 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)writeGroup:(TSGroupThread *)groupThread transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(groupThread);
-    OWSAssert(transaction);
+    OWSAssertDebug(groupThread);
+    OWSAssertDebug(transaction);
 
     TSGroupModel *group = groupThread.groupModel;
-    OWSAssert(group);
+    OWSAssertDebug(group);
 
     SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetailsBuilder new];
     [groupBuilder setId:group.groupId];

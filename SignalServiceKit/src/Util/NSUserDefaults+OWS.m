@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary<NSString *, id> *dictionary = [NSUserDefaults standardUserDefaults].dictionaryRepresentation;
     for (NSString *key in dictionary) {
         id value = dictionary[key];
-        OWSAssert(value);
+        OWSAssertDebug(value);
         [appUserDefaults setObject:value forKey:key];
     }
 }
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeAll
 {
-    OWSAssert(CurrentAppContext().isMainApp);
+    OWSAssertDebug(CurrentAppContext().isMainApp);
 
     NSDictionary<NSString *, id> *dictionary = self.dictionaryRepresentation;
     for (NSString *key in dictionary) {

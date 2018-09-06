@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)runNowOrWhenAppIsReady:(AppReadyBlock)block
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(block);
+    OWSAssertDebug(block);
 
     if (self.isAppReady) {
         block();
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setAppIsReady
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(!self.isAppReady);
+    OWSAssertDebug(!self.isAppReady);
 
     OWSLogInfo(@"");
 
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)runAppReadyBlocks
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(self.isAppReady);
+    OWSAssertDebug(self.isAppReady);
 
     NSArray<AppReadyBlock> *appReadyBlocks = [self.appReadyBlocks copy];
     [self.appReadyBlocks removeAllObjects];

@@ -227,7 +227,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 NewGroupViewController *strongSelf = weakSelf;
-                                OWSCAssert(strongSelf);
+                                OWSCAssertDebug(strongSelf);
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
                                 BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
@@ -313,7 +313,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 NewGroupViewController *strongSelf = weakSelf;
-                                OWSCAssert(strongSelf);
+                                OWSCAssertDebug(strongSelf);
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
 
@@ -404,7 +404,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)removeRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self.memberRecipientIds removeObject:recipientId];
     [self updateTableContents];
@@ -412,7 +412,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)addRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self.memberRecipientIds addObject:recipientId];
     self.hasUnsavedChanges = YES;
@@ -444,7 +444,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
         }];
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
     
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
@@ -606,7 +606,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 - (void)avatarDidChange:(UIImage *)image
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(image);
+    OWSAssertDebug(image);
 
     self.groupAvatar = image;
 }
@@ -630,7 +630,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (BOOL)isRecipientGroupMember:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     return [self.memberRecipientIds containsObject:recipientId];
 }

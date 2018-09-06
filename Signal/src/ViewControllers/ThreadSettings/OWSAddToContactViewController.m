@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     _recipientId = recipientId;
 }
@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)displayNameForContact:(Contact *)contact
 {
-    OWSAssert(contact);
+    OWSAssertDebug(contact);
 
     if (contact.fullName.length > 0) {
         return contact.fullName;
@@ -186,8 +186,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentContactViewControllerForContact:(Contact *)contact
 {
-    OWSAssert(contact);
-    OWSAssert(self.recipientId);
+    OWSAssertDebug(contact);
+    OWSAssertDebug(self.recipientId);
 
     if (!self.contactsManager.supportsContactEditing) {
         OWSFailDebug(@"Contact editing not supported");

@@ -17,7 +17,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 
 - (NSString *)descriptionForEnvelopeType:(SSKProtoEnvelope *)envelope
 {
-    OWSAssert(envelope != nil);
+    OWSAssertDebug(envelope != nil);
 
     switch (envelope.type) {
         case SSKProtoEnvelopeTypeReceipt:
@@ -43,7 +43,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 
 - (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope
 {
-    OWSAssert(envelope != nil);
+    OWSAssertDebug(envelope != nil);
 
     return [NSString stringWithFormat:@"<Envelope type: %@, source: %@, timestamp: %llu content.length: %lu />",
                      [self descriptionForEnvelopeType:envelope],

@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ensurePlaceholderConstraints
 {
-    OWSAssert(self.placeholderView);
+    OWSAssertDebug(self.placeholderView);
 
     if (self.placeholderConstraints) {
         [NSLayoutConstraint deactivateConstraints:self.placeholderConstraints];
@@ -176,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    OWSAssert(self.textViewToolbarDelegate);
+    OWSAssertDebug(self.textViewToolbarDelegate);
 
     [self updatePlaceholderVisibility];
 

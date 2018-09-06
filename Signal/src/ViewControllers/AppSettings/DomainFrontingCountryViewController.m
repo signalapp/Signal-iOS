@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)selectCountry:(OWSCountryMetadata *)countryMetadata
 {
-    OWSAssert(countryMetadata);
+    OWSAssertDebug(countryMetadata);
 
     OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode;
 

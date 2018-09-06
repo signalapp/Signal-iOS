@@ -54,7 +54,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (nullable id)tryGetValueForKey:(NSString *)key
 {
-    OWSAssert(key != nil);
+    OWSAssertDebug(key != nil);
 
     __block id result;
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -65,7 +65,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (nullable id)tryGetValueForKey:(NSString *)key transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(key != nil);
+    OWSAssertDebug(key != nil);
     return [transaction objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
 }
 
@@ -80,7 +80,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
                toValue:(nullable id)value
            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(key != nil);
+    OWSAssertDebug(key != nil);
 
     [transaction setObject:value forKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
 }
@@ -100,7 +100,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 + (void)setIsReadyForAppExtensions
 {
-    OWSAssert(CurrentAppContext().isMainApp);
+    OWSAssertDebug(CurrentAppContext().isMainApp);
 
     [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
     [NSUserDefaults.appUserDefaults synchronize];
@@ -140,7 +140,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 + (void)setIsLoggingEnabled:(BOOL)flag
 {
-    OWSAssert(CurrentAppContext().isMainApp);
+    OWSAssertDebug(CurrentAppContext().isMainApp);
 
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the

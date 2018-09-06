@@ -20,7 +20,7 @@ static NSString *const OWS105AttachmentFilePathsMigrationId = @"105";
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
     [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection

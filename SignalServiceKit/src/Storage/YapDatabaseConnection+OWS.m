@@ -14,16 +14,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     return nil != [self objectForKey:key inCollection:collection];
 }
 
 - (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     __block NSString *_Nullable object;
 
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)objectForKey:(NSString *)key inCollection:(NSString *)collection ofExpectedType:(Class)class
 {
     id _Nullable value = [self objectForKey:key inCollection:collection];
-    OWSAssert(!value || [value isKindOfClass:class]);
+    OWSAssertDebug(!value || [value isKindOfClass:class]);
     return value;
 }
 
@@ -124,8 +124,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setObject:(id)object forKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:object forKey:key inCollection:collection];
@@ -134,24 +134,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setBool:(BOOL)value forKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     [self setObject:@(value) forKey:key inCollection:collection];
 }
 
 - (void)setDouble:(double)value forKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     [self setObject:@(value) forKey:key inCollection:collection];
 }
 
 - (void)removeObjectForKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeObjectForKey:key inCollection:collection];
@@ -160,8 +160,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setInt:(int)value forKey:(NSString *)key inCollection:(NSString *)collection
 {
-    OWSAssert(key.length > 0);
-    OWSAssert(collection.length > 0);
+    OWSAssertDebug(key.length > 0);
+    OWSAssertDebug(collection.length > 0);
 
     [self setObject:@(value) forKey:key inCollection:collection];
 }

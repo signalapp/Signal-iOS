@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
                        manualMessageFetching:(BOOL)isEnabled
                                          pin:(nullable NSString *)pin
 {
-    OWSAssert(signalingKey.length > 0);
-    OWSAssert(authToken.length > 0);
+    OWSAssertDebug(signalingKey.length > 0);
+    OWSAssertDebug(authToken.length > 0);
 
     NSMutableDictionary *result = [@{
         @"signalingKey" : signalingKey,

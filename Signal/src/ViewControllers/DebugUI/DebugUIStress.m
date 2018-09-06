@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
     
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
@@ -453,8 +453,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)ensureGroupOfDataBuilder:(SSKProtoDataMessageBuilder *)dataBuilder thread:(TSThread *)thread
 {
-    OWSAssert(dataBuilder);
-    OWSAssert(thread);
+    OWSAssertDebug(dataBuilder);
+    OWSAssertDebug(thread);
 
     if (![thread isKindOfClass:[TSGroupThread class]]) {
         return;
@@ -469,7 +469,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendStressMessage:(TSOutgoingMessage *)message
 {
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
     [messageSender enqueueMessage:message
@@ -484,8 +484,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendStressMessage:(TSThread *)thread
                     block:(DynamicOutgoingMessageBlock)block
 {
-    OWSAssert(thread);
-    OWSAssert(block);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(block);
 
     OWSDynamicOutgoingMessage *message =
         [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block thread:thread];
@@ -495,8 +495,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendStressMessage:(TSThread *)thread timestamp:(uint64_t)timestamp block:(DynamicOutgoingMessageBlock)block
 {
-    OWSAssert(thread);
-    OWSAssert(block);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(block);
 
     OWSDynamicOutgoingMessage *message =
         [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block timestamp:timestamp thread:thread];
@@ -518,7 +518,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             groupId:[Randomness generateRandomBytes:16]];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }

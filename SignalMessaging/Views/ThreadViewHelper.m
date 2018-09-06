@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<TSThread *> *threads = [NSMutableArray new];
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSUInteger numberOfSections = [self.threadMappings numberOfSections];
-        OWSAssert(numberOfSections == 1);
+        OWSAssertDebug(numberOfSections == 1);
         for (NSUInteger section = 0; section < numberOfSections; section++) {
             NSUInteger numberOfItems = [self.threadMappings numberOfItemsInSection:section];
             for (NSUInteger item = 0; item < numberOfItems; item++) {

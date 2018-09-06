@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssert(senderId.length > 0 && messageIdTimestamp > 0);
+    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
 
     NSString *receiptId =
         [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     // renamed timestamp -> messageIdTimestamp
     if (!_messageIdTimestamp) {
         NSNumber *_Nullable legacyTimestamp = (NSNumber *)[coder decodeObjectForKey:@"timestamp"];
-        OWSAssert(legacyTimestamp.unsignedLongLongValue > 0);
+        OWSAssertDebug(legacyTimestamp.unsignedLongLongValue > 0);
         _messageIdTimestamp = legacyTimestamp.unsignedLongLongValue;
     }
 
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)uniqueIdForSenderId:(NSString *)senderId messageIdTimestamp:(uint64_t)messageIdTimestamp
 {
-    OWSAssert(senderId.length > 0 && messageIdTimestamp > 0);
+    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
 
     return [NSString stringWithFormat:@"%@-%llu", senderId, messageIdTimestamp];
 }
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:
                                                                          (YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
     NSString *receiptId =
         [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
     return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:receiptId transaction:transaction];

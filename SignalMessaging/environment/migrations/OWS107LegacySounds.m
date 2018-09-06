@@ -20,7 +20,7 @@ static NSString *const OWS107LegacySoundsMigrationId = @"107";
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [OWSSounds setGlobalNotificationSound:OWSSound_SignalClassic transaction:transaction];
 }

@@ -235,7 +235,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
 {
-    OWSCAssert(pastTimestamp > 0);
+    OWSCAssertDebug(pastTimestamp > 0);
 
     uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
     BOOL isFutureTimestamp = pastTimestamp >= nowTimestamp;
@@ -260,7 +260,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 + (NSString *)formatDateShort:(NSDate *)date
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(date);
+    OWSAssertDebug(date);
 
     NSDate *now = [NSDate date];
     NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
@@ -283,7 +283,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)formatDateForConversationDateBreaks:(NSDate *)date
 {
-    OWSAssert(date);
+    OWSAssertDebug(date);
 
     if (![self dateIsThisYear:date]) {
         // last year formatter: Nov 11, 2017
@@ -307,7 +307,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)formatDateAsTime:(NSDate *)date
 {
-    OWSAssert(date);
+    OWSAssertDebug(date);
 
     NSString *dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     return dateTimeString.localizedUppercaseString;

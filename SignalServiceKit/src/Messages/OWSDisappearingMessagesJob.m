@@ -136,7 +136,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
 
-    OWSAssert(backgroundTask);
+    OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
     return expirationCount;
 }
@@ -171,7 +171,7 @@ void AssertIsOnDisappearingMessagesQueue()
                  expirationStartedAt:(uint64_t)expirationStartedAt
                          transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     if (!message.isExpiringMessage) {
         return;
@@ -219,9 +219,9 @@ void AssertIsOnDisappearingMessagesQueue()
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(thread);
-    OWSAssert(timestampForSorting > 0);
-    OWSAssert(transaction);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(timestampForSorting > 0);
+    OWSAssertDebug(transaction);
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
@@ -255,7 +255,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                                           createdInExistingGroup:createdInExistingGroup];
     [infoMessage saveWithTransaction:transaction];
 
-    OWSAssert(backgroundTask);
+    OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
 }
 
@@ -295,7 +295,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)scheduleRunByDate:(NSDate *)date
 {
-    OWSAssert(date);
+    OWSAssertDebug(date);
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!CurrentAppContext().isMainAppAndActive) {

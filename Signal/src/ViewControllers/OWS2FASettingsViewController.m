@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case OWS2FASettingsMode_SelectPIN:
         case OWS2FASettingsMode_ConfirmPIN:
-            OWSAssert(![OWS2FAManager.sharedManager is2FAEnabled]);
+            OWSAssertDebug(![OWS2FAManager.sharedManager is2FAEnabled]);
             break;
     }
 
@@ -301,18 +301,18 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"status mode should not have a next button.");
             return;
         case OWS2FASettingsMode_SelectPIN: {
-            OWSAssert(self.hasValidPin);
+            OWSAssertDebug(self.hasValidPin);
 
             OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
             vc.mode = OWS2FASettingsMode_ConfirmPIN;
             vc.candidatePin = self.pinTextfield.text;
-            OWSAssert(self.root2FAViewController);
+            OWSAssertDebug(self.root2FAViewController);
             vc.root2FAViewController = self.root2FAViewController;
             [self.navigationController pushViewController:vc animated:YES];
             break;
         }
         case OWS2FASettingsMode_ConfirmPIN: {
-            OWSAssert(self.hasValidPin);
+            OWSAssertDebug(self.hasValidPin);
 
             if ([self.pinTextfield.text isEqualToString:self.candidatePin]) {
                 [self tryToEnable2FA];
@@ -336,7 +336,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showEnable2FAWorkUI
 {
-    OWSAssert(![OWS2FAManager.sharedManager is2FAEnabled]);
+    OWSAssertDebug(![OWS2FAManager.sharedManager is2FAEnabled]);
 
     OWSLogInfo(@"");
 
@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tryToEnable2FA
 {
-    OWSAssert(self.candidatePin.length > 0);
+    OWSAssertDebug(self.candidatePin.length > 0);
 
     OWSLogInfo(@"");
 
@@ -414,8 +414,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showCompleteUI
 {
-    OWSAssert([OWS2FAManager.sharedManager is2FAEnabled]);
-    OWSAssert(self.root2FAViewController);
+    OWSAssertDebug([OWS2FAManager.sharedManager is2FAEnabled]);
+    OWSAssertDebug(self.root2FAViewController);
 
     OWSLogInfo(@"");
 

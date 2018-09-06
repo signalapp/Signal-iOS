@@ -34,11 +34,11 @@ static TextSecureKitEnv *sharedTextSecureKitEnv;
         return self;
     }
 
-    OWSAssert(callMessageHandler);
-    OWSAssert(contactsManager);
-    OWSAssert(messageSender);
-    OWSAssert(notificationsManager);
-    OWSAssert(profileManager);
+    OWSAssertDebug(callMessageHandler);
+    OWSAssertDebug(contactsManager);
+    OWSAssertDebug(messageSender);
+    OWSAssertDebug(notificationsManager);
+    OWSAssertDebug(profileManager);
 
     _callMessageHandler = callMessageHandler;
     _contactsManager = contactsManager;
@@ -51,15 +51,15 @@ static TextSecureKitEnv *sharedTextSecureKitEnv;
 
 + (instancetype)sharedEnv
 {
-    OWSAssert(sharedTextSecureKitEnv);
+    OWSAssertDebug(sharedTextSecureKitEnv);
 
     return sharedTextSecureKitEnv;
 }
 
 + (void)setSharedEnv:(TextSecureKitEnv *)env
 {
-    OWSAssert(env);
-    OWSAssert(!sharedTextSecureKitEnv || CurrentAppContext().isRunningTests);
+    OWSAssertDebug(env);
+    OWSAssertDebug(!sharedTextSecureKitEnv || CurrentAppContext().isRunningTests);
 
     sharedTextSecureKitEnv = env;
 }

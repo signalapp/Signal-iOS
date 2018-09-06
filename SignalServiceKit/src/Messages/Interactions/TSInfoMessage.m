@@ -97,8 +97,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId
 {
-    OWSAssert(thread);
-    OWSAssert(recipientId);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(recipientId);
 
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
@@ -168,7 +168,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
               sendReadReceipt:(BOOL)sendReadReceipt
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     if (_read) {
         return;

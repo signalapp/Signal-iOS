@@ -27,9 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
      conversationColorName:(NSString *)conversationColorName
 disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
-    OWSAssert(signalAccount);
-    OWSAssert(signalAccount.contact);
-    OWSAssert(contactsManager);
+    OWSAssertDebug(signalAccount);
+    OWSAssertDebug(signalAccount.contact);
+    OWSAssertDebug(contactsManager);
 
     SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
@@ -69,7 +69,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     }
 
     if (profileKeyData) {
-        OWSAssert(profileKeyData.length == kAES256_KeyByteLength);
+        OWSAssertDebug(profileKeyData.length == kAES256_KeyByteLength);
         [contactBuilder setProfileKey:profileKeyData];
     }
 

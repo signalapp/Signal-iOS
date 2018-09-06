@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     phoneNumberNameMap:(nullable NSDictionary<NSString *, NSString *> *)
                                                                            phoneNumberNameMap
 {
-    OWSAssert(self.phoneNumberNameMap);
+    OWSAssertDebug(self.phoneNumberNameMap);
 
     NSMutableDictionary<NSString *, PhoneNumber *> *parsedPhoneNumberMap = [NSMutableDictionary new];
     NSMutableArray<PhoneNumber *> *parsedPhoneNumbers = [NSMutableArray new];
@@ -255,11 +255,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)nameForPhoneNumber:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
-    OWSAssert([self.textSecureIdentifiers containsObject:recipientId]);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug([self.textSecureIdentifiers containsObject:recipientId]);
 
     NSString *value = self.phoneNumberNameMap[recipientId];
-    OWSAssert(value);
+    OWSAssertDebug(value);
     if (!value) {
         return NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
             @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
@@ -305,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     NSError *error;
     NSArray<CNContact *> *_Nullable contacts = [CNContactVCardSerialization contactsWithData:data error:&error];
@@ -325,8 +325,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CNContact *)mergeCNContact:(CNContact *)oldCNContact newCNContact:(CNContact *)newCNContact
 {
-    OWSAssert(oldCNContact);
-    OWSAssert(newCNContact);
+    OWSAssertDebug(oldCNContact);
+    OWSAssertDebug(newCNContact);
 
     Contact *oldContact = [[Contact alloc] initWithSystemContact:oldCNContact];
 

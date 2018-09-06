@@ -256,7 +256,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
                            withHMACKey:(NSData *)HMACKey
                             truncation:(NSUInteger)truncation
 {
-    OWSAssert(truncation <= CC_SHA1_DIGEST_LENGTH);
+    OWSAssertDebug(truncation <= CC_SHA1_DIGEST_LENGTH);
 
     return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
 }
@@ -265,7 +265,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
                              withHMACKey:(NSData *)HMACKey
                               truncation:(NSUInteger)truncation
 {
-    OWSAssert(truncation <= CC_SHA256_DIGEST_LENGTH);
+    OWSAssertDebug(truncation <= CC_SHA256_DIGEST_LENGTH);
 
     return
         [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
@@ -365,8 +365,8 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 + (nullable NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString
 {
-    OWSAssert(payload);
-    OWSAssert(signalingKeyString);
+    OWSAssertDebug(payload);
+    OWSAssertDebug(signalingKeyString);
 
     size_t versionLength = 1;
     size_t ivLength = 16;
@@ -673,10 +673,10 @@ const NSUInteger kAES256_KeyByteLength = 32;
                                                    authTag:(NSData *)authTagFromEncrypt
                                                        key:(OWSAES256Key *)key
 {
-    OWSAssert(initializationVector.length == kAESGCM256_IVLength);
-    OWSAssert(ciphertext.length > 0);
-    OWSAssert(authTagFromEncrypt.length == kAESGCM256_TagLength);
-    OWSAssert(key);
+    OWSAssertDebug(initializationVector.length == kAESGCM256_IVLength);
+    OWSAssertDebug(ciphertext.length > 0);
+    OWSAssertDebug(authTagFromEncrypt.length == kAESGCM256_TagLength);
+    OWSAssertDebug(key);
 
     NSMutableData *plaintext = [NSMutableData dataWithLength:ciphertext.length];
 
@@ -762,7 +762,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     int decryptStatus = EVP_DecryptFinal_ex(ctx, (unsigned char *)(plaintext.bytes + decryptedBytes), &finalBytes);
 
     // AESGCM doesn't write any final bytes
-    OWSAssert(finalBytes == 0);
+    OWSAssertDebug(finalBytes == 0);
 
     // Clean up
     EVP_CIPHER_CTX_free(ctx);
@@ -790,7 +790,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 + (nullable NSData *)decryptAESGCMWithProfileData:(NSData *)encryptedData key:(OWSAES256Key *)key
 {
-    OWSAssert(encryptedData.length > kAESGCM256_IVLength + kAESGCM256_TagLength);
+    OWSAssertDebug(encryptedData.length > kAESGCM256_IVLength + kAESGCM256_TagLength);
     NSUInteger cipherTextLength = encryptedData.length - kAESGCM256_IVLength - kAESGCM256_TagLength;
 
     // encryptedData layout: initializationVector || ciphertext || authTag

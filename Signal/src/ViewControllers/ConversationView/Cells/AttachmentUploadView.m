@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
 
     if (self) {
-        OWSAssert(attachment);
+        OWSAssertDebug(attachment);
 
         self.attachment = attachment;
         self.attachmentStateCallback = attachmentStateCallback;

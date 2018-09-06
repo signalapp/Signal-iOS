@@ -153,7 +153,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
     self.thread = thread;
     self.uiDatabaseConnection = uiDatabaseConnection;
 
@@ -170,7 +170,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)updateEditButton
 {
-    OWSAssert(self.thread);
+    OWSAssertDebug(self.thread);
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && self.hasExistingContact) {
@@ -184,7 +184,7 @@ const CGFloat kIconViewLength = 24;
 
 - (BOOL)hasExistingContact
 {
-    OWSAssert([self.thread isKindOfClass:[TSContactThread class]]);
+    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *recipientId = contactThread.contactIdentifier;
     return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
@@ -318,7 +318,7 @@ const CGFloat kIconViewLength = 24;
         }
                                  actionBlock:^{
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                     OWSCAssert(strongSelf);
+                                     OWSCAssertDebug(strongSelf);
                                      TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
                                      NSString *recipientId = contactThread.contactIdentifier;
                                      [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
@@ -371,7 +371,7 @@ const CGFloat kIconViewLength = 24;
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
                                  OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                 OWSCAssert(strongSelf);
+                                 OWSCAssertDebug(strongSelf);
                                  cell.preservesSuperviewLayoutMargins = YES;
                                  cell.contentView.preservesSuperviewLayoutMargins = YES;
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -425,7 +425,7 @@ const CGFloat kIconViewLength = 24;
                         itemWithCustomCellBlock:^{
                             UITableViewCell *cell = [OWSTableItem newCell];
                             OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssert(strongSelf);
+                            OWSCAssertDebug(strongSelf);
                             cell.preservesSuperviewLayoutMargins = YES;
                             cell.contentView.preservesSuperviewLayoutMargins = YES;
                             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -517,7 +517,7 @@ const CGFloat kIconViewLength = 24;
                             [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
                         [OWSTableItem configureCell:cell];
                         OWSConversationSettingsViewController *strongSelf = weakSelf;
-                        OWSCAssert(strongSelf);
+                        OWSCAssertDebug(strongSelf);
                         cell.preservesSuperviewLayoutMargins = YES;
                         cell.contentView.preservesSuperviewLayoutMargins = YES;
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -556,7 +556,7 @@ const CGFloat kIconViewLength = 24;
                             [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
                         [OWSTableItem configureCell:cell];
                         OWSConversationSettingsViewController *strongSelf = weakSelf;
-                        OWSCAssert(strongSelf);
+                        OWSCAssertDebug(strongSelf);
                         cell.preservesSuperviewLayoutMargins = YES;
                         cell.contentView.preservesSuperviewLayoutMargins = YES;
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -631,7 +631,7 @@ const CGFloat kIconViewLength = 24;
                                                      @"table cell label in conversation settings")
                                         iconName:@"table_ic_block"];
             OWSConversationSettingsViewController *strongSelf = weakSelf;
-            OWSCAssert(strongSelf);
+            OWSCAssertDebug(strongSelf);
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             UISwitch *blockUserSwitch = [UISwitch new];
@@ -656,7 +656,7 @@ const CGFloat kIconViewLength = 24;
 
 - (UITableViewCell *)disclosureCellWithName:(NSString *)name iconColor:(UIColor *)iconColor
 {
-    OWSAssert(name.length > 0);
+    OWSAssertDebug(name.length > 0);
 
     UIView *iconView = [UIView containerView];
     [iconView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
@@ -674,14 +674,14 @@ const CGFloat kIconViewLength = 24;
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
 {
-    OWSAssert(iconName.length > 0);
+    OWSAssertDebug(iconName.length > 0);
     UIImageView *iconView = [self viewForIconWithName:iconName];
     return [self cellWithName:name iconView:iconView];
 }
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconView:(UIView *)iconView
 {
-    OWSAssert(name.length > 0);
+    OWSAssertDebug(name.length > 0);
 
     UITableViewCell *cell = [OWSTableItem newCell];
     cell.preservesSuperviewLayoutMargins = YES;
@@ -727,7 +727,7 @@ const CGFloat kIconViewLength = 24;
     const NSUInteger kAvatarSize = 68;
     UIImage *avatarImage =
         [OWSAvatarBuilder buildImageForThread:self.thread diameter:kAvatarSize contactsManager:self.contactsManager];
-    OWSAssert(avatarImage);
+    OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
     _avatarView = avatarView;
@@ -833,7 +833,7 @@ const CGFloat kIconViewLength = 24;
 {
     UIImage *icon = [UIImage imageNamed:iconName];
 
-    OWSAssert(icon);
+    OWSAssertDebug(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     iconView.tintColor = [Theme secondaryColor];
@@ -901,7 +901,7 @@ const CGFloat kIconViewLength = 24;
 - (void)showVerificationView
 {
     NSString *recipientId = self.thread.contactIdentifier;
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [FingerprintViewController presentFromViewController:self recipientId:recipientId];
 }
@@ -915,7 +915,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showUpdateGroupView:(UpdateGroupMode)mode
 {
-    OWSAssert(self.conversationSettingsViewDelegate);
+    OWSAssertDebug(self.conversationSettingsViewDelegate);
 
     UpdateGroupViewController *updateGroupViewController = [UpdateGroupViewController new];
     updateGroupViewController.conversationSettingsViewDelegate = self.conversationSettingsViewDelegate;
@@ -1015,7 +1015,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)blockUserSwitchDidChange:(id)sender
 {
-    OWSAssert(!self.isGroupThread);
+    OWSAssertDebug(!self.isGroupThread);
 
     if (![sender isKindOfClass:[UISwitch class]]) {
         OWSFailDebug(@"Unexpected sender for block user switch: %@", sender);
@@ -1025,7 +1025,7 @@ const CGFloat kIconViewLength = 24;
     BOOL isCurrentlyBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
 
     if (blockUserSwitch.isOn) {
-        OWSAssert(!isCurrentlyBlocked);
+        OWSAssertDebug(!isCurrentlyBlocked);
         if (isCurrentlyBlocked) {
             return;
         }
@@ -1038,7 +1038,7 @@ const CGFloat kIconViewLength = 24;
                                               blockUserSwitch.on = isBlocked;
                                           }];
     } else {
-        OWSAssert(isCurrentlyBlocked);
+        OWSAssertDebug(isCurrentlyBlocked);
         if (!isCurrentlyBlocked) {
             return;
         }
@@ -1226,7 +1226,7 @@ const CGFloat kIconViewLength = 24;
     // reference to it until we're dismissed.
     self.mediaGalleryViewController = vc;
 
-    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+    OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
     [vc pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
 }
 #pragma mark - Notifications
@@ -1243,7 +1243,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssertIsOnMainThread();
 
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
         [self.thread.contactIdentifier isEqualToString:recipientId]) {
@@ -1276,7 +1276,7 @@ const CGFloat kIconViewLength = 24;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         ConversationConfigurationSyncOperation *operation =
             [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
-        OWSAssert(operation.isReady);
+        OWSAssertDebug(operation.isReady);
         [operation start];
     });
 

@@ -64,9 +64,9 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
         return self;
     }
 
-    OWSAssert(contactsManager);
-    OWSAssert(messageSender);
-    OWSAssert(identityManager);
+    OWSAssertDebug(contactsManager);
+    OWSAssertDebug(messageSender);
+    OWSAssertDebug(identityManager);
 
     _contactsManager = contactsManager;
     _identityManager = identityManager;

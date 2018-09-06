@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_assert_queue(queue);                                                                              \
         } else {                                                                                                       \
             _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wdeprecated-declarations\"")         \
-                OWSAssert(dispatch_get_current_queue() == queue);                                                      \
+                OWSAssertDebug(dispatch_get_current_queue() == queue);                                                      \
             _Pragma("clang diagnostic pop")                                                                            \
         }                                                                                                              \
     }

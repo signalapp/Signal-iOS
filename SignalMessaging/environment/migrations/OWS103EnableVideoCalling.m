@@ -20,7 +20,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
 // Override parent migration
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    OWSAssert(completion);
+    OWSAssertDebug(completion);
 
     OWSLogWarn(@"running migration...");
     if ([TSAccountManager isRegistered]) {

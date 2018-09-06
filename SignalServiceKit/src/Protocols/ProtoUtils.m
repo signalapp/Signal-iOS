@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
 
     id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
 
@@ -43,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
                           recipientId:(NSString *_Nullable)recipientId
                    dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    OWSAssert(thread);
-    OWSAssert(dataMessageBuilder);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(dataMessageBuilder);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
         [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    OWSAssert(dataMessageBuilder);
+    OWSAssertDebug(dataMessageBuilder);
 
     [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 }
@@ -72,9 +72,9 @@ NS_ASSUME_NONNULL_BEGIN
                           recipientId:(NSString *)recipientId
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
 {
-    OWSAssert(thread);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(callMessageBuilder);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(callMessageBuilder);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
         [callMessageBuilder setProfileKey:self.localProfileKey.keyData];

@@ -53,7 +53,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     // Do any additional setup after loading the view.
     [self populateDefaultCountryNameAndCode];
-    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+    OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
     [SignalApp.sharedApp setSignUpFlowNavigationController:(OWSNavigationController *)self.navigationController];
 }
 
@@ -302,7 +302,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (BOOL)tryToApplyPhoneNumberE164:(NSString *)phoneNumberE164
 {
-    OWSAssert(phoneNumberE164);
+    OWSAssertDebug(phoneNumberE164);
 
     if (phoneNumberE164.length < 1) {
         OWSFailDebug(@"Could not resume re-registration; invalid phoneNumberE164.");
@@ -368,9 +368,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                   countryCode:(NSString *)countryCode
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(countryName.length > 0);
-    OWSAssert(callingCode.length > 0);
-    OWSAssert(countryCode.length > 0);
+    OWSAssertDebug(countryName.length > 0);
+    OWSAssertDebug(callingCode.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
 
     _countryCode = countryCode;
     _callingCode = callingCode;
@@ -510,9 +510,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                       countryName:(NSString *)countryName
                       callingCode:(NSString *)callingCode
 {
-    OWSAssert(countryCode.length > 0);
-    OWSAssert(countryName.length > 0);
-    OWSAssert(callingCode.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
+    OWSAssertDebug(countryName.length > 0);
+    OWSAssertDebug(callingCode.length > 0);
 
     [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
 
@@ -562,8 +562,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (NSString *_Nullable)debugValueForKey:(NSString *)key
 {
-    OWSCAssert([NSThread isMainThread]);
-    OWSCAssert(key.length > 0);
+    OWSCAssertDebug([NSThread isMainThread]);
+    OWSCAssertDebug(key.length > 0);
 
     NSError *error;
     NSString *value = [SAMKeychain passwordForService:kKeychainService_LastRegistered account:key error:&error];
@@ -575,9 +575,9 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (void)setDebugValue:(NSString *)value forKey:(NSString *)key
 {
-    OWSCAssert([NSThread isMainThread]);
-    OWSCAssert(key.length > 0);
-    OWSCAssert(value.length > 0);
+    OWSCAssertDebug([NSThread isMainThread]);
+    OWSCAssertDebug(key.length > 0);
+    OWSCAssertDebug(value.length > 0);
 
     NSError *error;
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];

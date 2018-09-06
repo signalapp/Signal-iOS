@@ -73,7 +73,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (void)commontInit
 {
-    OWSAssert(!self.iconView);
+    OWSAssertDebug(!self.iconView);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
@@ -163,8 +163,8 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (void)loadForDisplay
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.viewItem);
 
     self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
@@ -288,7 +288,7 @@ typedef void (^SystemMessageActionBlock)(void);
                 break;
             }
             case TSInfoMessageVerificationStateChange:
-                OWSAssert([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
+                OWSAssertDebug([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
                 if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
                     OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
                     BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
@@ -305,16 +305,16 @@ typedef void (^SystemMessageActionBlock)(void);
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;
     }
-    OWSAssert(result);
+    OWSAssertDebug(result);
     return result;
 }
 
 - (void)applyTitleForInteraction:(TSInteraction *)interaction
                            label:(UILabel *)label
 {
-    OWSAssert(interaction);
-    OWSAssert(label);
-    OWSAssert(self.viewItem.systemMessageText.length > 0);
+    OWSAssertDebug(interaction);
+    OWSAssertDebug(label);
+    OWSAssertDebug(self.viewItem.systemMessageText.length > 0);
 
     [self configureFonts];
 
@@ -343,8 +343,8 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (CGSize)titleSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.viewItem);
 
     CGFloat maxTitleWidth = (CGFloat)floor(self.conversationStyle.fullWidthContentWidth);
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
@@ -352,8 +352,8 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (CGSize)cellSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.viewItem);
 
     TSInteraction *interaction = self.viewItem.interaction;
 
@@ -389,7 +389,7 @@ typedef void (^SystemMessageActionBlock)(void);
 - (nullable SystemMessageAction *)actionForInteraction:(TSInteraction *)interaction
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(interaction);
+    OWSAssertDebug(interaction);
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         return [self actionForErrorMessage:(TSErrorMessage *)interaction];
@@ -405,7 +405,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForErrorMessage:(TSErrorMessage *)message
 {
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     __weak OWSSystemMessageCell *weakSelf = self;
     switch (message.errorType) {
@@ -453,7 +453,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)message
 {
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     __weak OWSSystemMessageCell *weakSelf = self;
     switch (message.messageType) {
@@ -501,7 +501,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (nullable SystemMessageAction *)actionForCall:(TSCall *)call
 {
-    OWSAssert(call);
+    OWSAssertDebug(call);
 
     __weak OWSSystemMessageCell *weakSelf = self;
     switch (call.callType) {
@@ -531,14 +531,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)longPress
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     if ([self isGestureInCellHeader:longPress]) {
         return;
     }
 
     TSInteraction *interaction = self.viewItem.interaction;
-    OWSAssert(interaction);
+    OWSAssertDebug(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {
         [self.delegate conversationCell:self didLongpressSystemMessageViewItem:self.viewItem];
@@ -547,7 +547,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
 {
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.viewItem);
 
     if (!self.viewItem.hasCellHeader) {
         return NO;

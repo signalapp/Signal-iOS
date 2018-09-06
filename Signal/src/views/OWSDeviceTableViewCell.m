@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithDevice:(OWSDevice *)device
 {
-    OWSAssert(device);
+    OWSAssertDebug(device);
 
     [OWSTableItem configureCell:self];
 

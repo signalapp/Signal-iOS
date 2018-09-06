@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
               dbConnection:(YapDatabaseConnection *)dbConnection
                 completion:(OWSDatabaseMigrationCompletion)completion
 {
-    OWSAssert(collection.length > 0);
-    OWSAssert(dbConnection);
-    OWSAssert(completion);
+    OWSAssertDebug(collection.length > 0);
+    OWSAssertDebug(dbConnection);
+    OWSAssertDebug(completion);
 
     NSMutableArray<NSString *> *recordIds = [NSMutableArray new];
     [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -40,10 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
        dbConnection:(YapDatabaseConnection *)dbConnection
          completion:(OWSDatabaseMigrationCompletion)completion
 {
-    OWSAssert(recordIds);
-    OWSAssert(collection.length > 0);
-    OWSAssert(dbConnection);
-    OWSAssert(completion);
+    OWSAssertDebug(recordIds);
+    OWSAssertDebug(collection.length > 0);
+    OWSAssertDebug(dbConnection);
+    OWSAssertDebug(completion);
 
     OWSLogVerbose(@"%lu", (unsigned long)recordIds.count);
 

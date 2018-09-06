@@ -40,7 +40,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 
 - (void)commontInit
 {
-    OWSAssert(!self.titleLabel);
+    OWSAssertDebug(!self.titleLabel);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.layoutConstraints = @[];
@@ -75,9 +75,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 - (void)loadForDisplayWithViewItem:(ConversationViewItem *)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle
 {
-    OWSAssert(viewItem);
-    OWSAssert(conversationStyle);
-    OWSAssert(viewItem.unreadIndicator || viewItem.shouldShowDate);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(conversationStyle);
+    OWSAssertDebug(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
     self.titleLabel.textColor = Theme.primaryColor;
     self.subtitleLabel.textColor = Theme.primaryColor;
@@ -102,7 +102,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 
 - (CGFloat)strokeThicknessWithViewItem:(ConversationViewItem *)viewItem
 {
-    OWSAssert(viewItem);
+    OWSAssertDebug(viewItem);
 
     if (viewItem.unreadIndicator) {
         return 4.f;
@@ -113,7 +113,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 
 - (UIColor *)strokeColorWithViewItem:(ConversationViewItem *)viewItem
 {
-    OWSAssert(viewItem);
+    OWSAssertDebug(viewItem);
 
     if (viewItem.unreadIndicator) {
         return Theme.secondaryColor;
@@ -124,7 +124,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 
 - (void)configureLabelsWithViewItem:(ConversationViewItem *)viewItem
 {
-    OWSAssert(viewItem);
+    OWSAssertDebug(viewItem);
 
     NSDate *date = viewItem.interaction.dateForSorting;
     NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date].localizedUppercaseString;
@@ -161,9 +161,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
                         conversationStyle:(ConversationStyle *)conversationStyle
 {
-    OWSAssert(viewItem);
-    OWSAssert(conversationStyle);
-    OWSAssert(viewItem.unreadIndicator || viewItem.shouldShowDate);
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(conversationStyle);
+    OWSAssertDebug(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
     [self configureLabelsWithViewItem:viewItem];
 
