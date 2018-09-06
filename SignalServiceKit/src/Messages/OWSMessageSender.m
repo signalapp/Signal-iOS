@@ -735,15 +735,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [TSPreKeyManager
             rotateSignedPreKeyWithSuccess:^{
                 OWSLogInfo(@"New prekeys registered with server.");
+                NSError *error = OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
+                [error setIsRetryable:YES];
+                return failureHandler(error);
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to update prekeys with the server: %@", error);
+                return failureHandler(error);
             }];
-
-        // MJK TODO move this into the success/failure handlers, otherwise we'll just fail again.
-        NSError *error = OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
-        [error setIsRetryable:YES];
-        return failureHandler(error);
     }
 
     if (remainingAttemptsParam <= 0) {
