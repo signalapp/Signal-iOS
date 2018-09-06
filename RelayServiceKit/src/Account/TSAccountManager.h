@@ -120,7 +120,7 @@ extern NSString *const kNSNotificationName_LocalUIDDidChange;
 // - obtained signal server credentials
 // - uploaded pre-keys
 // - uploaded push tokens
-- (void)didRegister;
+- (void)finalizeRegistration;
 
 #if TARGET_OS_IPHONE
 

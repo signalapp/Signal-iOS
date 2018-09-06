@@ -342,7 +342,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
         }
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
-        if (infoMessage.messageType == TSInfoMessageVerificationStateChange) {
+        if (infoMessage.infoMessageType == TSInfoMessageVerificationStateChange) {
             return NO;
         }
     }

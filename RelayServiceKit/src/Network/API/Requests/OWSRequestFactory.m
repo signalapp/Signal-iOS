@@ -9,9 +9,12 @@
 #import "TSAttributes.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/SignedPreKeyRecord.h>
-#import <Curve25519Kit/Curve25519.h>
+//#import <AxolotlKit/NSData+keyVersionByte.h>
+//#import <AxolotlKit/SignedPreKeyRecord.h>
+//#import <Curve25519Kit/Curve25519.h>
+
+@import Curve25519Kit;
+@import AxolotlKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -280,23 +283,26 @@ NS_ASSUME_NONNULL_BEGIN
                            authUsername:(NSString *)authUsername
                            authPassword:(NSString *)authPassword
 {
-    OWSAssert(keyPair);
-    OWSAssert(enclaveId.length > 0);
-    OWSAssert(authUsername.length > 0);
-    OWSAssert(authPassword.length > 0);
+    DDLogError(@"Unsupported remoteAttestationRequest call!");
+    return nil;
 
-    NSString *path =
-        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/attestation/%@", enclaveId];
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                                            method:@"PUT"
-                                        parameters:@{
-                                            // We DO NOT prepend the "key type" byte.
-                                            @"clientPublic" : [keyPair.publicKey base64EncodedStringWithOptions:0],
-                                        }];
-    request.authUsername = authUsername;
-    request.authPassword = authPassword;
-
-    return request;
+//    OWSAssert(keyPair);
+//    OWSAssert(enclaveId.length > 0);
+//    OWSAssert(authUsername.length > 0);
+//    OWSAssert(authPassword.length > 0);
+//
+//    NSString *path =
+//        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/attestation/%@", enclaveId];
+//    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
+//                                            method:@"PUT"
+//                                        parameters:@{
+//                                            // We DO NOT prepend the "key type" byte.
+//                                            @"clientPublic" : [keyPair.publicKey base64EncodedStringWithOptions:0],
+//                                        }];
+//    request.authUsername = authUsername;
+//    request.authPassword = authPassword;
+//
+//    return request;
 }
 
 + (TSRequest *)enclaveContactDiscoveryRequestWithId:(NSData *)requestId
@@ -309,29 +315,31 @@ NS_ASSUME_NONNULL_BEGIN
                                        authPassword:(NSString *)authPassword
                                             cookies:(NSArray<NSHTTPCookie *> *)cookies
 {
-    NSString *path =
-        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/discovery/%@", enclaveId];
-
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                                            method:@"PUT"
-                                        parameters:@{
-                                            @"requestId" : requestId.base64EncodedString,
-                                            @"addressCount" : @(addressCount),
-                                            @"data" : encryptedAddressData.base64EncodedString,
-                                            @"iv" : cryptIv.base64EncodedString,
-                                            @"mac" : cryptMac.base64EncodedString,
-                                        }];
-
-    request.authUsername = authUsername;
-    request.authPassword = authPassword;
-
-    NSDictionary<NSString *, NSString *> *cookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-    for (NSString *cookieHeader in cookieHeaders) {
-        NSString *cookieValue = cookieHeaders[cookieHeader];
-        [request setValue:cookieValue forHTTPHeaderField:cookieHeader];
-    }
-
-    return request;
+    DDLogError(@"Unsupported enclaveContactDiscoveryRequestWithId call!");
+    return nil;
+//    NSString *path =
+//        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/discovery/%@", enclaveId];
+//
+//    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
+//                                            method:@"PUT"
+//                                        parameters:@{
+//                                            @"requestId" : requestId.base64EncodedString,
+//                                            @"addressCount" : @(addressCount),
+//                                            @"data" : encryptedAddressData.base64EncodedString,
+//                                            @"iv" : cryptIv.base64EncodedString,
+//                                            @"mac" : cryptMac.base64EncodedString,
+//                                        }];
+//
+//    request.authUsername = authUsername;
+//    request.authPassword = authPassword;
+//
+//    NSDictionary<NSString *, NSString *> *cookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+//    for (NSString *cookieHeader in cookieHeaders) {
+//        NSString *cookieValue = cookieHeaders[cookieHeader];
+//        [request setValue:cookieValue forHTTPHeaderField:cookieHeader];
+//    }
+//
+//    return request;
 }
 
 + (TSRequest *)remoteAttestationAuthRequest

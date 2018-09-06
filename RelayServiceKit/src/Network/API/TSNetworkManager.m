@@ -11,6 +11,7 @@
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
+#import "OWSDevice.h"
 
 NSString *const TSNetworkManagerDomain = @"io.forsta.relay.networkManager";
 
@@ -115,7 +116,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [sessionManager PUT:request.URL.absoluteString parameters:parameters success:success failure:failure];
     } else {
         if (request.shouldHaveAuthorizationHeaders) {
-            [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
+            NSString *fullAuthUser = [NSString stringWithFormat:@"%@.%u", request.authUsername, [OWSDeviceManager.sharedManager currentDeviceId]];
+            [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:fullAuthUser
                                                                              password:request.authPassword];
         }
 

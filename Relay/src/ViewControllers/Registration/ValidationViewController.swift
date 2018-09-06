@@ -134,6 +134,8 @@ class ValidationViewController: UITableViewController {
     
     private func proceedToMain() {
         DispatchQueue.global(qos: .default).async {
+            TSAccountManager.sharedInstance().finalizeRegistration()
+
             TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }

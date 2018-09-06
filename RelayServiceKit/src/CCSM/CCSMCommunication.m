@@ -393,9 +393,7 @@
             [CCSMStorage.sharedInstance setOrgInfo:@{ }];
             [CCSMStorage.sharedInstance setTags:@{ }];
         }
-        
-        [TSAccountManager.sharedInstance didRegister];
-        
+                
         [CCSMStorage.sharedInstance setSessionToken:[payload objectForKey:@"token"]];
         
         [CCSMStorage.sharedInstance setUserInfo:userDict];
@@ -489,13 +487,19 @@
 +(void)registerDeviceWithParameters:(NSDictionary *)parameters
                          completion:(void (^)(NSDictionary *response, NSError *error))completionBlock
 {
-    NSString *TSSUrlString = [[CCSMStorage new] textSecureURL];
+    NSString *TSSUrlString = [CCSMStorage.sharedInstance textSecureURL];
     NSString *urlString = [NSString stringWithFormat:@"%@/v1/devices%@", TSSUrlString, [parameters objectForKey:@"urlParms"]];
     
     NSString *rawToken = [NSString stringWithFormat:@"%@:%@", [parameters objectForKey:@"username"], [parameters objectForKey:@"password"]];
-    NSData *rawData = [rawToken dataUsingEncoding:kCFStringEncodingUTF8];
-    NSString *base64String = [rawData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    NSData *rawData = [rawToken dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *base64String = [rawData base64EncodedStringWithOptions:0];
     NSString *authHeader = [@"Basic " stringByAppendingString:base64String];
+
+    
+//    NSString *rawToken = [NSString stringWithFormat:@"%@:%@", localNumber, password];
+//    NSData *encodedToken = [rawToken dataUsingEncoding:NSUTF8StringEncoding];
+//    NSString *tokenString = [encodedToken base64EncodedString];
+//    return [@"Basic " stringByAppendingString:tokenString];
 
     
 //    NSString *authHeader = [HttpRequest computeBasicAuthorizationTokenForLocalNumber:[parameters objectForKey:@"username"]
@@ -845,7 +849,7 @@
                                            {
                                                if (data.length > 0 && connectionError == nil)
                                                {
-                                                   CCSMStorage *ccsmStore = [CCSMStorage new];
+                                                   CCSMStorage *ccsmStore = [CCSMStorage sharedInstance];
                                                    NSString *userSlug = [result objectForKey:@"nametag"];
                                                    NSString *orgSlug = [result objectForKey:@"orgslug"];
                                                    [ccsmStore setOrgName:orgSlug];

@@ -142,7 +142,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     return _isRegistered;
 }
 
-- (void)didRegister
+- (void)finalizeRegistration
 {
     DDLogInfo(@"%@ didRegister", self.logTag);
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;

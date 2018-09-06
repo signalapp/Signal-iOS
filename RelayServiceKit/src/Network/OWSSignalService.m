@@ -12,6 +12,9 @@
 #import "TSConstants.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
+#import "CCSMStorage.h"
+
+@import AFNetworking;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -165,15 +168,18 @@ NSString *const kFLTSSURLKey = @"FLTSSURLKey";
 
 - (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
+    NSURL *baseURL = [[NSURL alloc] initWithString:[self textSecureURL]];
     OWSAssert(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
 
-    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+    sessionManager.securityPolicy = [AFSecurityPolicy defaultPolicy];
+//    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+//    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+//    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 
     return sessionManager;
 }
@@ -200,7 +206,7 @@ NSString *const kFLTSSURLKey = @"FLTSSURLKey";
 
 - (AFHTTPSessionManager *)CDNSessionManager
 {
-    DDLogDebug(@"Cencorshipt circumvention not implemented.");
+    DDLogDebug(@"Cencorship circumvention not implemented.");
     return nil;
 //    if (self.isCensorshipCircumventionActive) {
 //        DDLogInfo(@"%@ using reflector CDNSessionManager via: %@",
@@ -302,14 +308,16 @@ NSString *const kFLTSSURLKey = @"FLTSSURLKey";
 -(nullable NSString *)textSecureURL
 {
     if (self.cachedTSSURL == nil) {
-        self.cachedTSSURL = (NSString *)[OWSPrimaryStorage valueForKey:kFLTSSURLKey];
+        self.cachedTSSURL = (NSString *)[CCSMStorage.sharedInstance textSecureURL];
+//        self.cachedTSSURL = (NSString *)[OWSPrimaryStorage valueForKey:kFLTSSURLKey];
     }
     return self.cachedTSSURL;
 }
 
 -(void)setTextSecureURL:(nullable NSString *)value
 {
-    [OWSPrimaryStorage setValue:value forKey:kFLTSSURLKey];
+    [CCSMStorage.sharedInstance setTextSecureURL:value];
+//    [OWSPrimaryStorage setValue:value forKey:kFLTSSURLKey];
     self.cachedTSSURL = nil;
 }
 

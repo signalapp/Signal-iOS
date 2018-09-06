@@ -396,7 +396,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             // Create a new web socket.
             
             NSString *tssAPI = nil;
-            NSString *TSSUrlString = [[CCSMStorage new] textSecureURL];
+            NSString *TSSUrlString = [[CCSMStorage sharedInstance] textSecureURL];
             if (TSSUrlString.length > 0) {
                 tssAPI = [TSSUrlString stringByAppendingString:@"/v1/websocket/"];
             } else {
@@ -882,7 +882,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             stringWithFormat:@"?login=%@.%d&password=%@",
             [TSAccountManager.localUID stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
             OWSDeviceManager.sharedManager.currentDeviceId,
-            TSAccountManager.serverAuthToken];
+            TSAccountManager.sharedInstance.serverAuthToken];
 }
 
 #pragma mark - Socket LifeCycle
