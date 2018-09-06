@@ -802,10 +802,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 + (nullable NSData *)decryptAESGCMWithProfileData:(NSData *)encryptedData key:(OWSAES256Key *)key
 {
-    OWSAssert(encryptedData.length > kAESGCM256_IVLength + kAESGCM256_TagLength);
-
     NSUInteger cipherTextLength;
-    ows_sub_overflow(encryptedData.length, (kAESGCM256_IVLength + kAESGCM256_TagLength), &cipherTextLength);
+    BOOL didOverflow
+        = __builtin_sub_overflow(encryptedData.length, (kAESGCM256_IVLength + kAESGCM256_TagLength), &cipherTextLength);
+    if (didOverflow) {
+        OWSFailDebug(@"unexpectedly short encryptedData.length: %lu", (unsigned long)encryptedData.length);
+        return nil;
+    }
 
     // encryptedData layout: initializationVector || ciphertext || authTag
     NSData *initializationVector = [encryptedData subdataWithRange:NSMakeRange(0, kAESGCM256_IVLength)];
