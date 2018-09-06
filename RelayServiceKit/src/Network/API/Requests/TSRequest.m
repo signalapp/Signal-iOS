@@ -97,7 +97,10 @@
     OWSAssert(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authUsername ?: [TSAccountManager localUID]);
+        if (_authUsername == nil) {
+            _authUsername = [TSAccountManager localUID];
+        }
+        return _authUsername;
     }
 }
 
@@ -106,7 +109,10 @@
     OWSAssert(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authPassword ?: [TSAccountManager serverAuthToken]);
+        if (_authPassword == nil) {
+            _authPassword = [TSAccountManager serverAuthToken];
+        }
+        return _authPassword;
     }
 }
 

@@ -94,7 +94,7 @@ public class AccountManager: NSObject {
 
     private func completeRegistration() {
         Logger.info("\(self.TAG) in \(#function)")
-        self.textSecureAccountManager.didRegister()
+        self.textSecureAccountManager.finalizeRegistration()
     }
 
     // MARK: Message Delivery
