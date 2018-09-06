@@ -93,8 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _userTextPhoneNumbers = [phoneNumbers copy];
     _phoneNumberNameMap = [NSMutableDictionary new];
-    _parsedPhoneNumbers =
-        [self parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers phoneNumberNameMap:phoneNumberNameMap];
+    _parsedPhoneNumbers = [NSArray new];
+//        [self parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers phoneNumberNameMap:phoneNumberNameMap];
 
     NSMutableArray<NSString *> *emailAddresses = [NSMutableArray new];
     for (CNLabeledValue *emailField in cnContact.emailAddresses) {
