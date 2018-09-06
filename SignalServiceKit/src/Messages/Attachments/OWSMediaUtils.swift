@@ -16,13 +16,14 @@ public enum OWSMediaError: Error {
     }
 
     @objc public class func thumbnail(forImageAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
+        Logger.verbose("thumbnailing image: \(path)")
+
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
         guard NSData.ows_isValidImage(atPath: path) else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
-
         guard let originalImage = UIImage(contentsOfFile: path) else {
             throw OWSMediaError.failure(description: "Could not load original image.")
         }
@@ -33,11 +34,13 @@ public enum OWSMediaError: Error {
     }
 
     @objc public class func thumbnail(forVideoAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
-        let maxSize = CGSize(width: maxDimension, height: maxDimension)
+        Logger.verbose("thumbnailing video: \(path)")
 
-        guard FileManager.default.fileExists(atPath: path) else {
-            throw OWSMediaError.failure(description: "Media file missing.")
+        guard isVideoOfValidContentTypeAndSize(path: path) else {
+            throw OWSMediaError.failure(description: "Media file has missing or invalid length.")
         }
+
+        let maxSize = CGSize(width: maxDimension, height: maxDimension)
         let url = URL(fileURLWithPath: path)
         let asset = AVURLAsset(url: url, options: nil)
         guard isValidVideo(asset: asset) else {
@@ -54,13 +57,36 @@ public enum OWSMediaError: Error {
     }
 
     @objc public class func isValidVideo(path: String) -> Bool {
+        guard isVideoOfValidContentTypeAndSize(path: path) else {
+            Logger.error("Media file has missing or invalid length.")
+            return false
+        }
+
+        let url = URL(fileURLWithPath: path)
+        let asset = AVURLAsset(url: url, options: nil)
+        return isValidVideo(asset: asset)
+    }
+
+    private class func isVideoOfValidContentTypeAndSize(path: String) -> Bool {
         guard FileManager.default.fileExists(atPath: path) else {
             Logger.error("Media file missing.")
             return false
         }
-        let url = URL(fileURLWithPath: path)
-        let asset = AVURLAsset(url: url, options: nil)
-        return isValidVideo(asset: asset)
+        let fileExtension = URL(fileURLWithPath: path).pathExtension
+        guard let contentType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) else {
+            Logger.error("Media file has unknown content type.")
+            return false
+        }
+        guard MIMETypeUtil.isSupportedVideoMIMEType(contentType) else {
+            Logger.error("Media file has invalid content type.")
+            return false
+        }
+
+        guard let fileSize = OWSFileSystem.fileSize(ofPath: path) else {
+            Logger.error("Media file has unknown length.")
+            return false
+        }
+        return fileSize.uintValue <= kMaxFileSizeVideo
     }
 
     private class func isValidVideo(asset: AVURLAsset) -> Bool {
@@ -74,11 +100,35 @@ public enum OWSMediaError: Error {
             Logger.error("Invalid video size: \(maxTrackSize)")
             return false
         }
-        let kMaxValidSize: CGFloat = 3 * 1024.0
-        if maxTrackSize.width > kMaxValidSize || maxTrackSize.height > kMaxValidSize {
+        if maxTrackSize.width > kMaxVideoDimensions || maxTrackSize.height > kMaxVideoDimensions {
             Logger.error("Invalid video dimensions: \(maxTrackSize)")
             return false
         }
         return true
     }
+
+    // MARK: Constants
+
+    /**
+     * Media Size constraints from Signal-Android
+     *
+     * https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
+     */
+    @objc
+    public static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
+    @objc
+    public static let kMaxFileSizeImage = UInt(6 * 1024 * 1024)
+    @objc
+    public static let kMaxFileSizeVideo = UInt(100 * 1024 * 1024)
+    @objc
+    public static let kMaxFileSizeAudio = UInt(100 * 1024 * 1024)
+    @objc
+    public static let kMaxFileSizeGeneric = UInt(100 * 1024 * 1024)
+
+    @objc
+    public static let kMaxVideoDimensions: CGFloat = 3 * 1024
+    @objc
+    public static let kMaxAnimatedImageDimensions: UInt = 1 * 1024
+    @objc
+    public static let kMaxStillImageDimensions: UInt = 8 * 1024
 }

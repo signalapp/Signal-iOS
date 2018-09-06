@@ -172,6 +172,7 @@ private struct OWSThumbnailRequest {
         } catch let error as NSError {
             throw OWSThumbnailError.externalError(description: "File write failed: \(thumbnailPath), \(error)", underlyingError: error)
         }
+        OWSFileSystem.protectFileOrFolder(atPath: thumbnailPath)
         return OWSLoadedThumbnail(image: thumbnailImage, data: thumbnailData)
     }
 }
