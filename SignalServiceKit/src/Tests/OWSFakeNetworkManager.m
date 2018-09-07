@@ -1,5 +1,6 @@
-//  Created by Michael Kirk on 10/19/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSFakeNetworkManager.h"
 
