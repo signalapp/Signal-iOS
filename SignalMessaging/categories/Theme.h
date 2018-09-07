@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 //#ifdef DEBUG
-#define THEME_ENABLED
+// #define THEME_ENABLED
 //#endif
 
 extern NSString *const ThemeDidChangeNotification;
