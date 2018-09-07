@@ -22,9 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property (class, readonly, nonatomic) SSKEnvironment *shared;
-
-+ (void)setShared:(SSKEnvironment *)env;
+@property (class, nonatomic) SSKEnvironment *shared;
 
 @property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
