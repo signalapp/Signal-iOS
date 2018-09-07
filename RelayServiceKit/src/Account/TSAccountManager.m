@@ -145,22 +145,24 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 - (void)finalizeRegistration
 {
     DDLogInfo(@"%@ didRegister", self.logTag);
-    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
-
-    if (!phoneNumber) {
-        OWSRaiseException(@"RegistrationFail", @"Internal Corrupted State");
+    if (!self.isRegistered) {
+        NSString *phoneNumber = self.phoneNumberAwaitingVerification;
+        
+        if (!phoneNumber) {
+            OWSRaiseException(@"RegistrationFail", @"Internal Corrupted State");
+        }
+        
+        [self storeLocalUID:phoneNumber];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
+                                                                 object:nil
+                                                               userInfo:nil];
+        
+        // Warm these cached values.
+        [self isRegistered];
+        [self localUID];
+        [self isDeregistered];
     }
-
-    [self storeLocalUID:phoneNumber];
-
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
-                                                             object:nil
-                                                           userInfo:nil];
-
-    // Warm these cached values.
-    [self isRegistered];
-    [self localUID];
-    [self isDeregistered];
 }
 
 +(nullable NSString *)username

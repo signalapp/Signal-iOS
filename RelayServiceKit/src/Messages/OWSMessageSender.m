@@ -953,7 +953,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)messageSendDidSucceed:(TSOutgoingMessage *)message
-                    recipient:(SignalRecipient *)recipient
+                    recipient:(RelayRecipient *)recipient
                 isLocalNumber:(BOOL)isLocalNumber
                deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
                       success:(void (^)(void))successHandler
@@ -983,7 +983,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             // If we've just delivered a message to a user, we know they
             // have a valid Signal account.
-            [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
+//            [RelayRecipient markRecipientAsRegisteredAndGet:recipient.uniqueId transaction:transaction];
         }];
 
         [self handleMessageSentLocally:message];

@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSThreadAvatarChangedNotification;
+extern NSString *const TSThreadExpressionChangedNotification;
 extern NSString *const TSThread_NotificationKey_UniqueId;
 
 @class OWSDisappearingMessagesConfiguration;
@@ -14,9 +15,12 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 @class TSAttachmentStream;
 
-/**
- *  TSThread is the superclass of TSContactThread and TSGroupThread
- */
+// Manager to handle thead update notifications in background
+@interface TSThreadManager : NSObject
+
++ (instancetype)sharedManager;
+
+@end
 
 @interface TSThread : TSYapDatabaseObject
 

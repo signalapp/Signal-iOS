@@ -473,9 +473,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
-        return;
-    }
+//    if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
+//        return;
+//    }
 
     [self updateNameLabel];
     [self updateAvatarView];
@@ -503,17 +503,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSAttributedString *name;
-//    if (thread.isGroupThread) {
-//        if (thread.name.length == 0) {
-//            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
-//        } else {
-            name = [[NSAttributedString alloc] initWithString:thread.name];
-//        }
-//    } else {
-//        name = [contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-//                                                                     primaryFont:self.nameFont
-//                                                                   secondaryFont:self.nameSecondaryFont];
-//    }
+            name = [[NSAttributedString alloc] initWithString:thread.title];
 
     self.nameLabel.attributedText = name;
 }

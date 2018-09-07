@@ -149,9 +149,8 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.setCompressionResistanceHorizontalLow()
         nameLabel.autoPinTopToSuperviewMargin(withInset: vMargin)
         
-        //        if let groupThread = self.thread as? TSGroupThread {
-        let groupName = ((thread.title?.count)! > 0
-            ? thread.title
+        let groupName = ((thread.displayName.count) > 0
+            ? thread.displayName
             : MessageStrings.newGroupDefaultTitle)
         
         nameLabel.text = groupName

@@ -15,7 +15,6 @@
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
-//#import <YapDatabase/YapDatabase.h>
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "CCSMKeys.h"
@@ -27,7 +26,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 NSString *const TSThreadAvatarChangedNotification = @"TSThreadAvatarChangedNotification";
+NSString *const TSThreadExpressionChangedNotification = @"TSThreadExpressionChangedNotification";
 NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_UniqueId";
+
+@interface TSThreadManager()
+
+@end
+
+@implementation TSThreadManager
+
++ (instancetype)sharedManager
+{
+    static TSThreadManager *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] initDefault];
+    });
+    return instance;
+}
+
+- (instancetype)initDefault
+{
+    if (self = [super init]) {
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(threadExpressionUpdated:)
+                                                   name:TSThreadExpressionChangedNotification
+                                                 object:nil];
+    }
+    return self;
+}
+
+-(void)threadExpressionUpdated:(NSNotification *)notification {
+    DDLogDebug(@"notification: %@", notification);
+    if ([notification.object isKindOfClass:[TSThread class]]) {
+        TSThread *thread = (TSThread *)notification.object;
+        [thread validate];
+    }
+}
+
+@end
 
 @interface TSThread ()
 
@@ -43,6 +80,8 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 #pragma mark -
 
 @implementation TSThread
+
+@synthesize universalExpression =  _universalExpression;
 
 + (NSString *)collection {
     return @"TSThread";
@@ -135,7 +174,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     }
     
     for (NSString *interactionId in interactionIds) {
-        // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
+        // We need tononatomic fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
         TSInteraction *_Nullable interaction =
         [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
         if (!interaction) {
@@ -524,23 +563,6 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     return [NSArray<TSThread *> arrayWithArray:results];
 }
 
--(BOOL)isOneOnOne
-{
-    return (self.participantIds.count == 2 && [self.participantIds containsObject:TSAccountManager.localUID]);
-}
-
--(nullable NSString *)otherParticipantId
-{
-    if (self.isOneOnOne) {
-        for (NSString *uid in self.participantIds) {
-            if (![uid isEqualToString:TSAccountManager.localUID]) {
-                return uid;
-            }
-        }
-    }
-    return nil;
-}
-
 +(instancetype)getOrCreateThreadWithParticipants:(NSArray <NSString *> *)participantIDs
 {
     __block TSThread *thread = nil;
@@ -583,11 +605,12 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     NSString *threadExpression = [(NSDictionary *)[payload objectForKey:FLDistributionKey] objectForKey:FLExpressionKey];
     NSString *threadType = [payload objectForKey:FLThreadTypeKey];
     NSString *threadTitle = [payload objectForKey:FLThreadTitleKey];
-    self.title = ((threadTitle.length > 0) ? threadTitle : nil );
+    self.title = ((threadTitle.length > 0) ? threadTitle : @"" );
     self.type = ((threadType.length > 0) ? threadType : nil );
     self.universalExpression = threadExpression;
     
-    [self updateWithExpression:self.universalExpression];
+    [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
+                                                      object:self];
 }
 
 -(void)validate
@@ -607,11 +630,11 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
                                                   self.monitorIds = [NSCountedSet setWithArray:[lookupDict objectForKey:@"monitorids"]];
                                               }
                                           }
-//                                          [self save];
+                                          [self save];
                                           
                                       } failure:^(NSError * _Nonnull error) {
                                           DDLogDebug(@"%@: TagMath query for expression failed.  Error: %@", self.logTag, error.localizedDescription);
-//                                          [self save];
+                                          [self save];
                                       }];
 }
 
@@ -623,6 +646,37 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     // Avatars are stored directly in the database, so there's no need
     // to keep the attachment around after assigning the image.
     [attachmentStream remove];
+}
+
+// MARK: - Accessors
+//-(nullable NSString *)universalExpression {
+//    return _universalExpression;
+//}
+//
+//-(void)setUniversalExpression:(nullable NSString *)value
+//{
+//    if (![value isEqualToString:_universalExpression]) {
+//        _universalExpression = value;
+//        [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
+//                                                          object:self];
+//    }
+//}
+
+-(BOOL)isOneOnOne
+{
+    return (self.participantIds.count == 2 && [self.participantIds containsObject:TSAccountManager.localUID]);
+}
+
+-(nullable NSString *)otherParticipantId
+{
+    if (self.isOneOnOne) {
+        for (NSString *uid in self.participantIds) {
+            if (![uid isEqualToString:TSAccountManager.localUID]) {
+                return uid;
+            }
+        }
+    }
+    return nil;
 }
 
 @end

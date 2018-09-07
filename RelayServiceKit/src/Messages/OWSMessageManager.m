@@ -1082,16 +1082,20 @@ NS_ASSUME_NONNULL_BEGIN
                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSDictionary *jsonPayload = [FLCCSMJSONService payloadDictionaryFromMessageBody:dataMessage.body];
-    NSString *threadId = [jsonPayload objectForKey:@"threadId"];
+    NSString *threadId = [jsonPayload objectForKey:FLThreadIDKey];
     
     // getOrCreate a thread and an incomingMessage
     TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        [thread updateWithPayload:jsonPayload];
-    // TODO:  take this out once tagmath lookups are working again
-    thread.participantIds = @[ envelope.source, TSAccountManager.localUID ];
-        [thread saveWithTransaction:transaction];
-//    });
+    
+//    NSDictionary *distribution = [jsonPayload objectForKey:@"distribution"];
+//    NSString *expression = [distribution objectForKey:@"expression"];
+//    if (expression.length > 0) {
+//        thread.universalExpression = expression;
+//    }
+//    thread.participantIds = @[ envelope.source, TSAccountManager.localUID ];
+    
+    [thread updateWithPayload:jsonPayload];
+    [thread saveWithTransaction:transaction];
 
     
     // Check to see if we already have this message

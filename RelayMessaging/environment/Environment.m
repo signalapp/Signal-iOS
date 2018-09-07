@@ -22,6 +22,8 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) OWSPreferences *preferences;
 
+@property (nonatomic) TSThreadManager *threadManager;
+
 @end
 
 #pragma mark -
@@ -66,6 +68,7 @@ static Environment *sharedEnvironment = nil;
     _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
     _messageSender = messageSender;
+    _threadManager = TSThreadManager.sharedManager;
 
     OWSSingletonAssert();
 
