@@ -192,6 +192,10 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                                     pointer:attachment
                                                     success:markAndHandleSuccess
                                                     failure:markAndHandleFailure];
+
+                                if (![OWSFileSystem deleteFile:encryptedDataFilePath]) {
+                                    OWSLogError(@"Could not delete temporary file.");
+                                }
                             }
                         });
                     }
@@ -295,9 +299,17 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     const long kMaxDownloadSize = 150 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
 
+    NSString *tempFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSURL *tempFileURL = [NSURL fileURLWithPath:tempFilePath];
+
     __block NSURLSessionDownloadTask *task;
     void (^failureHandler)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Failed to download attachment with error: %@", error.description);
+
+        if (![OWSFileSystem deleteFileIfExists:tempFilePath]) {
+            OWSLogError(@"Could not delete temporary file.");
+        }
+
         failureHandlerParam(task, error);
     };
 
@@ -308,12 +320,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                                                      parameters:nil
                                                                           error:&serializationError];
     if (serializationError) {
-        failureHandler(serializationError);
-        return;
+        return failureHandler(serializationError);
     }
-
-    NSString *tempFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSURL *tempFileURL = [NSURL fileURLWithPath:tempFilePath];
 
     task = [manager downloadTaskWithRequest:request
         progress:^(NSProgress *progress) {
@@ -403,6 +411,15 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                     OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
                 return failureHandler(error);
             }
+
+            // Protect the temporary file.
+            if (![OWSFileSystem ensureFileExists:filePath.path]) {
+                OWSLogError(@"Could not protect temporary file.");
+                NSError *error = OWSErrorWithCodeDescription(
+                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                return failureHandler(error);
+            }
+
             NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:filePath.path];
             if (!fileSize) {
                 OWSLogError(@"Could not determine attachment file size.");
