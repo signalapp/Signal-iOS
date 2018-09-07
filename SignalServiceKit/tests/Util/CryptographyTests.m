@@ -3,7 +3,7 @@
 //
 
 #import "Cryptography.h"
-#import "NSData+Base64.h"
+#import "NSData+OWS.h"
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN

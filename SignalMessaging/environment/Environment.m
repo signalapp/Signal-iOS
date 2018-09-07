@@ -49,7 +49,7 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = environment;
 }
 
-+ (void)clearCurrentForTests
++ (void)clearSharedForTests
 {
     sharedEnvironment = nil;
 }

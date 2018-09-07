@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 @testable import Signal
 
-class ImageCacheTest: XCTestCase {
+class ImageCacheTest: SignalBaseTest {
 
     var imageCache: ImageCache!
 
@@ -19,9 +19,9 @@ class ImageCacheTest: XCTestCase {
     override func setUp() {
         super.setUp()
          self.imageCache = ImageCache()
-        imageCache.setImage(firstVariation, forKey:cacheKey1, diameter:100)
-        imageCache.setImage(secondVariation, forKey:cacheKey1, diameter:200)
-        imageCache.setImage(otherImage, forKey:cacheKey2, diameter:100)
+        imageCache.setImage(firstVariation, forKey: cacheKey1, diameter: 100)
+        imageCache.setImage(secondVariation, forKey: cacheKey1, diameter: 200)
+        imageCache.setImage(otherImage, forKey: cacheKey2, diameter: 100)
     }
 
     override func tearDown() {
@@ -30,32 +30,32 @@ class ImageCacheTest: XCTestCase {
     }
 
     func testSetGet() {
-        XCTAssertEqual(firstVariation, imageCache.image(forKey:cacheKey1, diameter: 100))
-        XCTAssertEqual(secondVariation, imageCache.image(forKey:cacheKey1, diameter: 200))
-        XCTAssertNotEqual(secondVariation, imageCache.image(forKey:cacheKey1, diameter: 100))
-        XCTAssertEqual(otherImage, imageCache.image(forKey:cacheKey2, diameter: 100))
-        XCTAssertNil(imageCache.image(forKey:cacheKey2, diameter: 200))
+        XCTAssertEqual(firstVariation, imageCache.image(forKey: cacheKey1, diameter: 100))
+        XCTAssertEqual(secondVariation, imageCache.image(forKey: cacheKey1, diameter: 200))
+        XCTAssertNotEqual(secondVariation, imageCache.image(forKey: cacheKey1, diameter: 100))
+        XCTAssertEqual(otherImage, imageCache.image(forKey: cacheKey2, diameter: 100))
+        XCTAssertNil(imageCache.image(forKey: cacheKey2, diameter: 200))
     }
 
     func testRemoveAllForKey() {
         // sanity check
-        XCTAssertEqual(firstVariation, imageCache.image(forKey:cacheKey1, diameter: 100))
-        XCTAssertEqual(otherImage, imageCache.image(forKey:cacheKey2, diameter: 100))
+        XCTAssertEqual(firstVariation, imageCache.image(forKey: cacheKey1, diameter: 100))
+        XCTAssertEqual(otherImage, imageCache.image(forKey: cacheKey2, diameter: 100))
 
-        imageCache.removeAllImages(forKey:cacheKey1)
+        imageCache.removeAllImages(forKey: cacheKey1)
 
-        XCTAssertNil(imageCache.image(forKey:cacheKey1, diameter: 100))
-        XCTAssertNil(imageCache.image(forKey:cacheKey1, diameter: 200))
-        XCTAssertEqual(otherImage, imageCache.image(forKey:cacheKey2, diameter: 100))
+        XCTAssertNil(imageCache.image(forKey: cacheKey1, diameter: 100))
+        XCTAssertNil(imageCache.image(forKey: cacheKey1, diameter: 200))
+        XCTAssertEqual(otherImage, imageCache.image(forKey: cacheKey2, diameter: 100))
     }
 
     func testRemoveAll() {
-        XCTAssertEqual(firstVariation, imageCache.image(forKey:cacheKey1, diameter: 100))
+        XCTAssertEqual(firstVariation, imageCache.image(forKey: cacheKey1, diameter: 100))
 
         imageCache.removeAllImages()
 
-        XCTAssertNil(imageCache.image(forKey:cacheKey1, diameter: 100))
-        XCTAssertNil(imageCache.image(forKey:cacheKey1, diameter: 200))
-        XCTAssertNil(imageCache.image(forKey:cacheKey2, diameter: 100))
+        XCTAssertNil(imageCache.image(forKey: cacheKey1, diameter: 100))
+        XCTAssertNil(imageCache.image(forKey: cacheKey1, diameter: 200))
+        XCTAssertNil(imageCache.image(forKey: cacheKey2, diameter: 100))
     }
 }

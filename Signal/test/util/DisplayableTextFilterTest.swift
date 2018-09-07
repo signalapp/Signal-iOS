@@ -6,7 +6,7 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
-class DisplayableTextTest: XCTestCase {
+class DisplayableTextTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()

@@ -1,12 +1,13 @@
-//  Created by Michael Kirk on 9/25/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSDisappearingMessagesConfiguration.h"
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSDisappearingMessagesConfigurationTest : XCTestCase
+@interface OWSDisappearingMessagesConfigurationTest : SSKBaseTest
 
 @end
 

@@ -154,6 +154,7 @@
 		3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */; };
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 348570A620F67574004FF32B /* OWSMessageHeaderView.m */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* CDSSigningCertificateTest.m */; };
@@ -790,6 +791,8 @@
 		347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		3478506F1FDAEB16007B8332 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
+		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
+		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
 		348570A620F67574004FF32B /* OWSMessageHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageHeaderView.m; sourceTree = "<group>"; };
 		348570A720F67574004FF32B /* OWSMessageHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageHeaderView.h; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
@@ -2306,6 +2309,8 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
+				34843B2321432293004DED45 /* SignalBaseTest.h */,
+				34843B2221432292004DED45 /* SignalBaseTest.m */,
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				B660F6731C29867F00687D6E /* call */,
@@ -3480,6 +3485,7 @@
 				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
+				34843B2421432293004DED45 /* SignalBaseTest.m in Sources */,
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */,

@@ -5,7 +5,7 @@
 import XCTest
 @testable import Signal
 
-class ByteParserTest: XCTestCase {
+class ByteParserTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()
