@@ -149,14 +149,6 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _content: Data? = nil
 }
 
-#if swift(>=4.2)
-
-extension SignalServiceProtos_Envelope.TypeEnum: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
-
 struct SignalServiceProtos_Content {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1108,14 +1100,6 @@ struct SignalServiceProtos_DataMessage {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-#if swift(>=4.2)
-
-extension SignalServiceProtos_DataMessage.Flags: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
-
 struct SignalServiceProtos_NullMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1186,14 +1170,6 @@ struct SignalServiceProtos_ReceiptMessage {
 
   fileprivate var _type: SignalServiceProtos_ReceiptMessage.TypeEnum? = nil
 }
-
-#if swift(>=4.2)
-
-extension SignalServiceProtos_ReceiptMessage.TypeEnum: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_Verified {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1275,14 +1251,6 @@ struct SignalServiceProtos_Verified {
   fileprivate var _state: SignalServiceProtos_Verified.State? = nil
   fileprivate var _nullMessage: Data? = nil
 }
-
-#if swift(>=4.2)
-
-extension SignalServiceProtos_Verified.State: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_SyncMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -1475,6 +1443,8 @@ struct SignalServiceProtos_SyncMessage {
     // methods supported on all messages.
 
     var numbers: [String] = []
+
+    var groupIds: [Data] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1732,14 +1702,6 @@ struct SignalServiceProtos_AttachmentPointer {
   fileprivate var _height: UInt32? = nil
 }
 
-#if swift(>=4.2)
-
-extension SignalServiceProtos_AttachmentPointer.Flags: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
-
 struct SignalServiceProtos_GroupContext {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1829,14 +1791,6 @@ struct SignalServiceProtos_GroupContext {
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
-
-#if swift(>=4.2)
-
-extension SignalServiceProtos_GroupContext.TypeEnum: CaseIterable {
-  // Support synthesized by the compiler.
-}
-
-#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_ContactDetails {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -2018,6 +1972,15 @@ struct SignalServiceProtos_GroupDetails {
   var hasColor: Bool {return _storage._color != nil}
   /// Clears the value of `color`. Subsequent reads from it will return its default value.
   mutating func clearColor() {_storage._color = nil}
+
+  var blocked: Bool {
+    get {return _storage._blocked ?? false}
+    set {_uniqueStorage()._blocked = newValue}
+  }
+  /// Returns true if `blocked` has been explicitly set.
+  var hasBlocked: Bool {return _storage._blocked != nil}
+  /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
+  mutating func clearBlocked() {_storage._blocked = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3660,12 +3623,14 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Blocked"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "numbers"),
+    2: .same(proto: "groupIds"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeRepeatedStringField(value: &self.numbers)
+      case 2: try decoder.decodeRepeatedBytesField(value: &self.groupIds)
       default: break
       }
     }
@@ -3675,11 +3640,15 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
     if !self.numbers.isEmpty {
       try visitor.visitRepeatedStringField(value: self.numbers, fieldNumber: 1)
     }
+    if !self.groupIds.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.groupIds, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   func _protobuf_generated_isEqualTo(other: SignalServiceProtos_SyncMessage.Blocked) -> Bool {
     if self.numbers != other.numbers {return false}
+    if self.groupIds != other.groupIds {return false}
     if unknownFields != other.unknownFields {return false}
     return true
   }
@@ -4142,6 +4111,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     5: .same(proto: "active"),
     6: .same(proto: "expireTimer"),
     7: .same(proto: "color"),
+    8: .same(proto: "blocked"),
   ]
 
   fileprivate class _StorageClass {
@@ -4152,6 +4122,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     var _active: Bool? = nil
     var _expireTimer: UInt32? = nil
     var _color: String? = nil
+    var _blocked: Bool? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4165,6 +4136,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       _active = source._active
       _expireTimer = source._expireTimer
       _color = source._color
+      _blocked = source._blocked
     }
   }
 
@@ -4187,6 +4159,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         case 5: try decoder.decodeSingularBoolField(value: &_storage._active)
         case 6: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
         case 7: try decoder.decodeSingularStringField(value: &_storage._color)
+        case 8: try decoder.decodeSingularBoolField(value: &_storage._blocked)
         default: break
         }
       }
@@ -4216,6 +4189,9 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._color {
         try visitor.visitSingularStringField(value: v, fieldNumber: 7)
       }
+      if let v = _storage._blocked {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4232,6 +4208,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._active != other_storage._active {return false}
         if _storage._expireTimer != other_storage._expireTimer {return false}
         if _storage._color != other_storage._color {return false}
+        if _storage._blocked != other_storage._blocked {return false}
         return true
       }
       if !storagesAreEqual {return false}

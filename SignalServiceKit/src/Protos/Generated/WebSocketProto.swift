@@ -413,12 +413,12 @@ public enum WebSocketProtoError: Error {
         }
         let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
 
-        var request: WebSocketProtoWebSocketRequestMessage?
+        var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
         }
 
-        var response: WebSocketProtoWebSocketResponseMessage?
+        var response: WebSocketProtoWebSocketResponseMessage? = nil
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage.parseProto(proto.response)
         }

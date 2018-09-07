@@ -309,27 +309,27 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Content) throws -> SSKProtoContent {
-        var dataMessage: SSKProtoDataMessage?
+        var dataMessage: SSKProtoDataMessage? = nil
         if proto.hasDataMessage {
             dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
         }
 
-        var syncMessage: SSKProtoSyncMessage?
+        var syncMessage: SSKProtoSyncMessage? = nil
         if proto.hasSyncMessage {
             syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
-        var callMessage: SSKProtoCallMessage?
+        var callMessage: SSKProtoCallMessage? = nil
         if proto.hasCallMessage {
             callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
         }
 
-        var nullMessage: SSKProtoNullMessage?
+        var nullMessage: SSKProtoNullMessage? = nil
         if proto.hasNullMessage {
             nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
         }
 
-        var receiptMessage: SSKProtoReceiptMessage?
+        var receiptMessage: SSKProtoReceiptMessage? = nil
         if proto.hasReceiptMessage {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
@@ -969,12 +969,12 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_CallMessage) throws -> SSKProtoCallMessage {
-        var offer: SSKProtoCallMessageOffer?
+        var offer: SSKProtoCallMessageOffer? = nil
         if proto.hasOffer {
             offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
         }
 
-        var answer: SSKProtoCallMessageAnswer?
+        var answer: SSKProtoCallMessageAnswer? = nil
         if proto.hasAnswer {
             answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
         }
@@ -982,12 +982,12 @@ public enum SSKProtoError: Error {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup?
+        var hangup: SSKProtoCallMessageHangup? = nil
         if proto.hasHangup {
             hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
-        var busy: SSKProtoCallMessageBusy?
+        var busy: SSKProtoCallMessageBusy? = nil
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
@@ -1127,7 +1127,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var thumbnail: SSKProtoAttachmentPointer?
+        var thumbnail: SSKProtoAttachmentPointer? = nil
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
         }
@@ -1973,7 +1973,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws -> SSKProtoDataMessageContactAvatar {
-        var avatar: SSKProtoAttachmentPointer?
+        var avatar: SSKProtoAttachmentPointer? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -2116,7 +2116,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact) throws -> SSKProtoDataMessageContact {
-        var name: SSKProtoDataMessageContactName?
+        var name: SSKProtoDataMessageContactName? = nil
         if proto.hasName {
             name = try SSKProtoDataMessageContactName.parseProto(proto.name)
         }
@@ -2130,7 +2130,7 @@ public enum SSKProtoError: Error {
         var address: [SSKProtoDataMessageContactPostalAddress] = []
         address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
-        var avatar: SSKProtoDataMessageContactAvatar?
+        var avatar: SSKProtoDataMessageContactAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
@@ -2337,12 +2337,12 @@ public enum SSKProtoError: Error {
         var attachments: [SSKProtoAttachmentPointer] = []
         attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
-        var group: SSKProtoGroupContext?
+        var group: SSKProtoGroupContext? = nil
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
         }
 
-        var quote: SSKProtoDataMessageQuote?
+        var quote: SSKProtoDataMessageQuote? = nil
         if proto.hasQuote {
             quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
         }
@@ -2812,7 +2812,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var message: SSKProtoDataMessage?
+        var message: SSKProtoDataMessage? = nil
         if proto.hasMessage {
             message = try SSKProtoDataMessage.parseProto(proto.message)
         }
@@ -2988,7 +2988,7 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer?
+        var blob: SSKProtoAttachmentPointer? = nil
         if proto.hasBlob {
             blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
@@ -3025,6 +3025,16 @@ public enum SSKProtoError: Error {
             proto.numbers = wrappedItems
         }
 
+        @objc public func addGroupIds(_ valueParam: Data) {
+            var items = proto.groupIds
+            items.append(valueParam)
+            proto.groupIds = items
+        }
+
+        @objc public func setGroupIds(_ wrappedItems: [Data]) {
+            proto.groupIds = wrappedItems
+        }
+
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageBlocked? {
             guard _isDebugAssertConfiguration() else {
@@ -3047,6 +3057,10 @@ public enum SSKProtoError: Error {
 
     @objc public var numbers: [String] {
         return proto.numbers
+    }
+
+    @objc public var groupIds: [Data] {
+        return proto.groupIds
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
@@ -3515,22 +3529,22 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent?
+        var sent: SSKProtoSyncMessageSent? = nil
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
         }
 
-        var contacts: SSKProtoSyncMessageContacts?
+        var contacts: SSKProtoSyncMessageContacts? = nil
         if proto.hasContacts {
             contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
         }
 
-        var groups: SSKProtoSyncMessageGroups?
+        var groups: SSKProtoSyncMessageGroups? = nil
         if proto.hasGroups {
             groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
         }
 
-        var request: SSKProtoSyncMessageRequest?
+        var request: SSKProtoSyncMessageRequest? = nil
         if proto.hasRequest {
             request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
         }
@@ -3538,17 +3552,17 @@ public enum SSKProtoError: Error {
         var read: [SSKProtoSyncMessageRead] = []
         read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
-        var blocked: SSKProtoSyncMessageBlocked?
+        var blocked: SSKProtoSyncMessageBlocked? = nil
         if proto.hasBlocked {
             blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
         }
 
-        var verified: SSKProtoVerified?
+        var verified: SSKProtoVerified? = nil
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
 
-        var configuration: SSKProtoSyncMessageConfiguration?
+        var configuration: SSKProtoSyncMessageConfiguration? = nil
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
@@ -3944,7 +3958,7 @@ public enum SSKProtoError: Error {
         }
         let type = SSKProtoGroupContextTypeWrap(proto.type)
 
-        var avatar: SSKProtoAttachmentPointer?
+        var avatar: SSKProtoAttachmentPointer? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -4207,12 +4221,12 @@ public enum SSKProtoError: Error {
         }
         let number = proto.number
 
-        var avatar: SSKProtoContactDetailsAvatar?
+        var avatar: SSKProtoContactDetailsAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
         }
 
-        var verified: SSKProtoVerified?
+        var verified: SSKProtoVerified? = nil
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
@@ -4372,6 +4386,10 @@ public enum SSKProtoError: Error {
             proto.color = valueParam
         }
 
+        @objc public func setBlocked(_ valueParam: Bool) {
+            proto.blocked = valueParam
+        }
+
         // NOTE: This method is intended for debugging purposes only.
         @objc public func buildIgnoringErrors() -> SSKProtoGroupDetails? {
             guard _isDebugAssertConfiguration() else {
@@ -4434,6 +4452,13 @@ public enum SSKProtoError: Error {
         return proto.hasColor
     }
 
+    @objc public var blocked: Bool {
+        return proto.blocked
+    }
+    @objc public var hasBlocked: Bool {
+        return proto.hasBlocked
+    }
+
     private init(proto: SignalServiceProtos_GroupDetails,
                  id: Data,
                  avatar: SSKProtoGroupDetailsAvatar?) {
@@ -4467,7 +4492,7 @@ public enum SSKProtoError: Error {
         }
         let id = proto.id
 
-        var avatar: SSKProtoGroupDetailsAvatar?
+        var avatar: SSKProtoGroupDetailsAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
