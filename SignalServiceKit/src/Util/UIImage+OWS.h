@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)normalizedImage;
 - (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate;
 
-- (UIImage *)resizedImageToSize:(CGSize)dstSize;
+- (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints;
+- (nullable UIImage *)resizedImageToSize:(CGSize)dstSize;
 - (UIImage *)resizedImageToFillPixelSize:(CGSize)boundingSize;
 
 + (UIImage *)imageWithColor:(UIColor *)color;

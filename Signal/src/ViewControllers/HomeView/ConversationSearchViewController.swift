@@ -387,7 +387,7 @@ class ConversationSearchViewController: UITableViewController {
                                                 guard let strongSelf = self else { return }
 
                                                 guard let results = searchResults else {
-                                                    owsFailDebug("\(strongSelf.logTag) in \(#function) searchResults was unexpectedly nil")
+                                                    owsFailDebug("searchResults was unexpectedly nil")
                                                     return
                                                 }
 

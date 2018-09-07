@@ -218,7 +218,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private let iceServers: [RTCIceServer]
     private let connectionConstraints: RTCMediaConstraints
     private let configuration: RTCConfiguration
-    private let factory = RTCPeerConnectionFactory()
+    private let factory: RTCPeerConnectionFactory
 
     // DataChannel
 
@@ -254,6 +254,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         self.iceServers = iceServers
         self.delegate = delegate
 
+        // Ensure we enable SW decoders to enable VP8 support
+        let decoderFactory = RTCDefaultVideoDecoderFactory()
+        let encoderFactory = RTCDefaultVideoEncoderFactory()
+        let factory = RTCPeerConnectionFactory(encoderFactory: encoderFactory, decoderFactory: decoderFactory)
+
+        self.factory = factory
         configuration = RTCConfiguration()
         configuration.iceServers = iceServers
         configuration.bundlePolicy = .maxBundle

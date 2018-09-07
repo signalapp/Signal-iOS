@@ -651,7 +651,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
-        guard let mediaURL = attachmentStream.mediaURL() else {
+        guard let mediaURL = attachmentStream.originalMediaURL else {
             owsFailDebug("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
             return
         }

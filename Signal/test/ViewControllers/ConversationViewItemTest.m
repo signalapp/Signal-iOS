@@ -126,7 +126,7 @@
     TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
-    NSString *_Nullable filePath = attachmentStream.filePath;
+    NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
     XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
@@ -148,7 +148,7 @@
     TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
-    NSString *_Nullable filePath = attachmentStream.filePath;
+    NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
     XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
@@ -170,7 +170,7 @@
     TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
-    NSString *_Nullable filePath = attachmentStream.filePath;
+    NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
     XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
@@ -192,7 +192,7 @@
     TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
-    NSString *_Nullable filePath = attachmentStream.filePath;
+    NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
     XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);

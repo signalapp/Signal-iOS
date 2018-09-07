@@ -192,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = self.attachmentStream.sourceFilename;
     if (!filename) {
-        filename = [[self.attachmentStream filePath] lastPathComponent];
+        filename = [self.attachmentStream.originalFilePath lastPathComponent];
     }
     NSString *topText = [[filename stringByDeletingPathExtension] ows_stripped];
     if (topText.length < 1) {

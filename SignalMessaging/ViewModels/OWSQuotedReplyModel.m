@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSAttachmentStream *attachmentStream;
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             attachmentStream = (TSAttachmentStream *)attachment;
-            thumbnailImage = attachmentStream.image;
+            thumbnailImage = attachmentStream.thumbnailImageSmallSync;
         }
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.
@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
             hasText = YES;
             quotedText = @"";
 
-            NSData *_Nullable oversizeTextData = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+            NSData *_Nullable oversizeTextData = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
             if (oversizeTextData) {
                 // We don't need to include the entire text body of the message, just
                 // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   authorId:authorId
                                       body:quotedText
                                 bodySource:TSQuotedMessageContentSourceLocal
-                            thumbnailImage:quotedAttachment.thumbnailImage
+                            thumbnailImage:quotedAttachment.thumbnailImageSmallSync
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment

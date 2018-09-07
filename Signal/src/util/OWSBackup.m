@@ -544,7 +544,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(backupIO);
     OWSAssertDebug(completion);
 
-    NSString *_Nullable attachmentFilePath = [attachment filePath];
+    NSString *_Nullable attachmentFilePath = [attachment originalFilePath];
     if (attachmentFilePath.length < 1) {
         OWSLogError(@"Attachment has invalid file path.");
         return completion(NO);
@@ -615,7 +615,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    NSString *_Nullable attachmentFilePath = [attachment filePath];
+    NSString *_Nullable attachmentFilePath = [attachment originalFilePath];
     if (attachmentFilePath.length < 1) {
         OWSLogError(@"Attachment has invalid file path.");
         return completion(NO);

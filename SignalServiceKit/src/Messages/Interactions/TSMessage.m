@@ -232,7 +232,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             [attachment isKindOfClass:TSAttachmentStream.class]) {
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
 
-            NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+            NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
             if (data) {
                 NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 if (text) {
@@ -260,7 +260,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             // Handle oversize text attachments.
             if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+                NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
                 if (data) {
                     NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                     if (text) {

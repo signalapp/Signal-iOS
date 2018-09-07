@@ -539,7 +539,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return NO;
                 }
                 TSAttachmentStream *attachmentStream = object;
-                NSString *_Nullable filePath = attachmentStream.filePath;
+                NSString *_Nullable filePath = attachmentStream.originalFilePath;
                 if (!filePath) {
                     OWSLogError(@"attachment is missing file.");
                     return NO;

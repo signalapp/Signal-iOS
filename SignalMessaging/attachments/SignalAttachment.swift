@@ -180,16 +180,11 @@ public class SignalAttachment: NSObject {
 
     // MARK: Constants
 
-    /**
-     * Media Size constraints from Signal-Android
-     *
-     * https://github.com/signalapp/Signal-Android/blob/master/src/org/thoughtcrime/securesms/mms/PushMediaConstraints.java
-     */
-    static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
-    static let kMaxFileSizeImage = UInt(6 * 1024 * 1024)
-    static let kMaxFileSizeVideo = UInt(100 * 1024 * 1024)
-    static let kMaxFileSizeAudio = UInt(100 * 1024 * 1024)
-    static let kMaxFileSizeGeneric = UInt(100 * 1024 * 1024)
+    static let kMaxFileSizeAnimatedImage = OWSMediaUtils.kMaxFileSizeAnimatedImage
+    static let kMaxFileSizeImage = OWSMediaUtils.kMaxFileSizeImage
+    static let kMaxFileSizeVideo = OWSMediaUtils.kMaxFileSizeVideo
+    static let kMaxFileSizeAudio = OWSMediaUtils.kMaxFileSizeAudio
+    static let kMaxFileSizeGeneric = OWSMediaUtils.kMaxFileSizeGeneric
 
     // MARK: Constructor
 

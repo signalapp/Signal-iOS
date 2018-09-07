@@ -35,11 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *replacingView;
 @property (nonatomic) UIButton *shareButton;
 
-@property (nonatomic) NSData *fileData;
-
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
-@property (nonatomic, readonly) UIImage *image;
+@property (nonatomic, nullable) UIImage *image;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
 @property (nonatomic, nullable) UIButton *playVideoButton;
@@ -54,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTrailingConstraint;
 
 @end
+
+#pragma mark -
 
 @implementation MediaDetailViewController
 
@@ -72,8 +72,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     _galleryItemBox = galleryItemBox;
     _viewItem = viewItem;
+
     // We cache the image data in case the attachment stream is deleted.
-    _image = galleryItemBox.attachmentStream.image;
+    __weak MediaDetailViewController *weakSelf = self;
+    _image = [galleryItemBox.attachmentStream
+        thumbnailImageLargeWithSuccess:^(UIImage *image) {
+            weakSelf.image = image;
+            [weakSelf updateContents];
+            [weakSelf updateMinZoomScale];
+        }
+        failure:^{
+            OWSLogWarn(@"Could not load media.");
+        }];
 
     return self;
 }
@@ -81,22 +91,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSAttachmentStream *)attachmentStream
 {
     return self.galleryItemBox.attachmentStream;
-}
-
-- (NSURL *_Nullable)attachmentUrl
-{
-    return self.attachmentStream.mediaURL;
-}
-
-- (NSData *)fileData
-{
-    if (!_fileData) {
-        NSURL *_Nullable url = self.attachmentUrl;
-        if (url) {
-            _fileData = [NSData dataWithContentsOfURL:url];
-        }
-    }
-    return _fileData;
 }
 
 - (BOOL)isAnimated
@@ -115,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = [UIColor clearColor];
 
-    [self createContents];
+    [self updateContents];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -134,6 +128,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateMinZoomScale
 {
+    if (!self.image) {
+        self.scrollView.minimumZoomScale = 1.f;
+        self.scrollView.maximumZoomScale = 1.f;
+        self.scrollView.zoomScale = 1.f;
+        return;
+    }
+
     CGSize viewSize = self.scrollView.bounds.size;
     UIImage *image = self.image;
     OWSAssertDebug(image);
@@ -163,8 +164,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Initializers
 
-- (void)createContents
+- (void)updateContents
 {
+    [self.mediaView removeFromSuperview];
+    [self.scrollView removeFromSuperview];
+    [self.playVideoButton removeFromSuperview];
+    [self.videoProgressBar removeFromSuperview];
+
     UIScrollView *scrollView = [UIScrollView new];
     [self.view addSubview:scrollView];
     self.scrollView = scrollView;
@@ -184,19 +190,28 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.isAnimated) {
         if (self.attachmentStream.isValidImage) {
-            YYImage *animatedGif = [YYImage imageWithData:self.fileData];
+            YYImage *animatedGif = [YYImage imageWithContentsOfFile:self.attachmentStream.originalFilePath];
             YYAnimatedImageView *animatedView = [YYAnimatedImageView new];
             animatedView.image = animatedGif;
             self.mediaView = animatedView;
         } else {
-            self.mediaView = [UIImageView new];
+            self.mediaView = [UIView new];
+            self.mediaView.backgroundColor = Theme.offBackgroundColor;
         }
+    } else if (!self.image) {
+        // Still loading thumbnail.
+        self.mediaView = [UIView new];
+        self.mediaView.backgroundColor = Theme.offBackgroundColor;
     } else if (self.isVideo) {
-        self.mediaView = [self buildVideoPlayerView];
+        if (self.attachmentStream.isValidVideo) {
+            self.mediaView = [self buildVideoPlayerView];
+        } else {
+            self.mediaView = [UIView new];
+            self.mediaView.backgroundColor = Theme.offBackgroundColor;
+        }
     } else {
         // Present the static image using standard UIImageView
         UIImageView *imageView = [[UIImageView alloc] initWithImage:self.image];
-
         self.mediaView = imageView;
     }
 
@@ -260,12 +275,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIView *)buildVideoPlayerView
 {
+    NSURL *_Nullable attachmentUrl = self.attachmentStream.originalMediaURL;
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:[self.attachmentUrl path]]) {
+    if (![fileManager fileExistsAtPath:[attachmentUrl path]]) {
         OWSFailDebug(@"Missing video file");
     }
 
-    OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:self.attachmentUrl];
+    OWSVideoPlayer *player = [[OWSVideoPlayer alloc] initWithUrl:attachmentUrl];
     [player seekToTime:kCMTimeZero];
     player.delegate = self;
     self.videoPlayer = player;

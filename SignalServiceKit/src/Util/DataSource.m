@@ -7,6 +7,7 @@
 #import "NSData+Image.h"
 #import "NSString+SSK.h"
 #import "OWSFileSystem.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isValidVideo
 {
-    return [NSData ows_isValidVideoAtURL:self.dataUrl];
+    return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
 }
 
 - (void)setSourceFilename:(nullable NSString *)sourceFilename
