@@ -5,6 +5,8 @@
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/OWSStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -210,6 +212,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
 {
     OWSFailDebug(@"cannot run main app active blocks in share extension.");
+}
+
+- (id<SSKKeychainStorage>)keychainStorage
+{
+    return [SSKDefaultKeychainStorage shared];
+}
+
+- (NSString *)appDocumentDirectoryPath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *documentDirectoryURL =
+        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    return [documentDirectoryURL path];
+}
+
+- (NSString *)appSharedDataDirectoryPath
+{
+    NSURL *groupContainerDirectoryURL =
+        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
+    return [groupContainerDirectoryURL path];
 }
 
 @end

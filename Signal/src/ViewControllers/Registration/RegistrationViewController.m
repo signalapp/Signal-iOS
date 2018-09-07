@@ -11,10 +11,10 @@
 #import "TSAccountManager.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
-#import <SAMKeychain/SAMKeychain.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -566,11 +566,13 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSCAssertDebug(key.length > 0);
 
     NSError *error;
-    NSString *value = [SAMKeychain passwordForService:kKeychainService_LastRegistered account:key error:&error];
-    if (value && !error) {
-        return value;
+    NSString *_Nullable value =
+        [CurrentAppContext().keychainStorage stringForService:kKeychainService_LastRegistered key:key error:&error];
+    if (error || !value) {
+        DDLogWarn(@"Could not retrieve 'last registered' value from keychain: %@.", error);
+        return nil;
     }
-    return nil;
+    return value;
 }
 
 - (void)setDebugValue:(NSString *)value forKey:(NSString *)key
@@ -580,8 +582,10 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSCAssertDebug(value.length > 0);
 
     NSError *error;
-    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    BOOL success = [SAMKeychain setPassword:value forService:kKeychainService_LastRegistered account:key error:&error];
+    BOOL success = [CurrentAppContext().keychainStorage setString:value
+                                                          service:kKeychainService_LastRegistered
+                                                              key:key
+                                                            error:&error];
     if (!success || error) {
         OWSLogError(@"Error persisting 'last registered' value in keychain: %@", error);
     }

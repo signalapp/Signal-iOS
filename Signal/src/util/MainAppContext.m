@@ -283,6 +283,26 @@ NS_ASSUME_NONNULL_BEGIN
     backgroundTask = nil;
 }
 
+- (id<SSKKeychainStorage>)keychainStorage
+{
+    return [SSKDefaultKeychainStorage shared];
+}
+
+- (NSString *)appDocumentDirectoryPath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *documentDirectoryURL =
+        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    return [documentDirectoryURL path];
+}
+
+- (NSString *)appSharedDataDirectoryPath
+{
+    NSURL *groupContainerDirectoryURL =
+        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
+    return [groupContainerDirectoryURL path];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

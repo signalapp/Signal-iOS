@@ -22,6 +22,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @class OWSAES256Key;
 
+@protocol SSKKeychainStorage;
+
 @protocol AppContext <NSObject>
 
 @property (nonatomic, readonly) BOOL isMainApp;
@@ -96,11 +98,21 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, readonly) NSDate *appLaunchTime;
 
+- (id<SSKKeychainStorage>)keychainStorage;
+
+- (NSString *)appDocumentDirectoryPath;
+
+- (NSString *)appSharedDataDirectoryPath;
+
 @end
 
 id<AppContext> CurrentAppContext(void);
 void SetCurrentAppContext(id<AppContext> appContext);
 
 void ExitShareExtension(void);
+
+#ifdef DEBUG
+void ClearCurrentAppContextForTests(void);
+#endif
 
 NS_ASSUME_NONNULL_END
