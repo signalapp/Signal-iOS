@@ -2,11 +2,11 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "SignalBaseTest.h"
 #import <SignalServiceKit/CDSSigningCertificate.h>
 #import <SignalServiceKit/NSData+OWS.h>
-#import <XCTest/XCTest.h>
 
-@interface CDSSigningCertificateTest : XCTestCase
+@interface CDSSigningCertificateTest : SignalBaseTest
 
 @end
 

@@ -46,7 +46,7 @@ class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
     }
 }
 
-class PeerConnectionClientTest: XCTestCase {
+class PeerConnectionClientTest: SignalBaseTest {
 
     var client: PeerConnectionClient!
     var clientDelegate: FakePeerConnectionClientDelegate!

@@ -3,9 +3,9 @@
 //
 
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
+#import "SSKBaseTest.h"
 #import "TSPreKeyManager.h"
 #import <AxolotlKit/SignedPrekeyRecord.h>
-#import <XCTest/XCTest.h>
 
 @interface  TSPreKeyManager (Testing)
 
@@ -13,7 +13,7 @@
 
 @end
 
-@interface SignedPreKeyDeletionTests : XCTestCase
+@interface SignedPreKeyDeletionTests : SSKBaseTest
 
 @end
 

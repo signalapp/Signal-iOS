@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
 
-@interface PhoneNumberUtilTest : XCTestCase
+@interface PhoneNumberUtilTest : SSKBaseTest
 
 @end
 

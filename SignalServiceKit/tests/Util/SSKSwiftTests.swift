@@ -2,8 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SignalBaseTest.h"
+import XCTest
 
-@interface UtilTest : SignalBaseTest
-
-@end
+class SSKSwiftTests: XCTestCase {
+}

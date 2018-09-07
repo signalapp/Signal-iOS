@@ -88,7 +88,7 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
 let bobRecipientId = "+49030183000"
 let aliceRecipientId = "+12345678900"
 
-class ConversationSearcherTest: XCTestCase {
+class ConversationSearcherTest: SignalBaseTest {
 
     // MARK: - Dependencies
     var searcher: ConversationSearcher {
@@ -381,7 +381,7 @@ class ConversationSearcherTest: XCTestCase {
     }
 }
 
-class SearcherTest: XCTestCase {
+class SearcherTest: SignalBaseTest {
 
     struct TestCharacter {
         let name: String
