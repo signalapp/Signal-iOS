@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "FunctionalUtil.h"
@@ -52,27 +52,7 @@
     }
     return r;
 }
-- (double)sumDouble {
-    double s = 0.0;
-    for (NSNumber *e in self) {
-        s += [e doubleValue];
-    }
-    return s;
-}
-- (NSUInteger)sumNSUInteger {
-    NSUInteger s = 0;
-    for (NSNumber *e in self) {
-        s += [e unsignedIntegerValue];
-    }
-    return s;
-}
-- (NSInteger)sumNSInteger {
-    NSInteger s = 0;
-    for (NSNumber *e in self) {
-        s += [e integerValue];
-    }
-    return s;
-}
+
 - (NSDictionary *)keyedBy:(id (^)(id value))keySelector {
     OWSAssertDebug(keySelector != nil);
 

@@ -313,7 +313,7 @@ def process(filepath):
     
     filename = os.path.basename(filepath)
     if filename.startswith('.'):
-        return
+        raise "shouldn't call process with dotfile"
     file_ext = os.path.splitext(filename)[1]
     if file_ext in ('.swift'):
         env_copy = os.environ.copy()
@@ -376,7 +376,7 @@ def should_ignore_path(path):
         
     return False
     
-    
+
 def process_if_appropriate(filepath):
     filename = os.path.basename(filepath)
     if filename.startswith('.'):
@@ -388,7 +388,33 @@ def process_if_appropriate(filepath):
         return
     process(filepath)
 
-    
+
+def check_diff_for_keywords():
+    keywords = ["OWSAssert\(", "OWSFail\(", "ows_add_overflow\(", "ows_sub_overflow\("]
+    matching_expression = "|".join(keywords) 
+    command_line = 'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
+    print(command_line)
+    try:
+        output = subprocess.check_output(command_line, shell=True)
+    except subprocess.CalledProcessError, e:
+        # > man grep
+        #  EXIT STATUS
+        #  The grep utility exits with one of the following values:
+        #  0     One or more lines were selected.
+        #  1     No lines were selected.
+        #  >1    An error occurred.
+        if e.returncode == 1:
+            # no keywords in diff output
+            return
+        else:
+            # some other error - bad grep expression?
+            raise e
+
+    if len(output) > 0:
+        print("⚠️  keywords detected in diff:")
+        print(output)
+
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Precommit script.')
@@ -426,3 +452,5 @@ if __name__ == "__main__":
 
     print 'git clang-format...'
     print commands.getoutput('git clang-format')
+
+    check_diff_for_keywords()

@@ -75,27 +75,7 @@
     }
     return r;
 }
-- (double)sumDouble {
-    double s = 0.0;
-    for (NSNumber *e in self) {
-        s += [e doubleValue];
-    }
-    return s;
-}
-- (NSUInteger)sumNSUInteger {
-    NSUInteger s = 0;
-    for (NSNumber *e in self) {
-        s += [e unsignedIntegerValue];
-    }
-    return s;
-}
-- (NSInteger)sumNSInteger {
-    NSInteger s = 0;
-    for (NSNumber *e in self) {
-        s += [e integerValue];
-    }
-    return s;
-}
+
 - (NSDictionary *)keyedBy:(id (^)(id value))keySelector {
     tskit_require(keySelector != nil);
 

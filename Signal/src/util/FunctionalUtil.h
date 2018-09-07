@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 @interface NSArray (FunctionalUtil)
@@ -18,15 +18,6 @@
 
 /// Returns an array of all the results of passing items from this array through the given projection function.
 - (NSArray *)filter:(int (^)(id item))predicate;
-
-/// Returns the sum of the doubles in this array of doubles.
-- (double)sumDouble;
-
-/// Returns the sum of the unsigned integers in this array of unsigned integers.
-- (NSUInteger)sumNSUInteger;
-
-/// Returns the sum of the integers in this array of integers.
-- (NSInteger)sumNSInteger;
 
 - (NSDictionary *)keyedBy:(id (^)(id))keySelector;
 - (NSDictionary *)groupBy:(id (^)(id value))keySelector;

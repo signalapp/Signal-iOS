@@ -630,27 +630,30 @@ NS_ASSUME_NONNULL_BEGIN
     {
         unsigned long long databaseFileSize = 0;
         for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
-            databaseFileSize += [OWSFileSystem fileSizeOfPath:item.encryptedItem.filePath].unsignedLongLongValue;
+            unsigned long long fileSize =
+                [OWSFileSystem fileSizeOfPath:item.encryptedItem.filePath].unsignedLongLongValue;
+            ows_add_overflow(databaseFileSize, fileSize, &databaseFileSize);
         }
         OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.",
             @"database items",
             self.unsavedDatabaseItems.count,
             databaseFileSize);
-        totalFileSize += databaseFileSize;
-        totalFileCount += self.unsavedDatabaseItems.count;
+        ows_add_overflow(totalFileSize, databaseFileSize, &totalFileSize);
+        ows_add_overflow(totalFileCount, self.unsavedDatabaseItems.count, &totalFileCount);
     }
     {
         unsigned long long attachmentFileSize = 0;
         for (OWSAttachmentExport *attachmentExport in self.unsavedAttachmentExports) {
-            attachmentFileSize +=
+            unsigned long long fileSize =
                 [OWSFileSystem fileSizeOfPath:attachmentExport.attachmentFilePath].unsignedLongLongValue;
+            ows_add_overflow(attachmentFileSize, fileSize, &attachmentFileSize);
         }
         OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.",
             @"attachment items",
             self.unsavedAttachmentExports.count,
             attachmentFileSize);
-        totalFileSize += attachmentFileSize;
-        totalFileCount += self.unsavedAttachmentExports.count;
+        ows_add_overflow(totalFileSize, attachmentFileSize, &totalFileSize);
+        ows_add_overflow(totalFileCount, self.unsavedAttachmentExports.count, &totalFileSize);
     }
     OWSLogInfo(@"exporting %@: count: %zd, bytes: %llu.", @"all items", totalFileCount, totalFileSize);
 

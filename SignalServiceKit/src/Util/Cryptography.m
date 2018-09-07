@@ -26,6 +26,9 @@ static const NSUInteger kAESGCM256_IVLength = 12;
 // length of authentication tag for AES256-GCM
 static const NSUInteger kAESGCM256_TagLength = 16;
 
+// length of key used for websocket envelope authentication
+static const NSUInteger kHMAC256_EnvelopeKeyLength = 20;
+
 const NSUInteger kAES256_KeyByteLength = 32;
 
 @implementation OWSAES256Key
@@ -230,42 +233,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
     return [ourHmacData copy];
 }
 
-+ (nullable NSData *)computeSHA1HMAC:(NSData *)data withHMACKey:(NSData *)HMACKey
-{
-    if (data.length >= SIZE_MAX) {
-        OWSFailDebug(@"data is too long.");
-        return nil;
-    }
-    size_t dataLength = (size_t)data.length;
-    if (HMACKey.length >= SIZE_MAX) {
-        OWSFailDebug(@"HMAC key is too long.");
-        return nil;
-    }
-    size_t hmacKeyLength = (size_t)HMACKey.length;
-
-    NSMutableData *_Nullable ourHmacData = [[NSMutableData alloc] initWithLength:CC_SHA1_DIGEST_LENGTH];
-    if (!ourHmacData) {
-        OWSFailDebug(@"could not allocate buffer.");
-        return nil;
-    }
-    CCHmac(kCCHmacAlgSHA1, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmacData.mutableBytes);
-    return [ourHmacData copy];
-}
-
-+ (nullable NSData *)truncatedSHA1HMAC:(NSData *)dataToHMAC
-                           withHMACKey:(NSData *)HMACKey
-                            truncation:(NSUInteger)truncation
-{
-    OWSAssertDebug(truncation <= CC_SHA1_DIGEST_LENGTH);
-
-    return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
-}
-
 + (nullable NSData *)truncatedSHA256HMAC:(NSData *)dataToHMAC
                              withHMACKey:(NSData *)HMACKey
                               truncation:(NSUInteger)truncation
 {
-    OWSAssertDebug(truncation <= CC_SHA256_DIGEST_LENGTH);
+    OWSAssert(truncation <= CC_SHA256_DIGEST_LENGTH);
+    OWSAssert(dataToHMAC);
+    OWSAssert(HMACKey);
 
     return
         [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
@@ -287,29 +261,60 @@ const NSUInteger kAES256_KeyByteLength = 32;
                        matchingHMAC:(NSData *)hmac
                              digest:(nullable NSData *)digest
 {
-    if (dataToDecrypt.length >= (SIZE_MAX - kCCBlockSizeAES128)) {
-        OWSFailDebug(@"data is too long.");
+    OWSAssert(dataToDecrypt);
+    OWSAssert(key);
+    if (key.length != kCCKeySizeAES256) {
+        OWSFailDebug(@"key had wrong size.");
+        return nil;
+    }
+    OWSAssert(iv);
+    if (iv.length != kCCBlockSizeAES128) {
+        OWSFailDebug(@"iv had wrong size.");
+        return nil;
+    }
+    OWSAssert(hmacKey);
+    OWSAssert(hmac);
+
+    size_t bufferSize;
+    BOOL didOverflow = __builtin_add_overflow(dataToDecrypt.length, kCCBlockSizeAES128, &bufferSize);
+    if (didOverflow) {
+        OWSFailDebug(@"bufferSize was too large.");
         return nil;
     }
 
     // Verify hmac of: version? || iv || encrypted data
+
+    NSUInteger dataToAuthLength = 0;
+    if (__builtin_add_overflow(dataToDecrypt.length, iv.length, &dataToAuthLength)) {
+        OWSFailDebug(@"dataToAuth was too large.");
+        return nil;
+    }
+    if (version != nil && __builtin_add_overflow(dataToAuthLength, version.length, &dataToAuthLength)) {
+        OWSFailDebug(@"dataToAuth was too large.");
+        return nil;
+    }
+
     NSMutableData *dataToAuth = [NSMutableData data];
     if (version != nil) {
         [dataToAuth appendData:version];
     }
-
     [dataToAuth appendData:iv];
     [dataToAuth appendData:dataToDecrypt];
 
     NSData *_Nullable ourHmacData;
 
-    if (hmacType == TSHMACSHA1Truncated10Bytes) {
-        ourHmacData = [Cryptography truncatedSHA1HMAC:dataToAuth withHMACKey:hmacKey truncation:10];
-    } else if (hmacType == TSHMACSHA256Truncated10Bytes) {
+    if (hmacType == TSHMACSHA256Truncated10Bytes) {
+        // used to authenticate envelope from websocket
+        OWSAssert(hmacKey.length == kHMAC256_EnvelopeKeyLength);
         ourHmacData = [Cryptography truncatedSHA256HMAC:dataToAuth withHMACKey:hmacKey truncation:10];
+        OWSAssert(ourHmacData.length == 10);
     } else if (hmacType == TSHMACSHA256AttachementType) {
+        OWSAssert(hmacKey.length == HMAC256_KEY_LENGTH);
         ourHmacData =
             [Cryptography truncatedSHA256HMAC:dataToAuth withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
+        OWSAssert(ourHmacData.length == HMAC256_OUTPUT_LENGTH);
+    } else {
+        OWSFail(@"unknown HMAC scheme: %ld", (long)hmacType);
     }
 
     if (hmac == nil || ![ourHmacData ows_constantTimeIsEqualToData:hmac]) {
@@ -333,7 +338,6 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     // decrypt
-    size_t bufferSize = [dataToDecrypt length] + kCCBlockSizeAES128;
     NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
     if (!bufferData) {
         OWSLogError(@"Failed to allocate buffer.");
@@ -372,7 +376,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
     size_t ivLength = 16;
     size_t macLength = 10;
     size_t nonCiphertextLength = versionLength + ivLength + macLength;
-    size_t ciphertextLength = payload.length - nonCiphertextLength;
+
+    size_t ciphertextLength;
+    ows_sub_overflow(payload.length, nonCiphertextLength, &ciphertextLength);
 
     if (payload.length < nonCiphertextLength) {
         OWSFailDebug(@"Invalid payload");
@@ -389,12 +395,12 @@ const NSUInteger kAES256_KeyByteLength = 32;
     NSData *ivData = [payload subdataWithRange:NSMakeRange(cursor, ivLength)];
     cursor += ivLength;
     NSData *ciphertextData = [payload subdataWithRange:NSMakeRange(cursor, ciphertextLength)];
-    cursor += ciphertextLength;
+    ows_add_overflow(cursor, ciphertextLength, &cursor);
     NSData *macData = [payload subdataWithRange:NSMakeRange(cursor, macLength)];
 
     NSData *signalingKey                = [NSData dataFromBase64String:signalingKeyString];
     NSData *signalingKeyAESKeyMaterial  = [signalingKey subdataWithRange:NSMakeRange(0, 32)];
-    NSData *signalingKeyHMACKeyMaterial = [signalingKey subdataWithRange:NSMakeRange(32, 20)];
+    NSData *signalingKeyHMACKeyMaterial = [signalingKey subdataWithRange:NSMakeRange(32, kHMAC256_EnvelopeKeyLength)];
     return [Cryptography decryptCBCMode:ciphertextData
                                     key:signalingKeyAESKeyMaterial
                                      IV:ivData
@@ -434,11 +440,14 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     // dataToDecrypt: IV || Ciphertext || truncated MAC(IV||Ciphertext)
     NSData *iv                  = [dataToDecrypt subdataWithRange:NSMakeRange(0, AES_CBC_IV_LENGTH)];
-    NSData *encryptedAttachment = [dataToDecrypt
-        subdataWithRange:NSMakeRange(AES_CBC_IV_LENGTH,
-                                     [dataToDecrypt length] - AES_CBC_IV_LENGTH - HMAC256_OUTPUT_LENGTH)];
-    NSData *hmac = [dataToDecrypt
-        subdataWithRange:NSMakeRange([dataToDecrypt length] - HMAC256_OUTPUT_LENGTH, HMAC256_OUTPUT_LENGTH)];
+
+    NSUInteger cipherTextLength;
+    ows_sub_overflow(dataToDecrypt.length, (AES_CBC_IV_LENGTH + HMAC256_OUTPUT_LENGTH), &cipherTextLength);
+    NSData *encryptedAttachment = [dataToDecrypt subdataWithRange:NSMakeRange(AES_CBC_IV_LENGTH, cipherTextLength)];
+
+    NSUInteger hmacOffset;
+    ows_sub_overflow(dataToDecrypt.length, HMAC256_OUTPUT_LENGTH, &hmacOffset);
+    NSData *hmac = [dataToDecrypt subdataWithRange:NSMakeRange(hmacOffset, HMAC256_OUTPUT_LENGTH)];
 
     NSData *_Nullable paddedPlainText = [Cryptography decryptCBCMode:encryptedAttachment
                                                                  key:encryptionKey
@@ -469,7 +478,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
             OWSLogInfo(@"decrypted unpadded attachment.");
             return [paddedPlainText copy];
         } else {
-            unsigned long paddingSize = paddedPlainText.length - unpaddedSize;
+            unsigned long paddingSize;
+            ows_sub_overflow(paddedPlainText.length, unpaddedSize, &paddingSize);
+
             OWSLogInfo(@"decrypted padded attachment with unpaddedSize: %lu, paddingSize: %lu",
                 (unsigned long)unpaddedSize,
                 paddingSize);
@@ -517,7 +528,8 @@ const NSUInteger kAES256_KeyByteLength = 32;
     paddedAttachmentData.length = desiredSize;
 
     // Encrypt
-    size_t bufferSize = [paddedAttachmentData length] + kCCBlockSizeAES128;
+    size_t bufferSize;
+    ows_add_overflow(paddedAttachmentData.length, kCCBlockSizeAES128, &bufferSize);
     NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
     if (!bufferData) {
         OWSLogError(@"Failed to allocate buffer.");
@@ -790,14 +802,22 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 + (nullable NSData *)decryptAESGCMWithProfileData:(NSData *)encryptedData key:(OWSAES256Key *)key
 {
-    OWSAssertDebug(encryptedData.length > kAESGCM256_IVLength + kAESGCM256_TagLength);
-    NSUInteger cipherTextLength = encryptedData.length - kAESGCM256_IVLength - kAESGCM256_TagLength;
+    NSUInteger cipherTextLength;
+    BOOL didOverflow
+        = __builtin_sub_overflow(encryptedData.length, (kAESGCM256_IVLength + kAESGCM256_TagLength), &cipherTextLength);
+    if (didOverflow) {
+        OWSFailDebug(@"unexpectedly short encryptedData.length: %lu", (unsigned long)encryptedData.length);
+        return nil;
+    }
 
     // encryptedData layout: initializationVector || ciphertext || authTag
     NSData *initializationVector = [encryptedData subdataWithRange:NSMakeRange(0, kAESGCM256_IVLength)];
     NSData *ciphertext = [encryptedData subdataWithRange:NSMakeRange(kAESGCM256_IVLength, cipherTextLength)];
-    NSData *authTag =
-        [encryptedData subdataWithRange:NSMakeRange(kAESGCM256_IVLength + cipherTextLength, kAESGCM256_TagLength)];
+
+    NSUInteger tagOffset;
+    ows_add_overflow(kAESGCM256_IVLength, cipherTextLength, &tagOffset);
+
+    NSData *authTag = [encryptedData subdataWithRange:NSMakeRange(tagOffset, kAESGCM256_TagLength)];
 
     return [self decryptAESGCMWithInitializationVector:initializationVector
                                             ciphertext:ciphertext
