@@ -7,7 +7,6 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeContactsManager.h"
-#import "OWSFakeContactsUpdater.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
@@ -218,7 +217,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSPrimaryStorage *storageManager = [OWSPrimaryStorage sharedManager];
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
-    OWSFakeContactsUpdater *contactsUpdater = [OWSFakeContactsUpdater new];
 
     // Successful Sending
     TSNetworkManager *successfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:YES];

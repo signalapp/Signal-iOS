@@ -3,3 +3,4 @@
 //
 
 #import "Signal-Bridging-Header.h"
+#import "SignalBaseTest.h"
