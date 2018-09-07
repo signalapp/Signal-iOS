@@ -8,12 +8,12 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSReadReceiptManager.h"
+#import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
-#import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         networkManager:TSNetworkManager.sharedManager
                                         primaryStorage:OWSPrimaryStorage.sharedManager
                                     readReceiptManager:OWSReadReceiptManager.sharedManager
-                                       contactsManager:[TextSecureKitEnv sharedEnv].contactsManager];
+                                       contactsManager:[SSKEnvironment shared].contactsManager];
 }
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript

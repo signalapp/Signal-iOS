@@ -44,11 +44,11 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/sysctl.h>
 
@@ -615,7 +615,7 @@ static NSTimeInterval launchStartedAt;
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
             [TSSocketManager requestSocketOpen];
-            [[Environment current].contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
+            [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
 
@@ -1041,8 +1041,8 @@ static NSTimeInterval launchStartedAt;
 
     [AppVersion.sharedInstance mainAppLaunchDidComplete];
 
-    [Environment.current.contactsManager loadSignalAccountsFromCache];
-    [Environment.current.contactsManager startObserving];
+    [Environment.shared.contactsManager loadSignalAccountsFromCache];
+    [Environment.shared.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];

@@ -34,8 +34,8 @@
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 
-+ (Environment *)current;
-+ (void)setCurrent:(Environment *)environment;
+@property (class, nonatomic) Environment *shared;
+
 // Should only be called by tests.
 + (void)clearCurrentForTests;
 

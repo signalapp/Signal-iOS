@@ -64,12 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSMessageSender *)messageSender
 {
-    return [Environment current].messageSender;
+    return Environment.shared.messageSender;
 }
 
 + (OWSContactsManager *)contactsManager
 {
-    return [Environment current].contactsManager;
+    return Environment.shared.contactsManager;
 }
 
 + (OWSIdentityManager *)identityManager

@@ -583,8 +583,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 OWSVerificationStateChangeMessage *verificationMessage
                     = (OWSVerificationStateChangeMessage *)infoMessage;
                 BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
-                NSString *displayName = [[Environment current].contactsManager
-                    displayNameForPhoneIdentifier:verificationMessage.recipientId];
+                NSString *displayName =
+                    [Environment.shared.contactsManager displayNameForPhoneIdentifier:verificationMessage.recipientId];
                 NSString *titleFormat = (isVerified
                         ? (verificationMessage.isLocalChange
                                   ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",

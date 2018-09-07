@@ -17,10 +17,10 @@ class DebugUINotifications: DebugUIPage {
         return SignalApp.shared().callService.notificationsAdapter
     }
     var messageSender: MessageSender {
-        return Environment.current().messageSender
+        return Environment.shared.messageSender
     }
     var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+        return Environment.shared.contactsManager
     }
 
     // MARK: Overrides

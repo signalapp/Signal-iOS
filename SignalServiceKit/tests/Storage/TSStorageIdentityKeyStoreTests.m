@@ -6,8 +6,8 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSUnitTestEnvironment.h"
+#import "SSKEnvironment.h"
 #import "SecurityUtils.h"
-#import "TextSecureKitEnv.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <XCTest/XCTest.h>
 

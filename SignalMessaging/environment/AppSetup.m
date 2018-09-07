@@ -12,7 +12,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,18 +34,17 @@ NS_ASSUME_NONNULL_BEGIN
         // Order matters here.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        [Environment setCurrent:[Release releaseEnvironment]];
+        [Environment setShared:[Release releaseEnvironment]];
 
         id<OWSCallMessageHandler> callMessageHandler = callMessageHandlerBlock();
         id<NotificationsProtocol> notificationsManager = notificationsManagerBlock();
 
-        TextSecureKitEnv *sharedEnv =
-            [[TextSecureKitEnv alloc] initWithCallMessageHandler:callMessageHandler
-                                                 contactsManager:[Environment current].contactsManager
-                                                   messageSender:[Environment current].messageSender
-                                            notificationsManager:notificationsManager
-                                                  profileManager:OWSProfileManager.sharedManager];
-        [TextSecureKitEnv setSharedEnv:sharedEnv];
+        SSKEnvironment *shared = [[SSKEnvironment alloc] initWithCallMessageHandler:callMessageHandler
+                                                                    contactsManager:Environment.shared.contactsManager
+                                                                      messageSender:Environment.shared.messageSender
+                                                               notificationsManager:notificationsManager
+                                                                     profileManager:OWSProfileManager.sharedManager];
+        [SSKEnvironment setShared:shared];
 
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];

@@ -29,14 +29,14 @@ static Environment *sharedEnvironment = nil;
 
 @implementation Environment
 
-+ (Environment *)current
++ (Environment *)shared
 {
     OWSAssertDebug(sharedEnvironment);
 
     return sharedEnvironment;
 }
 
-+ (void)setCurrent:(Environment *)environment
++ (void)setShared:(Environment *)environment
 {
     // The main app environment should only be set once.
     //
@@ -103,9 +103,9 @@ static Environment *sharedEnvironment = nil;
 
 + (OWSPreferences *)preferences
 {
-    OWSAssertDebug([Environment current].preferences);
+    OWSAssertDebug(Environment.shared.preferences);
 
-    return [Environment current].preferences;
+    return Environment.shared.preferences;
 }
 
 // TODO: Convert to singleton?

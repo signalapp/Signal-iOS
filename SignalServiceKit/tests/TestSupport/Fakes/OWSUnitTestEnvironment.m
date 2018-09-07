@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUnitTestEnvironment.h"
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [self setSharedEnv:[[self alloc] initDefault]];
+        [self setShared:[[self alloc] initDefault]];
     });
 }
 

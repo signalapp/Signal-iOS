@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TextSecureKitEnv.h"
+#import "SSKEnvironment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSUnitTestEnvironment : TextSecureKitEnv
+@interface OWSUnitTestEnvironment : SSKEnvironment
 
 + (void)ensureSetup;
 - (instancetype)initDefault;

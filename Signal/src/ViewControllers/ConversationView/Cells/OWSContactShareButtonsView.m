@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self) {
         _delegate = delegate;
         _contactShare = contactShare;
-        _contactsManager = [Environment current].contactsManager;
+        _contactsManager = Environment.shared.contactsManager;
 
         [self createContents];
     }
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(contactShare);
 
-    OWSContactsManager *contactsManager = [Environment current].contactsManager;
+    OWSContactsManager *contactsManager = Environment.shared.contactsManager;
 
     return [self hasAnyButton:contactShare contactsManager:contactsManager];
 }

@@ -20,12 +20,12 @@
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
-#import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -79,8 +79,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (instancetype)initDefault
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = [Environment current].messageSender;
-    TSNetworkManager *networkManager = [Environment current].networkManager;
+    OWSMessageSender *messageSender = Environment.shared.messageSender;
+    TSNetworkManager *networkManager = Environment.shared.networkManager;
 
     return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender networkManager:networkManager];
 }

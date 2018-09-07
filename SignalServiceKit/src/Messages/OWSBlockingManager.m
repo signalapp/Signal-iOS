@@ -9,7 +9,7 @@
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
-#import "TextSecureKitEnv.h"
+#import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,7 +51,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
 - (instancetype)initDefault
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = [TextSecureKitEnv sharedEnv].messageSender;
+    OWSMessageSender *messageSender = [SSKEnvironment shared].messageSender;
 
     return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
 }

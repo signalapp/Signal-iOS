@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [[Environment current].preferences unsetRecordedAPNSTokens];
+    [Environment.shared.preferences unsetRecordedAPNSTokens];
 
     [ModalActivityIndicatorViewController
         presentFromViewController:fromViewController

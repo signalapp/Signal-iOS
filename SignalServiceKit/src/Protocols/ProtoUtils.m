@@ -5,8 +5,8 @@
 #import "ProtoUtils.h"
 #import "Cryptography.h"
 #import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
 #import "TSThread.h"
-#import "TextSecureKitEnv.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
 
-    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+    id<ProfileManagerProtocol> profileManager = [SSKEnvironment shared].profileManager;
 
     // For 1:1 threads, we want to include the profile key IFF the
     // contact is in the whitelist.
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSAES256Key *)localProfileKey
 {
-    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+    id<ProfileManagerProtocol> profileManager = [SSKEnvironment shared].profileManager;
     return profileManager.localProfileKey;
 }
 
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (recipientId.length > 0) {
             // Once we've shared our profile key with a user (perhaps due to being
             // a member of a whitelisted group), make sure they're whitelisted.
-            id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+            id<ProfileManagerProtocol> profileManager = [SSKEnvironment shared].profileManager;
             // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
             dispatch_async(dispatch_get_main_queue(), ^{
                 [profileManager addUserToProfileWhitelist:recipientId];
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
-        id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+        id<ProfileManagerProtocol> profileManager = [SSKEnvironment shared].profileManager;
         // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
         dispatch_async(dispatch_get_main_queue(), ^{
             [profileManager addUserToProfileWhitelist:recipientId];

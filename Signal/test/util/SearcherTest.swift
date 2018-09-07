@@ -7,10 +7,10 @@ import XCTest
 @testable import SignalMessaging
 
 @objc
-class StubbableEnvironment: TextSecureKitEnv {
-    let proxy: TextSecureKitEnv
+class StubbableEnvironment: SSKEnvironment {
+    let proxy: SSKEnvironment
 
-    init(proxy: TextSecureKitEnv) {
+    init(proxy: SSKEnvironment) {
         self.proxy = proxy
         super.init(callMessageHandler: proxy.callMessageHandler, contactsManager: proxy.contactsManager, messageSender: proxy.messageSender, notificationsManager: proxy.notificationsManager, profileManager: proxy.profileManager)
     }
@@ -101,12 +101,12 @@ class ConversationSearcherTest: XCTestCase {
 
     // MARK: - Test Life Cycle
 
-    var originalEnvironment: TextSecureKitEnv?
+    var originalEnvironment: SSKEnvironment?
 
     override func tearDown() {
         super.tearDown()
 
-        TextSecureKitEnv.setShared(originalEnvironment!)
+        SSKEnvironment.setShared(originalEnvironment!)
     }
 
     override func setUp() {
@@ -118,12 +118,12 @@ class ConversationSearcherTest: XCTestCase {
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
-        originalEnvironment = TextSecureKitEnv.shared()
+        originalEnvironment = SSKEnvironment.shared
         assert(originalEnvironment != nil)
 
         let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
         testEnvironment.stubbedContactsManager = FakeContactsManager()
-        TextSecureKitEnv.setShared(testEnvironment)
+        SSKEnvironment.setShared(testEnvironment)
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
@@ -375,7 +375,7 @@ class ConversationSearcherTest: XCTestCase {
     private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!
         self.dbConnection.read { transaction in
-            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: TextSecureKitEnv.shared().contactsManager)
+            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared.contactsManager)
         }
         return results
     }

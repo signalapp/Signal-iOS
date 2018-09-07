@@ -58,8 +58,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     [super loadView];
 
-    _contactsManager = [Environment current].contactsManager;
-    _messageSender = [Environment current].messageSender;
+    _contactsManager = Environment.shared.contactsManager;
+    _messageSender = Environment.shared.messageSender;
 
     _progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
     self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");

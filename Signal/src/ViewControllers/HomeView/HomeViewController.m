@@ -146,8 +146,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)commonInit
 {
     _accountManager = SignalApp.sharedApp.accountManager;
-    _contactsManager = [Environment current].contactsManager;
-    _messageSender = [Environment current].messageSender;
+    _contactsManager = Environment.shared.contactsManager;
+    _messageSender = Environment.shared.messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
     _threadViewModelCache = [NSCache new];

@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
-    OWSAssertDebug([Environment current]);
+    OWSAssertDebug(Environment.shared);
     OWSAssertDebug(completion);
 
     NSString *previousVersion = AppVersion.sharedInstance.lastAppVersion;
