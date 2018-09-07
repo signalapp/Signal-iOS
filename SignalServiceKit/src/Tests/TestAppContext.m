@@ -3,7 +3,7 @@
 //
 
 #import "TestAppContext.h"
-#import "TestKeychainStorage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)appDocumentDirectoryPath
 {
-    return self.mockAppDocumentDirectoryPath
+    return self.mockAppDocumentDirectoryPath;
 }
 
 - (NSString *)appSharedDataDirectoryPath

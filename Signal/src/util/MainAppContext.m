@@ -285,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<KeychainStorage>)keychainStorage
 {
-    return [SSKKeychainStorage sharedInstance];
+    return [SSKKeychainStorage shared];
 }
 
 - (NSString *)appDocumentDirectoryPath

@@ -582,10 +582,10 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     OWSCAssertDebug(value.length > 0);
 
     NSError *error;
-    BOOL success = [CurrentAppContext().keychainStorage setWithString:value
-                                                              service:kKeychainService_LastRegistered
-                                                                  key:key
-                                                                error:&error];
+    BOOL success = [CurrentAppContext().keychainStorage setString:value
+                                                          service:kKeychainService_LastRegistered
+                                                              key:key
+                                                            error:&error];
     if (!success || error) {
         OWSLogError(@"Error persisting 'last registered' value in keychain: %@", error);
     }

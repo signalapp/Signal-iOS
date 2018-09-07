@@ -15,7 +15,7 @@ public enum KeychainStorageError: Error {
 
     @objc func string(forService service: String, key: String) throws -> String
 
-    @objc func set(string: String, service: String, key: String) throws
+    @objc(setString:service:key:error:) func set(string: String, service: String, key: String) throws
 
     @objc func data(forService service: String, key: String) throws -> Data
 
@@ -29,7 +29,7 @@ public enum KeychainStorageError: Error {
 @objc
 public class SSKKeychainStorage: NSObject, KeychainStorage {
 
-    @objc public static let sharedInstance = SSKKeychainStorage()
+    @objc public static let shared = SSKKeychainStorage()
 
     // Force usage as a singleton
     override private init() {
