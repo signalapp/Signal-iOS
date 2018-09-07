@@ -569,7 +569,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     NSString *_Nullable value =
         [CurrentAppContext().keychainStorage stringForService:kKeychainService_LastRegistered key:key error:&error];
     if (error || !value) {
-        DDLogWarn(@"Could not retrieve 'last registered' value from keychain: %@.", error);
+        OWSLogWarn(@"Could not retrieve 'last registered' value from keychain: %@.", error);
         return nil;
     }
     return value;
