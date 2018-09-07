@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
-    [Environment.preferences clear];
+    [Environment.shared.preferences clear];
 
     [self clearAllNotifications];
 

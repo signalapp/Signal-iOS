@@ -2796,10 +2796,10 @@ typedef enum : NSUInteger {
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
 
-    if (!Environment.preferences.hasSentAMessage) {
-        [Environment.preferences setHasSentAMessage:YES];
+    if (!Environment.shared.preferences.hasSentAMessage) {
+        [Environment.shared.preferences setHasSentAMessage:YES];
     }
-    if ([Environment.preferences soundInForeground]) {
+    if ([Environment.shared.preferences soundInForeground]) {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
         AudioServicesPlaySystemSound(soundId);
     }

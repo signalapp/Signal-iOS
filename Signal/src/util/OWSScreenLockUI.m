@@ -348,7 +348,7 @@ NS_ASSUME_NONNULL_BEGIN
         return ScreenLockUIStateNone;
     }
 
-    if (Environment.preferences.screenSecurityIsEnabled) {
+    if (Environment.shared.preferences.screenSecurityIsEnabled) {
         OWSLogVerbose(@"desiredUIState: screen protection 4.");
         return ScreenLockUIStateScreenProtection;
     } else {

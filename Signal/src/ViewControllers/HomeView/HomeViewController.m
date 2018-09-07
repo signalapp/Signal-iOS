@@ -1435,7 +1435,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     NSString *secondLine = @"";
 
     if (self.homeViewMode == HomeViewMode_Inbox) {
-        if ([Environment.preferences hasSentAMessage]) {
+        if ([Environment.shared.preferences hasSentAMessage]) {
             firstLine = NSLocalizedString(
                 @"EMPTY_INBOX_TITLE", @"Header text an existing user sees when viewing an empty inbox");
             secondLine = NSLocalizedString(
@@ -1477,7 +1477,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 // If the user hasn't sent a message, we don't want to ask them for a review yet.
 - (void)requestReviewIfAppropriate
 {
-    if (self.hasEverAppeared && Environment.preferences.hasSentAMessage) {
+    if (self.hasEverAppeared && Environment.shared.preferences.hasSentAMessage) {
         OWSLogDebug(@"requesting review");
         if (@available(iOS 10, *)) {
             // In Debug this pops up *every* time, which is helpful, but annoying.
