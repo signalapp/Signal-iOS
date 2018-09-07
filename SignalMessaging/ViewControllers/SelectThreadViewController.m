@@ -238,21 +238,19 @@ NS_ASSUME_NONNULL_BEGIN
                                 return;
                             }
 
-                            if ([thread isKindOfClass:[TSContactThread class]]) {
-                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
-                                if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
-                                    [BlockListUIUtils showUnblockPhoneNumberActionSheet:thread.contactIdentifier
-                                                                     fromViewController:strongSelf
-                                                                        blockingManager:helper.blockingManager
-                                                                        contactsManager:helper.contactsManager
-                                                                        completionBlock:^(BOOL isStillBlocked) {
-                                                                            if (!isStillBlocked) {
-                                                                                [strongSelf.selectThreadViewDelegate
-                                                                                    threadWasSelected:thread];
-                                                                            }
-                                                                        }];
-                                    return;
-                                }
+                            BOOL isBlocked = [helper isThreadBlocked:thread];
+                            if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
+                                [BlockListUIUtils
+                                    showUnblockThreadActionSheet:thread
+                                              fromViewController:strongSelf
+                                                 blockingManager:helper.blockingManager
+                                                 contactsManager:helper.contactsManager
+                                                 completionBlock:^(BOOL isStillBlocked) {
+                                                     if (!isStillBlocked) {
+                                                         [strongSelf.selectThreadViewDelegate threadWasSelected:thread];
+                                                     }
+                                                 }];
+                                return;
                             }
 
                             [strongSelf.selectThreadViewDelegate threadWasSelected:thread];

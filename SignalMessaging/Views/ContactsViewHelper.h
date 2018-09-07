@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class Contact;
 @class ContactsViewHelper;
 @class SignalAccount;
+@class TSThread;
 
 @protocol CNContactViewControllerDelegate;
 
@@ -58,9 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
 - (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
 
+// MJK TODO Can we remove?
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
+
+- (BOOL)isThreadBlocked:(TSThread *)thread;
 
 // NOTE: This method uses a transaction.
 - (NSString *)localNumber;

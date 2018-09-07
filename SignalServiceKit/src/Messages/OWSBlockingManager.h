@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSThread;
+
 extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
 
 // This class can be safely accessed and used from any thread.
@@ -21,9 +23,15 @@ extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
 // want to fire a sync message.
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage;
 
+// TODO convert to property
 - (NSArray<NSString *> *)blockedPhoneNumbers;
 
+@property (readonly) NSArray<NSData *> *blockedGroupIds;
+- (void)addBlockedGroupId:(NSData *)groupId;
+- (void)removeBlockedGroupId:(NSData *)groupId;
+
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
+- (BOOL)isThreadBlocked:(TSThread *)thread;
 
 - (void)syncBlockedPhoneNumbers;
 

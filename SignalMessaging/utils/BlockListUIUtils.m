@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "BlockListUIUtils.h"
@@ -18,6 +18,31 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 @implementation BlockListUIUtils
 
 #pragma mark - Block
+
++ (void)showBlockThreadActionSheet:(TSThread *)thread
+                fromViewController:(UIViewController *)fromViewController
+                   blockingManager:(OWSBlockingManager *)blockingManager
+                   contactsManager:(OWSContactsManager *)contactsManager
+                   completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self showBlockPhoneNumberActionSheet:contactThread.contactIdentifier
+                           fromViewController:fromViewController
+                              blockingManager:blockingManager
+                              contactsManager:contactsManager
+                              completionBlock:completionBlock];
+    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self showBlockGroupActionSheet:groupThread.groupModel
+                            displayName:groupThread.name
+                     fromViewController:fromViewController
+                        blockingManager:blockingManager
+                        completionBlock:completionBlock];
+    } else {
+        OWSFail(@"unexpected thread type: %@", thread.class);
+    }
+}
 
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
                      fromViewController:(UIViewController *)fromViewController
@@ -89,7 +114,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                         @"An explanation of the consequences of blocking another user.")
                                      preferredStyle:UIAlertControllerStyleActionSheet];
 
-    UIAlertAction *unblockAction = [UIAlertAction
+    UIAlertAction *blockAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
@@ -103,7 +128,56 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                 }
                             }];
                 }];
-    [actionSheetController addAction:unblockAction];
+    [actionSheetController addAction:blockAction];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              if (completionBlock) {
+                                                                  completionBlock(NO);
+                                                              }
+                                                          }];
+    [actionSheetController addAction:dismissAction];
+
+    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+}
+
++ (void)showBlockGroupActionSheet:(TSGroupModel *)groupModel
+                      displayName:(NSString *)displayName
+               fromViewController:(UIViewController *)fromViewController
+                  blockingManager:(OWSBlockingManager *)blockingManager
+                  completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    OWSAssert(displayName.length > 0);
+    OWSAssert(fromViewController);
+    OWSAssert(blockingManager);
+
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
+                                                     @"A format for the 'block group' action sheet title. Embeds {{the "
+                                                     @"blocked group's name}}."),
+                                [self formatDisplayNameForAlertTitle:displayName]];
+
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:title
+                                            message:NSLocalizedString(@"BLOCK_GROUP_BEHAVIOR_EXPLANATION",
+                                                        @"An explanation of the consequences of blocking a group.")
+                                     preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *blockAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [self blockGroup:groupModel
+                               displayName:displayName
+                        fromViewController:fromViewController
+                           blockingManager:blockingManager
+                           completionBlock:^(UIAlertAction *ignore) {
+                               if (completionBlock) {
+                                   completionBlock(YES);
+                               }
+                           }];
+                }];
+    [actionSheetController addAction:blockAction];
 
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
                                                             style:UIAlertActionStyleCancel
@@ -144,7 +218,55 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                completionBlock:completionBlock];
 }
 
++ (void)blockGroup:(TSGroupModel *)groupModel
+           displayName:(NSString *)displayName
+    fromViewController:(UIViewController *)fromViewController
+       blockingManager:(OWSBlockingManager *)blockingManager
+       completionBlock:(BlockAlertCompletionBlock)completionBlock
+{
+    OWSAssert(displayName.length > 0);
+    OWSAssert(fromViewController);
+    OWSAssert(blockingManager);
+
+    [blockingManager addBlockedGroupId:groupModel.groupId];
+
+    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
+                                   @"The title of the 'group blocked' alert.")
+                       message:[NSString
+                                   stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                                        @"The message format of the 'user blocked' "
+                                                        @"alert. Embeds {{the blocked group's name}}."),
+                                   [self formatDisplayNameForAlertMessage:displayName]]
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
+}
+
 #pragma mark - Unblock
+
++ (void)showUnblockThreadActionSheet:(TSThread *)thread
+                  fromViewController:(UIViewController *)fromViewController
+                     blockingManager:(OWSBlockingManager *)blockingManager
+                     contactsManager:(OWSContactsManager *)contactsManager
+                     completionBlock:(nullable BlockActionCompletionBlock)completionBlock
+{
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self showUnblockPhoneNumberActionSheet:contactThread.contactIdentifier
+                             fromViewController:fromViewController
+                                blockingManager:blockingManager
+                                contactsManager:contactsManager
+                                completionBlock:completionBlock];
+    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self showUnblockGroupActionSheet:groupThread.groupModel
+                              displayName:groupThread.name
+                       fromViewController:fromViewController
+                          blockingManager:blockingManager
+                          completionBlock:completionBlock];
+    } else {
+        OWSFail(@"unexpected thread type: %@", thread.class);
+    }
+}
 
 + (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
                        fromViewController:(UIViewController *)fromViewController
@@ -248,28 +370,71 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                completionBlock:completionBlock];
 }
 
-+ (void)showBlockFailedAlert:(UIViewController *)fromViewController
-             completionBlock:(BlockAlertCompletionBlock)completionBlock
++ (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
+                        displayName:(NSString *)displayName
+                 fromViewController:(UIViewController *)fromViewController
+                    blockingManager:(OWSBlockingManager *)blockingManager
+                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
+    OWSAssert(displayName.length > 0);
     OWSAssert(fromViewController);
+    OWSAssert(blockingManager);
 
-    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE",
-                                   @"The title of the 'block user failed' alert.")
-                       message:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE",
-                                   @"The title of the 'block user failed' alert.")
-            fromViewController:fromViewController
-               completionBlock:completionBlock];
+    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_GROUP_TITLE_FORMAT",
+                                                     @"A format for the 'unblock group' action sheet title. Embeds "
+                                                     @"{{the blocked groups's name}}."),
+                                [self formatDisplayNameForAlertTitle:displayName]];
+
+    UIAlertController *actionSheetController =
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+
+    UIAlertAction *unblockAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON", @"Button label for the 'unblock' button")
+                  style:UIAlertActionStyleDestructive
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [BlockListUIUtils unblockGroup:groupModel
+                                       displayName:displayName
+                                fromViewController:fromViewController
+                                   blockingManager:blockingManager
+                                   completionBlock:^(UIAlertAction *ignore) {
+                                       if (completionBlock) {
+                                           completionBlock(NO);
+                                       }
+                                   }];
+                }];
+    [actionSheetController addAction:unblockAction];
+
+    UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.cancelButton
+                                                            style:UIAlertActionStyleCancel
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              if (completionBlock) {
+                                                                  completionBlock(YES);
+                                                              }
+                                                          }];
+    [actionSheetController addAction:dismissAction];
+
+    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-+ (void)showUnblockFailedAlert:(UIViewController *)fromViewController
-               completionBlock:(BlockAlertCompletionBlock)completionBlock
++ (void)unblockGroup:(TSGroupModel *)groupModel
+           displayName:(NSString *)displayName
+    fromViewController:(UIViewController *)fromViewController
+       blockingManager:(OWSBlockingManager *)blockingManager
+       completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
+    OWSAssert(displayName.length > 0);
     OWSAssert(fromViewController);
+    OWSAssert(blockingManager);
 
-    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE",
-                                   @"The title of the 'unblock user failed' alert.")
-                       message:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE",
-                                   @"The title of the 'unblock user failed' alert.")
+    [blockingManager removeBlockedGroupId:groupModel.groupId];
+
+    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_USER_ALERT_TITLE",
+                                   @"The title of the 'group unblocked' alert.")
+                       message:[NSString stringWithFormat:NSLocalizedString(
+                                                              @"BLOCK_LIST_VIEW_UNBLOCKED_USER_ALERT_MESSAGE_FORMAT",
+                                                              @"The message format of the 'group unblocked' "
+                                                              @"alert. Embeds {{the blocked group's name}}."),
+                                         [self formatDisplayNameForAlertMessage:displayName]]
             fromViewController:fromViewController
                completionBlock:completionBlock];
 }

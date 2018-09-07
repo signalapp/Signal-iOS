@@ -617,34 +617,47 @@ const CGFloat kIconViewLength = 24;
         = NSLocalizedString(@"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
     [contents addSection:notificationsSection];
 
-    // Block user section.
+    // Block Conversation section.
 
-    if (!self.isGroupThread) {
-        BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
-
-        OWSTableSection *section = [OWSTableSection new];
+    OWSTableSection *section = [OWSTableSection new];
+    if (self.thread.isGroupThread) {
         section.footerTitle = NSLocalizedString(
-            @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell =
-                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
-                                                     @"table cell label in conversation settings")
-                                        iconName:@"table_ic_block"];
-            OWSConversationSettingsViewController *strongSelf = weakSelf;
-            OWSCAssert(strongSelf);
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-            UISwitch *blockUserSwitch = [UISwitch new];
-            blockUserSwitch.on = isBlocked;
-            [blockUserSwitch addTarget:strongSelf
-                                action:@selector(blockUserSwitchDidChange:)
-                      forControlEvents:UIControlEventValueChanged];
-            cell.accessoryView = blockUserSwitch;
-            return cell;
-        }
-                                                   actionBlock:nil]];
-        [contents addSection:section];
+            @"BLOCK_GROUP_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+    } else {
+        section.footerTitle = NSLocalizedString(
+            @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking a group.");
     }
+
+    [section addItem:[OWSTableItem
+                         itemWithCustomCellBlock:^{
+                             OWSConversationSettingsViewController *strongSelf = weakSelf;
+                             if (!strongSelf) {
+                                 return [UITableViewCell new];
+                             }
+
+                             NSString *cellTitle;
+                             if (self.thread.isGroupThread) {
+                                 cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP",
+                                     @"table cell label in conversation settings");
+                             } else {
+                                 cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
+                                     @"table cell label in conversation settings");
+                             }
+                             UITableViewCell *cell =
+                                 [strongSelf disclosureCellWithName:cellTitle iconName:@"table_ic_block"];
+
+                             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                             UISwitch *blockConversationSwitch = [UISwitch new];
+                             blockConversationSwitch.on = [strongSelf.blockingManager isThreadBlocked:self.thread];
+                             [blockConversationSwitch addTarget:strongSelf
+                                                         action:@selector(blockConversationSwitchDidChange:)
+                                               forControlEvents:UIControlEventValueChanged];
+                             cell.accessoryView = blockConversationSwitch;
+                             return cell;
+                         }
+                                     actionBlock:nil]];
+    [contents addSection:section];
 
     self.contents = contents;
 }
@@ -1013,43 +1026,41 @@ const CGFloat kIconViewLength = 24;
     [self updateTableContents];
 }
 
-- (void)blockUserSwitchDidChange:(id)sender
+- (void)blockConversationSwitchDidChange:(id)sender
 {
-    OWSAssert(!self.isGroupThread);
-
     if (![sender isKindOfClass:[UISwitch class]]) {
         OWSFail(@"%@ Unexpected sender for block user switch: %@", self.logTag, sender);
     }
-    UISwitch *blockUserSwitch = (UISwitch *)sender;
+    UISwitch *blockConversationSwitch = (UISwitch *)sender;
 
-    BOOL isCurrentlyBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.contactIdentifier];
+    BOOL isCurrentlyBlocked = [self.blockingManager isThreadBlocked:self.thread];
 
-    if (blockUserSwitch.isOn) {
+    if (blockConversationSwitch.isOn) {
         OWSAssert(!isCurrentlyBlocked);
         if (isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showBlockPhoneNumberActionSheet:self.thread.contactIdentifier
-                                       fromViewController:self
-                                          blockingManager:_blockingManager
-                                          contactsManager:_contactsManager
-                                          completionBlock:^(BOOL isBlocked) {
-                                              // Update switch state if user cancels action.
-                                              blockUserSwitch.on = isBlocked;
-                                          }];
+        [BlockListUIUtils showBlockThreadActionSheet:self.thread
+                                  fromViewController:self
+                                     blockingManager:_blockingManager
+                                     contactsManager:_contactsManager
+                                     completionBlock:^(BOOL isBlocked) {
+                                         // Update switch state if user cancels action.
+                                         blockConversationSwitch.on = isBlocked;
+                                     }];
     } else {
         OWSAssert(isCurrentlyBlocked);
         if (!isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:self.thread.contactIdentifier
-                                         fromViewController:self
-                                            blockingManager:_blockingManager
-                                            contactsManager:_contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                // Update switch state if user cancels action.
-                                                blockUserSwitch.on = isBlocked;
-                                            }];
+        [BlockListUIUtils showUnblockThreadActionSheet:self.thread
+                                    fromViewController:self
+                                       blockingManager:_blockingManager
+                                       contactsManager:_contactsManager
+                                       completionBlock:^(BOOL isBlocked) {
+                                           // Update switch state if user cancels action.
+                                           blockConversationSwitch.on = isBlocked;
+                                       }];
     }
 }
 

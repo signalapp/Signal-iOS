@@ -227,6 +227,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "BLOCK_GROUP_BEHAVIOR_EXPLANATION";
+
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Block";
 
@@ -277,6 +280,9 @@
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Block %@?";
+
+/* An explanation of the consequences of blocking a group. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "BLOCK_USER_BEHAVIOR_EXPLANATION";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continue";
@@ -511,6 +517,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
