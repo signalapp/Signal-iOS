@@ -22,7 +22,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @class OWSAES256Key;
 
-@protocol KeychainStorage;
+@protocol SSKKeychainStorage;
 
 @protocol AppContext <NSObject>
 
@@ -98,7 +98,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, readonly) NSDate *appLaunchTime;
 
-- (id<KeychainStorage>)keychainStorage;
+- (id<SSKKeychainStorage>)keychainStorage;
 
 - (NSString *)appDocumentDirectoryPath;
 

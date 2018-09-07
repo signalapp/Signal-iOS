@@ -283,9 +283,9 @@ NS_ASSUME_NONNULL_BEGIN
     backgroundTask = nil;
 }
 
-- (id<KeychainStorage>)keychainStorage
+- (id<SSKKeychainStorage>)keychainStorage
 {
-    return [SSKKeychainStorage shared];
+    return [SSKDefaultKeychainStorage shared];
 }
 
 - (NSString *)appDocumentDirectoryPath

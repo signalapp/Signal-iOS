@@ -214,9 +214,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFailDebug(@"cannot run main app active blocks in share extension.");
 }
 
-- (id<KeychainStorage>)keychainStorage
+- (id<SSKKeychainStorage>)keychainStorage
 {
-    return [SSKKeychainStorage shared];
+    return [SSKDefaultKeychainStorage shared];
 }
 
 - (NSString *)appDocumentDirectoryPath

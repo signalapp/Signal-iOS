@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class TestKeychainStorage: NSObject, KeychainStorage {
+public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
 
     private var dataMap = [String: Data]()
 

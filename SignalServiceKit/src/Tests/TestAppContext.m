@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TestAppContext ()
 
-@property (nonatomic) TestKeychainStorage *testKeychainStorage;
+@property (nonatomic) SSKTestKeychainStorage *testKeychainStorage;
 @property (nonatomic) NSString *mockAppDocumentDirectoryPath;
 @property (nonatomic) NSString *mockAppSharedDataDirectoryPath;
 
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    self.testKeychainStorage = [TestKeychainStorage new];
+    self.testKeychainStorage = [SSKTestKeychainStorage new];
 
     NSString *temporaryDirectory = NSTemporaryDirectory();
     self.mockAppDocumentDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
-- (id<KeychainStorage>)keychainStorage
+- (id<SSKKeychainStorage>)keychainStorage
 {
     return self.testKeychainStorage;
 }

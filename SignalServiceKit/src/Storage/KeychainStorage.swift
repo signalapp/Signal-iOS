@@ -11,7 +11,7 @@ public enum KeychainStorageError: Error {
 
 // MARK: -
 
-@objc public protocol KeychainStorage: class {
+@objc public protocol SSKKeychainStorage: class {
 
     @objc func string(forService service: String, key: String) throws -> String
 
@@ -27,9 +27,9 @@ public enum KeychainStorageError: Error {
 // MARK: -
 
 @objc
-public class SSKKeychainStorage: NSObject, KeychainStorage {
+public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
 
-    @objc public static let shared = SSKKeychainStorage()
+    @objc public static let shared = SSKDefaultKeychainStorage()
 
     // Force usage as a singleton
     override private init() {
