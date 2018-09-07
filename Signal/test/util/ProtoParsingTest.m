@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "SignalBaseTest.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/NSData+OWS.h>
@@ -9,7 +10,6 @@
 #import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface ProtoParsingTest : XCTestCase
+@interface ProtoParsingTest : SignalBaseTest
 
 @end
 

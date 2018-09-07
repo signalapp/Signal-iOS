@@ -3,10 +3,10 @@
 //
 
 #import "OWSDeviceProvisioningURLParser.h"
+#import "SignalBaseTest.h"
 #import <SignalServiceKit/NSData+OWS.h>
-#import <XCTest/XCTest.h>
 
-@interface OWSDeviceProvisioningURLParserTest : XCTestCase
+@interface OWSDeviceProvisioningURLParserTest : SignalBaseTest
 
 @end
 

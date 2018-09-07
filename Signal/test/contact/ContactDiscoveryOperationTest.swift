@@ -5,7 +5,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class ContactDiscoveryOperationTest: XCTestCase {
+class ContactDiscoveryOperationTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()

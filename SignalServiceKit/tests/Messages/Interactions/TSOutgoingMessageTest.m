@@ -1,14 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSContactThread.h"
 #import "TSOutgoingMessage.h"
-#import <XCTest/XCTest.h>
+#import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSOutgoingMessageTest : XCTestCase
+@interface TSOutgoingMessageTest : SSKBaseTest
 
 @property (nonatomic) TSContactThread *thread;
 

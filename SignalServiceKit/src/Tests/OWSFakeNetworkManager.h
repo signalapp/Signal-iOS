@@ -2,14 +2,13 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKEnvironment.h"
+#import "TSNetworkManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSUnitTestEnvironment : SSKEnvironment
+@interface OWSFakeNetworkManager : TSNetworkManager
 
-+ (void)ensureSetup;
-- (instancetype)initDefault;
+- (instancetype)init;
 
 @end
 

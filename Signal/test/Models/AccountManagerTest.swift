@@ -56,7 +56,7 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
-class AccountManagerTest: XCTestCase {
+class AccountManagerTest: SignalBaseTest {
 
     let tsAccountManager = FailingTSAccountManager(networkManager: TSNetworkManager.shared(), primaryStorage: OWSPrimaryStorage.shared())
     var preferences = OWSPreferences()
@@ -103,7 +103,7 @@ class AccountManagerTest: XCTestCase {
     }
 
     func testSuccessfulRegistration() {
-        Environment.clearCurrentForTests()
+        Environment.clearSharedForTests()
         Environment.setCurrent(Release.releaseEnvironment())
 
         let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), primaryStorage: OWSPrimaryStorage.shared())

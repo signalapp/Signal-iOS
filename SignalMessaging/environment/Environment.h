@@ -37,6 +37,6 @@
 @property (class, nonatomic) Environment *shared;
 
 // Should only be called by tests.
-+ (void)clearCurrentForTests;
++ (void)clearSharedForTests;
 
 @end

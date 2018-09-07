@@ -4,15 +4,19 @@
 
 #import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
-#import <XCTest/XCTest.h>
+#import "TestAppContext.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface TSThreadTest : XCTestCase
+@interface TSThreadTest : SSKBaseTest
 
 @end
+
+#pragma mark -
 
 @implementation TSThreadTest
 
