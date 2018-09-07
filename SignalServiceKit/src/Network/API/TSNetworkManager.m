@@ -66,9 +66,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
             success:(TSNetworkManagerSuccess)successBlock
             failure:(TSNetworkManagerFailure)failureBlock
 {
-    OWSAssert(request);
-    OWSAssert(successBlock);
-    OWSAssert(failureBlock);
+    OWSAssertDebug(request);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self makeRequestSync:request completionQueue:completionQueue success:successBlock failure:failureBlock];
@@ -80,9 +80,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                 success:(TSNetworkManagerSuccess)successBlock
                 failure:(TSNetworkManagerFailure)failureBlock
 {
-    OWSAssert(request);
-    OWSAssert(successBlock);
-    OWSAssert(failureBlock);
+    OWSAssertDebug(request);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
 
     OWSLogInfo(@"Making request: %@", request);
 
@@ -149,8 +149,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 + (failureBlock)errorPrettifyingForFailureBlock:(failureBlock)failureBlock request:(TSRequest *)request
 {
-    OWSAssert(failureBlock);
-    OWSAssert(request);
+    OWSAssertDebug(failureBlock);
+    OWSAssertDebug(request);
 
     return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
       NSInteger statusCode = [task statusCode];

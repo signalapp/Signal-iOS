@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
 {
-    OWSAssert(memberIds);
+    OWSAssertDebug(memberIds);
 
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];

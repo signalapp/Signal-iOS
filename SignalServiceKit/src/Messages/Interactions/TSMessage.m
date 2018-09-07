@@ -205,7 +205,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return nil;
     }
 
-    OWSAssert(self.attachmentIds.count == 1);
+    OWSAssertDebug(self.attachmentIds.count == 1);
     return [TSAttachment fetchObjectWithUniqueID:self.attachmentIds.firstObject transaction:transaction];
 }
 
@@ -345,7 +345,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     if ([self shouldUseReceiptDateForSorting] && self.receivedAtTimestamp > 0) {
         return self.receivedAtTimestamp;
     } else {
-        OWSAssert(self.timestamp > 0);
+        OWSAssertDebug(self.timestamp > 0);
         return self.timestamp;
     }
 }
@@ -362,9 +362,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-    OWSAssert(self.quotedMessage);
-    OWSAssert(self.quotedMessage.quotedAttachments.count == 1);
+    OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+    OWSAssertDebug(self.quotedMessage);
+    OWSAssertDebug(self.quotedMessage.quotedAttachments.count == 1);
 
     [self.quotedMessage setThumbnailAttachmentStream:attachmentStream];
 }
@@ -374,7 +374,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
     [self touchThreadWithTransaction:transaction];
@@ -382,7 +382,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(expireStartedAt > 0);
+    OWSAssertDebug(expireStartedAt > 0);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSMessage *message) {

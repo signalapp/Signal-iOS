@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    OWSAssert(recipient);
+    OWSAssertDebug(recipient);
 
     SSKProtoContentBuilder *builder = [SSKProtoContentBuilder new];
     [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];

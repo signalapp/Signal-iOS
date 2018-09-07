@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioDurationSeconds
 {
-    OWSAssert(self.viewItem.audioDurationSeconds > 0.f);
+    OWSAssertDebug(self.viewItem.audioDurationSeconds > 0.f);
 
     return self.viewItem.audioDurationSeconds;
 }
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIcon:(UIImage *)icon
 {
-    OWSAssert(icon.size.height == self.iconSize);
+    OWSAssertDebug(icon.size.height == self.iconSize);
 
     icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];

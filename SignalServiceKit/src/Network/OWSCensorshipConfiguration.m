@@ -34,7 +34,7 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
 + (instancetype)censorshipConfigurationWithCountryCode:(NSString *)countryCode
 {
     OWSCountryMetadata *countryMetadadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-    OWSAssert(countryMetadadata);
+    OWSAssertDebug(countryMetadadata);
 
     NSString *_Nullable specifiedDomain = countryMetadadata.frontingDomain;
 
@@ -51,8 +51,8 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         securityPolicy = [self securityPolicyForDomain:OWSCensorshipConfiguration_DefaultFrontingHost];
     }
 
-    OWSAssert(baseURL);
-    OWSAssert(securityPolicy);
+    OWSAssertDebug(baseURL);
+    OWSAssertDebug(securityPolicy);
 
 
     return [[OWSCensorshipConfiguration alloc] initWithDomainFrontBaseURL:baseURL securityPolicy:securityPolicy];
@@ -60,8 +60,8 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
 
 - (instancetype)initWithDomainFrontBaseURL:(NSURL *)domainFrontBaseURL securityPolicy:(AFSecurityPolicy *)securityPolicy
 {
-    OWSAssert(domainFrontBaseURL);
-    OWSAssert(securityPolicy);
+    OWSAssertDebug(domainFrontBaseURL);
+    OWSAssertDebug(securityPolicy);
 
     self = [super init];
     if (!self) {

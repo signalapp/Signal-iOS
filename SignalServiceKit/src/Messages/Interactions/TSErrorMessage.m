@@ -206,7 +206,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
               sendReadReceipt:(BOOL)sendReadReceipt
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     if (_read) {
         return;

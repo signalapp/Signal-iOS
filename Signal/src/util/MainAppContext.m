@@ -222,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
 {
-    OWSAssert(profileKey);
+    OWSAssertDebug(profileKey);
 
     [MultiDeviceProfileKeyUpdateJob runWithProfileKey:profileKey
                                       identityManager:OWSIdentityManager.sharedManager
@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runNowOrWhenMainAppIsActive:(AppActiveBlock)block
 {
-    OWSAssert(block);
+    OWSAssertDebug(block);
 
     DispatchMainThreadSafe(^{
         if (self.isMainAppAndActive) {
@@ -254,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSBackgroundTask *_Nullable backgroundTask =
                 [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
             block();
-            OWSAssert(backgroundTask);
+            OWSAssertDebug(backgroundTask);
             backgroundTask = nil;
             return;
         }
@@ -266,7 +266,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)runAppActiveBlocks
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(self.isMainAppAndActive);
+    OWSAssertDebug(self.isMainAppAndActive);
 
     // App active blocks typically will be used to safely access the
     // shared data container, so use a background task to protect this
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
         block();
     }
 
-    OWSAssert(backgroundTask);
+    OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
 }
 

@@ -118,10 +118,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupWithRootWindow:(UIWindow *)rootWindow
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(rootWindow);
+    OWSAssertDebug(rootWindow);
 
     [self createScreenBlockingWindowWithRootWindow:rootWindow];
-    OWSAssert(self.screenBlockingWindow);
+    OWSAssertDebug(self.screenBlockingWindow);
 }
 
 - (void)startObserving
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tryToActivateScreenLockBasedOnCountdown
 {
-    OWSAssert(!self.appIsInBackground);
+    OWSAssertDebug(!self.appIsInBackground);
     OWSAssertIsOnMainThread();
 
     if (!AppReadiness.isAppReady) {
@@ -177,9 +177,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     NSTimeInterval countdownInterval = fabs([self.screenLockCountdownDate timeIntervalSinceNow]);
-    OWSAssert(countdownInterval >= 0);
+    OWSAssertDebug(countdownInterval >= 0);
     NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
-    OWSAssert(screenLockTimeout >= 0);
+    OWSAssertDebug(screenLockTimeout >= 0);
     if (countdownInterval >= screenLockTimeout) {
         self.isScreenLockLocked = YES;
 
@@ -379,7 +379,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createScreenBlockingWindowWithRootWindow:(UIWindow *)rootWindow
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(rootWindow);
+    OWSAssertDebug(rootWindow);
 
     UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = NO;

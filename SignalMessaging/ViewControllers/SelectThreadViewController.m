@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
-    OWSAssert(self.selectThreadViewDelegate);
+    OWSAssertDebug(self.selectThreadViewDelegate);
 
     // Search
     UISearchBar *searchBar = [OWSSearchBar new];
@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             SelectThreadViewController *strongSelf = weakSelf;
-                            OWSCAssert(strongSelf);
+                            OWSCAssertDebug(strongSelf);
 
                             // To be consistent with the threads (above), we use ContactTableViewCell
                             // instead of HomeViewCell to present contacts and threads.
@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             SelectThreadViewController *strongSelf = weakSelf;
-                            OWSCAssert(strongSelf);
+                            OWSCAssertDebug(strongSelf);
 
                             ContactTableViewCell *cell = [ContactTableViewCell new];
                             BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
@@ -309,8 +309,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
-    OWSAssert(self.selectThreadViewDelegate);
+    OWSAssertDebug(signalAccount);
+    OWSAssertDebug(self.selectThreadViewDelegate);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
@@ -334,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
     }];
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
 
     [self.selectThreadViewDelegate threadWasSelected:thread];
 }

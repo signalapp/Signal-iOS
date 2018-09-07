@@ -156,7 +156,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     }
 
     self.localRelativeFilePath = localRelativeFilePath;
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 }
 
 #pragma mark - File Management
@@ -174,7 +174,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 - (BOOL)writeData:(NSData *)data error:(NSError **)error
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     *error = nil;
     NSString *_Nullable filePath = self.filePath;
@@ -188,7 +188,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 - (BOOL)writeDataSource:(DataSource *)dataSource
 {
-    OWSAssert(dataSource);
+    OWSAssertDebug(dataSource);
 
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
@@ -319,14 +319,14 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 - (BOOL)isValidImage
 {
-    OWSAssert(self.isImage || self.isAnimated);
+    OWSAssertDebug(self.isImage || self.isAnimated);
 
     return [NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType];
 }
 
 - (BOOL)isValidVideo
 {
-    OWSAssert(self.isVideo);
+    OWSAssertDebug(self.isVideo);
 
     return [NSData ows_isValidVideoAtURL:self.mediaURL];
 }
@@ -380,7 +380,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     NSString *thumbnailPath = self.thumbnailPath;
     if (!thumbnailPath) {
-        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
+        OWSAssertDebug(!self.isImage && !self.isVideo && !self.isAnimated);
 
         return nil;
     }
@@ -399,7 +399,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 {
     NSString *thumbnailPath = self.thumbnailPath;
     if (!thumbnailPath) {
-        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
+        OWSAssertDebug(!self.isImage && !self.isVideo && !self.isAnimated);
 
         return nil;
     }
@@ -428,7 +428,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
         OWSLogError(@"while generating thumbnail, source file doesn't exist: %@", self.mediaURL);
         // If we're not lazy-restoring this message, the attachment should exist on disk.
-        OWSAssert(self.lazyRestoreFragmentId);
+        OWSAssertDebug(self.lazyRestoreFragmentId);
         return;
     }
 
@@ -443,7 +443,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
         }
 
         CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.mediaURL, NULL);
-        OWSAssert(imageSource != NULL);
+        OWSAssertDebug(imageSource != NULL);
         NSDictionary *imageOptions = @{
             (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
             (NSString const *)kCGImageSourceThumbnailMaxPixelSize : @(thumbnailSize),
@@ -475,7 +475,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
     NSData *thumbnailData = UIImageJPEGRepresentation(result, 0.9);
 
-    OWSAssert(thumbnailData.length > 0);
+    OWSAssertDebug(thumbnailData.length > 0);
     OWSLogDebug(@"generated thumbnail with size: %lu", (unsigned long)thumbnailData.length);
     [thumbnailData writeToFile:thumbnailPath atomically:YES];
 }
@@ -613,7 +613,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 - (CGSize)imageSize
 {
-    OWSAssert(self.shouldHaveImageSize);
+    OWSAssertDebug(self.shouldHaveImageSize);
 
     @synchronized(self)
     {
@@ -651,7 +651,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 - (CGFloat)calculateAudioDurationSeconds
 {
     OWSAssertIsOnMainThread();
-    OWSAssert([self isAudio]);
+    OWSAssertDebug([self isAudio]);
 
     NSError *error;
     AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
@@ -730,14 +730,14 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 - (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(lazyRestoreFragment);
-    OWSAssert(transaction);
+    OWSAssertDebug(lazyRestoreFragment);
+    OWSAssertDebug(transaction);
 
     if (!lazyRestoreFragment.uniqueId) {
         // If metadata hasn't been saved yet, save now.
         [lazyRestoreFragment saveWithTransaction:transaction];
 
-        OWSAssert(lazyRestoreFragment.uniqueId);
+        OWSAssertDebug(lazyRestoreFragment.uniqueId);
     }
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSAttachmentStream *attachment) {
@@ -784,7 +784,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
 {
-    OWSAssert(attachmentId.length > 0);
+    OWSAssertDebug(attachmentId.length > 0);
 
     // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
     // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
@@ -806,7 +806,7 @@ const CGFloat kMaxVideoStillSize = 1 * 1024;
 
     builder.id = self.serverId;
 
-    OWSAssert(self.contentType.length > 0);
+    OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
     OWSLogVerbose(@"Sending attachment with filename: '%@'", self.sourceFilename);

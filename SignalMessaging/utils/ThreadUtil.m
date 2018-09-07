@@ -77,9 +77,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(text.length > 0);
-    OWSAssert(thread);
-    OWSAssert(messageSender);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(messageSender);
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -118,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(attachment);
-    OWSAssert(ignoreErrors || ![attachment hasError]);
-    OWSAssert([attachment mimeType].length > 0);
-    OWSAssert(thread);
-    OWSAssert(messageSender);
+    OWSAssertDebug(attachment);
+    OWSAssertDebug(ignoreErrors || ![attachment hasError]);
+    OWSAssertDebug([attachment mimeType].length > 0);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(messageSender);
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -170,10 +170,10 @@ NS_ASSUME_NONNULL_BEGIN
                                         completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
-    OWSAssert(contactShare.ows_isValid);
-    OWSAssert(thread);
-    OWSAssert(messageSender);
+    OWSAssertDebug(contactShare);
+    OWSAssertDebug(contactShare.ows_isValid);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(messageSender);
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
@@ -221,14 +221,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
 {
-    OWSAssert(thread);
-    OWSAssert(dbConnection);
-    OWSAssert(contactsManager);
-    OWSAssert(blockingManager);
-    OWSAssert(maxRangeSize > 0);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(dbConnection);
+    OWSAssertDebug(contactsManager);
+    OWSAssertDebug(blockingManager);
+    OWSAssertDebug(maxRangeSize > 0);
 
     NSString *localNumber = [TSAccountManager localNumber];
-    OWSAssert(localNumber.length > 0);
+    OWSAssertDebug(localNumber.length > 0);
 
     // Many OWSProfileManager methods aren't safe to call from inside a database
     // transaction, so do this work now.
@@ -277,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
                               // Remove obsolete unread indicator interactions;
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
-                              OWSAssert(!existingContactOffers);
+                              OWSAssertDebug(!existingContactOffers);
                               if (existingContactOffers) {
                                   // There should never be more than one "contact offers" in
                                   // a given thread, but if there is, discard all but one.
@@ -288,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
                               [blockingSafetyNumberChanges addObject:object];
                           } else if ([object isKindOfClass:[TSErrorMessage class]]) {
                               TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-                              OWSAssert(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
+                              OWSAssertDebug(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
                               [nonBlockingSafetyNumberChanges addObject:errorMessage];
                           } else {
                               OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
@@ -324,7 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
 
-                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
+                          OWSAssertDebug([object isKindOfClass:[TSInteraction class]]);
 
                           if ([object isKindOfClass:[TSIncomingMessage class]] ||
                               [object isKindOfClass:[TSOutgoingMessage class]] ||
@@ -497,11 +497,11 @@ NS_ASSUME_NONNULL_BEGIN
         hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
     firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
 {
-    OWSAssert(dynamicInteractions);
-    OWSAssert(thread);
-    OWSAssert(transaction);
-    OWSAssert(blockingSafetyNumberChanges);
-    OWSAssert(nonBlockingSafetyNumberChanges);
+    OWSAssertDebug(dynamicInteractions);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(blockingSafetyNumberChanges);
+    OWSAssertDebug(nonBlockingSafetyNumberChanges);
 
     if (hideUnreadMessagesIndicator) {
         return;
@@ -512,7 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     YapDatabaseViewTransaction *threadMessagesTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-    OWSAssert([threadMessagesTransaction isKindOfClass:[YapDatabaseViewTransaction class]]);
+    OWSAssertDebug([threadMessagesTransaction isKindOfClass:[YapDatabaseViewTransaction class]]);
 
     // Determine unread indicator position, if necessary.
     //
@@ -568,7 +568,7 @@ NS_ASSUME_NONNULL_BEGIN
         // expired.
         return;
     }
-    OWSAssert(visibleUnseenMessageCount > 0);
+    OWSAssertDebug(visibleUnseenMessageCount > 0);
 
     NSUInteger missingUnseenSafetyNumberChangeCount = 0;
     if (hasMoreUnseenMessages) {
@@ -618,9 +618,9 @@ NS_ASSUME_NONNULL_BEGIN
                                          transaction:(YapDatabaseReadWriteTransaction *)transaction
                                       focusMessageId:(NSString *)focusMessageId
 {
-    OWSAssert(thread);
-    OWSAssert(transaction);
-    OWSAssert(focusMessageId);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(focusMessageId);
 
     YapDatabaseViewTransaction *databaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
 
@@ -649,8 +649,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager
 {
-    OWSAssert(thread);
-    OWSAssert(blockingManager);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(blockingManager);
 
     if (!thread.isGroupThread) {
         return NO;
@@ -678,7 +678,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread
 {
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
 
     if (thread.isGroupThread) {
         return NO;
@@ -719,9 +719,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeAllObjectsInCollection:(NSString *)collection
                                class:(Class) class
                          transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssert(collection.length > 0);
-    OWSAssert(class);
-    OWSAssert(transaction);
+    OWSAssertDebug(collection.length > 0);
+    OWSAssertDebug(class);
+    OWSAssertDebug(transaction);
 
     NSArray<NSString *> *_Nullable uniqueIds = [transaction allKeysInCollection:collection];
     if (!uniqueIds) {
@@ -751,8 +751,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(timestamp > 0);
-    OWSAssert(authorId.length > 0);
+    OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(authorId.length > 0);
 
     NSString *localNumber = [TSAccountManager localNumber];
     if (localNumber.length < 1) {

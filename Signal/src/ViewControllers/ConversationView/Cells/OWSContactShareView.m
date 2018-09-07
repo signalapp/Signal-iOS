@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *disclosureImage =
         [UIImage imageNamed:(CurrentAppContext().isRTL ? @"small_chevron_left" : @"small_chevron_right")];
-    OWSAssert(disclosureImage);
+    OWSAssertDebug(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     disclosureImageView.tintColor = textColor;

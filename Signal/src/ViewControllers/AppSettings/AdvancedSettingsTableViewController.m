@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated) {
         OWSCountryMetadata *manualCensorshipCircumventionCountry =
             [weakSelf ensureManualCensorshipCircumventionCountry];
-        OWSAssert(manualCensorshipCircumventionCountry);
+        OWSAssertDebug(manualCensorshipCircumventionCountry);
         NSString *text = [NSString
             stringWithFormat:NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT",
                                  @"Label for the 'manual censorship circumvention' country. Embeds {{the manual "
@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!countryMetadata) {
         countryCode = @"US";
         countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-        OWSAssert(countryMetadata);
+        OWSAssertDebug(countryMetadata);
     }
 
     if (countryMetadata) {

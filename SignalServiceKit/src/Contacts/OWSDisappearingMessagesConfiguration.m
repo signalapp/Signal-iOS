@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     uint32_t max = [[self.validDurationsSeconds valueForKeyPath:@"@max.intValue"] unsignedIntValue];
 
     // It's safe to update this assert if we add a larger duration
-    OWSAssert(max == 1 * kWeekInterval);
+    OWSAssertDebug(max == 1 * kWeekInterval);
 
     return max;
 }

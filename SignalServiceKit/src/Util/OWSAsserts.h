@@ -9,29 +9,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifndef OWSAssert
 
+#define CONVERT_TO_STRING(X) #X
+#define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
+
 #ifdef DEBUG
 
 #define USE_ASSERTS
 
-#define CONVERT_TO_STRING(X) #X
-#define CONVERT_EXPR_TO_STRING(X) CONVERT_TO_STRING(X)
+// OWSAssertDebug() and OWSFailDebug() should be used in Obj-C methods.
+// OWSCAssertDebug() and OWSCFailDebug() should be used in free functions.
 
-// OWSAssert() and OWSFailDebug() should be used in Obj-C methods.
-// OWSCAssert() and OWSCFailDebug() should be used in free functions.
-
-#define OWSAssert(X)                                                                                                   \
+#define OWSAssertDebug(X)                                                                                              \
     do {                                                                                                               \
         if (!(X)) {                                                                                                    \
-            OWSLogError(@"%s Assertion failed: %s", __PRETTY_FUNCTION__, CONVERT_EXPR_TO_STRING(X));                   \
+            OWSLogError(@"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                           \
             [DDLog flushLog];                                                                                          \
             NSAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                           \
         }                                                                                                              \
     } while (NO)
 
-#define OWSCAssert(X)                                                                                                  \
+#define OWSCAssertDebug(X)                                                                                             \
     do {                                                                                                               \
         if (!(X)) {                                                                                                    \
-            OWSLogError(@"%s Assertion failed: %s", __PRETTY_FUNCTION__, CONVERT_EXPR_TO_STRING(X));                   \
+            OWSLogError(@"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                           \
             [DDLog flushLog];                                                                                          \
             NSCAssert(0, @"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                          \
         }                                                                                                              \
@@ -42,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *formattedMessage = [NSString stringWithFormat:message, ##__VA_ARGS__];                               \
         NSAssert(0, formattedMessage);                                                                                 \
     } while (NO)
-
 
 #define OWSCFailWithoutLogging(message, ...)                                                                           \
     do {                                                                                                               \
@@ -66,8 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #else
 
-#define OWSAssert(X)
-#define OWSCAssert(X)
+#define OWSAssertDebug(X)
+#define OWSCAssertDebug(X)
 #define OWSFailWithoutLogging(message, ...)
 #define OWSCFailWithoutLogging(message, ...)
 #define OWSFailNoFormat(X)
@@ -77,7 +76,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWSAbstractMethod() OWSFailDebug(@"%@ Method needs to be implemented by subclasses.", self.logTag)
+// Like OWSAssertDebug, but will fail in production, terminating the app
+#define OWSAssert(X)                                                                                                   \
+    do {                                                                                                               \
+        if (!(X)) {                                                                                                    \
+            OWSFail(@"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                               \
+        }                                                                                                              \
+    } while (NO)
+
+#define OWSCAssert(X)                                                                                                  \
+    do {                                                                                                               \
+        if (!(X)) {                                                                                                    \
+            OWSCFail(@"Assertion failed: %s", CONVERT_EXPR_TO_STRING(X));                                              \
+        }                                                                                                              \
+    } while (NO)
+
+#define OWSAbstractMethod() OWSFail(@"Method needs to be implemented by subclasses.")
 
 #pragma mark - Singleton Asserts
 
@@ -107,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized([self class])                                                                                        \
     {                                                                                                                  \
         if (!CurrentAppContext().isRunningTests) {                                                                     \
-            OWSAssert(!_isSingletonCreated);                                                                           \
+            OWSAssertDebug(!_isSingletonCreated);                                                                      \
             _isSingletonCreated = YES;                                                                                 \
         }                                                                                                              \
     }
@@ -123,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 // This macro is intended for use in Objective-C.
-#define OWSAssertIsOnMainThread() OWSCAssert([NSThread isMainThread])
+#define OWSAssertIsOnMainThread() OWSCAssertDebug([NSThread isMainThread])
 
 #define OWSFailDebug(_messageFormat, ...)                                                                              \
     do {                                                                                                               \
@@ -196,7 +210,7 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
 #ifdef DEBUG_UI_JANK
 #define OWSJanksUI()                                                                                                   \
     do {                                                                                                               \
-        OWSAssert(![NSThread isMainThread])                                                                            \
+        OWSAssertDebug(![NSThread isMainThread])                                                                       \
     } while (NO)
 #endif
 #endif
@@ -204,5 +218,19 @@ __attribute__((annotate("returns_localized_nsstring"))) static inline NSString *
 #ifndef OWSJanksUI
 #define OWSJanksUI()
 #endif
+
+#pragma mark - Overflow Math
+
+#define ows_add_overflow(a, b, resultRef)                                                                              \
+    do {                                                                                                               \
+        BOOL _didOverflow = __builtin_add_overflow(a, b, resultRef);                                                   \
+        OWSAssert(!_didOverflow);                                                                                      \
+    } while (NO)
+
+#define ows_sub_overflow(a, b, resultRef)                                                                              \
+    do {                                                                                                               \
+        BOOL _didOverflow = __builtin_sub_overflow(a, b, resultRef);                                                   \
+        OWSAssert(!_didOverflow);                                                                                      \
+    } while (NO)
 
 NS_ASSUME_NONNULL_END

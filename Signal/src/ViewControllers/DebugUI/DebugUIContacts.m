@@ -1153,7 +1153,7 @@ NS_ASSUME_NONNULL_BEGIN
               contactHandler:
                   (nullable void (^)(CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler
 {
-    OWSAssert(count > 0);
+    OWSAssertDebug(count > 0);
 
     NSUInteger remainder = count;
     const NSUInteger kMaxBatchSize = 20;
@@ -1175,8 +1175,8 @@ NS_ASSUME_NONNULL_BEGIN
                                       CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop))contactHandler
            batchCompletionHandler:(nullable void (^)(void))batchCompletionHandler
 {
-    OWSAssert(count > 0);
-    OWSAssert(batchCompletionHandler);
+    OWSAssertDebug(count > 0);
+    OWSAssertDebug(batchCompletionHandler);
 
     OWSLogDebug(@"createRandomContactsBatch: %zu", count);
 
@@ -1215,7 +1215,7 @@ NS_ASSUME_NONNULL_BEGIN
                              const NSUInteger kPercentWithAvatar = 50;
                              const NSUInteger kMinimumAvatarDiameter = 200;
                              const NSUInteger kMaximumAvatarDiameter = 800;
-                             OWSAssert(kMaximumAvatarDiameter >= kMinimumAvatarDiameter);
+                             OWSAssertDebug(kMaximumAvatarDiameter >= kMinimumAvatarDiameter);
                              if (arc4random_uniform(100) < kPercentWithAvatar) {
                                  NSUInteger avatarDiameter
                                      = arc4random_uniform(kMaximumAvatarDiameter - kMinimumAvatarDiameter)
@@ -1252,7 +1252,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteContactsWithFilter:(BOOL (^_Nonnull)(CNContact *contact))filterBlock
 {
-    OWSAssert(filterBlock);
+    OWSAssertDebug(filterBlock);
 
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {

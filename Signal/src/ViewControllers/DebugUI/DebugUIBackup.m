@@ -61,10 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"backupTestFile.");
 
     NSData *_Nullable data = [Randomness generateRandomBytes:32];
-    OWSAssert(data);
+    OWSAssertDebug(data);
     NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"pdf"];
     BOOL success = [data writeToFile:filePath atomically:YES];
-    OWSAssert(success);
+    OWSAssertDebug(success);
 
     [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
         if (hasAccess) {
@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   interactionCount++;
                                                   NSData *_Nullable data =
                                                       [NSKeyedArchiver archivedDataWithRootObject:interaction];
-                                                  OWSAssert(data);
+                                                  OWSAssertDebug(data);
                                                   interactionSizeTotal += data.length;
                                               }];
         [transaction enumerateKeysAndObjectsInCollection:[TSAttachment collection]
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   attachmentCount++;
                                                   NSData *_Nullable data =
                                                       [NSKeyedArchiver archivedDataWithRootObject:attachment];
-                                                  OWSAssert(data);
+                                                  OWSAssertDebug(data);
                                                   attachmentSizeTotal += data.length;
                                               }];
     }];

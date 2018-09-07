@@ -20,9 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 {
-    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-    OWSAssert(attachmentStream.uniqueId);
-    OWSAssert(attachmentStream.contentType);
+    OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+    OWSAssertDebug(attachmentStream.uniqueId);
+    OWSAssertDebug(attachmentStream.contentType);
 
     return [self initWithAttachmentId:attachmentStream.uniqueId
                           contentType:attachmentStream.contentType
@@ -62,8 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
                        bodySource:(TSQuotedMessageContentSource)bodySource
     receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
 {
-    OWSAssert(timestamp > 0);
-    OWSAssert(authorId.length > 0);
+    OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(authorId.length > 0);
 
     self = [super init];
     if (!self) {
@@ -84,8 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
                              body:(NSString *_Nullable)body
       quotedAttachmentsForSending:(NSArray<TSAttachmentStream *> *)attachments
 {
-    OWSAssert(timestamp > 0);
-    OWSAssert(authorId.length > 0);
+    OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(authorId.length > 0);
 
     self = [super init];
     if (!self) {
@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    thread:(TSThread *)thread
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(dataMessage);
+    OWSAssertDebug(dataMessage);
 
     if (!dataMessage.quote) {
         return nil;
@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSAssert(bodySource != TSQuotedMessageContentSourceUnknown);
+    OWSAssertDebug(bodySource != TSQuotedMessageContentSourceUnknown);
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable OWSAttachmentInfo *)firstAttachmentInfo
 {
-    OWSAssert(self.quotedAttachments.count <= 1);
+    OWSAssertDebug(self.quotedAttachments.count <= 1);
     return self.quotedAttachments.firstObject;
 }
 
@@ -302,8 +302,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-    OWSAssert(self.quotedAttachments.count == 1);
+    OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+    OWSAssertDebug(self.quotedAttachments.count == 1);
 
     OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
     firstAttachment.thumbnailAttachmentStreamId = attachmentStream.uniqueId;
@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (OWSAttachmentInfo *info in self.quotedAttachments) {
 
-        OWSAssert(info.attachmentId);
+        OWSAssertDebug(info.attachmentId);
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:info.attachmentId transaction:transaction];
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
             continue;

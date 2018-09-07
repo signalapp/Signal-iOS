@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler
                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
     OWSLogDebug(@"Recording transcript: %@", transcript);
@@ -134,8 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 
         // early return to avoid saving an empty incoming message.
-        OWSAssert(transcript.body.length == 0);
-        OWSAssert(outgoingMessage.attachmentIds.count == 0);
+        OWSAssertDebug(transcript.body.length == 0);
+        OWSAssertDebug(outgoingMessage.attachmentIds.count == 0);
         
         return;
     }

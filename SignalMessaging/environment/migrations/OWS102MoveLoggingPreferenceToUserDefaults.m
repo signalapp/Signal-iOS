@@ -20,7 +20,7 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     OWSLogWarn(@"[OWS102MoveLoggingPreferenceToUserDefaultsMigrationId] copying existing logging preference to "
                @"NSUserDefaults");

@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     self.recipientId = recipientId;
     self.accountManager = [TSAccountManager sharedInstance];
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
-    OWSAssert(recipientIdentity);
+    OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
     self.identityKey = recipientIdentity.identityKey;
@@ -165,11 +165,11 @@ NS_ASSUME_NONNULL_BEGIN
                       contactName:(NSString *)contactName
                               tag:(NSString *)tag
 {
-    OWSAssert(viewController);
-    OWSAssert(identityKey.length > 0);
-    OWSAssert(recipientId.length > 0);
-    OWSAssert(contactName.length > 0);
-    OWSAssert(tag.length > 0);
+    OWSAssertDebug(viewController);
+    OWSAssertDebug(identityKey.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(contactName.length > 0);
+    OWSAssertDebug(tag.length > 0);
 
     OWSLogInfo(@"%@ Successfully verified safety numbers.", tag);
 
@@ -209,9 +209,9 @@ NS_ASSUME_NONNULL_BEGIN
                             cancelBlock:(void (^_Nonnull)(void))cancelBlock
                                     tag:(NSString *)tag
 {
-    OWSAssert(viewController);
-    OWSAssert(cancelBlock);
-    OWSAssert(tag.length > 0);
+    OWSAssertDebug(viewController);
+    OWSAssertDebug(cancelBlock);
+    OWSAssertDebug(tag.length > 0);
 
     OWSLogInfo(@"%@ Failed to verify safety numbers.", tag);
 

@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
         countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
     }
 
-    OWSAssert(countryMetadata);
+    OWSAssertDebug(countryMetadata);
     OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = isEnabled;
 }

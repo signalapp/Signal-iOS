@@ -67,10 +67,10 @@
     OWSTableSection *section = [OWSTableSection new];
 
     for (NSString *countryCode in self.countryCodes) {
-        OWSAssert(countryCode.length > 0);
-        OWSAssert([PhoneNumberUtil countryNameFromCountryCode:countryCode].length > 0);
-        OWSAssert([PhoneNumberUtil callingCodeFromCountryCode:countryCode].length > 0);
-        OWSAssert(![[PhoneNumberUtil callingCodeFromCountryCode:countryCode] isEqualToString:@"+0"]);
+        OWSAssertDebug(countryCode.length > 0);
+        OWSAssertDebug([PhoneNumberUtil countryNameFromCountryCode:countryCode].length > 0);
+        OWSAssertDebug([PhoneNumberUtil callingCodeFromCountryCode:countryCode].length > 0);
+        OWSAssertDebug(![[PhoneNumberUtil callingCodeFromCountryCode:countryCode] isEqualToString:@"+0"]);
 
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -99,7 +99,7 @@
 
 - (void)countryCodeWasSelected:(NSString *)countryCode
 {
-    OWSAssert(countryCode.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
 
     NSString *callingCodeSelected = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
     NSString *countryNameSelected = [PhoneNumberUtil countryNameFromCountryCode:countryCode];

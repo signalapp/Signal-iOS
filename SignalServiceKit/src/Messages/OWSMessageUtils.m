@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSUInteger numberOfItems;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id databaseView = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        OWSAssert(databaseView);
+        OWSAssertDebug(databaseView);
         numberOfItems = ([databaseView numberOfItemsInAllGroups] - [databaseView numberOfItemsInGroup:thread.uniqueId]);
     }];
 

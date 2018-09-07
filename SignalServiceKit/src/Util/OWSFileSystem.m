@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)cachesDirectoryPath
 {
     NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    OWSAssert(paths.count >= 1);
+    OWSAssertDebug(paths.count >= 1);
     return paths[0];
 }
 
@@ -201,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isDirectory;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:dirPath isDirectory:&isDirectory];
     if (exists) {
-        OWSAssert(isDirectory);
+        OWSAssertDebug(isDirectory);
 
         return [self protectFileOrFolderAtPath:dirPath];
     } else {
@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error
 {
-    OWSAssert(dirPath.length > 0);
+    OWSAssertDebug(dirPath.length > 0);
 
     *error = nil;
 
@@ -305,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     NSString *tempFilePath = [self temporaryFilePathWithFileExtension:fileExtension];
     NSError *error;

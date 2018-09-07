@@ -13,8 +13,8 @@ NSString *const OWSPrimaryStorageCallKitIdToPhoneNumberCollection = @"TSStorageM
 
 - (void)setPhoneNumber:(NSString *)phoneNumber forCallKitId:(NSString *)callKitId
 {
-    OWSAssert(phoneNumber.length > 0);
-    OWSAssert(callKitId.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(callKitId.length > 0);
 
     [self.dbReadWriteConnection setObject:phoneNumber
                                    forKey:callKitId
@@ -23,7 +23,7 @@ NSString *const OWSPrimaryStorageCallKitIdToPhoneNumberCollection = @"TSStorageM
 
 - (NSString *)phoneNumberForCallKitId:(NSString *)callKitId
 {
-    OWSAssert(callKitId.length > 0);
+    OWSAssertDebug(callKitId.length > 0);
 
     return
         [self.dbReadConnection objectForKey:callKitId inCollection:OWSPrimaryStorageCallKitIdToPhoneNumberCollection];

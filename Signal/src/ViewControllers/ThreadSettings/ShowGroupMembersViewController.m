@@ -87,9 +87,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _thread = thread;
 
-    OWSAssert(self.thread);
-    OWSAssert(self.thread.groupModel);
-    OWSAssert(self.thread.groupModel.groupMemberIds);
+    OWSAssertDebug(self.thread);
+    OWSAssertDebug(self.thread.groupModel);
+    OWSAssertDebug(self.thread.groupModel.groupMemberIds);
 
     self.memberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
 }
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+    OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
     self.title = _thread.groupModel.groupName;
 
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateTableContents
 {
-    OWSAssert(self.thread);
+    OWSAssertDebug(self.thread);
 
     OWSTableContents *contents = [OWSTableContents new];
 
@@ -156,8 +156,8 @@ NS_ASSUME_NONNULL_BEGIN
           toSection:(OWSTableSection *)section
     useVerifyAction:(BOOL)useVerifyAction
 {
-    OWSAssert(recipientIds);
-    OWSAssert(section);
+    OWSAssertDebug(recipientIds);
+    OWSAssertDebug(section);
 
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  ShowGroupMembersViewController *strongSelf = weakSelf;
-                                 OWSCAssert(strongSelf);
+                                 OWSCAssertDebug(strongSelf);
 
                                  ContactTableViewCell *cell = [ContactTableViewCell new];
                                  OWSVerificationState verificationState =
@@ -270,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didSelectRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
     SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showContactInfoViewForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self.contactsViewHelper presentContactViewControllerForRecipientId:recipientId
                                                      fromViewController:self
@@ -401,7 +401,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showConversationViewForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [SignalApp.sharedApp presentConversationForRecipientId:recipientId
                                                     action:ConversationViewActionCompose
@@ -417,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showSafetyNumberView:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [FingerprintViewController presentFromViewController:self recipientId:recipientId];
 }

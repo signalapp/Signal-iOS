@@ -41,11 +41,11 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength)
 {
-    OWSCAssert(identityKey.length == kIdentityKeyLength);
-    OWSCAssert(destinationRecipientId.length > 0);
+    OWSCAssertDebug(identityKey.length == kIdentityKeyLength);
+    OWSCAssertDebug(destinationRecipientId.length > 0);
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
-    OWSCAssert(verificationState != OWSVerificationStateNoLongerVerified);
+    OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
     SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
     verifiedBuilder.destination = destinationRecipientId;
@@ -120,7 +120,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     // Ensure changes are persisted without clobbering any work done on another thread or instance.
     [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
@@ -132,7 +132,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     changeBlock(self);
 

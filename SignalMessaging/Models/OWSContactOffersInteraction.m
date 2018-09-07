@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     _hasBlockOffer = hasBlockOffer;
     _hasAddToContactsOffer = hasAddToContactsOffer;
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
     _recipientId = recipientId;
 
     return self;

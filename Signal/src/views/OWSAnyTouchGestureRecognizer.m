@@ -40,7 +40,7 @@
 
 - (UIView *)rootViewInViewHierarchy:(UIView *)view
 {
-    OWSAssert(view);
+    OWSAssertDebug(view);
     UIResponder *responder = view;
     UIView *lastView = nil;
     while (responder) {

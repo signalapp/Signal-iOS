@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
                      viewController:(DebugUITableViewController *)viewController
                              thread:(nullable TSThread *)thread
 {
-    OWSAssert(page);
-    OWSAssert(viewController);
+    OWSAssertDebug(page);
+    OWSAssertDebug(viewController);
 
     __weak DebugUITableViewController *weakSelf = viewController;
     return [OWSTableItem disclosureItemWithText:page.name
@@ -65,8 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentDebugUIForThread:(TSThread *)thread fromViewController:(UIViewController *)fromViewController
 {
-    OWSAssert(thread);
-    OWSAssert(fromViewController);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(fromViewController);
 
     DebugUITableViewController *viewController = [DebugUITableViewController new];
 
@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)presentDebugUIFromViewController:(UIViewController *)fromViewController
 {
-    OWSAssert(fromViewController);
+    OWSAssertDebug(fromViewController);
 
     DebugUITableViewController *viewController = [DebugUITableViewController new];
 

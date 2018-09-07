@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pinEntryView:(PinEntryView *)entryView submittedPinCode:(NSString *)pinCode
 {
-    OWSAssert(self.entryView.hasValidPin);
+    OWSAssertDebug(self.entryView.hasValidPin);
 
     [self tryToRegisterWithPinCode:pinCode];
 }
@@ -112,9 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tryToRegisterWithPinCode:(NSString *)pinCode
 {
-    OWSAssert(self.entryView.hasValidPin);
-    OWSAssert(self.verificationCode.length > 0);
-    OWSAssert(pinCode.length > 0);
+    OWSAssertDebug(self.entryView.hasValidPin);
+    OWSAssertDebug(self.verificationCode.length > 0);
+    OWSAssertDebug(pinCode.length > 0);
 
     OWSLogInfo(@"");
 

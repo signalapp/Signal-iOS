@@ -106,7 +106,7 @@
         // to avoid biasing towards higher values.
         lastPreKeyId = 1;
     }
-    OWSCAssert(lastPreKeyId > 0 && lastPreKeyId < kPreKeyOfLastResortId);
+    OWSCAssertDebug(lastPreKeyId > 0 && lastPreKeyId < kPreKeyOfLastResortId);
 
     return lastPreKeyId;
 }

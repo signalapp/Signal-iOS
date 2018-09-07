@@ -46,7 +46,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
 + (void)registerCrossProcessNotifier:(OWSStorage *)storage
 {
-    OWSAssert(storage);
+    OWSAssertDebug(storage);
 
     // I don't think the identifier and name of this extension matter for our purposes,
     // so long as they don't conflict with any other extension names.
@@ -61,9 +61,9 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
                                     storage:(OWSStorage *)storage
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(viewName.length > 0);
-    OWSAssert((viewGrouping));
-    OWSAssert(storage);
+    OWSAssertDebug(viewName.length > 0);
+    OWSAssertDebug((viewGrouping));
+    OWSAssertDebug(storage);
 
     YapDatabaseView *existingView = [storage registeredExtension:viewName];
     if (existingView) {
@@ -208,7 +208,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             // Do nothing; we never hide threads that have ever had a message.
         } else {
             YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-            OWSAssert(viewTransaction);
+            OWSAssertDebug(viewTransaction);
             NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
             if (threadMessageCount < 1) {
                 return nil;
@@ -415,13 +415,13 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     id result = [transaction ext:TSUnseenDatabaseViewExtensionName];
 
     if (!result) {
         result = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        OWSAssert(result);
+        OWSAssertDebug(result);
     }
 
     return result;
@@ -429,20 +429,20 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
 + (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     id result = [transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName];
-    OWSAssert(result);
+    OWSAssertDebug(result);
 
     return result;
 }
 
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     id result = [transaction ext:TSThreadSpecialMessagesDatabaseViewExtensionName];
-    OWSAssert(result);
+    OWSAssertDebug(result);
 
     return result;
 }

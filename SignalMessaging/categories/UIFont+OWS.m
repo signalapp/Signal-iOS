@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UIFontDescriptor *fontDescriptor = [self.fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
     UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0];
-    OWSAssert(font);
+    OWSAssertDebug(font);
     return font ?: self;
 }
 

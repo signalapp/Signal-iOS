@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CDSSigningCertificate *)parseCertificateFromPem:(NSString *)certificatePem
 {
-    OWSAssert(certificatePem);
+    OWSAssertDebug(certificatePem);
 
     CDSSigningCertificate *signingCertificate = [CDSSigningCertificate new];
 
@@ -238,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)verifySignatureOfBody:(NSString *)body signature:(NSData *)signature
 {
-    OWSAssert(self.publicKey);
+    OWSAssertDebug(self.publicKey);
 
     NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -266,7 +266,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)verifyDistinguishedNameOfCertificate:(NSData *)certificateData
 {
-    OWSAssert(certificateData);
+    OWSAssertDebug(certificateData);
 
     // The Security framework doesn't offer access to certificate properties
     // with API available on iOS 9. We use OpenSSL to extract the name.
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSDictionary<NSString *, NSString *> *)propertiesForCertificate:(NSData *)certificateData
 {
-    OWSAssert(certificateData);
+    OWSAssertDebug(certificateData);
 
     if (certificateData.length >= UINT32_MAX) {
         OWSFailDebug(@"certificate data is too long.");

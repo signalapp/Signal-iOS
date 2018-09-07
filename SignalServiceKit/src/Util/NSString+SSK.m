@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UnicodeCodeRange *)rangeWithStart:(unichar)first last:(unichar)last
 {
-    OWSAssert(first <= last);
+    OWSAssertDebug(first <= last);
 
     UnicodeCodeRange *range = [UnicodeCodeRange new];
     range.first = first;

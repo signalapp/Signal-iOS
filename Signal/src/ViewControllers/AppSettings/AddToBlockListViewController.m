@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)phoneNumberWasSelected:(NSString *)phoneNumber
 {
-    OWSAssert(phoneNumber.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
 
     __weak AddToBlockListViewController *weakSelf = self;
     [BlockListUIUtils showBlockPhoneNumberActionSheet:phoneNumber
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
+    OWSAssertDebug(signalAccount);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
     return ![helper isRecipientIdBlocked:signalAccount.recipientId];
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
+    OWSAssertDebug(signalAccount);
 
     __weak AddToBlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;

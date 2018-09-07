@@ -160,7 +160,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
-    OWSAssert(baseURL);
+    OWSAssertDebug(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
         [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
@@ -205,7 +205,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 - (AFHTTPSessionManager *)defaultCDNSessionManager
 {
     NSURL *baseURL = [[NSURL alloc] initWithString:textSecureCDNServerURL];
-    OWSAssert(baseURL);
+    OWSAssertDebug(baseURL);
     
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager =
@@ -263,7 +263,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
         OWSCensorshipConfiguration *configuration =
             [OWSCensorshipConfiguration censorshipConfigurationWithCountryCode:countryCode];
-        OWSAssert(configuration);
+        OWSAssertDebug(configuration);
 
         return configuration;
     }

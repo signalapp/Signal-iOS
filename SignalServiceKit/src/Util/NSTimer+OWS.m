@@ -41,7 +41,7 @@ static void *kNSTimer_OWS_Proxy = &kNSTimer_OWS_Proxy;
 
 - (void)ows_setProxy:(NSTimerProxy *)proxy
 {
-    OWSAssert(proxy);
+    OWSAssertDebug(proxy);
 
     objc_setAssociatedObject(self, kNSTimer_OWS_Proxy, proxy, OBJC_ASSOCIATION_RETAIN);
 }

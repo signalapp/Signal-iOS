@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
                                  transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(quotedMessage.quotedAttachments.count <= 1);
+    OWSAssertDebug(quotedMessage.quotedAttachments.count <= 1);
     OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
 
     BOOL thumbnailDownloadFailed = NO;
@@ -118,8 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(ConversationViewItem *)conversationItem
                                                            transaction:(YapDatabaseReadTransaction *)transaction;
 {
-    OWSAssert(conversationItem);
-    OWSAssert(transaction);
+    OWSAssertDebug(conversationItem);
+    OWSAssertDebug(transaction);
 
     TSMessage *message = (TSMessage *)conversationItem.interaction;
     if (![message isKindOfClass:[TSMessage class]]) {
@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSThread *thread = [message threadWithTransaction:transaction];
-    OWSAssert(thread);
+    OWSAssertDebug(thread);
 
     uint64_t timestamp = message.timestamp;
 
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
             return (NSString * _Nullable) nil;
         }
     }();
-    OWSAssert(authorId.length > 0);
+    OWSAssertDebug(authorId.length > 0);
     
     if (conversationItem.contactShare) {
         ContactShareViewModel *contactShare = conversationItem.contactShare;

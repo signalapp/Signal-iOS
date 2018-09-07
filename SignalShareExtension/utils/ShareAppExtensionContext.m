@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssert(rootViewController);
+    OWSAssertDebug(rootViewController);
 
     _rootViewController = rootViewController;
 
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)backgroundTaskIdentifier
 {
-    OWSAssert(backgroundTaskIdentifier == UIBackgroundTaskInvalid);
+    OWSAssertDebug(backgroundTaskIdentifier == UIBackgroundTaskInvalid);
 }
 
 - (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjects:(NSArray<id> *)blockingObjects
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIViewController *)frontmostViewController
 {
-    OWSAssert(self.rootViewController);
+    OWSAssertDebug(self.rootViewController);
 
     return [self.rootViewController findFrontmostViewController:YES];
 }

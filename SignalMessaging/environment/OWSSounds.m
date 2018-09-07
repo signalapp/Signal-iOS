@@ -39,8 +39,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
     SystemSoundID newSoundID;
     OSStatus status = AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &newSoundID);
-    OWSAssert(status == kAudioServicesNoError);
-    OWSAssert(newSoundID);
+    OWSAssertDebug(status == kAudioServicesNoError);
+    OWSAssertDebug(newSoundID);
     _soundID = newSoundID;
 
     return self;
@@ -50,7 +50,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 {
     OWSLogDebug(@"in dealloc disposing sound: %@", _soundURL.lastPathComponent);
     OSStatus status = AudioServicesDisposeSystemSoundID(_soundID);
-    OWSAssert(status == kAudioServicesNoError);
+    OWSAssertDebug(status == kAudioServicesNoError);
 }
 
 @end
@@ -91,7 +91,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         return self;
     }
 
-    OWSAssert(primaryStorage);
+    OWSAssertDebug(primaryStorage);
 
     _dbConnection = primaryStorage.newDatabaseConnection;
 
@@ -253,7 +253,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     }
     NSURL *_Nullable url = [[NSBundle mainBundle] URLForResource:filename.stringByDeletingPathExtension
                                                    withExtension:filename.pathExtension];
-    OWSAssert(url);
+    OWSAssertDebug(url);
     return url;
 }
 
@@ -268,7 +268,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     OWSSystemSound *_Nullable cachedSound = (OWSSystemSound *)[self.cachedSystemSounds getWithKey:cacheKey];
 
     if (cachedSound) {
-        OWSAssert([cachedSound isKindOfClass:[OWSSystemSound class]]);
+        OWSAssertDebug([cachedSound isKindOfClass:[OWSSystemSound class]]);
         return cachedSound.soundID;
     }
 
@@ -314,7 +314,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 - (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     OWSLogInfo(@"Setting global notification sound to: %@", [[self class] displayNameForSound:sound]);
 
@@ -336,7 +336,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         if (soundURL) {
             return [NSData dataWithContentsOfURL:soundURL];
         } else {
-            OWSAssert(sound == OWSSound_None);
+            OWSAssertDebug(sound == OWSSound_None);
             return [NSData new];
         }
     }();

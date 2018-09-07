@@ -129,11 +129,11 @@ const NSUInteger kMax2FAPinLength = 16;
 
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode callingCode:(NSString *)callingCode
 {
-    OWSAssert(countryCode.length > 0);
-    OWSAssert(callingCode.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
+    OWSAssertDebug(callingCode.length > 0);
 
     NSString *examplePhoneNumber = [PhoneNumberUtil examplePhoneNumberForCountryCode:countryCode];
-    OWSAssert(!examplePhoneNumber || [examplePhoneNumber hasPrefix:callingCode]);
+    OWSAssertDebug(!examplePhoneNumber || [examplePhoneNumber hasPrefix:callingCode]);
     if (examplePhoneNumber && [examplePhoneNumber hasPrefix:callingCode]) {
         NSString *formattedPhoneNumber =
             [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:examplePhoneNumber

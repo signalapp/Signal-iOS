@@ -22,14 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
-    OWSAssert(signalRecipient);
+    OWSAssertDebug(signalRecipient);
     return [self initWithRecipientId:signalRecipient.recipientId];
 }
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId
 {
     if (self = [super init]) {
-        OWSAssert(recipientId.length > 0);
+        OWSAssertDebug(recipientId.length > 0);
 
         _recipientId = recipientId;
     }

@@ -53,15 +53,15 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                          blockingManager:(OWSBlockingManager *)blockingManager
                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert(phoneNumbers.count > 0);
-    OWSAssert(displayName.length > 0);
-    OWSAssert(fromViewController);
-    OWSAssert(blockingManager);
+    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(displayName.length > 0);
+    OWSAssertDebug(fromViewController);
+    OWSAssertDebug(blockingManager);
 
     NSString *localContactId = [TSAccountManager localNumber];
-    OWSAssert(localContactId.length > 0);
+    OWSAssertDebug(localContactId.length > 0);
     for (NSString *phoneNumber in phoneNumbers) {
-        OWSAssert(phoneNumber.length > 0);
+        OWSAssertDebug(phoneNumber.length > 0);
 
         if ([localContactId isEqualToString:phoneNumber]) {
             [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
@@ -123,13 +123,13 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
           blockingManager:(OWSBlockingManager *)blockingManager
           completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(phoneNumbers.count > 0);
-    OWSAssert(displayName.length > 0);
-    OWSAssert(fromViewController);
-    OWSAssert(blockingManager);
+    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(displayName.length > 0);
+    OWSAssertDebug(fromViewController);
+    OWSAssertDebug(blockingManager);
 
     for (NSString *phoneNumber in phoneNumbers) {
-        OWSAssert(phoneNumber.length > 0);
+        OWSAssertDebug(phoneNumber.length > 0);
         [blockingManager addBlockedPhoneNumber:phoneNumber];
     }
 
@@ -180,10 +180,10 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                            blockingManager:(OWSBlockingManager *)blockingManager
                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert(phoneNumbers.count > 0);
-    OWSAssert(displayName.length > 0);
-    OWSAssert(fromViewController);
-    OWSAssert(blockingManager);
+    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(displayName.length > 0);
+    OWSAssertDebug(fromViewController);
+    OWSAssertDebug(blockingManager);
 
     NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
                                                      @"A format for the 'unblock user' action sheet title. Embeds "
@@ -227,13 +227,13 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
             blockingManager:(OWSBlockingManager *)blockingManager
             completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(phoneNumbers.count > 0);
-    OWSAssert(displayName.length > 0);
-    OWSAssert(fromViewController);
-    OWSAssert(blockingManager);
+    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(displayName.length > 0);
+    OWSAssertDebug(fromViewController);
+    OWSAssertDebug(blockingManager);
 
     for (NSString *phoneNumber in phoneNumbers) {
-        OWSAssert(phoneNumber.length > 0);
+        OWSAssertDebug(phoneNumber.length > 0);
         [blockingManager removeBlockedPhoneNumber:phoneNumber];
     }
 
@@ -251,7 +251,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 + (void)showBlockFailedAlert:(UIViewController *)fromViewController
              completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(fromViewController);
+    OWSAssertDebug(fromViewController);
 
     [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE",
                                    @"The title of the 'block user failed' alert.")
@@ -264,7 +264,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 + (void)showUnblockFailedAlert:(UIViewController *)fromViewController
                completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(fromViewController);
+    OWSAssertDebug(fromViewController);
 
     [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE",
                                    @"The title of the 'unblock user failed' alert.")
@@ -281,9 +281,9 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
           fromViewController:(UIViewController *)fromViewController
              completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(title.length > 0);
-    OWSAssert(message.length > 0);
-    OWSAssert(fromViewController);
+    OWSAssertDebug(title.length > 0);
+    OWSAssertDebug(message.length > 0);
+    OWSAssertDebug(fromViewController);
 
     UIAlertController *controller =
         [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
@@ -306,7 +306,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
 + (NSString *)formatDisplayName:(NSString *)displayName withMaxLength:(NSUInteger)maxLength
 {
-    OWSAssert(displayName.length > 0);
+    OWSAssertDebug(displayName.length > 0);
 
     if (displayName.length > maxLength) {
         return [[displayName substringToIndex:maxLength] stringByAppendingString:@"…"];

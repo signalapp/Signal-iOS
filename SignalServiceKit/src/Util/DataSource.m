@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable DataSource *)dataSourceWithData:(NSData *)data
                               fileExtension:(NSString *)fileExtension
 {
-    OWSAssert(data);
+    OWSAssertDebug(data);
 
     if (!data) {
         return nil;
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)data
 {
-    OWSAssert(self.dataValue);
+    OWSAssertDebug(self.dataValue);
 
     return self.dataValue;
 }
@@ -184,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)dataPath
 {
-    OWSAssert(self.dataValue);
+    OWSAssertDebug(self.dataValue);
 
     @synchronized(self)
     {
@@ -209,14 +209,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)dataLength
 {
-    OWSAssert(self.dataValue);
+    OWSAssertDebug(self.dataValue);
 
     return self.dataValue.length;
 }
 
 - (BOOL)writeToPath:(NSString *)dstFilePath
 {
-    OWSAssert(self.dataValue);
+    OWSAssertDebug(self.dataValue);
 
     // There's an odd bug wherein instances of NSData/Data created in Swift
     // code reliably crash on iOS 9 when calling [NSData writeToFile:...].
@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
-    OWSAssert(fileUrl);
+    OWSAssertDebug(fileUrl);
 
     if (!fileUrl || ![fileUrl isFileURL]) {
         return nil;
@@ -288,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
                      shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
-    OWSAssert(filePath);
+    OWSAssertDebug(filePath);
 
     if (!filePath) {
         return nil;
@@ -302,13 +302,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setFilePath:(NSString *)filePath
 {
-    OWSAssert(filePath.length > 0);
+    OWSAssertDebug(filePath.length > 0);
 
 #ifdef DEBUG
     BOOL isDirectory;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
-    OWSAssert(exists);
-    OWSAssert(!isDirectory);
+    OWSAssertDebug(exists);
+    OWSAssertDebug(!isDirectory);
 #endif
 
     _filePath = filePath;
@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)data
 {
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 
     @synchronized(self)
     {
@@ -335,28 +335,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSURL *)dataUrl
 {
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 
     return [NSURL fileURLWithPath:self.filePath];
 }
 
 - (nullable NSString *)dataPath
 {
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 
     return self.filePath;
 }
 
 - (nullable NSString *)dataPathIfOnDisk
 {
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 
     return self.filePath;
 }
 
 - (NSUInteger)dataLength
 {
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 
     @synchronized(self)
     {
@@ -379,7 +379,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)writeToPath:(NSString *)dstFilePath
 {
-    OWSAssert(self.filePath);
+    OWSAssertDebug(self.filePath);
 
     NSError *error;
     BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];

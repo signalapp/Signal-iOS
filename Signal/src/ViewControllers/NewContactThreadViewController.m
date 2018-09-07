@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       action:@selector(dismissPressed)];
     // TODO: We should use separate RTL and LTR flavors of this asset.
     UIImage *newGroupImage = [UIImage imageNamed:@"btnGroup--white"];
-    OWSAssert(newGroupImage);
+    OWSAssertDebug(newGroupImage);
     UIBarButtonItem *newGroupButton = [[UIBarButtonItem alloc] initWithImage:newGroupImage
                                                                        style:UIBarButtonItemStylePlain
                                                                       target:self
@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
     [contents autoCenterInSuperview];
 
     UIImage *heroImage = [UIImage imageNamed:@"uiEmptyContact"];
-    OWSAssert(heroImage);
+    OWSAssertDebug(heroImage);
     UIImageView *heroImageView = [[UIImageView alloc] initWithImage:heroImage];
     heroImageView.layer.minificationFilter = kCAFilterTrilinear;
     heroImageView.layer.magnificationFilter = kCAFilterTrilinear;
@@ -413,7 +413,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       customRowHeight:UITableViewAutomaticDimension]];
             } else {
                 UITableViewCell *loadingCell = [OWSTableItem newCell];
-                OWSAssert(loadingCell.contentView);
+                OWSAssertDebug(loadingCell.contentView);
 
                 UIActivityIndicatorView *activityIndicatorView =
                     [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -506,7 +506,7 @@ NS_ASSUME_NONNULL_BEGIN
     // "invite via SMS..." cells.
     NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
     for (NSString *phoneNumber in searchPhoneNumbers) {
-        OWSAssert(phoneNumber.length > 0);
+        OWSAssertDebug(phoneNumber.length > 0);
 
         if ([self.nonContactAccountSet containsObject:phoneNumber]) {
             [phoneNumbersSection
@@ -611,7 +611,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (Contact *contact in invitees) {
         hasSearchResults = YES;
 
-        OWSAssert(contact.parsedPhoneNumbers.count > 0);
+        OWSAssertDebug(contact.parsedPhoneNumbers.count > 0);
         // TODO: Should we invite all of their phone numbers?
         PhoneNumber *phoneNumber = contact.parsedPhoneNumbers[0];
         NSString *displayName = contact.fullName;
@@ -737,7 +737,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSInviteFlow alloc] initWithPresentingViewController:self
                                                 contactsManager:self.contactsViewHelper.contactsManager];
 
-    OWSAssert([phoneNumber length] > 0);
+    OWSAssertDebug([phoneNumber length] > 0);
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
     if ([phoneNumber length] > 0) {
         confirmMessage = [[NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"") stringByAppendingString:phoneNumber]
@@ -815,14 +815,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)newConversationWithRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
     [self newConversationWithThread:thread];
 }
 
 - (void)newConversationWithThread:(TSThread *)thread
 {
-    OWSAssert(thread != nil);
+    OWSAssertDebug(thread != nil);
     [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -858,7 +858,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self newConversationWithRecipientId:recipientId];
 }
@@ -904,11 +904,11 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         NSMutableDictionary *map = [NSMutableDictionary new];
         for (NSString *countryCode in [PhoneNumberUtil countryCodesForSearchTerm:nil]) {
-            OWSAssert(countryCode.length > 0);
+            OWSAssertDebug(countryCode.length > 0);
             NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-            OWSAssert(callingCode.length > 0);
-            OWSAssert([callingCode hasPrefix:@"+"]);
-            OWSAssert(![callingCode isEqualToString:@"+0"]);
+            OWSAssertDebug(callingCode.length > 0);
+            OWSAssertDebug([callingCode hasPrefix:@"+"]);
+            OWSAssertDebug(![callingCode isEqualToString:@"+0"]);
 
             map[callingCode] = countryCode;
         }
@@ -919,7 +919,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)callingCodeForPossiblePhoneNumber:(NSString *)phoneNumber
 {
-    OWSAssert([phoneNumber hasPrefix:@"+"]);
+    OWSAssertDebug([phoneNumber hasPrefix:@"+"]);
 
     for (NSString *callingCode in [self callingCodesToCountryCodeMap].allKeys) {
         if ([phoneNumber hasPrefix:callingCode]) {

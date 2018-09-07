@@ -75,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!_callService) {
-            OWSAssert(self.accountManager);
-            OWSAssert(Environment.current.contactsManager);
-            OWSAssert(Environment.current.messageSender);
+            OWSAssertDebug(self.accountManager);
+            OWSAssertDebug(Environment.current.contactsManager);
+            OWSAssertDebug(Environment.current.messageSender);
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCallLoggingPreference:) name:OWSPreferencesCallLoggingDidChangeNotification object:nil];
             
             _callService = [[CallService alloc] initWithAccountManager:self.accountManager
@@ -100,8 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!_outboundCallInitiator) {
-            OWSAssert(Environment.current.contactsManager);
-            OWSAssert(Environment.current.contactsUpdater);
+            OWSAssertDebug(Environment.current.contactsManager);
+            OWSAssertDebug(Environment.current.contactsUpdater);
             _outboundCallInitiator =
                 [[OutboundCallInitiator alloc] initWithContactsManager:Environment.current.contactsManager
                                                        contactsUpdater:Environment.current.contactsUpdater];
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentConversationForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
 {
-    OWSAssert(threadId.length > 0);
+    OWSAssertDebug(threadId.length > 0);
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
     if (thread == nil) {

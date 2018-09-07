@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commontInit
 {
     // Ensure only called once.
-    OWSAssert(!self.messageBubbleView);
+    OWSAssertDebug(!self.messageBubbleView);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSMessage *)message
 {
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     return (TSMessage *)self.viewItem.interaction;
 }
@@ -126,11 +126,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplay
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.viewItem);
-    OWSAssert(self.viewItem.interaction);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssert(self.messageBubbleView);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.viewItem);
+    OWSAssertDebug(self.viewItem.interaction);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
@@ -217,8 +217,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)sendFailureBadge
 {
     UIImage *image = [UIImage imageNamed:@"message_status_failed_large"];
-    OWSAssert(image);
-    OWSAssert(image.size.width == self.sendFailureBadgeSize && image.size.height == self.sendFailureBadgeSize);
+    OWSAssertDebug(image);
+    OWSAssertDebug(image.size.width == self.sendFailureBadgeSize && image.size.height == self.sendFailureBadgeSize);
     return image;
 }
 
@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
 // * If cell is not visible, eagerly unload view contents.
 - (void)ensureMediaLoadState
 {
-    OWSAssert(self.messageBubbleView);
+    OWSAssertDebug(self.messageBubbleView);
 
     if (!self.isCellVisible) {
         [self.messageBubbleView unloadContent];
@@ -322,11 +322,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)cellSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.viewWidth > 0);
-    OWSAssert(self.viewItem);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssert(self.messageBubbleView);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.viewWidth > 0);
+    OWSAssertDebug(self.viewItem);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
@@ -334,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize cellSize = messageBubbleSize;
 
-    OWSAssert(cellSize.width > 0 && cellSize.height > 0);
+    OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
     if (self.viewItem.hasCellHeader) {
         cellSize.height +=
@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
         OWSLogVerbose(@"Ignoring tap on message: %@", self.viewItem.interaction.debugDescription);
@@ -419,7 +419,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateBegan) {
         return;
@@ -460,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
 {
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.viewItem);
 
     if (!self.viewItem.hasCellHeader) {
         return NO;

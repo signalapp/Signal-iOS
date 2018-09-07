@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)rtlSafeAppend:(NSString *)string
 {
-    OWSAssert(string);
+    OWSAssertDebug(string);
 
     if (CurrentAppContext().isRTL) {
         return [string stringByAppendingString:self];
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet
 {
-    OWSAssert(characterSet);
+    OWSAssertDebug(characterSet);
 
     return [[self componentsSeparatedByCharactersInSet:characterSet] componentsJoinedByString:@""];
 }

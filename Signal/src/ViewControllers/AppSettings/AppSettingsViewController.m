@@ -79,7 +79,7 @@
     [super viewDidLoad];
     [self.navigationItem setHidesBackButton:YES];
 
-    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+    OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
@@ -286,7 +286,7 @@
     UIImage *avatarImage = (localProfileAvatarImage
             ?: [[UIImage imageNamed:@"profile_avatar_default"]
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
-    OWSAssert(avatarImage);
+    OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
     if (!localProfileAvatarImage) {
@@ -342,7 +342,7 @@
     [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
-    OWSAssert(disclosureImage);
+    OWSAssertDebug(disclosureImage);
     UIImageView *disclosureButton =
         [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];

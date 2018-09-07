@@ -74,7 +74,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (void)commontInit
 {
     // Ensure only called once.
-    OWSAssert(!self.bodyTextView);
+    OWSAssertDebug(!self.bodyTextView);
 
     _viewConstraints = [NSMutableArray new];
 
@@ -119,7 +119,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIFont *)textMessageFont
 {
-    OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
+    OWSAssertDebug(DisplayableText.kMaxJumbomojiCount == 5);
 
     CGFloat basePointSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
     switch (self.displayableBodyText.jumbomojiCount) {
@@ -151,7 +151,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (BOOL)hasBodyText
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.viewItem);
 
     return self.viewItem.hasBodyText;
 }
@@ -159,7 +159,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (nullable DisplayableText *)displayableBodyText
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.displayableBodyText);
+    OWSAssertDebug(self.viewItem.displayableBodyText);
 
     return self.viewItem.displayableBodyText;
 }
@@ -167,7 +167,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (nullable TSAttachmentStream *)attachmentStream
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.attachmentStream);
+    OWSAssertDebug(self.viewItem.attachmentStream);
 
     return self.viewItem.attachmentStream;
 }
@@ -175,14 +175,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (nullable TSAttachmentPointer *)attachmentPointer
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.attachmentPointer);
+    OWSAssertDebug(self.viewItem.attachmentPointer);
 
     return self.viewItem.attachmentPointer;
 }
 
 - (TSMessage *)message
 {
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     return (TSMessage *)self.viewItem.interaction;
 }
@@ -190,7 +190,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (CGSize)mediaSize
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.mediaSize.width > 0 && self.viewItem.mediaSize.height > 0);
+    OWSAssertDebug(self.viewItem.mediaSize.width > 0 && self.viewItem.mediaSize.height > 0);
 
     return self.viewItem.mediaSize;
 }
@@ -198,7 +198,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (BOOL)isQuotedReply
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.viewItem);
 
     return self.viewItem.isQuotedReply;
 }
@@ -206,7 +206,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (BOOL)hasQuotedText
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
+    OWSAssertDebug(self.viewItem);
 
     return self.viewItem.hasQuotedText;
 }
@@ -247,10 +247,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (void)configureViews
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.viewItem);
-    OWSAssert(self.viewItem.interaction);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.viewItem);
+    OWSAssertDebug(self.viewItem.interaction);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     NSValue *_Nullable quotedMessageSize = [self quotedMessageSize];
     NSValue *_Nullable bodyMediaSize = [self bodyMediaSize];
@@ -291,7 +291,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         self.quotedMessageView = quotedMessageView;
         [quotedMessageView createContents];
         [self.stackView addArrangedSubview:quotedMessageView];
-        OWSAssert(quotedMessageSize);
+        OWSAssertDebug(quotedMessageSize);
         [self.viewConstraints addObject:[quotedMessageView autoSetDimension:ALDimensionHeight
                                                                      toSize:quotedMessageSize.CGSizeValue.height]];
     }
@@ -303,19 +303,19 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_OversizeTextMessage:
             break;
         case OWSMessageCellType_StillImage:
-            OWSAssert(self.viewItem.attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForStillImage];
             break;
         case OWSMessageCellType_AnimatedImage:
-            OWSAssert(self.viewItem.attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForAnimatedImage];
             break;
         case OWSMessageCellType_Video:
-            OWSAssert(self.viewItem.attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForVideo];
             break;
         case OWSMessageCellType_Audio:
-            OWSAssert(self.viewItem.attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForAudio];
             break;
         case OWSMessageCellType_GenericAttachment:
@@ -330,8 +330,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
 
     if (bodyMediaView) {
-        OWSAssert(self.loadCellContentBlock);
-        OWSAssert(self.unloadCellContentBlock);
+        OWSAssertDebug(self.loadCellContentBlock);
+        OWSAssertDebug(self.unloadCellContentBlock);
 
         bodyMediaView.clipsToBounds = YES;
 
@@ -360,7 +360,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 [self.bubbleView addPartnerView:strokeView];
                 [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];
             } else {
-                OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
+                OWSAssertDebug(self.cellType == OWSMessageCellType_ContactShare);
 
                 if (self.contactShareHasSpacerTop) {
                     UIView *spacerView = [UIView containerView];
@@ -389,7 +389,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         [self configureBodyTextView];
         [textViews addObject:self.bodyTextView];
 
-        OWSAssert(bodyTextSize);
+        OWSAssertDebug(bodyTextSize);
         [self.viewConstraints addObjectsFromArray:@[
             [self.bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextSize.CGSizeValue.height],
         ]];
@@ -407,7 +407,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     if (self.viewItem.shouldHideFooter) {
         // Do nothing.
     } else if (shouldFooterOverlayMedia) {
-        OWSAssert(bodyMediaView);
+        OWSAssertDebug(bodyMediaView);
 
         CGFloat maxGradientHeight = 40.f;
         CAGradientLayer *gradientLayer = [CAGradientLayer new];
@@ -455,7 +455,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
     ]];
     if (bodyMediaView) {
-        OWSAssert(bodyMediaSize);
+        OWSAssertDebug(bodyMediaSize);
         [self.viewConstraints
             addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.CGSizeValue.height]];
     }
@@ -477,13 +477,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         return;
     }
 
-    OWSAssert(self.viewItem.contactShare);
+    OWSAssertDebug(self.viewItem.contactShare);
 
     OWSContactShareButtonsView *buttonsView =
         [[OWSContactShareButtonsView alloc] initWithContactShare:self.viewItem.contactShare delegate:self];
 
     NSValue *_Nullable actionButtonsSize = [self actionButtonsSize];
-    OWSAssert(actionButtonsSize);
+    OWSAssertDebug(actionButtonsSize);
     [self.viewConstraints addObjectsFromArray:@[
         [buttonsView autoSetDimension:ALDimensionHeight toSize:actionButtonsSize.CGSizeValue.height],
     ]];
@@ -515,7 +515,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    OWSAssert(buttonsView.backgroundColor);
+    OWSAssertDebug(buttonsView.backgroundColor);
     shadowView.fillColor = buttonsView.backgroundColor;
     shadowView.layer.shadowColor = Theme.boldColor.CGColor;
     shadowView.layer.shadowOpacity = 0.12f;
@@ -590,7 +590,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIColor *)bubbleColor
 {
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
     return [self.conversationStyle bubbleColorWithMessage:message];
@@ -658,10 +658,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                          cacheKey:(NSString *)cacheKey
                   shouldSkipCache:(BOOL)shouldSkipCache
 {
-    OWSAssert(self.attachmentStream);
-    OWSAssert(mediaView);
-    OWSAssert(cacheKey);
-    OWSAssert(self.cellMediaCache);
+    OWSAssertDebug(self.attachmentStream);
+    OWSAssertDebug(mediaView);
+    OWSAssertDebug(cacheKey);
+    OWSAssertDebug(self.cellMediaCache);
 
     if (self.viewItem.didCellMediaFailToLoad) {
         return nil;
@@ -721,7 +721,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (void)configureBodyTextView
 {
-    OWSAssert(self.hasBodyText);
+    OWSAssertDebug(self.hasBodyText);
 
     BOOL shouldIgnoreEvents = NO;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
@@ -765,8 +765,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (void)configureSenderNameLabel
 {
-    OWSAssert(self.senderNameLabel);
-    OWSAssert(self.shouldShowSenderName);
+    OWSAssertDebug(self.senderNameLabel);
+    OWSAssertDebug(self.shouldShowSenderName);
 
     self.senderNameLabel.textColor = self.bodyTextColor;
     self.senderNameLabel.font = OWSMessageBubbleView.senderNameFont;
@@ -824,8 +824,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForStillImage
 {
-    OWSAssert(self.attachmentStream);
-    OWSAssert([self.attachmentStream isImage]);
+    OWSAssertDebug(self.attachmentStream);
+    OWSAssertDebug([self.attachmentStream isImage]);
 
     UIImageView *stillImageView = [UIImageView new];
     // We need to specify a contentMode since the size of the image
@@ -844,7 +844,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
+        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
         if (stillImageView.image) {
             return;
         }
@@ -855,7 +855,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         BOOL shouldSkipCache =
             [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.filePath].unsignedIntegerValue < kMaxCachableSize;
         stillImageView.image = [strongSelf tryToLoadCellMedia:^{
-            OWSCAssert([strongSelf.attachmentStream isImage]);
+            OWSCAssertDebug([strongSelf.attachmentStream isImage]);
             return strongSelf.attachmentStream.image;
         }
                                                     mediaView:stillImageView
@@ -867,7 +867,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
+        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
         stillImageView.image = nil;
     };
 
@@ -876,8 +876,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForAnimatedImage
 {
-    OWSAssert(self.attachmentStream);
-    OWSAssert([self.attachmentStream isAnimated]);
+    OWSAssertDebug(self.attachmentStream);
+    OWSAssertDebug([self.attachmentStream isAnimated]);
 
     YYAnimatedImageView *animatedImageView = [[YYAnimatedImageView alloc] init];
     // We need to specify a contentMode since the size of the image
@@ -892,12 +892,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.bodyMediaView == animatedImageView);
+        OWSCAssertDebug(strongSelf.bodyMediaView == animatedImageView);
         if (animatedImageView.image) {
             return;
         }
         animatedImageView.image = [strongSelf tryToLoadCellMedia:^{
-            OWSCAssert([strongSelf.attachmentStream isAnimated]);
+            OWSCAssertDebug([strongSelf.attachmentStream isAnimated]);
 
             NSString *_Nullable filePath = [strongSelf.attachmentStream filePath];
             YYImage *_Nullable animatedImage = nil;
@@ -915,7 +915,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.bodyMediaView == animatedImageView);
+        OWSCAssertDebug(strongSelf.bodyMediaView == animatedImageView);
         animatedImageView.image = nil;
     };
 
@@ -924,8 +924,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForAudio
 {
-    OWSAssert(self.attachmentStream);
-    OWSAssert([self.attachmentStream isAudio]);
+    OWSAssertDebug(self.attachmentStream);
+    OWSAssertDebug([self.attachmentStream isAudio]);
 
     OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
                                                                                  isIncoming:self.isIncoming
@@ -947,8 +947,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForVideo
 {
-    OWSAssert(self.attachmentStream);
-    OWSAssert([self.attachmentStream isVideo]);
+    OWSAssertDebug(self.attachmentStream);
+    OWSAssertDebug([self.attachmentStream isVideo]);
 
     UIImageView *stillImageView = [UIImageView new];
     // We need to specify a contentMode since the size of the image
@@ -973,12 +973,12 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
+        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
         if (stillImageView.image) {
             return;
         }
         stillImageView.image = [strongSelf tryToLoadCellMedia:^{
-            OWSCAssert([strongSelf.attachmentStream isVideo]);
+            OWSCAssertDebug([strongSelf.attachmentStream isVideo]);
 
             return strongSelf.attachmentStream.image;
         }
@@ -991,7 +991,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
+        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
         stillImageView.image = nil;
     };
 
@@ -1000,7 +1000,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForGenericAttachment
 {
-    OWSAssert(self.viewItem.attachmentStream);
+    OWSAssertDebug(self.viewItem.attachmentStream);
     OWSGenericAttachmentView *attachmentView =
         [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
@@ -1018,7 +1018,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForDownloadingAttachment
 {
-    OWSAssert(self.attachmentPointer);
+    OWSAssertDebug(self.attachmentPointer);
 
     AttachmentPointerView *downloadView =
         [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer
@@ -1041,7 +1041,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIView *)loadViewForContactShare
 {
-    OWSAssert(self.viewItem.contactShare);
+    OWSAssertDebug(self.viewItem.contactShare);
 
     OWSContactShareView *contactShareView = [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
                                                                                    isIncoming:self.isIncoming
@@ -1067,7 +1067,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (void)addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:
     (nullable AttachmentStateBlock)attachmentStateCallback
 {
-    OWSAssert(self.attachmentStream);
+    OWSAssertDebug(self.attachmentStream);
 
     if (!attachmentStateCallback) {
         attachmentStateCallback = ^(BOOL isAttachmentReady) {
@@ -1087,7 +1087,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (void)showAttachmentErrorViewWithMediaView:(UIView *)mediaView
 {
-    OWSAssert(mediaView);
+    OWSAssertDebug(mediaView);
 
     // TODO: We could do a better job of indicating that the media could not be loaded.
     UIView *errorView = [UIView new];
@@ -1102,8 +1102,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 // Size of "message body" text, not quoted reply text.
 - (nullable NSValue *)bodyTextSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
     if (!self.hasBodyText) {
         return nil;
@@ -1121,8 +1121,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (nullable NSValue *)bodyMediaSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
     CGFloat maxMessageWidth = self.conversationStyle.maxMessageWidth;
     if (!self.hasFullWidthMediaView) {
@@ -1140,8 +1140,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Video: {
-            OWSAssert(self.mediaSize.width > 0);
-            OWSAssert(self.mediaSize.height > 0);
+            OWSAssertDebug(self.mediaSize.width > 0);
+            OWSAssertDebug(self.mediaSize.height > 0);
 
             // TODO: Adjust this behavior.
 
@@ -1178,7 +1178,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
-            OWSAssert(self.viewItem.attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
             OWSGenericAttachmentView *attachmentView =
                 [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
@@ -1189,13 +1189,13 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = CGSizeMake(MIN(200, maxMessageWidth), [AttachmentPointerView measureHeight]);
             break;
         case OWSMessageCellType_ContactShare:
-            OWSAssert(self.viewItem.contactShare);
+            OWSAssertDebug(self.viewItem.contactShare);
 
             result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
     }
 
-    OWSAssert(result.width <= maxMessageWidth);
+    OWSAssertDebug(result.width <= maxMessageWidth);
     result.width = MIN(result.width, maxMessageWidth);
 
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
@@ -1203,10 +1203,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (nullable NSValue *)quotedMessageSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
-    OWSAssert(self.viewItem);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
+    OWSAssertDebug(self.viewItem);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     if (!self.isQuotedReply) {
         return nil;
@@ -1227,8 +1227,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (nullable NSValue *)senderNameSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
     if (!self.shouldShowSenderName) {
         return nil;
@@ -1245,11 +1245,11 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (nullable NSValue *)actionButtonsSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
     if (self.cellType == OWSMessageCellType_ContactShare) {
-        OWSAssert(self.viewItem.contactShare);
+        OWSAssertDebug(self.viewItem.contactShare);
 
         if ([OWSContactShareButtonsView hasAnyButton:self.viewItem.contactShare]) {
             CGSize buttonsSize = CGSizeCeil(
@@ -1262,10 +1262,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (CGSize)measureSize
 {
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.viewWidth > 0);
-    OWSAssert(self.viewItem);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.viewWidth > 0);
+    OWSAssertDebug(self.viewItem);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     CGSize cellSize = CGSizeZero;
 
@@ -1338,7 +1338,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     // Make sure the bubble is always wide enough to complete it's bubble shape.
     cellSize.width = MAX(cellSize.width, self.bubbleView.minWidth);
 
-    OWSAssert(cellSize.width > 0 && cellSize.height > 0);
+    OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
     if (self.hasTapForMore) {
         cellSize.height += self.tapForMoreHeight + self.textViewVSpacing;
@@ -1352,7 +1352,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
     cellSize = CGSizeCeil(cellSize);
 
-    OWSAssert(cellSize.width <= self.conversationStyle.maxMessageWidth);
+    OWSAssertDebug(cellSize.width <= self.conversationStyle.maxMessageWidth);
     cellSize.width = MIN(cellSize.width, self.conversationStyle.maxMessageWidth);
 
     return cellSize;
@@ -1360,10 +1360,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (CGSize)sizeForTextViewGroup:(NSArray<NSValue *> *)textViewSizes
 {
-    OWSAssert(textViewSizes);
-    OWSAssert(textViewSizes.count > 0);
-    OWSAssert(self.conversationStyle);
-    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
+    OWSAssertDebug(textViewSizes);
+    OWSAssertDebug(textViewSizes.count > 0);
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
     CGSize result = CGSizeZero;
     for (NSValue *size in textViewSizes) {
@@ -1391,7 +1391,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (UIColor *)bodyTextColor
 {
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
     return [self.conversationStyle bubbleTextColorWithMessage:message];
@@ -1476,7 +1476,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateRecognized) {
         OWSLogVerbose(@"Ignoring tap on message: %@", self.viewItem.interaction.debugDescription);
@@ -1522,7 +1522,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (void)handleMediaTapGesture
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
 
@@ -1532,42 +1532,42 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_OversizeTextMessage:
             break;
         case OWSMessageCellType_StillImage:
-            OWSAssert(self.bodyMediaView);
-            OWSAssert(attachmentStream);
+            OWSAssertDebug(self.bodyMediaView);
+            OWSAssertDebug(attachmentStream);
 
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:attachmentStream
                                      imageView:self.bodyMediaView];
             break;
         case OWSMessageCellType_AnimatedImage:
-            OWSAssert(self.bodyMediaView);
-            OWSAssert(attachmentStream);
+            OWSAssertDebug(self.bodyMediaView);
+            OWSAssertDebug(attachmentStream);
 
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:attachmentStream
                                      imageView:self.bodyMediaView];
             break;
         case OWSMessageCellType_Audio:
-            OWSAssert(attachmentStream);
+            OWSAssertDebug(attachmentStream);
 
             [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
             return;
         case OWSMessageCellType_Video:
-            OWSAssert(self.bodyMediaView);
-            OWSAssert(attachmentStream);
+            OWSAssertDebug(self.bodyMediaView);
+            OWSAssertDebug(attachmentStream);
 
             [self.delegate didTapVideoViewItem:self.viewItem
                               attachmentStream:attachmentStream
                                      imageView:self.bodyMediaView];
             return;
         case OWSMessageCellType_GenericAttachment:
-            OWSAssert(attachmentStream);
+            OWSAssertDebug(attachmentStream);
 
             [AttachmentSharing showShareUIForAttachment:attachmentStream];
             break;
         case OWSMessageCellType_DownloadingAttachment: {
             TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
-            OWSAssert(attachmentPointer);
+            OWSAssertDebug(attachmentPointer);
 
             if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
                 [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
@@ -1628,7 +1628,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     [self.delegate didTapSendMessageToContactShare:contactShare];
 }
@@ -1636,7 +1636,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     [self.delegate didTapSendInviteToContactShare:contactShare];
 }
@@ -1644,7 +1644,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(contactShare);
+    OWSAssertDebug(contactShare);
 
     [self.delegate didTapShowAddToContactUIForContactShare:contactShare];
 }

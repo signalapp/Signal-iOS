@@ -132,15 +132,15 @@
 
 - (UIImage *)resizedImageToFillPixelSize:(CGSize)dstSize
 {
-    OWSAssert(dstSize.width > 0);
-    OWSAssert(dstSize.height > 0);
+    OWSAssertDebug(dstSize.width > 0);
+    OWSAssertDebug(dstSize.height > 0);
 
     UIImage *normalized = [self normalizedImage];
 
     // Get the size in pixels, not points.
     CGSize srcSize = CGSizeMake(CGImageGetWidth(normalized.CGImage), CGImageGetHeight(normalized.CGImage));
-    OWSAssert(srcSize.width > 0);
-    OWSAssert(srcSize.height > 0);
+    OWSAssertDebug(srcSize.width > 0);
+    OWSAssertDebug(srcSize.height > 0);
 
     CGFloat widthRatio = srcSize.width / dstSize.width;
     CGFloat heightRatio = srcSize.height / dstSize.height;
@@ -149,13 +149,13 @@
         drawRect.origin.y = 0;
         drawRect.size.height = dstSize.height;
         drawRect.size.width = dstSize.height * srcSize.width / srcSize.height;
-        OWSAssert(drawRect.size.width > dstSize.width);
+        OWSAssertDebug(drawRect.size.width > dstSize.width);
         drawRect.origin.x = (drawRect.size.width - dstSize.width) * -0.5f;
     } else {
         drawRect.origin.x = 0;
         drawRect.size.width = dstSize.width;
         drawRect.size.height = dstSize.width * srcSize.height / srcSize.width;
-        OWSAssert(drawRect.size.height >= dstSize.height);
+        OWSAssertDebug(drawRect.size.height >= dstSize.height);
         drawRect.origin.y = (drawRect.size.height - dstSize.height) * -0.5f;
     }
 
@@ -171,7 +171,7 @@
 + (UIImage *)imageWithColor:(UIColor *)color
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(color);
+    OWSAssertDebug(color);
 
     return [self imageWithColor:color size:CGSizeMake(1.f, 1.f)];
 }
@@ -179,7 +179,7 @@
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(color);
+    OWSAssertDebug(color);
 
     CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
     UIGraphicsBeginImageContextWithOptions(rect.size, NO, 1.f);

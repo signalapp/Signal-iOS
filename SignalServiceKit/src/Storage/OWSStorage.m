@@ -65,7 +65,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         return self;
     }
 
-    OWSAssert(delegate);
+    OWSAssertDebug(delegate);
 
     self.delegate = delegate;
 
@@ -82,8 +82,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areAllRegistrationsComplete);
+    OWSAssertDebug(delegate);
+    OWSAssertDebug(delegate.areAllRegistrationsComplete);
 
     OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
@@ -109,8 +109,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                 completionBlock:(nullable dispatch_block_t)completionBlock
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
-    OWSAssert(delegate.areAllRegistrationsComplete);
+    OWSAssertDebug(delegate);
+    OWSAssertDebug(delegate.areAllRegistrationsComplete);
 
     __block OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
@@ -161,7 +161,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         return self;
     }
 
-    OWSAssert(delegate);
+    OWSAssertDebug(delegate);
 
     self.delegate = delegate;
 
@@ -175,7 +175,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 - (YapDatabaseConnection *)newConnection
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
-    OWSAssert(delegate);
+    OWSAssertDebug(delegate);
 
     OWSDatabaseConnection *connection = [[OWSDatabaseConnection alloc] initWithDatabase:self delegate:delegate];
     [self addConnection:connection];
@@ -337,7 +337,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (nullable id)dbNotificationObject
 {
-    OWSAssert(self.database);
+    OWSAssertDebug(self.database);
 
     return self.database;
 }
@@ -373,7 +373,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
 {
-    OWSAssert(migrationBlock);
+    OWSAssertDebug(migrationBlock);
 
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -381,7 +381,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [OWSPrimaryStorage.sharedManager runSyncRegistrations];
 
     [OWSPrimaryStorage.sharedManager runAsyncRegistrationsWithCompletion:^{
-        OWSAssert(self.isStorageReady);
+        OWSAssertDebug(self.isStorageReady);
 
         [self postRegistrationCompleteNotification];
 
@@ -399,7 +399,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Returns YES IFF all registrations are complete.
 + (void)postRegistrationCompleteNotification
 {
-    OWSAssert(self.isStorageReady);
+    OWSAssertDebug(self.isStorageReady);
 
     OWSLogInfo(@"");
 
@@ -425,16 +425,16 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     options.enableMultiProcessSupport = YES;
     options.cipherKeySpecBlock = ^{
         // NOTE: It's critical that we don't capture a reference to self
-        // (e.g. by using OWSAssert()) or this database will contain a
+        // (e.g. by using OWSAssertDebug()) or this database will contain a
         // circular reference and will leak.
         OWSStorage *strongSelf = weakSelf;
-        OWSCAssert(strongSelf);
+        OWSCAssertDebug(strongSelf);
 
         // Rather than compute this once and capture the value of the key
         // in the closure, we prefer to fetch the key from the keychain multiple times
         // in order to keep the key out of application memory.
         NSData *databaseKeySpec = [strongSelf databaseKeySpec];
-        OWSCAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
+        OWSCAssertDebug(databaseKeySpec.length == kSQLCipherKeySpecLength);
         return databaseKeySpec;
     };
 
@@ -446,12 +446,12 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     // If any of these asserts fails, we need to verify and update
     // OWSDatabaseConverter which assumes the values of these options.
-    OWSAssert(options.cipherDefaultkdfIterNumber == 0);
-    OWSAssert(options.kdfIterNumber == 0);
-    OWSAssert(options.cipherPageSize == 0);
-    OWSAssert(options.pragmaPageSize == 0);
-    OWSAssert(options.pragmaJournalSizeLimit == 0);
-    OWSAssert(options.pragmaMMapSize == 0);
+    OWSAssertDebug(options.cipherDefaultkdfIterNumber == 0);
+    OWSAssertDebug(options.kdfIterNumber == 0);
+    OWSAssertDebug(options.cipherPageSize == 0);
+    OWSAssertDebug(options.pragmaPageSize == 0);
+    OWSAssertDebug(options.pragmaJournalSizeLimit == 0);
+    OWSAssertDebug(options.pragmaMMapSize == 0);
 
     // Sanity checking elsewhere asserts we should only regenerate key specs when
     // there is no existing database, so rather than lazily generate in the cipherKeySpecBlock
@@ -516,7 +516,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSLogError(@"%@", extensionName);
 
     NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
-    OWSAssert(appUserDefaults);
+    OWSAssertDebug(appUserDefaults);
     NSMutableDictionary<NSString *, NSNumber *> *_Nullable versionMap =
         [[appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionMap] mutableCopy];
     if (!versionMap) {
@@ -534,7 +534,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAssertIsOnMainThread();
 
     NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
-    OWSAssert(appUserDefaults);
+    OWSAssertDebug(appUserDefaults);
     NSDictionary<NSString *, NSNumber *> *_Nullable versionMap =
         [appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionMap];
     NSNumber *_Nullable versionSuffix = versionMap[extensionName];
@@ -550,8 +550,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (YapDatabaseExtension *)updateExtensionVersion:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
-    OWSAssert(extension);
-    OWSAssert(extensionName.length > 0);
+    OWSAssertDebug(extension);
+    OWSAssertDebug(extensionName.length > 0);
 
     if ([extension isKindOfClass:[YapDatabaseAutoView class]]) {
         YapDatabaseAutoView *databaseView = (YapDatabaseAutoView *)extension;
@@ -564,8 +564,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         return databaseViewCopy;
     } else if ([extension isKindOfClass:[YapDatabaseSecondaryIndex class]]) {
         YapDatabaseSecondaryIndex *secondaryIndex = (YapDatabaseSecondaryIndex *)extension;
-        OWSAssert(secondaryIndex->setup);
-        OWSAssert(secondaryIndex->handler);
+        OWSAssertDebug(secondaryIndex->setup);
+        OWSAssertDebug(secondaryIndex->handler);
         YapDatabaseSecondaryIndex *secondaryIndexCopy = [[YapDatabaseSecondaryIndex alloc]
             initWithSetup:secondaryIndex->setup
                   handler:secondaryIndex->handler
@@ -602,7 +602,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 {
     extension = [self updateExtensionVersion:extension withName:extensionName];
 
-    OWSAssert(![self.extensionNames containsObject:extensionName]);
+    OWSAssertDebug(![self.extensionNames containsObject:extensionName]);
     [self.extensionNames addObject:extensionName];
 
     return [self.database registerExtension:extension withName:extensionName];
@@ -620,7 +620,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 {
     extension = [self updateExtensionVersion:extension withName:extensionName];
 
-    OWSAssert(![self.extensionNames containsObject:extensionName]);
+    OWSAssertDebug(![self.extensionNames containsObject:extensionName]);
     [self.extensionNames addObject:extensionName];
 
     [self.database asyncRegisterExtension:extension
@@ -734,14 +734,14 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 + (nullable NSData *)tryToLoadDatabaseCipherKeySpec:(NSError **)errorHandle
 {
     NSData *_Nullable data = [self tryToLoadKeyChainValue:keychainDBCipherKeySpec errorHandle:errorHandle];
-    OWSAssert(!data || data.length == kSQLCipherKeySpecLength);
+    OWSAssertDebug(!data || data.length == kSQLCipherKeySpecLength);
 
     return data;
 }
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData
 {
-    OWSAssert(cipherKeySpecData.length == kSQLCipherKeySpecLength);
+    OWSAssertDebug(cipherKeySpecData.length == kSQLCipherKeySpecLength);
 
     [self storeKeyChainValue:cipherKeySpecData keychainKey:keychainDBCipherKeySpec];
 }
@@ -824,7 +824,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)raiseKeySpecInaccessibleExceptionWithErrorDescription:(NSString *)errorDescription
 {
-    OWSAssert(CurrentAppContext().isMainApp && CurrentAppContext().isInBackground);
+    OWSAssertDebug(CurrentAppContext().isMainApp && CurrentAppContext().isInBackground);
 
     // Sleep to give analytics events time to be delivered.
     [NSThread sleepForTimeInterval:5.0f];
@@ -858,16 +858,16 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle
 {
-    OWSAssert(keychainKey.length > 0);
-    OWSAssert(errorHandle);
+    OWSAssertDebug(keychainKey.length > 0);
+    OWSAssertDebug(errorHandle);
 
     return [SAMKeychain passwordDataForService:keychainService account:keychainKey error:errorHandle];
 }
 
 + (void)storeKeyChainValue:(NSData *)data keychainKey:(NSString *)keychainKey
 {
-    OWSAssert(keychainKey.length > 0);
-    OWSAssert(data.length > 0);
+    OWSAssertDebug(keychainKey.length > 0);
+    OWSAssertDebug(data.length > 0);
 
     NSError *error;
     [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];

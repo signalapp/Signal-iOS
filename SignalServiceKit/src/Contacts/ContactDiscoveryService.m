@@ -355,10 +355,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                    enclaveId:(NSString *)enclaveId
                                                         auth:(RemoteAttestationAuth *)auth
 {
-    OWSAssert(responseJson);
-    OWSAssert(response);
-    OWSAssert(keyPair);
-    OWSAssert(enclaveId.length > 0);
+    OWSAssertDebug(responseJson);
+    OWSAssertDebug(response);
+    OWSAssertDebug(keyPair);
+    OWSAssertDebug(enclaveId.length > 0);
 
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
         OWSFailDebug(@"unexpected response type.");
@@ -480,10 +480,10 @@ NS_ASSUME_NONNULL_BEGIN
                                  signature:(NSData *)signature
                                  quoteData:(NSData *)quoteData
 {
-    OWSAssert(certificates.length > 0);
-    OWSAssert(signatureBody.length > 0);
-    OWSAssert(signature.length > 0);
-    OWSAssert(quoteData);
+    OWSAssertDebug(certificates.length > 0);
+    OWSAssertDebug(signatureBody.length > 0);
+    OWSAssertDebug(signature.length > 0);
+    OWSAssertDebug(quoteData);
 
     CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:certificates];
     if (!certificate) {
@@ -555,7 +555,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignatureBodyEntity *)parseSignatureBodyEntity:(NSString *)signatureBody
 {
-    OWSAssert(signatureBody.length > 0);
+    OWSAssertDebug(signatureBody.length > 0);
 
     NSError *error = nil;
     NSDictionary *_Nullable jsonDict =
@@ -591,9 +591,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)verifyServerQuote:(CDSQuote *)quote keys:(RemoteAttestationKeys *)keys enclaveId:(NSString *)enclaveId
 {
-    OWSAssert(quote);
-    OWSAssert(keys);
-    OWSAssert(enclaveId.length > 0);
+    OWSAssertDebug(quote);
+    OWSAssertDebug(keys);
+    OWSAssertDebug(enclaveId.length > 0);
 
     if (quote.reportData.length < keys.serverStaticPublic.length) {
         OWSFailDebug(
@@ -633,10 +633,10 @@ NS_ASSUME_NONNULL_BEGIN
                   encryptedRequestTag:(NSData *)encryptedRequestTag
                                  keys:(RemoteAttestationKeys *)keys
 {
-    OWSAssert(encryptedRequestId.length > 0);
-    OWSAssert(encryptedRequestIv.length > 0);
-    OWSAssert(encryptedRequestTag.length > 0);
-    OWSAssert(keys);
+    OWSAssertDebug(encryptedRequestId.length > 0);
+    OWSAssertDebug(encryptedRequestIv.length > 0);
+    OWSAssertDebug(encryptedRequestTag.length > 0);
+    OWSAssertDebug(keys);
 
     OWSAES256Key *_Nullable key = keys.serverKey;
     if (!key) {

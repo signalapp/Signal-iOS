@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    OWSAssert(completion);
+    OWSAssertDebug(completion);
 
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
 

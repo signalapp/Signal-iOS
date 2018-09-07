@@ -17,10 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
                            signalingKey:(NSString *)signalingKey
                                 authKey:(NSString *)authKey
 {
-    OWSAssert(verificationCode.length > 0);
-    OWSAssert(phoneNumber.length > 0);
-    OWSAssert(signalingKey.length > 0);
-    OWSAssert(authKey.length > 0);
+    OWSAssertDebug(verificationCode.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(signalingKey.length > 0);
+    OWSAssertDebug(authKey.length > 0);
 
     NSURL *url =
         [NSURL URLWithString:[NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode]];

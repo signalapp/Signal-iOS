@@ -32,7 +32,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 - (void)addSection:(OWSTableSection *)section
 {
-    OWSAssert(section);
+    OWSAssertDebug(section);
 
     [_sections addObject:section];
 }
@@ -69,7 +69,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 - (void)addItem:(OWSTableItem *)item
 {
-    OWSAssert(item);
+    OWSAssertDebug(item);
 
     [_items addObject:item];
 }
@@ -120,7 +120,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(title.length > 0);
+    OWSAssertDebug(title.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -132,8 +132,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                      customRowHeight:(CGFloat)customRowHeight
                          actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customCell);
-    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
+    OWSAssertDebug(customCell);
+    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -146,7 +146,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                           customRowHeight:(CGFloat)customRowHeight
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
+    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self itemWithCustomCellBlock:customCellBlock actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
@@ -156,7 +156,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 + (OWSTableItem *)itemWithCustomCellBlock:(OWSTableCustomCellBlock)customCellBlock
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customCellBlock);
+    OWSAssertDebug(customCellBlock);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -178,8 +178,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                    actionBlock:(nullable OWSTableActionBlock)actionBlock
                  accessoryType:(UITableViewCellAccessoryType)accessoryType
 {
-    OWSAssert(text.length > 0);
-    OWSAssert(actionBlock);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -196,7 +196,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
+    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self disclosureItemWithText:text actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
@@ -207,8 +207,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                               detailText:(NSString *)detailText
                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(text.length > 0);
-    OWSAssert(actionBlock);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -226,15 +226,15 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)subPageItemWithText:(NSString *)text actionBlock:(nullable OWSTableSubPageBlock)actionBlock
 {
-    OWSAssert(text.length > 0);
-    OWSAssert(actionBlock);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
     __weak OWSTableItem *weakItem = item;
     item.actionBlock = ^{
         OWSTableItem *strongItem = weakItem;
-        OWSAssert(strongItem);
-        OWSAssert(strongItem.tableViewController);
+        OWSAssertDebug(strongItem);
+        OWSAssertDebug(strongItem.tableViewController);
 
         if (actionBlock) {
             actionBlock(strongItem.tableViewController);
@@ -253,7 +253,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                       customRowHeight:(CGFloat)customRowHeight
                           actionBlock:(nullable OWSTableSubPageBlock)actionBlock
 {
-    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
+    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self subPageItemWithText:text actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
@@ -262,8 +262,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(text.length > 0);
-    OWSAssert(actionBlock);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(actionBlock);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -277,7 +277,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text
 {
-    OWSAssert(text.length > 0);
+    OWSAssertDebug(text.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
@@ -300,7 +300,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight
 {
-    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
+    OWSAssertDebug(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self softCenterLabelItemWithText:text];
     item.customRowHeight = @(customRowHeight);
@@ -309,7 +309,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)labelItemWithText:(NSString *)text
 {
-    OWSAssert(text.length > 0);
+    OWSAssertDebug(text.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
@@ -323,8 +323,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText
 {
-    OWSAssert(text.length > 0);
-    OWSAssert(accessoryText.length > 0);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(accessoryText.length > 0);
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
@@ -356,9 +356,9 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                               target:(id)target
                             selector:(SEL)selector
 {
-    OWSAssert(text.length > 0);
-    OWSAssert(target);
-    OWSAssert(selector);
+    OWSAssertDebug(text.length > 0);
+    OWSAssertDebug(target);
+    OWSAssertDebug(selector);
 
     OWSTableItem *item = [OWSTableItem new];
     __weak id weakTarget = target;
@@ -452,7 +452,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 {
     [super loadView];
 
-    OWSAssert(self.contents);
+    OWSAssertDebug(self.contents);
 
     if (self.contents.title.length > 0) {
         self.title = self.contents.title;
@@ -503,8 +503,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (OWSTableSection *)sectionForIndex:(NSInteger)sectionIndex
 {
-    OWSAssert(self.contents);
-    OWSAssert(sectionIndex >= 0 && sectionIndex < (NSInteger)self.contents.sections.count);
+    OWSAssertDebug(self.contents);
+    OWSAssertDebug(sectionIndex >= 0 && sectionIndex < (NSInteger)self.contents.sections.count);
 
     OWSTableSection *section = self.contents.sections[(NSUInteger)sectionIndex];
     return section;
@@ -512,11 +512,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (OWSTableItem *)itemForIndexPath:(NSIndexPath *)indexPath
 {
-    OWSAssert(self.contents);
-    OWSAssert(indexPath.section >= 0 && indexPath.section < (NSInteger)self.contents.sections.count);
+    OWSAssertDebug(self.contents);
+    OWSAssertDebug(indexPath.section >= 0 && indexPath.section < (NSInteger)self.contents.sections.count);
 
     OWSTableSection *section = self.contents.sections[(NSUInteger)indexPath.section];
-    OWSAssert(indexPath.item >= 0 && indexPath.item < (NSInteger)section.items.count);
+    OWSAssertDebug(indexPath.item >= 0 && indexPath.item < (NSInteger)section.items.count);
     OWSTableItem *item = section.items[(NSUInteger)indexPath.item];
 
     return item;
@@ -524,7 +524,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (void)setContents:(OWSTableContents *)contents
 {
-    OWSAssert(contents);
+    OWSAssertDebug(contents);
     OWSAssertIsOnMainThread();
 
     _contents = contents;
@@ -536,14 +536,14 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    OWSAssert(self.contents);
+    OWSAssertDebug(self.contents);
     return (NSInteger)self.contents.sections.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionIndex
 {
     OWSTableSection *section = [self sectionForIndex:sectionIndex];
-    OWSAssert(section.items);
+    OWSAssertDebug(section.items);
     return (NSInteger)section.items.count;
 }
 
@@ -571,7 +571,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kOWSTableCellIdentifier];
-    OWSAssert(cell);
+    OWSAssertDebug(cell);
     [OWSTableItem configureCell:cell];
 
     cell.textLabel.text = item.title;
@@ -610,7 +610,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     if (section.customHeaderHeight) {
-        OWSAssert([section.customHeaderHeight floatValue] > 0);
+        OWSAssertDebug([section.customHeaderHeight floatValue] > 0);
         return [section.customHeaderHeight floatValue];
     } else if (section.headerTitle.length > 0) {
         return UITableViewAutomaticDimension;
@@ -628,7 +628,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     if (section.customFooterHeight) {
-        OWSAssert([section.customFooterHeight floatValue] > 0);
+        OWSAssertDebug([section.customFooterHeight floatValue] > 0);
         return [section.customFooterHeight floatValue];
     } else if (section.footerTitle.length > 0) {
         return UITableViewAutomaticDimension;
@@ -682,7 +682,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (void)presentFromViewController:(UIViewController *)fromViewController
 {
-    OWSAssert(fromViewController);
+    OWSAssertDebug(fromViewController);
 
     OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:self];
     self.navigationItem.leftBarButtonItem =

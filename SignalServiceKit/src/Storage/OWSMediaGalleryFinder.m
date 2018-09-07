@@ -53,8 +53,8 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                                                                           forKey:message.uniqueId
                                                                     inCollection:[TSMessage collection]];
 
-    OWSAssert(wasFound);
-    OWSAssert([self.mediaGroup isEqual:groupId]);
+    OWSAssertDebug(wasFound);
+    OWSAssertDebug([self.mediaGroup isEqual:groupId]);
 
     return index;
 }
@@ -84,7 +84,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                                 NSUInteger index,
                                 BOOL *_Nonnull stop) {
 
-                                OWSAssert([object isKindOfClass:[TSMessage class]]);
+                                OWSAssertDebug([object isKindOfClass:[TSMessage class]]);
                                 messageBlock((TSMessage *)object);
                             }];
 }
@@ -94,7 +94,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 - (YapDatabaseAutoViewTransaction *)galleryExtensionWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     YapDatabaseAutoViewTransaction *extension = [transaction extension:OWSMediaGalleryFinderExtensionName];
-    OWSAssert(extension);
+    OWSAssertDebug(extension);
     
     return extension;
 }
@@ -148,7 +148,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
         }
         TSMessage *message = (TSMessage *)object;
         
-        OWSAssert(message.attachmentIds.count <= 1);
+        OWSAssertDebug(message.attachmentIds.count <= 1);
         NSString *attachmentId = message.attachmentIds.firstObject;
         if (attachmentId.length == 0) {
             return nil;

@@ -245,7 +245,7 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
 - (void)addPartnerView:(id<OWSBubbleViewPartner>)partnerView
 {
-    OWSAssert(self.partnerViews);
+    OWSAssertDebug(self.partnerViews);
 
     [partnerView setBubbleView:self];
 
@@ -254,7 +254,7 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
 - (void)clearPartnerViews
 {
-    OWSAssert(self.partnerViews);
+    OWSAssertDebug(self.partnerViews);
 
     [self.partnerViews removeAllObjects];
 }

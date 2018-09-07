@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssert(delegate);
+    OWSAssertDebug(delegate);
     _delegate = delegate;
 
     _blockingManager = [OWSBlockingManager sharedManager];
@@ -105,14 +105,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     return self.signalAccountMap[recipientId];
 }
 
 - (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
@@ -201,8 +201,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
 {
-    OWSAssert(contact);
-    OWSAssert(searchTerm.length > 0);
+    OWSAssertDebug(contact);
+    OWSAssertDebug(searchTerm.length > 0);
 
     if ([contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
         return YES;
@@ -222,8 +222,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)doesContact:(Contact *)contact matchSearchTerms:(NSArray<NSString *> *)searchTerms
 {
-    OWSAssert(contact);
-    OWSAssert(searchTerms.count > 0);
+    OWSAssertDebug(contact);
+    OWSAssertDebug(searchTerms.count > 0);
 
     for (NSString *searchTerm in searchTerms) {
         if (![self doesContact:contact matchSearchTerm:searchTerm]) {

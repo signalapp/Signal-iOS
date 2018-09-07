@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isEnvelopeBlocked:(SSKProtoEnvelope *)envelope
 {
-    OWSAssert(envelope);
+    OWSAssertDebug(envelope);
 
     return [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
 }
@@ -93,10 +93,10 @@ NS_ASSUME_NONNULL_BEGIN
            successBlock:(DecryptSuccessBlock)successBlockParameter
            failureBlock:(DecryptFailureBlock)failureBlockParameter
 {
-    OWSAssert(envelope);
-    OWSAssert(successBlockParameter);
-    OWSAssert(failureBlockParameter);
-    OWSAssert([TSAccountManager isRegistered]);
+    OWSAssertDebug(envelope);
+    OWSAssertDebug(successBlockParameter);
+    OWSAssertDebug(failureBlockParameter);
+    OWSAssertDebug([TSAccountManager isRegistered]);
 
     // successBlock is called synchronously so that we can avail ourselves of
     // the transaction.
@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
     @try {
         OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
 
-        OWSAssert(envelope.source.length > 0);
+        OWSAssertDebug(envelope.source.length > 0);
         if ([self isEnvelopeBlocked:envelope]) {
             OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
             failureBlock();
@@ -194,9 +194,9 @@ NS_ASSUME_NONNULL_BEGIN
                 successBlock:(DecryptSuccessBlock)successBlock
                 failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
-    OWSAssert(envelope);
-    OWSAssert(successBlock);
-    OWSAssert(failureBlock);
+    OWSAssertDebug(envelope);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
 
     [self decryptEnvelope:envelope
             cipherTypeName:@"Secure Message"
@@ -211,9 +211,9 @@ NS_ASSUME_NONNULL_BEGIN
                successBlock:(DecryptSuccessBlock)successBlock
                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
-    OWSAssert(envelope);
-    OWSAssert(successBlock);
-    OWSAssert(failureBlock);
+    OWSAssertDebug(envelope);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
 
     // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
     [TSPreKeyManager checkPreKeys];
@@ -233,11 +233,11 @@ NS_ASSUME_NONNULL_BEGIN
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
-    OWSAssert(envelope);
-    OWSAssert(cipherTypeName.length > 0);
-    OWSAssert(cipherMessageBlock);
-    OWSAssert(successBlock);
-    OWSAssert(failureBlock);
+    OWSAssertDebug(envelope);
+    OWSAssertDebug(cipherTypeName.length > 0);
+    OWSAssertDebug(cipherMessageBlock);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
 
     OWSPrimaryStorage *primaryStorage = self.primaryStorage;
     NSString *recipientId = envelope.source;
@@ -310,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
             errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
         }
 
-        OWSAssert(errorMessage);
+        OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage saveWithTransaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];

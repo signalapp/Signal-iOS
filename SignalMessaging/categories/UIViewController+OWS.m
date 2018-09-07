@@ -50,8 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIBarButtonItem *)createOWSBackButtonWithTarget:(id)target selector:(SEL)selector
 {
-    OWSAssert(target);
-    OWSAssert(selector);
+    OWSAssertDebug(target);
+    OWSAssertDebug(selector);
 
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
     BOOL isRTL = CurrentAppContext().isRTL;
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *backImage = [[UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    OWSAssert(backImage);
+    OWSAssertDebug(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
     backButton.tintColor = Theme.navbarIconColor;
 

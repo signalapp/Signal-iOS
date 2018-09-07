@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
 
-    OWSAssert(self.verificationStateSyncMessage.paddingBytesLength > 0);
+    OWSAssertDebug(self.verificationStateSyncMessage.paddingBytesLength > 0);
 
     // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
     // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     // verification sync which is ~1-512 bytes larger then that.
     contentLength += self.verificationStateSyncMessage.paddingBytesLength;
 
-    OWSAssert(contentLength > 0);
+    OWSAssertDebug(contentLength > 0);
 
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
 

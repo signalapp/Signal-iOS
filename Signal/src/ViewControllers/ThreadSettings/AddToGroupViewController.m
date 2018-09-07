@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)phoneNumberWasSelected:(NSString *)phoneNumber
 {
-    OWSAssert(phoneNumber.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
 
     __weak AddToGroupViewController *weakSelf = self;
 
@@ -87,14 +87,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
+    OWSAssertDebug(signalAccount);
 
     return ![self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
+    OWSAssertDebug(signalAccount);
 
     __weak AddToGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addToGroup:(NSString *)recipientId
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     [self.addToGroupDelegate recipientIdWasAdded:recipientId];
     [self.navigationController popViewControllerAnimated:YES];
@@ -160,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSString *)accessoryMessageForSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssert(signalAccount);
+    OWSAssertDebug(signalAccount);
 
     if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
         return NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");

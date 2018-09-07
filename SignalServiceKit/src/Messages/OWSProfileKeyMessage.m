@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
-    OWSAssert(self.thread);
+    OWSAssertDebug(self.thread);
 
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (!builder) {

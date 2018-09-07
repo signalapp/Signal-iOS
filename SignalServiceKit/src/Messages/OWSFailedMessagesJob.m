@@ -40,7 +40,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 - (NSArray<NSString *> *)fetchAttemptingOutMessageIdsWithTransaction:
     (YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
 
@@ -59,7 +59,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 - (void)enumerateAttemptingOutMessagesWithBlock:(void (^_Nonnull)(TSOutgoingMessage *message))block
                                     transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    OWSAssert(transaction);
+    OWSAssertDebug(transaction);
 
     // Since we can't directly mutate the enumerated "attempting out" expired messages, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSMessage objects one at a time.
@@ -82,7 +82,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
                 // sanity check
-                OWSAssert(message.messageState == TSOutgoingMessageStateSending);
+                OWSAssertDebug(message.messageState == TSOutgoingMessageStateSending);
                 if (message.messageState != TSOutgoingMessageStateSending) {
                     OWSLogError(@"Refusing to mark as unsent message with state: %d", (int)message.messageState);
                     return;
@@ -90,7 +90,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
                 OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
                 [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
-                OWSAssert(message.messageState == TSOutgoingMessageStateFailed);
+                OWSAssertDebug(message.messageState == TSOutgoingMessageStateFailed);
 
                 count++;
             }

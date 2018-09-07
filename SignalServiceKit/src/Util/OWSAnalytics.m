@@ -70,7 +70,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-        OWSAssert(primaryStorage);
+        OWSAssertDebug(primaryStorage);
         // Use a newDatabaseConnection so as not to block reads in the launch path.
         instance = primaryStorage.newDatabaseConnection;
     });
@@ -154,8 +154,8 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             }
             
             firstEventDictionary = [transaction objectForKey:firstEventKey inCollection:kOWSAnalytics_EventsCollection];
-            OWSAssert(firstEventDictionary);
-            OWSAssert([firstEventDictionary isKindOfClass:[NSDictionary class]]);
+            OWSAssertDebug(firstEventDictionary);
+            OWSAssertDebug([firstEventDictionary isKindOfClass:[NSDictionary class]]);
         }];
 
         if (firstEventDictionary) {
@@ -166,8 +166,8 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)sendEvent:(NSDictionary *)eventDictionary eventKey:(NSString *)eventKey isCritical:(BOOL)isCritical
 {
-    OWSAssert(eventDictionary);
-    OWSAssert(eventKey);
+    OWSAssertDebug(eventDictionary);
+    OWSAssertDebug(eventKey);
     AssertOnDispatchQueue(self.serialQueue);
 
     if (isCritical) {
@@ -229,8 +229,8 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             success:(void (^_Nonnull)(void))successBlock
             failure:(void (^_Nonnull)(void))failureBlock
 {
-    OWSAssert(eventDictionary);
-    OWSAssert(eventKey);
+    OWSAssertDebug(eventDictionary);
+    OWSAssertDebug(eventKey);
     AssertOnDispatchQueue(self.serialQueue);
 
     OWSLogDebug(@"submitting: %@", eventKey);
@@ -299,8 +299,8 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (void)addEvent:(NSString *)eventName severity:(OWSAnalyticsSeverity)severity properties:(NSDictionary *)properties
 {
-    OWSAssert(eventName.length > 0);
-    OWSAssert(properties);
+    OWSAssertDebug(eventName.length > 0);
+    OWSAssertDebug(properties);
 
 #ifndef NO_SIGNAL_ANALYTICS
     BOOL isError = severity == OWSAnalyticsSeverityError;
@@ -318,7 +318,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         [eventProperties addEntriesFromDictionary:self.eventSuperProperties];
 
         NSDictionary *eventDictionary = [eventProperties copy];
-        OWSAssert(eventDictionary);
+        OWSAssertDebug(eventDictionary);
         NSString *eventKey = [NSUUID UUID].UUIDString;
         OWSLogDebug(@"enqueuing event: %@", eventKey);
 

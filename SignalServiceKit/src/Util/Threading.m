@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 void DispatchMainThreadSafe(dispatch_block_t block)
 {
-    OWSCAssert(block);
+    OWSCAssertDebug(block);
 
     if ([NSThread isMainThread]) {
         block();
@@ -21,7 +21,7 @@ void DispatchMainThreadSafe(dispatch_block_t block)
 
 void DispatchSyncMainThreadSafe(dispatch_block_t block)
 {
-    OWSCAssert(block);
+    OWSCAssertDebug(block);
 
     if ([NSThread isMainThread]) {
         block();

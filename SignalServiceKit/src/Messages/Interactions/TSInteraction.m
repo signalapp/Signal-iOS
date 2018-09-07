@@ -36,7 +36,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                                                 ofClass:(Class)clazz
                                         withTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(timestamp > 0);
+    OWSAssertDebug(timestamp > 0);
 
     // Accept any interaction.
     return [self interactionsWithTimestamp:timestamp
@@ -50,7 +50,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                                                  filter:(BOOL (^_Nonnull)(TSInteraction *))filter
                                         withTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(timestamp > 0);
+    OWSAssertDebug(timestamp > 0);
 
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
@@ -76,7 +76,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
-    OWSAssert(timestamp > 0);
+    OWSAssertDebug(timestamp > 0);
 
     self = [super initWithUniqueId:nil];
 
@@ -122,7 +122,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other
 {
-    OWSAssert(other);
+    OWSAssertDebug(other);
 
     uint64_t timestamp1 = self.timestampForSorting;
     uint64_t timestamp2 = other.timestampForSorting;

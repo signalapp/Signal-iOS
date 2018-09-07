@@ -141,7 +141,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                           success:(OrphanDataBlock)success
                           failure:(dispatch_block_t)failure
 {
-    OWSAssert(databaseConnection);
+    OWSAssertDebug(databaseConnection);
 
     if (remainingRetries < 1) {
         OWSLogInfo(@"Aborting orphan data search.");
@@ -173,7 +173,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 // abort if the app resigns active, in order to avoid 0xdead10cc crashes.
 + (nullable OWSOrphanData *)findOrphanDataSync:(YapDatabaseConnection *)databaseConnection
 {
-    OWSAssert(databaseConnection);
+    OWSAssertDebug(databaseConnection);
 
     __block BOOL shouldAbort = NO;
 
@@ -469,7 +469,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans databaseConnection:(YapDatabaseConnection *)databaseConnection
 {
     OWSAssertIsOnMainThread();
-    OWSAssert(databaseConnection);
+    OWSAssertDebug(databaseConnection);
 
     if (!AppReadiness.isAppReady) {
         OWSFailDebug(@"can't audit orphan data until app is ready.");
@@ -543,8 +543,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 success:(dispatch_block_t)success
                 failure:(dispatch_block_t)failure
 {
-    OWSAssert(databaseConnection);
-    OWSAssert(orphanData);
+    OWSAssertDebug(databaseConnection);
+    OWSAssertDebug(orphanData);
 
     if (remainingRetries < 1) {
         OWSLogInfo(@"Aborting orphan data audit.");
@@ -582,8 +582,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         databaseConnection:(YapDatabaseConnection *)databaseConnection
        shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
 {
-    OWSAssert(databaseConnection);
-    OWSAssert(orphanData);
+    OWSAssertDebug(databaseConnection);
+    OWSAssertDebug(orphanData);
 
     __block BOOL shouldAbort = NO;
 

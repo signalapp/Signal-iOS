@@ -90,7 +90,7 @@
 - (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
-    OWSAssert(thread != nil);
+    OWSAssertDebug(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesMissedCall;
@@ -128,7 +128,7 @@
 - (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call callerName:(NSString *)callerName
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
-    OWSAssert(thread != nil);
+    OWSAssertDebug(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
     // Use category which allows call back
@@ -165,7 +165,7 @@
 - (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call callerName:(NSString *)callerName
 {
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:call.remotePhoneNumber];
-    OWSAssert(thread != nil);
+    OWSAssertDebug(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
     // Use category which does not allow call back
@@ -205,7 +205,7 @@
                            thread:(TSThread *)thread
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     if (!thread) {
         OWSFailDebug(@"unexpected notification not associated with a thread: %@.", [message class]);
@@ -261,7 +261,7 @@
 - (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)message
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
-    OWSAssert(message);
+    OWSAssertDebug(message);
 
     NSString *messageText = [message previewTextWithTransaction:transaction];
 
@@ -297,9 +297,9 @@
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
                          transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(message);
-    OWSAssert(thread);
-    OWSAssert(contactsManager);
+    OWSAssertDebug(message);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(contactsManager);
 
     // While batch processing, some of the necessary changes have not been commited.
     NSString *rawMessageText = [message previewTextWithTransaction:transaction];

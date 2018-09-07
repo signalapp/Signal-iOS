@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange
 {
-    OWSAssert(recipientId.length > 0);
+    OWSAssertDebug(recipientId.length > 0);
 
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageVerificationStateChange];
     if (!self) {

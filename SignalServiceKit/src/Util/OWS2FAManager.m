@@ -59,8 +59,8 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         return self;
     }
 
-    OWSAssert(primaryStorage);
-    OWSAssert(networkManager);
+    OWSAssertDebug(primaryStorage);
+    OWSAssertDebug(networkManager);
 
     _dbConnection = primaryStorage.newDatabaseConnection;
     _networkManager = networkManager;
@@ -91,7 +91,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (void)mark2FAAsEnabledWithPin:(NSString *)pin
 {
-    OWSAssert(pin.length > 0);
+    OWSAssertDebug(pin.length > 0);
 
     [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
 
@@ -107,9 +107,9 @@ const NSUInteger kDaySecs = kHourSecs * 24;
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure
 {
-    OWSAssert(pin.length > 0);
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssertDebug(pin.length > 0);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
     [self.networkManager makeRequest:request

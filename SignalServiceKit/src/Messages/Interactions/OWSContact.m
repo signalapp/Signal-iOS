@@ -458,7 +458,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (OWSContact *)newContactWithName:(OWSContactName *)name
 {
-    OWSAssert(name);
+    OWSAssertDebug(name);
 
     OWSContact *newContact = [OWSContact new];
 
@@ -471,7 +471,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (OWSContact *)copyContactWithName:(OWSContactName *)name
 {
-    OWSAssert(name);
+    OWSAssertDebug(name);
 
     OWSContact *contactCopy = [self copy];
 
@@ -500,7 +500,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     NSError *error;
     BOOL success = [attachmentStream writeData:imageData error:&error];
-    OWSAssert(success && !error);
+    OWSAssertDebug(success && !error);
 
     [attachmentStream saveWithTransaction:transaction];
     self.avatarAttachmentId = attachmentStream.uniqueId;
@@ -517,7 +517,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
 {
-    OWSAssert(contactsManager);
+    OWSAssertDebug(contactsManager);
 
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
@@ -528,7 +528,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (NSArray<NSString *> *)systemContactPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
 {
-    OWSAssert(contactsManager);
+    OWSAssertDebug(contactsManager);
 
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
@@ -768,7 +768,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 + (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact
 {
-    OWSAssert(contact);
+    OWSAssertDebug(contact);
 
     SSKProtoDataMessageContactBuilder *contactBuilder =
         [SSKProtoDataMessageContactBuilder new];
@@ -930,12 +930,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 + (nullable OWSContact *)contactForDataMessage:(SSKProtoDataMessage *)dataMessage
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(dataMessage);
+    OWSAssertDebug(dataMessage);
 
     if (dataMessage.contact.count < 1) {
         return nil;
     }
-    OWSAssert(dataMessage.contact.count == 1);
+    OWSAssertDebug(dataMessage.contact.count == 1);
     SSKProtoDataMessageContact *contactProto = dataMessage.contact.firstObject;
 
     OWSContact *contact = [OWSContact new];

@@ -70,7 +70,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)viewDidLoad
 {
-    OWSAssert(self.tableViewController);
+    OWSAssertDebug(self.tableViewController);
 
     [super viewDidLoad];
 }
@@ -87,7 +87,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)createViews
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
@@ -212,13 +212,13 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 - (void)populateDefaultCountryNameAndCode
 {
     PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localNumber]];
-    OWSAssert(localNumber);
+    OWSAssertDebug(localNumber);
 
     NSString *countryCode;
     NSNumber *callingCode;
     if (localNumber) {
         callingCode = [localNumber getCountryCode];
-        OWSAssert(callingCode);
+        OWSAssertDebug(callingCode);
         if (callingCode) {
             NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
             countryCode = [[PhoneNumberUtil sharedThreadLocal] probableCountryCodeForCallingCode:prefix];
@@ -283,7 +283,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)tryToSelectPhoneNumber
 {
-    OWSAssert(self.delegate);
+    OWSAssertDebug(self.delegate);
 
     if (![self hasValidPhoneNumber]) {
         OWSFailDebug(@"Invalid phone number was selected.");
@@ -307,7 +307,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
     // There should only be one phone number, since we're explicitly specifying
     // a country code and therefore parsing a number in e164 format.
-    OWSAssert([possiblePhoneNumbers count] == 1);
+    OWSAssertDebug([possiblePhoneNumbers count] == 1);
 
     if ([self.delegate shouldValidatePhoneNumbers]) {
         // Show an alert while validating the recipient.
@@ -403,9 +403,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                       countryName:(NSString *)countryName
                       callingCode:(NSString *)callingCode
 {
-    OWSAssert(countryCode.length > 0);
-    OWSAssert(countryName.length > 0);
-    OWSAssert(callingCode.length > 0);
+    OWSAssertDebug(countryCode.length > 0);
+    OWSAssertDebug(countryName.length > 0);
+    OWSAssertDebug(callingCode.length > 0);
 
     [self updateCountryWithName:countryName callingCode:callingCode countryCode:countryCode];
 
@@ -456,7 +456,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     const CGFloat kButtonRowHeight = 60;
     [phoneNumberSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
         SelectRecipientViewController *strongSelf = weakSelf;
-        OWSCAssert(strongSelf);
+        OWSCAssertDebug(strongSelf);
 
         UITableViewCell *cell = [OWSTableItem newCell];
         cell.preservesSuperviewLayoutMargins = YES;
@@ -539,7 +539,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                     addItem:[OWSTableItem
                                 itemWithCustomCellBlock:^{
                                     SelectRecipientViewController *strongSelf = weakSelf;
-                                    OWSCAssert(strongSelf);
+                                    OWSCAssertDebug(strongSelf);
 
                                     ContactTableViewCell *cell = [ContactTableViewCell new];
                                     BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];

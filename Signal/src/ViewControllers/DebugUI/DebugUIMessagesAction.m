@@ -36,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     OWSAbstractMethod();
 
@@ -62,8 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)performNTimes:(NSUInteger)countParam success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     OWSLogInfo(@"%@ performNTimes: %zd", self.label, countParam);
     [DDLog flushLog];
@@ -81,10 +81,10 @@ NS_ASSUME_NONNULL_BEGIN
             NSUInteger index = count;
 
             DebugUIMessagesSingleAction *action = [self nextActionToPerform];
-            OWSAssert([action isKindOfClass:[DebugUIMessagesSingleAction class]]);
+            OWSAssertDebug([action isKindOfClass:[DebugUIMessagesSingleAction class]]);
 
             if (action.staggeredActionBlock) {
-                OWSAssert(!action.unstaggeredActionBlock);
+                OWSAssertDebug(!action.unstaggeredActionBlock);
                 action.staggeredActionBlock(index,
                     transaction,
                     ^{
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 break;
             } else {
-                OWSAssert(action.unstaggeredActionBlock);
+                OWSAssertDebug(action.unstaggeredActionBlock);
 
                 // TODO: We could check result for failure.
                 action.unstaggeredActionBlock(index, transaction);
@@ -129,8 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
                       staggeredActionBlock:(StaggeredActionBlock)staggeredActionBlock
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(staggeredActionBlock);
+    OWSAssertDebug(label.length > 0);
+    OWSAssertDebug(staggeredActionBlock);
 
     DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
     instance.label = label;
@@ -141,8 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
                     unstaggeredActionBlock:(UnstaggeredActionBlock)unstaggeredActionBlock
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(unstaggeredActionBlock);
+    OWSAssertDebug(label.length > 0);
+    OWSAssertDebug(unstaggeredActionBlock);
 
     DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
     instance.label = label;
@@ -154,9 +154,9 @@ NS_ASSUME_NONNULL_BEGIN
                       staggeredActionBlock:(StaggeredActionBlock)staggeredActionBlock
                               prepareBlock:(ActionPrepareBlock)prepareBlock
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(staggeredActionBlock);
-    OWSAssert(prepareBlock);
+    OWSAssertDebug(label.length > 0);
+    OWSAssertDebug(staggeredActionBlock);
+    OWSAssertDebug(prepareBlock);
 
     DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
     instance.label = label;
@@ -169,9 +169,9 @@ NS_ASSUME_NONNULL_BEGIN
                     unstaggeredActionBlock:(UnstaggeredActionBlock)unstaggeredActionBlock
                               prepareBlock:(ActionPrepareBlock)prepareBlock
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(unstaggeredActionBlock);
-    OWSAssert(prepareBlock);
+    OWSAssertDebug(label.length > 0);
+    OWSAssertDebug(unstaggeredActionBlock);
+    OWSAssertDebug(prepareBlock);
 
     DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
     instance.label = label;
@@ -182,8 +182,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     if (self.prepareBlock) {
         self.prepareBlock(success, failure);
@@ -210,17 +210,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (DebugUIMessagesSingleAction *)nextActionToPerform
 {
-    OWSAssert(self.subactions.count > 0);
+    OWSAssertDebug(self.subactions.count > 0);
 
     switch (self.subactionMode) {
         case SubactionMode_Random: {
             DebugUIMessagesAction *subaction = self.subactions[arc4random_uniform((uint32_t)self.subactions.count)];
-            OWSAssert(subaction);
+            OWSAssertDebug(subaction);
             return subaction.nextActionToPerform;
         }
         case SubactionMode_Ordered: {
             DebugUIMessagesAction *subaction = self.subactions[self.subactionIndex];
-            OWSAssert(subaction);
+            OWSAssertDebug(subaction);
             self.subactionIndex = (self.subactionIndex + 1) % self.subactions.count;
             return subaction.nextActionToPerform;
         }
@@ -229,8 +229,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     [DebugUIMessagesGroupAction prepareSubactions:[self.subactions mutableCopy] success:success failure:failure];
 }
@@ -239,8 +239,8 @@ NS_ASSUME_NONNULL_BEGIN
                   success:(ActionSuccessBlock)success
                   failure:(ActionFailureBlock)failure
 {
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     if (unpreparedSubactions.count < 1) {
         return success();
@@ -260,8 +260,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (DebugUIMessagesAction *)randomGroupActionWithLabel:(NSString *)label
                                            subactions:(NSArray<DebugUIMessagesAction *> *)subactions
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(subactions.count > 0);
+    OWSAssertDebug(label.length > 0);
+    OWSAssertDebug(subactions.count > 0);
 
     DebugUIMessagesGroupAction *instance = [DebugUIMessagesGroupAction new];
     instance.label = label;
@@ -273,8 +273,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (DebugUIMessagesAction *)allGroupActionWithLabel:(NSString *)label
                                         subactions:(NSArray<DebugUIMessagesAction *> *)subactions
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(subactions.count > 0);
+    OWSAssertDebug(label.length > 0);
+    OWSAssertDebug(subactions.count > 0);
 
     DebugUIMessagesGroupAction *instance = [DebugUIMessagesGroupAction new];
     instance.label = label;

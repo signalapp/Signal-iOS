@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     uint16_t value;
     const size_t valueSize = sizeof(value);
-    OWSAssert(valueSize == 2);
+    OWSAssertDebug(valueSize == 2);
     if (index + valueSize > self.data.length) {
         self.hasError = YES;
         return 0;
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     uint32_t value;
     const size_t valueSize = sizeof(value);
-    OWSAssert(valueSize == 4);
+    OWSAssertDebug(valueSize == 4);
     if (index + valueSize > self.data.length) {
         self.hasError = YES;
         return 0;
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     uint64_t value;
     const size_t valueSize = sizeof(value);
-    OWSAssert(valueSize == 8);
+    OWSAssertDebug(valueSize == 8);
     if (index + valueSize > self.data.length) {
         self.hasError = YES;
         return 0;
