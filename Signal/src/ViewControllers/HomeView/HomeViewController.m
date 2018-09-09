@@ -159,8 +159,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 #pragma GCC diagnostic pop
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                             selector:@selector(blockListDidChange:)
+                                                 name:kNSNotificationName_BlockListDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalAccountsDidChange:)
@@ -207,11 +207,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 #pragma mark - Notifications
 
-- (void)blockedPhoneNumbersDidChange:(id)notification
+- (void)blockListDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
+
+    // FIXME rather than tracking blockedPhoneNumberSet, use ContactViewHelper?
 
     [self reloadTableViewData];
 }

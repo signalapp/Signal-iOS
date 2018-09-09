@@ -55,6 +55,7 @@ class ConversationSearchViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // MJK TODO
         let blockingManager = OWSBlockingManager.shared()
         blockedPhoneNumberSet = Set(blockingManager.blockedPhoneNumbers())
 

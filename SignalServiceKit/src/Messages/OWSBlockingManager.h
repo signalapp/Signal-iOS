@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
-extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
+extern NSString *const kNSNotificationName_BlockListDidChange;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSBlockingManager : NSObject

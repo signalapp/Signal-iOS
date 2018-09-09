@@ -197,12 +197,10 @@ NS_ASSUME_NONNULL_BEGIN
                             // instead of HomeViewCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                            if ([thread isKindOfClass:[TSContactThread class]]) {
-                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
-                                if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                                }
+                            BOOL isBlocked = [helper isThreadBlocked:thread];
+                            if (isBlocked) {
+                                cell.accessoryMessage = NSLocalizedString(
+                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
                             [cell configureWithThread:thread contactsManager:helper.contactsManager];

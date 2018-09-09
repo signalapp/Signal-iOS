@@ -347,6 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     BOOL isBlocked = NO;
+    // FIXME
     if (!thread.isGroupThread) {
         NSString *contactIdentifier = thread.contactIdentifier;
         isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];

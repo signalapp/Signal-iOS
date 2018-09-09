@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
+@property (nonatomic) NSArray<NSData *> *blockedGroupIds;
 
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
@@ -52,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    _blockedGroupIds = [_blockingManager blockedGroupIds];
+
     _conversationSearcher = ConversationSearcher.shared;
 
     _contactsManager = [Environment current].contactsManager;
@@ -74,8 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                             selector:@selector(blockListDidChange:)
+                                                 name:kNSNotificationName_BlockListDidChange
                                                object:nil];
 }
 
@@ -91,11 +94,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateContacts];
 }
 
-- (void)blockedPhoneNumbersDidChange:(id)notification
+- (void)blockListDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
-    self.blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    self.blockedPhoneNumbers = self.blockingManager.blockedPhoneNumbers;
+    self.blockedGroupIds = self.blockingManager.blockedGroupIds;
 
     [self updateContacts];
 }
@@ -159,6 +163,27 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     return [_blockedPhoneNumbers containsObject:recipientId];
+}
+
+- (BOOL)isGroupIdBlocked:(NSData *)groupId
+{
+    OWSAssertIsOnMainThread();
+
+    return [self.blockedGroupIds containsObject:groupId];
+}
+
+- (BOOL)isThreadBlocked:(TSThread *)thread
+{
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        return [self isRecipientIdBlocked:contactThread.contactIdentifier];
+    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        return [self isGroupIdBlocked:groupThread.groupModel.groupId];
+    } else {
+        OWSFail(@"%@ failure: unexpected thread: %@", self.logTag, thread.class);
+        return NO;
+    }
 }
 
 - (void)updateContacts

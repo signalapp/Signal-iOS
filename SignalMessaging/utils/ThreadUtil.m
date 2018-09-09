@@ -347,6 +347,9 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers in 1:1 conversations.
             shouldHaveBlockOffer = NO;
+
+            // MJK TODO - any conditions under which we'd make a block offer for groups?
+
             // Only create profile whitelist offers in 1:1 conversations.
             shouldHaveAddToProfileWhitelistOffer = NO;
         } else {
@@ -665,6 +668,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (![OWSProfileManager.sharedManager hasLocalProfile]) {
         return NO;
     }
+    if ([blockingManager isThreadBlocked:thread]) {
+        return NO;
+    }
+
     BOOL hasUnwhitelistedMember = NO;
     NSArray<NSString *> *blockedPhoneNumbers = [blockingManager blockedPhoneNumbers];
     for (NSString *recipientId in thread.recipientIdentifiers) {

@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange = @"kNSNotificationName_BlockedPhoneNumbersDidChange";
+NSString *const kNSNotificationName_BlockListDidChange = @"kNSNotificationName_BlockListDidChange";
 
 NSString *const kOWSBlockingManager_BlockListCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
 
@@ -298,7 +298,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
             [self saveSyncedBlockListWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_BlockedPhoneNumbersDidChange
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_BlockListDidChange
                                                                  object:nil
                                                                userInfo:nil];
     });

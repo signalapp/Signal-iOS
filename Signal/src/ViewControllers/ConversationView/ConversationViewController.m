@@ -293,8 +293,8 @@ typedef enum : NSUInteger {
 - (void)addNotificationListeners
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                             selector:@selector(blockListDidChange:)
+                                                 name:kNSNotificationName_BlockListDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(windowManagerCallDidChange:)
@@ -410,7 +410,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)blockedPhoneNumbersDidChange:(id)notification
+- (void)blockListDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -865,6 +865,7 @@ typedef enum : NSUInteger {
     }
 
     NSString *blockStateMessage = nil;
+    // FIXME - group blocking
     if ([self isBlockedContactConversation]) {
         blockStateMessage = NSLocalizedString(
             @"MESSAGES_VIEW_CONTACT_BLOCKED", @"Indicates that this 1:1 conversation has been blocked.");
