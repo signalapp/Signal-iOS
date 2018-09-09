@@ -33,7 +33,7 @@ extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
-- (void)syncBlockedPhoneNumbers;
+- (void)syncBlockList;
 
 @end
 

@@ -698,7 +698,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             DDLogInfo(@"%@ Received request for block list", self.logTag);
-            [_blockingManager syncBlockedPhoneNumbers];
+            [_blockingManager syncBlockList];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             BOOL areReadReceiptsEnabled =
                 [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];

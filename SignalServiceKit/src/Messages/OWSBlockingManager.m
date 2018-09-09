@@ -20,13 +20,13 @@ NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange = @"kNSNotifica
 
 NSString *const kOWSBlockingManager_BlockListCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
 
-// This key is used to persist the current "blocked phone numbers" state.
+// These keys are used to persist the current local "block list" state.
 NSString *const kOWSBlockingManager_BlockedPhoneNumbersKey = @"kOWSBlockingManager_BlockedPhoneNumbersKey";
-
 NSString *const kOWSBlockingManager_BlockedGroupIdsKey = @"kOWSBlockingManager_BlockedGroupIdsKey";
 
-// This key is used to persist the most recently synced "blocked phone numbers" state.
+// These keys are used to persist the most recently synced remote "block list" state.
 NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockingManager_SyncedBlockedPhoneNumbersKey";
+NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingManager_SyncedBlockedGroupIdsKey";
 
 @interface OWSBlockingManager ()
 
@@ -264,6 +264,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     [self handleUpdate:YES];
 }
 
+// TODO label the `sendSyncMessage` param
 - (void)handleUpdate:(BOOL)sendSyncMessage
 {
     NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
@@ -272,12 +273,18 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
                           forKey:kOWSBlockingManager_BlockedPhoneNumbersKey
                     inCollection:kOWSBlockingManager_BlockListCollection];
 
+    NSArray<NSData *> *blockedGroupIds = [self blockedGroupIds];
+
+    [self.dbConnection setObject:blockedGroupIds
+                          forKey:kOWSBlockingManager_BlockedGroupIdsKey
+                    inCollection:kOWSBlockingManager_BlockListCollection];
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (sendSyncMessage) {
-            [self sendBlockedPhoneNumbersMessage:blockedPhoneNumbers];
+            [self sendBlockListSyncMessageWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
         } else {
             // If this update came from an incoming block list sync message,
-            // update the "synced blocked phone numbers" state immediately,
+            // update the "synced blocked list" state immediately,
             // since we're now in sync.
             //
             // There could be data loss if both clients modify the block list
@@ -288,7 +295,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
             // c) It's unlikely a user will make conflicting changes on two
             //    devices around the same time.
             // d) There isn't a good way to avoid this.
-            [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
+            [self saveSyncedBlockListWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
         }
 
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_BlockedPhoneNumbersDidChange
@@ -316,63 +323,81 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
                                                             inCollection:kOWSBlockingManager_BlockListCollection];
     _blockedGroupIdSet = [[NSMutableSet alloc] initWithArray:(blockedGroupIds ?: [NSArray new])];
 
-    [self syncBlockedPhoneNumbersIfNecessary];
+    [self syncBlockListIfNecessary];
     [self observeNotifications];
 }
 
-- (void)syncBlockedPhoneNumbers
+- (void)syncBlockList
 {
     OWSAssert(_blockedPhoneNumberSet);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
+        [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:self.blockedGroupIds];
     });
 }
 
 // This method should only be called from within a synchronized block.
-- (void)syncBlockedPhoneNumbersIfNecessary
+- (void)syncBlockListIfNecessary
 {
     OWSAssert(_blockedPhoneNumberSet);
 
-    // If we haven't yet successfully synced the current "blocked phone numbers" changes,
+    // If we haven't yet successfully synced the current "block list" changes,
     // try again to sync now.
     NSArray<NSString *> *syncedBlockedPhoneNumbers =
         [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
                            inCollection:kOWSBlockingManager_BlockListCollection];
-    NSSet *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
-    if (![_blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet]) {
-        DDLogInfo(@"%@ retrying sync of blocked phone numbers", self.logTag);
-        [self sendBlockedPhoneNumbersMessage:self.blockedPhoneNumbers];
+    NSSet<NSString *> *syncedBlockedPhoneNumberSet =
+        [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
+
+    NSArray<NSData *> *syncedBlockedGroupIds =
+        [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedGroupIdsKey
+                           inCollection:kOWSBlockingManager_BlockListCollection];
+    NSSet<NSData *> *syncedBlockedGroupIdSet = [[NSSet alloc] initWithArray:(syncedBlockedGroupIds ?: [NSArray new])];
+
+    if ([self.blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet] &&
+        [self.blockedGroupIdSet isEqualToSet:syncedBlockedGroupIdSet]) {
+        DDLogVerbose(@"Ignoring redundant block list sync");
+        return;
     }
+
+    DDLogInfo(@"%@ retrying sync of block list", self.logTag);
+    [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:self.blockedGroupIds];
 }
 
-- (void)sendBlockedPhoneNumbersMessage:(NSArray<NSString *> *)blockedPhoneNumbers
+- (void)sendBlockListSyncMessageWithPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers
+                                        groupIds:(NSArray<NSData *> *)blockedGroupIds
 {
     OWSAssert(blockedPhoneNumbers);
     OWSAssert(blockedGroupIds);
 
     OWSBlockedPhoneNumbersMessage *message =
-        [[OWSBlockedPhoneNumbersMessage alloc] initWithPhoneNumbers:blockedPhoneNumbers];
+        [[OWSBlockedPhoneNumbersMessage alloc] initWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
 
     [self.messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully sent blocked phone numbers sync message", self.logTag);
 
             // Record the last set of "blocked phone numbers" which we successfully synced.
-            [self saveSyncedBlockedPhoneNumbers:blockedPhoneNumbers];
+            [self saveSyncedBlockListWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
         }
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to send blocked phone numbers sync message with error: %@", self.logTag, error);
         }];
 }
 
-- (void)saveSyncedBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers
+/// Records the last block list which we successfully synced.
+- (void)saveSyncedBlockListWithPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers
+                                   groupIds:(NSArray<NSData *> *)blockedGroupIds
 {
     OWSAssert(blockedPhoneNumbers);
+    OWSAssert(blockedGroupIds);
 
-    // Record the last set of "blocked phone numbers" which we successfully synced.
     [self.dbConnection setObject:blockedPhoneNumbers
                           forKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
+                    inCollection:kOWSBlockingManager_BlockListCollection];
+
+    [self.dbConnection setObject:blockedGroupIds
+                          forKey:kOWSBlockingManager_SyncedBlockedGroupIdsKey
                     inCollection:kOWSBlockingManager_BlockListCollection];
 }
 
@@ -385,7 +410,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedPhoneNumbersKey = @"kOWSBlockin
     [AppReadiness runNowOrWhenAppIsReady:^{
         @synchronized(self)
         {
-            [self syncBlockedPhoneNumbersIfNecessary];
+            [self syncBlockListIfNecessary];
         }
     }];
 }

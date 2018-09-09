@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSBlockedPhoneNumbersMessage ()
 
 @property (nonatomic, readonly) NSArray<NSString *> *phoneNumbers;
+@property (nonatomic, readonly) NSArray<NSData *> *groupIds;
 
 @end
 
@@ -20,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
+- (instancetype)initWithPhoneNumbers:(NSArray<NSString *> *)phoneNumbers groupIds:(NSArray<NSData *> *)groupIds
 {
     self = [super init];
     if (!self) {
@@ -28,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _phoneNumbers = [phoneNumbers copy];
+    _groupIds = [groupIds copy];
 
     return self;
 }
@@ -36,6 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlockedBuilder new];
     [blockedBuilder setNumbers:_phoneNumbers];
+    [blockedBuilder setGroupIds:_groupIds];
+
     NSError *error;
     SSKProtoSyncMessageBlocked *_Nullable blockedProto = [blockedBuilder buildAndReturnError:&error];
     if (error || !blockedProto) {
