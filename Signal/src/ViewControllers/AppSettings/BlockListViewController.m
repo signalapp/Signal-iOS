@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSTableSection *addSection = [OWSTableSection new];
     addSection.footerTitle = NSLocalizedString(
-        @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+        @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
 
     [addSection
         addItem:[OWSTableItem

@@ -622,10 +622,10 @@ const CGFloat kIconViewLength = 24;
     OWSTableSection *section = [OWSTableSection new];
     if (self.thread.isGroupThread) {
         section.footerTitle = NSLocalizedString(
-            @"BLOCK_GROUP_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
+            @"BLOCK_GROUP_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking a group.");
     } else {
         section.footerTitle = NSLocalizedString(
-            @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking a group.");
+            @"BLOCK_USER_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
     }
 
     [section addItem:[OWSTableItem
