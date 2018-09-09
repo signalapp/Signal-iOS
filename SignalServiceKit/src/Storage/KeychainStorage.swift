@@ -94,6 +94,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.deletePassword(forService: service, account: key, error: &error)
         if let error = error {
+            // If deletion failed because the specified item could not be found in the keychain, consider it success.
+            if error.code == errSecItemNotFound {
+                return
+            }
             throw KeychainStorageError.failure(description: "\(logTag) error removing data: \(error)")
         }
         guard result else {
