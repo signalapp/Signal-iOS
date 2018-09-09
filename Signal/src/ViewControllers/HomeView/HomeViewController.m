@@ -840,9 +840,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssert(cell);
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
-    [cell configureWithThread:thread
-              contactsManager:self.contactsManager
-        blockedPhoneNumberSet:self.blockedPhoneNumberSet];
+
+    BOOL isBlocked = [self.blockingManager isThreadBlocked:thread.threadRecord];
+    [cell configureWithThread:thread contactsManager:self.contactsManager isBlocked:isBlocked];
 
     return cell;
 }
