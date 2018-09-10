@@ -1076,41 +1076,31 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     TSThread *thread = [self threadForIndexPath:indexPath];
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
 
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
         if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-            UIAlertController *removingFromGroup = [UIAlertController
-                alertControllerWithTitle:[NSString
-                                             stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
-                                 message:nil
-                          preferredStyle:UIAlertControllerStyleAlert];
-            [self presentViewController:removingFromGroup animated:YES completion:nil];
+            [ThreadUtil sendLeaveGroupMessageInThread:gThread
+                             presentingViewController:self
+                                        messageSender:self.messageSender
+                                           completion:^(NSError *_Nullable error) {
+                                               if (error) {
+                                                   NSString *title = NSLocalizedString(@"GROUP_REMOVING_FAILED",
+                                                       @"Title of alert indicating that group deletion failed.");
 
-            TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                   groupMetaMessage:TSGroupMessageQuit
-                                                                   expiresInSeconds:0];
-            [self.messageSender enqueueMessage:message
-                success:^{
-                    [self dismissViewControllerAnimated:YES
-                                             completion:^{
-                                                 [self deleteThread:thread];
-                                             }];
-                }
-                failure:^(NSError *error) {
-                    [self dismissViewControllerAnimated:YES
-                                             completion:^{
-                                                 [OWSAlerts
-                                                     showAlertWithTitle:
-                                                         NSLocalizedString(@"GROUP_REMOVING_FAILED",
-                                                             @"Title of alert indicating that group deletion failed.")
-                                                                message:error.localizedRecoverySuggestion];
-                                             }];
-                }];
+                                                   [OWSAlerts showAlertWithTitle:title
+                                                                         message:error.localizedRecoverySuggestion];
+                                                   return;
+                                               }
+
+                                               [self deleteThread:thread];
+                                           }];
         } else {
+            // MJK - turn these trailing elses into guards
             [self deleteThread:thread];
         }
     } else {
+        // MJK - turn these trailing elses into guards
         [self deleteThread:thread];
     }
 }

@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class Contact;
 @class OWSBlockingManager;
 @class OWSContactsManager;
+@class OWSMessageSender;
 @class SignalAccount;
 @class TSThread;
 
@@ -24,6 +25,7 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                 fromViewController:(UIViewController *)fromViewController
                    blockingManager:(OWSBlockingManager *)blockingManager
                    contactsManager:(OWSContactsManager *)contactsManager
+                     messageSender:(OWSMessageSender *)messageSender
                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber

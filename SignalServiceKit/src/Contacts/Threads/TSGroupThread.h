@@ -33,6 +33,9 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (void)leaveGroupWithSneakyTransaction;
+- (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;

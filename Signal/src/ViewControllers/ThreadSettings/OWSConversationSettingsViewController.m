@@ -1009,10 +1009,10 @@ const CGFloat kIconViewLength = 24;
             DDLogWarn(@"%@ Failed to leave group with error: %@", self.logTag, error);
         }];
 
-    NSMutableArray *newGroupMemberIds = [NSMutableArray arrayWithArray:gThread.groupModel.groupMemberIds];
-    [newGroupMemberIds removeObject:[self.accountManager localNumber]];
-    gThread.groupModel.groupMemberIds = newGroupMemberIds;
-    [gThread save];
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [gThread leaveGroupWithTransaction:transaction];
+    }];
 
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -1042,12 +1042,14 @@ const CGFloat kIconViewLength = 24;
         }
         [BlockListUIUtils showBlockThreadActionSheet:self.thread
                                   fromViewController:self
-                                     blockingManager:_blockingManager
-                                     contactsManager:_contactsManager
+                                     blockingManager:self.blockingManager
+                                     contactsManager:self.contactsManager
+                                       messageSender:self.messageSender
                                      completionBlock:^(BOOL isBlocked) {
                                          // Update switch state if user cancels action.
                                          blockConversationSwitch.on = isBlocked;
                                      }];
+
     } else {
         OWSAssert(isCurrentlyBlocked);
         if (!isCurrentlyBlocked) {

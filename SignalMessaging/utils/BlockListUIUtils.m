@@ -10,6 +10,7 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,6 +24,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                 fromViewController:(UIViewController *)fromViewController
                    blockingManager:(OWSBlockingManager *)blockingManager
                    contactsManager:(OWSContactsManager *)contactsManager
+                     messageSender:(OWSMessageSender *)messageSender
                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -34,10 +36,10 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                               completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [self showBlockGroupActionSheet:groupThread.groupModel
-                            displayName:groupThread.name
+        [self showBlockGroupActionSheet:groupThread
                      fromViewController:fromViewController
                         blockingManager:blockingManager
+                          messageSender:messageSender
                         completionBlock:completionBlock];
     } else {
         OWSFail(@"unexpected thread type: %@", thread.class);
@@ -142,20 +144,20 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-+ (void)showBlockGroupActionSheet:(TSGroupModel *)groupModel
-                      displayName:(NSString *)displayName
++ (void)showBlockGroupActionSheet:(TSGroupThread *)groupThread
                fromViewController:(UIViewController *)fromViewController
                   blockingManager:(OWSBlockingManager *)blockingManager
+                    messageSender:(OWSMessageSender *)messageSender
                   completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssert(displayName.length > 0);
+    OWSAssert(groupThread);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
     NSString *title = [NSString
         stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
                              @"A format for the 'block group' action sheet title. Embeds the {{group name}}."),
-        [self formatDisplayNameForAlertTitle:displayName]];
+        [self formatDisplayNameForAlertTitle:groupThread.name]];
 
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:title
@@ -167,10 +169,10 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
         actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
                   style:UIAlertActionStyleDestructive
                 handler:^(UIAlertAction *_Nonnull action) {
-                    [self blockGroup:groupModel
-                               displayName:displayName
+                    [self blockGroup:groupThread
                         fromViewController:fromViewController
                            blockingManager:blockingManager
+                             messageSender:messageSender
                            completionBlock:^(UIAlertAction *ignore) {
                                if (completionBlock) {
                                    completionBlock(YES);
@@ -218,27 +220,46 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                completionBlock:completionBlock];
 }
 
-+ (void)blockGroup:(TSGroupModel *)groupModel
-           displayName:(NSString *)displayName
++ (void)blockGroup:(TSGroupThread *)groupThread
     fromViewController:(UIViewController *)fromViewController
        blockingManager:(OWSBlockingManager *)blockingManager
+         messageSender:(OWSMessageSender *)messageSender
        completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssert(displayName.length > 0);
+    OWSAssert(groupThread);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
-    [blockingManager addBlockedGroupId:groupModel.groupId];
+    // block the group regardless of the ability to deliver the "leave group" message.
+    [blockingManager addBlockedGroupId:groupThread.groupModel.groupId];
 
-    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
-                                   @"The title of the 'group blocked' alert.")
-                       message:[NSString
-                                   stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
-                                                        @"The message format of the 'conversation blocked' alert. "
-                                                        @"Embeds the {{conversation title}}."),
-                                   [self formatDisplayNameForAlertMessage:displayName]]
-            fromViewController:fromViewController
-               completionBlock:completionBlock];
+    // blockingManager.addBlocked* creates sneaky transactions, so we can't pass in a transaction
+    // via params and instead have to create our own sneaky transaction here.
+    [groupThread leaveGroupWithSneakyTransaction];
+
+    [ThreadUtil
+        sendLeaveGroupMessageInThread:groupThread
+             presentingViewController:fromViewController
+                        messageSender:messageSender
+                           completion:^(NSError *_Nullable error) {
+                               if (error) {
+                                   DDLogError(@"Failed to leave blocked group with error: %@", error);
+                               }
+
+                               [self
+                                   showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
+                                                            @"The title of the 'group blocked' alert.")
+                                                message:[NSString
+                                                            stringWithFormat:
+                                                                NSLocalizedString(
+                                                                    @"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                                                    @"The message format of the 'conversation blocked' "
+                                                                    @"alert. "
+                                                                    @"Embeds the {{conversation title}}."),
+                                                            [self formatDisplayNameForAlertMessage:groupThread.name]]
+                                     fromViewController:fromViewController
+                                        completionBlock:completionBlock];
+                           }];
 }
 
 #pragma mark - Unblock

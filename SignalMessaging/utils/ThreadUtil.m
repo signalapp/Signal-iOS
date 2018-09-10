@@ -212,6 +212,48 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
++ (void)sendLeaveGroupMessageInThread:(TSGroupThread *)thread
+             presentingViewController:(UIViewController *)presentingViewController
+                        messageSender:(OWSMessageSender *)messageSender
+                           completion:(void (^_Nullable)(NSError *_Nullable error))completion
+{
+    OWSAssert([thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssert(presentingViewController);
+    OWSAssert(messageSender);
+
+    NSString *title = [NSString
+        stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", @"Modal text when removing a group"), thread.name];
+    UIAlertController *removingFromGroup =
+        [UIAlertController alertControllerWithTitle:title message:title preferredStyle:UIAlertControllerStyleAlert];
+    [presentingViewController presentViewController:removingFromGroup animated:YES completion:nil];
+
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
+    [messageSender enqueueMessage:message
+        success:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [presentingViewController dismissViewControllerAnimated:YES
+                                                             completion:^{
+                                                                 if (completion) {
+                                                                     completion(nil);
+                                                                 }
+                                                             }];
+            });
+        }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [presentingViewController dismissViewControllerAnimated:YES
+                                                             completion:^{
+                                                                 if (completion) {
+                                                                     completion(error);
+                                                                 }
+                                                             }];
+            });
+        }];
+}
+
+#pragma mark - Dynamic Interactions
+
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
