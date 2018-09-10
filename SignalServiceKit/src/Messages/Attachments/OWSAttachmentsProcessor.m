@@ -176,28 +176,10 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                 [self downloadFromLocation:location
                     pointer:attachment
                     success:^(NSString *encryptedDataFilePath) {
-                        // Use attachmentDecryptSerialQueue to ensure that we only load into memory
-                        // & decrypt a single attachment at a time.
-                        dispatch_async(self.attachmentDecryptSerialQueue, ^{
-                            @autoreleasepool {
-                                NSData *_Nullable encryptedData = [NSData dataWithContentsOfFile:encryptedDataFilePath];
-                                if (!encryptedData) {
-                                    OWSLogError(@"Could not load encrypted data.");
-                                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeInvalidMessage,
-                                        NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-                                    return markAndHandleFailure(error);
-                                }
-
-                                [self decryptAttachmentData:encryptedData
-                                                    pointer:attachment
-                                                    success:markAndHandleSuccess
-                                                    failure:markAndHandleFailure];
-
-                                if (![OWSFileSystem deleteFile:encryptedDataFilePath]) {
-                                    OWSLogError(@"Could not delete temporary file.");
-                                }
-                            }
-                        });
+                        [self decryptAttachmentPath:encryptedDataFilePath
+                                            pointer:attachment
+                                            success:markAndHandleSuccess
+                                            failure:markAndHandleFailure];
                     }
                     failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
                         if (attachment.serverId < 100) {
@@ -231,6 +213,35 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             }
             return markAndHandleFailure(error);
         }];
+}
+
+- (void)decryptAttachmentPath:(NSString *)encryptedDataFilePath
+                      pointer:(TSAttachmentPointer *)attachment
+                      success:(void (^)(TSAttachmentStream *attachmentStream))success
+                      failure:(void (^)(NSError *error))failure
+{
+    OWSAssertDebug(encryptedDataFilePath.length > 0);
+    OWSAssertDebug(attachment);
+
+    // Use attachmentDecryptSerialQueue to ensure that we only load into memory
+    // & decrypt a single attachment at a time.
+    dispatch_async(self.attachmentDecryptSerialQueue, ^{
+        @autoreleasepool {
+            NSData *_Nullable encryptedData = [NSData dataWithContentsOfFile:encryptedDataFilePath];
+            if (!encryptedData) {
+                OWSLogError(@"Could not load encrypted data.");
+                NSError *error = OWSErrorWithCodeDescription(
+                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                return failure(error);
+            }
+
+            [self decryptAttachmentData:encryptedData pointer:attachment success:success failure:failure];
+
+            if (![OWSFileSystem deleteFile:encryptedDataFilePath]) {
+                OWSLogError(@"Could not delete temporary file.");
+            }
+        }
+    });
 }
 
 - (void)decryptAttachmentData:(NSData *)cipherText
@@ -287,31 +298,46 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                      success:(void (^)(NSString *encryptedDataPath))successHandler
                      failure:(void (^)(NSURLSessionTask *_Nullable task, NSError *error))failureHandlerParam
 {
-    dispatch_queue_t completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.requestSerializer     = [AFHTTPRequestSerializer serializer];
     [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.completionQueue = completionQueue;
+    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     // We want to avoid large downloads from a compromised or buggy service.
     const long kMaxDownloadSize = 150 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
 
-    NSString *tempFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSURL *tempFileURL = [NSURL fileURLWithPath:tempFilePath];
+    NSString *tempSubdirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSString *tempFilePath1 = [tempSubdirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSString *tempFilePath2 = [tempSubdirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSURL *tempFileURL1 = [NSURL fileURLWithPath:tempFilePath1];
 
     __block NSURLSessionDownloadTask *task;
     void (^failureHandler)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Failed to download attachment with error: %@", error.description);
 
-        if (![OWSFileSystem deleteFileIfExists:tempFilePath]) {
-            OWSLogError(@"Could not delete temporary file.");
+        if (![OWSFileSystem deleteFileIfExists:tempFilePath1]) {
+            OWSLogError(@"Could not delete temporary file #1.");
+        }
+        if (![OWSFileSystem deleteFileIfExists:tempFilePath2]) {
+            OWSLogError(@"Could not delete temporary file #2.");
         }
 
         failureHandlerParam(task, error);
     };
+
+    // downloadTaskWithRequest's destination callback needs to
+    // return a path to a non-existent file path, and we can't apply
+    // file protection to a non-existent file path.
+    // By creating the temporary file inside a temporary subdirectory,
+    // we can apply file protection to that subdirectory.
+    if (![OWSFileSystem ensureDirectoryExists:tempSubdirPath]) {
+        OWSLogError(@"Could not create temporary subdirectory for attachment download.");
+        NSError *error = OWSErrorWithCodeDescription(
+            OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+        return failureHandler(error);
+    }
 
     NSString *method = @"GET";
     NSError *serializationError = nil;
@@ -398,29 +424,29 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             hasCheckedContentLength = YES;
         }
         destination:^(NSURL *targetPath, NSURLResponse *response) {
-            return tempFileURL;
+            return tempFileURL1;
         }
         completionHandler:^(NSURLResponse *response, NSURL *_Nullable filePath, NSError *_Nullable error) {
             if (error) {
                 failureHandler(error);
                 return;
             }
-            if (![tempFileURL isEqual:filePath]) {
+            if (![tempFileURL1 isEqual:filePath]) {
                 OWSLogError(@"Unexpected temp file path.");
                 NSError *error = OWSErrorWithCodeDescription(
                     OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
                 return failureHandler(error);
             }
 
-            // Protect the temporary file.
-            if (![OWSFileSystem ensureFileExists:filePath.path]) {
-                OWSLogError(@"Could not protect temporary file.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-                return failureHandler(error);
+            // Move the temporary file to a second temporary location
+            // to ensure that it isn't deleted before we're done with it.
+            NSError *moveError;
+            if (![NSFileManager.defaultManager moveItemAtPath:tempFilePath1 toPath:tempFilePath2 error:&moveError]) {
+                OWSLogError(@"Could not move temporary file.");
+                return failureHandler(moveError);
             }
 
-            NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:filePath.path];
+            NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:tempFilePath2];
             if (!fileSize) {
                 OWSLogError(@"Could not determine attachment file size.");
                 NSError *error = OWSErrorWithCodeDescription(
@@ -433,7 +459,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                     OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
                 return failureHandler(error);
             }
-            successHandler(filePath.path);
+            successHandler(tempFilePath2);
         }];
     [task resume];
 }
