@@ -294,6 +294,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (!self) {
         return self;
     }
+    
+    if (self.uniqueId.length == 0) {
+        self.uniqueId = NSUUID.new.UUIDString;
+    }
 
     _hasSyncedTranscript = NO;
 
