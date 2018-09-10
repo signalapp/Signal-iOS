@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
     if (!TSAccountManager.isRegistered) {
@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -324,7 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
     if (envelope.timestamp < 1) {
@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -496,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
     if (groupId.length < 1) {
@@ -540,7 +540,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -620,7 +620,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -665,7 +665,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -718,7 +718,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -872,7 +872,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -898,7 +898,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -977,7 +977,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -1035,7 +1035,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
     if (dataMessage.group.type != SSKProtoGroupContextTypeRequestInfo) {
@@ -1101,7 +1101,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return nil;
     }
 
@@ -1289,7 +1289,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return;
     }
 
@@ -1405,7 +1405,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     if (!transaction) {
-        OWSFailDebug(@"Missing transaction.");
+        OWSFail(@"Missing transaction.");
         return nil;
     }
 

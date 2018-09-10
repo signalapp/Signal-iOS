@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing keyPair");
         return nil;
     }
-    if (serverStaticPublic.length < 1) {
+    if (serverEphemeralPublic.length < 1) {
         OWSFailDebug(@"Invalid serverEphemeralPublic");
         return nil;
     }
