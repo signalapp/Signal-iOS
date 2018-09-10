@@ -14,6 +14,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak BlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    // Add section
+    // "Add" section
 
     OWSTableSection *addSection = [OWSTableSection new];
     addSection.footerTitle = NSLocalizedString(
@@ -73,29 +74,61 @@ NS_ASSUME_NONNULL_BEGIN
                                }]];
     [contents addSection:addSection];
 
-    // Blocklist section
+    // "Blocklist" section
 
-    OWSTableSection *blocklistSection = [OWSTableSection new];
     NSArray<NSString *> *blockedPhoneNumbers =
         [helper.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
-    for (NSString *phoneNumber in blockedPhoneNumbers) {
-        [blocklistSection addItem:[OWSTableItem
-                                      itemWithCustomCellBlock:^{
-                                          ContactTableViewCell *cell = [ContactTableViewCell new];
-                                          [cell configureWithRecipientId:phoneNumber
-                                                         contactsManager:helper.contactsManager];
-                                          return cell;
-                                      }
-                                      customRowHeight:UITableViewAutomaticDimension
-                                      actionBlock:^{
-                                          [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
-                                                                           fromViewController:weakSelf
-                                                                              blockingManager:helper.blockingManager
-                                                                              contactsManager:helper.contactsManager
-                                                                              completionBlock:nil];
-                                      }]];
+
+    if (blockedPhoneNumbers.count > 0) {
+        OWSTableSection *blockedContactsSection = [OWSTableSection new];
+        blockedContactsSection.headerTitle
+            = NSLocalizedString(@"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that has been blocked");
+
+        for (NSString *phoneNumber in blockedPhoneNumbers) {
+            [blockedContactsSection
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                ContactTableViewCell *cell = [ContactTableViewCell new];
+                                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+                                return cell;
+                            }
+                            customRowHeight:UITableViewAutomaticDimension
+                            actionBlock:^{
+                                [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
+                                                                 fromViewController:weakSelf
+                                                                    blockingManager:helper.blockingManager
+                                                                    contactsManager:helper.contactsManager
+                                                                    completionBlock:nil];
+                            }]];
+        }
+        [contents addSection:blockedContactsSection];
     }
-    [contents addSection:blocklistSection];
+
+    NSArray<NSData *> *blockedGroupIds = helper.blockedGroupIds;
+    if (blockedGroupIds.count > 0) {
+        OWSTableSection *blockedGroupsSection = [OWSTableSection new];
+        blockedGroupsSection.headerTitle = NSLocalizedString(
+            @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that has been blocked");
+        for (NSData *groupId in blockedGroupIds) {
+            TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId];
+            [blockedGroupsSection addItem:[OWSTableItem
+                                              itemWithCustomCellBlock:^{
+                                                  ContactTableViewCell *cell = [ContactTableViewCell new];
+                                                  [cell configureWithThread:groupThread
+                                                            contactsManager:helper.contactsManager];
+                                                  return cell;
+                                              }
+                                              customRowHeight:UITableViewAutomaticDimension
+                                              actionBlock:^{
+                                                  [BlockListUIUtils showUnblockThreadActionSheet:groupThread
+                                                                              fromViewController:weakSelf
+                                                                                 blockingManager:helper.blockingManager
+                                                                                 contactsManager:helper.contactsManager
+                                                                                 completionBlock:nil];
+                                              }]];
+        }
+        [contents addSection:blockedGroupsSection];
+    }
 
     self.tableViewController.contents = contents;
 }

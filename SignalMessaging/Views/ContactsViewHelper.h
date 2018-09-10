@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MJK TODO Can we remove? Do we need blockedGroupList?
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
+@property (nonatomic, readonly) NSArray<NSData *> *blockedGroupIds;
 
 // Suitable when the user tries to perform an action which is not possible due to the user having
 // previously denied contact access.
