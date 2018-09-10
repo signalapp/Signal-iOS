@@ -8,6 +8,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSThread.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (NSData *)buildPlainTextData:(RelayRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];

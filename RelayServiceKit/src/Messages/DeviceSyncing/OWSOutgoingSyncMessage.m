@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSSignalServiceProtosSyncMessageBuilder new];
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (NSData *)buildPlainTextData:(RelayRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
     [contentBuilder setSyncMessage:[self buildSyncMessage]];

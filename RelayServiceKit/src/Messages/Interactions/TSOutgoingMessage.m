@@ -17,8 +17,9 @@
 #import "TSThread.h"
 #import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
+
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -908,10 +909,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return [builder build];
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (NSData *)buildPlainTextData:(RelayRecipient *)recipient
 {
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    contentBuilder.dataMessage = [self buildDataMessage:recipient.recipientId];
+    contentBuilder.dataMessage = [self buildDataMessage:recipient.uniqueId];
     return [[contentBuilder build] data];
 }
 
