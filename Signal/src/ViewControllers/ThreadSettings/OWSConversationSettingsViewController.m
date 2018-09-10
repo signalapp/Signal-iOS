@@ -351,20 +351,24 @@ const CGFloat kIconViewLength = 24;
         }
                                                        actionBlock:nil]];
     } else {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return
-                [weakSelf disclosureCellWithName:(self.isGroupThread
-                                                         ? NSLocalizedString(
-                                                               @"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                                               @"Action that shares user profile with a group.")
-                                                         : NSLocalizedString(
-                                                               @"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                                               @"Action that shares user profile with a user."))iconName
-                                                :@"table_ic_share_profile"];
-        }
-                                 actionBlock:^{
-                                     [weakSelf showShareProfileAlert];
-                                 }]];
+        [mainSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            UITableViewCell *cell = [weakSelf
+                                disclosureCellWithName:
+                                    (self.isGroupThread
+                                            ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
+                                                  @"Action that shares user profile with a group.")
+                                            : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
+                                                  @"Action that shares user profile with a user."))
+                                              iconName:@"table_ic_share_profile"];
+                            cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+
+                            return cell;
+                        }
+                        actionBlock:^{
+                            [weakSelf showShareProfileAlert];
+                        }]];
     }
 
     [mainSection addItem:[OWSTableItem
@@ -414,6 +418,8 @@ const CGFloat kIconViewLength = 24;
                                  [subtitleLabel autoPinTrailingToSuperviewMargin];
                                  [subtitleLabel autoPinBottomToSuperviewMargin];
 
+                                 cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+
                                  return cell;
                              }
                                      customRowHeight:UITableViewAutomaticDimension
@@ -460,6 +466,8 @@ const CGFloat kIconViewLength = 24;
                             [slider autoPinTrailingToSuperviewMargin];
                             [slider autoPinBottomToSuperviewMargin];
 
+                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+
                             return cell;
                         }
                                 customRowHeight:UITableViewAutomaticDimension
@@ -472,27 +480,40 @@ const CGFloat kIconViewLength = 24;
 
     if (self.isGroupThread) {
         NSArray *groupItems = @[
-            [OWSTableItem itemWithCustomCellBlock:^{
-                return [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
-                                                            @"table cell label in conversation settings")
-                                               iconName:@"table_ic_group_edit"];
-            }
+            [OWSTableItem
+                itemWithCustomCellBlock:^{
+                    UITableViewCell *cell =
+                        [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
+                                                             @"table cell label in conversation settings")
+                                                iconName:@"table_ic_group_edit"];
+                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                    return cell;
+                }
                 actionBlock:^{
                     [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                 }],
-            [OWSTableItem itemWithCustomCellBlock:^{
-                return [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
-                                                            @"table cell label in conversation settings")
-                                               iconName:@"table_ic_group_members"];
-            }
+            [OWSTableItem
+                itemWithCustomCellBlock:^{
+                    UITableViewCell *cell =
+                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LIST_GROUP_MEMBERS_ACTION",
+                                                             @"table cell label in conversation settings")
+                                                iconName:@"table_ic_group_members"];
+                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                    return cell;
+                }
                 actionBlock:^{
                     [weakSelf showGroupMembersView];
                 }],
-            [OWSTableItem itemWithCustomCellBlock:^{
-                return [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
-                                                            @"table cell label in conversation settings")
-                                               iconName:@"table_ic_group_leave"];
-            }
+            [OWSTableItem
+                itemWithCustomCellBlock:^{
+                    UITableViewCell *cell =
+                        [weakSelf disclosureCellWithName:NSLocalizedString(@"LEAVE_GROUP_ACTION",
+                                                             @"table cell label in conversation settings")
+                                                iconName:@"table_ic_group_leave"];
+                    cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+
+                    return cell;
+                }
                 actionBlock:^{
                     [weakSelf didTapLeaveGroup];
                 }],
@@ -827,6 +848,11 @@ const CGFloat kIconViewLength = 24;
 - (void)conversationNameTouched:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
+        if (self.hasLeftGroup) {
+            DDLogVerbose(@"%@ ignoring tap for left group thread.", self.logTag);
+            return;
+        }
+
         if (self.isGroupThread) {
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
@@ -994,6 +1020,17 @@ const CGFloat kIconViewLength = 24;
     [alertController addAction:[OWSAlerts cancelAction]];
 
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (BOOL)hasLeftGroup
+{
+    if (self.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        BOOL inGroup = [groupThread.groupModel.groupMemberIds containsObject:TSAccountManager.localNumber];
+        return !inGroup;
+    }
+
+    return NO;
 }
 
 - (void)leaveGroup

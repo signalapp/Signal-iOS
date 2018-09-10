@@ -1417,25 +1417,17 @@ typedef enum : NSUInteger {
                                                      }]];
     }
 
-    if (self.userLeftGroup) {
-        [subtitleText
-            appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:NSLocalizedString(@"GROUP_YOU_LEFT", @"")
-                                           attributes:@{
-                                               NSFontAttributeName : self.headerView.subtitleFont,
-                                               NSForegroundColorAttributeName : subtitleColor,
-                                           }]];
-    } else {
-        [subtitleText appendAttributedString:
-                          [[NSAttributedString alloc]
-                              initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                 @"The subtitle for the messages view title indicates that the "
-                                                 @"title can be tapped to access settings for this conversation.")
-                                  attributes:@{
-                                      NSFontAttributeName : self.headerView.subtitleFont,
-                                      NSForegroundColorAttributeName : subtitleColor,
-                                  }]];
-    }
+
+    [subtitleText
+        appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
+                                                      @"The subtitle for the messages view title indicates that the "
+                                                      @"title can be tapped to access settings for this conversation.")
+                                       attributes:@{
+                                           NSFontAttributeName : self.headerView.subtitleFont,
+                                           NSForegroundColorAttributeName : subtitleColor,
+                                       }]];
+
 
     self.headerView.attributedSubtitle = subtitleText;
 }
@@ -1577,11 +1569,6 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
-    if (self.userLeftGroup) {
-        DDLogDebug(@"%@ Ignoring request to show conversation settings, since user left group", self.logTag);
-        return;
-    }
-
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
