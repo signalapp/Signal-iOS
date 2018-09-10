@@ -425,10 +425,6 @@
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
-		7D508CF52141A626002231BF /* Forsta-values.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7D508CF42141A625002231BF /* Forsta-values.plist */; };
-		7D508CF62141A626002231BF /* Forsta-values.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7D508CF42141A625002231BF /* Forsta-values.plist */; };
-		7D508CF72141A626002231BF /* Forsta-values.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7D508CF42141A625002231BF /* Forsta-values.plist */; };
-		7D508CF82141A626002231BF /* Forsta-values.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7D508CF42141A625002231BF /* Forsta-values.plist */; };
 		7D6564F42113BD8B00365A19 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6564E42113BD8900365A19 /* SelectThreadViewController.m */; };
 		7D6564F52113BD8B00365A19 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6564E52113BD8900365A19 /* NewNonContactConversationViewController.m */; };
 		7D6564F72113BD8B00365A19 /* NewNonContactConversationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D6564E72113BD8900365A19 /* NewNonContactConversationViewController.h */; };
@@ -530,6 +526,7 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		DBD6CEE82146CD790088B4A4 /* Forsta-values.plist in Resources */ = {isa = PBXBuildFile; fileRef = DBD6CEE72146CD6A0088B4A4 /* Forsta-values.plist */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E6431F0E7EAC0CB73D75A38B /* Pods_Relay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE34D2C7844709C73962401 /* Pods_Relay.framework */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
@@ -1144,7 +1141,6 @@
 		76EB04EB18170B33006006FC /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
-		7D508CF42141A625002231BF /* Forsta-values.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Forsta-values.plist"; sourceTree = "<group>"; };
 		7D6564C12113B1C200365A19 /* Relay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Relay.entitlements; sourceTree = "<group>"; };
 		7D6564C22113B74900365A19 /* RelayShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelayShareExtension.entitlements; sourceTree = "<group>"; };
 		7D6564E42113BD8900365A19 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
@@ -1300,6 +1296,7 @@
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D3982FE81613EA6D4D796702 /* Pods_RelayTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D562B853DF3F1C3D5A1CB00B /* Pods-RelayTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayTests/Pods-RelayTests.app store release.xcconfig"; sourceTree = "<group>"; };
+		DBD6CEE72146CD6A0088B4A4 /* Forsta-values.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Forsta-values.plist"; sourceTree = "<group>"; };
 		DD2F0E9696373921805C505E /* Pods-RelayShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayShareExtension/Pods-RelayShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Permissions.h"; path = "util/UIViewController+Permissions.h"; sourceTree = "<group>"; };
@@ -2577,8 +2574,8 @@
 		D221A094169C9E5E00537ABF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				7D508CF42141A625002231BF /* Forsta-values.plist */,
 				4C63CBFF210A620B003AE45C /* SignalTSan.supp */,
+				DBD6CEE72146CD6A0088B4A4 /* Forsta-values.plist */,
 				4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */,
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				D221A099169C9E5E00537ABF /* main.m */,
@@ -2732,7 +2729,6 @@
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
 				453518771FC635DD00210559 /* Embed App Extensions */,
 				4535189F1FC63DBF00210559 /* Embed Frameworks */,
-				7D508CF32141A008002231BF /* Fabric Start */,
 			);
 			buildRules = (
 			);
@@ -2920,7 +2916,6 @@
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
 				347850331FD7494A007B8332 /* fontawesome-webfont.ttf in Resources */,
-				7D508CF72141A626002231BF /* Forsta-values.plist in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 				347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */,
 			);
@@ -2931,7 +2926,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3421981621061A0700C57195 /* JSQMVC-README.md in Resources */,
-				7D508CF82141A626002231BF /* Forsta-values.plist in Resources */,
 				3421981721061A0700C57195 /* JSQMVC-SIGNAL.md in Resources */,
 				3421981221061A0700C57195 /* JSQMVC-LICENSE in Resources */,
 			);
@@ -2993,7 +2987,7 @@
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
-				7D508CF52141A626002231BF /* Forsta-values.plist in Resources */,
+				DBD6CEE82146CD790088B4A4 /* Forsta-values.plist in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
@@ -3018,7 +3012,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */,
-				7D508CF62141A626002231BF /* Forsta-values.plist in Resources */,
 				B660F6D41C29868000687D6E /* whisperFake.cer in Resources */,
 				34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */,
 				34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */,
@@ -3189,20 +3182,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		7D508CF32141A008002231BF /* Fabric Start */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Fabric Start";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "APIKey=`defaults read ${PROJECT_DIR}/Relay/Forsta-values FabricAPIKey`\nBuildSecret=`defaults read ${PROJECT_DIR}/Relay/Forsta-values FabricBuildSecret`\n\"${PODS_ROOT}/Fabric/run\" ${APIKey} ${BuildSecret}";
 		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
