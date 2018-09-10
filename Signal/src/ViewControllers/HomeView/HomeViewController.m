@@ -74,7 +74,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) HomeViewMode homeViewMode;
 @property (nonatomic) id previewingContext;
-@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -149,7 +148,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     _contactsManager = [Environment current].contactsManager;
     _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
-    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
     _threadViewModelCache = [NSCache new];
 
     // Ensure ExperienceUpgradeFinder has been initialized.
@@ -210,10 +208,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)blockListDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
-
-    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-
-    // FIXME rather than tracking blockedPhoneNumberSet, use ContactViewHelper?
 
     [self reloadTableViewData];
 }

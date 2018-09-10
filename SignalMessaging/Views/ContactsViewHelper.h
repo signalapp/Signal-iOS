@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
 
-// MJK TODO Can we remove? Do we need blockedGroupList?
 @property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
 @property (nonatomic, readonly) NSArray<NSData *> *blockedGroupIds;
 
