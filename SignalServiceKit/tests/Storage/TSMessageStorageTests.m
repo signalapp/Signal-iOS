@@ -4,15 +4,15 @@
 
 #import "Cryptography.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import <XCTest/XCTest.h>
 
-@interface TSMessageStorageTests : XCTestCase
+@interface TSMessageStorageTests : SSKBaseTest
 
 @property TSContactThread *thread;
 

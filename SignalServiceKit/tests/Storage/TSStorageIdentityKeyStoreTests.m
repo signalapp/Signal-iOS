@@ -6,12 +6,12 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSUnitTestEnvironment.h"
+#import "SSKBaseTest.h"
 #import "SSKEnvironment.h"
 #import "SecurityUtils.h"
 #import <Curve25519Kit/Curve25519.h>
-#import <XCTest/XCTest.h>
 
-@interface TSStorageIdentityKeyStoreTests : XCTestCase
+@interface TSStorageIdentityKeyStoreTests : SSKBaseTest
 
 @end
 

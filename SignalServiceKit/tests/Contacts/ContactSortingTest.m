@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
+    [super setUp];
+
     srandom((unsigned int)time(NULL));
 }
 

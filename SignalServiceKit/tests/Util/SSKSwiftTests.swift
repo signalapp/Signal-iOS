@@ -4,5 +4,6 @@
 
 import XCTest
 
+// Just a placeholder.
 class SSKSwiftTests: XCTestCase {
 }

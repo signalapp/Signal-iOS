@@ -2,10 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "SSKBaseTest.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/OWSProvisioningCipher.h>
-#import <XCTest/XCTest.h>
 
 @interface OWSProvisioningCipher(Testing)
 
@@ -16,7 +16,7 @@
 
 @end
 
-@interface OWSProvisioningCipherTest : XCTestCase
+@interface OWSProvisioningCipherTest : SSKBaseTest
 
 @end
 

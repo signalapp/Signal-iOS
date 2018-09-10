@@ -4,13 +4,13 @@
 
 #import "TSMessage.h"
 #import "NSDate+OWS.h"
+#import "SSKBaseTest.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSMessageTest : XCTestCase
+@interface TSMessageTest : SSKBaseTest
 
 @property TSThread *thread;
 
