@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class OWSSignalServiceProtosAttachmentPointer;
 @class OWSSignalServiceProtosContentBuilder;
 @class OWSSignalServiceProtosDataMessageBuilder;
-@class SignalRecipient;
+@class RelayRecipient;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
@@ -129,7 +129,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient;
+- (NSData *)buildPlainTextData:(RelayRecipient *)recipient;
 
 /**
  * Intermediate protobuf representation
