@@ -258,7 +258,7 @@ public enum PushRegistrationError: Error {
 
         guard let voipRegistry = self.voipRegistry else {
             owsFailDebug("failed to initialize voipRegistry")
-            reject(PushRegistrationError.assertionError(description: "\(self.logTag) failed to initialize voipRegistry"))
+            reject(PushRegistrationError.assertionError(description: "failed to initialize voipRegistry"))
             return promise.then { _ in
                 // coerce expected type of returned promise - we don't really care about the value,
                 // since this promise has been rejected. In practice this shouldn't happen

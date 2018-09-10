@@ -362,7 +362,7 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
 
         guard self.call == nil else {
-            let errorDescription = "\(self.logTag) call was unexpectedly already set."
+            let errorDescription = "call was unexpectedly already set."
             Logger.error(errorDescription)
             call.state = .localFailure
             OWSProdError(OWSAnalyticsEvents.callServiceCallAlreadySet(), file: #file, function: #function, line: #line)
@@ -384,7 +384,7 @@ private class SignalCallData: NSObject {
             }
 
             guard callData.peerConnectionClient == nil else {
-                let errorDescription = "\(self.logTag) peerconnection was unexpectedly already set."
+                let errorDescription = "peerconnection was unexpectedly already set."
                 Logger.error(errorDescription)
                 OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionAlreadySet(), file: #file, function: #function, line: #line)
                 throw CallError.assertionError(description: errorDescription)
@@ -440,8 +440,8 @@ private class SignalCallData: NSObject {
             return race(timeout, callData.callConnectedPromise)
         }.then {
             Logger.info(self.call == call
-                ? "\(self.logTag) outgoing call connected: \(call.identifiersForLogs)."
-                : "\(self.logTag) obsolete outgoing call connected: \(call.identifiersForLogs).")
+                ? "outgoing call connected: \(call.identifiersForLogs)."
+                : "obsolete outgoing call connected: \(call.identifiersForLogs).")
         }.catch { error in
             Logger.error("placing call \(call.identifiersForLogs) failed with error: \(error)")
 
@@ -746,8 +746,8 @@ private class SignalCallData: NSObject {
             return race(callData.callConnectedPromise, timeout)
         }.then {
             Logger.info(self.call == newCall
-                ? "\(self.logTag) incoming call connected: \(newCall.identifiersForLogs)."
-                : "\(self.logTag) obsolete incoming call connected: \(newCall.identifiersForLogs).")
+                ? "incoming call connected: \(newCall.identifiersForLogs)."
+                : "obsolete incoming call connected: \(newCall.identifiersForLogs).")
         }.catch { error in
             guard self.call == newCall else {
                 Logger.debug("ignoring error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
@@ -891,7 +891,7 @@ private class SignalCallData: NSObject {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) ignoring \(#function) since there is no current call."))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring \(#function) since there is no current call."))
             return
         }
 
@@ -921,7 +921,7 @@ private class SignalCallData: NSObject {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) ignoring \(#function) since there is no current call."))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring \(#function) since there is no current call."))
             return
         }
 
@@ -946,7 +946,7 @@ private class SignalCallData: NSObject {
 
         guard let call = self.call else {
             // This may happen if we hang up slightly before they hang up.
-            handleFailedCurrentCall(error: .obsoleteCall(description:"\(self.logTag) call was unexpectedly nil"))
+            handleFailedCurrentCall(error: .obsoleteCall(description:"call was unexpectedly nil"))
             return
         }
 
@@ -991,7 +991,7 @@ private class SignalCallData: NSObject {
             // This should never happen; return to a known good state.
             owsFailDebug("call was unexpectedly nil")
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) call was unexpectedly nil"))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "call was unexpectedly nil"))
             return
         }
 
@@ -999,7 +999,7 @@ private class SignalCallData: NSObject {
             // This should never happen; return to a known good state.
             owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -1016,7 +1016,7 @@ private class SignalCallData: NSObject {
 
         guard let currentCallData = self.callData else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallDataMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) callData unexpectedly nil"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "callData unexpectedly nil"))
             return
         }
 
@@ -1029,7 +1029,7 @@ private class SignalCallData: NSObject {
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) missing peerconnection client"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "missing peerconnection client"))
             return
         }
 
@@ -1046,7 +1046,7 @@ private class SignalCallData: NSObject {
             dataBuilder.setConnected(try connectedBuilder.build())
             messageData = try dataBuilder.buildSerializedData()
         } catch {
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "couldn't build proto"))
             return
         }
 
@@ -1065,7 +1065,7 @@ private class SignalCallData: NSObject {
 
         guard let peerConnectionClient = callData.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) peerConnectionClient unexpectedly nil"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "peerConnectionClient unexpectedly nil"))
             return
         }
 
@@ -1095,7 +1095,7 @@ private class SignalCallData: NSObject {
             // This should never happen; return to a known good state.
             owsFailDebug("call was unexpectedly nil")
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) call was unexpectedly nil"))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "call was unexpectedly nil"))
             return
         }
 
@@ -1103,7 +1103,7 @@ private class SignalCallData: NSObject {
             // This should never happen; return to a known good state.
             owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
             OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
             return
         }
 
@@ -1151,7 +1151,7 @@ private class SignalCallData: NSObject {
 
         guard call == currentCall else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallMismatch(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) ignoring \(#function) for call other than current call"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "ignoring \(#function) for call other than current call"))
             return
         }
 
@@ -1184,7 +1184,7 @@ private class SignalCallData: NSObject {
                 dataBuilder.setHangup(try hangupBuilder.build())
                 messageData = try dataBuilder.buildSerializedData()
             } catch {
-                handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto"))
+                handleFailedCall(failedCall: call, error: CallError.assertionError(description: "couldn't build proto"))
                 return
             }
 
@@ -1207,7 +1207,7 @@ private class SignalCallData: NSObject {
 
             terminateCall()
         } catch {
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) couldn't build proto"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "couldn't build proto"))
         }
     }
 
@@ -1363,7 +1363,7 @@ private class SignalCallData: NSObject {
             // This should never happen; return to a known good state.
             owsFailDebug("received data message, but there is no current call. Ignoring.")
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received data message, but there is no current call. Ignoring."))
+            handleFailedCurrentCall(error: CallError.assertionError(description: "received data message, but there is no current call. Ignoring."))
             return
         }
         let call = callData.call
@@ -1375,7 +1375,7 @@ private class SignalCallData: NSObject {
                 // This should never happen; return to a known good state.
                 owsFailDebug("received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
                 OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-                handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
+                handleFailedCurrentCall(error: CallError.assertionError(description: "received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
                 return
             }
 
@@ -1389,7 +1389,7 @@ private class SignalCallData: NSObject {
                 // This should never happen; return to a known good state.
                 owsFailDebug("received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
                 OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-                handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
+                handleFailedCurrentCall(error: CallError.assertionError(description: "received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
                 return
             }
 

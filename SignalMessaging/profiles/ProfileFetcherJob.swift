@@ -187,23 +187,23 @@ public class SignalServiceProfile: NSObject {
         self.recipientId = recipientId
 
         guard let responseDict = rawResponse as? [String: Any?] else {
-            throw ValidationError.invalid(description: "\(SignalServiceProfile.logTag()) unexpected type: \(String(describing: rawResponse))")
+            throw ValidationError.invalid(description: "unexpected type: \(String(describing: rawResponse))")
         }
 
         guard let identityKeyString = responseDict["identityKey"] as? String else {
-            throw ValidationError.invalidIdentityKey(description: "\(SignalServiceProfile.logTag()) missing identity key: \(String(describing: rawResponse))")
+            throw ValidationError.invalidIdentityKey(description: "missing identity key: \(String(describing: rawResponse))")
         }
         guard let identityKeyWithType = Data(base64Encoded: identityKeyString) else {
-            throw ValidationError.invalidIdentityKey(description: "\(SignalServiceProfile.logTag()) unable to parse identity key: \(identityKeyString)")
+            throw ValidationError.invalidIdentityKey(description: "unable to parse identity key: \(identityKeyString)")
         }
         let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
-            throw ValidationError.invalidIdentityKey(description: "\(SignalServiceProfile.logTag()) malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
+            throw ValidationError.invalidIdentityKey(description: "malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
         }
 
         if let profileNameString = responseDict["name"] as? String {
             guard let data = Data(base64Encoded: profileNameString) else {
-                throw ValidationError.invalidProfileName(description: "\(SignalServiceProfile.logTag()) unable to parse profile name: \(profileNameString)")
+                throw ValidationError.invalidProfileName(description: "unable to parse profile name: \(profileNameString)")
             }
             self.profileNameEncrypted = data
         } else {
