@@ -10,20 +10,8 @@
 #import "TSUnreadIndicatorInteraction.h"
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayServiceKit/NSDate+OWS.h>
-#import <RelayServiceKit/OWSAddToContactsOfferMessage.h>
-#import <RelayServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <RelayServiceKit/OWSBlockingManager.h>
-#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <RelayServiceKit/OWSMessageSender.h>
-#import <RelayServiceKit/OWSUnknownContactBlockOfferMessage.h>
-#import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSCall.h>
-#import <RelayServiceKit/TSDatabaseView.h>
-#import <RelayServiceKit/TSIncomingMessage.h>
-#import <RelayServiceKit/TSInvalidIdentityKeyErrorMessage.h>
-#import <RelayServiceKit/TSOutgoingMessage.h>
-#import <RelayServiceKit/TSThread.h>
+
+@import RelayServiceKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -88,6 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                attachmentId:nil
                                                            expiresInSeconds:expiresInSeconds
                                                               quotedMessage:[quotedReplyModel buildQuotedMessage]];
+    
+    message.messageType = FLMessageTypeContentKey;
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 
