@@ -46,9 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
 
-@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
-@property (nonatomic, readonly) NSArray<NSData *> *blockedGroupIds;
-
 // Suitable when the user tries to perform an action which is not possible due to the user having
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
@@ -60,7 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
 - (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
 
-// MJK TODO Can we remove?
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;

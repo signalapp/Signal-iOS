@@ -30,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation BlockListViewController
 
+- (OWSBlockingManager *)blockingManager
+{
+    return OWSBlockingManager.sharedManager;
+}
+
 - (void)loadView
 {
     [super loadView];
@@ -77,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
     // "Blocklist" section
 
     NSArray<NSString *> *blockedPhoneNumbers =
-        [helper.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
+        [self.blockingManager.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
 
     if (blockedPhoneNumbers.count > 0) {
         OWSTableSection *blockedContactsSection = [OWSTableSection new];
@@ -104,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:blockedContactsSection];
     }
 
-    NSArray<NSData *> *blockedGroupIds = helper.blockedGroupIds;
+    NSArray<NSData *> *blockedGroupIds = self.blockingManager.blockedGroupIds;
     if (blockedGroupIds.count > 0) {
         OWSTableSection *blockedGroupsSection = [OWSTableSection new];
         blockedGroupsSection.headerTitle = NSLocalizedString(
