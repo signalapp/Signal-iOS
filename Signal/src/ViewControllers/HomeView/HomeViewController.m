@@ -21,9 +21,9 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -64,7 +64,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
-    ConversationSearchViewDelegate>
+    ConversationSearchViewDelegate,
+    OWSBlockListCacheDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -89,7 +90,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSBlockListCache *blocklistCache;
 
 // Views
 
@@ -147,7 +148,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     _accountManager = SignalApp.sharedApp.accountManager;
     _contactsManager = [Environment current].contactsManager;
     _messageSender = [Environment current].messageSender;
-    _blockingManager = [OWSBlockingManager sharedManager];
+    _blocklistCache = [OWSBlockListCache new];
+    [_blocklistCache startObservingAndSyncStateWithDelegate:self];
     _threadViewModelCache = [NSCache new];
 
     // Ensure ExperienceUpgradeFinder has been initialized.
@@ -835,7 +837,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
 
-    BOOL isBlocked = [self.blockingManager isThreadBlocked:thread.threadRecord];
+    BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
     [cell configureWithThread:thread contactsManager:self.contactsManager isBlocked:isBlocked];
 
     return cell;
@@ -1542,6 +1544,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     } else {
         DDLogDebug(@"%@ in %s not requesting review", self.logTag, __PRETTY_FUNCTION__);
     }
+}
+
+#pragma mark - OWSBlockListCacheDelegate
+
+- (void)blockListCacheDidUpdate:(OWSBlockListCache *_Nonnull)blocklistCache
+{
+    DDLogVerbose(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    [self reloadTableViewData];
 }
 
 @end
