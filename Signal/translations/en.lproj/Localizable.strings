@@ -225,7 +225,7 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will not be able to send or receive messages in a blocked group. If you later unblock the group, you'll need to be re-added to the group before you can once again send or receive messages in that group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "If you block this group you will no longer receive messages or updates from this group.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Block";
@@ -246,7 +246,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Unblock";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "You will need to be added to the group by another member to be able to message.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "You will still need to be added to the group by another member to be able to message.";
 
 /* Action sheet title when confirming you want to unblock a group. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE_FORMAT" = "Unblock this Group?";
