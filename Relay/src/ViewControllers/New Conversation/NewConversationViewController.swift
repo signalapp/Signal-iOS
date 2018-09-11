@@ -476,7 +476,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                         FLContactsManager.shared.updateRecipient(uid as! String)
                     }
                 }
-                Environment.messageGroup(thread)
+                SignalApp.shared().presentConversation(for: thread, action: .compose)
             })
         }
     }
