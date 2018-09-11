@@ -77,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            expiresInSeconds:expiresInSeconds
                                                               quotedMessage:[quotedReplyModel buildQuotedMessage]];
     
+    message.plainTextBody = text;
     message.messageType = FLMessageTypeContentKey;
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
@@ -126,6 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:[attachment isVoiceMessage]
                                                       quotedMessage:[quotedReplyModel buildQuotedMessage]
                                                        contactShare:nil];
+    
+    message.messageType = FLMessageTypeContentKey;
 
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType

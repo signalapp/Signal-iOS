@@ -365,13 +365,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (TSOutgoingMessageState)messageState
 {
+    NSMutableDictionary *theOthers = [self.recipientStateMap mutableCopy];
+    [theOthers removeObjectForKey:TSAccountManager.localUID];
+    
     TSOutgoingMessageState newMessageState =
-        [TSOutgoingMessage messageStateForRecipientStates:self.recipientStateMap.allValues];
-    if (self.hasLegacyMessageState) {
-        if (newMessageState == TSOutgoingMessageStateSent || self.legacyMessageState == TSOutgoingMessageStateSent) {
-            return TSOutgoingMessageStateSent;
-        }
-    }
+        [TSOutgoingMessage messageStateForRecipientStates:theOthers.allValues];
+
     return newMessageState;
 }
 
