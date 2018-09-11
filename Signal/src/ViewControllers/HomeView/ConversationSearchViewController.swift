@@ -10,7 +10,7 @@ protocol ConversationSearchViewDelegate: class {
 }
 
 @objc
-class ConversationSearchViewController: UITableViewController {
+class ConversationSearchViewController: UITableViewController, BlockListCacheDelegate {
 
     @objc
     public weak var delegate: ConversationSearchViewDelegate?
@@ -48,14 +48,15 @@ class ConversationSearchViewController: UITableViewController {
 
     private var hasThemeChanged = false
 
-    var blockingManager: OWSBlockingManager {
-        return OWSBlockingManager.shared()
-    }
+    var blockListCache: BlockListCache!
 
     // MARK: View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        blockListCache = BlockListCache()
+        blockListCache.startObservingAndSyncState(delegate: self)
 
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
@@ -337,6 +338,12 @@ class ConversationSearchViewController: UITableViewController {
         }
     }
 
+    // MARK: BlockListCacheDelegate
+
+    func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
+        refreshSearchResults()
+    }
+
     // MARK: Update Search Results
 
     var refreshTimer: Timer?
@@ -394,7 +401,7 @@ class ConversationSearchViewController: UITableViewController {
     // MARK: -
 
     private func isBlocked(thread: ThreadViewModel) -> Bool {
-        return self.blockingManager.isThreadBlocked(thread.threadRecord)
+        return self.blockListCache.isBlocked(thread: thread.threadRecord)
     }
 }
 

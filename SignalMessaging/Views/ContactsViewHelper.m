@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactsViewHelper ()
+@interface ContactsViewHelper () <OWSBlockListCacheDelegate>
 
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
@@ -27,8 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
-@property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
-@property (nonatomic) NSArray<NSData *> *blockedGroupIds;
+@property (nonatomic, readonly) OWSBlockListCache *blockListCache;
 
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
@@ -52,8 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
     _delegate = delegate;
 
     _blockingManager = [OWSBlockingManager sharedManager];
-    _blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
-    _blockedGroupIds = [_blockingManager blockedGroupIds];
+    _blockListCache = [OWSBlockListCache new];
+    [_blockListCache startObservingAndSyncStateWithDelegate:self];
 
     _conversationSearcher = ConversationSearcher.shared;
 
@@ -76,10 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockListDidChange:)
-                                                 name:kNSNotificationName_BlockListDidChange
-                                               object:nil];
 }
 
 - (void)dealloc
@@ -90,16 +85,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-
-    [self updateContacts];
-}
-
-- (void)blockListDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    self.blockedPhoneNumbers = self.blockingManager.blockedPhoneNumbers;
-    self.blockedGroupIds = self.blockingManager.blockedGroupIds;
 
     [self updateContacts];
 }
@@ -162,14 +147,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    return [_blockedPhoneNumbers containsObject:recipientId];
+    return [self.blockListCache isRecipientIdBlocked:recipientId];
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
 {
     OWSAssertIsOnMainThread();
 
-    return [self.blockedGroupIds containsObject:groupId];
+    return [self.blockListCache isGroupIdBlocked:groupId];
 }
 
 - (BOOL)isThreadBlocked:(TSThread *)thread
@@ -432,6 +417,12 @@ NS_ASSUME_NONNULL_BEGIN
         modal.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     }
     [fromViewController presentViewController:modal animated:YES completion:nil];
+}
+
+- (void)blockListCacheDidUpdate:(OWSBlockListCache *)blocklistCache
+{
+    OWSAssertIsOnMainThread();
+    [self updateContacts];
 }
 
 @end

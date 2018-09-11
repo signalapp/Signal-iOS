@@ -159,10 +159,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 #pragma GCC diagnostic pop
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockListDidChange:)
-                                                 name:kNSNotificationName_BlockListDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
@@ -206,13 +202,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 #pragma mark - Notifications
-
-- (void)blockListDidChange:(id)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self reloadTableViewData];
-}
 
 - (void)signalAccountsDidChange:(id)notification
 {
