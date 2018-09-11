@@ -59,6 +59,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @implementation TSMessage
 
+@synthesize plainTextBody = _plainTextBody;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -336,12 +338,58 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 //    return _body.filterStringForDisplay;
 //}
 
+-(void)setPlainTextBody:(nullable NSString *)value
+{
+    if (![_plainTextBody isEqualToString:value]) {
+        _plainTextBody = value;
+        
+        // Add the new value to the forstaPayload
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            if (self->_plainTextBody.length > 0) {
+                NSMutableDictionary *dataDict = [[self.forstaPayload objectForKey:@"data"] mutableCopy];
+                if (!dataDict) {
+                    dataDict = [NSMutableDictionary new];
+                }
+                NSMutableArray *body = [[dataDict objectForKey:@"body"] mutableCopy];
+                if (!body) {
+                    body = [NSMutableArray new];
+                }
+                
+                NSDictionary *oldDict = nil;
+                if (body.count > 0) {
+                    for (NSDictionary *dict in body) {
+                        if ([(NSString *)[dict objectForKey:@"type"] isEqualToString:@"text/plain"]) {
+                            oldDict = dict;
+                        }
+                    }
+                }
+                NSDictionary *newDict = @{ @"type" : @"text/plain",
+                                           @"value" : value };
+                [body addObject:newDict];
+                
+                if (oldDict) {
+                    [body removeObject:oldDict];
+                }
+                
+                [dataDict setObject:body forKey:@"body"];
+                [self.forstaPayload setObject:dataDict forKey:@"data"];
+            } else {
+                // Empty value passed, remove the object from the payload
+                NSMutableDictionary *dataDict = [[self.forstaPayload objectForKey:@"data"] mutableCopy];
+                if (dataDict) {
+                    [dataDict removeObjectForKey:@"body"];
+                    [self.forstaPayload setObject:dataDict forKey:@"data"];
+                }
+            }
+        });
+    }
+}
+
+
 -(nullable NSString *)plainTextBody {
     if (_plainTextBody == nil) {
         if (self.forstaPayload) {
             _plainTextBody = [self plainBodyStringFromPayload];
-        } else {
-            return _body.filterStringForDisplay;
         }
     }
     return _plainTextBody.filterStringForDisplay;
