@@ -105,7 +105,7 @@ class DirectoryCell: UITableViewCell {
             
             fullNameAttributedString?.addAttribute(.font, value: firstNameFont, range: NSRange(location: 0, length: recipient?.firstName.count ?? 0))
             fullNameAttributedString?.addAttribute(.font, value: lastNameFont, range: NSRange(location: recipient?.firstName.count ?? 0 + 1, length: recipient?.lastName.count ?? 0))
-            fullNameAttributedString?.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 0, length: recipient?.fullName.count ?? 0))
+            fullNameAttributedString?.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 0, length: recipient?.fullName().count ?? 0))
             fullNameAttributedString?.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 0, length: recipient?.firstName.count ?? 0))
         }
         return fullNameAttributedString

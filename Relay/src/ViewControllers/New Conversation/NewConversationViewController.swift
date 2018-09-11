@@ -382,8 +382,8 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                                     
                                                     let matches = regex.matches(in: pretty, options: [], range: NSRange(location: 0, length: pretty.count))
                                                     for match in matches {
-                                                        let swiftRange: Range = Range()!
-                                                        let newSlug = pretty.substring(with: swiftRange)
+                                                        let swiftRange = Range(match.range, in :pretty)
+                                                        let newSlug = pretty.substring(with: swiftRange!)
                                                         self.addSlug(slug: newSlug)
                                                     }
                                                 } catch {
@@ -405,7 +405,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                             if userids.count > 0 {
                                                 DispatchQueue.global(qos: .background).async {
                                                     for uid in userids {
-                                                        FLContactsManager.shared.recipient(withUserId: uid)
+                                                        FLContactsManager.shared.recipient(withId: uid)
                                                     }
                                                 }
                                             }
@@ -444,7 +444,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         if !(userIds.contains(TSAccountManager.sharedInstance().selfRecipient().uniqueId as Any)) {
             // If not, add self and run again
             var pretty = results.object(forKey: "pretty") as! String
-            let mySlug = TSAccountManager.sharedInstance().selfRecipient().flTag.slug
+            let mySlug = TSAccountManager.sharedInstance().selfRecipient().flTag?.slug
             pretty.append(" + @\(mySlug!)")
             
             CCSMCommManager.asyncTagLookup(with: pretty, success: { newResults in
@@ -499,7 +499,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                     } else if obj.isKind(of: RelayRecipient.classForCoder()) {
                         let recipient: RelayRecipient = obj as! RelayRecipient
                         return ( (recipient.fullName().lowercased() as NSString).contains(filterString!) ||
-                            (recipient.flTag.displaySlug.lowercased() as NSString).contains(filterString!) ||
+                            (recipient.flTag!.displaySlug.lowercased() as NSString).contains(filterString!) ||
                             (recipient.orgSlug.lowercased() as NSString).contains(filterString!))
                     } else {
                         return false
@@ -655,14 +655,14 @@ extension String {
     // https://stackoverflow.com/questions/30450434/figure-out-size-of-uilabel-based-on-string-in-swift#30450559
     func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [kCTFontAttributeName: font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font : font], context: nil)
         
         return ceil(boundingBox.height)
     }
     
     func width(withConstrainedHeight height: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [kCTFontAttributeName: font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font : font], context: nil)
         
         return ceil(boundingBox.width)
     }
