@@ -1018,7 +1018,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Archive";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Relay";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Yava kubata...";
