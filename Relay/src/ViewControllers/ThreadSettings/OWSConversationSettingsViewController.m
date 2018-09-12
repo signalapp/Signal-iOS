@@ -297,32 +297,6 @@ const CGFloat kIconViewLength = 24;
                              }]];
 #endif
 
-    if ([self.thread isKindOfClass:[TSThread class]] && self.contactsManager.supportsContactEditing
-        && !self.hasExistingContact) {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return
-                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_NEW_CONTACT",
-                                                     @"Label for 'new contact' button in conversation settings view.")
-                                        iconName:@"table_ic_new_contact"];
-        }
-                                 actionBlock:^{
-                                     [weakSelf presentContactViewController];
-                                 }]];
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return
-                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                     @"Label for 'new contact' button in conversation settings view.")
-                                        iconName:@"table_ic_add_to_existing_contact"];
-        }
-                                 actionBlock:^{
-                                     OWSConversationSettingsViewController *strongSelf = weakSelf;
-                                     OWSCAssert(strongSelf);
-                                     TSThread *contactThread = (TSThread *)strongSelf.thread;
-                                     NSString *recipientId = contactThread.otherParticipantId;
-                                     [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
-                                 }]];
-    }
-
     if (!self.isGroupThread && self.thread.hasSafetyNumbers) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
@@ -333,35 +307,6 @@ const CGFloat kIconViewLength = 24;
         }
                                  actionBlock:^{
                                      [weakSelf showVerificationView];
-                                 }]];
-    }
-
-    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return [weakSelf
-                labelCellWithName:(self.isGroupThread
-                                          ? NSLocalizedString(
-                                                @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                                                @"Indicates that user's profile has been shared with a group.")
-                                          : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                                                @"Indicates that user's profile has been shared with a user."))iconName
-                                 :@"table_ic_share_profile"];
-        }
-                                                       actionBlock:nil]];
-    } else {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return
-                [weakSelf disclosureCellWithName:(self.isGroupThread
-                                                         ? NSLocalizedString(
-                                                               @"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                                               @"Action that shares user profile with a group.")
-                                                         : NSLocalizedString(
-                                                               @"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                                               @"Action that shares user profile with a user."))iconName
-                                                :@"table_ic_share_profile"];
-        }
-                                 actionBlock:^{
-                                     [weakSelf showShareProfileAlert];
                                  }]];
     }
 
@@ -614,35 +559,6 @@ const CGFloat kIconViewLength = 24;
     notificationsSection.footerTitle
         = NSLocalizedString(@"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
     [contents addSection:notificationsSection];
-
-    // Block user section.
-
-    if (!self.isGroupThread) {
-        BOOL isBlocked = [[_blockingManager blockedPhoneNumbers] containsObject:self.thread.otherParticipantId];
-
-        OWSTableSection *section = [OWSTableSection new];
-        section.footerTitle = NSLocalizedString(
-            @"BLOCK_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of blocking another user.");
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell =
-                [weakSelf disclosureCellWithName:NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_USER",
-                                                     @"table cell label in conversation settings")
-                                        iconName:@"table_ic_block"];
-            OWSConversationSettingsViewController *strongSelf = weakSelf;
-            OWSCAssert(strongSelf);
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
-            UISwitch *blockUserSwitch = [UISwitch new];
-            blockUserSwitch.on = isBlocked;
-            [blockUserSwitch addTarget:strongSelf
-                                action:@selector(blockUserSwitchDidChange:)
-                      forControlEvents:UIControlEventValueChanged];
-            cell.accessoryView = blockUserSwitch;
-            return cell;
-        }
-                                                   actionBlock:nil]];
-        [contents addSection:section];
-    }
 
     self.contents = contents;
 }
