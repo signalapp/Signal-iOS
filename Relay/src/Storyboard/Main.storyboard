@@ -29,19 +29,19 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Signal on Chrome" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="57o-uV-YOg">
-                                            <rect key="frame" x="25" y="11" width="136" height="17.5"/>
+                                            <rect key="frame" x="25" y="11" width="136" height="18.5"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Linked: Jun 12, 2016" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uL2-wj-OZr">
-                                            <rect key="frame" x="25" y="28.5" width="124" height="16.5"/>
+                                            <rect key="frame" x="25" y="29.5" width="124" height="16"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Last Seen: Aug 25, 2016" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kek-MK-oLy">
-                                            <rect key="frame" x="25" y="45" width="148" height="16"/>
+                                            <rect key="frame" x="25" y="45.5" width="148" height="15.5"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
@@ -215,7 +215,7 @@
         <!--New Conversation View Controller-->
         <scene sceneID="9DL-Mz-08m">
             <objects>
-                <viewController id="Kx0-6R-NDb" customClass="NewConversationViewController" customModule="Relay" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NewConversationViewController" id="Kx0-6R-NDb" customClass="NewConversationViewController" customModule="Relay" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="MlY-a5-jER"/>
                         <viewControllerLayoutGuide type="bottom" id="WfU-R4-268"/>
