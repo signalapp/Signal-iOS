@@ -398,7 +398,14 @@ NS_ASSUME_NONNULL_BEGIN
         TSGroupThread *_Nullable groupThread =
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
-        if (!groupThread) {
+        if (groupThread) {
+            if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
+                if (![groupThread.recipientIdentifiers containsObject:[TSAccountManager localNumber]]) {
+                    DDLogInfo(@"%@ Ignoring messages for left group.", self.logTag);
+                    return;
+                }
+            }
+        } else {
             // Unknown group.
             if (dataMessage.group.type == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
