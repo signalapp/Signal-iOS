@@ -187,7 +187,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSMutableArray *newGroupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
+    NSMutableArray<NSString *> *newGroupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
     [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
 
     self.groupModel.groupMemberIds = newGroupMemberIds;
