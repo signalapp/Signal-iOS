@@ -31,7 +31,7 @@ def shared_pods
   pod 'GoogleWebRTC', '~> 1.1', :inhibit_warnings => true
   pod 'Fabric', :inhibit_warnings => true
   pod 'Crashlytics', :inhibit_warnings => true
-
+  pod 'UIImageView+Extension',       '~> 0.2', :inhibit_warnings => true
 end
 
 target 'Relay' do

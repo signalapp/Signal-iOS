@@ -6,21 +6,12 @@
 #import "OWSBackup.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
-#import "RegistrationViewController.h"
 #import "Relay-Swift.h"
 #import "ThreadUtil.h"
-#import <AxolotlKit/PreKeyBundle.h>
-#import <RelayMessaging/AttachmentSharing.h>
-#import <RelayMessaging/Environment.h>
-#import <RelayServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <RelayServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <RelayServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
-#import <RelayServiceKit/SecurityUtils.h>
-#import <RelayServiceKit/TSCall.h>
-#import <RelayServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <RelayServiceKit/TSThread.h>
-#import <RelayServiceKit/UIImage+OWS.h>
+
+@import AxolotlKit;
+@import RelayMessaging;
+@import RelayServiceKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -145,19 +136,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@ re-registering.", self.logTag);
 
-    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
-        OWSFail(@"%@ could not reset for re-registration.", self.logTag);
-        return;
-    }
-
-    [[Environment current].preferences unsetRecordedAPNSTokens];
-
-    RegistrationViewController *viewController = [RegistrationViewController new];
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:viewController];
-    navigationController.navigationBarHidden = YES;
-
-    [UIApplication sharedApplication].delegate.window.rootViewController = navigationController;
+    // TODO: Leverage this in Forsta world.
+//    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
+//        OWSFail(@"%@ could not reset for re-registration.", self.logTag);
+//        return;
+//    }
+//
+//    [[Environment current].preferences unsetRecordedAPNSTokens];
+//
+//    RegistrationViewController *viewController = [RegistrationViewController new];
+//    OWSNavigationController *navigationController =
+//        [[OWSNavigationController alloc] initWithRootViewController:viewController];
+//    navigationController.navigationBarHidden = YES;
+//
+//    [UIApplication sharedApplication].delegate.window.rootViewController = navigationController;
 }
 
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled

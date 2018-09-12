@@ -22,6 +22,7 @@
 #import <YapDatabase/YapDatabaseFullTextSearchPrivate.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 #import <YapDatabase/YapDatabaseSecondaryIndexPrivate.h>
+#import <YapDatabase/YapDatabaseFilteredView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -587,6 +588,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         return fullTextSearchCopy;
     } else if ([extension isKindOfClass:[YapDatabaseCrossProcessNotification class]]) {
         // versionTag doesn't matter for YapDatabaseCrossProcessNotification.
+        return extension;
+    } else if ([extension isKindOfClass:[YapDatabaseFilteredView class]]) {
         return extension;
     } else {
         // This method needs to be able to update the versionTag of all extensions.

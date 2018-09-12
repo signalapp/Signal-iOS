@@ -66,7 +66,7 @@ public class ContactShareViewModel: NSObject {
         let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
-                                                    contactsManager: contactsManager)
+                                                    contactsManager: FLContactsManager.shared)
         // Note: we use buildDefaultImage() and not build() so that contact
         // share views always reflect the contents of the contact share.
         // build() might return an avatar from a corresponding system

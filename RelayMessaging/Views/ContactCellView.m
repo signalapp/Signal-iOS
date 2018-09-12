@@ -208,7 +208,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
                                                                          color:color
                                                                       diameter:kContactCellAvatarSize
-                                                               contactsManager:contactsManager] build];
+                                                               contactsManager:FLContactsManager.shared] build];
 }
 
 - (void)updateProfileName

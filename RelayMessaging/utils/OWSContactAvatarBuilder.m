@@ -3,9 +3,9 @@
 //
 
 #import "OWSContactAvatarBuilder.h"
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 #import "TSThread.h"
-#import "UIColor+OWS.h"
+//#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import "JSQMessagesAvatarImageFactory.h"
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactAvatarBuilder ()
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) NSString *signalId;
 @property (nonatomic, readonly) NSString *contactName;
 @property (nonatomic, readonly) UIColor *color;
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                              name:(NSString *)name
                             color:(UIColor *)color
                          diameter:(NSUInteger)diameter
-                  contactsManager:(OWSContactsManager *)contactsManager
+                  contactsManager:(FLContactsManager *)contactsManager
 {
     self = [super init];
     if (!self) {
@@ -49,23 +49,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSignalId:(NSString *)signalId
                            color:(UIColor *)color
                         diameter:(NSUInteger)diameter
-                 contactsManager:(OWSContactsManager *)contactsManager
+                 contactsManager:(FLContactsManager *)contactsManager
 {
     // Name for avatar initials.
-    NSString *_Nullable name = [contactsManager nameFromSystemContactsForRecipientId:signalId];
-    if (name.length == 0) {
-        name = [contactsManager profileNameForRecipientId:signalId];
-    }
-    if (name.length == 0) {
-        name = signalId;
-    }
+    NSString *_Nullable name = [contactsManager nameStringForRecipientId:signalId];
+
     return [self initWithContactId:signalId name:name color:color diameter:diameter contactsManager:contactsManager];
 }
 
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
-                      contactsManager:(OWSContactsManager *)contactsManager
+                      contactsManager:(FLContactsManager *)contactsManager
 {
     
     NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
@@ -82,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    return [self.contactsManager imageForPhoneIdentifier:self.signalId];
+    return [self.contactsManager imageForRecipientId:self.signalId];
 }
 
 - (UIImage *)buildDefaultImage
 {
     UIImage *cachedAvatar =
-        [self.contactsManager.avatarCache imageForKey:self.signalId diameter:(CGFloat)self.diameter];
+        [self.contactsManager imageForRecipientId:self.signalId];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -126,8 +121,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        textColor:[UIColor whiteColor]
                                                                             font:[UIFont ows_boldFontWithSize:fontSize]
                                                                         diameter:self.diameter] avatarImage];
-
-    [self.contactsManager.avatarCache setImage:image forKey:self.signalId diameter:self.diameter];
+    
+    [self.contactsManager setImageWithImage:image recipientId:self.signalId];
+    
+//    [self.contactsManager.avatarCache setImage:image forKey:self.signalId diameter:self.diameter];
     return image;
 }
 

@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContactsManager;
+@class FLContactsManager;
 @class TSThread;
 
 @interface OWSContactAvatarBuilder : OWSAvatarBuilder
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSignalId:(NSString *)signalId
                            color:(UIColor *)color
                         diameter:(NSUInteger)diameter
-                 contactsManager:(OWSContactsManager *)contactsManager;
+                 contactsManager:(FLContactsManager *)contactsManager;
 
 /**
  * Build an avatar for a non-Signal recipient
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
-                      contactsManager:(OWSContactsManager *)contactsManager;
+                      contactsManager:(FLContactsManager *)contactsManager;
 
 @end
 

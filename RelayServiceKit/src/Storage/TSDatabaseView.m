@@ -11,12 +11,21 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseCrossProcessNotification.h>
-#import <YapDatabase/YapDatabaseViewTypes.h>
+#import "FLTag.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
+
+@import YapDatabase;
 
 NSString *const TSInboxGroup = @"TSInboxGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
+
+NSString *const FLPinnedGroup  = @"TSPinnedGroup";
+NSString *const FLActiveTagsGroup = @"FLActiveTagsGroup";
+NSString *const FLVisibleRecipientGroup = @"FLVisibleRecipientGroup";
+NSString *const FLHiddenContactsGroup = @"FLHiddenContactsGroup";
+NSString *const FLMonitorGroup = @"FLMonitorGroup";
+NSString *const FLTagDatabaseViewExtensionName = @"FLTagDatabaseViewExtensionName";
+NSString *const FLFilteredTagDatabaseViewExtensionName = @"FLFilteredTagDatabaseViewExtensionName";
 
 NSString *const TSUnreadIncomingMessagesGroup = @"TSUnreadIncomingMessagesGroup";
 NSString *const TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
@@ -202,19 +211,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSThread *thread = (TSThread *)object;
 
-//        if (thread.isGroupThread) {
-//            // Do nothing; we never hide group threads.
-//        } else if (thread.hasEverHadMessage) {
-//            // Do nothing; we never hide threads that have ever had a message.
-//        } else {
-//            YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-//            OWSAssert(viewTransaction);
-//            NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
-//            if (threadMessageCount < 1) {
-//                return nil;
-//            }
-//        }
-
         if (thread.archivalDate) {
             return ([self threadShouldBeInInbox:thread]) ? TSInboxGroup : TSArchiveGroup;
         } else if (thread.archivalDate) {
@@ -258,6 +254,41 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     }
 
     return YES;
+}
+
++(YapDatabaseViewSorting *)tagSorting
+{
+    return [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction * _Nonnull transaction,
+                                                                       NSString * _Nonnull group,
+                                                                       NSString * _Nonnull collection1,
+                                                                       NSString * _Nonnull key1,
+                                                                       id  _Nonnull object1,
+                                                                       NSString * _Nonnull collection2,
+                                                                       NSString * _Nonnull key2,
+                                                                       id  _Nonnull object2) {
+        if ([group isEqualToString:FLActiveTagsGroup]) {
+            if ([object1 isKindOfClass:[FLTag class]] && [object2 isKindOfClass:[FLTag class]]) {
+                FLTag *aTag1 = (FLTag *)object1;
+                FLTag *aTag2 = (FLTag *)object2;
+                
+                return [aTag1.tagDescription compare:aTag2.tagDescription];
+            }
+        } else if ([group isEqualToString:FLVisibleRecipientGroup]) {
+            if ([object1 isKindOfClass:[RelayRecipient class]] && [object2 isKindOfClass:[RelayRecipient class]]) {
+                RelayRecipient *recipient1 = (RelayRecipient *)object1;
+                RelayRecipient *recipient2 = (RelayRecipient *)object2;
+                
+                NSComparisonResult result = [recipient1.lastName compare:recipient2.lastName];
+                if (result == NSOrderedSame) {
+                    return [recipient1.firstName compare:recipient2.firstName];
+                } else {
+                    return result;
+                }
+                
+            }
+        }
+        return NSOrderedSame;
+    }];
 }
 
 + (YapDatabaseViewSorting *)threadSorting {
@@ -309,6 +340,74 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
         return [message1 compareForSorting:message2];
     }];
+}
+
++(void)asyncRegisterTagDatabaseView:(OWSStorage *)storage
+{
+    YapDatabaseView *tagView = [storage registeredExtension:FLTagDatabaseViewExtensionName];
+    if (tagView) {
+        OWSFail(@"Registered database view twice: %@", FLTagDatabaseViewExtensionName);
+        return;
+    }
+    
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping
+                                             withObjectBlock:^NSString *(YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+                                                 if ([collection isEqualToString:[FLTag collection]]) {
+                                                     FLTag *aTag = (FLTag *)object;
+                                                     if (aTag.recipientIds.count > 1) {
+                                                         if (aTag.hiddenDate) {
+                                                             return FLHiddenContactsGroup;
+                                                         } else {
+                                                             return FLActiveTagsGroup;
+                                                         }
+                                                     }
+                                                 } else if ([collection isEqualToString:[RelayRecipient collection]]) {
+                                                     RelayRecipient *recipient = (RelayRecipient *)object;
+                                                     if (recipient.isMonitor) {
+                                                         return FLMonitorGroup;
+                                                    // Removing hide/unhide per request.
+//                                                     } else if (recipient.hiddenDate) {
+//                                                         return FLHiddenContactsGroup;
+                                                     } else {
+                                                         return FLVisibleRecipientGroup;
+                                                     }
+                                                 }
+                                                 return nil;
+                                             }];
+    YapDatabaseViewSorting *viewSorting = [self tagSorting];
+    
+    YapDatabaseViewOptions *options = [[YapDatabaseViewOptions alloc] init];
+    options.isPersistent = NO;
+    options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObjects:[RelayRecipient collection],[FLTag collection], nil]];
+    
+    YapDatabaseView *databaseView =
+    [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping
+                                          sorting:viewSorting
+                                       versionTag:@"1" options:options];
+    
+    [storage asyncRegisterExtension:databaseView withName:FLTagDatabaseViewExtensionName];
+}
+
++(void)asyncRegisterFilteredTagDatabaseView:(OWSStorage *)storage
+{
+    YapDatabaseFilteredView *filteredView = [storage registeredExtension:FLFilteredTagDatabaseViewExtensionName];
+    if (filteredView) {
+        OWSFail(@"Registered database view twice: %@", FLFilteredTagDatabaseViewExtensionName);
+        return;
+    }
+    
+    YapDatabaseViewFiltering *filtering = [YapDatabaseViewFiltering withObjectBlock:^BOOL(YapDatabaseReadTransaction * _Nonnull transaction,
+                                                                                          NSString * _Nonnull group,
+                                                                                          NSString * _Nonnull collection,
+                                                                                          NSString * _Nonnull key,
+                                                                                          id  _Nonnull object) {
+        return YES;
+    }];
+    
+    filteredView = [[YapDatabaseFilteredView alloc] initWithParentViewName:FLTagDatabaseViewExtensionName filtering:filtering];
+    
+    
+    [storage asyncRegisterExtension:filteredView withName:FLFilteredTagDatabaseViewExtensionName];
 }
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage
