@@ -695,9 +695,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSLoadedThumbnail *_Nullable loadedThumbnail;
     loadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:thumbnailDimensionPoints
-        success:^(OWSLoadedThumbnail *loadedThumbnail) {
+        success:^(OWSLoadedThumbnail *thumbnail) {
             DispatchMainThreadSafe(^{
-                success(loadedThumbnail.image);
+                success(thumbnail.image);
             });
         }
         failure:^{
@@ -749,9 +749,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     __block OWSLoadedThumbnail *_Nullable asyncLoadedThumbnail = nil;
     OWSLoadedThumbnail *_Nullable syncLoadedThumbnail = nil;
     syncLoadedThumbnail = [self loadedThumbnailWithThumbnailDimensionPoints:kThumbnailDimensionPointsSmall
-        success:^(OWSLoadedThumbnail *asyncLoadedThumbnail) {
+        success:^(OWSLoadedThumbnail *thumbnail) {
             @synchronized(self) {
-                asyncLoadedThumbnail = asyncLoadedThumbnail;
+                asyncLoadedThumbnail = thumbnail;
             }
             dispatch_semaphore_signal(semaphore);
         }
