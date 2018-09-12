@@ -9,6 +9,30 @@ public protocol BlockListCacheDelegate: class {
     func blockListCacheDidUpdate(_ blocklistCache: BlockListCache)
 }
 
+/// A performant cache for which contacts/groups are blocked.
+///
+/// The source of truth for which contacts and groups are blocked is the `blockingManager`, but because
+/// those accessors are made to be thread safe, they can be slow in tight loops, e.g. when rendering table
+/// view cells.
+///
+/// Typically you'll want to create a Cache, update it to the latest state while simultaneously being informed
+/// of any future changes to block list state.
+///
+///     class SomeViewController: BlockListCacheDelegate {
+///         let blockListCache = BlockListCache()
+///         func viewDidLoad() {
+///            super.viewDidLoad()
+///            blockListCache.startObservingAndSyncState(delegate: self)
+///            self.updateAnyViewsWhichDepondOnBlockListCache()
+///         }
+///
+///         func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
+///             self.updateAnyViewsWhichDepondOnBlockListCache()
+///         }
+///
+///         ...
+///      }
+///
 @objc(OWSBlockListCache)
 public class BlockListCache: NSObject {
 
