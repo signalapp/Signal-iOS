@@ -26,7 +26,6 @@
 #import "OWSRequestFactory.h"
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
-#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSIncomingMessage.h"
@@ -306,6 +305,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         avatarAttachment);
                 }
             }
+            
+            // make sure the body is JSON
+            if (!(message.body && [NSJSONSerialization JSONObjectWithData:[message.body dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil])) {
+                NSString *messageBlob = [FLCCSMJSONService blobFromMessage:message];
+                message.body = messageBlob;
+            }
+
 
             // All outgoing messages should be saved at the time they are enqueued.
             [message saveWithTransaction:transaction];
@@ -429,17 +435,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (NSArray<SignalRecipient *> *)signalRecipientsForRecipientIds:(NSArray<NSString *> *)recipientIds
+- (NSArray<RelayRecipient *> *)RelayRecipientsForRecipientIds:(NSArray<NSString *> *)recipientIds
                                                         message:(TSOutgoingMessage *)message
 {
     OWSAssert(recipientIds);
     OWSAssert(message);
 
-    NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
+    NSMutableArray<RelayRecipient *> *recipients = [NSMutableArray new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (NSString *recipientId in recipientIds) {
-            SignalRecipient *recipient =
-                [SignalRecipient getOrBuildUnsavedRecipientForRecipientId:recipientId transaction:transaction];
+            RelayRecipient *recipient =
+                [RelayRecipient getOrBuildUnsavedRecipientForRecipientId:recipientId transaction:transaction];
             [recipients addObject:recipient];
         }
     }];
@@ -488,10 +494,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return;
             }
             
-            NSArray<SignalRecipient *> *recipients =
-            [self signalRecipientsForRecipientIds:@[recipientContactId] message:message];
+            NSArray<RelayRecipient *> *recipients =
+            [self RelayRecipientsForRecipientIds:@[recipientContactId] message:message];
             OWSAssert(recipients.count == 1);
-            SignalRecipient *recipient = recipients.firstObject;
+            RelayRecipient *recipient = recipients.firstObject;
             
             if (!recipient) {
                 NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
@@ -550,8 +556,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return;
             }
 
-            NSArray<SignalRecipient *> *recipients =
-                [self signalRecipientsForRecipientIds:sendingRecipientIds.allObjects message:message];
+            NSArray<RelayRecipient *> *recipients =
+                [self RelayRecipientsForRecipientIds:sendingRecipientIds.allObjects message:message];
             OWSAssert(recipients.count == sendingRecipientIds.count);
 
             [self groupSend:recipients message:message thread:thread success:successHandler failure:failureHandler];
@@ -559,7 +565,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (void)groupSend:(NSArray<SignalRecipient *> *)recipients
+- (void)groupSend:(NSArray<RelayRecipient *> *)recipients
           message:(TSOutgoingMessage *)message
            thread:(TSThread *)thread
           success:(void (^)(void))successHandler
@@ -570,8 +576,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
 
-    for (SignalRecipient *recipient in recipients) {
-        NSString *recipientId = recipient.recipientId;
+    for (RelayRecipient *recipient in recipients) {
+        NSString *recipientId = recipient.uniqueId;
 
         // We don't need to send the message to ourselves...
         if ([recipientId isEqualToString:[TSAccountManager localUID]]) {
@@ -667,17 +673,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [sendCompletionPromise retainUntilComplete];
 }
 
-- (void)unregisteredRecipient:(SignalRecipient *)recipient
+- (void)unregisteredRecipient:(RelayRecipient *)recipient
                       message:(TSOutgoingMessage *)message
                        thread:(TSThread *)thread
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             // Mark as "skipped" group members who no longer have signal accounts.
-            [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
+            [message updateWithSkippedRecipient:recipient.uniqueId transaction:transaction];
 
-        [SignalRecipient removeUnregisteredRecipient:recipient.recipientId transaction:transaction];
+        [RelayRecipient removeUnregisteredRecipient:recipient.uniqueId transaction:transaction];
 
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
+        [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.uniqueId]
             saveWithTransaction:transaction];
 
         // TODO: Should we deleteAllSessionsForContact here?
@@ -687,7 +693,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
-                   recipient:(SignalRecipient *)recipient
+                   recipient:(RelayRecipient *)recipient
                       thread:(nullable TSThread *)thread
                     attempts:(int)remainingAttemptsParam
      useWebsocketIfAvailable:(BOOL)useWebsocketIfAvailable
@@ -754,8 +760,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             NSString *localizedErrorDescription =
                 [NSString stringWithFormat:localizedErrorDescriptionFormat,
-                          [self.contactsManager displayNameForPhoneIdentifier:recipient.recipientId]];
-            NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.recipientId);
+                          [self.contactsManager displayNameForPhoneIdentifier:recipient.uniqueId]];
+            NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.uniqueId);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit
@@ -792,7 +798,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
-            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
+            [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:recipient.uniqueId];
 
             failureHandler(error);
             return;
@@ -835,7 +841,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // The linked device list is reflected in two separate pieces of state:
         //
         // * OWSDevice's state is updated when you link or unlink a device.
-        // * SignalRecipient's state is updated by 409 "Mismatched devices"
+        // * RelayRecipient's state is updated by 409 "Mismatched devices"
         //   responses from the service.
         //
         // If _both_ of these pieces of state agree that there are no linked
@@ -844,7 +850,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // 1. Check OWSDevice's state.
         BOOL mayHaveLinkedDevices = [OWSDeviceManager.sharedManager mayHaveLinkedDevices:self.dbConnection];
 
-        // 2. Check SignalRecipient's state.
+        // 2. Check RelayRecipient's state.
         BOOL hasDeviceMessages = deviceMessages.count > 0;
 
         DDLogInfo(@"%@ mayHaveLinkedDevices: %d, hasDeviceMessages: %d",
@@ -867,14 +873,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         } else if (mayHaveLinkedDevices && !hasDeviceMessages) {
             // We may have just linked a new secondary device which is not yet reflected in
-            // the SignalRecipient that corresponds to ourself.  Proceed.  Client should learn
+            // the RelayRecipient that corresponds to ourself.  Proceed.  Client should learn
             // of new secondary devices via 409 "Mismatched devices" response.
             DDLogWarn(@"%@ account has secondary devices, but sync message has no device messages", self.logTag);
         } else if (!mayHaveLinkedDevices && hasDeviceMessages) {
             OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
         }
-    } else {
-        OWSAssert(deviceMessages.count > 0);
+        // TODO: Investigate other places where device query may be taking place.
+//    } else {
+//        OWSAssert(deviceMessages.count > 0);
     }
 
     if (deviceMessages.count == 0) {
@@ -992,7 +999,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)messageSendDidFail:(TSOutgoingMessage *)message
-                 recipient:(SignalRecipient *)recipient
+                 recipient:(RelayRecipient *)recipient
                     thread:(nullable TSThread *)thread
              isLocalNumber:(BOOL)isLocalNumber
             deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
@@ -1122,7 +1129,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)handleMismatchedDevicesWithResponseJson:(NSDictionary *)responseJson
-                                      recipient:(SignalRecipient *)recipient
+                                      recipient:(RelayRecipient *)recipient
                                      completion:(void (^)(void))completionHandler
 {
     OWSAssert(responseJson);
@@ -1153,12 +1160,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                  protocolContext:transaction];
                 }
 
-                [recipient removeDevicesFromRecipient:[NSSet setWithArray:extraDevices] transaction:transaction];
+                [recipient removeDevicesFromRecipient:[NSOrderedSet orderedSetWithArray:extraDevices] transaction:transaction];
             }
 
             if (missingDevices && missingDevices.count > 0) {
                 DDLogInfo(@"%@ Adding missing devices: %@", self.logTag, missingDevices);
-                [recipient addDevicesToRegisteredRecipient:[NSSet setWithArray:missingDevices]
+                [recipient addDevicesToRegisteredRecipient:[NSOrderedSet orderedSetWithArray:missingDevices]
                                               transaction:transaction];
             }
 
@@ -1192,7 +1199,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
 
     [self sendMessageToService:sentMessageTranscript
-        recipient:[SignalRecipient selfRecipient]
+        recipient:TSAccountManager.selfRecipient
         thread:message.thread
         attempts:OWSMessageSenderRetryAttempts
         useWebsocketIfAvailable:YES
@@ -1209,7 +1216,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }];
 }
 
-- (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message recipient:(SignalRecipient *)recipient
+- (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message recipient:(RelayRecipient *)recipient
 {
     OWSAssert(message);
     OWSAssert(recipient);
@@ -1221,7 +1228,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         self.logTag,
         [message class],
         (unsigned long)plainText.length);
-
+    
     for (NSNumber *deviceNumber in recipient.devices) {
         @try {
             __block NSDictionary *messageDict;
@@ -1253,7 +1260,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceNumber] transaction:transaction];
+                    [recipient removeDevicesFromRecipient:[NSOrderedSet orderedSetWithObject:deviceNumber] transaction:transaction];
                 }];
             } else {
                 @throw exception;
@@ -1265,7 +1272,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
-                                      recipient:(SignalRecipient *)recipient
+                                      recipient:(RelayRecipient *)recipient
                                        deviceId:(NSNumber *)deviceNumber
                                   keyingStorage:(OWSPrimaryStorage *)storage
                                        isSilent:(BOOL)isSilent
@@ -1277,7 +1284,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssert(storage);
     OWSAssert(transaction);
 
-    NSString *identifier = recipient.recipientId;
+    NSString *identifier = recipient.uniqueId;
     OWSAssert(identifier.length > 0);
 
     if (![storage containsSession:identifier deviceId:[deviceNumber intValue] protocolContext:transaction]) {

@@ -26,7 +26,15 @@ import YapDatabase
     @objc public var isMonitor = false
     @objc public var isActive = false
     
-    fileprivate(set) var devices: NSOrderedSet?
+    fileprivate var _devices = NSOrderedSet()
+    @objc public var devices: NSOrderedSet {
+        get {
+            if _devices.count == 0 {
+                _devices = NSOrderedSet(object: NSNumber(value: 1) )
+            }
+            return _devices
+        }
+    }
 
     @objc public func fullName() -> String {
         if firstName != "" && lastName != "" {
@@ -185,21 +193,21 @@ import YapDatabase
         
         let recipient = RelayRecipient.init(uniqueId: uid)
         
-        if (TSAccountManager.localUID() == uid) {
-            // Default to no devices.
-            //
-            // This instance represents our own account and is used for sending
-            // sync message to linked devices.  We shouldn't have any linked devices
-            // yet when we create the "self" SignalRecipient, and we don't need to
-            // send sync messages to the primary - we ARE the primary.
-            recipient.devices = NSOrderedSet()
-        } else {
-            // Default to sending to just primary device.
-            //
-            // OWSMessageSender will correct this if it is wrong the next time
-            // we send a message to this recipient.
-            recipient.devices = NSOrderedSet(object: 1)
-        }
+//        if (TSAccountManager.localUID() == uid) {
+//            // Default to no devices.
+//            //
+//            // This instance represents our own account and is used for sending
+//            // sync message to linked devices.  We shouldn't have any linked devices
+//            // yet when we create the "self" SignalRecipient, and we don't need to
+//            // send sync messages to the primary - we ARE the primary.
+//            recipient.devices = NSOrderedSet()
+//        } else {
+//            // Default to sending to just primary device.
+//            //
+//            // OWSMessageSender will correct this if it is wrong the next time
+//            // we send a message to this recipient.
+//            recipient.devices = NSOrderedSet(object: 1)
+//        }
         return recipient
     }
 
@@ -210,16 +218,23 @@ import YapDatabase
             Logger.error("\(self.logTag) in \(#function) adding self as recipient device")
             return
         }
-        let updatedDevices: NSMutableOrderedSet? = self.devices?.mutableCopy() as? NSMutableOrderedSet
-        updatedDevices?.union(devices)
-        self.devices = updatedDevices
+        let updatedDevices: NSMutableOrderedSet = self.devices.mutableCopy() as! NSMutableOrderedSet
+        updatedDevices.union(devices)
+        _devices = updatedDevices
     }
     
     private func removeDevices(_ devices: NSOrderedSet) {
         assert(devices.count > 0)
-        let updatedDevices: NSMutableOrderedSet? = self.devices as? NSMutableOrderedSet
-        updatedDevices?.minus(devices)
-        self.devices = updatedDevices
+        
+        let updatedDevices = NSMutableOrderedSet.init(orderedSet: self.devices)
+
+        for device in devices {
+            updatedDevices.remove(device)
+        }
+        
+//        let updatedDevices = NSMutableOr÷deredSet.init(orderedSet: self.devices)
+//        updatedDevices.minus(devices)
+        _devices = updatedDevices.copy() as! NSOrderedSet
     }
 
     

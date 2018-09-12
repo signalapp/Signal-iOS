@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
                                                                                   color:self.conversationStyle.primaryColor
                                                                                diameter:self.avatarSize
-                                                                        contactsManager:contactsManager];
+                                                                        contactsManager:FLContactsManager.shared];
     self.avatarView.image = [avatarBuilder build];
     [self.contentView addSubview:self.avatarView];
 

@@ -3,7 +3,6 @@
 //
 
 #import "AppUpdateNag.h"
-#import "RegistrationViewController.h"
 #import "Relay-Swift.h"
 #import <ATAppUpdater/ATAppUpdater.h>
 #import <RelayServiceKit/NSDate+OWS.h>
@@ -58,40 +57,41 @@ NSString *const OWSPrimaryStorageAppUpgradeNagDate = @"TSStorageManagerAppUpgrad
 
 - (void)showAppUpgradeNagIfNecessary
 {
-    if (CurrentAppContext().isRunningTests) {
-        return;
-    }
-
-    // Only show nag if we are "at rest" in the home view or registration view without any
-    // alerts or dialogs showing.
-    UIViewController *frontmostViewController =
-    [UIApplication sharedApplication].frontmostViewController;
-    OWSAssert(frontmostViewController);
-    BOOL canPresent = ([frontmostViewController isKindOfClass:[HomeViewController class]] ||
-        [frontmostViewController isKindOfClass:[RegistrationViewController class]]);
-    if (!canPresent) {
-        return;
-    }
-
-    NSDate *lastNagDate = [self.dbConnection dateForKey:OWSPrimaryStorageAppUpgradeNagDate
-                                           inCollection:OWSPrimaryStorageAppUpgradeNagCollection];
-    const NSTimeInterval kNagFrequency = kDayInterval * 14;
-    BOOL canNag = (!lastNagDate || fabs(lastNagDate.timeIntervalSinceNow) > kNagFrequency);
-    if (!canNag) {
-        return;
-    }
-
-    ATAppUpdater *updater = [ATAppUpdater sharedUpdater];
-    [updater setAlertTitle:NSLocalizedString(
-                               @"APP_UPDATE_NAG_ALERT_TITLE", @"Title for the 'new app version available' alert.")];
-    [updater setAlertMessage:NSLocalizedString(@"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT",
-                                 @"Message format for the 'new app version available' alert. Embeds: {{The latest app "
-                                 @"version number.}}.")];
-    [updater setAlertUpdateButtonTitle:NSLocalizedString(@"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON",
-                                           @"Label for the 'update' button in the 'new app version available' alert.")];
-    [updater setAlertCancelButtonTitle:CommonStrings.cancelButton];
-    [updater setDelegate:self];
-    [updater showUpdateWithConfirmation];
+    DDLogDebug(@"showAppUpgradeNagIfNecessary called.  Method not implemented.");
+//    if (CurrentAppContext().isRunningTests) {
+//        return;
+//    }
+//
+//    // Only show nag if we are "at rest" in the home view or registration view without any
+//    // alerts or dialogs showing.
+//    UIViewController *frontmostViewController =
+//    [UIApplication sharedApplication].frontmostViewController;
+//    OWSAssert(frontmostViewController);
+//    BOOL canPresent = ([frontmostViewController isKindOfClass:[HomeViewController class]] ||
+//        [frontmostViewController isKindOfClass:[RegistrationViewController class]]);
+//    if (!canPresent) {
+//        return;
+//    }
+//
+//    NSDate *lastNagDate = [self.dbConnection dateForKey:OWSPrimaryStorageAppUpgradeNagDate
+//                                           inCollection:OWSPrimaryStorageAppUpgradeNagCollection];
+//    const NSTimeInterval kNagFrequency = kDayInterval * 14;
+//    BOOL canNag = (!lastNagDate || fabs(lastNagDate.timeIntervalSinceNow) > kNagFrequency);
+//    if (!canNag) {
+//        return;
+//    }
+//
+//    ATAppUpdater *updater = [ATAppUpdater sharedUpdater];
+//    [updater setAlertTitle:NSLocalizedString(
+//                               @"APP_UPDATE_NAG_ALERT_TITLE", @"Title for the 'new app version available' alert.")];
+//    [updater setAlertMessage:NSLocalizedString(@"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT",
+//                                 @"Message format for the 'new app version available' alert. Embeds: {{The latest app "
+//                                 @"version number.}}.")];
+//    [updater setAlertUpdateButtonTitle:NSLocalizedString(@"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON",
+//                                           @"Label for the 'update' button in the 'new app version available' alert.")];
+//    [updater setAlertCancelButtonTitle:CommonStrings.cancelButton];
+//    [updater setDelegate:self];
+//    [updater showUpdateWithConfirmation];
 }
 
 #pragma mark - ATAppUpdaterDelegate

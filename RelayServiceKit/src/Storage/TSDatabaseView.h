@@ -10,6 +10,16 @@ extern NSString *const TSArchiveGroup;
 extern NSString *const TSUnreadIncomingMessagesGroup;
 extern NSString *const TSSecondaryDevicesGroup;
 
+extern NSString *const FLPinnedGroup;
+extern NSString *const FLActiveTagsGroup;
+extern NSString *const FLVisibleRecipientGroup;
+extern NSString *const FLAnnouncementsGroup;
+extern NSString *const FLHiddenContactsGroup;
+extern NSString *const FLMonitorGroup;
+
+extern NSString *const FLTagDatabaseViewExtensionName;
+extern NSString *const FLFilteredTagDatabaseViewExtensionName;
+
 extern NSString *const TSThreadDatabaseViewExtensionName;
 
 extern NSString *const TSMessageDatabaseViewExtensionName;
@@ -60,5 +70,10 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage
                                              completion:(nullable dispatch_block_t)completion;
+
+// Forsta Additions
++(void)asyncRegisterTagDatabaseView:(OWSStorage *)storage;
++(void)asyncRegisterFilteredTagDatabaseView:(OWSStorage *)storage;
+
 
 @end

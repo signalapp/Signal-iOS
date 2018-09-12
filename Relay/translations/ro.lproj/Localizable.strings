@@ -87,7 +87,7 @@
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Actualizează";
 
 /* Name of application */
-"APPLICATION_NAME" = "Signal";
+"APPLICATION_NAME" = "Relay";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arhivează";
@@ -1018,7 +1018,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arhivă";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "Relay";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Se conectează...";

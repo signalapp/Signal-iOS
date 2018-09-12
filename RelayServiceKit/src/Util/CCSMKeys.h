@@ -32,4 +32,11 @@
 #define FLThreadTypeConversation @"conversation"
 #define FLThreadTypeAnnouncement @"announcement"
 
+// Message keys
+#define FLMessageTypeContentKey @"content"
+#define FLMessageTypePollKey @"poll"
+#define FLMessageTypePollResponseKey @"pollResponse"
+#define FLMessageTypeControlKey @"control"
+#define FLMessageTypeReceiptKey @"receipt"
+
 #endif /* CCSMKeys_h */

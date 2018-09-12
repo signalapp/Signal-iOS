@@ -125,6 +125,13 @@ import RelayServiceKit
     @objc public func refreshCCSMRecipients() {
     }
     
+    @objc public func setImage(image: UIImage, recipientId: String) {
+        if let recipient = self.recipient(withId: recipientId) {
+            recipient.avatar = image
+            self.avatarCache.setObject(image, forKey: recipientId as NSString)
+        }
+    }
+    
     @objc public func image(forRecipientId uid: String) -> UIImage? {
         // TODO: implement gravatars here
         var image: UIImage? = nil
