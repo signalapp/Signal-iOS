@@ -20,7 +20,7 @@ import RelayServiceKit
     private let readConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadConnection }()
     private let readWriteConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadWriteConnection }()
     private var latestRecipientsById: [AnyHashable : Any] = [:]
-    private var activeRecipientsBacker: [SignalRecipient] = []
+    private var activeRecipientsBacker: [ RelayRecipient ] = []
     private var visibleRecipientsPredicate: NSCompoundPredicate?
     
     private let avatarCache: NSCache<NSString, UIImage>
@@ -88,7 +88,7 @@ import RelayServiceKit
 //            if firstNameOrdering {
 //                return (contact1?.firstName.caseInsensitiveCompare(contact2?.firstName ?? ""))!
 //            } else {
-                return (contact1?.lastName.caseInsensitiveCompare(contact2?.lastName ?? ""))!
+            return (contact1?.lastName!.caseInsensitiveCompare(contact2?.lastName ?? ""))!
 //            }
         }    }
         
@@ -101,26 +101,159 @@ import RelayServiceKit
     @objc public func updateRecipient(_ userId: String, with transaction: YapDatabaseReadWriteTransaction) {
     }
     
+    @objc public func ccsmFetchRecipientDictionary(userId: String) -> Dictionary<String, Any>? {
+        
+        // must not execute on main thread
+        assert(!Thread.isMainThread)
+        
+        var result: Dictionary<String, Any>?
+        
+        let url = "\(FLHomeURL)/v1/directory/user/?id=\(userId)"
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        CCSMCommManager.getThing(url,
+                                 success: { (payload) in
+                                    
+                                    if let resultsArray: Array = payload?["results"] as? Array<Dictionary<String, Any>> {
+                                        result = resultsArray.last!
+                                    }
+                                    
+                                    semaphore.signal()
+        }, failure: { (error) in
+            Logger.debug("CCSM User lookup failed.")
+            semaphore.signal()
+        })
+        
+        let timeout = DispatchTime.now() + .seconds(3)
+        if semaphore.wait(timeout: timeout) == .timedOut {
+            Logger.debug("CCSM user lookup timed out.")
+        }
+        return result
+    }
+    
     @objc public func recipient(withId userId: String) -> RelayRecipient? {
+        
+        // Check the cache
         var recipient:RelayRecipient? = recipientCache.object(forKey: userId as NSString)
         
+        // Check the db
         if recipient == nil {
-            recipient = RelayRecipient.fetch(uniqueId: userId as String)
-            recipientCache.setObject(recipient!, forKey: userId as NSString)
+            self.readWriteConnection.readWrite { (transaction) in
+                recipient = self.recipient(withId: userId, transaction: transaction)
+            }
         }
-        return recipient!
+        
+        return recipient
     }
     
     @objc public func recipient(withId userId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
-        var recipient:RelayRecipient? = recipientCache.object(forKey: userId as NSString)
+        
+        var recipient: RelayRecipient? = RelayRecipient.fetch(uniqueId: userId, transaction: transaction)
         
         if recipient == nil {
-            recipient = RelayRecipient.fetch(uniqueId: userId, transaction: transaction)
+            
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            DispatchQueue.global(qos: .background).async {
+                
+                if let userDict = self.ccsmFetchRecipientDictionary(userId: userId) {
+                        recipient = self.recipient(fromDictionary: userDict, transaction: transaction)
+                }
+                
+            }
+                
+            
+            //            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            //                NSDictionary *recipientDict = [self dictionaryForRecipientId:userId];
+            //                if (recipientDict) {
+            //                    recipient = [self recipientFromDictionary:recipientDict];
+            //                    if (recipient) {
+            //                        [self.recipientCache setObject:recipient forKey:recipient.uniqueId];
+            //                    }
+            //                }
+            //                dispatch_semaphore_signal(sema);
+            //                });
+            //            dispatch_time_t wait_time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * (double)NSEC_PER_SEC));
+            //            dispatch_semaphore_wait(sema, wait_time);
+            
+            let timeout = DispatchTime.now() + .seconds(3)
+            if semaphore.wait(timeout: timeout) == .timedOut {
+                Logger.debug("CCSM user lookup timed out.")
+            }
+        }
+        
+        if recipient != nil {
             recipientCache.setObject(recipient!, forKey: userId as NSString)
         }
-        return recipient!
         
+        return recipient
     }
+
+    @objc public func recipient(fromDictionary userDict: Dictionary<String, Any>) -> RelayRecipient? {
+        var recipient: RelayRecipient? = nil
+        self.readWriteConnection.readWrite({ transaction in
+            recipient = self.recipient(fromDictionary: userDict, transaction: transaction)
+        })
+        return recipient
+    }
+    
+    func recipient(fromDictionary userDict: Dictionary<String, Any>, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
+
+        guard let uuid = NSUUID.init(uuidString:(userDict["id"] as? String)!) else {
+           Logger.debug("Attempt to build recipient with malformed dictionary.")
+            return nil
+        }
+        
+        guard let tagDict = userDict["tag"] as? [AnyHashable : Any] else {
+            Logger.debug("Missing tagDictionary for Recipient: \(uuid.uuidString)")
+            return nil
+        }
+
+        let uidString = uuid.uuidString
+        
+        let recipient = RelayRecipient.getOrBuildUnsavedRecipient(forRecipientId: uidString, transaction: transaction)
+        
+        recipient.isActive = (Int(truncating: userDict["is_active"] as? NSNumber ?? 0)) == 1 ? true : false
+        if !recipient.isActive {
+            Logger.info("Removing inactive user: \(uidString)")
+            self.remove(recipient: recipient, with: transaction)
+            return nil
+        }
+        
+        recipient.firstName = userDict["first_name"] as? String
+        recipient.lastName = userDict["last_name"] as? String
+        recipient.email = userDict["email"] as? String
+        recipient.phoneNumber = userDict["phone"] as? String
+        recipient.gravatarHash = userDict["gravatar_hash"] as? String
+        recipient.isMonitor = (Int(truncating: userDict["is_monitor"] as? NSNumber ?? 0)) == 1 ? true : false
+        
+        let orgDict = userDict["org"] as? [AnyHashable : Any]
+        if orgDict != nil {
+            recipient.orgID = orgDict!["id"] as? String
+            recipient.orgSlug = orgDict!["slug"] as? String
+        } else {
+            Logger.debug("Missing orgDictionary for Recipient: \(self.description)")
+        }
+        recipient.flTag = FLTag.getOrCreateTag(with: tagDict, transaction: transaction)
+        recipient.flTag?.recipientIds = Set<AnyHashable>([recipient.uniqueId]) as? NSCountedSet
+        if recipient.flTag?.tagDescription?.count == 0 {
+            recipient.flTag?.tagDescription = recipient.fullName()
+        }
+        if recipient.flTag?.orgSlug.count == 0 {
+            recipient.flTag?.orgSlug = recipient.orgSlug!
+        }
+        if recipient.flTag == nil {
+            Logger.error("Attempt to create recipient with a nil tag!  Recipient: \(recipient.uniqueId)")
+            self.remove(recipient: recipient, with: transaction)
+            return nil
+        } else {
+            self.save(recipient: recipient, with: transaction)
+        }
+        
+        return recipient
+    }
+
     
     @objc public func refreshCCSMRecipients() {
     }

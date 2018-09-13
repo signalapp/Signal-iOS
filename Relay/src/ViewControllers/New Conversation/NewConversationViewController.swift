@@ -500,7 +500,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                         let recipient: RelayRecipient = obj as! RelayRecipient
                         return ( (recipient.fullName().lowercased() as NSString).contains(filterString!) ||
                             (recipient.flTag!.displaySlug.lowercased() as NSString).contains(filterString!) ||
-                            (recipient.orgSlug.lowercased() as NSString).contains(filterString!))
+                            (recipient.orgSlug!.lowercased() as NSString).contains(filterString!))
                     } else {
                         return false
                     }
