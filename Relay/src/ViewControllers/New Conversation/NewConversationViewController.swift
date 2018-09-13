@@ -474,7 +474,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                     // Spin off background process to pull in participants
                     DispatchQueue.global(qos: .background).async {
                         for uid in userIds {
-                            FLContactsManager.shared.updateRecipient(uid as! String)
+                            FLContactsManager.shared.updateRecipient(userId: uid as! String)
                         }
                     }
                     SignalApp.shared().presentConversation(for: thread, action: .compose)

@@ -95,13 +95,22 @@ import RelayServiceKit
     @objc public func doAfterEnvironmentInitSetup() {
     }
     
-    @objc public func updateRecipient(_ userId: String) {
+    @objc public func updateRecipient(userId: String) {
+            self.readWriteConnection.asyncReadWrite { (transaction) in
+                self.updateRecipient(userId: userId, with: transaction)
+            }
     }
     
-    @objc public func updateRecipient(_ userId: String, with transaction: YapDatabaseReadWriteTransaction) {
+    fileprivate func updateRecipient(userId: String, with transaction: YapDatabaseReadWriteTransaction) {
+        
+        if let updateDict:Dictionary<String, Any> = ccsmFetchRecipientDictionary(userId: userId) {
+            if let recipient = recipient(fromDictionary: updateDict, transaction: transaction) {
+                save(recipient: recipient, with: transaction)
+            }
+        }
     }
     
-    @objc public func ccsmFetchRecipientDictionary(userId: String) -> Dictionary<String, Any>? {
+    fileprivate func ccsmFetchRecipientDictionary(userId: String) -> Dictionary<String, Any>? {
         
         // must not execute on main thread
         assert(!Thread.isMainThread)
@@ -230,9 +239,9 @@ import RelayServiceKit
             Logger.error("Attempt to create recipient with a nil tag!  Recipient: \(recipient.uniqueId)")
             self.remove(recipient: recipient, with: transaction)
             return nil
-        } else {
-            Logger.debug("Saving updated recipient: \(recipient.uniqueId)")
-            self.save(recipient: recipient, with: transaction)
+//        } else {
+//            Logger.debug("Saving updated recipient: \(recipient.uniqueId)")
+//            self.save(recipient: recipient, with: transaction)
         }
         
         return recipient

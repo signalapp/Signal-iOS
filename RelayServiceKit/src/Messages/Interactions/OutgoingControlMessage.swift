@@ -49,12 +49,16 @@ import UIKit
         get { return nil }
         set { }
     }
-
-    @objc override public func save() {
-        return      // never save control messages
+    
+    @objc override public func shouldBeSaved() -> Bool {
+        return false
     }
 
-    @objc override public func save(with transaction: YapDatabaseReadWriteTransaction) {
-        return      // never save control messages
-    }
+//    @objc override public func save() {
+//        return      // never save control messages
+//    }
+//
+//    @objc override public func save(with transaction: YapDatabaseReadWriteTransaction) {
+//        return      // never save control messages
+//    }
 }
