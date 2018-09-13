@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Falha ao selecionar o documento.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "O Signal não pode carregar o arquivo como está. Tente comprimi-lo antes de enviar.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Arquivo Incompatível";
@@ -224,35 +224,47 @@
 /* Indicates that the backup import data is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restaurando arquivos";
 
-/* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Usuários bloqueados não poderão efetuar ligações ou enviar mensagens para você.";
+/* An explanation of the consequences of blocking a group. */
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquear";
 
+/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "Bloquear %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
+
+/* Section header for groups that have been blocked */
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+
+/* Section header for users that have been blocked */
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
 
-/* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+/* Action sheet body when confirming you want to unblock a group */
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+
+/* Action sheet title when confirming you want to unblock a group. Embeds the {{conversation title}}. */
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE_FORMAT" = "Unblock This Group?";
+
+/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Desbloquear %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Bloquear";
 
-/* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Falha ao Bloquear essa Pessoa.";
-
-/* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Erro";
-
-/* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ sob bloqueio";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Pessoa sob Bloqueio";
+
+/* The title of the 'group blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Você nao pode bloquear-se.";
@@ -260,23 +272,20 @@
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Erro";
 
-/* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Falha ao Desbloquear essa Pessoa.";
-
-/* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Erro";
-
-/* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
+/* Alert body after unblocking a group or 1:1 chat. Embeds the conversation title. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ não mais sob bloqueio.";
 
-/* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Pessoa Desbloqueada";
+/* Alert title after unblocking a group or 1:1 chat. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Unblocked";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloquear";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloquear %@?";
+
+/* An explanation of the consequences of blocking another user. */
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continuar";
@@ -405,7 +414,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Você tem certeza que deseja sair?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Conectar Novo Dispositivo";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Vincular novo dispositivo";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@talvez tenha reinstalado ou trocado de aparelho. Verifique seu número de segurança com esse contato para garantir privacidade.";
@@ -513,7 +522,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adicionar à Lista de Contatos";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear este usuário";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+
+/* table cell label in conversation settings */
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informações do contato";
@@ -564,7 +576,7 @@
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Este grupo pode ver o seu perfil";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Esta pessoa pode ver o seu perfil.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Esta pessoa pode ver o seu perfil";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Compartilhar Perfil";
@@ -612,13 +624,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Otimizando base de dados";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "Há %@ h";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Há %@ min";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Agora";
 
 /* The current day. */
 "DATE_TODAY" = "Hoje";
@@ -670,10 +682,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecionando para o GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Recadastrar este telefone";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Dispositivo não cadastrado. Seu número de telefone pode estar cadastrado no Signal em outro aparelho. Clique para se recadastrar.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Última atividade: %@";
@@ -763,10 +775,10 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Por que você não convida alguém?";
 
 /* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
+"EMPTY_INBOX_NEW_USER_TEXT" = "Clique no botão de escrever";
 
 /* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
+"EMPTY_INBOX_NEW_USER_TITLE" = "Comece a conversar no Signal!";
 
 /* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "Nada. None. Zero. Zilch.";
@@ -796,10 +808,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN incorreto.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Insira um PIN para o Bloqueio de Cadastro. Você deverá informar esse PIN da próxima vez que cadastrar este número de telefone no Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Insira um PIN de Desbloqueio de Cadastro. Você deverá informar esse PIN da próxima vez que cadastrar este número de telefone no Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Para mais segurança, ative um PIN de Bloqueio de Cadastro que será requerido para cadastrar este número de telefone no Signal no futuro.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Para mais segurança, ative um PIN de Desbloqueio de Cadastro que será requerido para cadastrar este número de telefone no Signal no futuro.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "O Bloqueio de Cadastro está ativo. Você deve inserir seu PIN quando for cadastrar seu número de telefone no Signal novamente.";
@@ -865,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "A chave do recipiente não é válida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mensagem recebida não sincronizada.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Recebi uma mensagem não compatível com esta versão.";
@@ -984,7 +996,7 @@
 /* Button label for the 'show contact info' button */
 "GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Informações do contato";
 
-/* No comment provided by engineer. */
+/* Modal text when removing a group */
 "GROUP_REMOVING" = "Saindo do grupo %@";
 
 /* Title of alert indicating that group deletion failed. */
@@ -1002,11 +1014,11 @@
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversas arquivadas";
 
-/* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqueado";
+/* Table cell subtitle label for a conversation the user has blocked. */
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
@@ -1063,7 +1075,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Habilitar acesso aos contatos";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convide Amigos para o Signal.";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convide amigos para o Signal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Buscar";
@@ -1108,7 +1120,7 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "Digitalizar o código QR";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Conectar Novo Dispositivo";
+"LINK_NEW_DEVICE_TITLE" = "Vincular novo dispositivo";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivos vinculados";
@@ -1264,10 +1276,13 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ não está mais marcado como verificado. Toque para ver as opções.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Você bloqueou 1 membro deste grupo";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+
+/* Indicates that this group conversation has been blocked. */
+"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Você Bloqueou %@ Membros deste Grupo";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Você Deseja Compartilhar o Seu Perfil com Esse Grupo?";
@@ -1279,13 +1294,13 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toque aqui para configura";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Novas mensagens";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Há mais mensagens não lidas.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Há mais mensagens não lidas (inclusive sobre mudanças de número de segurança)";
 
 /* notification title */
 "MISSED_CALL" = "Chamada perdida";
@@ -1566,7 +1581,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toque aqui para saber mais.";
 
 /* Label for the profile name field of the profile view. */
-"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nome do Perfil";
+"PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nome de perfil";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvar";
@@ -1629,10 +1644,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "Esqueci meu PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Este número de telefone poderá ser cadastrado sem o PIN de Bloqueio de Cadastro após 7 dias de inatividade no Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Este número de telefone poderá ser cadastrado sem o PIN de Desbloqueio de Cadastro após 7 dias de inatividade no Signal.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"REGISTER_2FA_INSTRUCTIONS" = "Este número de telefone está com o Bloqueio de Cadastro ativo. Por favor, insira o PIN de Desbloqueio de Cadastro.\n\nSeu PIN de Desbloqueio de Cadastro é um número à parte do código de verificação automático enviado para você na etapa anterior.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Falha no registro";
@@ -1656,7 +1671,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código Do País";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Bloqueio de Cadastro";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Inserir Número";
@@ -1674,7 +1689,7 @@
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registre esse iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Já tem uma conta no Signal?";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Termos e Política de Privacidade";
@@ -1704,7 +1719,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Os números que você submeteu não batem com os que enviamos. Quer conferir?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN de Desbloqueio de Cadastro incorreto.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Register";
@@ -1728,16 +1743,16 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "O número de telefone que você está tentanto registrar já foi registrado em um outro servidor. Por favor, anule o outro registro e tente de novo. ";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
+"REMINDER_2FA_BODY" = "O Bloqueio de Cadastro está ativo para seu número de telefone. Para ajudar você a memorizar seu PIN de Desbloqueio de Cadastro, o Signal pedirá que o confirme periodicamente.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Lembrete:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "O Bloqueio de Cadastro ajuda a proteger seu número de telefone de tentativas de cadastro não autorizadas. Esse recurso pode ser desativado a qualquer instante nas configurações de privacidade do Signal.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "Insira seu PIN de Desbloqueio de Cadastro";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Você pode criar um novo PIN nas suas configurações de privacidade.";
@@ -1875,13 +1890,13 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "A driblagem de censura pode ser ativada somente durante uma conexão à Internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "A driblagem de censura não é necessária. Você já está conectada/o ao serviço Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "A driblagem de censura não é necessária. Você já se conectou ao serviço Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Driblagem de Censura";
 
 /* Label for setting that enables dark theme. */
-"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+"SETTINGS_ADVANCED_DARK_THEME" = "Tema Escuro";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Habilitar log de depuração";
@@ -1929,13 +1944,13 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Cópia de segurança bem-sucedida";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Adicionar...";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Você não possui contatos no Signal";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nenhum Resultado de Pesquisa";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nenhum resultado encontrado";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Bloqueado";
@@ -1974,10 +1989,10 @@
 "SETTINGS_INFORMATION_HEADER" = "Informação";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Convide Seus Amigos";
+"SETTINGS_INVITE_TITLE" = "Convide seus amigos";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Você pode falar comigo pelo @signalapp. Baixe agora: https://signal.org/download/.";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Som de mensagem";
@@ -2025,7 +2040,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloqueie a tela do Signal usando Touch ID, Face ID ou a senha do seu dispositivo iOS. Você ainda poderá receber chamadas e notificações de mensagem com o Bloqueio de Tela ativo. Os ajustes de notificação do Signal permitem que você personalize a informação que será exibida.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Bloqueio de Tela";
