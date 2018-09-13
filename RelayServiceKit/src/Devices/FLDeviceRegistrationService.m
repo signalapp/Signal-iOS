@@ -80,7 +80,7 @@
                 }];
             } else { // no other devices, register the account
                 [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
-                                                                    object:@{ @"message": @"Registering account..." }];
+                                                                    object:@{ @"message": @"Registering device..." }];
                 [self registerAcountWithCompletion:^(NSError * _Nullable registerError) {
                     completionBlock(registerError);
                 }];
@@ -321,7 +321,7 @@
             OWSProvisioningProtosProvisioningUuid *proto = [OWSProvisioningProtosProvisioningUuid parseFromData:request.body];
             [self sendWebSocketMessageAcknowledgement:request];
             [[NSNotificationCenter defaultCenter] postNotificationName:FLRegistrationStatusUpdateNotification
-                                                                object:@{ @"message": @"Requesting device provisioning.  Awaiting response..." }];
+                                                                object:@{ @"message": @"Looking for an existing device..." }];
             NSDictionary *payload = @{ @"uuid" : proto.uuid,
                                        @"key" : ourPublicKeyString };
             

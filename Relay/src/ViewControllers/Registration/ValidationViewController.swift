@@ -251,13 +251,13 @@ class ValidationViewController: UITableViewController {
                     if err.domain == NSCocoaErrorDomain && err.code == NSUserActivityRemoteApplicationTimedOutError {
                         // Device provision timed out.
                         Logger.info("Device Autoprovisioning timed out.");
-                        let alert = UIAlertController(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                                      message: NSLocalizedString("PROVISION_FAILURE_MESSAGE", comment: ""),
+                        let alert = UIAlertController(title: NSLocalizedString("REGISTER_ERROR", comment: ""),
+                                                      message: NSLocalizedString("REGISTER_ERROR_MESSAGE", comment: ""),
                                                       preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""),
                                                       style: .cancel,
                                                       handler: nil))
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("TRY_AGAIN", comment: ""),
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_TRY_AGAIN", comment: ""),
                                                       style: .default,
                                                       handler: { action in
                                                         self.onValidationButtonTap(sender: self)
