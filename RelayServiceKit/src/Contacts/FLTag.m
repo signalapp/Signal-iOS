@@ -83,7 +83,7 @@
         aTag.orgUrl = [orgDict objectForKey:FLTagURLKey];
     }
     
-    [aTag saveWithTransaction:transaction];
+//    [aTag saveWithTransaction:transaction];
     
     return aTag;
 }
