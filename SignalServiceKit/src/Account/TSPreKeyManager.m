@@ -188,13 +188,15 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)clearSignedPreKeyRecords {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    NSNumber *currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
+    NSNumber *_Nullable currentSignedPrekeyId = [primaryStorage currentSignedPrekeyId];
     [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId];
 }
 
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId
++ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *_Nullable)keyId
 {
     if (!keyId) {
+        // currentSignedPreKeyId should only be nil before we've completed registration.
+        // We have this guard here for robustness, but we should never get here.
         OWSFailDebug(@"Ignoring request to clear signed preKeys since no keyId was specified");
         return;
     }
