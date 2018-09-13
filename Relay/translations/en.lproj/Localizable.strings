@@ -1656,13 +1656,13 @@
 "REGISTER_ERROR" = "Auto-Registration Failure";
 
 /* No comment provided by engineer. */
-"REGISTER_ERROR_MESSAGE" = "None of your existing devices responded to share your Identity Keys.";
+"REGISTER_ERROR_MESSAGE" = "None of your existing devices responded to share your Identity Key.";
 
 /* No comment provided by engineer. */
 "REGISTER_FAILED_TRY_AGAIN" = "Try Again";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_FORCE_REGISTRATION" = "Create New Identity Keys";
+"REGISTER_FAILED_FORCE_REGISTRATION" = "Create New Identity Key";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
