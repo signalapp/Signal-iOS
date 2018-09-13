@@ -8,6 +8,7 @@
 
 import UIKit
 import CocoaLumberjack
+import RelayServiceKit
 
 class NewConversationViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UIGestureRecognizerDelegate, SlugCellDelegate, SlugLayoutDelegate {
     
@@ -150,17 +151,17 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     
     // MARK: - TableView delegate/datasource methods
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath) as! DirectoryCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath) as! FLDirectoryCell
         
         let aThing = self.objectForIndexPath(indexPath: indexPath)
         
-        if aThing.isKind(of: RelayRecipient.classForCoder()) {
-            let recipient = aThing as! RelayRecipient
+        if aThing.isKind(of: SignalRecipient.classForCoder()) {
+            let recipient = aThing as! SignalRecipient
             
             DispatchQueue.global(qos: .default).async {
-                cell.configureCell(recipient: recipient)
+                cell.configureCell(withContact: recipient)
             }
-            if (self.selectedSlugs.contains((recipient.flTag?.displaySlug)!)) {
+            if (self.selectedSlugs.contains(recipient.flTag.displaySlug)) {
                 cell.accessoryType = .checkmark
             } else {
                 cell.accessoryType = .none
@@ -169,7 +170,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             let aTag = aThing as! FLTag
             
             DispatchQueue.global(qos: .default).async {
-                cell.configureCell(aTag: aTag)
+                cell.configureCell(with: aTag)
             }
             if (self.selectedSlugs.contains(aTag.displaySlug)) {
                 cell.accessoryType = .checkmark
@@ -188,9 +189,9 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         
         let aThing: NSObject = self.objectForIndexPath(indexPath: indexPath)
         
-        if aThing.isKind(of: RelayRecipient.classForCoder()) {
-            let recipient = aThing as! RelayRecipient
-            tagSlug = (recipient.flTag?.displaySlug)!
+        if aThing.isKind(of: SignalRecipient.classForCoder()) {
+            let recipient = aThing as! SignalRecipient
+            tagSlug = recipient.flTag.displaySlug
         } else if aThing.isKind(of: FLTag.classForCoder()) {
             let aTag = aThing as! FLTag
             tagSlug = aTag.displaySlug
@@ -213,12 +214,12 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     
     func numberOfSections(in tableView: UITableView) -> Int {
         let number: NSNumber = NSNumber(value: (self.tagMappings?.numberOfSections())!)
-        return Int(truncating: number)
+        return Int(number)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let number: NSNumber = NSNumber(value: (self.tagMappings?.numberOfItems(inSection: UInt(section)))!)
-        return Int(truncating: number)
+        return Int(number)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -242,7 +243,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
      }
      */
     
-    @objc internal func yapDatabaseModified(notification: Notification) {
+    internal func yapDatabaseModified(notification: Notification) {
         let notfications = self.uiDBConnection.beginLongLivedReadTransaction()
         
         var sectionChanges = NSArray()
@@ -307,7 +308,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                         self.buildThreadWith(results: results as NSDictionary)
         },
                                        failure: { error in
-                                        Logger.debug(String(format: "Tag Lookup failed with error: %@", error.localizedDescription))
+                                        DDLogDebug(String(format: "Tag Lookup failed with error: %@", error.localizedDescription))
                                         DispatchQueue.main.async {
                                             let alert = UIAlertController(title: nil,
                                                                           message: NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: ""),
@@ -382,8 +383,8 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                                     
                                                     let matches = regex.matches(in: pretty, options: [], range: NSRange(location: 0, length: pretty.count))
                                                     for match in matches {
-                                                        let swiftRange = Range(match.range, in :pretty)
-                                                        let newSlug = pretty.substring(with: swiftRange!)
+                                                        let swiftRange: Range = match.range.toRange()!
+                                                        let newSlug = pretty.substring(with: swiftRange)
                                                         self.addSlug(slug: newSlug)
                                                     }
                                                 } catch {
@@ -405,13 +406,13 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                             if userids.count > 0 {
                                                 DispatchQueue.global(qos: .background).async {
                                                     for uid in userids {
-                                                        FLContactsManager.shared.recipient(withId: uid)
+                                                        Environment.getCurrent().contactsManager.recipient(withUserId: uid)
                                                     }
                                                 }
                                             }
             },
                                            failure:{ (error) in
-                                            Logger.debug("Tag Lookup failed with error: \(error.localizedDescription)")
+                                            DDLogDebug("Tag Lookup failed with error: \(error.localizedDescription)")
                                             DispatchQueue.main.async {
                                                 let alert = UIAlertController(title: "",
                                                                               message: NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: ""),
@@ -432,7 +433,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             let usersIds: NSArray = results.object(forKey: "userids") as! NSArray
             
             for uid in usersIds {
-                FLContactsManager.shared.recipient(withId: uid as! String)
+                Environment.getCurrent().contactsManager.recipient(withUserId: uid as! String)
             }
         }
     }
@@ -441,16 +442,16 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         let userIds = results.object(forKey: "userids") as! NSArray
         
         // Verify myself is included
-        if !(userIds.contains(TSAccountManager.sharedInstance().selfRecipient().uniqueId as Any)) {
+        if !(userIds.contains(TSAccountManager.sharedInstance().myself?.uniqueId as Any)) {
             // If not, add self and run again
             var pretty = results.object(forKey: "pretty") as! String
-            let mySlug = TSAccountManager.sharedInstance().selfRecipient().flTag?.slug
+            let mySlug = TSAccountManager.sharedInstance().myself?.flTag.slug
             pretty.append(" + @\(mySlug!)")
             
             CCSMCommManager.asyncTagLookup(with: pretty, success: { newResults in
                 self.buildThreadWith(results: newResults as NSDictionary)
             }, failure: { error in
-                Logger.debug(String(format: "Tag Lookup failed with error: %@", error.localizedDescription))
+                DDLogDebug(String(format: "Tag Lookup failed with error: %@", error.localizedDescription))
                 DispatchQueue.main.async {
                     let alert = UIAlertController(title: nil,
                                                   message: NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: ""),
@@ -463,23 +464,21 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             })
         } else {
             // build thread and go
-            DispatchQueue.main.async {
-                self.navigationController?.dismiss(animated: true, completion: {
-                    let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
-                    thread.type = FLThreadTypeConversation
-                    thread.prettyExpression = results.object(forKey: "pretty") as? String
-                    thread.universalExpression = results.object(forKey: "universal") as? String
-                    thread.save()
-                    
-                    // Spin off background process to pull in participants
-                    DispatchQueue.global(qos: .background).async {
-                        for uid in userIds {
-                            FLContactsManager.shared.updateRecipient(userId: uid as! String)
-                        }
+            self.navigationController?.dismiss(animated: true, completion: {
+                let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
+                thread.type = FLThreadTypeConversation
+                thread.prettyExpression = results.object(forKey: "pretty") as! String
+                thread.universalExpression = results.object(forKey: "universal") as! String
+                thread.save()
+                
+                // Spin off background process to pull in participants
+                DispatchQueue.global(qos: .background).async {
+                    for uid in userIds {
+                        Environment.getCurrent().contactsManager.updateRecipient(uid as! String)
                     }
-                    SignalApp.shared().presentConversation(for: thread, action: .compose)
-                })
-            }
+                }
+                Environment.messageGroup(thread)
+            })
         }
     }
 
@@ -489,7 +488,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         
         let filtering = YapDatabaseViewFiltering.withObjectBlock { (transaction, group, collection, key, object) -> Bool in
             let obj: NSObject = object as! NSObject
-            if obj.isKind(of: RelayRecipient.classForCoder()) || obj.isKind(of: FLTag.classForCoder()) {
+            if obj.isKind(of: SignalRecipient.classForCoder()) || obj.isKind(of: FLTag.classForCoder()) {
                 if (filterString?.count)! > 0 {
                     if obj.isKind(of: FLTag.classForCoder()) {
                         let aTag: FLTag = obj as! FLTag
@@ -498,11 +497,11 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                             (aTag.tagDescription!.lowercased() as NSString).contains(filterString!) ||
                             (aTag.orgSlug.lowercased() as NSString).contains(filterString!))
                         
-                    } else if obj.isKind(of: RelayRecipient.classForCoder()) {
-                        let recipient: RelayRecipient = obj as! RelayRecipient
-                        return ( (recipient.fullName().lowercased() as NSString).contains(filterString!) ||
-                            (recipient.flTag!.displaySlug.lowercased() as NSString).contains(filterString!) ||
-                            (recipient.orgSlug!.lowercased() as NSString).contains(filterString!))
+                    } else if obj.isKind(of: SignalRecipient.classForCoder()) {
+                        let recipient: SignalRecipient = obj as! SignalRecipient
+                        return ( (recipient.fullName.lowercased() as NSString).contains(filterString!) ||
+                            (recipient.flTag.displaySlug.lowercased() as NSString).contains(filterString!) ||
+                            (recipient.orgSlug.lowercased() as NSString).contains(filterString!))
                     } else {
                         return false
                     }
@@ -588,7 +587,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     @objc private func refreshContentFromSource() {
         DispatchQueue.main.async {
             self.refreshControl.beginRefreshing()
-            FLContactsManager.shared.refreshCCSMRecipients()
+            Environment.getCurrent().contactsManager.refreshCCSMRecipients()
             self.refreshControl.endRefreshing()
         }
     }
@@ -657,14 +656,14 @@ extension String {
     // https://stackoverflow.com/questions/30450434/figure-out-size-of-uilabel-based-on-string-in-swift#30450559
     func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font : font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
         
         return ceil(boundingBox.height)
     }
     
     func width(withConstrainedHeight height: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height)
-        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [.font : font], context: nil)
+        let boundingBox = self.boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: font], context: nil)
         
         return ceil(boundingBox.width)
     }
