@@ -363,13 +363,15 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
                                                      }
                                                  } else if ([collection isEqualToString:[RelayRecipient collection]]) {
                                                      RelayRecipient *recipient = (RelayRecipient *)object;
-                                                     if (recipient.isMonitor) {
-                                                         return FLMonitorGroup;
-                                                    // Removing hide/unhide per request.
-//                                                     } else if (recipient.hiddenDate) {
-//                                                         return FLHiddenContactsGroup;
-                                                     } else {
-                                                         return FLVisibleRecipientGroup;
+                                                     if (recipient.flTag != nil) {
+                                                         if (recipient.isMonitor) {
+                                                             return FLMonitorGroup;
+                                                             // Removing hide/unhide per request.
+                                                             // } else if (recipient.hiddenDate) {
+                                                             //  return FLHiddenContactsGroup;
+                                                         } else {
+                                                             return FLVisibleRecipientGroup;
+                                                         }
                                                      }
                                                  }
                                                  return nil;

@@ -118,7 +118,6 @@ import RelayServiceKit
                                     if let resultsArray: Array = payload?["results"] as? Array<Dictionary<String, Any>> {
                                         result = resultsArray.last!
                                     }
-                                    
                                     semaphore.signal()
         }, failure: { (error) in
             Logger.debug("CCSM User lookup failed.")
@@ -156,27 +155,11 @@ import RelayServiceKit
             let semaphore = DispatchSemaphore(value: 0)
             
             DispatchQueue.global(qos: .background).async {
-                
                 if let userDict = self.ccsmFetchRecipientDictionary(userId: userId) {
                         recipient = self.recipient(fromDictionary: userDict, transaction: transaction)
                 }
-                
+                semaphore.signal()
             }
-                
-            
-            //            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            //                NSDictionary *recipientDict = [self dictionaryForRecipientId:userId];
-            //                if (recipientDict) {
-            //                    recipient = [self recipientFromDictionary:recipientDict];
-            //                    if (recipient) {
-            //                        [self.recipientCache setObject:recipient forKey:recipient.uniqueId];
-            //                    }
-            //                }
-            //                dispatch_semaphore_signal(sema);
-            //                });
-            //            dispatch_time_t wait_time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * (double)NSEC_PER_SEC));
-            //            dispatch_semaphore_wait(sema, wait_time);
-            
             let timeout = DispatchTime.now() + .seconds(3)
             if semaphore.wait(timeout: timeout) == .timedOut {
                 Logger.debug("CCSM user lookup timed out.")
@@ -248,6 +231,7 @@ import RelayServiceKit
             self.remove(recipient: recipient, with: transaction)
             return nil
         } else {
+            Logger.debug("Saving updated recipient: \(recipient.uniqueId)")
             self.save(recipient: recipient, with: transaction)
         }
         
@@ -318,6 +302,9 @@ import RelayServiceKit
     
     @objc public func save(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
         recipient.save(with: transaction)
+        if let aTag = recipient.flTag {
+            aTag.save(with: transaction)
+        }
         self.recipientCache.setObject(recipient, forKey: recipient.uniqueId as NSString)
     }
     
@@ -329,6 +316,9 @@ import RelayServiceKit
     
     @objc public func remove(recipient: RelayRecipient, with transaction: YapDatabaseReadWriteTransaction) {
         self.recipientCache.removeObject(forKey: recipient.uniqueId as NSString)
+        if let aTag = recipient.flTag {
+            aTag.remove(with: transaction)
+        }
         recipient.remove(with: transaction)
     }
     
