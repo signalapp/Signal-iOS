@@ -33,12 +33,13 @@ public class CreatePreKeysOperation: OWSOperation {
         let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
 
         firstly {
+            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.primaryStorage.storePreKeyRecords(preKeyRecords)
+
             return self.accountManager.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
         }.then { () -> Void in
             signedPreKeyRecord.markAsAcceptedByService()
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-            self.primaryStorage.storePreKeyRecords(preKeyRecords)
         }.then { () -> Void in
             Logger.debug("done")
             self.reportSuccess()
@@ -73,11 +74,11 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
 
         firstly {
+            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             return self.accountManager.setSignedPreKey(signedPreKeyRecord)
         }.then(on: DispatchQueue.global()) { () -> Void in
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
@@ -150,11 +151,12 @@ public class RefreshPreKeysOperation: OWSOperation {
             let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
             let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
 
+            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.primaryStorage.storePreKeyRecords(preKeyRecords)
+
             return self.accountManager.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords).then { () -> Void in
                 signedPreKeyRecord.markAsAcceptedByService()
-                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-                self.primaryStorage.storePreKeyRecords(preKeyRecords)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()
