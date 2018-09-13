@@ -400,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (groupThread) {
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
-                if (![groupThread.recipientIdentifiers containsObject:[TSAccountManager localNumber]]) {
+                if (![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
                     DDLogInfo(@"%@ Ignoring messages for left group.", self.logTag);
                     return;
                 }
