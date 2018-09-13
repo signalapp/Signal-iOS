@@ -4,6 +4,7 @@
 
 #import "OWSGroupsOutputStream.h"
 #import "MIMETypeUtil.h"
+#import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
@@ -26,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembers:group.groupMemberIds];
     [groupBuilder setColor:groupThread.conversationColorName];
+
+    if ([OWSBlockingManager.sharedManager isGroupIdBlocked:group.groupId]) {
+        [groupBuilder setBlocked:YES];
+    }
 
     NSData *avatarPng;
     if (group.groupImage) {

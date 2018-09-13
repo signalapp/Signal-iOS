@@ -178,6 +178,24 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return self.groupModel.groupName ? self.groupModel.groupName : NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
+- (void)leaveGroupWithSneakyTransaction
+{
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self leaveGroupWithTransaction:transaction];
+    }];
+}
+
+- (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSMutableArray<NSString *> *newGroupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
+    [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
+
+    self.groupModel.groupMemberIds = newGroupMemberIds;
+    [self saveWithTransaction:transaction];
+}
+
+#pragma mark - Avatar
+
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

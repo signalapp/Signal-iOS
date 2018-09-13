@@ -158,11 +158,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocking
 
-- (BOOL)isEnvelopeBlocked:(SSKProtoEnvelope *)envelope
+- (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
 {
     OWSAssert(envelope);
 
     return [_blockingManager isRecipientIdBlocked:envelope.source];
+}
+
+- (BOOL)isDataMessageBlocked:(SSKProtoDataMessage *)dataMessage envelope:(SSKProtoEnvelope *)envelope
+{
+    OWSAssert(dataMessage);
+    OWSAssert(envelope);
+
+    if (dataMessage.group) {
+        return [self.blockingManager isGroupIdBlocked:dataMessage.group.id];
+    } else {
+        BOOL senderBlocked = [self isEnvelopeSenderBlocked:envelope];
+
+        // If the envelopeSender was blocked, we never should have gotten as far as decrypting the dataMessage.
+        OWSAssert(!senderBlocked);
+
+        return senderBlocked;
+    }
 }
 
 #pragma mark - message handling
@@ -184,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssert(envelope.source.length > 0);
-    OWSAssert(![self isEnvelopeBlocked:envelope]);
+    OWSAssert(![self isEnvelopeSenderBlocked:envelope]);
 
     switch (envelope.type) {
         case SSKProtoEnvelopeTypeCiphertext:
@@ -343,6 +360,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dataMessage);
     OWSAssert(transaction);
 
+    if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
+        NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
+        if (dataMessage.group) {
+            logMessage =
+                [logMessage stringByAppendingString:[NSString stringWithFormat:@" in group: %@", dataMessage.group.id]];
+        }
+        DDLogError(@"%@", logMessage);
+        return;
+    }
+
     if (dataMessage.hasTimestamp) {
         if (dataMessage.timestamp <= 0) {
             DDLogError(@"%@ Ignoring message with invalid data message timestamp: %@", self.logTag, envelope.source);
@@ -371,7 +398,14 @@ NS_ASSUME_NONNULL_BEGIN
         TSGroupThread *_Nullable groupThread =
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
-        if (!groupThread) {
+        if (groupThread) {
+            if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
+                if (![groupThread.recipientIdentifiers containsObject:[TSAccountManager localNumber]]) {
+                    DDLogInfo(@"%@ Ignoring messages for left group.", self.logTag);
+                    return;
+                }
+            }
+        } else {
             // Unknown group.
             if (dataMessage.group.type == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
@@ -698,7 +732,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             DDLogInfo(@"%@ Received request for block list", self.logTag);
-            [_blockingManager syncBlockedPhoneNumbers];
+            [_blockingManager syncBlockList];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             BOOL areReadReceiptsEnabled =
                 [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];

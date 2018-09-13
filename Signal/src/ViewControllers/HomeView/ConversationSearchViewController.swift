@@ -10,7 +10,7 @@ protocol ConversationSearchViewDelegate: class {
 }
 
 @objc
-class ConversationSearchViewController: UITableViewController {
+class ConversationSearchViewController: UITableViewController, BlockListCacheDelegate {
 
     @objc
     public weak var delegate: ConversationSearchViewDelegate?
@@ -46,17 +46,17 @@ class ConversationSearchViewController: UITableViewController {
         case messages
     }
 
-    var blockedPhoneNumberSet = Set<String>()
-
     private var hasThemeChanged = false
+
+    var blockListCache: BlockListCache!
 
     // MARK: View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let blockingManager = OWSBlockingManager.shared()
-        blockedPhoneNumberSet = Set(blockingManager.blockedPhoneNumbers())
+        blockListCache = BlockListCache()
+        blockListCache.startObservingAndSyncState(delegate: self)
 
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
@@ -215,7 +215,7 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, blockedPhoneNumber: self.blockedPhoneNumberSet)
+            cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, isBlocked: isBlocked(thread: searchResult.thread))
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
@@ -265,7 +265,7 @@ class ConversationSearchViewController: UITableViewController {
 
             cell.configure(withThread: searchResult.thread,
                            contactsManager: contactsManager,
-                           blockedPhoneNumber: self.blockedPhoneNumberSet,
+                           isBlocked: isBlocked(thread: searchResult.thread),
                            overrideSnippet: overrideSnippet,
                            overrideDate: overrideDate)
 
@@ -338,6 +338,12 @@ class ConversationSearchViewController: UITableViewController {
         }
     }
 
+    // MARK: BlockListCacheDelegate
+
+    func blockListCacheDidUpdate(_ blocklistCache: BlockListCache) {
+        refreshSearchResults()
+    }
+
     // MARK: Update Search Results
 
     var refreshTimer: Timer?
@@ -390,6 +396,12 @@ class ConversationSearchViewController: UITableViewController {
 
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         delegate?.conversationSearchViewWillBeginDragging()
+    }
+
+    // MARK: -
+
+    private func isBlocked(thread: ThreadViewModel) -> Bool {
+        return self.blockListCache.isBlocked(thread: thread.threadRecord)
     }
 }
 

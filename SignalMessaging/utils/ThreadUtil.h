@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSUnreadIndicator;
 @class SignalAttachment;
 @class TSContactThread;
+@class TSGroupThread;
 @class TSInteraction;
 @class TSThread;
 @class YapDatabaseConnection;
@@ -70,6 +71,13 @@ NS_ASSUME_NONNULL_BEGIN
                                           inThread:(TSThread *)thread
                                      messageSender:(OWSMessageSender *)messageSender
                                         completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+
++ (void)sendLeaveGroupMessageInThread:(TSGroupThread *)thread
+             presentingViewController:(UIViewController *)presentingViewController
+                        messageSender:(OWSMessageSender *)messageSender
+                           completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+
+#pragma mark - dynamic interactions
 
 // This method will create and/or remove any offers and indicators
 // necessary for this thread.  This includes:
