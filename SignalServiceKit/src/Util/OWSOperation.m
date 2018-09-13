@@ -48,13 +48,14 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Called one time only
 - (nullable NSError *)checkForPreconditionError
 {
+    // OWSOperation have a notion of failure, which is inferred by the presence of a `failingError`.
+    //
+    // By default, any failing dependency cascades that failure to it's dependent.
+    // If you'd like different behavior, override this method (`checkForPreconditionError`) without calling `super`.
     for (NSOperation *dependency in self.dependencies) {
         if (![dependency isKindOfClass:[OWSOperation class]]) {
-            // If you want an operation to have a cascading failure, it must
-            // subclass OWSOperation.
-            //
-            // Native operations like NSOperation or NSBlockOperation don't
-            // don't support this feature.
+            // Native operations, like NSOperation and NSBlockOperation have no notion of "failure".
+            // So there's no `failingError` to cascade.
             continue;
         }
 
