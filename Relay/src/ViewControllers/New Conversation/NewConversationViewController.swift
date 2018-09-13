@@ -463,21 +463,23 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             })
         } else {
             // build thread and go
-            self.navigationController?.dismiss(animated: true, completion: {
-                let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
-                thread.type = FLThreadTypeConversation
-                thread.prettyExpression = results.object(forKey: "pretty") as? String
-                thread.universalExpression = results.object(forKey: "universal") as? String
-                thread.save()
-                
-                // Spin off background process to pull in participants
-                DispatchQueue.global(qos: .background).async {
-                    for uid in userIds {
-                        FLContactsManager.shared.updateRecipient(uid as! String)
+            DispatchQueue.main.async {
+                self.navigationController?.dismiss(animated: true, completion: {
+                    let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
+                    thread.type = FLThreadTypeConversation
+                    thread.prettyExpression = results.object(forKey: "pretty") as? String
+                    thread.universalExpression = results.object(forKey: "universal") as? String
+                    thread.save()
+                    
+                    // Spin off background process to pull in participants
+                    DispatchQueue.global(qos: .background).async {
+                        for uid in userIds {
+                            FLContactsManager.shared.updateRecipient(uid as! String)
+                        }
                     }
-                }
-                SignalApp.shared().presentConversation(for: thread, action: .compose)
-            })
+                    SignalApp.shared().presentConversation(for: thread, action: .compose)
+                })
+            }
         }
     }
 
