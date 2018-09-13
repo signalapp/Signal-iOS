@@ -81,6 +81,12 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 {
     static dispatch_once_t onceToken;
     static NSOperationQueue *operationQueue;
+
+    // PreKey state lives in two places - on the client and on the service.
+    // Some of our pre-key operations depend on the service state, e.g. we need to check our one-time-prekey count
+    // before we decide to upload new ones. This potentially entails multiple async operations, all of which should
+    // complete before starting any other pre-key operation. That's why a dispatch_queue is insufficient for
+    // coordinating PreKey operations and instead we use NSOperation's on a serial NSOperationQueue.
     dispatch_once(&onceToken, ^{
         operationQueue = [NSOperationQueue new];
         operationQueue.name = @"TSPreKeyManager";
