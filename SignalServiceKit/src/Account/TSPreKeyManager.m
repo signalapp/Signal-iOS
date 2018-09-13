@@ -83,6 +83,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     static NSOperationQueue *operationQueue;
     dispatch_once(&onceToken, ^{
         operationQueue = [NSOperationQueue new];
+        operationQueue.name = @"TSPreKeyManager";
         operationQueue.maxConcurrentOperationCount = 1;
     });
     return operationQueue;
