@@ -86,8 +86,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (blockedPhoneNumbers.count > 0) {
         OWSTableSection *blockedContactsSection = [OWSTableSection new];
-        blockedContactsSection.headerTitle
-            = NSLocalizedString(@"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that has been blocked");
+        blockedContactsSection.headerTitle = NSLocalizedString(
+            @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
         for (NSString *phoneNumber in blockedPhoneNumbers) {
             [blockedContactsSection
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (blockedGroupIds.count > 0) {
         OWSTableSection *blockedGroupsSection = [OWSTableSection new];
         blockedGroupsSection.headerTitle = NSLocalizedString(
-            @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that has been blocked");
+            @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
         for (NSData *groupId in blockedGroupIds) {
             TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId];
             [blockedGroupsSection addItem:[OWSTableItem
