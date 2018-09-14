@@ -22,7 +22,6 @@ NSString *const kOWSBlockingManager_BlockListCollection = @"kOWSBlockingManager_
 
 // These keys are used to persist the current local "block list" state.
 NSString *const kOWSBlockingManager_BlockedPhoneNumbersKey = @"kOWSBlockingManager_BlockedPhoneNumbersKey";
-NSString *const kOWSBlockingManager_BlockedGroupIdsKey = @"kOWSBlockingManager_BlockedGroupIdsKey";
 NSString *const kOWSBlockingManager_BlockedGroupMapKey = @"kOWSBlockingManager_BlockedGroupMapKey";
 
 // These keys are used to persist the most recently synced remote "block list" state.
@@ -38,7 +37,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // consistency issues between clients, but these should all be valid e164
 // phone numbers.
 @property (atomic, readonly) NSMutableSet<NSString *> *blockedPhoneNumberSet;
-@property (atomic, readonly) NSMutableSet<NSData *> *blockedGroupIdSet;
 @property (atomic, readonly) NSMutableDictionary<NSData *, TSGroupModel *> *blockedGroupMap;
 
 @end
@@ -205,14 +203,21 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 {
     @synchronized(self) {
         [self ensureLazyInitialization];
-        // TODO use blockedGroupMap.allKeys?
-        return _blockedGroupIdSet.allObjects;
+        return self.blockedGroupMap.allKeys;
+    }
+}
+
+- (NSArray<TSGroupModel *> *)blockedGroups
+{
+    @synchronized(self) {
+        [self ensureLazyInitialization];
+        return self.blockedGroupMap.allValues;
     }
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
 {
-    return [self.blockedGroupIds containsObject:groupId];
+    return self.blockedGroupMap[groupId] != nil;
 }
 
 - (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId
@@ -232,12 +237,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     @synchronized(self) {
         [self ensureLazyInitialization];
 
-        if ([self.blockedGroupIdSet containsObject:groupId]) {
+        if ([self isGroupIdBlocked:groupId]) {
             // Ignore redundant changes.
             return;
         }
-
-        [self.blockedGroupIdSet addObject:groupId];
         self.blockedGroupMap[groupId] = groupModel;
     }
 
@@ -253,12 +256,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     @synchronized(self) {
         [self ensureLazyInitialization];
 
-        if (![_blockedGroupIdSet containsObject:groupId]) {
+        if (![self isGroupIdBlocked:groupId]) {
             // Ignore redundant changes.
             return;
         }
 
-        [_blockedGroupIdSet removeObject:groupId];
+        [self.blockedGroupMap removeObjectForKey:groupId];
     }
 
     [self handleUpdate];
@@ -284,16 +287,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                           forKey:kOWSBlockingManager_BlockedPhoneNumbersKey
                     inCollection:kOWSBlockingManager_BlockListCollection];
 
-    NSArray<NSData *> *blockedGroupIds = [self blockedGroupIds];
-
-    [self.dbConnection setObject:blockedGroupIds
-                          forKey:kOWSBlockingManager_BlockedGroupIdsKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
-
     NSDictionary *blockedGroupMap;
     @synchronized(self) {
         blockedGroupMap = [self.blockedGroupMap copy];
     }
+    NSArray<NSData *> *blockedGroupIds = blockedGroupMap.allKeys;
 
     [self.dbConnection setObject:blockedGroupMap
                           forKey:kOWSBlockingManager_BlockedGroupMapKey
@@ -329,7 +327,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (void)ensureLazyInitialization
 {
     if (_blockedPhoneNumberSet) {
-        OWSAssert(_blockedGroupIdSet);
+        OWSAssert(_blockedGroupMap);
 
         // already loaded
         return;
@@ -339,10 +337,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         [self.dbConnection objectForKey:kOWSBlockingManager_BlockedPhoneNumbersKey
                            inCollection:kOWSBlockingManager_BlockListCollection];
     _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: [NSArray new])];
-
-    NSArray<NSData *> *blockedGroupIds = [self.dbConnection objectForKey:kOWSBlockingManager_BlockedGroupIdsKey
-                                                            inCollection:kOWSBlockingManager_BlockListCollection];
-    _blockedGroupIdSet = [[NSMutableSet alloc] initWithArray:(blockedGroupIds ?: [NSArray new])];
 
     NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap =
         [self.dbConnection objectForKey:kOWSBlockingManager_BlockedGroupMapKey
@@ -384,14 +378,17 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                            inCollection:kOWSBlockingManager_BlockListCollection];
     NSSet<NSData *> *syncedBlockedGroupIdSet = [[NSSet alloc] initWithArray:(syncedBlockedGroupIds ?: [NSArray new])];
 
+    NSArray<NSData *> *localBlockedGroupIds = self.blockedGroupIds;
+    NSSet<NSData *> *localBlockedGroupIdSet = [[NSSet alloc] initWithArray:localBlockedGroupIds];
+
     if ([self.blockedPhoneNumberSet isEqualToSet:syncedBlockedPhoneNumberSet] &&
-        [self.blockedGroupIdSet isEqualToSet:syncedBlockedGroupIdSet]) {
+        [localBlockedGroupIdSet isEqualToSet:syncedBlockedGroupIdSet]) {
         DDLogVerbose(@"Ignoring redundant block list sync");
         return;
     }
 
     DDLogInfo(@"%@ retrying sync of block list", self.logTag);
-    [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:self.blockedGroupIds];
+    [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:localBlockedGroupIds];
 }
 
 - (void)sendBlockListSyncMessageWithPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers

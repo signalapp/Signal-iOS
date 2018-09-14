@@ -28,6 +28,8 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 - (NSArray<NSString *> *)blockedPhoneNumbers;
 
 @property (readonly) NSArray<NSData *> *blockedGroupIds;
+@property (readonly) NSArray<TSGroupModel *> *blockedGroups;
+
 - (void)addBlockedGroup:(TSGroupModel *)group;
 - (void)removeBlockedGroupId:(NSData *)groupId;
 - (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId;

@@ -110,17 +110,16 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:blockedContactsSection];
     }
 
-    NSArray<NSData *> *blockedGroupIds = self.blockingManager.blockedGroupIds;
-    if (blockedGroupIds.count > 0) {
+    NSArray<TSGroupModel *> *blockedGroups = self.blockingManager.blockedGroups;
+    if (blockedGroups.count > 0) {
         OWSTableSection *blockedGroupsSection = [OWSTableSection new];
         blockedGroupsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
-        for (NSData *groupId in blockedGroupIds) {
-            TSGroupModel *_Nullable cachedGroup = [self.blockingManager cachedGroupDetailsWithGroupId:groupId];
-            OWSAssert(cachedGroup);
-            UIImage *image = cachedGroup.groupImage ?: OWSGroupAvatarBuilder.defaultGroupImage;
-            NSString *groupName = cachedGroup.groupName ?: TSGroupThread.defaultGroupName;
-            
+
+        for (TSGroupModel *blockedGroup in blockedGroups) {
+            UIImage *image = blockedGroup.groupImage ?: OWSGroupAvatarBuilder.defaultGroupImage;
+            NSString *groupName = blockedGroup.groupName ?: TSGroupThread.defaultGroupName;
+
             [blockedGroupsSection addItem:[OWSTableItem
                                               itemWithCustomCellBlock:^{
                                                   OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
@@ -131,11 +130,11 @@ NS_ASSUME_NONNULL_BEGIN
                                               }
                                               customRowHeight:UITableViewAutomaticDimension
                                               actionBlock:^{
-                                                  [BlockListUIUtils showUnblockGroupActionSheet:cachedGroup
+                                                  [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
                                                                                     displayName:groupName
-                                                                              fromViewController:weakSelf
-                                                                                 blockingManager:helper.blockingManager
-                                                                                 completionBlock:nil];
+                                                                             fromViewController:weakSelf
+                                                                                blockingManager:helper.blockingManager
+                                                                                completionBlock:nil];
                                               }]];
         }
         [contents addSection:blockedGroupsSection];
