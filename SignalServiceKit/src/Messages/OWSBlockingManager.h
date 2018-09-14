@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSGroupModel;
 @class TSThread;
 
 extern NSString *const kNSNotificationName_BlockListDidChange;
@@ -27,8 +28,9 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 - (NSArray<NSString *> *)blockedPhoneNumbers;
 
 @property (readonly) NSArray<NSData *> *blockedGroupIds;
-- (void)addBlockedGroupId:(NSData *)groupId;
+- (void)addBlockedGroup:(TSGroupModel *)group;
 - (void)removeBlockedGroupId:(NSData *)groupId;
+- (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId;
 
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
 - (BOOL)isGroupIdBlocked:(NSData *)groupId;

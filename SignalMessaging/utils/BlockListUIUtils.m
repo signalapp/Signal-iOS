@@ -231,7 +231,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssert(blockingManager);
 
     // block the group regardless of the ability to deliver the "leave group" message.
-    [blockingManager addBlockedGroupId:groupThread.groupModel.groupId];
+    [blockingManager addBlockedGroup:groupThread.groupModel];
 
     // blockingManager.addBlocked* creates sneaky transactions, so we can't pass in a transaction
     // via params and instead have to create our own sneaky transaction here.
