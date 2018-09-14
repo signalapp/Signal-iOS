@@ -7,15 +7,14 @@
 #import "Cryptography.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
-#import "OWSFakeContactsUpdater.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "OWSUnitTestEnvironment.h"
 #import "SSKBaseTest.h"
+#import "SSKProto.pb.h"
 #import "TSGroupThread.h"
 #import "TSNetworkManager.h"
 
@@ -34,11 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
                          messageSender:(OWSMessageSender *)messageSender;
 
 // private method we are testing
-- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
-               withSyncMessage:(OWSSignalServiceProtosSyncMessage *)syncMessage;
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)messageEnvelope withSyncMessage:(SSKProtoSyncMessage *)syncMessage;
 
-- (void)handleIncomingEnvelope:(OWSSignalServiceProtosEnvelope *)messageEnvelope
-               withDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)messageEnvelope withDataMessage:(SSKProtoDataMessage *)dataMessage;
 
 @end
 
@@ -54,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               storageManager:[OWSPrimaryStorage sharedManager]
                                           callMessageHandler:[OWSFakeCallMessageHandler new]
                                              contactsManager:[OWSFakeContactsManager new]
-                                             contactsUpdater:[OWSFakeContactsUpdater new]
                                              identityManager:[OWSIdentityManager sharedManager]
                                                messageSender:messageSender];
 }
@@ -72,11 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSMessagesManager *messagesManager =
         [self messagesManagerWithSender:[[OWSFakeMessageSender alloc] initWithExpectation:messageWasSent]];
 
-    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
-    OWSSignalServiceProtosSyncMessageBuilder *messageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
-    OWSSignalServiceProtosSyncMessageRequestBuilder *requestBuilder =
-        [OWSSignalServiceProtosSyncMessageRequestBuilder new];
-    [requestBuilder setType:OWSSignalServiceProtosSyncMessageRequestTypeGroups];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    SSKProtoSyncMessageBuilder *messageBuilder = [SSKProtoSyncMessageBuilder new];
+    SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequestBuilder new];
+    [requestBuilder setType:SSKProtoSyncMessageRequestTypeGroups];
     [messageBuilder setRequest:[requestBuilder build]];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder build] withSyncMessage:[messageBuilder build]];
@@ -96,14 +91,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSMessagesManager *messagesManager = [self messagesManagerWithSender:[OWSFakeMessageSender new]];
 
-    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
 
-    OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
     groupContextBuilder.name = @"Newly created Group Name";
     groupContextBuilder.id = groupIdData;
-    groupContextBuilder.type = OWSSignalServiceProtosGroupContextTypeUpdate;
+    groupContextBuilder.type = SSKProtoGroupContextTypeUpdate;
 
-    OWSSignalServiceProtosDataMessageBuilder *messageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessageBuilder new];
     messageBuilder.group = [groupContextBuilder build];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder build] withDataMessage:[messageBuilder build]];
@@ -123,22 +118,21 @@ NS_ASSUME_NONNULL_BEGIN
     TSMessagesManager *messagesManager = [self messagesManagerWithSender:[OWSFakeMessageSender new]];
 
 
-    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
 
-    OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
     groupContextBuilder.name = @"Newly created Group with Avatar Name";
     groupContextBuilder.id = groupIdData;
-    groupContextBuilder.type = OWSSignalServiceProtosGroupContextTypeUpdate;
+    groupContextBuilder.type = SSKProtoGroupContextTypeUpdate;
 
-    OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
-        [OWSSignalServiceProtosAttachmentPointerBuilder new];
+    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointerBuilder new];
     attachmentBuilder.id = 1234;
     attachmentBuilder.contentType = @"image/png";
     attachmentBuilder.key = [NSData new];
     attachmentBuilder.size = 123;
     groupContextBuilder.avatar = [attachmentBuilder build];
 
-    OWSSignalServiceProtosDataMessageBuilder *messageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessageBuilder new];
     messageBuilder.group = [groupContextBuilder build];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder build] withDataMessage:[messageBuilder build]];
@@ -158,16 +152,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSMessagesManager *messagesManager = [self messagesManagerWithSender:[OWSFakeMessageSender new]];
 
-    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
 
-    OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
     groupContextBuilder.name = @"Newly created Group with Avatar Name";
     groupContextBuilder.id = groupIdData;
 
     // e.g. some future feature sent from another device that we don't yet support.
     groupContextBuilder.type = 666;
 
-    OWSSignalServiceProtosDataMessageBuilder *messageBuilder = [OWSSignalServiceProtosDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessageBuilder new];
     messageBuilder.group = [groupContextBuilder build];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder build] withDataMessage:[messageBuilder build]];

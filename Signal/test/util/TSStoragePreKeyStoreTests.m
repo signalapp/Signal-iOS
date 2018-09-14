@@ -11,17 +11,20 @@
 
 @implementation TSStoragePreKeyStoreTests
 
-- (void)setUp {
+- (void)setUp
+{
     [super setUp];
     // Put setup code here. This method is called before the invocation of each test method in the class.
 }
 
-- (void)tearDown {
+- (void)tearDown
+{
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }
 
-- (void)testGeneratingAndStoringPreKeys {
+- (void)testGeneratingAndStoringPreKeys
+{
     NSArray *generatedKeys = [[OWSPrimaryStorage sharedManager] generatePreKeyRecords];
 
 
@@ -29,7 +32,7 @@
 
     [[OWSPrimaryStorage sharedManager] storePreKeyRecords:generatedKeys];
 
-    PreKeyRecord *lastPreKeyRecord  = [generatedKeys lastObject];
+    PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
     XCTAssert([[[OWSPrimaryStorage sharedManager] loadPreKey:lastPreKeyRecord.Id].keyPair.publicKey
@@ -40,14 +43,15 @@
 }
 
 
-- (void)testRemovingPreKeys {
+- (void)testRemovingPreKeys
+{
     NSArray *generatedKeys = [[OWSPrimaryStorage sharedManager] generatePreKeyRecords];
 
     XCTAssert([generatedKeys count] == 100, @"Not hundred keys generated");
 
     [[OWSPrimaryStorage sharedManager] storePreKeyRecords:generatedKeys];
 
-    PreKeyRecord *lastPreKeyRecord  = [generatedKeys lastObject];
+    PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
     [[OWSPrimaryStorage sharedManager] removePreKey:lastPreKeyRecord.Id];

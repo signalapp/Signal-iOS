@@ -44,29 +44,31 @@
 - (void)testIncrementalMessageNumbers
 {
     __block NSInteger messageInt;
-    NSString *body = @"I don't see myself as a hero because what I'm doing is self-interested: I don't want to live in a world where there's no privacy and therefore no room for intellectual exploration and creativity.";
-    [[OWSPrimaryStorage sharedManager].newDatabaseConnection readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *transaction) {
-        NSString* messageId;
-        
-        for (uint64_t i = 0; i<50; i++) {
-            TSOutgoingMessage *newMessage =
-                [[TSOutgoingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body];
-            [newMessage saveWithTransaction:transaction];
-            if (i == 0) {
-                messageId = newMessage.uniqueId;
+    NSString *body
+        = @"I don't see myself as a hero because what I'm doing is self-interested: I don't want to live in a world "
+          @"where there's no privacy and therefore no room for intellectual exploration and creativity.";
+    [[OWSPrimaryStorage sharedManager].newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageId;
+
+            for (uint64_t i = 0; i < 50; i++) {
+                TSOutgoingMessage *newMessage =
+                    [[TSOutgoingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body];
+                [newMessage saveWithTransaction:transaction];
+                if (i == 0) {
+                    messageId = newMessage.uniqueId;
+                }
             }
-        }
-        
-        messageInt = [messageId integerValue];
-        
-        for (NSInteger i = messageInt; i < messageInt+50; i++) {
-            TSOutgoingMessage *message =
-                [TSOutgoingMessage fetchObjectWithUniqueID:[@(i) stringValue] transaction:transaction];
-            XCTAssert(message != nil);
-            XCTAssert(message.body == body);
-        }
-    }];
+
+            messageInt = [messageId integerValue];
+
+            for (NSInteger i = messageInt; i < messageInt + 50; i++) {
+                TSOutgoingMessage *message =
+                    [TSOutgoingMessage fetchObjectWithUniqueID:[@(i) stringValue] transaction:transaction];
+                XCTAssert(message != nil);
+                XCTAssert(message.body == body);
+            }
+        }];
 
     [[OWSPrimaryStorage sharedManager].newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -89,8 +91,11 @@
 {
     __block NSString *messageId;
     uint64_t timestamp = 666;
-    
-    NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
+
+    NSString *body
+        = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to "
+          @"have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because "
+          @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
                                                                         inThread:self.thread
@@ -114,7 +119,10 @@
 
 - (void)testMessagesDeletedOnThreadDeletion
 {
-    NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
+    NSString *body
+        = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to "
+          @"have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because "
+          @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
     for (int i = 0; i < 10; i++) {
@@ -149,7 +157,10 @@
 
 - (void)testGroupMessagesDeletedOnThreadDeletion
 {
-    NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
+    NSString *body
+        = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to "
+          @"have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because "
+          @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     __block TSGroupThread *thread;
     [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWriteWithBlock:^(

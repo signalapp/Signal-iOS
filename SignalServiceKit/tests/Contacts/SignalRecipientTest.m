@@ -3,7 +3,6 @@
 //
 
 #import "SignalRecipient.h"
-#import "MockSSKEnvironment.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTest.h"
 #import "TSAccountManager.h"
