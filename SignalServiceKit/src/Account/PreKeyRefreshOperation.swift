@@ -54,6 +54,7 @@ public class RefreshPreKeysOperation: OWSOperation {
 
             return self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords).then { () -> Void in
                 signedPreKeyRecord.markAsAcceptedByService()
+                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()

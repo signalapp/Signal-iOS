@@ -35,6 +35,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         }.then(on: DispatchQueue.global()) { () -> Void in
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
+            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()

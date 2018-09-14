@@ -37,6 +37,7 @@ public class CreatePreKeysOperation: OWSOperation {
             return self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
             }.then { () -> Void in
                 signedPreKeyRecord.markAsAcceptedByService()
+                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
             }.then { () -> Void in
                 Logger.debug("done")
