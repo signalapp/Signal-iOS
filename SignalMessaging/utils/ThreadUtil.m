@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *title = [NSString
         stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", @"Modal text when removing a group"), thread.name];
     UIAlertController *removingFromGroup =
-        [UIAlertController alertControllerWithTitle:title message:title preferredStyle:UIAlertControllerStyleAlert];
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
     [presentingViewController presentViewController:removingFromGroup animated:YES completion:nil];
 
     TSOutgoingMessage *message =
