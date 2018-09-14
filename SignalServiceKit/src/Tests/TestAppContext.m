@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @interface TestAppContext ()
 
 @property (nonatomic) SSKTestKeychainStorage *testKeychainStorage;
@@ -149,5 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

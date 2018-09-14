@@ -6,8 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @interface OWSFakeCallMessageHandler : NSObject <OWSCallMessageHandler>
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

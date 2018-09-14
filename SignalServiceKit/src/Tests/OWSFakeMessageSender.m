@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @implementation OWSFakeMessageSender
 
 - (void)enqueueMessage:(TSOutgoingMessage *)message
@@ -45,5 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

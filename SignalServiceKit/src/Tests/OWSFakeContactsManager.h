@@ -6,8 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @interface OWSFakeContactsManager : NSObject <ContactsManagerProtocol>
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

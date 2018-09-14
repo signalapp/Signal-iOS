@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class UIImage;
+#ifdef DEBUG
 
 @implementation OWSFakeContactsManager
 
@@ -36,5 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

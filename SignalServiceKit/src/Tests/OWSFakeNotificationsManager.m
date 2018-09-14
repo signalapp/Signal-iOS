@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @implementation OWSFakeNotificationsManager
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
@@ -22,5 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

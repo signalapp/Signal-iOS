@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @interface OWSFakeMessageSender : OWSMessageSender
 
 @property (nonatomic, nullable) dispatch_block_t enqueueMessageBlock;
@@ -13,5 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) dispatch_block_t enqueueTemporaryAttachmentBlock;
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

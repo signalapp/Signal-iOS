@@ -4,6 +4,8 @@
 
 import Foundation
 
+#if DEBUG
+
 @objc
 public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
 
@@ -50,3 +52,5 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
         dataMap.removeValue(forKey: key)
     }
 }
+
+#endif

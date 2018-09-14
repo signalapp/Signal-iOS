@@ -6,8 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @interface OWSFakeProfileManager : NSObject <ProfileManagerProtocol>
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END
