@@ -212,16 +212,16 @@ class ValidationViewController: UITableViewController {
     
     private func forgotPassword() {
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: NSLocalizedString("RESETTING_PASSWORD", comment: ""), message: NSLocalizedString("ARE_YOU_SURE", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("NO", comment: ""), style: .default, handler: nil))
-            alert.addAction(UIAlertAction(title: NSLocalizedString("YES", comment: ""), style: .destructive, handler: { (action) in
+            let alert = UIAlertController(title: NSLocalizedString("RESET_PASSWORD", comment: ""), message: NSLocalizedString("RESET_PASSWORD_MESSAGE", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Proceed", comment: ""), style: .destructive, handler: { (action) in
                 
                 CCSMCommManager.requestPasswordReset(forUser: CCSMStorage.sharedInstance().getUserName(),
                                                      org: CCSMStorage.sharedInstance().getOrgName(),
                                                      completion: { (success, error) in
                                                         if success {
                                                             Logger.info("Password reset request successful sent.")
-                                                            self.presentAlertWithMessage(message: "Password reset request successful.\nPlease check your email or SMS for instructions.")
+                                                            self.presentAlertWithMessage(message: "Link Succesfully Sent\nPlease check your email or SMS for instructions.")
                                                         } else {
                                                             Logger.debug("Password reset request failed with error:\(String(describing: error?.localizedDescription))")
                                                             self.presentAlertWithMessage(message: "Password reset request failed.\n\(String(describing: error?.localizedDescription))")
