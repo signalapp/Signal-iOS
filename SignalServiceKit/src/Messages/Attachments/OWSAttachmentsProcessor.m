@@ -8,6 +8,7 @@
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
+#import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"

@@ -25,9 +25,11 @@ PODS:
   - CocoaLumberjack/Default (3.4.2)
   - CocoaLumberjack/Extensions (3.4.2):
     - CocoaLumberjack/Default
-  - Curve25519Kit (2.1.0)
+  - Curve25519Kit (2.1.0):
+    - CocoaLumberjack
   - GRKOpenSSLFramework (1.0.2.12)
-  - HKDFKit (0.0.4)
+  - HKDFKit (0.0.4):
+    - CocoaLumberjack
   - libPhoneNumber-iOS (0.9.13)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
@@ -202,16 +204,16 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 0c9dc8cc0f02fd616fa8e5a4f4184e452de93f1e
+    :commit: c058f3bdf4e11f378d3232b0031526c7611c20e0
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: ced146699622ebd3d282bbfce3d492db4456e9aa
+    :commit: 14bfa06578b6f68aa1ee09ecc9e16ad751e0ebd2
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
-    :commit: 780f980b8ff3c4a24baf19088162f13605c0b272
+    :commit: f6e051a765e0bc819fee72f9b7d18acee33a8b37
     :git: https://github.com/signalapp/HKDFKit.git
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
@@ -225,11 +227,11 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  AxolotlKit: 07bd978ea931d113939de88d3d2d354896680ceb
+  AxolotlKit: 3a8d57041c5b162425cc40773ea6276c0c838c9d
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
-  Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
+  Curve25519Kit: d4741ff66e7d92b70316e72476ea1f91495ab51b
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
-  HKDFKit: 3fb424060aaf69795bc8ab34c4c233b98dc6303b
+  HKDFKit: 0445c3158e15137c845bee690a59755ac4360469
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4

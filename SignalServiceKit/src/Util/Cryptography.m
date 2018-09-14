@@ -178,7 +178,10 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
     uint32_t dataLength = (uint32_t)stringData.length;
 
-    NSMutableData *hashData = [NSMutableData dataWithLength:20];
+    NSMutableData *_Nullable hashData = [NSMutableData dataWithLength:20];
+    if (!hashData) {
+        OWSFail(@"Could not allocate buffer.");
+    }
     CC_SHA1(stringData.bytes, dataLength, hashData.mutableBytes);
 
     NSData *truncatedData = [hashData subdataWithRange:NSMakeRange(0, 10)];
@@ -532,8 +535,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     ows_add_overflow(paddedAttachmentData.length, kCCBlockSizeAES128, &bufferSize);
     NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
     if (!bufferData) {
-        OWSLogError(@"Failed to allocate buffer.");
-        return nil;
+        OWSFail(@"Failed to allocate buffer.");
     }
 
     size_t bytesEncrypted = 0;

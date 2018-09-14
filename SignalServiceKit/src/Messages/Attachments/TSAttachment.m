@@ -5,6 +5,7 @@
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
 #import "NSString+SSK.h"
+#import "iOSVersions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
