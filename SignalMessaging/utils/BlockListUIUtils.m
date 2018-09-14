@@ -154,10 +154,11 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
+    NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
     NSString *title = [NSString
         stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
                              @"A format for the 'block group' action sheet title. Embeds the {{group name}}."),
-        [self formatDisplayNameForAlertTitle:groupThread.name]];
+        [self formatDisplayNameForAlertTitle:groupName]];
 
     UIAlertController *actionSheetController =
         [UIAlertController alertControllerWithTitle:title
@@ -246,6 +247,9 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                    DDLogError(@"Failed to leave blocked group with error: %@", error);
                                }
 
+                               NSString *groupName
+                                   = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
+
                                [self
                                    showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
                                                             @"The title of the 'group blocked' alert.")
@@ -256,7 +260,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                                     @"The message format of the 'conversation blocked' "
                                                                     @"alert. "
                                                                     @"Embeds the {{conversation title}}."),
-                                                            [self formatDisplayNameForAlertMessage:groupThread.name]]
+                                                            [self formatDisplayNameForAlertMessage:groupName]]
                                      fromViewController:fromViewController
                                         completionBlock:completionBlock];
                            }];
@@ -279,8 +283,9 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                 completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
+        NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
         [self showUnblockGroupActionSheet:groupThread.groupModel
-                              displayName:groupThread.name
+                              displayName:groupName
                        fromViewController:fromViewController
                           blockingManager:blockingManager
                           completionBlock:completionBlock];
@@ -398,11 +403,9 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssert(fromViewController);
     OWSAssert(blockingManager);
 
-    NSString *title = [NSString
-        stringWithFormat:
-            NSLocalizedString(@"BLOCK_LIST_UNBLOCK_GROUP_TITLE_FORMAT",
-                @"Action sheet title when confirming you want to unblock a group. Embeds the {{conversation title}}."),
-        [self formatDisplayNameForAlertTitle:displayName]];
+    NSString *title =
+        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_GROUP_TITLE",
+                                       @"Action sheet title when confirming you want to unblock a group.")];
 
     NSString *message = NSLocalizedString(
         @"BLOCK_LIST_UNBLOCK_GROUP_BODY", @"Action sheet body when confirming you want to unblock a group");

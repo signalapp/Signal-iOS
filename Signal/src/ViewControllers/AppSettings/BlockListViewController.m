@@ -118,7 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         for (TSGroupModel *blockedGroup in blockedGroups) {
             UIImage *image = blockedGroup.groupImage ?: OWSGroupAvatarBuilder.defaultGroupImage;
-            NSString *groupName = blockedGroup.groupName ?: TSGroupThread.defaultGroupName;
+            NSString *groupName
+                = blockedGroup.groupName.length > 0 ? blockedGroup.groupName : TSGroupThread.defaultGroupName;
 
             [blockedGroupsSection addItem:[OWSTableItem
                                               itemWithCustomCellBlock:^{

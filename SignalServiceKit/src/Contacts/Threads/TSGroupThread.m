@@ -175,6 +175,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (NSString *)name
 {
+    // TODO sometimes groupName is set to the empty string. I'm hesitent to change
+    // the semantics here until we have time to thouroughly test the fallout.
+    // Instead, see the `groupNameOrDefault` which is appropriate for use when displaying
+    // text corresponding to a group.
     return self.groupModel.groupName ?: self.class.defaultGroupName;
 }
 
