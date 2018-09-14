@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>aps-environment</key>
+	<string>development</string>
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
@@ -18,11 +20,11 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.io.forsta.relay</string>
+		<string>group.io.forsta.relay-dev</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)io.forsta.relay</string>
+		<string>$(AppIdentifierPrefix)io.forsta.relayDev</string>
 	</array>
 </dict>
 </plist>

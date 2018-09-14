@@ -423,6 +423,297 @@
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
+		7D2CD53A214C3C9C004E957A /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E3211CB08400F9EF53 /* Conversions.m */; };
+		7D2CD53B214C3C9C004E957A /* ConversationConfigurationSyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */; };
+		7D2CD53C214C3C9C004E957A /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */; };
+		7D2CD53D214C3C9C004E957A /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
+		7D2CD53E214C3C9C004E957A /* MediaGalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EC6DE205E9E30000E787C /* MediaGalleryViewController.swift */; };
+		7D2CD53F214C3C9C004E957A /* HomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A50207D0C01009F5D9C /* HomeViewCell.m */; };
+		7D2CD540214C3C9C004E957A /* ArrayUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517D9211CADDD00F9EF53 /* ArrayUtil.m */; };
+		7D2CD541214C3C9C004E957A /* OWSBubbleShapeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF006206C3CB200025978 /* OWSBubbleShapeView.m */; };
+		7D2CD542214C3C9C004E957A /* OWSAudioMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B91F8800D90066283D /* OWSAudioMessageView.m */; };
+		7D2CD543214C3C9C004E957A /* DebugUIContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C02A1ED3685800188D7C /* DebugUIContacts.m */; };
+		7D2CD544214C3C9C004E957A /* WebRTCCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C9DEB71DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift */; };
+		7D2CD545214C3C9C004E957A /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
+		7D2CD546214C3C9C004E957A /* HttpRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72C211B7B1000965478 /* HttpRequest.m */; };
+		7D2CD547214C3C9C004E957A /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
+		7D2CD548214C3C9C004E957A /* AddToGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89B204DAC8D007AEB0F /* AddToGroupViewController.m */; };
+		7D2CD549214C3C9C004E957A /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
+		7D2CD54A214C3C9C004E957A /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
+		7D2CD54B214C3C9C004E957A /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
+		7D2CD54C214C3C9C004E957A /* MediaTileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A84032059C787008B8C75 /* MediaTileViewController.swift */; };
+		7D2CD54D214C3C9C004E957A /* OWSBackupSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88E204DAC8C007AEB0F /* OWSBackupSettingsViewController.m */; };
+		7D2CD54E214C3C9C004E957A /* ConversationViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0701F8678AA0066283D /* ConversationViewItem.m */; };
+		7D2CD54F214C3C9C004E957A /* AppStoreRating.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DA6B061B8A2F9A00CA6F98 /* AppStoreRating.m */; };
+		7D2CD550214C3C9C004E957A /* CallNotificationsAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451A13B01E13DED2000A50FD /* CallNotificationsAdapter.swift */; };
+		7D2CD551214C3C9C004E957A /* OWSMessageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 348570A620F67574004FF32B /* OWSMessageHeaderView.m */; };
+		7D2CD552214C3C9C004E957A /* UserNotificationsAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */; };
+		7D2CD553214C3C9C004E957A /* OWSContactOffersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F09B1F867BFC0066283D /* OWSContactOffersCell.m */; };
+		7D2CD554214C3C9C004E957A /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C6204DE64D007AEB0F /* OWSBackupAPI.swift */; };
+		7D2CD555214C3C9C004E957A /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
+		7D2CD556214C3C9C004E957A /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* HomeViewController.m */; };
+		7D2CD557214C3C9C004E957A /* ConversationViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0971F867BFC0066283D /* ConversationViewCell.m */; };
+		7D2CD558214C3C9C004E957A /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4505C2BE1E648EA300CEBF41 /* ExperienceUpgrade.swift */; };
+		7D2CD559214C3C9C004E957A /* AppUpdateNag.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CCAF371F0C0599004084F4 /* AppUpdateNag.m */; };
+		7D2CD55A214C3C9C004E957A /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
+		7D2CD55B214C3C9C004E957A /* SlugViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705DA12148258100488180 /* SlugViewLayout.swift */; };
+		7D2CD55C214C3C9C004E957A /* DictionaryUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517DE211CAE1000F9EF53 /* DictionaryUtil.m */; };
+		7D2CD55D214C3C9C004E957A /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* SyncPushTokensJob.swift */; };
+		7D2CD55E214C3C9C004E957A /* DebugUIMessagesAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDC206939B200CB1A14 /* DebugUIMessagesAssetLoader.m */; };
+		7D2CD55F214C3C9C004E957A /* CallUIAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45794E851E00620000066731 /* CallUIAdapter.swift */; };
+		7D2CD560214C3C9C004E957A /* FingerprintViewScanController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */; };
+		7D2CD561214C3C9C004E957A /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517D1211CACA200F9EF53 /* StringUtil.m */; };
+		7D2CD562214C3C9C004E957A /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
+		7D2CD563214C3C9C004E957A /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
+		7D2CD564214C3C9C004E957A /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
+		7D2CD565214C3C9C004E957A /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
+		7D2CD566214C3C9C004E957A /* NeverClearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386A53207D271C009F5D9C /* NeverClearView.swift */; };
+		7D2CD567214C3C9C004E957A /* NewConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705D992148252400488180 /* NewConversationViewController.swift */; };
+		7D2CD568214C3C9C004E957A /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
+		7D2CD569214C3C9C004E957A /* EvpMessageDigest.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E7211CB19B00F9EF53 /* EvpMessageDigest.m */; };
+		7D2CD56A214C3C9C004E957A /* OWSWebRTCDataProtos.pb.m in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D81DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m */; };
+		7D2CD56B214C3C9C004E957A /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
+		7D2CD56C214C3C9C004E957A /* OWSBackupLazyRestoreJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */; };
+		7D2CD56D214C3C9C004E957A /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
+		7D2CD56E214C3C9C004E957A /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
+		7D2CD56F214C3C9C004E957A /* OWSLinkedDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC882204DAC8C007AEB0F /* OWSLinkedDevicesTableViewController.m */; };
+		7D2CD570214C3C9C004E957A /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
+		7D2CD571214C3C9C004E957A /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
+		7D2CD572214C3C9C004E957A /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
+		7D2CD573214C3C9C004E957A /* DataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517D5211CAD3A00F9EF53 /* DataUtil.m */; };
+		7D2CD574214C3C9C004E957A /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
+		7D2CD575214C3C9C004E957A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
+		7D2CD576214C3C9C004E957A /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
+		7D2CD577214C3C9C004E957A /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
+		7D2CD578214C3C9C004E957A /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517D7211CADDC00F9EF53 /* NumberUtil.m */; };
+		7D2CD579214C3C9C004E957A /* DebugUIFileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */; };
+		7D2CD57A214C3C9C004E957A /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
+		7D2CD57B214C3C9C004E957A /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
+		7D2CD57C214C3C9C004E957A /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
+		7D2CD57D214C3C9C004E957A /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
+		7D2CD57E214C3C9C004E957A /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8CC20518C76007AEB0F /* OWSBackupJob.m */; };
+		7D2CD57F214C3C9C004E957A /* OWSMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0A21F867BFC0066283D /* OWSMessageCell.m */; };
+		7D2CD580214C3C9C004E957A /* EvpSymetricUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E8211CB19B00F9EF53 /* EvpSymetricUtil.m */; };
+		7D2CD581214C3C9C004E957A /* HttpRequestOrResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A72F211B7C7100965478 /* HttpRequestOrResponse.m */; };
+		7D2CD582214C3C9C004E957A /* DismissableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */; };
+		7D2CD583214C3C9C004E957A /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
+		7D2CD584214C3C9C004E957A /* MultiDeviceProfileKeyUpdateJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451686AA1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift */; };
+		7D2CD585214C3C9C004E957A /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
+		7D2CD586214C3C9C004E957A /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
+		7D2CD587214C3C9C004E957A /* DebugUISessionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 452037D01EE84975004E4CDF /* DebugUISessionState.m */; };
+		7D2CD588214C3C9C004E957A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D221A099169C9E5E00537ABF /* main.m */; };
+		7D2CD589214C3C9C004E957A /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A732211B7CA500965478 /* HttpResponse.m */; };
+		7D2CD58A214C3C9C004E957A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
+		7D2CD58B214C3C9C004E957A /* RegistrationUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E5DC8120D8050D00C08145 /* RegistrationUtils.m */; };
+		7D2CD58C214C3C9C004E957A /* AttachmentPointerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */; };
+		7D2CD58D214C3C9C004E957A /* DebugUICalling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45638BDB1F3DD0D400128435 /* DebugUICalling.swift */; };
+		7D2CD58E214C3C9C004E957A /* DataChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45464DBB1DFA041F001D3FD6 /* DataChannelMessage.swift */; };
+		7D2CD58F214C3C9C004E957A /* AudioProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E5671EC4B19400495BAC /* AudioProgressView.swift */; };
+		7D2CD590214C3C9C004E957A /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */; };
+		7D2CD591214C3C9C004E957A /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
+		7D2CD592214C3C9C004E957A /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
+		7D2CD593214C3C9C004E957A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C22114D8E600B40BB9 /* LoginViewController.swift */; };
+		7D2CD594214C3C9C004E957A /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
+		7D2CD595214C3C9C004E957A /* AddContactShareToExistingContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */; };
+		7D2CD596214C3C9C004E957A /* SignalApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129971FD1E4D900532771 /* SignalApp.m */; };
+		7D2CD597214C3C9C004E957A /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
+		7D2CD598214C3C9C004E957A /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
+		7D2CD599214C3C9C004E957A /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1D1E69011F00E04C47 /* UIStoryboard+OWS.swift */; };
+		7D2CD59A214C3C9C004E957A /* MessageFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452ECA4C1E087E7200E2F016 /* MessageFetcherJob.swift */; };
+		7D2CD59B214C3C9C004E957A /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
+		7D2CD59C214C3C9C004E957A /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
+		7D2CD59D214C3C9C004E957A /* ConversationViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0721F8678AA0066283D /* ConversationViewLayout.m */; };
+		7D2CD59E214C3C9C004E957A /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
+		7D2CD59F214C3C9C004E957A /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
+		7D2CD5A0214C3C9C004E957A /* OWS2FAReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */; };
+		7D2CD5A1214C3C9C004E957A /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF53208D40AC007B4E76 /* LoadingViewController.swift */; };
+		7D2CD5A2214C3C9C004E957A /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
+		7D2CD5A3214C3C9C004E957A /* OWSGenericAttachmentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B61F87F8850066283D /* OWSGenericAttachmentView.m */; };
+		7D2CD5A4214C3C9C004E957A /* OWSMessageFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D920E620E179C200D51158 /* OWSMessageFooterView.m */; };
+		7D2CD5A5214C3C9C004E957A /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
+		7D2CD5A6214C3C9C004E957A /* ValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */; };
+		7D2CD5A7214C3C9C004E957A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
+		7D2CD5A8214C3C9C004E957A /* ForstaColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7121042118E1D400C56034 /* ForstaColors.m */; };
+		7D2CD5A9214C3C9C004E957A /* DebugUINotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457C87B72032645C008D52D6 /* DebugUINotifications.swift */; };
+		7D2CD5AA214C3C9C004E957A /* Crc32.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517DF211CAE1100F9EF53 /* Crc32.m */; };
+		7D2CD5AB214C3C9C004E957A /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
+		7D2CD5AC214C3C9C004E957A /* OWSBackupIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */; };
+		7D2CD5AD214C3C9C004E957A /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
+		7D2CD5AE214C3C9C004E957A /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451764291DE939FD00EDB8B9 /* ContactCell.swift */; };
+		7D2CD5AF214C3C9C004E957A /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
+		7D2CD5B0214C3C9C004E957A /* SlugCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705DA02148258100488180 /* SlugCell.swift */; };
+		7D2CD5B1214C3C9C004E957A /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
+		7D2CD5B2214C3C9C004E957A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
+		7D2CD5B3214C3C9C004E957A /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
+		7D2CD5B4214C3C9C004E957A /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = 342197FF210612F600C57195 /* iRate.m */; };
+		7D2CD5B5214C3C9C004E957A /* MediaDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */; };
+		7D2CD5B6214C3C9C004E957A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
+		7D2CD5B7214C3C9C004E957A /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
+		7D2CD5B8214C3C9C004E957A /* OWSMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */; };
+		7D2CD5B9214C3C9C004E957A /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
+		7D2CD5BA214C3C9C004E957A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
+		7D2CD5BB214C3C9C004E957A /* PinEntryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D308AC2049A439000189E4 /* PinEntryView.m */; };
+		7D2CD5BC214C3C9C004E957A /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
+		7D2CD5BD214C3C9C004E957A /* DirectoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705DA6214827EF00488180 /* DirectoryCell.swift */; };
+		7D2CD5BE214C3C9C004E957A /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B5360D206DD8BB00D61655 /* UIResponder+OWS.swift */; };
+		7D2CD5BF214C3C9C004E957A /* NonCallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F659811E1BE77000444429 /* NonCallKitCallUIAdaptee.swift */; };
+		7D2CD5C0214C3C9C004E957A /* TurnServerInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45AE48501E0732D6004D96C2 /* TurnServerInfo.swift */; };
+		7D2CD5C1214C3C9C004E957A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
+		7D2CD5C2214C3C9C004E957A /* UIApplication+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C0DC1A1E68FE9000E04C47 /* UIApplication+OWS.swift */; };
+		7D2CD5C3214C3C9C004E957A /* MessageSender+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45638BDE1F3DDB2200128435 /* MessageSender+Promise.swift */; };
+		7D2CD5C4214C3C9C004E957A /* CallKitCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC59A1DF8575700E9B410 /* CallKitCallManager.swift */; };
+		7D2CD5C5214C3C9C004E957A /* PushRegistrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4539B5851F79348F007141FF /* PushRegistrationManager.swift */; };
+		7D2CD5C6214C3C9C004E957A /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBC5D01DF8592E00E9B410 /* SignalCall.swift */; };
+		7D2CD5C7214C3C9C004E957A /* OWSAddToContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A1204DAC8D007AEB0F /* OWSAddToContactViewController.m */; };
+		7D2CD5C8214C3C9C004E957A /* OWSBackupExportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8BF204DB7D2007AEB0F /* OWSBackupExportJob.m */; };
+		7D2CD5C9214C3C9C004E957A /* MediaPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F32C1D205718B000A300D5 /* MediaPageViewController.swift */; };
+		7D2CD5CA214C3C9C004E957A /* OWSLayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3466087320E5649700AFFE73 /* OWSLayerView.swift */; };
+		7D2CD5CB214C3C9C004E957A /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
+		7D2CD5CC214C3C9C004E957A /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
+		7D2CD5CD214C3C9C004E957A /* CallAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170BA1E2FC5D3003FC1F2 /* CallAudioService.swift */; };
+		7D2CD5CE214C3C9C004E957A /* OWS2FASettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */; };
+		7D2CD5CF214C3C9C004E957A /* OWSBackupImportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C820517B84007AEB0F /* OWSBackupImportJob.m */; };
+		7D2CD5D0214C3C9C004E957A /* OWSConversationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */; };
+		7D2CD5D1214C3C9C004E957A /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
+		7D2CD5D2214C3C9C004E957A /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
+		7D2CD5D3214C3C9C004E957A /* CallKitCallUIAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F659721E1BD99C00444429 /* CallKitCallUIAdaptee.swift */; };
+		7D2CD5D4214C3C9C004E957A /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
+		7D2CD5D5214C3C9C004E957A /* PeerConnectionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458DE9D51DEE3FD00071BB03 /* PeerConnectionClient.swift */; };
+		7D2CD5D6214C3C9C004E957A /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */; };
+		7D2CD5D7214C3C9C004E957A /* MessageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */; };
+		7D2CD5D8214C3C9C004E957A /* ConversationInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */; };
+		7D2CD5D9214C3C9C004E957A /* QuotedReplyPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457F671A20746193000EABCD /* QuotedReplyPreview.swift */; };
+		7D2CD5DA214C3C9C004E957A /* OWSBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF001206BD5A500025978 /* OWSBubbleView.m */; };
+		7D2CD5DB214C3C9C004E957A /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
+		7D2CD5DC214C3C9C004E957A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
+		7D2CD5DD214C3C9C004E957A /* ConversationInputTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0681F8678AA0066283D /* ConversationInputTextView.m */; };
+		7D2CD5DE214C3C9C004E957A /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */; };
+		7D2CD5DF214C3C9C004E957A /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
+		7D2CD5E0214C3C9C004E957A /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC893204DAC8C007AEB0F /* AboutTableViewController.m */; };
+		7D2CD5E1214C3C9C004E957A /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
+		7D2CD5E2214C3C9C004E957A /* UpdateGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89C204DAC8D007AEB0F /* UpdateGroupViewController.m */; };
+		7D2CD5E3214C3C9C004E957A /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4574A5D51DD6704700C6B692 /* CallService.swift */; };
+		7D2CD5E4214C3C9C004E957A /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3461299B1FD1EA9E00532771 /* NotificationsManager.m */; };
+		7D2CD5E5214C3C9C004E957A /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
+		7D2CD5E6214C3C9C004E957A /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
+		7D2CD5E7214C3C9C004E957A /* PrivacySettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */; };
+		7D2CD5E8214C3C9C004E957A /* DebugUIBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C4204DE223007AEB0F /* DebugUIBackup.m */; };
+		7D2CD5E9214C3C9C004E957A /* MessageStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */; };
+		7D2CD5EA214C3C9C004E957A /* OWSSoundSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */; };
+		7D2CD5EB214C3C9C004E957A /* Pastelog.m in Sources */ = {isa = PBXBuildFile; fileRef = 4579431D1E7C8CE9008ED0C0 /* Pastelog.m */; };
+		7D2CD5EC214C3C9C004E957A /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC886204DAC8C007AEB0F /* AddToBlockListViewController.m */; };
+		7D2CD5ED214C3C9C004E957A /* AppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */; };
+		7D2CD5EE214C3C9C004E957A /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
+		7D2CD5EF214C3C9C004E957A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
+		7D2CD5F0214C3C9C004E957A /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9105F1FFEB114000C4745 /* OWSBackup.m */; };
+		7D2CD5F1214C3C9C004E957A /* OWSSystemMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0A61F867BFC0066283D /* OWSSystemMessageCell.m */; };
+		7D2CD5F2214C3C9C004E957A /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
+		7D2CD5F3214C3C9C004E957A /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
+		7D2CD5F4214C3C9C004E957A /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06E1F8678AA0066283D /* ConversationViewController.m */; };
+		7D2CD5F5214C3C9C004E957A /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
+		7D2CD5F6214C3C9C004E957A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
+		7D2CD5F7214C3C9C004E957A /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */; };
+		7D2CD5F8214C3C9C004E957A /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
+		7D2CD5F9214C3C9C004E957A /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517CD211CAC0D00F9EF53 /* CryptoTools.m */; };
+		7D2CD5FB214C3C9C004E957A /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
+		7D2CD5FC214C3C9C004E957A /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		7D2CD5FD214C3C9C004E957A /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		7D2CD5FE214C3C9C004E957A /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45847E861E4283C30080EAB3 /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		7D2CD5FF214C3C9C004E957A /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
+		7D2CD600214C3C9C004E957A /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4520D8D41D417D8E00123472 /* Photos.framework */; };
+		7D2CD601214C3C9C004E957A /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		7D2CD602214C3C9C004E957A /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		7D2CD603214C3C9C004E957A /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
+		7D2CD604214C3C9C004E957A /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
+		7D2CD605214C3C9C004E957A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
+		7D2CD606214C3C9C004E957A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70377AAA1918450100CAF501 /* MobileCoreServices.framework */; };
+		7D2CD607214C3C9C004E957A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
+		7D2CD608214C3C9C004E957A /* RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* RelayMessaging.framework */; };
+		7D2CD609214C3C9C004E957A /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
+		7D2CD60A214C3C9C004E957A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
+		7D2CD60B214C3C9C004E957A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
+		7D2CD60C214C3C9C004E957A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A163E8AA16F3F6A90094D68B /* Security.framework */; };
+		7D2CD60D214C3C9C004E957A /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
+		7D2CD60E214C3C9C004E957A /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
+		7D2CD60F214C3C9C004E957A /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
+		7D2CD610214C3C9C004E957A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */; };
+		7D2CD611214C3C9C004E957A /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */; };
+		7D2CD612214C3C9C004E957A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08D169C9E5E00537ABF /* UIKit.framework */; };
+		7D2CD613214C3C9C004E957A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A08F169C9E5E00537ABF /* Foundation.framework */; };
+		7D2CD614214C3C9C004E957A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
+		7D2CD615214C3C9C004E957A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
+		7D2CD616214C3C9C004E957A /* Pods_Relay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE34D2C7844709C73962401 /* Pods_Relay.framework */; };
+		7D2CD618214C3C9C004E957A /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
+		7D2CD619214C3C9C004E957A /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
+		7D2CD61A214C3C9C004E957A /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
+		7D2CD61B214C3C9C004E957A /* audio_pause_button_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF381A73426500B5C81A /* audio_pause_button_blue.png */; };
+		7D2CD61C214C3C9C004E957A /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
+		7D2CD61D214C3C9C004E957A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5509EC91A69AB8B00ABA4BC /* Main.storyboard */; };
+		7D2CD61E214C3C9C004E957A /* audio_play_button.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF3B1A73426500B5C81A /* audio_play_button.png */; };
+		7D2CD61F214C3C9C004E957A /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
+		7D2CD620214C3C9C004E957A /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D7121012118D7E800C56034 /* Login.storyboard */; };
+		7D2CD621214C3C9C004E957A /* mute_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5421A1D190B0059AC12 /* mute_on@2x.png */; };
+		7D2CD622214C3C9C004E957A /* quit@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C54C1A1D190B0059AC12 /* quit@2x.png */; };
+		7D2CD623214C3C9C004E957A /* audio_pause_button.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF3D1A73426500B5C81A /* audio_pause_button.png */; };
+		7D2CD624214C3C9C004E957A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
+		7D2CD625214C3C9C004E957A /* endcall@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C51B1A1D190B0059AC12 /* endcall@2x.png */; };
+		7D2CD626214C3C9C004E957A /* error_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF371A3393DD00B47253 /* error_white@2x.png */; };
+		7D2CD627214C3C9C004E957A /* savephoto@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5501A1D190B0059AC12 /* savephoto@2x.png */; };
+		7D2CD628214C3C9C004E957A /* play_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5D1A7049EC00ECA2BF /* play_icon.png */; };
+		7D2CD629214C3C9C004E957A /* audio_pause_button_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF391A73426500B5C81A /* audio_pause_button_blue@2x.png */; };
+		7D2CD62A214C3C9C004E957A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
+		7D2CD62B214C3C9C004E957A /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
+		7D2CD62C214C3C9C004E957A /* sonarping.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78E2040A4F70000134C /* sonarping.mp3 */; };
+		7D2CD62D214C3C9C004E957A /* audio_play_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF3C1A73426500B5C81A /* audio_play_button@2x.png */; };
+		7D2CD62E214C3C9C004E957A /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
+		7D2CD62F214C3C9C004E957A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
+		7D2CD630214C3C9C004E957A /* ContactsPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */; };
+		7D2CD631214C3C9C004E957A /* mute_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5411A1D190B0059AC12 /* mute_off@2x.png */; };
+		7D2CD632214C3C9C004E957A /* audio_play_button_blue@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF3A1A73426500B5C81A /* audio_play_button_blue@2x.png */; };
+		7D2CD633214C3C9C004E957A /* Opening.m4r in Resources */ = {isa = PBXBuildFile; fileRef = 34C3C78C20409F320000134C /* Opening.m4r */; };
+		7D2CD634214C3C9C004E957A /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
+		7D2CD635214C3C9C004E957A /* contact_default_feed.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C50B1A1D190B0059AC12 /* contact_default_feed.png */; };
+		7D2CD636214C3C9C004E957A /* play_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5E1A7049EC00ECA2BF /* play_icon@2x.png */; };
+		7D2CD637214C3C9C004E957A /* call@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B633C5041A1D190B0059AC12 /* call@2x.png */; };
+		7D2CD638214C3C9C004E957A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
+		7D2CD639214C3C9C004E957A /* pause_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5C1A7049EC00ECA2BF /* pause_icon@2x.png */; };
+		7D2CD63A214C3C9C004E957A /* qr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC91203F1A39EFB70074545C /* qr@2x.png */; };
+		7D2CD63B214C3C9C004E957A /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
+		7D2CD63C214C3C9C004E957A /* pause_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B10C9B5B1A7049EC00ECA2BF /* pause_icon.png */; };
+		7D2CD63D214C3C9C004E957A /* audio_play_button_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF461A73428300B5C81A /* audio_play_button_blue.png */; };
+		7D2CD63E214C3C9C004E957A /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
+		7D2CD63F214C3C9C004E957A /* audio_pause_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD83FF3E1A73426500B5C81A /* audio_pause_button@2x.png */; };
+		7D2CD640214C3C9C004E957A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
+		7D2CD641214C3C9C004E957A /* aurora.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6F2044AAB500CD42F8 /* aurora.aifc */; };
+		7D2CD642214C3C9C004E957A /* aurora-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5B2044AAB300CD42F8 /* aurora-quiet.aifc */; };
+		7D2CD643214C3C9C004E957A /* bamboo.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6C2044AAB500CD42F8 /* bamboo.aifc */; };
+		7D2CD644214C3C9C004E957A /* bamboo-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5F2044AAB400CD42F8 /* bamboo-quiet.aifc */; };
+		7D2CD645214C3C9C004E957A /* chord.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A622044AAB400CD42F8 /* chord.aifc */; };
+		7D2CD646214C3C9C004E957A /* chord-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A682044AAB500CD42F8 /* chord-quiet.aifc */; };
+		7D2CD647214C3C9C004E957A /* circles.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6A2044AAB500CD42F8 /* circles.aifc */; };
+		7D2CD648214C3C9C004E957A /* circles-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A702044AAB500CD42F8 /* circles-quiet.aifc */; };
+		7D2CD649214C3C9C004E957A /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
+		7D2CD64A214C3C9C004E957A /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
+		7D2CD64B214C3C9C004E957A /* complete.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A652044AAB400CD42F8 /* complete.aifc */; };
+		7D2CD64C214C3C9C004E957A /* Forsta-values.plist in Resources */ = {isa = PBXBuildFile; fileRef = DBD6CEE72146CD6A0088B4A4 /* Forsta-values.plist */; };
+		7D2CD64D214C3C9C004E957A /* complete-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6E2044AAB500CD42F8 /* complete-quiet.aifc */; };
+		7D2CD64E214C3C9C004E957A /* hello.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5E2044AAB400CD42F8 /* hello.aifc */; };
+		7D2CD64F214C3C9C004E957A /* hello-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A632044AAB400CD42F8 /* hello-quiet.aifc */; };
+		7D2CD650214C3C9C004E957A /* input.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A602044AAB400CD42F8 /* input.aifc */; };
+		7D2CD651214C3C9C004E957A /* forsta_splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D7705C72114E5C300B40BB9 /* forsta_splash.png */; };
+		7D2CD652214C3C9C004E957A /* input-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A732044AAB600CD42F8 /* input-quiet.aifc */; };
+		7D2CD653214C3C9C004E957A /* keys.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A612044AAB400CD42F8 /* keys.aifc */; };
+		7D2CD654214C3C9C004E957A /* keys-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5D2044AAB400CD42F8 /* keys-quiet.aifc */; };
+		7D2CD655214C3C9C004E957A /* note.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6D2044AAB500CD42F8 /* note.aifc */; };
+		7D2CD656214C3C9C004E957A /* note-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A662044AAB400CD42F8 /* note-quiet.aifc */; };
+		7D2CD657214C3C9C004E957A /* popcorn.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A6B2044AAB500CD42F8 /* popcorn.aifc */; };
+		7D2CD658214C3C9C004E957A /* popcorn-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A642044AAB400CD42F8 /* popcorn-quiet.aifc */; };
+		7D2CD659214C3C9C004E957A /* pulse.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A692044AAB500CD42F8 /* pulse.aifc */; };
+		7D2CD65A214C3C9C004E957A /* pulse-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A672044AAB500CD42F8 /* pulse-quiet.aifc */; };
+		7D2CD65B214C3C9C004E957A /* synth.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A722044AAB600CD42F8 /* synth.aifc */; };
+		7D2CD65C214C3C9C004E957A /* synth-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5C2044AAB300CD42F8 /* synth-quiet.aifc */; };
+		7D2CD660214C3C9C004E957A /* RelayShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 453518681FC635DD00210559 /* RelayShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7D2CD662214C3C9C004E957A /* RelayMessaging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* RelayMessaging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7D6564F42113BD8B00365A19 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6564E42113BD8900365A19 /* SelectThreadViewController.m */; };
 		7D6564F52113BD8B00365A19 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6564E52113BD8900365A19 /* NewNonContactConversationViewController.m */; };
 		7D6564F72113BD8B00365A19 /* NewNonContactConversationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D6564E72113BD8900365A19 /* NewNonContactConversationViewController.h */; };
@@ -468,6 +759,7 @@
 		7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DD5A732211B7CA500965478 /* HttpResponse.m */; };
 		7DD9C9ED2114A60C000A1CDC /* RelayMessaging.h in Headers */ = {isa = PBXBuildFile; fileRef = 453518941FC63DBF00210559 /* RelayMessaging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7DF2E98F212360B400855424 /* FLContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF2E98E212360B400855424 /* FLContactsManager.swift */; };
+		93B5A7A62605C8DB0E8C6399 /* Pods_RelayDev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B8661366C8D98511544433B /* Pods_RelayDev.framework */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -574,6 +866,20 @@
 			remoteGlobalIDString = 453518911FC63DBF00210559;
 			remoteInfo = RelayMessaging;
 		};
+		7D2CD534214C3C9C004E957A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 453518671FC635DD00210559;
+			remoteInfo = SignalShareExtension;
+		};
+		7D2CD536214C3C9C004E957A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 453518911FC63DBF00210559;
+			remoteInfo = RelayMessaging;
+		};
 		B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
@@ -606,6 +912,28 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7D2CD65F214C3C9C004E957A /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7D2CD660214C3C9C004E957A /* RelayShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D2CD661214C3C9C004E957A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7D2CD662214C3C9C004E957A /* RelayMessaging.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -614,6 +942,7 @@
 		0EB06AC3F26DB309BD8C3952 /* Pods-RelayTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayTests/Pods-RelayTests.debug.xcconfig"; sourceTree = "<group>"; };
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1109BE332A1FE87763659499 /* Pods-RelayShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayShareExtension/Pods-RelayShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
+		25497741DB03737D754FC3D5 /* Pods-RelayDev.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayDev.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayDev/Pods-RelayDev.app store release.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_RelayMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		3400C7981EAFB772008A8584 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
@@ -957,6 +1286,7 @@
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
+		3B8661366C8D98511544433B /* Pods_RelayDev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayDev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
 		4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS107LegacySounds.m; sourceTree = "<group>"; };
@@ -1119,6 +1449,7 @@
 		4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationConfigurationSyncOperation.swift; sourceTree = "<group>"; };
 		4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuActionsViewController.swift; sourceTree = "<group>"; };
 		53B4BAFE3F3D8E5CFB79BF26 /* Pods-Relay.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Relay.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Relay/Pods-Relay.app store release.xcconfig"; sourceTree = "<group>"; };
+		6423314F94372ED068A02504 /* Pods-RelayDev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayDev.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayDev/Pods-RelayDev.debug.xcconfig"; sourceTree = "<group>"; };
 		6F5AC463F739F55FA0A2353F /* Pods-RelayMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayMessaging.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayMessaging/Pods-RelayMessaging.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1130,6 +1461,9 @@
 		76EB04EB18170B33006006FC /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
+		7D2CD666214C3C9C004E957A /* RelayDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelayDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D2CD667214C3C9C004E957A /* RelayDev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "RelayDev-Info.plist"; path = "/Users/markd/Forsta/Relay-iOS-App/RelayDev-Info.plist"; sourceTree = "<absolute>"; };
+		7D2CD668214C3DE4004E957A /* RelayDev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDev.entitlements; sourceTree = "<group>"; };
 		7D6564C12113B1C200365A19 /* Relay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Relay.entitlements; sourceTree = "<group>"; };
 		7D6564C22113B74900365A19 /* RelayShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelayShareExtension.entitlements; sourceTree = "<group>"; };
 		7D6564E42113BD8900365A19 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
@@ -1290,6 +1624,42 @@
 			files = (
 				346129741FD1E02D00532771 /* PromiseKit.framework in Frameworks */,
 				4070A49B3118F91857CED384 /* Pods_RelayMessaging.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D2CD5FA214C3C9C004E957A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D2CD5FB214C3C9C004E957A /* WebRTC.framework in Frameworks */,
+				7D2CD5FC214C3C9C004E957A /* Metal.framework in Frameworks */,
+				7D2CD5FD214C3C9C004E957A /* MetalKit.framework in Frameworks */,
+				7D2CD5FE214C3C9C004E957A /* Intents.framework in Frameworks */,
+				7D2CD5FF214C3C9C004E957A /* PromiseKit.framework in Frameworks */,
+				7D2CD600214C3C9C004E957A /* Photos.framework in Frameworks */,
+				7D2CD601214C3C9C004E957A /* ContactsUI.framework in Frameworks */,
+				7D2CD602214C3C9C004E957A /* Contacts.framework in Frameworks */,
+				7D2CD603214C3C9C004E957A /* PushKit.framework in Frameworks */,
+				7D2CD604214C3C9C004E957A /* Social.framework in Frameworks */,
+				7D2CD605214C3C9C004E957A /* CoreMedia.framework in Frameworks */,
+				7D2CD606214C3C9C004E957A /* MobileCoreServices.framework in Frameworks */,
+				7D2CD607214C3C9C004E957A /* MessageUI.framework in Frameworks */,
+				7D2CD608214C3C9C004E957A /* RelayMessaging.framework in Frameworks */,
+				7D2CD609214C3C9C004E957A /* MediaPlayer.framework in Frameworks */,
+				7D2CD60A214C3C9C004E957A /* libz.dylib in Frameworks */,
+				7D2CD60B214C3C9C004E957A /* QuartzCore.framework in Frameworks */,
+				7D2CD60C214C3C9C004E957A /* Security.framework in Frameworks */,
+				7D2CD60D214C3C9C004E957A /* AddressBook.framework in Frameworks */,
+				7D2CD60E214C3C9C004E957A /* AddressBookUI.framework in Frameworks */,
+				7D2CD60F214C3C9C004E957A /* CFNetwork.framework in Frameworks */,
+				7D2CD610214C3C9C004E957A /* SystemConfiguration.framework in Frameworks */,
+				7D2CD611214C3C9C004E957A /* CoreTelephony.framework in Frameworks */,
+				7D2CD612214C3C9C004E957A /* UIKit.framework in Frameworks */,
+				7D2CD613214C3C9C004E957A /* Foundation.framework in Frameworks */,
+				7D2CD614214C3C9C004E957A /* AVFoundation.framework in Frameworks */,
+				7D2CD615214C3C9C004E957A /* AudioToolbox.framework in Frameworks */,
+				7D2CD616214C3C9C004E957A /* Pods_Relay.framework in Frameworks */,
+				93B5A7A62605C8DB0E8C6399 /* Pods_RelayDev.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2342,6 +2712,8 @@
 				1109BE332A1FE87763659499 /* Pods-RelayShareExtension.app store release.xcconfig */,
 				0EB06AC3F26DB309BD8C3952 /* Pods-RelayTests.debug.xcconfig */,
 				D562B853DF3F1C3D5A1CB00B /* Pods-RelayTests.app store release.xcconfig */,
+				6423314F94372ED068A02504 /* Pods-RelayDev.debug.xcconfig */,
+				25497741DB03737D754FC3D5 /* Pods-RelayDev.app store release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -2478,6 +2850,7 @@
 				D221A0AA169C9E5F00537ABF /* RelayTests.xctest */,
 				453518681FC635DD00210559 /* RelayShareExtension.appex */,
 				453518921FC63DBF00210559 /* RelayMessaging.framework */,
+				7D2CD666214C3C9C004E957A /* RelayDev.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2524,6 +2897,7 @@
 				04F98C3E458646751D685473 /* Pods_RelayMessaging.framework */,
 				00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */,
 				D3982FE81613EA6D4D796702 /* Pods_RelayTests.framework */,
+				3B8661366C8D98511544433B /* Pods_RelayDev.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2532,6 +2906,7 @@
 			isa = PBXGroup;
 			children = (
 				7D6564C12113B1C200365A19 /* Relay.entitlements */,
+				7D2CD668214C3DE4004E957A /* RelayDev.entitlements */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B633C4FD1A1D190B0059AC12 /* Images */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
@@ -2554,6 +2929,7 @@
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Relay-Info.plist */,
+				7D2CD667214C3C9C004E957A /* RelayDev-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Relay-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -2690,6 +3066,31 @@
 			productReference = 453518921FC63DBF00210559 /* RelayMessaging.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		7D2CD532214C3C9C004E957A /* RelayDev */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D2CD663214C3C9C004E957A /* Build configuration list for PBXNativeTarget "RelayDev" */;
+			buildPhases = (
+				7D2CD537214C3C9C004E957A /* [CP] Check Pods Manifest.lock */,
+				7D2CD538214C3C9C004E957A /* Swift Lint */,
+				7D2CD539214C3C9C004E957A /* Sources */,
+				7D2CD5FA214C3C9C004E957A /* Frameworks */,
+				7D2CD617214C3C9C004E957A /* Resources */,
+				7D2CD65D214C3C9C004E957A /* [CP] Embed Pods Frameworks */,
+				7D2CD65E214C3C9C004E957A /* [Carthage] Copy Frameworks */,
+				7D2CD65F214C3C9C004E957A /* Embed App Extensions */,
+				7D2CD661214C3C9C004E957A /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7D2CD533214C3C9C004E957A /* PBXTargetDependency */,
+				7D2CD535214C3C9C004E957A /* PBXTargetDependency */,
+			);
+			name = RelayDev;
+			productName = RedPhone;
+			productReference = 7D2CD666214C3C9C004E957A /* RelayDev.app */;
+			productType = "com.apple.product-type.application";
+		};
 		D221A088169C9E5E00537ABF /* Relay */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Relay" */;
@@ -2773,6 +3174,29 @@
 						DevelopmentTeam = THHR8L4QV3;
 						LastSwiftMigration = 0930;
 						ProvisioningStyle = Automatic;
+					};
+					7D2CD532214C3C9C004E957A = {
+						DevelopmentTeam = THHR8L4QV3;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 					D221A088169C9E5E00537ABF = {
 						DevelopmentTeam = THHR8L4QV3;
@@ -2874,6 +3298,7 @@
 			projectRoot = "";
 			targets = (
 				D221A088169C9E5E00537ABF /* Relay */,
+				7D2CD532214C3C9C004E957A /* RelayDev */,
 				D221A0A9169C9E5F00537ABF /* RelayTests */,
 				453518671FC635DD00210559 /* RelayShareExtension */,
 				453518911FC63DBF00210559 /* RelayMessaging */,
@@ -2902,6 +3327,82 @@
 				3421981621061A0700C57195 /* JSQMVC-README.md in Resources */,
 				3421981721061A0700C57195 /* JSQMVC-SIGNAL.md in Resources */,
 				3421981221061A0700C57195 /* JSQMVC-LICENSE in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D2CD617214C3C9C004E957A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D2CD618214C3C9C004E957A /* SignalTSan.supp in Resources */,
+				7D2CD619214C3C9C004E957A /* SignalUBSan.supp in Resources */,
+				7D2CD61A214C3C9C004E957A /* end_call_tone_cept.caf in Resources */,
+				7D2CD61B214C3C9C004E957A /* audio_pause_button_blue.png in Resources */,
+				7D2CD61C214C3C9C004E957A /* fontawesome-webfont.ttf in Resources */,
+				7D2CD61D214C3C9C004E957A /* Main.storyboard in Resources */,
+				7D2CD61E214C3C9C004E957A /* audio_play_button.png in Resources */,
+				7D2CD61F214C3C9C004E957A /* dripicons-v2.ttf in Resources */,
+				7D2CD620214C3C9C004E957A /* Login.storyboard in Resources */,
+				7D2CD621214C3C9C004E957A /* mute_on@2x.png in Resources */,
+				7D2CD622214C3C9C004E957A /* quit@2x.png in Resources */,
+				7D2CD623214C3C9C004E957A /* audio_pause_button.png in Resources */,
+				7D2CD624214C3C9C004E957A /* Localizable.strings in Resources */,
+				7D2CD625214C3C9C004E957A /* endcall@2x.png in Resources */,
+				7D2CD626214C3C9C004E957A /* error_white@2x.png in Resources */,
+				7D2CD627214C3C9C004E957A /* savephoto@2x.png in Resources */,
+				7D2CD628214C3C9C004E957A /* play_icon.png in Resources */,
+				7D2CD629214C3C9C004E957A /* audio_pause_button_blue@2x.png in Resources */,
+				7D2CD62A214C3C9C004E957A /* Images.xcassets in Resources */,
+				7D2CD62B214C3C9C004E957A /* ringback_tone_ansi.caf in Resources */,
+				7D2CD62C214C3C9C004E957A /* sonarping.mp3 in Resources */,
+				7D2CD62D214C3C9C004E957A /* audio_play_button@2x.png in Resources */,
+				7D2CD62E214C3C9C004E957A /* message_sent.aiff in Resources */,
+				7D2CD62F214C3C9C004E957A /* Launch Screen.storyboard in Resources */,
+				7D2CD630214C3C9C004E957A /* ContactsPicker.xib in Resources */,
+				7D2CD631214C3C9C004E957A /* mute_off@2x.png in Resources */,
+				7D2CD632214C3C9C004E957A /* audio_play_button_blue@2x.png in Resources */,
+				7D2CD633214C3C9C004E957A /* Opening.m4r in Resources */,
+				7D2CD634214C3C9C004E957A /* warning_white@2x.png in Resources */,
+				7D2CD635214C3C9C004E957A /* contact_default_feed.png in Resources */,
+				7D2CD636214C3C9C004E957A /* play_icon@2x.png in Resources */,
+				7D2CD637214C3C9C004E957A /* call@2x.png in Resources */,
+				7D2CD638214C3C9C004E957A /* Settings.bundle in Resources */,
+				7D2CD639214C3C9C004E957A /* pause_icon@2x.png in Resources */,
+				7D2CD63A214C3C9C004E957A /* qr@2x.png in Resources */,
+				7D2CD63B214C3C9C004E957A /* busy_tone_ansi.caf in Resources */,
+				7D2CD63C214C3C9C004E957A /* pause_icon.png in Resources */,
+				7D2CD63D214C3C9C004E957A /* audio_play_button_blue.png in Resources */,
+				7D2CD63E214C3C9C004E957A /* ElegantIcons.ttf in Resources */,
+				7D2CD63F214C3C9C004E957A /* audio_pause_button@2x.png in Resources */,
+				7D2CD640214C3C9C004E957A /* NewMessage.aifc in Resources */,
+				7D2CD641214C3C9C004E957A /* aurora.aifc in Resources */,
+				7D2CD642214C3C9C004E957A /* aurora-quiet.aifc in Resources */,
+				7D2CD643214C3C9C004E957A /* bamboo.aifc in Resources */,
+				7D2CD644214C3C9C004E957A /* bamboo-quiet.aifc in Resources */,
+				7D2CD645214C3C9C004E957A /* chord.aifc in Resources */,
+				7D2CD646214C3C9C004E957A /* chord-quiet.aifc in Resources */,
+				7D2CD647214C3C9C004E957A /* circles.aifc in Resources */,
+				7D2CD648214C3C9C004E957A /* circles-quiet.aifc in Resources */,
+				7D2CD649214C3C9C004E957A /* classic.aifc in Resources */,
+				7D2CD64A214C3C9C004E957A /* classic-quiet.aifc in Resources */,
+				7D2CD64B214C3C9C004E957A /* complete.aifc in Resources */,
+				7D2CD64C214C3C9C004E957A /* Forsta-values.plist in Resources */,
+				7D2CD64D214C3C9C004E957A /* complete-quiet.aifc in Resources */,
+				7D2CD64E214C3C9C004E957A /* hello.aifc in Resources */,
+				7D2CD64F214C3C9C004E957A /* hello-quiet.aifc in Resources */,
+				7D2CD650214C3C9C004E957A /* input.aifc in Resources */,
+				7D2CD651214C3C9C004E957A /* forsta_splash.png in Resources */,
+				7D2CD652214C3C9C004E957A /* input-quiet.aifc in Resources */,
+				7D2CD653214C3C9C004E957A /* keys.aifc in Resources */,
+				7D2CD654214C3C9C004E957A /* keys-quiet.aifc in Resources */,
+				7D2CD655214C3C9C004E957A /* note.aifc in Resources */,
+				7D2CD656214C3C9C004E957A /* note-quiet.aifc in Resources */,
+				7D2CD657214C3C9C004E957A /* popcorn.aifc in Resources */,
+				7D2CD658214C3C9C004E957A /* popcorn-quiet.aifc in Resources */,
+				7D2CD659214C3C9C004E957A /* pulse.aifc in Resources */,
+				7D2CD65A214C3C9C004E957A /* pulse-quiet.aifc in Resources */,
+				7D2CD65B214C3C9C004E957A /* synth.aifc in Resources */,
+				7D2CD65C214C3C9C004E957A /* synth-quiet.aifc in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3159,6 +3660,117 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		7D2CD537214C3C9C004E957A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RelayDev-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7D2CD538214C3C9C004E957A /* Swift Lint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Lint";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n# disabled for now. too many lint errors outside of the scope of this branch\n#(cd Signal && swiftlint)\n# never fail.\nexit 0\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+		};
+		7D2CD65D214C3C9C004E957A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-RelayDev/Pods-RelayDev-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
+				"${BUILT_PRODUCTS_DIR}/ATAppUpdater/ATAppUpdater.framework",
+				"${BUILT_PRODUCTS_DIR}/AxolotlKit/AxolotlKit.framework",
+				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
+				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
+				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
+				"${PODS_ROOT}/GoogleWebRTC/Frameworks/frameworks/WebRTC.framework",
+				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
+				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
+				"${BUILT_PRODUCTS_DIR}/ProtocolBuffers/ProtocolBuffers.framework",
+				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
+				"${BUILT_PRODUCTS_DIR}/ReCaptcha/ReCaptcha.framework",
+				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
+				"${BUILT_PRODUCTS_DIR}/RelayServiceKit/RelayServiceKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
+				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
+				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
+				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/UIImageView+Extension/UIImageView_Extension.framework",
+				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
+				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
+				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ATAppUpdater.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AxolotlKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WebRTC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtocolBuffers.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReCaptcha.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RelayServiceKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIImageView_Extension.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RelayDev/Pods-RelayDev-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7D2CD65E214C3C9C004E957A /* [Carthage] Copy Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
+			);
+			name = "[Carthage] Copy Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
+		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -3362,6 +3974,205 @@
 				451F8A411FD714B8005CB9DA /* ContactTableViewCell.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
 				7D6564F82113BD8B00365A19 /* ViewControllerUtils.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D2CD539214C3C9C004E957A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D2CD53A214C3C9C004E957A /* Conversions.m in Sources */,
+				7D2CD53B214C3C9C004E957A /* ConversationConfigurationSyncOperation.swift in Sources */,
+				7D2CD53C214C3C9C004E957A /* ExperienceUpgradeFinder.swift in Sources */,
+				7D2CD53D214C3C9C004E957A /* AttachmentUploadView.m in Sources */,
+				7D2CD53E214C3C9C004E957A /* MediaGalleryViewController.swift in Sources */,
+				7D2CD53F214C3C9C004E957A /* HomeViewCell.m in Sources */,
+				7D2CD540214C3C9C004E957A /* ArrayUtil.m in Sources */,
+				7D2CD541214C3C9C004E957A /* OWSBubbleShapeView.m in Sources */,
+				7D2CD542214C3C9C004E957A /* OWSAudioMessageView.m in Sources */,
+				7D2CD543214C3C9C004E957A /* DebugUIContacts.m in Sources */,
+				7D2CD544214C3C9C004E957A /* WebRTCCallMessageHandler.swift in Sources */,
+				7D2CD545214C3C9C004E957A /* GifPickerCell.swift in Sources */,
+				7D2CD546214C3C9C004E957A /* HttpRequest.m in Sources */,
+				7D2CD547214C3C9C004E957A /* OWSAnalytics.swift in Sources */,
+				7D2CD548214C3C9C004E957A /* AddToGroupViewController.m in Sources */,
+				7D2CD549214C3C9C004E957A /* DebugUIMisc.m in Sources */,
+				7D2CD54A214C3C9C004E957A /* OWSLinkDeviceViewController.m in Sources */,
+				7D2CD54B214C3C9C004E957A /* DebugUIDiskUsage.m in Sources */,
+				7D2CD54C214C3C9C004E957A /* MediaTileViewController.swift in Sources */,
+				7D2CD54D214C3C9C004E957A /* OWSBackupSettingsViewController.m in Sources */,
+				7D2CD54E214C3C9C004E957A /* ConversationViewItem.m in Sources */,
+				7D2CD54F214C3C9C004E957A /* AppStoreRating.m in Sources */,
+				7D2CD550214C3C9C004E957A /* CallNotificationsAdapter.swift in Sources */,
+				7D2CD551214C3C9C004E957A /* OWSMessageHeaderView.m in Sources */,
+				7D2CD552214C3C9C004E957A /* UserNotificationsAdaptee.swift in Sources */,
+				7D2CD553214C3C9C004E957A /* OWSContactOffersCell.m in Sources */,
+				7D2CD554214C3C9C004E957A /* OWSBackupAPI.swift in Sources */,
+				7D2CD555214C3C9C004E957A /* ConversationScrollButton.m in Sources */,
+				7D2CD556214C3C9C004E957A /* HomeViewController.m in Sources */,
+				7D2CD557214C3C9C004E957A /* ConversationViewCell.m in Sources */,
+				7D2CD558214C3C9C004E957A /* ExperienceUpgrade.swift in Sources */,
+				7D2CD559214C3C9C004E957A /* AppUpdateNag.m in Sources */,
+				7D2CD55A214C3C9C004E957A /* UIViewController+Permissions.m in Sources */,
+				7D2CD55B214C3C9C004E957A /* SlugViewLayout.swift in Sources */,
+				7D2CD55C214C3C9C004E957A /* DictionaryUtil.m in Sources */,
+				7D2CD55D214C3C9C004E957A /* SyncPushTokensJob.swift in Sources */,
+				7D2CD55E214C3C9C004E957A /* DebugUIMessagesAssetLoader.m in Sources */,
+				7D2CD55F214C3C9C004E957A /* CallUIAdapter.swift in Sources */,
+				7D2CD560214C3C9C004E957A /* FingerprintViewScanController.m in Sources */,
+				7D2CD561214C3C9C004E957A /* StringUtil.m in Sources */,
+				7D2CD562214C3C9C004E957A /* SafetyNumberConfirmationAlert.swift in Sources */,
+				7D2CD563214C3C9C004E957A /* ConversationSearchViewController.swift in Sources */,
+				7D2CD564214C3C9C004E957A /* RemoteVideoView.m in Sources */,
+				7D2CD565214C3C9C004E957A /* PushManager.m in Sources */,
+				7D2CD566214C3C9C004E957A /* NeverClearView.swift in Sources */,
+				7D2CD567214C3C9C004E957A /* NewConversationViewController.swift in Sources */,
+				7D2CD568214C3C9C004E957A /* CompareSafetyNumbersActivity.swift in Sources */,
+				7D2CD569214C3C9C004E957A /* EvpMessageDigest.m in Sources */,
+				7D2CD56A214C3C9C004E957A /* OWSWebRTCDataProtos.pb.m in Sources */,
+				7D2CD56B214C3C9C004E957A /* AccountManager.swift in Sources */,
+				7D2CD56C214C3C9C004E957A /* OWSBackupLazyRestoreJob.swift in Sources */,
+				7D2CD56D214C3C9C004E957A /* GiphyAPI.swift in Sources */,
+				7D2CD56E214C3C9C004E957A /* OWS2FARegistrationViewController.m in Sources */,
+				7D2CD56F214C3C9C004E957A /* OWSLinkedDevicesTableViewController.m in Sources */,
+				7D2CD570214C3C9C004E957A /* NotificationSettingsViewController.m in Sources */,
+				7D2CD571214C3C9C004E957A /* HapticFeedback.swift in Sources */,
+				7D2CD572214C3C9C004E957A /* LongTextViewController.swift in Sources */,
+				7D2CD573214C3C9C004E957A /* DataUtil.m in Sources */,
+				7D2CD574214C3C9C004E957A /* OWSAnyTouchGestureRecognizer.m in Sources */,
+				7D2CD575214C3C9C004E957A /* SignalsNavigationController.m in Sources */,
+				7D2CD576214C3C9C004E957A /* FunctionalUtil.m in Sources */,
+				7D2CD577214C3C9C004E957A /* OWSBezierPathView.m in Sources */,
+				7D2CD578214C3C9C004E957A /* NumberUtil.m in Sources */,
+				7D2CD579214C3C9C004E957A /* DebugUIFileBrowser.swift in Sources */,
+				7D2CD57A214C3C9C004E957A /* ProfileViewController.m in Sources */,
+				7D2CD57B214C3C9C004E957A /* OWSContactShareButtonsView.m in Sources */,
+				7D2CD57C214C3C9C004E957A /* MainAppContext.m in Sources */,
+				7D2CD57D214C3C9C004E957A /* DebugUIPage.m in Sources */,
+				7D2CD57E214C3C9C004E957A /* OWSBackupJob.m in Sources */,
+				7D2CD57F214C3C9C004E957A /* OWSMessageCell.m in Sources */,
+				7D2CD580214C3C9C004E957A /* EvpSymetricUtil.m in Sources */,
+				7D2CD581214C3C9C004E957A /* HttpRequestOrResponse.m in Sources */,
+				7D2CD582214C3C9C004E957A /* DismissableTextField.swift in Sources */,
+				7D2CD583214C3C9C004E957A /* MenuActionsViewController.swift in Sources */,
+				7D2CD584214C3C9C004E957A /* MultiDeviceProfileKeyUpdateJob.swift in Sources */,
+				7D2CD585214C3C9C004E957A /* SessionResetJob.swift in Sources */,
+				7D2CD586214C3C9C004E957A /* NotificationSettingsOptionsViewController.m in Sources */,
+				7D2CD587214C3C9C004E957A /* DebugUISessionState.m in Sources */,
+				7D2CD588214C3C9C004E957A /* main.m in Sources */,
+				7D2CD589214C3C9C004E957A /* HttpResponse.m in Sources */,
+				7D2CD58A214C3C9C004E957A /* ExperienceUpgradesPageViewController.swift in Sources */,
+				7D2CD58B214C3C9C004E957A /* RegistrationUtils.m in Sources */,
+				7D2CD58C214C3C9C004E957A /* AttachmentPointerView.swift in Sources */,
+				7D2CD58D214C3C9C004E957A /* DebugUICalling.swift in Sources */,
+				7D2CD58E214C3C9C004E957A /* DataChannelMessage.swift in Sources */,
+				7D2CD58F214C3C9C004E957A /* AudioProgressView.swift in Sources */,
+				7D2CD590214C3C9C004E957A /* GiphyDownloader.swift in Sources */,
+				7D2CD591214C3C9C004E957A /* FingerprintViewController.m in Sources */,
+				7D2CD592214C3C9C004E957A /* Platform.swift in Sources */,
+				7D2CD593214C3C9C004E957A /* LoginViewController.swift in Sources */,
+				7D2CD594214C3C9C004E957A /* AdvancedSettingsTableViewController.m in Sources */,
+				7D2CD595214C3C9C004E957A /* AddContactShareToExistingContactViewController.swift in Sources */,
+				7D2CD596214C3C9C004E957A /* SignalApp.m in Sources */,
+				7D2CD597214C3C9C004E957A /* GifPickerLayout.swift in Sources */,
+				7D2CD598214C3C9C004E957A /* DebugUISyncMessages.m in Sources */,
+				7D2CD599214C3C9C004E957A /* UIStoryboard+OWS.swift in Sources */,
+				7D2CD59A214C3C9C004E957A /* MessageFetcherJob.swift in Sources */,
+				7D2CD59B214C3C9C004E957A /* DebugUIProfile.swift in Sources */,
+				7D2CD59C214C3C9C004E957A /* ReminderView.swift in Sources */,
+				7D2CD59D214C3C9C004E957A /* ConversationViewLayout.m in Sources */,
+				7D2CD59E214C3C9C004E957A /* DirectionalPanGestureRecognizer.swift in Sources */,
+				7D2CD59F214C3C9C004E957A /* OWSProgressView.m in Sources */,
+				7D2CD5A0214C3C9C004E957A /* OWS2FAReminderViewController.swift in Sources */,
+				7D2CD5A1214C3C9C004E957A /* LoadingViewController.swift in Sources */,
+				7D2CD5A2214C3C9C004E957A /* AvatarViewHelper.m in Sources */,
+				7D2CD5A3214C3C9C004E957A /* OWSGenericAttachmentView.m in Sources */,
+				7D2CD5A4214C3C9C004E957A /* OWSMessageFooterView.m in Sources */,
+				7D2CD5A5214C3C9C004E957A /* ContactShareViewHelper.swift in Sources */,
+				7D2CD5A6214C3C9C004E957A /* ValidationViewController.swift in Sources */,
+				7D2CD5A7214C3C9C004E957A /* InviteFlow.swift in Sources */,
+				7D2CD5A8214C3C9C004E957A /* ForstaColors.m in Sources */,
+				7D2CD5A9214C3C9C004E957A /* DebugUINotifications.swift in Sources */,
+				7D2CD5AA214C3C9C004E957A /* Crc32.m in Sources */,
+				7D2CD5AB214C3C9C004E957A /* ColorPickerViewController.swift in Sources */,
+				7D2CD5AC214C3C9C004E957A /* OWSBackupIO.m in Sources */,
+				7D2CD5AD214C3C9C004E957A /* OWSDeviceProvisioningURLParser.m in Sources */,
+				7D2CD5AE214C3C9C004E957A /* ContactCell.swift in Sources */,
+				7D2CD5AF214C3C9C004E957A /* DomainFrontingCountryViewController.m in Sources */,
+				7D2CD5B0214C3C9C004E957A /* SlugCell.swift in Sources */,
+				7D2CD5B1214C3C9C004E957A /* OWSMessageBubbleView.m in Sources */,
+				7D2CD5B2214C3C9C004E957A /* CallViewController.swift in Sources */,
+				7D2CD5B3214C3C9C004E957A /* DebugUITableViewController.m in Sources */,
+				7D2CD5B4214C3C9C004E957A /* iRate.m in Sources */,
+				7D2CD5B5214C3C9C004E957A /* MediaDetailViewController.m in Sources */,
+				7D2CD5B6214C3C9C004E957A /* NewGroupViewController.m in Sources */,
+				7D2CD5B7214C3C9C004E957A /* DebugUIMessages.m in Sources */,
+				7D2CD5B8214C3C9C004E957A /* OWSMessageTextView.m in Sources */,
+				7D2CD5B9214C3C9C004E957A /* ConversationCollectionView.m in Sources */,
+				7D2CD5BA214C3C9C004E957A /* NewContactThreadViewController.m in Sources */,
+				7D2CD5BB214C3C9C004E957A /* PinEntryView.m in Sources */,
+				7D2CD5BC214C3C9C004E957A /* BlockListViewController.m in Sources */,
+				7D2CD5BD214C3C9C004E957A /* DirectoryCell.swift in Sources */,
+				7D2CD5BE214C3C9C004E957A /* UIResponder+OWS.swift in Sources */,
+				7D2CD5BF214C3C9C004E957A /* NonCallKitCallUIAdaptee.swift in Sources */,
+				7D2CD5C0214C3C9C004E957A /* TurnServerInfo.swift in Sources */,
+				7D2CD5C1214C3C9C004E957A /* ContactsPicker.swift in Sources */,
+				7D2CD5C2214C3C9C004E957A /* UIApplication+OWS.swift in Sources */,
+				7D2CD5C3214C3C9C004E957A /* MessageSender+Promise.swift in Sources */,
+				7D2CD5C4214C3C9C004E957A /* CallKitCallManager.swift in Sources */,
+				7D2CD5C5214C3C9C004E957A /* PushRegistrationManager.swift in Sources */,
+				7D2CD5C6214C3C9C004E957A /* SignalCall.swift in Sources */,
+				7D2CD5C7214C3C9C004E957A /* OWSAddToContactViewController.m in Sources */,
+				7D2CD5C8214C3C9C004E957A /* OWSBackupExportJob.m in Sources */,
+				7D2CD5C9214C3C9C004E957A /* MediaPageViewController.swift in Sources */,
+				7D2CD5CA214C3C9C004E957A /* OWSLayerView.swift in Sources */,
+				7D2CD5CB214C3C9C004E957A /* OutboundCallInitiator.swift in Sources */,
+				7D2CD5CC214C3C9C004E957A /* OWSScreenLockUI.m in Sources */,
+				7D2CD5CD214C3C9C004E957A /* CallAudioService.swift in Sources */,
+				7D2CD5CE214C3C9C004E957A /* OWS2FASettingsViewController.m in Sources */,
+				7D2CD5CF214C3C9C004E957A /* OWSBackupImportJob.m in Sources */,
+				7D2CD5D0214C3C9C004E957A /* OWSConversationSettingsViewController.m in Sources */,
+				7D2CD5D1214C3C9C004E957A /* GifPickerViewController.swift in Sources */,
+				7D2CD5D2214C3C9C004E957A /* MessageRecipientStatusUtils.swift in Sources */,
+				7D2CD5D3214C3C9C004E957A /* CallKitCallUIAdaptee.swift in Sources */,
+				7D2CD5D4214C3C9C004E957A /* OWSQuotedMessageView.m in Sources */,
+				7D2CD5D5214C3C9C004E957A /* PeerConnectionClient.swift in Sources */,
+				7D2CD5D6214C3C9C004E957A /* ConversationHeaderView.swift in Sources */,
+				7D2CD5D7214C3C9C004E957A /* MessageDetailViewController.swift in Sources */,
+				7D2CD5D8214C3C9C004E957A /* ConversationInputToolbar.m in Sources */,
+				7D2CD5D9214C3C9C004E957A /* QuotedReplyPreview.swift in Sources */,
+				7D2CD5DA214C3C9C004E957A /* OWSBubbleView.m in Sources */,
+				7D2CD5DB214C3C9C004E957A /* ContactViewController.swift in Sources */,
+				7D2CD5DC214C3C9C004E957A /* AppDelegate.m in Sources */,
+				7D2CD5DD214C3C9C004E957A /* ConversationInputTextView.m in Sources */,
+				7D2CD5DE214C3C9C004E957A /* OWSQRCodeScanningViewController.m in Sources */,
+				7D2CD5DF214C3C9C004E957A /* MessageActions.swift in Sources */,
+				7D2CD5E0214C3C9C004E957A /* AboutTableViewController.m in Sources */,
+				7D2CD5E1214C3C9C004E957A /* DebugUIStress.m in Sources */,
+				7D2CD5E2214C3C9C004E957A /* UpdateGroupViewController.m in Sources */,
+				7D2CD5E3214C3C9C004E957A /* CallService.swift in Sources */,
+				7D2CD5E4214C3C9C004E957A /* NotificationsManager.m in Sources */,
+				7D2CD5E5214C3C9C004E957A /* TextFieldHelper.swift in Sources */,
+				7D2CD5E6214C3C9C004E957A /* DebugUIMessagesAction.m in Sources */,
+				7D2CD5E7214C3C9C004E957A /* PrivacySettingsTableViewController.m in Sources */,
+				7D2CD5E8214C3C9C004E957A /* DebugUIBackup.m in Sources */,
+				7D2CD5E9214C3C9C004E957A /* MessageStatusView.swift in Sources */,
+				7D2CD5EA214C3C9C004E957A /* OWSSoundSettingsViewController.m in Sources */,
+				7D2CD5EB214C3C9C004E957A /* Pastelog.m in Sources */,
+				7D2CD5EC214C3C9C004E957A /* AddToBlockListViewController.m in Sources */,
+				7D2CD5ED214C3C9C004E957A /* AppSettingsViewController.m in Sources */,
+				7D2CD5EE214C3C9C004E957A /* CropScaleImageViewController.swift in Sources */,
+				7D2CD5EF214C3C9C004E957A /* MarqueeLabel.swift in Sources */,
+				7D2CD5F0214C3C9C004E957A /* OWSBackup.m in Sources */,
+				7D2CD5F1214C3C9C004E957A /* OWSSystemMessageCell.m in Sources */,
+				7D2CD5F2214C3C9C004E957A /* GroupTableViewCell.swift in Sources */,
+				7D2CD5F3214C3C9C004E957A /* OWSContactShareView.m in Sources */,
+				7D2CD5F4214C3C9C004E957A /* ConversationViewController.m in Sources */,
+				7D2CD5F5214C3C9C004E957A /* OWSMessageTimerView.m in Sources */,
+				7D2CD5F6214C3C9C004E957A /* DateUtil.m in Sources */,
+				7D2CD5F7214C3C9C004E957A /* ShowGroupMembersViewController.m in Sources */,
+				7D2CD5F8214C3C9C004E957A /* OWSDeviceTableViewCell.m in Sources */,
+				7D2CD5F9214C3C9C004E957A /* CryptoTools.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3623,6 +4434,16 @@
 			isa = PBXTargetDependency;
 			target = 453518911FC63DBF00210559 /* RelayMessaging */;
 			targetProxy = 453518971FC63DBF00210559 /* PBXContainerItemProxy */;
+		};
+		7D2CD533214C3C9C004E957A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 453518671FC635DD00210559 /* RelayShareExtension */;
+			targetProxy = 7D2CD534214C3C9C004E957A /* PBXContainerItemProxy */;
+		};
+		7D2CD535214C3C9C004E957A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 453518911FC63DBF00210559 /* RelayMessaging */;
+			targetProxy = 7D2CD536214C3C9C004E957A /* PBXContainerItemProxy */;
 		};
 		B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3904,6 +4725,140 @@
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = "App Store Release";
+		};
+		7D2CD664214C3C9C004E957A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6423314F94372ED068A02504 /* Pods-RelayDev.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES;
+				CODE_SIGN_ENTITLEMENTS = Relay/RelayDev.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 230;
+				DEVELOPMENT_TEAM = THHR8L4QV3;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Relay/Relay-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					HAVE_CONFIG_H,
+				);
+				GCC_STRICT_ALIASING = NO;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${SRCROOT}/RedPhone/lib/ogg/include\"",
+					"\"${SRCROOT}/RedPhone/lib/debug/include\"",
+					"\"$(SRCROOT)/libtommath\"",
+					"\"$(SRCROOT)/libtomcrypt/headers\"",
+					"\"$(SRCROOT)/MMDrawerController\"",
+					"\"$(SRCROOT)/Libraries\"/**",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/RelayDev-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)",
+				);
+				LLVM_LTO = NO;
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relayDev;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Relay/src/Relay-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Relay-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+				SWIFT_VERSION = 4.0;
+				TEST_AFTER_BUILD = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		7D2CD665214C3C9C004E957A /* App Store Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 25497741DB03737D754FC3D5 /* Pods-RelayDev.app store release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Relay/RelayDev.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 230;
+				DEVELOPMENT_TEAM = THHR8L4QV3;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Relay/Relay-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					HAVE_CONFIG_H,
+					"RELEASE=1",
+				);
+				GCC_STRICT_ALIASING = NO;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${SRCROOT}/RedPhone/lib/ogg/include\"",
+					"\"${SRCROOT}/RedPhone/lib/debug/include\"",
+					"\"$(SRCROOT)/libtommath\"",
+					"\"$(SRCROOT)/libtomcrypt/headers\"",
+					"\"$(SRCROOT)/MMDrawerController\"",
+					"\"$(SRCROOT)/Libraries\"/**",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/RelayDev-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)",
+				);
+				LLVM_LTO = NO;
+				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relayDev;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Relay/src/Relay-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Relay-Swift.h";
+				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
+				SWIFT_VERSION = 4.0;
+				TEST_AFTER_BUILD = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s";
+				WRAPPER_EXTENSION = app;
 			};
 			name = "App Store Release";
 		};
@@ -4318,6 +5273,15 @@
 			buildConfigurations = (
 				4535189B1FC63DBF00210559 /* Debug */,
 				4535189D1FC63DBF00210559 /* App Store Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "App Store Release";
+		};
+		7D2CD663214C3C9C004E957A /* Build configuration list for PBXNativeTarget "RelayDev" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D2CD664214C3C9C004E957A /* Debug */,
+				7D2CD665214C3C9C004E957A /* App Store Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "App Store Release";

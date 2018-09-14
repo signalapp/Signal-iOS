@@ -34,6 +34,14 @@ def shared_pods
   pod 'UIImageView+Extension',       '~> 0.2', :inhibit_warnings => true
 end
 
+target 'RelayDev' do
+    shared_pods
+    pod 'ReCaptcha', '~> 1.2', :inhibit_warnings => true
+    pod 'ATAppUpdater', :inhibit_warnings => true
+    pod 'SSZipArchive', :inhibit_warnings => true
+end
+
+
 target 'Relay' do
   shared_pods
   pod 'ReCaptcha', '~> 1.2', :inhibit_warnings => true
