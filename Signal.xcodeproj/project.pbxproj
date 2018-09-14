@@ -155,7 +155,7 @@
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
-		34843B26214327C9004DED45 /* OWSOrphanedDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanedDataCleanerTest.m */; };
+		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
 		348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 348570A620F67574004FF32B /* OWSMessageHeaderView.m */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* CDSSigningCertificateTest.m */; };
@@ -794,7 +794,7 @@
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
-		34843B25214327C9004DED45 /* OWSOrphanedDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanedDataCleanerTest.m; sourceTree = "<group>"; };
+		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
 		348570A620F67574004FF32B /* OWSMessageHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageHeaderView.m; sourceTree = "<group>"; };
 		348570A720F67574004FF32B /* OWSMessageHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageHeaderView.h; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
@@ -2375,7 +2375,7 @@
 				455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */,
 				34DB0BEB2011548A007B313F /* OWSDatabaseConverterTest.h */,
 				34DB0BEC2011548B007B313F /* OWSDatabaseConverterTest.m */,
-				34843B25214327C9004DED45 /* OWSOrphanedDataCleanerTest.m */,
+				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
 				45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */,
 				34E8A8D02085238900B272B1 /* ProtoParsingTest.m */,
 				45360B8F1F9527DA00FA666C /* SearcherTest.swift */,
@@ -3476,7 +3476,7 @@
 				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
-				34843B26214327C9004DED45 /* OWSOrphanedDataCleanerTest.m in Sources */,
+				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
 				45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */,
 				B660F7561C29988E00687D6E /* PushManager.m in Sources */,
 				34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */,
