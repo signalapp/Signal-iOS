@@ -268,7 +268,13 @@ class ValidationViewController: UITableViewController {
                                                         let verifyAlert = UIAlertController(title: NSLocalizedString("REGISTER_FORCE_VALIDATION_TITLE", comment: ""),
                                                                                             message: NSLocalizedString("REGISTER_FORCE_VALIDATION_MESSAGE", comment: ""),
                                                                                             preferredStyle: .alert)
-                                                        verifyAlert.addAction(UIAlertAction(title:NSLocalizedString("YES", comment: ""),
+                                                        verifyAlert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""),
+                                                                                            style: .default,
+                                                                                            handler: { action in
+                                                                                                // User Bailed
+                                                                                                self.stopSpinner()
+                                                        }))
+                                                        verifyAlert.addAction(UIAlertAction(title:NSLocalizedString("Proceed", comment: ""),
                                                                                             style: .destructive,
                                                                                             handler: { action in
                                                                                                 self.startSpinner()
@@ -283,12 +289,6 @@ class ValidationViewController: UITableViewController {
                                                                                                         self.presentAlertWithMessage(message: "Forced provisioning failed.  Please try again.")
                                                                                                     }
                                                                                                 })
-                                                        }))
-                                                        verifyAlert.addAction(UIAlertAction(title: NSLocalizedString("NO", comment: ""),
-                                                                                            style: .default,
-                                                                                            handler: { action in
-                                                                                                // User Bailed
-                                                                                                self.stopSpinner()
                                                         }))
                                                         DispatchQueue.main.async {
                                                             self.navigationController?.present(verifyAlert, animated: true, completion: {
