@@ -225,31 +225,31 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restaurando arquivos";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Você deixará de receber mensagens e atualizações do grupo.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquear";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquear e sair do grupo \"%@\"?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Bloquear %@?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Grupos bloqueados";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Usuários bloqueados";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Existing members will be able to add you to the group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Membros atuais poderão adicionar você novamente ao grupo.";
 
-/* Action sheet title when confirming you want to unblock a group. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE_FORMAT" = "Unblock This Group?";
+/* Action sheet title when confirming you want to unblock a group. */
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Unblock This Group?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Desbloquear %@?";
@@ -258,25 +258,25 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Bloquear";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ sob bloqueio";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Pessoa sob Bloqueio";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupo bloqueado";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Você nao pode bloquear-se.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Você não pode se bloquear.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Erro";
 
-/* Alert body after unblocking a group or 1:1 chat. Embeds the conversation title. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ não mais sob bloqueio.";
+/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
 
-/* Alert title after unblocking a group or 1:1 chat. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "Unblocked";
+/* Alert body after unblocking a group. */
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloquear";
@@ -285,7 +285,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloquear %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Você não receberá mais ligações e mensagens de quem bloquear.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Continuar";
@@ -297,7 +297,7 @@
 "BUTTON_SELECT" = "Selecionar";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Ligar Novamente";
+"CALL_AGAIN_BUTTON_TITLE" = "Ligar novamente";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "O Signal necessita de acesso ao seu microfone para fazer chamadas e gravar mensagens de voz. Você pode conseguir esta permissão no app Configurações.";
@@ -522,10 +522,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Adicionar à Lista de Contatos";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquear grupo";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear pessoa";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informações do contato";
@@ -567,7 +567,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar Novo Contato";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toque para mudar";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ativar o som";
@@ -700,7 +700,7 @@
 "DISAPPEARING_MESSAGES" = "Mensagens efêmeras";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Mensagens nesta conversa desaparecem após %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Se assim habilitadas, as mensagens enviadas e recebidas nesta conversa desaparecerão após terem sido lidas.";
@@ -847,10 +847,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "O envio da mensagem falhou devido à falta de destinatários válidos.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "A solicitação de rede falhou.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Falha na solicitação de rede.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Solicitação de rede expirada.";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Resposta inválida do serviço.";
@@ -895,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Erro desconhecido,";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Mudança no número de segurança.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Usuário não registrado: %@";
@@ -1015,13 +1015,13 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversas arquivadas";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Você bloqueou";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nenhum resultado encontrado para '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arquivo";
@@ -1030,10 +1030,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Conectando...";
+"IN_CALL_CONNECTING" = "conectando...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconectando...";
+"IN_CALL_RECONNECTING" = "reconectando...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Chamando...";
@@ -1060,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Você recusou uma chamada";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
+"INCOMING_INCOMPLETE_CALL" = "Recebendo chamada";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Chamada perdida porque o número de segurança dessa pessoa mudou.";
@@ -1084,7 +1084,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Convide Amigos.";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Quando várias pessoas são convidadas ao mesmo tempo, elas recebem uma mensagem em grupo e podem se ver entre si.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Mensagens expiram em  %@.";
@@ -1165,22 +1165,22 @@
 "MESSAGE_ACTION_COPY_MEDIA" = "Copiar Mídia";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Copiar mensagem de texto";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Excluir mensagem";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Ela será apagada apenas deste dispositivo";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Detalhes";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+"MESSAGE_ACTION_REPLY" = "Responder à mensagem";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Salvar";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mensagem";
@@ -1243,7 +1243,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Recebido";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "O envio falhou.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Falhou";
@@ -1255,7 +1255,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Ignorada";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Falha no envio";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Enviando...";
@@ -1276,13 +1276,13 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ não está mais marcado como verificado. Toque para ver as opções.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Você bloqueou 1 membro deste grupo";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Você bloqueou este grupo";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Você bloqueou %@ membros deste grupo";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Você Deseja Compartilhar o Seu Perfil com Esse Grupo?";
@@ -1291,7 +1291,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Ao menos um membro deste grupo não está mais marcado como verificado. Toque para ver as opções.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toque aqui para configura";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toque para ajustes";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Novas mensagens";
@@ -1329,10 +1329,10 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Chamada perdida de %@";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Você não pode vincular mais dispositivos.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Você atingiu o número máximo de dispositivos que pode atualmente vincular à sua conta. Por favor, remova um dispositivo ou tente mais tarde.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Você não receberá notificações para conversas silenciadas.";
@@ -1353,7 +1353,7 @@
 "NETWORK_STATUS_CONNECTING" = "Conectando";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "Descadastrado";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Status da rede";
@@ -1443,16 +1443,16 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ definiu a expiração da mensagem efêmera para %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
+"OUTAGE_WARNING" = "O Signal está com dificuldades técnicas. Estamos fazendo o possível para restaurar o serviço o quanto antes.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Chamada efetuada";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Fazendo chamada";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Chamada não atendida";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -1614,16 +1614,16 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Em resposta a você";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Em resposta a você";
 
 /* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Mensagem original não encontrada.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Mensagem original indisponível.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Mensagem original não encontrada.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Anexo";
@@ -1683,7 +1683,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Não podemos ativar sua conta até que você verifique o código que enviamos.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "O Signal será agora desativado em outros dispositivos cadastrados atualmente com este número de telefone.";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registre esse iPad";
@@ -1722,7 +1722,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN de Desbloqueio de Cadastro incorreto.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Register";
+"REGISTRATION_VERIFY_DEVICE" = "Cadastro";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Por favor, forneça um número de telefone válido para registrar.";
@@ -1785,19 +1785,19 @@
 "SCAN_CODE_INSTRUCTIONS" = "Escaneie o Código QR no dispositivo do seu contato.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Scanear o Código QR";
+"SCAN_QR_CODE_VIEW_TITLE" = "Escanear código QR";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instante";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Não foi possível acessar a autenticação.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Falha na autenticação.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Você excedeu o número máximo permitido de tentativas de autenticação. Por favor, tente novamente mais tarde.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
@@ -1809,7 +1809,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentique-se para abrir o Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Falha na Autenticação";
@@ -1953,7 +1953,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nenhum resultado encontrado";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Bloqueado";
+"SETTINGS_BLOCK_LIST_TITLE" = "Lista de bloqueio";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Sempre redirecionar chamadas";
@@ -1962,7 +1962,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirecionar todas as chamadas através do servidor do Signal para impedir de revelar seu endereço IP ao seu contato. Habilitar esta opção irá reduzir a qualidade da chamada.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Apagar seu histórico de conversas";
+"SETTINGS_CLEAR_HISTORY" = "Limpar histórico de conversas";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems \n Licenciado sob a GPLv3";
@@ -1971,7 +1971,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Excluir conta";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Apagar todos os dados";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tem certeza que deseja apagar todo seu histórico (mensagens, anexos, histórico de chamada …)? Esta ação não pode ser revertida.";
@@ -1983,7 +1983,7 @@
 "SETTINGS_HELP_HEADER" = "Ajuda";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Limpar histórico de conversas";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informação";
@@ -2004,7 +2004,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Configurações";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Notificações de chamadas ou mensagens aparecem enquanto o telefone está bloqueado. Você pode limitar o conteúdo mostrado.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Conteúdo de Notificação";
@@ -2034,10 +2034,10 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Consultar e compartilhar quando as mensagens tiverem sido lidas. Essa configuração é opcional e válida para todas as conversas.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Recadastrar-se";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Espera para Bloqueio de Tela";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloqueie a tela do Signal usando Touch ID, Face ID ou a senha do seu dispositivo iOS. Você ainda poderá receber chamadas e notificações de mensagem com o Bloqueio de Tela ativo. Os ajustes de notificação do Signal permitem que você personalize a informação que será exibida.";
@@ -2097,7 +2097,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Seu número de segurança com %@ mudou recentemente. Verifique-o no aplicativo principal antes de reenviar.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Carregando...";
