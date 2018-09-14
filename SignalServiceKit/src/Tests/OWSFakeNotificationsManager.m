@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeNotificationsManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+#ifdef DEBUG
 
 @implementation OWSFakeNotificationsManager
 
@@ -22,5 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

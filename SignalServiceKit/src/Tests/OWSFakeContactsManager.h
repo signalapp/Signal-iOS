@@ -2,15 +2,16 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKEnvironment.h"
+#import "ContactsManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSUnitTestEnvironment : SSKEnvironment
+#ifdef DEBUG
 
-+ (void)ensureSetup;
-- (instancetype)initDefault;
+@interface OWSFakeContactsManager : NSObject <ContactsManagerProtocol>
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

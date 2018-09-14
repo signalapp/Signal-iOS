@@ -1,9 +1,12 @@
-//  Created by Michael Kirk on 10/19/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSFakeNetworkManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+#ifdef DEBUG
 
 @implementation OWSFakeNetworkManager
 
@@ -15,5 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END
