@@ -2372,6 +2372,6 @@
 "ENTER_VALIDATION_CODE" = "Enter Authentication Code";
 "RESEND_CODE" = "Send New Code";
 "ENTER_PASSWORD" = "Enter Password";
-"FORGOT_PASSWORD" = "Forgot Password";
-"ARE_YOU_SURE" = "Are you sure?";
-"RESETTING_PASSWORD" = "Resetting password";
+"FORGOT_PASSWORD" = "Forgot Password?";
+"RESET_PASSWORD_MESSAGE" = "This will cause a password-reset link to be sent to you.";
+"RESET_PASSWORD" = "Reset Password";
