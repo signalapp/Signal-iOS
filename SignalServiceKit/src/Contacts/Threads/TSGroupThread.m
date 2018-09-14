@@ -175,7 +175,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (NSString *)name
 {
-    return self.groupModel.groupName ? self.groupModel.groupName : NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    return self.groupModel.groupName ?: self.class.defaultGroupName;
+}
+
++ (NSString *)defaultGroupName
+{
+    return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
 - (void)leaveGroupWithSneakyTransaction

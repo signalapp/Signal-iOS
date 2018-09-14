@@ -9,6 +9,7 @@
 #import "ContactsViewHelper.h"
 #import "OWSTableViewController.h"
 #import "PhoneNumber.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
@@ -115,20 +116,25 @@ NS_ASSUME_NONNULL_BEGIN
         blockedGroupsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
         for (NSData *groupId in blockedGroupIds) {
-            TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId];
+            TSGroupModel *_Nullable cachedGroup = [self.blockingManager cachedGroupDetailsWithGroupId:groupId];
+            OWSAssert(cachedGroup);
+            UIImage *image = cachedGroup.groupImage ?: OWSGroupAvatarBuilder.defaultGroupImage;
+            NSString *groupName = cachedGroup.groupName ?: TSGroupThread.defaultGroupName;
+            
             [blockedGroupsSection addItem:[OWSTableItem
                                               itemWithCustomCellBlock:^{
-                                                  ContactTableViewCell *cell = [ContactTableViewCell new];
-                                                  [cell configureWithThread:groupThread
-                                                            contactsManager:helper.contactsManager];
+                                                  OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
+                                                  [cell configureWithImage:image
+                                                                      text:groupName
+                                                                detailText:nil];
                                                   return cell;
                                               }
                                               customRowHeight:UITableViewAutomaticDimension
                                               actionBlock:^{
-                                                  [BlockListUIUtils showUnblockThreadActionSheet:groupThread
+                                                  [BlockListUIUtils showUnblockGroupActionSheet:cachedGroup
+                                                                                    displayName:groupName
                                                                               fromViewController:weakSelf
                                                                                  blockingManager:helper.blockingManager
-                                                                                 contactsManager:helper.contactsManager
                                                                                  completionBlock:nil];
                                               }]];
         }
