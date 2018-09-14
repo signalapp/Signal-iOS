@@ -7,9 +7,11 @@ import PromiseKit
 
 @objc(SSKCreatePreKeysOperation)
 public class CreatePreKeysOperation: OWSOperation {
-    private var accountManager: AccountManager {
-        return AccountManager.shared
+
+    private var accountServiceClient: AccountServiceClient {
+        return AccountServiceClient.shared
     }
+
     private var primaryStorage: OWSPrimaryStorage {
         return OWSPrimaryStorage.shared()
     }
@@ -32,7 +34,7 @@ public class CreatePreKeysOperation: OWSOperation {
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.storePreKeyRecords(preKeyRecords)
 
-            return self.accountManager.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
+            return self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
             }.then { () -> Void in
                 signedPreKeyRecord.markAsAcceptedByService()
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)

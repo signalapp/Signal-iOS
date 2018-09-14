@@ -11,8 +11,8 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         return TSAccountManager.sharedInstance()
     }
 
-    private var accountManager: AccountManager {
-        return AccountManager.shared
+    private var accountServiceClient: AccountServiceClient {
+        return AccountServiceClient.shared
     }
 
     private var primaryStorage: OWSPrimaryStorage {
@@ -31,20 +31,20 @@ public class RotateSignedPreKeyOperation: OWSOperation {
 
         firstly {
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-            return self.accountManager.setSignedPreKey(signedPreKeyRecord)
-            }.then(on: DispatchQueue.global()) { () -> Void in
-                Logger.info("Successfully uploaded signed PreKey")
-                signedPreKeyRecord.markAsAcceptedByService()
-                self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
+        }.then(on: DispatchQueue.global()) { () -> Void in
+            Logger.info("Successfully uploaded signed PreKey")
+            signedPreKeyRecord.markAsAcceptedByService()
+            self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
-                TSPreKeyManager.clearPreKeyUpdateFailureCount()
-                TSPreKeyManager.clearSignedPreKeyRecords()
-            }.then { () -> Void in
-                Logger.debug("done")
-                self.reportSuccess()
-            }.catch { error in
-                self.reportError(error)
-            }.retainUntilComplete()
+            TSPreKeyManager.clearPreKeyUpdateFailureCount()
+            TSPreKeyManager.clearSignedPreKeyRecords()
+        }.then { () -> Void in
+            Logger.debug("done")
+            self.reportSuccess()
+        }.catch { error in
+            self.reportError(error)
+        }.retainUntilComplete()
     }
 
     override public func didFail(error: Error) {

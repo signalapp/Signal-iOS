@@ -16,8 +16,8 @@ public class RefreshPreKeysOperation: OWSOperation {
         return TSAccountManager.sharedInstance()
     }
 
-    private var accountManager: AccountManager {
-        return AccountManager.shared
+    private var accountServiceClient: AccountServiceClient {
+        return AccountServiceClient.shared
     }
 
     private var primaryStorage: OWSPrimaryStorage {
@@ -37,7 +37,7 @@ public class RefreshPreKeysOperation: OWSOperation {
         }
 
         firstly {
-            self.accountManager.getPreKeysCount()
+            self.accountServiceClient.getPreKeysCount()
         }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in
             Logger.debug("preKeysCount: \(preKeysCount)")
             guard preKeysCount < kEphemeralPreKeysMinimumCount || self.primaryStorage.currentSignedPrekeyId() == nil else {
@@ -52,7 +52,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.storePreKeyRecords(preKeyRecords)
 
-            return self.accountManager.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords).then { () -> Void in
+            return self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords).then { () -> Void in
                 signedPreKeyRecord.markAsAcceptedByService()
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 

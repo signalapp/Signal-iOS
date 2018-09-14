@@ -5,13 +5,14 @@
 import Foundation
 import PromiseKit
 
-protocol ServiceSocket {
+protocol SignalServiceClient {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
 }
 
-class ServiceRestSocket: ServiceSocket {
+/// Based on libsignal-service-java's PushServiceSocket class
+class SignalServiceRestClient: SignalServiceClient {
 
     var networkManager: TSNetworkManager {
         return TSNetworkManager.shared()
