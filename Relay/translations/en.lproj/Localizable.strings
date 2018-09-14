@@ -390,10 +390,10 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "To see which of your contacts are Signal users, allow contacts access in your system settings.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregister you with the server. The app will close after deletion of data.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting all of your messages and account information from this device. The app will then close.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to delete your account?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to sign out and reset this app?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
@@ -1976,11 +1976,11 @@
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems \n Licensed under the GPLv3";
 
-/* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Delete Account";
-
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+
+/* No comment provided by engineer. */
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Sign Out and Delete Data";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
@@ -2372,6 +2372,6 @@
 "ENTER_VALIDATION_CODE" = "Enter Authentication Code";
 "RESEND_CODE" = "Send New Code";
 "ENTER_PASSWORD" = "Enter Password";
-"FORGOT_PASSWORD" = "Forgot Password";
-"ARE_YOU_SURE" = "Are you sure?";
-"RESETTING_PASSWORD" = "Resetting password";
+"FORGOT_PASSWORD" = "Forgot Password?";
+"RESET_PASSWORD_MESSAGE" = "This will cause a password-reset link to be sent to you.";
+"RESET_PASSWORD" = "Reset Password";
