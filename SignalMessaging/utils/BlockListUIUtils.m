@@ -381,15 +381,11 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
         [blockingManager removeBlockedPhoneNumber:phoneNumber];
     }
 
-    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE",
-                                   @"Alert title after unblocking a group or 1:1 chat.")
-                       message:[NSString
-                                   stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT",
-                                                        @"Alert body after unblocking a group or 1:1 chat. Embeds the "
-                                                        @"conversation title."),
-                                   [self formatDisplayNameForAlertMessage:displayName]]
-            fromViewController:fromViewController
-               completionBlock:completionBlock];
+    NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
+        @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
+    NSString *title = [NSString stringWithFormat:titleFormat, [self formatDisplayNameForAlertMessage:displayName]];
+
+    [self showOkAlertWithTitle:title message:nil fromViewController:fromViewController completionBlock:completionBlock];
 }
 
 + (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
@@ -456,13 +452,14 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
     [blockingManager removeBlockedGroupId:groupModel.groupId];
 
-    [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE",
-                                   @"Alert title after unblocking a group or 1:1 chat.")
-                       message:[NSString
-                                   stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT",
-                                                        @"Alert body after unblocking a group or 1:1 chat. Embeds the "
-                                                        @"conversation title."),
-                                   [self formatDisplayNameForAlertMessage:displayName]]
+    NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
+        @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
+    NSString *title = [NSString stringWithFormat:titleFormat, [self formatDisplayNameForAlertMessage:displayName]];
+
+    NSString *message
+        = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY", @"Alert body after unblocking a group.");
+    [self showOkAlertWithTitle:title
+                       message:message
             fromViewController:fromViewController
                completionBlock:completionBlock];
 }
@@ -470,12 +467,12 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 #pragma mark - UI
 
 + (void)showOkAlertWithTitle:(NSString *)title
-                     message:(NSString *)message
+                     message:(nullable NSString *)message
           fromViewController:(UIViewController *)fromViewController
              completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
     OWSAssert(title.length > 0);
-    OWSAssert(message.length > 0);
+
     OWSAssert(fromViewController);
 
     UIAlertController *controller =
