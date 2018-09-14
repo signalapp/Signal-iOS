@@ -265,8 +265,8 @@ class ValidationViewController: UITableViewController {
                         alert.addAction(UIAlertAction(title: NSLocalizedString("REGISTER_FAILED_FORCE_REGISTRATION", comment: ""),
                                                       style: .destructive,
                                                       handler: { action in
-                                                        let verifyAlert = UIAlertController(title: nil,
-                                                                                            message: NSLocalizedString("REGISTER_FORCE_VALIDATION", comment: ""),
+                                                        let verifyAlert = UIAlertController(title: NSLocalizedString("REGISTER_FORCE_VALIDATION_TITLE", comment: ""),
+                                                                                            message: NSLocalizedString("REGISTER_FORCE_VALIDATION_MESSAGE", comment: ""),
                                                                                             preferredStyle: .alert)
                                                         verifyAlert.addAction(UIAlertAction(title:NSLocalizedString("YES", comment: ""),
                                                                                             style: .destructive,
