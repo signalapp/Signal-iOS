@@ -260,7 +260,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             sendingQueue = [NSOperationQueue new];
             sendingQueue.qualityOfService = NSOperationQualityOfServiceUserInitiated;
             sendingQueue.maxConcurrentOperationCount = 1;
-
+            sendingQueue.name = [NSString stringWithFormat:@"%@:%@", self.logTag, queueKey];
             self.sendingQueueMap[queueKey] = sendingQueue;
         }
 

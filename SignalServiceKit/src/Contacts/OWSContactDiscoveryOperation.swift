@@ -156,7 +156,7 @@ class CDSOperation: OWSOperation {
     static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 5
-
+        queue.name = CDSOperation.logTag()
         return queue
     }()
 
