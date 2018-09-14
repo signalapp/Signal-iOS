@@ -5,9 +5,9 @@
 #import "NSDate+OWS.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface OWSDisappearingMessageFinderTest : XCTestCase
+@interface OWSDisappearingMessageFinderTest : SSKBaseTest
 
 @property YapDatabaseConnection *dbConnection;
 @property OWSDisappearingMessagesFinder *finder;

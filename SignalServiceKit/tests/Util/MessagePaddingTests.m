@@ -1,16 +1,12 @@
 //
-//  MessagePaddingTests.m
-//  Signal
-//
-//  Created by Frederic Jacobs on 26/02/15.
-//  Copyright (c) 2015 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "Cryptography.h"
 #import "NSData+messagePadding.h"
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
 
-@interface MessagePaddingTests : XCTestCase
+@interface MessagePaddingTests : SSKBaseTest
 
 @end
 

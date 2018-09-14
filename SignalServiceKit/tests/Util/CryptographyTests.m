@@ -3,8 +3,8 @@
 //
 
 #import "Cryptography.h"
-#import "NSData+Base64.h"
-#import <XCTest/XCTest.h>
+#import "NSData+OWS.h"
+#import "SSKBaseTest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface CryptographyTests : XCTestCase
+@interface CryptographyTests : SSKBaseTest
 
 @end
 

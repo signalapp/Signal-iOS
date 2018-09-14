@@ -7,9 +7,9 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSFakeContactsManager.h"
+#import "SSKBaseTest.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 @end
 
-@interface OWSDisappearingMessagesJobTest : XCTestCase
+@interface OWSDisappearingMessagesJobTest : SSKBaseTest
 
 @property TSThread *thread;
 

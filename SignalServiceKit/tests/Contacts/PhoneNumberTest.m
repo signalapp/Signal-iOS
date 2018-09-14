@@ -3,9 +3,9 @@
 //
 
 #import "PhoneNumber.h"
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
 
-@interface PhoneNumberTest : XCTestCase
+@interface PhoneNumberTest : SSKBaseTest
 
 @end
 

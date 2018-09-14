@@ -15,9 +15,9 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSUnitTestEnvironment.h"
+#import "SSKBaseTest.h"
 #import "TSGroupThread.h"
 #import "TSNetworkManager.h"
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface TSMessagesManagerTest : XCTestCase
+@interface TSMessagesManagerTest : SSKBaseTest
 
 @end
 

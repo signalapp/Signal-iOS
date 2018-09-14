@@ -3,13 +3,15 @@
 //
 
 #import "Contact.h"
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
+
+@import Contacts;
 
 @import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactSortingTest : XCTestCase
+@interface ContactSortingTest : SSKBaseTest
 
 @end
 
@@ -17,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
+    [super setUp];
+
     srandom((unsigned int)time(NULL));
 }
 

@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "SignalBaseTest.h"
 #import "TestUtil.h"
 #import <SignalMessaging/OWSContactsManager.h>
-#import <XCTest/XCTest.h>
 
-@interface OWSContactsManagerTest : XCTestCase
+@interface OWSContactsManagerTest : SignalBaseTest
 
 @end
 

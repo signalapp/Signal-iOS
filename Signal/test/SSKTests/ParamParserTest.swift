@@ -4,7 +4,7 @@
 
 import XCTest
 
-class ParamParserTest: XCTestCase {
+class ParamParserTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()

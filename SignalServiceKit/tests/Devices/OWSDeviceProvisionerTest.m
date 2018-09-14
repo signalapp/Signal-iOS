@@ -6,8 +6,8 @@
 #import "OWSDeviceProvisioningCodeService.h"
 #import "OWSDeviceProvisioningService.h"
 #import "OWSFakeNetworkManager.h"
+#import "SSKBaseTest.h"
 #import "TSNetworkManager.h"
-#import <XCTest/XCTest.h>
 
 @interface OWSFakeDeviceProvisioningService : OWSDeviceProvisioningService
 
@@ -48,7 +48,7 @@
 
 @end
 
-@interface OWSDeviceProvisionerTest : XCTestCase
+@interface OWSDeviceProvisionerTest : SSKBaseTest
 
 @end
 

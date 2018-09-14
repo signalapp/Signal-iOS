@@ -11,6 +11,7 @@
 #import "OWSFakeNetworkManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
+#import "SSKBaseTest.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
@@ -19,7 +20,6 @@
 #import "TSOutgoingMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface OWSMessageSenderTest : XCTestCase
+@interface OWSMessageSenderTest : SSKBaseTest
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSOutgoingMessage *expiringMessage;

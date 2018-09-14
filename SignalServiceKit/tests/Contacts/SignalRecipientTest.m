@@ -3,10 +3,12 @@
 //
 
 #import "SignalRecipient.h"
+#import "MockSSKEnvironment.h"
+#import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
 #import "TSAccountManager.h"
-
-//#import "TSStorageManager+keyingMaterial.h"
-#import <XCTest/XCTest.h>
+#import "TestAppContext.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface TSAccountManager (Testing)
 
@@ -14,7 +16,7 @@
 
 @end
 
-@interface SignalRecipientTest : XCTestCase
+@interface SignalRecipientTest : SSKBaseTest
 
 @property (nonatomic) NSString *localNumber;
 
