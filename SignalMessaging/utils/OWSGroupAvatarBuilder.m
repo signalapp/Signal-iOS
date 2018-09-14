@@ -34,6 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)buildDefaultImage
 {
+    return self.class.defaultGroupImage;
+}
+
++ (UIImage *)defaultGroupImage
+{
     static UIImage *defaultGroupImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

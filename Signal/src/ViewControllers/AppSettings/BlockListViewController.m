@@ -9,6 +9,7 @@
 #import "ContactsViewHelper.h"
 #import "OWSTableViewController.h"
 #import "PhoneNumber.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
@@ -109,27 +110,32 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:blockedContactsSection];
     }
 
-    NSArray<NSData *> *blockedGroupIds = self.blockingManager.blockedGroupIds;
-    if (blockedGroupIds.count > 0) {
+    NSArray<TSGroupModel *> *blockedGroups = self.blockingManager.blockedGroups;
+    if (blockedGroups.count > 0) {
         OWSTableSection *blockedGroupsSection = [OWSTableSection new];
         blockedGroupsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
-        for (NSData *groupId in blockedGroupIds) {
-            TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupId];
+
+        for (TSGroupModel *blockedGroup in blockedGroups) {
+            UIImage *image = blockedGroup.groupImage ?: OWSGroupAvatarBuilder.defaultGroupImage;
+            NSString *groupName
+                = blockedGroup.groupName.length > 0 ? blockedGroup.groupName : TSGroupThread.defaultGroupName;
+
             [blockedGroupsSection addItem:[OWSTableItem
                                               itemWithCustomCellBlock:^{
-                                                  ContactTableViewCell *cell = [ContactTableViewCell new];
-                                                  [cell configureWithThread:groupThread
-                                                            contactsManager:helper.contactsManager];
+                                                  OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
+                                                  [cell configureWithImage:image
+                                                                      text:groupName
+                                                                detailText:nil];
                                                   return cell;
                                               }
                                               customRowHeight:UITableViewAutomaticDimension
                                               actionBlock:^{
-                                                  [BlockListUIUtils showUnblockThreadActionSheet:groupThread
-                                                                              fromViewController:weakSelf
-                                                                                 blockingManager:helper.blockingManager
-                                                                                 contactsManager:helper.contactsManager
-                                                                                 completionBlock:nil];
+                                                  [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
+                                                                                    displayName:groupName
+                                                                             fromViewController:weakSelf
+                                                                                blockingManager:helper.blockingManager
+                                                                                completionBlock:nil];
                                               }]];
         }
         [contents addSection:blockedGroupsSection];

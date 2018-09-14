@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContactsManager;
 @class OWSMessageSender;
 @class SignalAccount;
+@class TSGroupModel;
 @class TSThread;
 
 typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
@@ -59,6 +60,12 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                             blockingManager:(OWSBlockingManager *)blockingManager
                             contactsManager:(OWSContactsManager *)contactsManager
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
+
++ (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
+                        displayName:(NSString *)displayName
+                 fromViewController:(UIViewController *)fromViewController
+                    blockingManager:(OWSBlockingManager *)blockingManager
+                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 #pragma mark - UI Utils
 

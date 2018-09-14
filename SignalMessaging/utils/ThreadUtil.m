@@ -221,10 +221,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(presentingViewController);
     OWSAssert(messageSender);
 
+    NSString *groupName = thread.name.length > 0 ? thread.name : TSGroupThread.defaultGroupName;
     NSString *title = [NSString
-        stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", @"Modal text when removing a group"), thread.name];
+        stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", @"Modal text when removing a group"), groupName];
     UIAlertController *removingFromGroup =
-        [UIAlertController alertControllerWithTitle:title message:title preferredStyle:UIAlertControllerStyleAlert];
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
     [presentingViewController presentViewController:removingFromGroup animated:YES completion:nil];
 
     TSOutgoingMessage *message =
