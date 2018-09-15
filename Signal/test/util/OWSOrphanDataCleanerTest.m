@@ -134,7 +134,7 @@
 
     TSAttachmentStream *attachmentStream = [self createAttachmentStream];
 
-    NSString *orphanedFilePath = [attachmentStream filePath];
+    NSString *orphanedFilePath = [attachmentStream originalFilePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
@@ -168,7 +168,7 @@
     __unused TSIncomingMessage *incomingMessage =
         [self createIncomingMessageWithThread:savedThread attachmentIds:@[ attachmentStream.uniqueId ]];
 
-    NSString *attachmentFilePath = [attachmentStream filePath];
+    NSString *attachmentFilePath = [attachmentStream originalFilePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFilePath];
     XCTAssert(fileExists);
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
@@ -197,7 +197,7 @@
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
 
-    NSString *orphanedFilePath = [attachmentStream filePath];
+    NSString *orphanedFilePath = [attachmentStream originalFilePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);

@@ -106,7 +106,7 @@ class ConversationSearcherTest: SignalBaseTest {
     override func tearDown() {
         super.tearDown()
 
-        SSKEnvironment.setShared(originalEnvironment!)
+        SSKEnvironment.shared = originalEnvironment!
     }
 
     override func setUp() {
@@ -123,7 +123,7 @@ class ConversationSearcherTest: SignalBaseTest {
 
         let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
         testEnvironment.stubbedContactsManager = FakeContactsManager()
-        SSKEnvironment.setShared(testEnvironment)
+        SSKEnvironment.shared = testEnvironment
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
