@@ -43,7 +43,9 @@
 
 - (NSUInteger)numberOfItemsInAttachmentsFolder
 {
-    return [OWSOrphanDataCleaner filePathsInAttachmentsFolder].count;
+    XCTFail(@"Test broken to fix compilation");
+    // return [OWSOrphanDataCleaner filePathsInAttachmentsFolder].count;
+    return 0;
 }
 
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
@@ -91,9 +93,11 @@
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -114,9 +118,10 @@
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -142,9 +147,10 @@
     // Do multiple cleanup passes.
     for (int i = 0; i < 2; i++) {
         XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-        [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-            [expectation fulfill];
-        }];
+        XCTFail(@"Test broken to fix compilation");
+        //        [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+        //            [expectation fulfill];
+        //        }];
         [self waitForExpectationsWithTimeout:5.0
                                      handler:^(NSError *error) {
                                          if (error) {
@@ -174,9 +180,10 @@
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -203,9 +210,10 @@
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
