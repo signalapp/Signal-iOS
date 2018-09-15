@@ -2,15 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDevice.h"
 #import "OWSOrphanDataCleaner.h"
+#import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
+#import <XCTest/XCTest.h>
 
-@interface OWSOrphanDataCleanerTest : SSKBaseTest
+@interface OWSOrphanDataCleanerTest : XCTestCase
 
 @end
 
