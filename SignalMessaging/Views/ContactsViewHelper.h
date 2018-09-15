@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class Contact;
 @class ContactsViewHelper;
 @class SignalAccount;
+@class TSThread;
 
 @protocol CNContactViewControllerDelegate;
 
@@ -45,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
 
-@property (nonatomic, readonly) NSArray<NSString *> *blockedPhoneNumbers;
-
 // Suitable when the user tries to perform an action which is not possible due to the user having
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
@@ -61,6 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
 - (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
+
+// This method is faster than OWSBlockingManager but
+// is only safe to be called on the main thread.
+- (BOOL)isThreadBlocked:(TSThread *)thread;
 
 // NOTE: This method uses a transaction.
 - (NSString *)localNumber;

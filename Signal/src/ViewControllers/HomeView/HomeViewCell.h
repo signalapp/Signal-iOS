@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
-      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet;
+                  isBlocked:(BOOL)isBlocked;
 
 - (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
-      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+                  isBlocked:(BOOL)isBlocked
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
                overrideDate:(nullable NSDate *)overrideDate;
 

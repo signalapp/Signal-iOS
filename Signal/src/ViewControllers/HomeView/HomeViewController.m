@@ -21,9 +21,9 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -64,7 +64,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
-    ConversationSearchViewDelegate>
+    ConversationSearchViewDelegate,
+    OWSBlockListCacheDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -74,7 +75,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) HomeViewMode homeViewMode;
 @property (nonatomic) id previewingContext;
-@property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -90,7 +90,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSBlockListCache *blocklistCache;
 
 // Views
 
@@ -148,8 +148,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     _accountManager = SignalApp.sharedApp.accountManager;
     _contactsManager = Environment.shared.contactsManager;
     _messageSender = Environment.shared.messageSender;
-    _blockingManager = [OWSBlockingManager sharedManager];
-    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
+    _blocklistCache = [OWSBlockListCache new];
+    [_blocklistCache startObservingAndSyncStateWithDelegate:self];
     _threadViewModelCache = [NSCache new];
 
     // Ensure ExperienceUpgradeFinder has been initialized.
@@ -158,10 +158,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [ExperienceUpgradeFinder sharedManager];
 #pragma GCC diagnostic pop
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
@@ -206,15 +202,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 #pragma mark - Notifications
-
-- (void)blockedPhoneNumbersDidChange:(id)notification
-{
-    OWSAssertIsOnMainThread();
-
-    _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-
-    [self reloadTableViewData];
-}
 
 - (void)signalAccountsDidChange:(id)notification
 {
@@ -835,9 +822,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertDebug(cell);
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
-    [cell configureWithThread:thread
-              contactsManager:self.contactsManager
-        blockedPhoneNumberSet:self.blockedPhoneNumberSet];
+
+    BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
+    [cell configureWithThread:thread contactsManager:self.contactsManager isBlocked:isBlocked];
 
     return cell;
 }
@@ -1071,41 +1058,31 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     TSThread *thread = [self threadForIndexPath:indexPath];
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
 
+    if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
         if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-            UIAlertController *removingFromGroup = [UIAlertController
-                alertControllerWithTitle:[NSString
-                                             stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", nil), [thread name]]
-                                 message:nil
-                          preferredStyle:UIAlertControllerStyleAlert];
-            [self presentViewController:removingFromGroup animated:YES completion:nil];
+            [ThreadUtil sendLeaveGroupMessageInThread:gThread
+                             presentingViewController:self
+                                        messageSender:self.messageSender
+                                           completion:^(NSError *_Nullable error) {
+                                               if (error) {
+                                                   NSString *title = NSLocalizedString(@"GROUP_REMOVING_FAILED",
+                                                       @"Title of alert indicating that group deletion failed.");
 
-            TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                   groupMetaMessage:TSGroupMetaMessageQuit
-                                                                   expiresInSeconds:0];
-            [self.messageSender enqueueMessage:message
-                success:^{
-                    [self dismissViewControllerAnimated:YES
-                                             completion:^{
-                                                 [self deleteThread:thread];
-                                             }];
-                }
-                failure:^(NSError *error) {
-                    [self dismissViewControllerAnimated:YES
-                                             completion:^{
-                                                 [OWSAlerts
-                                                     showAlertWithTitle:
-                                                         NSLocalizedString(@"GROUP_REMOVING_FAILED",
-                                                             @"Title of alert indicating that group deletion failed.")
-                                                                message:error.localizedRecoverySuggestion];
-                                             }];
-                }];
+                                                   [OWSAlerts showAlertWithTitle:title
+                                                                         message:error.localizedRecoverySuggestion];
+                                                   return;
+                                               }
+
+                                               [self deleteThread:thread];
+                                           }];
         } else {
+            // MJK - turn these trailing elses into guards
             [self deleteThread:thread];
         }
     } else {
+        // MJK - turn these trailing elses into guards
         [self deleteThread:thread];
     }
 }
@@ -1489,6 +1466,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     } else {
         OWSLogDebug(@"not requesting review");
     }
+}
+
+#pragma mark - OWSBlockListCacheDelegate
+
+- (void)blockListCacheDidUpdate:(OWSBlockListCache *_Nonnull)blocklistCache
+{
+    OWSLogVerbose(@"");
+    [self reloadTableViewData];
 }
 
 @end

@@ -175,8 +175,35 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (NSString *)name
 {
-    return self.groupModel.groupName ? self.groupModel.groupName : NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    // TODO sometimes groupName is set to the empty string. I'm hesitent to change
+    // the semantics here until we have time to thouroughly test the fallout.
+    // Instead, see the `groupNameOrDefault` which is appropriate for use when displaying
+    // text corresponding to a group.
+    return self.groupModel.groupName ?: self.class.defaultGroupName;
 }
+
++ (NSString *)defaultGroupName
+{
+    return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+}
+
+- (void)leaveGroupWithSneakyTransaction
+{
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self leaveGroupWithTransaction:transaction];
+    }];
+}
+
+- (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSMutableArray<NSString *> *newGroupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
+    [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
+
+    self.groupModel.groupMemberIds = newGroupMemberIds;
+    [self saveWithTransaction:transaction];
+}
+
+#pragma mark - Avatar
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {

@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocking
 
-- (BOOL)isEnvelopeBlocked:(SSKProtoEnvelope *)envelope
+- (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
 {
     OWSAssertDebug(envelope);
 
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
 
         OWSAssertDebug(envelope.source.length > 0);
-        if ([self isEnvelopeBlocked:envelope]) {
+        if ([self isEnvelopeSenderBlocked:envelope]) {
             OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
             failureBlock();
             return;

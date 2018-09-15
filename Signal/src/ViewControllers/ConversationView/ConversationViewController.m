@@ -293,8 +293,8 @@ typedef enum : NSUInteger {
 - (void)addNotificationListeners
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(blockedPhoneNumbersDidChange:)
-                                                 name:kNSNotificationName_BlockedPhoneNumbersDidChange
+                                             selector:@selector(blockListDidChange:)
+                                                 name:kNSNotificationName_BlockListDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(windowManagerCallDidChange:)
@@ -410,7 +410,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)blockedPhoneNumbersDidChange:(id)notification
+- (void)blockListDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -865,9 +865,14 @@ typedef enum : NSUInteger {
     }
 
     NSString *blockStateMessage = nil;
-    if ([self isBlockedContactConversation]) {
-        blockStateMessage = NSLocalizedString(
-            @"MESSAGES_VIEW_CONTACT_BLOCKED", @"Indicates that this 1:1 conversation has been blocked.");
+    if ([self isBlockedConversation]) {
+        if (self.isGroupConversation) {
+            blockStateMessage = NSLocalizedString(
+                @"MESSAGES_VIEW_GROUP_BLOCKED", @"Indicates that this group conversation has been blocked.");
+        } else {
+            blockStateMessage = NSLocalizedString(
+                @"MESSAGES_VIEW_CONTACT_BLOCKED", @"Indicates that this 1:1 conversation has been blocked.");
+        }
     } else if (self.isGroupConversation) {
         int blockedGroupMemberCount = [self blockedGroupMemberCount];
         if (blockedGroupMemberCount == 1) {
@@ -964,9 +969,9 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if ([self isBlockedContactConversation]) {
-        // If this a blocked 1:1 conversation, offer to unblock the user.
-        [self showUnblockContactUI:nil];
+    if ([self isBlockedConversation]) {
+        // If this a blocked conversation, offer to unblock.
+        [self showUnblockConversationUI:nil];
     } else if (self.isGroupConversation) {
         // If this a group conversation with at least one blocked member,
         // Show the block list view.
@@ -1054,10 +1059,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)showUnblockContactUI:(nullable BlockActionCompletionBlock)completionBlock
+- (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
-
     self.userHasScrolled = NO;
 
     // To avoid "noisy" animations (hiding the keyboard before showing
@@ -1068,21 +1071,16 @@ typedef enum : NSUInteger {
     // hidden.
     [self dismissKeyBoard];
 
-    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-    [BlockListUIUtils showUnblockPhoneNumberActionSheet:contactIdentifier
-                                     fromViewController:self
-                                        blockingManager:_blockingManager
-                                        contactsManager:_contactsManager
-                                        completionBlock:completionBlock];
+    [BlockListUIUtils showUnblockThreadActionSheet:self.thread
+                                fromViewController:self
+                                   blockingManager:self.blockingManager
+                                   contactsManager:self.contactsManager
+                                   completionBlock:completionBlock];
 }
 
-- (BOOL)isBlockedContactConversation
+- (BOOL)isBlockedConversation
 {
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        return NO;
-    }
-    NSString *contactIdentifier = ((TSContactThread *)self.thread).contactIdentifier;
-    return [[_blockingManager blockedPhoneNumbers] containsObject:contactIdentifier];
+    return [self.blockingManager isThreadBlocked:self.thread];
 }
 
 - (int)blockedGroupMemberCount
@@ -1432,25 +1430,17 @@ typedef enum : NSUInteger {
                                                      }]];
     }
 
-    if (self.userLeftGroup) {
-        [subtitleText
-            appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:NSLocalizedString(@"GROUP_YOU_LEFT", @"")
-                                           attributes:@{
-                                               NSFontAttributeName : self.headerView.subtitleFont,
-                                               NSForegroundColorAttributeName : subtitleColor,
-                                           }]];
-    } else {
-        [subtitleText appendAttributedString:
-                          [[NSAttributedString alloc]
-                              initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
-                                                 @"The subtitle for the messages view title indicates that the "
-                                                 @"title can be tapped to access settings for this conversation.")
-                                  attributes:@{
-                                      NSFontAttributeName : self.headerView.subtitleFont,
-                                      NSForegroundColorAttributeName : subtitleColor,
-                                  }]];
-    }
+
+    [subtitleText
+        appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:NSLocalizedString(@"MESSAGES_VIEW_TITLE_SUBTITLE",
+                                                      @"The subtitle for the messages view title indicates that the "
+                                                      @"title can be tapped to access settings for this conversation.")
+                                       attributes:@{
+                                           NSFontAttributeName : self.headerView.subtitleFont,
+                                           NSForegroundColorAttributeName : subtitleColor,
+                                       }]];
+
 
     self.headerView.attributedSubtitle = subtitleText;
 }
@@ -1523,8 +1513,8 @@ typedef enum : NSUInteger {
     }
 
     __weak ConversationViewController *weakSelf = self;
-    if ([self isBlockedContactConversation]) {
-        [self showUnblockContactUI:^(BOOL isBlocked) {
+    if ([self isBlockedConversation]) {
+        [self showUnblockConversationUI:^(BOOL isBlocked) {
             if (!isBlocked) {
                 [weakSelf callWithVideo:isVideo];
             }
@@ -1592,11 +1582,6 @@ typedef enum : NSUInteger {
 
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
 {
-    if (self.userLeftGroup) {
-        OWSLogDebug(@"Ignoring request to show conversation settings, since user left group");
-        return;
-    }
-
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
     [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
@@ -3766,8 +3751,8 @@ typedef enum : NSUInteger {
     [self dismissKeyBoard];
 
     __weak ConversationViewController *weakSelf = self;
-    if ([self isBlockedContactConversation]) {
-        [self showUnblockContactUI:^(BOOL isBlocked) {
+    if ([self isBlockedConversation]) {
+        [self showUnblockConversationUI:^(BOOL isBlocked) {
             if (!isBlocked) {
                 [weakSelf attachmentButtonPressed];
             }
@@ -4123,8 +4108,8 @@ typedef enum : NSUInteger {
 
     DispatchMainThreadSafe(^{
         __weak ConversationViewController *weakSelf = self;
-        if ([self isBlockedContactConversation]) {
-            [self showUnblockContactUI:^(BOOL isBlocked) {
+        if ([self isBlockedConversation]) {
+            [self showUnblockConversationUI:^(BOOL isBlocked) {
                 if (!isBlocked) {
                     [weakSelf tryToSendAttachmentIfApproved:attachment];
                 }
@@ -4430,8 +4415,8 @@ typedef enum : NSUInteger {
 {
 
     __weak ConversationViewController *weakSelf = self;
-    if ([self isBlockedContactConversation]) {
-        [self showUnblockContactUI:^(BOOL isBlocked) {
+    if ([self isBlockedConversation]) {
+        [self showUnblockConversationUI:^(BOOL isBlocked) {
             if (!isBlocked) {
                 [weakSelf tryToSendTextMessage:text updateKeyboardState:NO];
             }

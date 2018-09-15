@@ -17,7 +17,6 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>

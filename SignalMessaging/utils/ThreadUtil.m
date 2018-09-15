@@ -212,6 +212,49 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
++ (void)sendLeaveGroupMessageInThread:(TSGroupThread *)thread
+             presentingViewController:(UIViewController *)presentingViewController
+                        messageSender:(OWSMessageSender *)messageSender
+                           completion:(void (^_Nullable)(NSError *_Nullable error))completion
+{
+    OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
+    OWSAssertDebug(presentingViewController);
+    OWSAssertDebug(messageSender);
+
+    NSString *groupName = thread.name.length > 0 ? thread.name : TSGroupThread.defaultGroupName;
+    NSString *title = [NSString
+        stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", @"Modal text when removing a group"), groupName];
+    UIAlertController *removingFromGroup =
+        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [presentingViewController presentViewController:removingFromGroup animated:YES completion:nil];
+
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
+    [messageSender enqueueMessage:message
+        success:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [presentingViewController dismissViewControllerAnimated:YES
+                                                             completion:^{
+                                                                 if (completion) {
+                                                                     completion(nil);
+                                                                 }
+                                                             }];
+            });
+        }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [presentingViewController dismissViewControllerAnimated:YES
+                                                             completion:^{
+                                                                 if (completion) {
+                                                                     completion(error);
+                                                                 }
+                                                             }];
+            });
+        }];
+}
+
+#pragma mark - Dynamic Interactions
+
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
@@ -347,6 +390,9 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers in 1:1 conversations.
             shouldHaveBlockOffer = NO;
+
+            // MJK TODO - any conditions under which we'd make a block offer for groups?
+
             // Only create profile whitelist offers in 1:1 conversations.
             shouldHaveAddToProfileWhitelistOffer = NO;
         } else {
@@ -661,6 +707,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (![OWSProfileManager.sharedManager hasLocalProfile]) {
         return NO;
     }
+    if ([blockingManager isThreadBlocked:thread]) {
+        return NO;
+    }
+
     BOOL hasUnwhitelistedMember = NO;
     NSArray<NSString *> *blockedPhoneNumbers = [blockingManager blockedPhoneNumbers];
     for (NSString *recipientId in thread.recipientIdentifiers) {

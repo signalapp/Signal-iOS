@@ -197,12 +197,10 @@ NS_ASSUME_NONNULL_BEGIN
                             // instead of HomeViewCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                            if ([thread isKindOfClass:[TSContactThread class]]) {
-                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
-                                if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                                }
+                            BOOL isBlocked = [helper isThreadBlocked:thread];
+                            if (isBlocked) {
+                                cell.accessoryMessage = NSLocalizedString(
+                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
                             [cell configureWithThread:thread contactsManager:helper.contactsManager];
@@ -238,21 +236,19 @@ NS_ASSUME_NONNULL_BEGIN
                                 return;
                             }
 
-                            if ([thread isKindOfClass:[TSContactThread class]]) {
-                                BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
-                                if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
-                                    [BlockListUIUtils showUnblockPhoneNumberActionSheet:thread.contactIdentifier
-                                                                     fromViewController:strongSelf
-                                                                        blockingManager:helper.blockingManager
-                                                                        contactsManager:helper.contactsManager
-                                                                        completionBlock:^(BOOL isStillBlocked) {
-                                                                            if (!isStillBlocked) {
-                                                                                [strongSelf.selectThreadViewDelegate
-                                                                                    threadWasSelected:thread];
-                                                                            }
-                                                                        }];
-                                    return;
-                                }
+                            BOOL isBlocked = [helper isThreadBlocked:thread];
+                            if (isBlocked && ![strongSelf.selectThreadViewDelegate canSelectBlockedContact]) {
+                                [BlockListUIUtils
+                                    showUnblockThreadActionSheet:thread
+                                              fromViewController:strongSelf
+                                                 blockingManager:helper.blockingManager
+                                                 contactsManager:helper.contactsManager
+                                                 completionBlock:^(BOOL isStillBlocked) {
+                                                     if (!isStillBlocked) {
+                                                         [strongSelf.selectThreadViewDelegate threadWasSelected:thread];
+                                                     }
+                                                 }];
+                                return;
                             }
 
                             [strongSelf.selectThreadViewDelegate threadWasSelected:thread];

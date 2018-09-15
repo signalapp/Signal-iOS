@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendBlockListSyncMessage
 {
-    [self.blockingManager syncBlockedPhoneNumbers];
+    [self.blockingManager syncBlockList];
 }
 
 + (void)sendConfigurationSyncMessage

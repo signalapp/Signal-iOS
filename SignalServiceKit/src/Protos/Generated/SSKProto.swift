@@ -2979,6 +2979,16 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
             proto.numbers = wrappedItems
         }
 
+        @objc public func addGroupIds(_ valueParam: Data) {
+            var items = proto.groupIds
+            items.append(valueParam)
+            proto.groupIds = items
+        }
+
+        @objc public func setGroupIds(_ wrappedItems: [Data]) {
+            proto.groupIds = wrappedItems
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageBlocked {
             return try SSKProtoSyncMessageBlocked.parseProto(proto)
         }
@@ -2992,6 +3002,10 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
 
     @objc public var numbers: [String] {
         return proto.numbers
+    }
+
+    @objc public var groupIds: [Data] {
+        return proto.groupIds
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
@@ -4306,6 +4320,10 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
             proto.color = valueParam
         }
 
+        @objc public func setBlocked(_ valueParam: Bool) {
+            proto.blocked = valueParam
+        }
+
         @objc public func build() throws -> SSKProtoGroupDetails {
             return try SSKProtoGroupDetails.parseProto(proto)
         }
@@ -4357,6 +4375,13 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
     }
     @objc public var hasColor: Bool {
         return proto.hasColor
+    }
+
+    @objc public var blocked: Bool {
+        return proto.blocked
+    }
+    @objc public var hasBlocked: Bool {
+        return proto.hasBlocked
     }
 
     private init(proto: SignalServiceProtos_GroupDetails,

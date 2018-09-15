@@ -174,25 +174,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
-      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+                  isBlocked:(BOOL)isBlocked
 {
     [self configureWithThread:thread
               contactsManager:contactsManager
-        blockedPhoneNumberSet:blockedPhoneNumberSet
+                    isBlocked:isBlocked
               overrideSnippet:nil
                  overrideDate:nil];
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
-      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+                  isBlocked:(BOOL)isBlocked
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
                overrideDate:(nullable NSDate *)overrideDate
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
     OWSAssertDebug(contactsManager);
-    OWSAssertDebug(blockedPhoneNumberSet);
 
     [OWSTableItem configureCell:self];
 
@@ -215,8 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (overrideSnippet) {
         self.snippetLabel.attributedText = overrideSnippet;
     } else {
-        self.snippetLabel.attributedText =
-            [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
+        self.snippetLabel.attributedText = [self attributedSnippetForThread:thread isBlocked:isBlocked];
     }
 
     self.dateTimeLabel.text
@@ -341,29 +339,23 @@ NS_ASSUME_NONNULL_BEGIN
                                                   contactsManager:contactsManager];
 }
 
-- (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread
-                             blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+- (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
 {
     OWSAssertDebug(thread);
 
-    BOOL isBlocked = NO;
-    if (!thread.isGroupThread) {
-        NSString *contactIdentifier = thread.contactIdentifier;
-        isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
-    }
     BOOL hasUnreadMessages = thread.hasUnreadMessages;
 
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
         // If thread is blocked, don't show a snippet or mute status.
-        [snippetText
-            appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
-                                                          @"A label for conversations with blocked users.")
-                                           attributes:@{
-                                               NSFontAttributeName : self.snippetFont.ows_mediumWeight,
-                                               NSForegroundColorAttributeName : [Theme primaryColor],
-                                           }]];
+        [snippetText appendAttributedString:
+                         [[NSAttributedString alloc]
+                             initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONVERSATION",
+                                                @"Table cell subtitle label for a conversation the user has blocked.")
+                                 attributes:@{
+                                     NSFontAttributeName : self.snippetFont.ows_mediumWeight,
+                                     NSForegroundColorAttributeName : [Theme primaryColor],
+                                 }]];
     } else {
         if ([thread isMuted]) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
