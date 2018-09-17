@@ -88,13 +88,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(callMessageHandlerBlock: {
-            return NoopCallMessageHandler()
-        },
-                                  notificationsProtocolBlock: {
-            return NoopNotificationsManager()
-        },
-                                  migrationCompletion: { [weak self] in
+        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
+            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
+            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+            },
+            migrationCompletion: { [weak self] in
                                     AssertIsOnMainThread()
 
                                     guard let strongSelf = self else { return }

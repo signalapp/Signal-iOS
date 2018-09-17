@@ -93,8 +93,6 @@
 		3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */; };
 		3461295A1FD1D74C00532771 /* Environment.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129401FD1D74B00532771 /* Environment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3461295B1FD1D74C00532771 /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129411FD1D74B00532771 /* Environment.m */; };
-		3461296F1FD1D74C00532771 /* Release.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129561FD1D74B00532771 /* Release.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		346129701FD1D74C00532771 /* Release.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129571FD1D74B00532771 /* Release.m */; };
 		346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129581FD1D74B00532771 /* SignalKeyingStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129591FD1D74B00532771 /* SignalKeyingStorage.m */; };
 		346129731FD1E01700532771 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
@@ -156,6 +154,7 @@
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
+		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
 		348570A820F67575004FF32B /* OWSMessageHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 348570A620F67574004FF32B /* OWSMessageHeaderView.m */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* CDSSigningCertificateTest.m */; };
@@ -729,8 +728,6 @@
 		3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExperienceUpgradeFinder.swift; path = ExperienceUpgrades/ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		346129401FD1D74B00532771 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		346129411FD1D74B00532771 /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
-		346129561FD1D74B00532771 /* Release.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Release.h; sourceTree = "<group>"; };
-		346129571FD1D74B00532771 /* Release.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Release.m; sourceTree = "<group>"; };
 		346129581FD1D74B00532771 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
 		346129591FD1D74B00532771 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
 		346129931FD1E30000532771 /* OWSDatabaseMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDatabaseMigration.h; sourceTree = "<group>"; };
@@ -795,6 +792,8 @@
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
 		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
+		34843B2A214FE295004DED45 /* MockEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockEnvironment.m; sourceTree = "<group>"; };
+		34843B2B214FE295004DED45 /* MockEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MockEnvironment.h; sourceTree = "<group>"; };
 		348570A620F67574004FF32B /* OWSMessageHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageHeaderView.m; sourceTree = "<group>"; };
 		348570A720F67574004FF32B /* OWSMessageHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageHeaderView.h; sourceTree = "<group>"; };
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
@@ -1630,8 +1629,6 @@
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
 				34074F60203D0CBE004596AE /* OWSSounds.h */,
 				34074F5F203D0CBD004596AE /* OWSSounds.m */,
-				346129561FD1D74B00532771 /* Release.h */,
-				346129571FD1D74B00532771 /* Release.m */,
 				346129581FD1D74B00532771 /* SignalKeyingStorage.h */,
 				346129591FD1D74B00532771 /* SignalKeyingStorage.m */,
 				346129E01FD5C0BE00532771 /* VersionMigrations.h */,
@@ -1726,6 +1723,15 @@
 				34AC0A04211B39E800997B47 /* VideoPlayerView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		34843B29214FE295004DED45 /* mocks */ = {
+			isa = PBXGroup;
+			children = (
+				34843B2B214FE295004DED45 /* MockEnvironment.h */,
+				34843B2A214FE295004DED45 /* MockEnvironment.m */,
+			);
+			path = mocks;
 			sourceTree = "<group>";
 		};
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
@@ -2308,15 +2314,16 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
-				34843B2321432293004DED45 /* SignalBaseTest.h */,
-				34843B2221432292004DED45 /* SignalBaseTest.m */,
-				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				B660F6731C29867F00687D6E /* call */,
 				B660F6751C29867F00687D6E /* contact */,
+				34843B29214FE295004DED45 /* mocks */,
 				458E38381D6699110094BD24 /* Models */,
 				B660F69B1C29868000687D6E /* push */,
+				34843B2321432293004DED45 /* SignalBaseTest.h */,
+				34843B2221432292004DED45 /* SignalBaseTest.m */,
 				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
+				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
 				B660F6A01C29868000687D6E /* TestUtil.h */,
 				B660F6A21C29868000687D6E /* util */,
@@ -2527,7 +2534,6 @@
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
 				3421981421061A0700C57195 /* JSQMessagesAvatarImage.h in Headers */,
-				3461296F1FD1D74C00532771 /* Release.h in Headers */,
 				34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */,
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				346129FC1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.h in Headers */,
@@ -3181,7 +3187,6 @@
 				34AC09DF211B39B100997B47 /* OWSNavigationController.m in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
-				346129701FD1D74C00532771 /* Release.m in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
 				3421981321061A0700C57195 /* JSQMessagesAvatarImageFactory.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
@@ -3475,6 +3480,7 @@
 				45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */,
 				B660F7561C29988E00687D6E /* PushManager.m in Sources */,
 				34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */,
+				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,

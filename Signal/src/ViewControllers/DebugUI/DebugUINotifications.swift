@@ -17,7 +17,7 @@ class DebugUINotifications: DebugUIPage {
         return SignalApp.shared().callService.notificationsAdapter
     }
     var messageSender: MessageSender {
-        return Environment.shared.messageSender
+        return SSKEnvironment.shared.messageSender
     }
     var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager

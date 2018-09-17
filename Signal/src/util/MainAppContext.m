@@ -226,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [MultiDeviceProfileKeyUpdateJob runWithProfileKey:profileKey
                                       identityManager:OWSIdentityManager.sharedManager
-                                        messageSender:Environment.shared.messageSender
+                                        messageSender:SSKEnvironment.shared.messageSender
                                        profileManager:OWSProfileManager.sharedManager];
 }
 

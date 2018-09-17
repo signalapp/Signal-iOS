@@ -49,7 +49,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 {
     return [self initWithContactsManager:Environment.shared.contactsManager
                          identityManager:OWSIdentityManager.sharedManager
-                           messageSender:Environment.shared.messageSender
+                           messageSender:SSKEnvironment.shared.messageSender
                           profileManager:OWSProfileManager.sharedManager];
 }
 

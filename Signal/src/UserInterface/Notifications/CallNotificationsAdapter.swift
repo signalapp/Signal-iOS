@@ -12,7 +12,7 @@ public class CallNotificationsAdapter: NSObject {
 
     let adaptee: OWSCallNotificationsAdaptee
 
-    override init() {
+    @objc public init(adaptee: OWSCallNotificationsAdaptee) {
         // TODO We can't mix UILocalNotification (NotificationManager) with the UNNotifications
         // Because registering message categories in one, clobbers the registered categories from the other
         // We have to first port *all* the existing UINotification categories to UNNotifications
@@ -21,7 +21,7 @@ public class CallNotificationsAdapter: NSObject {
 //        if #available(iOS 10.0, *) {
 //            adaptee = UserNotificationsAdaptee()
 //        } else {
-            adaptee = SignalApp.shared().notificationsManager
+            self.adaptee = adaptee
 //        }
 
         super.init()

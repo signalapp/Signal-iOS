@@ -18,15 +18,24 @@ NS_ASSUME_NONNULL_BEGIN
     [super setUp];
 
     ClearCurrentAppContextForTests();
+    [Environment clearSharedForTests];
+    [SSKEnvironment clearSharedForTests];
 
     SetCurrentAppContext([TestAppContext new]);
+
+    [MockEnvironment activate];
+    [MockSSKEnvironment activate];
 }
 
 - (void)tearDown
 {
     NSLog(@"%@ tearDown", self.logTag);
 
+    [SSKEnvironment.shared.primaryStorage closeStorageForTests];
+
     ClearCurrentAppContextForTests();
+    [Environment clearSharedForTests];
+    [SSKEnvironment clearSharedForTests];
 
     [super tearDown];
 }

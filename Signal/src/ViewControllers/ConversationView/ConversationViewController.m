@@ -273,11 +273,10 @@ typedef enum : NSUInteger {
 
 - (void)commonInit
 {
-
     _viewControllerCreatedAt = CACurrentMediaTime();
     _contactsManager = Environment.shared.contactsManager;
-    _contactsUpdater = Environment.shared.contactsUpdater;
-    _messageSender = Environment.shared.messageSender;
+    _contactsUpdater = SSKEnvironment.shared.contactsUpdater;
+    _messageSender = SSKEnvironment.shared.messageSender;
     _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
     _primaryStorage = [OWSPrimaryStorage sharedManager];
     _networkManager = [TSNetworkManager sharedManager];

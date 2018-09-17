@@ -1200,8 +1200,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
 
+    __block SignalRecipient *recipient;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        recipient = [SignalRecipient selfRecipientWithTransaction:transaction];
+    }];
+
     [self sendMessageToService:sentMessageTranscript
-        recipient:[SignalRecipient selfRecipient]
+        recipient:recipient
         thread:message.thread
         attempts:OWSMessageSenderRetryAttempts
         useWebsocketIfAvailable:YES

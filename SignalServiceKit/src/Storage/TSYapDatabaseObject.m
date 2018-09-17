@@ -4,6 +4,7 @@
 
 #import "TSYapDatabaseObject.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKEnvironment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -123,13 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSJanksUI();
 
-    // Use a dedicated connection for model reads & writes.
-    static YapDatabaseConnection *dbReadWriteConnection = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        dbReadWriteConnection = [self primaryStorage].newDatabaseConnection;
-    });
-    return dbReadWriteConnection;
+    return SSKEnvironment.shared.objectReadWriteConnection;
 }
 
 + (OWSPrimaryStorage *)primaryStorage

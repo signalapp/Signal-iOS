@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSMessageSender *)messageSender
 {
-    return Environment.shared.messageSender;
+    return SSKEnvironment.shared.messageSender;
 }
 
 + (OWSContactsManager *)contactsManager

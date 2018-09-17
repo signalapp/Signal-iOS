@@ -4,31 +4,52 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol ContactsManagerProtocol;
-
+@class ContactsUpdater;
 @class OWSMessageSender;
+@class OWSPrimaryStorage;
+@class TSNetworkManager;
+@class YapDatabaseConnection;
 
+@protocol ContactsManagerProtocol;
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
 @protocol ProfileManagerProtocol;
 
 @interface SSKEnvironment : NSObject
 
-- (instancetype)initWithCallMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
-                           contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                             messageSender:(OWSMessageSender *)messageSender
-                      notificationsManager:(id<NotificationsProtocol>)notificationsManager
-                            profileManager:(id<ProfileManagerProtocol>)profileManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
+                          messageSender:(OWSMessageSender *)messageSender
+                         profileManager:(id<ProfileManagerProtocol>)profileManager
+                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
+                        contactsUpdater:(ContactsUpdater *)contactsUpdater
+                         networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property (class, nonatomic) SSKEnvironment *shared;
+@property (nonatomic, readonly, class) SSKEnvironment *shared;
 
-@property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
++ (void)setShared:(SSKEnvironment *)env;
+
+#ifdef DEBUG
+// Should only be called by tests.
++ (void)clearSharedForTests;
+#endif
+
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) id<NotificationsProtocol> notificationsManager;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
+@property (nonatomic, readonly) TSNetworkManager *networkManager;
+
+// This property is configured after Environment is created.
+@property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;
+// This property is configured after Environment is created.
+@property (atomic, nullable) id<NotificationsProtocol> notificationsManager;
+
+@property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
+
+- (BOOL)isComplete;
 
 @end
 

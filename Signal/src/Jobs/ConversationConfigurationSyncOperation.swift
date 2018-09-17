@@ -16,7 +16,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private var messageSender: MessageSender {
-        return Environment.shared.messageSender
+        return SSKEnvironment.shared.messageSender
     }
 
     private var contactsManager: OWSContactsManager {

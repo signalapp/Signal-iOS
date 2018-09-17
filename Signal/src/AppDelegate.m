@@ -29,7 +29,6 @@
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalMessaging/Release.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -157,11 +156,9 @@ static NSTimeInterval launchStartedAt;
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [AppSetup setupEnvironmentWithCallMessageHandlerBlock:^{
-        return SignalApp.sharedApp.callMessageHandler;
-    }
-        notificationsProtocolBlock:^{
-            return SignalApp.sharedApp.notificationsManager;
+    [AppSetup
+        setupEnvironmentWithAppSpecificSingletonBlock:^{
+            [SignalApp.sharedApp createSingletons];
         }
         migrationCompletion:^{
             OWSAssertIsOnMainThread();

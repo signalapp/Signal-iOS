@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     ClearCurrentAppContextForTests();
     SetCurrentAppContext([TestAppContext new]);
+
+    [MockSSKEnvironment activate];
 }
 
 - (void)tearDown

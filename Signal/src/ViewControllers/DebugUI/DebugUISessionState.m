@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
                                 [OWSSessionResetJob runWithContactThread:thread
-                                                           messageSender:Environment.shared.messageSender
+                                                           messageSender:SSKEnvironment.shared.messageSender
                                                           primaryStorage:[OWSPrimaryStorage sharedManager]];
                             }],
         ]];

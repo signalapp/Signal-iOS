@@ -68,21 +68,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 + (instancetype)sharedManager
 {
-    static OWSProfileManager *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
-
-- (instancetype)initDefault
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = Environment.shared.messageSender;
-    TSNetworkManager *networkManager = Environment.shared.networkManager;
-
-    return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender networkManager:networkManager];
+    return SSKEnvironment.shared.profileManager;
 }
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage

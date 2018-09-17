@@ -1,8 +1,6 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-
-#import <SignalMessaging/Release.h>
 
 #define testPhoneNumber1 [PhoneNumber phoneNumberFromE164:@"+19027777777"]
 #define testPhoneNumber2 [PhoneNumber phoneNumberFromE164:@"+19028888888"]

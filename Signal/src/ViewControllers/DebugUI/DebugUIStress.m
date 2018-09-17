@@ -471,7 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(message);
 
-    OWSMessageSender *messageSender = Environment.shared.messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     [messageSender enqueueMessage:message
         success:^{
             OWSLogInfo(@"Successfully sent message.");

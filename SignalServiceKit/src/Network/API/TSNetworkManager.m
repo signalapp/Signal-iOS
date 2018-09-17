@@ -7,6 +7,7 @@
 #import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
+#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
@@ -31,14 +32,10 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 + (instancetype)sharedManager
 {
-    static TSNetworkManager *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
+    OWSAssertDebug(SSKEnvironment.shared.networkManager);
 
+    return SSKEnvironment.shared.networkManager;
+}
 
 - (instancetype)initDefault
 {

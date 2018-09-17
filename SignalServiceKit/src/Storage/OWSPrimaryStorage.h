@@ -16,6 +16,8 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initStorage;
+
 + (instancetype)sharedManager NS_SWIFT_NAME(shared());
 
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
@@ -37,6 +39,8 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 + (NSString *)sharedDataDatabaseFilePath;
 + (NSString *)sharedDataDatabaseFilePath_SHM;
 + (NSString *)sharedDataDatabaseFilePath_WAL;
+
++ (void)protectFiles;
 
 @end
 

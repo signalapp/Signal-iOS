@@ -8,6 +8,7 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
+#import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
 #import "Threading.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -21,17 +22,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation ContactsUpdater
 
 + (instancetype)sharedUpdater {
-    static dispatch_once_t onceToken;
-    static id sharedInstance = nil;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [self new];
-    });
-    return sharedInstance;
-}
+    OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
 
+    return SSKEnvironment.shared.contactsUpdater;
+}
 
 - (instancetype)init
 {

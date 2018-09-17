@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OutboundCallInitiator;
 @class TSThread;
 
+// TODO: Pull out singletons to MainAppEnvironment?
 @interface SignalApp : NSObject
 
 @property (nonatomic, nullable, weak) HomeViewController *homeViewController;
@@ -34,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedApp;
+
+- (void)createSingletons;
 
 #pragma mark - Conversation Presentation
 

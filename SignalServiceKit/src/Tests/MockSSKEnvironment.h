@@ -2,17 +2,16 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "MockSSKEnvironment.h"
-#import <XCTest/XCTest.h>
+#import "SSKEnvironment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
+@interface MockSSKEnvironment : SSKEnvironment
 
-@interface SSKBaseTest : XCTestCase
++ (void)activate;
+
+- (instancetype)init;
 
 @end
-
-#endif
 
 NS_ASSUME_NONNULL_END

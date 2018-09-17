@@ -86,25 +86,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [self fetchObjectWithUniqueID:recipientId transaction:transaction];
 }
 
-+ (nullable instancetype)recipientForRecipientId:(NSString *)recipientId
-{
-    OWSAssertDebug(recipientId.length > 0);
-
-    __block SignalRecipient *recipient;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        recipient = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
-    }];
-    return recipient;
-}
-
 // TODO This method should probably live on the TSAccountManager rather than grabbing a global singleton.
-+ (instancetype)selfRecipient
++ (instancetype)selfRecipientWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    SignalRecipient *myself = [self recipientForRecipientId:[TSAccountManager localNumber]];
-    if (!myself) {
-        myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localNumber]];
-    }
-    return myself;
+    OWSAssertDebug(transaction);
+
+    NSString *recipientId = [TSAccountManager localNumber];
+    return [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
 }
 
 - (void)addDevices:(NSSet *)devices

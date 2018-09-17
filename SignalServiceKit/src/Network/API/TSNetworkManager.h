@@ -19,6 +19,8 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initDefault;
+
 + (instancetype)sharedManager;
 
 - (void)makeRequest:(TSRequest *)request

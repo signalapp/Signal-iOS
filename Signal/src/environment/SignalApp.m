@@ -55,97 +55,90 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Singletons
 
+- (void)createSingletons
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageSender);
+    OWSAssertDebug(Environment.shared.contactsManager);
+    OWSAssertDebug(Environment.shared.preferences);
+    OWSAssertDebug(SSKEnvironment.shared.networkManager);
+    OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
+
+    _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
+                                                                   preferences:Environment.shared.preferences];
+
+    _notificationsManager = [NotificationsManager new];
+    SSKEnvironment.shared.notificationsManager = self.notificationsManager;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didChangeCallLoggingPreference:)
+                                                 name:OWSPreferencesCallLoggingDidChangeNotification
+                                               object:nil];
+    _callService = [[CallService alloc]
+        initWithAccountManager:self.accountManager
+               contactsManager:Environment.shared.contactsManager
+                 messageSender:SSKEnvironment.shared.messageSender
+          notificationsAdapter:[[OWSCallNotificationsAdapter alloc] initWithAdaptee:self.notificationsManager]];
+
+    _callMessageHandler =
+        [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
+                                                        callService:self.callService
+                                                      messageSender:SSKEnvironment.shared.messageSender];
+    SSKEnvironment.shared.callMessageHandler = self.callMessageHandler;
+
+    _outboundCallInitiator =
+        [[OutboundCallInitiator alloc] initWithContactsManager:Environment.shared.contactsManager
+                                               contactsUpdater:SSKEnvironment.shared.contactsUpdater];
+
+    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
+                                                                networkManager:SSKEnvironment.shared.networkManager
+                                                                 signalService:[OWSSignalService sharedInstance]];
+}
+
 - (OWSWebRTCCallMessageHandler *)callMessageHandler
 {
-    @synchronized(self)
-    {
-        if (!_callMessageHandler) {
-            _callMessageHandler =
-                [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
-                                                                callService:self.callService
-                                                              messageSender:Environment.shared.messageSender];
-        }
-    }
+    OWSAssertDebug(_callMessageHandler);
 
     return _callMessageHandler;
 }
 
 - (CallService *)callService
 {
-    @synchronized(self)
-    {
-        if (!_callService) {
-            OWSAssertDebug(self.accountManager);
-            OWSAssertDebug(Environment.shared.contactsManager);
-            OWSAssertDebug(Environment.shared.messageSender);
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCallLoggingPreference:) name:OWSPreferencesCallLoggingDidChangeNotification object:nil];
-
-            _callService = [[CallService alloc] initWithAccountManager:self.accountManager
-                                                       contactsManager:Environment.shared.contactsManager
-                                                         messageSender:Environment.shared.messageSender
-                                                  notificationsAdapter:[OWSCallNotificationsAdapter new]];
-        }
-    }
+    OWSAssertDebug(_callService);
 
     return _callService;
 }
 
 - (CallUIAdapter *)callUIAdapter
 {
+    OWSAssertDebug(self.callService.callUIAdapter);
+
     return self.callService.callUIAdapter;
 }
 
 - (OutboundCallInitiator *)outboundCallInitiator
 {
-    @synchronized(self)
-    {
-        if (!_outboundCallInitiator) {
-            OWSAssertDebug(Environment.shared.contactsManager);
-            OWSAssertDebug(Environment.shared.contactsUpdater);
-            _outboundCallInitiator =
-                [[OutboundCallInitiator alloc] initWithContactsManager:Environment.shared.contactsManager
-                                                       contactsUpdater:Environment.shared.contactsUpdater];
-        }
-    }
+    OWSAssertDebug(_outboundCallInitiator);
 
     return _outboundCallInitiator;
 }
 
 - (OWSMessageFetcherJob *)messageFetcherJob
 {
-    @synchronized(self)
-    {
-        if (!_messageFetcherJob) {
-            _messageFetcherJob =
-                [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
-                                                       networkManager:Environment.shared.networkManager
-                                                        signalService:[OWSSignalService sharedInstance]];
-        }
-    }
+    OWSAssertDebug(_messageFetcherJob);
+
     return _messageFetcherJob;
 }
 
 - (NotificationsManager *)notificationsManager
 {
-    @synchronized(self)
-    {
-        if (!_notificationsManager) {
-            _notificationsManager = [NotificationsManager new];
-        }
-    }
+    OWSAssertDebug(_notificationsManager);
 
     return _notificationsManager;
 }
 
 - (AccountManager *)accountManager
 {
-    @synchronized(self)
-    {
-        if (!_accountManager) {
-            _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                           preferences:Environment.shared.preferences];
-        }
-    }
+    OWSAssertDebug(_accountManager);
 
     return _accountManager;
 }

@@ -120,7 +120,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredRecipientId.length > 0) {
-                id<ContactsManagerProtocol> contactsManager = [SSKEnvironment shared].contactsManager;
+                id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
                 NSString *recipientName = [contactsManager displayNameForPhoneIdentifier:self.unregisteredRecipientId];
                 return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "

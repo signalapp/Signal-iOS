@@ -3,30 +3,11 @@
 //
 
 #import "Environment.h"
-#import "DebugLogger.h"
 #import "OWSPreferences.h"
-#import "SignalKeyingStorage.h"
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/Threading.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 
 static Environment *sharedEnvironment = nil;
-
-@interface Environment ()
-
-@property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) ContactsUpdater *contactsUpdater;
-@property (nonatomic) TSNetworkManager *networkManager;
-@property (nonatomic) OWSMessageSender *messageSender;
-@property (nonatomic) OWSPreferences *preferences;
-
-@end
-
-#pragma mark -
 
 @implementation Environment
 
@@ -54,20 +35,16 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = nil;
 }
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
-                         networkManager:(TSNetworkManager *)networkManager
-                          messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithPreferences:(OWSPreferences *)preferences
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _contactsManager = contactsManager;
-    _contactsUpdater = contactsUpdater;
-    _networkManager = networkManager;
-    _messageSender = messageSender;
+    OWSAssertDebug(preferences);
+
+    _preferences = preferences;
 
     OWSSingletonAssert();
 
@@ -76,43 +53,7 @@ static Environment *sharedEnvironment = nil;
 
 - (OWSContactsManager *)contactsManager
 {
-    OWSAssertDebug(_contactsManager);
-
-    return _contactsManager;
-}
-
-- (ContactsUpdater *)contactsUpdater
-{
-    OWSAssertDebug(_contactsUpdater);
-
-    return _contactsUpdater;
-}
-
-- (TSNetworkManager *)networkManager
-{
-    OWSAssertDebug(_networkManager);
-
-    return _networkManager;
-}
-
-- (OWSMessageSender *)messageSender
-{
-    OWSAssertDebug(_messageSender);
-
-    return _messageSender;
-}
-
-// TODO: Convert to singleton?
-- (OWSPreferences *)preferences
-{
-    @synchronized(self)
-    {
-        if (!_preferences) {
-            _preferences = [OWSPreferences new];
-        }
-    }
-
-    return _preferences;
+    return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
 }
 
 @end
