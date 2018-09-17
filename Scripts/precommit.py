@@ -390,10 +390,9 @@ def process_if_appropriate(filepath):
 
 
 def check_diff_for_keywords():
-    keywords = ["OWSAssert\(", "OWSFail\(", "ows_add_overflow\(", "ows_sub_overflow\("]
+    keywords = ["OWSAssert\(", "OWSCAssert\(", "OWSCFail\(", "OWSFail\(", "ows_add_overflow\(", "ows_sub_overflow\("]
     matching_expression = "|".join(keywords) 
     command_line = 'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
-    print(command_line)
     try:
         output = subprocess.check_output(command_line, shell=True)
     except subprocess.CalledProcessError, e:
