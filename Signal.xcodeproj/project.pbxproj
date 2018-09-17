@@ -456,7 +456,6 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
-		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -1152,8 +1151,6 @@
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		76EB04EA18170B33006006FC /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
-		76EB04EB18170B33006006FC /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
 		948239851C08032C842937CC /* Pods-SignalMessaging.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.test.xcconfig"; sourceTree = "<group>"; };
@@ -1200,7 +1197,6 @@
 		B660F69E1C29868000687D6E /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		B660F69F1C29868000687D6E /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
 		B660F6A01C29868000687D6E /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
-		B660F6AC1C29868000687D6E /* FunctionalUtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtilTest.h; sourceTree = "<group>"; };
 		B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
 		B660F6B31C29868000687D6E /* UtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilTest.h; sourceTree = "<group>"; };
 		B660F6B41C29868000687D6E /* UtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilTest.m; sourceTree = "<group>"; };
@@ -2200,8 +2196,6 @@
 			children = (
 				B90418E4183E9DD40038554A /* DateUtil.h */,
 				B90418E5183E9DD40038554A /* DateUtil.m */,
-				76EB04EA18170B33006006FC /* FunctionalUtil.h */,
-				76EB04EB18170B33006006FC /* FunctionalUtil.m */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
@@ -2371,7 +2365,6 @@
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
 				3491D9A021022DB7001EF5A1 /* CDSSigningCertificateTest.m */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
-				B660F6AC1C29868000687D6E /* FunctionalUtilTest.h */,
 				B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */,
 				455AC69D1F4F8B0300134004 /* ImageCacheTest.swift */,
 				34DB0BEB2011548A007B313F /* OWSDatabaseConverterTest.h */,
@@ -3341,7 +3334,6 @@
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */,
-				76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
