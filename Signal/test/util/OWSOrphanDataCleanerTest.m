@@ -5,12 +5,13 @@
 #import "OWSOrphanDataCleaner.h"
 #import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
+#import "SignalBaseTest.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 #import <XCTest/XCTest.h>
 
-@interface OWSOrphanDataCleanerTest : XCTestCase
+@interface OWSOrphanDataCleanerTest : SignalBaseTest
 
 @end
 
