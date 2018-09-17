@@ -390,7 +390,27 @@ def process_if_appropriate(filepath):
 
 
 def check_diff_for_keywords():
-    keywords = ["OWSAssert\(", "OWSCAssert\(", "OWSCFail\(", "OWSFail\(", "ows_add_overflow\(", "ows_sub_overflow\("]
+    objc_keywords = [
+        "OWSAbstractMethod\("
+        "OWSAssert\(", 
+        "OWSCAssert\(", 
+        "OWSFail\(", 
+        "OWSCFail\(", 
+        "ows_add_overflow\(", 
+        "ows_sub_overflow\(",
+    ]
+
+    swift_keywords = [
+        "owsFail\(", 
+        "precondition\(", 
+        "fatalError\(", 
+        "dispatchPrecondition\(", 
+        "preconditionFailure\(", 
+        "notImplemented\("
+    ]
+
+    keywords = objc_keywords + swift_keywords
+
     matching_expression = "|".join(keywords) 
     command_line = 'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
     try:
