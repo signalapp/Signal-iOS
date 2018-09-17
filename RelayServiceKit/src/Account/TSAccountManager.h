@@ -19,10 +19,7 @@ extern NSString *const kNSNotificationName_LocalUIDDidChange;
 
 @interface TSAccountManager : NSObject
 
-// This property is exposed for testing purposes only.
-#ifdef DEBUG
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
 
 #pragma mark - Initializers
 

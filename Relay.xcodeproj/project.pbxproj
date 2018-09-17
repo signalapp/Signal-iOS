@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		042AE02FEBA302AB373774E6 /* Pods_RelayShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */; };
-		0C978700D40FF1C45DCD028C /* Pods_Common_RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDECD29AA2892699CD63E5D8 /* Pods_Common_RelayMessaging.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1672,7 +1671,6 @@
 			files = (
 				346129741FD1E02D00532771 /* PromiseKit.framework in Frameworks */,
 				4070A49B3118F91857CED384 /* Pods_RelayMessaging.framework in Frameworks */,
-				0C978700D40FF1C45DCD028C /* Pods_Common_RelayMessaging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
