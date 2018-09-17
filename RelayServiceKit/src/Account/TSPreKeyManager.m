@@ -94,7 +94,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     if (!CurrentAppContext().isMainApp) {
         return;
     }
-    OWSAssert(CurrentAppContext().isMainAppAndActive);
+    OWSAssert(CurrentAppContext().isMainApp);
 
     // Update the prekey check timestamp.
     dispatch_async(TSPreKeyManager.prekeyQueue, ^{
