@@ -51,10 +51,10 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 @property (nonatomic, readonly) BOOL isRegistered;
 
-// This property is exposed publicly for testing purposes only.
-#ifndef DEBUG
-@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
+//// This property is exposed publicly for testing purposes only.
+//#ifndef DEBUG
+//@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+//#endif
 
 @property (nonatomic, nullable) NSString *cachedLocalUID;
 @property (nonatomic, nullable) NSString *cachedUsername;

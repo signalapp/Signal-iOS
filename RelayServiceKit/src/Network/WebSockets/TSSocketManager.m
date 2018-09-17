@@ -396,12 +396,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             // Create a new web socket.
             
             NSString *tssAPI = nil;
-            NSString *TSSUrlString = [[CCSMStorage sharedInstance] textSecureURL];
-            if (TSSUrlString.length > 0) {
-                tssAPI = [TSSUrlString stringByAppendingString:@"/v1/websocket/"];
-            } else {
-                tssAPI = textSecureWebSocketAPI;
-            }
+            NSString *TSSUrlString = CCSMStorage.sharedInstance.textSecureURLString;
+            NSAssert(TSSUrlString.length > 0, @"No stored value for TSSUrlString!");
+            tssAPI = [TSSUrlString stringByAppendingString:@"/v1/websocket/"];
             tssAPI = [tssAPI stringByReplacingOccurrencesOfString:@"http"
                                                        withString:@"ws"];
             NSString *webSocketConnect =
