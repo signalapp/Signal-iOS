@@ -117,7 +117,7 @@ import RelayServiceKit
         
         var result: Dictionary<String, Any>?
         
-        let url = "\(CCSMStorage.sharedInstance().ccsmURLString)/v1/directory/user/?id=\(userId)"
+        let url = "\(CCSMEnvironment.sharedInstance().ccsmURLString!)/v1/directory/user/?id=\(userId)"
         
         let semaphore = DispatchSemaphore(value: 0)
         
@@ -125,7 +125,7 @@ import RelayServiceKit
                                  success: { (payload) in
                                     
                                     if let resultsArray: Array = payload?["results"] as? Array<Dictionary<String, Any>> {
-                                        result = resultsArray.last!
+                                        result = resultsArray.last
                                     }
                                     semaphore.signal()
         }, failure: { (error) in
@@ -249,7 +249,26 @@ import RelayServiceKit
 
     
     @objc public func refreshCCSMRecipients() {
+        DispatchQueue.global(qos: .background).async {
+            self.recipientCache.removeAllObjects()
+            self.tagCache.removeAllObjects()
+            CCSMCommManager.refreshCCSMData()
+            self.validateNonOrgRecipients()
+        }
     }
+    
+    private func validateNonOrgRecipients() {
+        for obj in RelayRecipient.allObjectsInCollection() {
+            if let recipient = obj as? RelayRecipient {
+                if recipient.orgID != TSAccountManager.selfRecipient().orgID ||
+                   recipient.orgID == "public" ||
+                   recipient.orgID == "forsta" {
+                    self.updateRecipient(userId: recipient.uniqueId)
+                }
+            }
+        }
+    }
+
     
     @objc public func setImage(image: UIImage, recipientId: String) {
         if let recipient = self.recipient(withId: recipientId) {

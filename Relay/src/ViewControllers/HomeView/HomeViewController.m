@@ -267,6 +267,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     [super loadView];
 
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        FLContactsManager.shared.refreshCCSMRecipients;
+    });
+    
     // TODO: Remove this.
     if (self.homeViewMode == HomeViewMode_Inbox) {
         [SignalApp.sharedApp setHomeViewController:self];
@@ -727,7 +731,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
+    __block NSArray<ExperienceUpgrade *> *unseenUpgrades = NSArray.new;
 //    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
 //        unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
 //    }];
