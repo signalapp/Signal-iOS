@@ -21,7 +21,8 @@
 
 @implementation CCSMStorage
 
-@synthesize textSecureURL = _textSecureURL;
+@synthesize ccsmURLString = _ccsmURLString;
+@synthesize textSecureURLString = _textSecureURLString;
 @synthesize readConnection = _readConnection;
 @synthesize writeConnection = _writeConnection;
 
@@ -159,18 +160,18 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
     return [self tryGetValueForKey:CCSMStorageKeyTags];
 }
 
--(NSString *)textSecureURL
+-(NSString *)textSecureURLString
 {
-    if (_textSecureURL == nil) {
-        _textSecureURL = [self tryGetValueForKey:CCSMStorageKeyTSServerURL];
+    if (_textSecureURLString == nil) {
+        _textSecureURLString = [self tryGetValueForKey:CCSMStorageKeyTSServerURL];
     }
-    return _textSecureURL;
+    return _textSecureURLString;
 }
 
--(void)setTextSecureURL:(NSString *)value
+-(void)setTextSecureURLString:(NSString *)value
 {
-    if (![_textSecureURL isEqualToString:value]) {
-        _textSecureURL = [value copy];
+    if (![_textSecureURLString isEqualToString:value]) {
+        _textSecureURLString = [value copy];
         [self setValueForKey:CCSMStorageKeyTSServerURL toValue:value];
     }
 }
@@ -190,5 +191,21 @@ NSString *const CCSMStorageKeyTSServerURL = @"TSServerURL";
     
     return [NSDictionary dictionaryWithDictionary:tags];
 }
+
+@end
+
+@implementation CCSMEnvironment
+
++ (instancetype)sharedInstance
+{
+    static dispatch_once_t onceToken;
+    static id sharedInstance = nil;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    
+    return sharedInstance;
+}
+
 
 @end

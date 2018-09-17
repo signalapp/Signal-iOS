@@ -308,15 +308,14 @@ NSString *const kFLTSSURLKey = @"FLTSSURLKey";
 -(nullable NSString *)textSecureURL
 {
     if (self.cachedTSSURL == nil) {
-        self.cachedTSSURL = (NSString *)[CCSMStorage.sharedInstance textSecureURL];
-//        self.cachedTSSURL = (NSString *)[OWSPrimaryStorage valueForKey:kFLTSSURLKey];
+        self.cachedTSSURL = (NSString *)CCSMStorage.sharedInstance.textSecureURLString;
     }
     return self.cachedTSSURL;
 }
 
 -(void)setTextSecureURL:(nullable NSString *)value
 {
-    [CCSMStorage.sharedInstance setTextSecureURL:value];
+    [CCSMStorage.sharedInstance setTextSecureURLString:value];
 //    [OWSPrimaryStorage setValue:value forKey:kFLTSSURLKey];
     self.cachedTSSURL = nil;
 }

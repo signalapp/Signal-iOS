@@ -39,33 +39,39 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define FLSupermanStageID @"88e7165e-d2da-4c3f-a14a-bb802bb0cefb"
 #define FLSupermanProdID @"cf40fca2-dfa8-4356-8ae7-45f56f7551ca"
 
-// Forsta home URLs
-#define FLForstaDevURL @"https://ccsm-dev-api.forsta.io"
-#define FLForstaStageURL @"https://ccsm-stage-api.forsta.io"
-#define FLForstaProdURL @"https://api.forsta.io"
+#define FLSupermanIds @[ FLSupermanDevID, FLSupermanStageID, FLSupermanProdID ]
 
-// Domain creation URLs
-#define FLDomainCreateDevURL @"https://ccsm-dev.forsta.io/create"
-#define FLDomainCreateStageURL @"https://ccsm-stage.forsta.io/create"
-#define FLDomainCreateProdURL @"https://console.forsta.io/create"
+//// Forsta CCSM home URLs
+//#define FLForstaDevURL @"https://ccsm-dev-api.forsta.io"
+//#define FLForstaStageURL @"https://ccsm-stage-api.forsta.io"
+//#define FLForstaProdURL @"https://api.forsta.io"
 
-// Forsta support URL
-#define FLForstaSupportURL @"https://support.forsta.io"
+//// Domain creation URLs
+//#define FLDomainCreateDevURL @"https://ccsm-dev.forsta.io/create"
+//#define FLDomainCreateStageURL @"https://ccsm-stage.forsta.io/create"
+//#define FLDomainCreateProdURL @"https://console.forsta.io/create"
 
-// Forsta SMS invitation URL
-#define FLSMSInvitationURL @"https://www.forsta.io"
+//// Forsta support URL
+//#define FLForstaSupportURL @"https://support.forsta.io"
+
+//// Forsta SMS invitation URL
+//#define FLSMSInvitationURL @"https://www.forsta.io"
 
 // TODO:  Flesh this for dev environment
-#define FLHomeURL FLForstaDevURL
-#define FLDomainCreateURL FLDomainCreateDevURL
-#define FLSupermanID FLSupermanDevID
+//#if DEVELOPMENT
+//    #define FLHomeURL FLForstaDevURL
+//    #define FLDomainCreateURL FLDomainCreateDevURL
+//    #define FLSupermanID FLSupermanDevID
+//#else
+//    #define FLHomeURL FLForstaProdURL
+//    #define FLDomainCreateURL FLDomainCreateProdURL
+//    #define FLSupermanID FLSupermanProdID
+//#endif
 
 
 //#ifndef DEBUG
 
 // Production
-#define textSecureWebSocketAPI @"wss://api.forsta.io/v1/websocket/"
-#define textSecureServerURL @"https://api.forsta.io"
 //#define textSecureCDNServerURL @"https://cdn.signal.org"
 // Use same reflector for service and CDN
 //#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
@@ -97,7 +103,5 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 #define textSecure2FAAPI @"/v1/accounts/pin"
-
-#define SignalApplicationGroup @"group.io.forsta.relay"
 
 #endif

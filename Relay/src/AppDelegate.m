@@ -231,6 +231,10 @@ static NSTimeInterval launchStartedAt;
 
 - (BOOL)ensureIsReadyForAppExtensions
 {
+    // Forsta additions
+    CCSMEnvironment.sharedInstance.appGroupIdString = ApplicationGroup;
+    CCSMEnvironment.sharedInstance.ccsmURLString = FLHomeURL;
+    
     // Given how sensitive this migration is, we verbosely
     // log the contents of all involved paths before and after.
     //

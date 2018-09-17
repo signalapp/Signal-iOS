@@ -5,6 +5,7 @@
 #import "OWSFileSystem.h"
 #import "OWSError.h"
 #import "TSConstants.h"
+#import "CCSMStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -111,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)appSharedDataDirectoryPath
 {
     NSURL *groupContainerDirectoryURL =
-        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
+        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:CCSMEnvironment.sharedInstance.appGroupIdString];
     return [groupContainerDirectoryURL path];
 }
 

@@ -117,7 +117,7 @@ import RelayServiceKit
         
         var result: Dictionary<String, Any>?
         
-        let url = "\(FLHomeURL)/v1/directory/user/?id=\(userId)"
+        let url = "\(CCSMStorage.sharedInstance().textSecureURLString)/v1/directory/user/?id=\(userId)"
         
         let semaphore = DispatchSemaphore(value: 0)
         

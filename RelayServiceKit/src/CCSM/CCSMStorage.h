@@ -22,7 +22,9 @@ extern NSString *const CCSMStorageKeyTSServerURL;
 
 @interface CCSMStorage : NSObject
 
-@property (strong) NSString *textSecureURL;
+@property (strong) NSString *appGroupIdString;
+@property (strong) NSString *textSecureURLString;
+@property (strong) NSString *ccsmURLString;
 
 + (instancetype)sharedInstance;
 
@@ -47,6 +49,15 @@ extern NSString *const CCSMStorageKeyTSServerURL;
 
 - (NSDictionary *)getTags;
 -(void)setTags:(NSDictionary *)value;
+
+@end
+
+@interface CCSMEnvironment : NSObject
+
++ (instancetype)sharedInstance;
+
+@property NSString *appGroupIdString;
+@property NSString *ccsmURLString;
 
 @end
 

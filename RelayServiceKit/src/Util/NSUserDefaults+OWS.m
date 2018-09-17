@@ -5,6 +5,7 @@
 #import "NSUserDefaults+OWS.h"
 #import "AppContext.h"
 #import "TSConstants.h"
+#import "CCSMStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUserDefaults *)appUserDefaults
 {
-    return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
+    return [[NSUserDefaults alloc] initWithSuiteName:CCSMEnvironment.sharedInstance.appGroupIdString];
 }
 
 + (void)migrateToSharedUserDefaults

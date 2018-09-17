@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		042AE02FEBA302AB373774E6 /* Pods_RelayShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */; };
+		0C978700D40FF1C45DCD028C /* Pods_Common_RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDECD29AA2892699CD63E5D8 /* Pods_Common_RelayMessaging.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -238,6 +239,7 @@
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4070A49B3118F91857CED384 /* Pods_RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 264242150E87D10A357DB07B /* Pods_RelayMessaging.framework */; };
+		41C4E0A535335A9B427A5840 /* Pods_RelayDevShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F7E17B4EFBB2600D9AEEA8E /* Pods_RelayDevShareExtension.framework */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */; };
@@ -712,7 +714,6 @@
 		7D2CD65A214C3C9C004E957A /* pulse-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A672044AAB500CD42F8 /* pulse-quiet.aifc */; };
 		7D2CD65B214C3C9C004E957A /* synth.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A722044AAB600CD42F8 /* synth.aifc */; };
 		7D2CD65C214C3C9C004E957A /* synth-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45B74A5C2044AAB300CD42F8 /* synth-quiet.aifc */; };
-		7D2CD660214C3C9C004E957A /* RelayShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 453518681FC635DD00210559 /* RelayShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7D2CD662214C3C9C004E957A /* RelayMessaging.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* RelayMessaging.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7D2CD66E214C46BC004E957A /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4535186A1FC635DD00210559 /* ShareViewController.swift */; };
 		7D2CD66F214C46BC004E957A /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
@@ -721,13 +722,13 @@
 		7D2CD672214C46BC004E957A /* SAEFailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850561FD86544007B8332 /* SAEFailedViewController.swift */; };
 		7D2CD674214C46BC004E957A /* RelayMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* RelayMessaging.framework */; };
 		7D2CD675214C46BC004E957A /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
-		7D2CD676214C46BC004E957A /* Pods_RelayShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */; };
 		7D2CD678214C46BC004E957A /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		7D2CD679214C46BC004E957A /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4535186C1FC635DD00210559 /* MainInterface.storyboard */; };
 		7D2CD67A214C46BC004E957A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		7D2CD67B214C46BC004E957A /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		7D2CD67C214C46BC004E957A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		7D2CD67D214C46BC004E957A /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
+		7D2CD687214C5A3F004E957A /* RelayDevShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7D2CD681214C46BC004E957A /* RelayDevShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7D6564F42113BD8B00365A19 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6564E42113BD8900365A19 /* SelectThreadViewController.m */; };
 		7D6564F52113BD8B00365A19 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D6564E52113BD8900365A19 /* NewNonContactConversationViewController.m */; };
 		7D6564F72113BD8B00365A19 /* NewNonContactConversationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 7D6564E72113BD8900365A19 /* NewNonContactConversationViewController.h */; };
@@ -880,13 +881,6 @@
 			remoteGlobalIDString = 453518911FC63DBF00210559;
 			remoteInfo = RelayMessaging;
 		};
-		7D2CD534214C3C9C004E957A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 453518671FC635DD00210559;
-			remoteInfo = SignalShareExtension;
-		};
 		7D2CD536214C3C9C004E957A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
@@ -900,6 +894,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 453518911FC63DBF00210559;
 			remoteInfo = RelayMessaging;
+		};
+		7D2CD685214C52AD004E957A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D2CD669214C46BC004E957A;
+			remoteInfo = RelayDevShareExtension;
 		};
 		B6AFCEBA19A93DA60098CFCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -939,7 +940,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				7D2CD660214C3C9C004E957A /* RelayShareExtension.appex in Embed App Extensions */,
+				7D2CD687214C5A3F004E957A /* RelayDevShareExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -961,10 +962,18 @@
 		00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		04F98C3E458646751D685473 /* Pods_RelayMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0EB06AC3F26DB309BD8C3952 /* Pods-RelayTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayTests/Pods-RelayTests.debug.xcconfig"; sourceTree = "<group>"; };
+		0F7E17B4EFBB2600D9AEEA8E /* Pods_RelayDevShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayDevShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		10671F24073579F438DE29BA /* Pods-Common-RelayDevShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDevShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDevShareExtension/Pods-Common-RelayDevShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		1109BE332A1FE87763659499 /* Pods-RelayShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayShareExtension/Pods-RelayShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
+		178982DE3528460F66DED5C2 /* Pods_Common_RelayDev_RelayDevShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_RelayDev_RelayDevShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1956251241E9DBBA9072D5C5 /* Pods_Common_RelayDevShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_RelayDevShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		25497741DB03737D754FC3D5 /* Pods-RelayDev.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayDev.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayDev/Pods-RelayDev.app store release.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_RelayMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		26FC1CC898AA01489780EA0D /* Pods-RelayDevShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayDevShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayDevShareExtension/Pods-RelayDevShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		2706DE522F024546D9AE35CC /* Pods_Common_Relay.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_Relay.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F7422E1FBE4A2487208B8AB /* Pods_Common_RelayDev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_RelayDev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3325DBBA33AF4A7FCE5EEF2C /* Pods-Common-RelayShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayShareExtension/Pods-Common-RelayShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		3400C7971EAFB772008A8584 /* ThreadViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		3400C7981EAFB772008A8584 /* ThreadViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
@@ -1043,6 +1052,7 @@
 		3421980D21061A0700C57195 /* JSQMVC-SIGNAL.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "JSQMVC-SIGNAL.md"; sourceTree = "<group>"; };
 		3421980E21061A0700C57195 /* JSQMessageAvatarImageDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessageAvatarImageDataSource.h; sourceTree = "<group>"; };
 		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
+		3421A820F5CCC12EF6F554E1 /* Pods-Common-RelayDev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDev.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDev/Pods-Common-RelayDev.debug.xcconfig"; sourceTree = "<group>"; };
 		34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedMessageView.m; sourceTree = "<group>"; };
 		34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedMessageView.h; sourceTree = "<group>"; };
 		3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageTimerView.h; sourceTree = "<group>"; };
@@ -1307,6 +1317,9 @@
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
 		34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSAnyTouchGestureRecognizer.m; path = views/OWSAnyTouchGestureRecognizer.m; sourceTree = "<group>"; };
 		3B8661366C8D98511544433B /* Pods_RelayDev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayDev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3CB17A8E0827C91FA745AC84 /* Pods-Common-Relay-RelayShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-Relay-RelayShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-Relay-RelayShareExtension/Pods-Common-Relay-RelayShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		3F4777A2952E437D001CDA97 /* Pods-Common-Relay.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-Relay.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-Relay/Pods-Common-Relay.app store release.xcconfig"; sourceTree = "<group>"; };
+		3F54462592176AEC742B33C1 /* Pods-Common-RelayMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayMessaging.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayMessaging/Pods-Common-RelayMessaging.debug.xcconfig"; sourceTree = "<group>"; };
 		4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "classic-quiet.aifc"; sourceTree = "<group>"; };
 		4503F1BC20470A5B00CEE724 /* classic.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = classic.aifc; sourceTree = "<group>"; };
 		4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS107LegacySounds.m; sourceTree = "<group>"; };
@@ -1342,7 +1355,7 @@
 		453518681FC635DD00210559 /* RelayShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelayShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4535186A1FC635DD00210559 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		4535186D1FC635DD00210559 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		4535186F1FC635DD00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4535186F1FC635DD00210559 /* RelayShareExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RelayShareExtension-Info.plist"; sourceTree = "<group>"; };
 		453518921FC63DBF00210559 /* RelayMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RelayMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		453518941FC63DBF00210559 /* RelayMessaging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RelayMessaging.h; sourceTree = "<group>"; };
 		453518951FC63DBF00210559 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1469,6 +1482,7 @@
 		4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationConfigurationSyncOperation.swift; sourceTree = "<group>"; };
 		4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuActionsViewController.swift; sourceTree = "<group>"; };
 		53B4BAFE3F3D8E5CFB79BF26 /* Pods-Relay.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Relay.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Relay/Pods-Relay.app store release.xcconfig"; sourceTree = "<group>"; };
+		6379CFB6BBE57E2F9746654B /* Pods-Common-RelayDev.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDev.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDev/Pods-Common-RelayDev.app store release.xcconfig"; sourceTree = "<group>"; };
 		6423314F94372ED068A02504 /* Pods-RelayDev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayDev.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayDev/Pods-RelayDev.debug.xcconfig"; sourceTree = "<group>"; };
 		6F5AC463F739F55FA0A2353F /* Pods-RelayMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayMessaging.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayMessaging/Pods-RelayMessaging.debug.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -1485,7 +1499,8 @@
 		7D2CD667214C3C9C004E957A /* RelayDev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "RelayDev-Info.plist"; path = "/Users/markd/Forsta/Relay-iOS-App/RelayDev-Info.plist"; sourceTree = "<absolute>"; };
 		7D2CD668214C3DE4004E957A /* RelayDev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDev.entitlements; sourceTree = "<group>"; };
 		7D2CD681214C46BC004E957A /* RelayDevShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelayDevShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D2CD682214C46BD004E957A /* RelayShareExtension copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "RelayShareExtension copy-Info.plist"; path = "/Users/markd/Forsta/Relay-iOS-App/RelayShareExtension copy-Info.plist"; sourceTree = "<absolute>"; };
+		7D2CD683214C491B004E957A /* RelayDevShareExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDevShareExtension.entitlements; sourceTree = "<group>"; };
+		7D2CD688214C5F74004E957A /* RelayDevShareExtension-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RelayDevShareExtension-Info.plist"; sourceTree = "<group>"; };
 		7D6564C12113B1C200365A19 /* Relay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Relay.entitlements; sourceTree = "<group>"; };
 		7D6564C22113B74900365A19 /* RelayShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RelayShareExtension.entitlements; sourceTree = "<group>"; };
 		7D6564E42113BD8900365A19 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectThreadViewController.m; sourceTree = "<group>"; };
@@ -1545,12 +1560,18 @@
 		7DD5A731211B7CA500965478 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
 		7DD5A732211B7CA500965478 /* HttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpResponse.m; sourceTree = "<group>"; };
 		7DF2E98E212360B400855424 /* FLContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLContactsManager.swift; sourceTree = "<group>"; };
+		8300824C7D94C76E7FEA1BED /* Pods-Common-RelayMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayMessaging/Pods-Common-RelayMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
+		8BDF00953362DF77BCB051B3 /* Pods-Common-Relay-RelayShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-Relay-RelayShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-Relay-RelayShareExtension/Pods-Common-Relay-RelayShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPickerTest.swift; sourceTree = "<group>"; };
+		99E02BE899268A9B58496A20 /* Pods-Common-RelayShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayShareExtension/Pods-Common-RelayShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
+		9B2870E9E12F0EDBB933814C /* Pods-Common-RelayDev-RelayDevShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDev-RelayDevShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDev-RelayDevShareExtension/Pods-Common-RelayDev-RelayDevShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A163E8AA16F3F6A90094D68B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		A1C32D4D17A0652C000A904E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		A1C32D4F17A06537000A904E /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		A1FDCBEE16DAA6C300868894 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		A47172A1E54ABB679F975561 /* Pods_Common_RelayShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_RelayShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4ECBEE8FF9C81EA4FFCD5E6 /* Pods_Common_Relay_RelayShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_Relay_RelayShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5509EC91A69AB8B00ABA4BC /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Storyboard/Main.storyboard; sourceTree = "<group>"; };
 		A656FD71C7A3C79B7AEB3801 /* Pods-Relay.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Relay.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Relay/Pods-Relay.debug.xcconfig"; sourceTree = "<group>"; };
 		ACE34D2C7844709C73962401 /* Pods_Relay.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Relay.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1601,9 +1622,12 @@
 		B97940251832BD2400BD66CB /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIUtil.h; sourceTree = "<group>"; };
 		B97940261832BD2400BD66CB /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		B9EB5ABC1884C002007CBB57 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		BA2141586A66096DBB8776DA /* Pods-Common-RelayDevShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDevShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDevShareExtension/Pods-Common-RelayDevShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		BAD0779E4941F181876C6C8D /* Pods-Common-Relay.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-Relay.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-Relay/Pods-Common-Relay.debug.xcconfig"; sourceTree = "<group>"; };
 		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		D21E3F6D942DA212DC7752EA /* Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDev-RelayDevShareExtension/Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		D221A089169C9E5E00537ABF /* Relay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Relay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D221A08D169C9E5E00537ABF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D221A08F169C9E5E00537ABF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1617,9 +1641,11 @@
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D3982FE81613EA6D4D796702 /* Pods_RelayTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RelayTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D562B853DF3F1C3D5A1CB00B /* Pods-RelayTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayTests/Pods-RelayTests.app store release.xcconfig"; sourceTree = "<group>"; };
+		D7BCBE6C7CD3E58FF656F0AC /* Pods-RelayDevShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayDevShareExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-RelayDevShareExtension/Pods-RelayDevShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		DBD6CEE72146CD6A0088B4A4 /* Forsta-values.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Forsta-values.plist"; sourceTree = "<group>"; };
 		DD2F0E9696373921805C505E /* Pods-RelayShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RelayShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RelayShareExtension/Pods-RelayShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		E1A0AD8B16E13FDD0071E604 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		EDECD29AA2892699CD63E5D8 /* Pods_Common_RelayMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Common_RelayMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+Permissions.h"; path = "util/UIViewController+Permissions.h"; sourceTree = "<group>"; };
 		EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+Permissions.m"; path = "util/UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -1646,6 +1672,7 @@
 			files = (
 				346129741FD1E02D00532771 /* PromiseKit.framework in Frameworks */,
 				4070A49B3118F91857CED384 /* Pods_RelayMessaging.framework in Frameworks */,
+				0C978700D40FF1C45DCD028C /* Pods_Common_RelayMessaging.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1691,7 +1718,7 @@
 			files = (
 				7D2CD674214C46BC004E957A /* RelayMessaging.framework in Frameworks */,
 				7D2CD675214C46BC004E957A /* PromiseKit.framework in Frameworks */,
-				7D2CD676214C46BC004E957A /* Pods_RelayShareExtension.framework in Frameworks */,
+				41C4E0A535335A9B427A5840 /* Pods_RelayDevShareExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2408,7 +2435,9 @@
 			isa = PBXGroup;
 			children = (
 				7D6564C22113B74900365A19 /* RelayShareExtension.entitlements */,
-				4535186F1FC635DD00210559 /* Info.plist */,
+				7D2CD683214C491B004E957A /* RelayDevShareExtension.entitlements */,
+				7D2CD688214C5F74004E957A /* RelayDevShareExtension-Info.plist */,
+				4535186F1FC635DD00210559 /* RelayShareExtension-Info.plist */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
@@ -2745,6 +2774,22 @@
 				D562B853DF3F1C3D5A1CB00B /* Pods-RelayTests.app store release.xcconfig */,
 				6423314F94372ED068A02504 /* Pods-RelayDev.debug.xcconfig */,
 				25497741DB03737D754FC3D5 /* Pods-RelayDev.app store release.xcconfig */,
+				BAD0779E4941F181876C6C8D /* Pods-Common-Relay.debug.xcconfig */,
+				3F4777A2952E437D001CDA97 /* Pods-Common-Relay.app store release.xcconfig */,
+				3CB17A8E0827C91FA745AC84 /* Pods-Common-Relay-RelayShareExtension.debug.xcconfig */,
+				8BDF00953362DF77BCB051B3 /* Pods-Common-Relay-RelayShareExtension.app store release.xcconfig */,
+				3421A820F5CCC12EF6F554E1 /* Pods-Common-RelayDev.debug.xcconfig */,
+				6379CFB6BBE57E2F9746654B /* Pods-Common-RelayDev.app store release.xcconfig */,
+				D21E3F6D942DA212DC7752EA /* Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig */,
+				9B2870E9E12F0EDBB933814C /* Pods-Common-RelayDev-RelayDevShareExtension.app store release.xcconfig */,
+				3F54462592176AEC742B33C1 /* Pods-Common-RelayMessaging.debug.xcconfig */,
+				8300824C7D94C76E7FEA1BED /* Pods-Common-RelayMessaging.app store release.xcconfig */,
+				BA2141586A66096DBB8776DA /* Pods-Common-RelayDevShareExtension.debug.xcconfig */,
+				10671F24073579F438DE29BA /* Pods-Common-RelayDevShareExtension.app store release.xcconfig */,
+				3325DBBA33AF4A7FCE5EEF2C /* Pods-Common-RelayShareExtension.debug.xcconfig */,
+				99E02BE899268A9B58496A20 /* Pods-Common-RelayShareExtension.app store release.xcconfig */,
+				26FC1CC898AA01489780EA0D /* Pods-RelayDevShareExtension.debug.xcconfig */,
+				D7BCBE6C7CD3E58FF656F0AC /* Pods-RelayDevShareExtension.app store release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -2871,7 +2916,6 @@
 				D221A08C169C9E5E00537ABF /* Frameworks */,
 				D221A08A169C9E5E00537ABF /* Products */,
 				9404664EC513585B05DF1350 /* Pods */,
-				7D2CD682214C46BD004E957A /* RelayShareExtension copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2931,6 +2975,14 @@
 				00B0C1C254310E207F4F8169 /* Pods_RelayShareExtension.framework */,
 				D3982FE81613EA6D4D796702 /* Pods_RelayTests.framework */,
 				3B8661366C8D98511544433B /* Pods_RelayDev.framework */,
+				2706DE522F024546D9AE35CC /* Pods_Common_Relay.framework */,
+				A4ECBEE8FF9C81EA4FFCD5E6 /* Pods_Common_Relay_RelayShareExtension.framework */,
+				2F7422E1FBE4A2487208B8AB /* Pods_Common_RelayDev.framework */,
+				178982DE3528460F66DED5C2 /* Pods_Common_RelayDev_RelayDevShareExtension.framework */,
+				EDECD29AA2892699CD63E5D8 /* Pods_Common_RelayMessaging.framework */,
+				1956251241E9DBBA9072D5C5 /* Pods_Common_RelayDevShareExtension.framework */,
+				A47172A1E54ABB679F975561 /* Pods_Common_RelayShareExtension.framework */,
+				0F7E17B4EFBB2600D9AEEA8E /* Pods_RelayDevShareExtension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -3116,7 +3168,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				7D2CD533214C3C9C004E957A /* PBXTargetDependency */,
+				7D2CD686214C52AD004E957A /* PBXTargetDependency */,
 				7D2CD535214C3C9C004E957A /* PBXTargetDependency */,
 			);
 			name = RelayDev;
@@ -3253,6 +3305,17 @@
 					7D2CD669214C46BC004E957A = {
 						DevelopmentTeam = THHR8L4QV3;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+						};
 					};
 					D221A088169C9E5E00537ABF = {
 						DevelopmentTeam = THHR8L4QV3;
@@ -3852,7 +3915,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-RelayShareExtension-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-RelayDevShareExtension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -4535,11 +4598,6 @@
 			target = 453518911FC63DBF00210559 /* RelayMessaging */;
 			targetProxy = 453518971FC63DBF00210559 /* PBXContainerItemProxy */;
 		};
-		7D2CD533214C3C9C004E957A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 453518671FC635DD00210559 /* RelayShareExtension */;
-			targetProxy = 7D2CD534214C3C9C004E957A /* PBXContainerItemProxy */;
-		};
 		7D2CD535214C3C9C004E957A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 453518911FC63DBF00210559 /* RelayMessaging */;
@@ -4549,6 +4607,11 @@
 			isa = PBXTargetDependency;
 			target = 453518911FC63DBF00210559 /* RelayMessaging */;
 			targetProxy = 7D2CD66B214C46BC004E957A /* PBXContainerItemProxy */;
+		};
+		7D2CD686214C52AD004E957A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7D2CD669214C46BC004E957A /* RelayDevShareExtension */;
+			targetProxy = 7D2CD685214C52AD004E957A /* PBXContainerItemProxy */;
 		};
 		B6AFCEBB19A93DA60098CFCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4618,7 +4681,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -4694,7 +4757,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -4851,6 +4914,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6423314F94372ED068A02504 /* Pods-RelayDev.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
@@ -4919,6 +4983,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 25497741DB03737D754FC3D5 /* Pods-RelayDev.app store release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Dev";
 				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = NO;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
@@ -4981,7 +5046,7 @@
 		};
 		7D2CD67F214C46BC004E957A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DD2F0E9696373921805C505E /* Pods-RelayShareExtension.debug.xcconfig */;
+			baseConfigurationReference = 26FC1CC898AA01489780EA0D /* Pods-RelayDevShareExtension.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -4995,7 +5060,7 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = RelayShareExtension/RelayShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = RelayShareExtension/RelayDevShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5020,12 +5085,12 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "RelayShareExtension copy-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayDevShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DDEVELOPMENT";
-				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relay.shareextension;
+				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relayDev.shareextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -5040,7 +5105,7 @@
 		};
 		7D2CD680214C46BC004E957A /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1109BE332A1FE87763659499 /* Pods-RelayShareExtension.app store release.xcconfig */;
+			baseConfigurationReference = D7BCBE6C7CD3E58FF656F0AC /* Pods-RelayDevShareExtension.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -5068,7 +5133,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = RelayShareExtension/RelayShareExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = RelayShareExtension/RelayDevShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5098,12 +5163,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "RelayShareExtension copy-Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayDevShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_SWIFT_FLAGS = "$(inherited) -DDEVELOPMENT";
-				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relay.shareextension;
+				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relayDev.shareextension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;

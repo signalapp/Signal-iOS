@@ -67,7 +67,7 @@
     [CCSMCommManager checkAccountRegistrationWithCompletion:^(NSDictionary *payload, NSError *checkError) {
         if (checkError == nil) {
             NSString *serverURL = [payload objectForKey:@"serverUrl"];
-            [CCSMStorage.sharedInstance setTextSecureURL:serverURL];
+            CCSMStorage.sharedInstance.textSecureURLString = serverURL;
             NSArray *devices = [payload objectForKey:@"devices"];
             DDLogInfo(@"Provisioning found %d other registered devices.", (int)devices.count);
             
@@ -268,7 +268,7 @@
 // MARK: - Helpers
 -(NSURL *)provisioningURL
 {
-    NSString *tssURLString = [CCSMStorage.sharedInstance textSecureURL];
+    NSString *tssURLString = CCSMStorage.sharedInstance.textSecureURLString;
     NSString *socketString = [tssURLString stringByReplacingOccurrencesOfString:@"http"
                                                                      withString:@"ws"];
     NSString *urlString = [socketString stringByAppendingString:@"/v1/websocket/provisioning/"];

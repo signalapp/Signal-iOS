@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1115976DB2D993FB7AAB33CEBB52F472"
-               BuildableName = "SignalServiceKit.framework"
-               BlueprintName = "SignalServiceKit"
+               BlueprintIdentifier = "96688B4B938FC6EC6926CDABBF8DE27D"
+               BuildableName = "RelayServiceKit.framework"
+               BlueprintName = "RelayServiceKit"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -120,6 +120,11 @@
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
+         <AdditionalOption
+            key = "NSZombieEnabled"
+            value = "YES"
+            isEnabled = "YES">
+         </AdditionalOption>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
