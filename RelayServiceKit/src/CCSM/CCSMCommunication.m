@@ -643,18 +643,22 @@
                                        NSHTTPURLResponse *HTTPresponse = (NSHTTPURLResponse *)response;
                                        DDLogDebug(@"Device Provision Request - Server response code: %ld", (long)HTTPresponse.statusCode);
                                        DDLogDebug(@"%@",[NSHTTPURLResponse localizedStringForStatusCode:HTTPresponse.statusCode]);
+                                       NSDictionary *result = [NSJSONSerialization JSONObjectWithData:data
+                                                                                options:0
+                                                                                  error:NULL];
+
                                        if (error != nil)  // Failed connection
                                        {
                                            DDLogError(@"Device Provision Request failed with error: %@", error.localizedDescription);
                                        }
                                        else if (HTTPresponse.statusCode >= 200 && HTTPresponse.statusCode <= 204) // SUCCESS!
                                        {
-                                           NSDictionary *result = nil;
+//                                           NSDictionary *result = nil;
                                            if (data.length > 0 && error == nil)
                                            {
-                                               result = [NSJSONSerialization JSONObjectWithData:data
-                                                                                        options:0
-                                                                                          error:NULL];
+//                                               result = [NSJSONSerialization JSONObjectWithData:data
+//                                                                                        options:0
+//                                                                                          error:NULL];
                                            }
                                            DDLogInfo(@"Device Provision Request sucessully sent.  Response: %@", result);
                                        }
@@ -920,7 +924,7 @@
 {
 //    NSString *homeURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CCSM_Home_URL"];
     // FIXME: Pull from appropriate location
-    NSString *homeURLString = @"https://ccsm-dev-api.forsta.io";
+    NSString *homeURLString = CCSMEnvironment.sharedInstance.ccsmURLString;
     NSString *urlString = [NSString stringWithFormat:@"%@%@?expression=%@", homeURLString, FLTagMathPath, lookupString];
     NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSMutableURLRequest *request = [self authRequestWithURL:url];
