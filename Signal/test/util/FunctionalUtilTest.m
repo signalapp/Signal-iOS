@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
+
 #import "FunctionalUtilTest.h"
 #import "FunctionalUtil.h"
 #import "TestUtil.h"
@@ -23,19 +27,6 @@
     test([[(@[@1,@2]) filter:^(NSNumber* x) { return false; }] isEqualToArray:(@[])]);
     test([[(@[@1,@2]) filter:^(NSNumber* x) { return x.intValue == 1; }] isEqualToArray:(@[@1])]);
     test([[(@[@1,@2]) filter:^(NSNumber* x) { return x.intValue == 2; }] isEqualToArray:(@[@2])]);
-}
--(void) testSum {
-    test([(@[]) sumDouble] == 0);
-    test([(@[]) sumNSUInteger] == 0);
-    test([(@[]) sumNSInteger] == 0);
-
-    test([(@[@1]) sumDouble] == 1);
-    test([(@[@2]) sumNSUInteger] == 2);
-    test([(@[@3]) sumNSInteger] == 3);
-    
-    test([(@[@1.5, @2.75]) sumDouble] == 4.25);
-    test([(@[@1, @3]) sumNSUInteger] == 4);
-    test([(@[@-1, @4]) sumNSInteger] == 3);
 }
 -(void) testKeyedBy {
 	test([[@[] keyedBy:^id(id value) { return @true; }] isEqual:@{}]);

@@ -28,7 +28,7 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 - (void)makeRequest:(TSRequest *)request
     completionQueue:(dispatch_queue_t)completionQueue
             success:(TSNetworkManagerSuccess)success
-            failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:shouldCompleteOnMainQueue:success:failure:));
+            failure:(TSNetworkManagerFailure)failure NS_SWIFT_NAME(makeRequest(_:completionQueue:success:failure:));
 
 @end
 

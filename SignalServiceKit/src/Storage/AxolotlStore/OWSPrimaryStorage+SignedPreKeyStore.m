@@ -105,12 +105,31 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
                              inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
 }
 
+- (nullable SignedPreKeyRecord *)currentSignedPreKey
+{
+    __block SignedPreKeyRecord *_Nullable currentRecord;
+
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        NSNumber *_Nullable preKeyId = [transaction objectForKey:OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId
+                                                    inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
+
+        if (preKeyId == nil) {
+            return;
+        }
+
+        currentRecord =
+            [transaction objectForKey:preKeyId.stringValue inCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
+    }];
+
+    return currentRecord;
+}
+
 #pragma mark - Prekey update failures
 
 - (int)prekeyUpdateFailureCount
 {
-    NSNumber *value = [self.dbReadConnection objectForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount
-                                             inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
+    NSNumber *_Nullable value = [self.dbReadConnection objectForKey:OWSPrimaryStorageKeyPrekeyUpdateFailureCount
+                                                       inCollection:OWSPrimaryStorageSignedPreKeyMetadataCollection];
     // Will default to zero.
     return [value intValue];
 }

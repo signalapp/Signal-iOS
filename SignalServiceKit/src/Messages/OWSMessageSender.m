@@ -732,17 +732,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // Only try to update the signed prekey; updating it is sufficient to
         // re-enable message sending.
-        [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedOnly
-            success:^{
+        [TSPreKeyManager
+            rotateSignedPreKeyWithSuccess:^{
                 OWSLogInfo(@"New prekeys registered with server.");
+                NSError *error = OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
+                [error setIsRetryable:YES];
+                return failureHandler(error);
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to update prekeys with the server: %@", error);
+                return failureHandler(error);
             }];
-
-        NSError *error = OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError();
-        [error setIsRetryable:YES];
-        return failureHandler(error);
     }
 
     if (remainingAttemptsParam <= 0) {

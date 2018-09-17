@@ -371,9 +371,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                 case 204: {
                     OWSLogInfo(@"Verification code accepted.");
                     [self storeServerAuthToken:authToken signalingKey:signalingKey];
-                    [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime
-                                                     success:successBlock
-                                                     failure:failureBlock];
+                    [TSPreKeyManager createPreKeysWithSuccess:successBlock failure:failureBlock];
                     break;
                 }
                 default: {

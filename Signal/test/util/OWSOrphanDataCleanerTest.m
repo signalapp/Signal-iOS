@@ -2,15 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDevice.h"
 #import "OWSOrphanDataCleaner.h"
+#import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
+#import <XCTest/XCTest.h>
 
-@interface OWSOrphanDataCleanerTest : SSKBaseTest
+@interface OWSOrphanDataCleanerTest : XCTestCase
 
 @end
 
@@ -43,7 +43,9 @@
 
 - (NSUInteger)numberOfItemsInAttachmentsFolder
 {
-    return [OWSOrphanDataCleaner filePathsInAttachmentsFolder].count;
+    XCTFail(@"Test broken to fix compilation");
+    // return [OWSOrphanDataCleaner filePathsInAttachmentsFolder].count;
+    return 0;
 }
 
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
@@ -91,9 +93,11 @@
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -114,9 +118,10 @@
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -134,7 +139,7 @@
 
     TSAttachmentStream *attachmentStream = [self createAttachmentStream];
 
-    NSString *orphanedFilePath = [attachmentStream filePath];
+    NSString *orphanedFilePath = [attachmentStream originalFilePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
@@ -142,9 +147,10 @@
     // Do multiple cleanup passes.
     for (int i = 0; i < 2; i++) {
         XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-        [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-            [expectation fulfill];
-        }];
+        XCTFail(@"Test broken to fix compilation");
+        //        [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+        //            [expectation fulfill];
+        //        }];
         [self waitForExpectationsWithTimeout:5.0
                                      handler:^(NSError *error) {
                                          if (error) {
@@ -168,15 +174,16 @@
     __unused TSIncomingMessage *incomingMessage =
         [self createIncomingMessageWithThread:savedThread attachmentIds:@[ attachmentStream.uniqueId ]];
 
-    NSString *attachmentFilePath = [attachmentStream filePath];
+    NSString *attachmentFilePath = [attachmentStream originalFilePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFilePath];
     XCTAssert(fileExists);
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -197,15 +204,16 @@
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
 
-    NSString *orphanedFilePath = [attachmentStream filePath];
+    NSString *orphanedFilePath = [attachmentStream originalFilePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    XCTFail(@"Test broken to fix compilation");
+    //    [OWSOrphanDataCleaner auditAndCleanupAsync:^{
+    //        [expectation fulfill];
+    //    }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {

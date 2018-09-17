@@ -16,19 +16,7 @@
 
 @implementation OWSPrimaryStorage (PreKeyStore)
 
-- (PreKeyRecord *)getOrGenerateLastResortKey
-{
-    if ([self containsPreKey:kPreKeyOfLastResortId]) {
-        return [self loadPreKey:kPreKeyOfLastResortId];
-    } else {
-        PreKeyRecord *lastResort =
-            [[PreKeyRecord alloc] initWithId:kPreKeyOfLastResortId keyPair:[Curve25519 generateKeyPair]];
-        [self storePreKey:kPreKeyOfLastResortId preKeyRecord:lastResort];
-        return lastResort;
-    }
-}
-
-- (NSArray *)generatePreKeyRecords
+- (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
 {
     NSMutableArray *preKeyRecords = [NSMutableArray array];
 
@@ -52,7 +40,7 @@
     return preKeyRecords;
 }
 
-- (void)storePreKeyRecords:(NSArray *)preKeyRecords
+- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
 {
     for (PreKeyRecord *record in preKeyRecords) {
         [self.dbReadWriteConnection setObject:record

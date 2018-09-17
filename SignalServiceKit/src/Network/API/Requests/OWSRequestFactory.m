@@ -235,12 +235,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
                                          identityKey:(NSData *)identityKeyPublic
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey
-                                    preKeyLastResort:(PreKeyRecord *)preKeyLastResort
 {
     OWSAssertDebug(prekeys.count > 0);
     OWSAssertDebug(identityKeyPublic.length > 0);
     OWSAssertDebug(signedPreKey);
-    OWSAssertDebug(preKeyLastResort);
 
     NSString *path = textSecureKeysAPI;
     NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
@@ -252,7 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
                               method:@"PUT"
                           parameters:@{
                               @"preKeys" : serializedPrekeyList,
-                              @"lastResortKey" : [self dictionaryFromPreKey:preKeyLastResort],
                               @"signedPreKey" : [self dictionaryFromSignedPreKey:signedPreKey],
                               @"identityKey" : publicIdentityKey
                           }];
