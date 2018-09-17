@@ -91,6 +91,10 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                                selector: #selector(yapDatabaseModified),
                                                name: NSNotification.Name.YapDatabaseModified,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(yapDatabaseModified),
+                                               name: NSNotification.Name.YapDatabaseModifiedExternally,
+                                               object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -405,7 +409,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                             if userids.count > 0 {
                                                 DispatchQueue.global(qos: .background).async {
                                                     for uid in userids {
-                                                        FLContactsManager.shared.recipient(withId: uid)
+                                                        FLContactsManager.shared.updateRecipient(userId: uid)
                                                     }
                                                 }
                                             }
@@ -432,7 +436,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             let usersIds: NSArray = results.object(forKey: "userids") as! NSArray
             
             for uid in usersIds {
-                FLContactsManager.shared.recipient(withId: uid as! String)
+                FLContactsManager.shared.updateRecipient(userId: uid as! String)
             }
         }
     }

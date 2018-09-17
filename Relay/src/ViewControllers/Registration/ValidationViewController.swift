@@ -133,7 +133,7 @@ class ValidationViewController: UITableViewController {
     }
     
     private func proceedToMain() {
-        DispatchQueue.global(qos: .default).async {
+        DispatchQueue.global(qos: .background).async {
             TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }
