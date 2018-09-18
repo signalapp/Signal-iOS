@@ -261,53 +261,55 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         [attachmentIds addObject:attachmentId];
     }
 
-    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                              inThread:thread
-                                                           messageBody:body
-                                                         attachmentIds:attachmentIds
-                                                      expiresInSeconds:expiresInSeconds
-                                                       expireStartedAt:0
-                                                        isVoiceMessage:NO
-                                                      groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                         quotedMessage:quotedMessage
-                                                          contactShare:nil];
+    // MJK TODO remove SenderTimestamp?
+    return [[TSOutgoingMessage alloc] initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                    inThread:thread
+                                                                 messageBody:body
+                                                               attachmentIds:attachmentIds
+                                                            expiresInSeconds:expiresInSeconds
+                                                             expireStartedAt:0
+                                                              isVoiceMessage:NO
+                                                            groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                               quotedMessage:quotedMessage
+                                                                contactShare:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 {
-    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                              inThread:thread
-                                                           messageBody:nil
-                                                         attachmentIds:[NSMutableArray new]
-                                                      expiresInSeconds:expiresInSeconds
-                                                       expireStartedAt:0
-                                                        isVoiceMessage:NO
-                                                      groupMetaMessage:groupMetaMessage
-                                                         quotedMessage:nil
-                                                          contactShare:nil];
+    // MJK TODO remove SenderTimestamp?
+    return [[TSOutgoingMessage alloc] initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                    inThread:thread
+                                                                 messageBody:nil
+                                                               attachmentIds:[NSMutableArray new]
+                                                            expiresInSeconds:expiresInSeconds
+                                                             expireStartedAt:0
+                                                              isVoiceMessage:NO
+                                                            groupMetaMessage:groupMetaMessage
+                                                               quotedMessage:nil
+                                                                contactShare:nil];
 }
 
-- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                 expireStartedAt:(uint64_t)expireStartedAt
-                                  isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
+- (instancetype)initOutgoingMessageWithSenderTimestamp:(uint64_t)timestamp
+                                              inThread:(nullable TSThread *)thread
+                                           messageBody:(nullable NSString *)body
+                                         attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                                      expiresInSeconds:(uint32_t)expiresInSeconds
+                                       expireStartedAt:(uint64_t)expireStartedAt
+                                        isVoiceMessage:(BOOL)isVoiceMessage
+                                      groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                                         quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                          contactShare:(nullable OWSContact *)contactShare
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:expireStartedAt
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare];
+    self = [super initMessageWithSenderTimestamp:timestamp
+                                        inThread:thread
+                                     messageBody:body
+                                   attachmentIds:attachmentIds
+                                expiresInSeconds:expiresInSeconds
+                                 expireStartedAt:expireStartedAt
+                                   quotedMessage:quotedMessage
+                                    contactShare:contactShare];
     if (!self) {
         return self;
     }

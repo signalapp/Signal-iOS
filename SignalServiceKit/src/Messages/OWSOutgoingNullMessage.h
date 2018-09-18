@@ -11,16 +11,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingNullMessage : TSOutgoingMessage
 
-- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                 expireStartedAt:(uint64_t)expireStartedAt
-                                  isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithSenderTimestamp:(uint64_t)timestamp
+                                              inThread:(nullable TSThread *)thread
+                                           messageBody:(nullable NSString *)body
+                                         attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                                      expiresInSeconds:(uint32_t)expiresInSeconds
+                                       expireStartedAt:(uint64_t)expireStartedAt
+                                        isVoiceMessage:(BOOL)isVoiceMessage
+                                      groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                                         quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                          contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage;

@@ -70,9 +70,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
         [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
-        [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
-                                         inThread:transcript.thread
-                                      messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+        // MJK TODO - verify we can delete this senderTimestamp
+        [[[TSInfoMessage alloc] initWithSenderTimestamp:transcript.timestamp
+                                               inThread:transcript.thread
+                                            messageType:TSInfoMessageTypeSessionDidEnd]
+            saveWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
         return;
@@ -85,17 +87,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
-    TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
-                                                           inThread:transcript.thread
-                                                        messageBody:transcript.body
-                                                      attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
-                                                   expiresInSeconds:transcript.expirationDuration
-                                                    expireStartedAt:transcript.expirationStartedAt
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:transcript.quotedMessage
-                                                       contactShare:transcript.contact];
+    TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc]
+        initOutgoingMessageWithSenderTimestamp:transcript.timestamp
+                                      inThread:transcript.thread
+                                   messageBody:transcript.body
+                                 attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
+                              expiresInSeconds:transcript.expirationDuration
+                               expireStartedAt:transcript.expirationStartedAt
+                                isVoiceMessage:NO
+                              groupMetaMessage:TSGroupMetaMessageUnspecified
+                                 quotedMessage:transcript.quotedMessage
+                                  contactShare:transcript.contact];
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {

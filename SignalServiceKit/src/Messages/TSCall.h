@@ -27,12 +27,12 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 @property (nonatomic, readonly) RPRecentCallType callType;
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initInteractionWithSenderTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                   withCallNumber:(NSString *)contactNumber
-                         callType:(RPRecentCallType)callType
-                         inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                         withCallNumber:(NSString *)contactNumber
+                               callType:(RPRecentCallType)callType
+                               inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

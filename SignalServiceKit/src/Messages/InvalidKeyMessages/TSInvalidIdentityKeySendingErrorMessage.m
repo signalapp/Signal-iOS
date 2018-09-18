@@ -32,10 +32,11 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                            preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
     // We want the error message to appear after the message.
-    self = [super initWithTimestamp:message.timestamp + 1
-                           inThread:thread
-                  failedMessageType:TSErrorMessageWrongTrustedIdentityKey
-                        recipientId:recipientId];
+    // MJK FIXME - we can't rely on sort order like this.
+    self = [super initWithSenderTimestamp:message.timestamp + 1
+                                 inThread:thread
+                        failedMessageType:TSErrorMessageWrongTrustedIdentityKey
+                              recipientId:recipientId];
 
     if (self) {
         _messageId    = message.uniqueId;

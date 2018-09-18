@@ -48,19 +48,19 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
-                      recipientId:(nullable NSString *)recipientId
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                               inThread:(nullable TSThread *)thread
+                      failedMessageType:(TSErrorMessageType)errorMessageType
+                            recipientId:(nullable NSString *)recipientId
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil];
+    self = [super initMessageWithSenderTimestamp:timestamp
+                                        inThread:thread
+                                     messageBody:nil
+                                   attachmentIds:@[]
+                                expiresInSeconds:0
+                                 expireStartedAt:0
+                                   quotedMessage:nil
+                                    contactShare:nil];
 
     if (!self) {
         return self;
@@ -77,11 +77,11 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                               inThread:(nullable TSThread *)thread
+                      failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
+    return [self initWithSenderTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
 }
 
 - (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -91,12 +91,16 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
+    // MJK FIXME - cannot rely on envelope timestamp for sorting, ensure this is saved immediately.
+    return [self initWithSenderTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 
 - (instancetype)initWithFailedMessageType:(TSErrorMessageType)errorMessageType
 {
-    return [self initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil failedMessageType:errorMessageType];
+    // MJK FIXME - cannot rely on envelope timestamp for sorting, ensure this is saved immediately.
+    return [self initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                inThread:nil
+                       failedMessageType:errorMessageType];
 }
 
 - (OWSInteractionType)interactionType
@@ -184,10 +188,11 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId
 {
-    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                  inThread:thread
-                         failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                               recipientId:recipientId];
+    // MJK TODO - should be safe to remove this senderTimestamp
+    return [[self alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                        inThread:thread
+                               failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                     recipientId:recipientId];
 }
 
 #pragma mark - OWSReadTracking

@@ -56,11 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSQuotedMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
-                             body:(NSString *_Nullable)body
-                       bodySource:(TSQuotedMessageContentSource)bodySource
-    receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                               authorId:(NSString *)authorId
+                                   body:(NSString *_Nullable)body
+                             bodySource:(TSQuotedMessageContentSource)bodySource
+          receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorId.length > 0);
@@ -79,10 +79,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
-                             body:(NSString *_Nullable)body
-      quotedAttachmentsForSending:(NSArray<TSAttachmentStream *> *)attachments
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                               authorId:(NSString *)authorId
+                                   body:(NSString *_Nullable)body
+            quotedAttachmentsForSending:(NSArray<TSAttachmentStream *> *)attachments
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorId.length > 0);
@@ -136,9 +136,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSQuotedMessageContentSource bodySource = TSQuotedMessageContentSourceUnknown;
 
     // Prefer to generate the text snippet locally if available.
-    TSMessage *_Nullable localRecord = (TSMessage *)[
-        [TSInteraction interactionsWithTimestamp:quoteProto.id ofClass:TSMessage.class withTransaction:transaction]
-        firstObject];
+    TSMessage *_Nullable localRecord
+        = (TSMessage *)[[TSInteraction interactionsWithSenderTimestamp:quoteProto.id
+                                                               ofClass:TSMessage.class
+                                                       withTransaction:transaction] firstObject];
 
     if (localRecord) {
         bodySource = TSQuotedMessageContentSourceLocal;
@@ -208,11 +209,12 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                             authorId:authorId
-                                                 body:body
-                                           bodySource:bodySource
-                        receivedQuotedAttachmentInfos:attachmentInfos];
+    // Legit usage of senderTimestamp - this class references the message it is quoting by it's sender timestamp
+    return [[TSQuotedMessage alloc] initWithSenderTimestamp:timestamp
+                                                   authorId:authorId
+                                                       body:body
+                                                 bodySource:bodySource
+                              receivedQuotedAttachmentInfos:attachmentInfos];
 }
 
 + (nullable TSAttachmentStream *)tryToDeriveLocalThumbnailWithAttachmentInfo:(OWSAttachmentInfo *)attachmentInfo
@@ -227,25 +229,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSArray<TSMessage *> *quotedMessages = (NSArray<TSMessage *> *)[TSInteraction
-        interactionsWithTimestamp:timestamp
-                           filter:^BOOL(TSInteraction *interaction) {
+        interactionsWithSenderTimestamp:timestamp
+                                 filter:^BOOL(TSInteraction *interaction) {
+                                     if (![threadId isEqual:interaction.uniqueThreadId]) {
+                                         return NO;
+                                     }
 
-                               if (![threadId isEqual:interaction.uniqueThreadId]) {
-                                   return NO;
-                               }
-
-                               if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                   TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                   return [authorId isEqual:incomingMessage.messageAuthorId];
-                               } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                   return [authorId isEqual:[TSAccountManager localNumber]];
-                               } else {
-                                   // ignore other interaction types
-                                   return NO;
-                               }
-
-                           }
-                  withTransaction:transaction];
+                                     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+                                         return [authorId isEqual:incomingMessage.messageAuthorId];
+                                     } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                         return [authorId isEqual:[TSAccountManager localNumber]];
+                                     } else {
+                                         // ignore other interaction types
+                                         return NO;
+                                     }
+                                 }
+                        withTransaction:transaction];
 
     TSMessage *_Nullable quotedMessage = quotedMessages.firstObject;
 

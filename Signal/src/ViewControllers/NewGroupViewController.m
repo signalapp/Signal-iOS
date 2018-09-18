@@ -462,9 +462,11 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
         // Add an error message to the new group indicating
         // that group creation didn't succeed.
-        TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                        inThread:thread
-                                                               failedMessageType:TSErrorMessageGroupCreationFailed];
+        // MJK TODO should be safe to remove senderTimestamp and just save immediately
+        TSErrorMessage *errorMessage =
+            [[TSErrorMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                   inThread:thread
+                                          failedMessageType:TSErrorMessageGroupCreationFailed];
         [errorMessage save];
 
         dispatch_async(dispatch_get_main_queue(), ^{

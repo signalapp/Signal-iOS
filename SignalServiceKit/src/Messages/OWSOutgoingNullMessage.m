@@ -24,16 +24,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
 {
-    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                          inThread:contactThread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil];
+    // MJK TODO - remove senderTimestamp
+    self = [super initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                inThread:contactThread
+                                             messageBody:nil
+                                           attachmentIds:[NSMutableArray new]
+                                        expiresInSeconds:0
+                                         expireStartedAt:0
+                                          isVoiceMessage:NO
+                                        groupMetaMessage:TSGroupMetaMessageUnspecified
+                                           quotedMessage:nil
+                                            contactShare:nil];
     if (!self) {
         return self;
     }

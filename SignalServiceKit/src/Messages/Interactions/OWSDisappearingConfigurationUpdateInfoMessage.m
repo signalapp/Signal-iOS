@@ -18,13 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingConfigurationUpdateInfoMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                    configuration:(OWSDisappearingMessagesConfiguration *)configuration
-              createdByRemoteName:(nullable NSString *)remoteName
-           createdInExistingGroup:(BOOL)createdInExistingGroup
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                                 thread:(TSThread *)thread
+                          configuration:(OWSDisappearingMessagesConfiguration *)configuration
+                    createdByRemoteName:(nullable NSString *)remoteName
+                 createdInExistingGroup:(BOOL)createdInExistingGroup
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
+    self = [super initWithSenderTimestamp:timestamp
+                                 inThread:thread
+                              messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
     if (!self) {
         return self;
     }

@@ -121,10 +121,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Find Content
 
-+ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                      authorId:(NSString *)authorId
-                                                threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable TSInteraction *)findInteractionInThreadBySenderTimestamp:(uint64_t)timestamp
+                                                            authorId:(NSString *)authorId
+                                                      threadUniqueId:(NSString *)threadUniqueId
+                                                         transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

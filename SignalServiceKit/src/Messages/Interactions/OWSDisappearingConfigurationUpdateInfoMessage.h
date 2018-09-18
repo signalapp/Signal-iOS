@@ -16,11 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @param remoteName is nil when created by the local user
  */
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                    configuration:(OWSDisappearingMessagesConfiguration *)configuration
-              createdByRemoteName:(nullable NSString *)remoteName
-           createdInExistingGroup:(BOOL)createdInExistingGroup;
+// MJK TODO - can we remove sendertimestamp here
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                                 thread:(TSThread *)thread
+                          configuration:(OWSDisappearingMessagesConfiguration *)configuration
+                    createdByRemoteName:(nullable NSString *)remoteName
+                 createdInExistingGroup:(BOOL)createdInExistingGroup;
 
 @end
 

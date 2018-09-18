@@ -1416,15 +1416,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // TODO: Why is this necessary?
         [message save];
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeGroupQuit
-                                    customMessage:message.customMessage] save];
+        // MJK TODO - remove senderTimestamp
+        [[[TSInfoMessage alloc] initWithSenderTimestamp:message.timestamp
+                                               inThread:thread
+                                            messageType:TSInfoMessageTypeGroupQuit
+                                          customMessage:message.customMessage] save];
     } else {
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeGroupUpdate
-                                    customMessage:message.customMessage] save];
+        // MJK TODO - remove senderTimestamp
+        [[[TSInfoMessage alloc] initWithSenderTimestamp:message.timestamp
+                                               inThread:thread
+                                            messageType:TSInfoMessageTypeGroupUpdate
+                                          customMessage:message.customMessage] save];
     }
 }
 

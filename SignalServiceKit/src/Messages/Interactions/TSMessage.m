@@ -60,16 +60,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @implementation TSMessage
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
+- (instancetype)initMessageWithSenderTimestamp:(uint64_t)timestamp
+                                      inThread:(nullable TSThread *)thread
+                                   messageBody:(nullable NSString *)body
+                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                              expiresInSeconds:(uint32_t)expiresInSeconds
+                               expireStartedAt:(uint64_t)expireStartedAt
+                                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                  contactShare:(nullable OWSContact *)contactShare
 {
-    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithSenderTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

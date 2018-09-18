@@ -190,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          for (int i = 0; i < 3; i++) {
                                              [DebugUIStress
                                                  sendStressMessage:thread
-                                                         timestamp:timestamp
+                                                   senderTimestamp:timestamp
                                                              block:^(SignalRecipient *recipient) {
                                                                  SSKProtoContentBuilder *contentBuilder =
                                                                      [SSKProtoContentBuilder new];
@@ -214,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
                                uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
                                [DebugUIStress
                                    sendStressMessage:thread
-                                           timestamp:timestamp
+                                     senderTimestamp:timestamp
                                                block:^(SignalRecipient *recipient) {
                                                    SSKProtoContentBuilder *contentBuilder =
                                                        [SSKProtoContentBuilder new];
@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
                                timestamp += kHourInMs;
                                [DebugUIStress
                                    sendStressMessage:thread
-                                           timestamp:timestamp
+                                     senderTimestamp:timestamp
                                                block:^(SignalRecipient *recipient) {
                                                    SSKProtoContentBuilder *contentBuilder =
                                                        [SSKProtoContentBuilder new];
@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
                                timestamp -= kHourInMs;
                                [DebugUIStress
                                    sendStressMessage:thread
-                                           timestamp:timestamp
+                                     senderTimestamp:timestamp
                                                block:^(SignalRecipient *recipient) {
                                                    SSKProtoContentBuilder *contentBuilder =
                                                        [SSKProtoContentBuilder new];
@@ -284,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                                          for (int i = 0; i < 3; i++) {
                                              [DebugUIStress sendStressMessage:thread
-                                                                    timestamp:timestamp
+                                                              senderTimestamp:timestamp
                                                                         block:^(SignalRecipient *recipient) {
                                                                             return data;
                                                                         }];
@@ -493,13 +493,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendStressMessage:message];
 }
 
-+ (void)sendStressMessage:(TSThread *)thread timestamp:(uint64_t)timestamp block:(DynamicOutgoingMessageBlock)block
++ (void)sendStressMessage:(TSThread *)thread
+          senderTimestamp:(uint64_t)timestamp
+                    block:(DynamicOutgoingMessageBlock)block
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(block);
 
     OWSDynamicOutgoingMessage *message =
-        [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block timestamp:timestamp thread:thread];
+        [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block senderTimestamp:timestamp thread:thread];
 
     [self sendStressMessage:message];
 }

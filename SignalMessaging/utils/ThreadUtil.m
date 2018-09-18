@@ -128,17 +128,18 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:attachment.captionText
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:[attachment isVoiceMessage]
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
-                                                       contactShare:nil];
+    // MJK TODO - remove senderTimestamp
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
+        initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                      inThread:thread
+                                   messageBody:attachment.captionText
+                                 attachmentIds:[NSMutableArray new]
+                              expiresInSeconds:expiresInSeconds
+                               expireStartedAt:0
+                                isVoiceMessage:[attachment isVoiceMessage]
+                              groupMetaMessage:TSGroupMetaMessageUnspecified
+                                 quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
+                                  contactShare:nil];
 
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType
@@ -179,17 +180,18 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    // MJK TODO - remove senderTimestamp
     TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:contactShare];
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                 inThread:thread
+                                                              messageBody:nil
+                                                            attachmentIds:[NSMutableArray new]
+                                                         expiresInSeconds:expiresInSeconds
+                                                          expireStartedAt:0
+                                                           isVoiceMessage:NO
+                                                         groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                            quotedMessage:nil
+                                                             contactShare:contactShare];
 
     [messageSender enqueueMessage:message
         success:^{
@@ -494,12 +496,12 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // TODO MJK - remove this timestamp
                 TSInteraction *offersMessage = [[OWSContactOffersInteraction alloc]
-                    initContactOffersWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                            thread:thread
-                                     hasBlockOffer:shouldHaveBlockOffer
-                             hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                     hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                       recipientId:recipientId];
+                    initContactOffersWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           hasBlockOffer:shouldHaveBlockOffer
+                                   hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                           hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                             recipientId:recipientId];
                 [offersMessage saveWithTransaction:transaction];
 
                 OWSLogInfo(
@@ -791,10 +793,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Find Content
 
-+ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                      authorId:(NSString *)authorId
-                                                threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable TSInteraction *)findInteractionInThreadBySenderTimestamp:(uint64_t)timestamp
+                                                            authorId:(NSString *)authorId
+                                                      threadUniqueId:(NSString *)threadUniqueId
+                                                         transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorId.length > 0);
@@ -805,29 +807,29 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    NSArray<TSInteraction *> *interactions =
-        [TSInteraction interactionsWithTimestamp:timestamp
-                                          filter:^(TSInteraction *interaction) {
-                                              NSString *_Nullable messageAuthorId = nil;
-                                              if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                                  TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                                  messageAuthorId = incomingMessage.authorId;
-                                              } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                                  messageAuthorId = localNumber;
-                                              }
-                                              if (messageAuthorId.length < 1) {
-                                                  return NO;
-                                              }
+    NSArray<TSInteraction *> *interactions = [TSInteraction
+        interactionsWithSenderTimestamp:timestamp
+                                 filter:^(TSInteraction *interaction) {
+                                     NSString *_Nullable messageAuthorId = nil;
+                                     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+                                         messageAuthorId = incomingMessage.authorId;
+                                     } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                         messageAuthorId = localNumber;
+                                     }
+                                     if (messageAuthorId.length < 1) {
+                                         return NO;
+                                     }
 
-                                              if (![authorId isEqualToString:messageAuthorId]) {
-                                                  return NO;
-                                              }
-                                              if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
-                                                  return NO;
-                                              }
-                                              return YES;
-                                          }
-                                 withTransaction:transaction];
+                                     if (![authorId isEqualToString:messageAuthorId]) {
+                                         return NO;
+                                     }
+                                     if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
+                                         return NO;
+                                     }
+                                     return YES;
+                                 }
+                        withTransaction:transaction];
     if (interactions.count < 1) {
         return nil;
     }

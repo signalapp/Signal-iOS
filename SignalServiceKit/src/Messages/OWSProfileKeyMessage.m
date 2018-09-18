@@ -12,18 +12,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSProfileKeyMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
 {
-    return [super initOutgoingMessageWithTimestamp:timestamp
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil];
+    return [super initOutgoingMessageWithSenderTimestamp:timestamp
+                                                inThread:thread
+                                             messageBody:nil
+                                           attachmentIds:[NSMutableArray new]
+                                        expiresInSeconds:0
+                                         expireStartedAt:0
+                                          isVoiceMessage:NO
+                                        groupMetaMessage:TSGroupMetaMessageUnspecified
+                                           quotedMessage:nil
+                                            contactShare:nil];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

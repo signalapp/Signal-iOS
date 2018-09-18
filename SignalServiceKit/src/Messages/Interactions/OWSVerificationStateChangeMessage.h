@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -15,11 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSVerificationState verificationState;
 @property (nonatomic, readonly) BOOL isLocalChange;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                      recipientId:(NSString *)recipientId
-                verificationState:(OWSVerificationState)verificationState
-                    isLocalChange:(BOOL)isLocalChange;
+- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
+                                 thread:(TSThread *)thread
+                            recipientId:(NSString *)recipientId
+                      verificationState:(OWSVerificationState)verificationState
+                          isLocalChange:(BOOL)isLocalChange;
 
 @end
 

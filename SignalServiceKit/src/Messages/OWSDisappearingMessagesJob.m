@@ -204,17 +204,19 @@ void AssertIsOnDisappearingMessagesQueue()
         remoteContactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
     }
 
+    // MJK - we can't rely on timestampForSorting
     [self becomeConsistentWithDisappearingDuration:message.expiresInSeconds
                                             thread:thread
-                             appearBeforeTimestamp:message.timestampForSorting
+                       appearBeforeSenderTimestamp:message.timestampForSorting
                         createdByRemoteContactName:remoteContactName
                             createdInExistingGroup:NO
                                        transaction:transaction];
 }
 
+// MJK - we can't rely on timestampForSorting
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
-                           appearBeforeTimestamp:(uint64_t)timestampForSorting
+                     appearBeforeSenderTimestamp:(uint64_t)timestampForSorting
                       createdByRemoteContactName:(nullable NSString *)remoteContactName
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -247,12 +249,13 @@ void AssertIsOnDisappearingMessagesQueue()
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
 
     // We want the info message to appear _before_ the message.
+    // MJK FIXME - we have to affect ordering by creation sequence, not sender timestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:timestampForSorting - 1
-                                                                          thread:thread
-                                                                   configuration:disappearingMessagesConfiguration
-                                                             createdByRemoteName:remoteContactName
-                                                          createdInExistingGroup:createdInExistingGroup];
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithSenderTimestamp:timestampForSorting - 1
+                                                                                thread:thread
+                                                                         configuration:disappearingMessagesConfiguration
+                                                                   createdByRemoteName:remoteContactName
+                                                                createdInExistingGroup:createdInExistingGroup];
     [infoMessage saveWithTransaction:transaction];
 
     OWSAssertDebug(backgroundTask);

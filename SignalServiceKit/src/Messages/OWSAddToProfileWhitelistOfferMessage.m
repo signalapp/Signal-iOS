@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAddToProfileWhitelistOfferMessage.h"
@@ -7,15 +7,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
+// TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
 @implementation OWSAddToProfileWhitelistOfferMessage
 
-+ (instancetype)addToProfileWhitelistOfferMessage:(uint64_t)timestamp thread:(TSThread *)thread
++ (instancetype)addToProfileWhitelistOfferMessageWithSenderTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
 {
     return [[OWSAddToProfileWhitelistOfferMessage alloc]
-        initWithTimestamp:timestamp
-                 inThread:thread
-              messageType:(thread.isGroupThread ? TSInfoMessageAddGroupToProfileWhitelistOffer
-                                                : TSInfoMessageAddUserToProfileWhitelistOffer)];
+        initWithSenderTimestamp:timestamp
+                       inThread:thread
+                    messageType:(thread.isGroupThread ? TSInfoMessageAddGroupToProfileWhitelistOffer
+                                                      : TSInfoMessageAddUserToProfileWhitelistOffer)];
 }
 
 - (BOOL)shouldUseReceiptDateForSorting

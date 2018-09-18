@@ -38,18 +38,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSContactThread *contactThread =
     [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+
+    // MJK - FIXME, can't rely on envelope.timestamp for sorting, ensure this is saved immediately.
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
-    [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
-                                                inThread:contactThread
-                                        incomingEnvelope:envelope];
+        [[self alloc] initForUnknownIdentityKeyWithSenderTimestamp:envelope.timestamp
+                                                          inThread:contactThread
+                                                  incomingEnvelope:envelope];
     return errorMessage;
 }
 
-- (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
-                                                       inThread:(TSThread *)thread
-                                               incomingEnvelope:(SSKProtoEnvelope *)envelope
+- (nullable instancetype)initForUnknownIdentityKeyWithSenderTimestamp:(uint64_t)timestamp
+                                                             inThread:(TSThread *)thread
+                                                     incomingEnvelope:(SSKProtoEnvelope *)envelope
 {
-    self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
+    self = [self initWithSenderTimestamp:timestamp
+                                inThread:thread
+                       failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
     if (!self) {
         return self;
     }

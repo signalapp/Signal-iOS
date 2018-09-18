@@ -288,9 +288,9 @@ NS_ASSUME_NONNULL_BEGIN
         uint64_t timestamp = [nsTimestamp unsignedLongLongValue];
 
         NSArray<TSOutgoingMessage *> *messages
-            = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:timestamp
-                                                                               ofClass:[TSOutgoingMessage class]
-                                                                       withTransaction:transaction];
+            = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithSenderTimestamp:timestamp
+                                                                                     ofClass:[TSOutgoingMessage class]
+                                                                             withTransaction:transaction];
         if (messages.count < 1) {
             // The service sends delivery receipts for "unpersisted" messages
             // like group updates, so these errors are expected to a certain extent.
@@ -879,9 +879,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                     inThread:thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+    // MJK TODO - safe to remove senderTimestamp
+    [[[TSInfoMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                           inThread:thread
+                                        messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
     [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
 }
@@ -927,12 +928,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
     NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
+    // MJK TODO - safe to remove senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *message =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                          thread:thread
-                                                                   configuration:disappearingMessagesConfiguration
-                                                             createdByRemoteName:name
-                                                          createdInExistingGroup:NO];
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                                thread:thread
+                                                                         configuration:disappearingMessagesConfiguration
+                                                                   createdByRemoteName:name
+                                                                createdInExistingGroup:NO];
     [message saveWithTransaction:transaction];
 }
 
@@ -1155,17 +1157,19 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
 
-                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:now
-                                                                             inThread:newGroupThread
-                                                                          messageType:TSInfoMessageTypeGroupUpdate
-                                                                        customMessage:updateGroupInfo];
+                // MJK FIXME - seems like we're relying on senderTimestamp
+                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithSenderTimestamp:now
+                                                                                   inThread:newGroupThread
+                                                                                messageType:TSInfoMessageTypeGroupUpdate
+                                                                              customMessage:updateGroupInfo];
                 [infoMessage saveWithTransaction:transaction];
 
                 if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
+                    // MJK - we can't rely on senderTimestamp
                     [[OWSDisappearingMessagesJob sharedJob]
                         becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                           thread:newGroupThread
-                                           appearBeforeTimestamp:now
+                                     appearBeforeSenderTimestamp:now
                                       createdByRemoteContactName:nil
                                           createdInExistingGroup:YES
                                                      transaction:transaction];
@@ -1185,10 +1189,11 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *nameString = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
-                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 inThread:oldGroupThread
-                                              messageType:TSInfoMessageTypeGroupUpdate
-                                            customMessage:updateGroupInfo] saveWithTransaction:transaction];
+                // MJK TODO - should be safe to remove senderTimestamp
+                [[[TSInfoMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                       inThread:oldGroupThread
+                                                    messageType:TSInfoMessageTypeGroupUpdate
+                                                  customMessage:updateGroupInfo] saveWithTransaction:transaction];
                 return nil;
             }
             case SSKProtoGroupContextTypeDeliver: {
@@ -1214,16 +1219,17 @@ NS_ASSUME_NONNULL_BEGIN
                     groupId,
                     (unsigned long)timestamp);
 
+                // Legit usage of senderTimestamp when creating an incoming group message record
                 TSIncomingMessage *incomingMessage =
-                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                                       inThread:oldGroupThread
-                                                                       authorId:envelope.source
-                                                                 sourceDeviceId:envelope.sourceDevice
-                                                                    messageBody:body
-                                                                  attachmentIds:attachmentIds
-                                                               expiresInSeconds:dataMessage.expireTimer
-                                                                  quotedMessage:quotedMessage
-                                                                   contactShare:contact];
+                    [[TSIncomingMessage alloc] initIncomingMessageWithSenderTimestamp:timestamp
+                                                                             inThread:oldGroupThread
+                                                                             authorId:envelope.source
+                                                                       sourceDeviceId:envelope.sourceDevice
+                                                                          messageBody:body
+                                                                        attachmentIds:attachmentIds
+                                                                     expiresInSeconds:dataMessage.expireTimer
+                                                                        quotedMessage:quotedMessage
+                                                                         contactShare:contact];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1253,16 +1259,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread
                                                                                     transaction:transaction];
 
+        // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
-            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                               inThread:thread
-                                                               authorId:[thread contactIdentifier]
-                                                         sourceDeviceId:envelope.sourceDevice
-                                                            messageBody:body
-                                                          attachmentIds:attachmentIds
-                                                       expiresInSeconds:dataMessage.expireTimer
-                                                          quotedMessage:quotedMessage
-                                                           contactShare:contact];
+            [[TSIncomingMessage alloc] initIncomingMessageWithSenderTimestamp:timestamp
+                                                                     inThread:thread
+                                                                     authorId:[thread contactIdentifier]
+                                                               sourceDeviceId:envelope.sourceDevice
+                                                                  messageBody:body
+                                                                attachmentIds:attachmentIds
+                                                             expiresInSeconds:dataMessage.expireTimer
+                                                                quotedMessage:quotedMessage
+                                                                 contactShare:contact];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread

@@ -39,40 +39,39 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction
++ (NSArray<TSInteraction *> *)interactionsWithSenderTimestamp:(uint64_t)timestamp
+                                                      ofClass:(Class)clazz
+                                              withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
 
     // Accept any interaction.
-    return [self interactionsWithTimestamp:timestamp
-                                    filter:^(TSInteraction *interaction) {
-                                        return [interaction isKindOfClass:clazz];
-                                    }
-                           withTransaction:transaction];
+    return [self interactionsWithSenderTimestamp:timestamp
+                                          filter:^(TSInteraction *interaction) {
+                                              return [interaction isKindOfClass:clazz];
+                                          }
+                                 withTransaction:transaction];
 }
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction
++ (NSArray<TSInteraction *> *)interactionsWithSenderTimestamp:(uint64_t)timestamp
+                                                       filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                              withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
 
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     [TSDatabaseSecondaryIndexes
-        enumerateMessagesWithTimestamp:timestamp
-                             withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-
-                                 TSInteraction *interaction =
-                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
-                                 if (!filter(interaction)) {
-                                     return;
-                                 }
-                                 [interactions addObject:interaction];
-                             }
-                      usingTransaction:transaction];
+        enumerateMessagesWithSenderTimestamp:timestamp
+                                   withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+                                       TSInteraction *interaction =
+                                           [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                       if (!filter(interaction)) {
+                                           return;
+                                       }
+                                       [interactions addObject:interaction];
+                                   }
+                            usingTransaction:transaction];
 
     return [interactions copy];
 }
@@ -81,7 +80,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return @"TSInteraction";
 }
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initInteractionWithSenderTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
 

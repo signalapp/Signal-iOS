@@ -64,7 +64,6 @@
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
-#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -2368,10 +2367,10 @@ typedef enum : NSUInteger {
     }
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
-                                                                  authorId:quotedReply.authorId
-                                                            threadUniqueId:self.thread.uniqueId
-                                                               transaction:transaction];
+        quotedInteraction = [ThreadUtil findInteractionInThreadBySenderTimestamp:quotedReply.timestamp
+                                                                        authorId:quotedReply.authorId
+                                                                  threadUniqueId:self.thread.uniqueId
+                                                                     transaction:transaction];
         if (!quotedInteraction) {
             return;
         }

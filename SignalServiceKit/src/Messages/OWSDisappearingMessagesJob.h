@@ -52,9 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
  * @param createdInExistingGroup
  *    YES when being added to a group which already has DM enabled, otherwise NO
  */
+// MJK FIXME - we can't rely on timestampForSorting
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
-                           appearBeforeTimestamp:(uint64_t)timestampForSorting
+                     appearBeforeSenderTimestamp:(uint64_t)timestampForSorting
                       createdByRemoteContactName:(nullable NSString *)remoteContactName
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;

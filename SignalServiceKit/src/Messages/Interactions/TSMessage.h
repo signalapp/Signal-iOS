@@ -27,16 +27,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initInteractionWithSenderTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
+- (instancetype)initMessageWithSenderTimestamp:(uint64_t)timestamp
+                                      inThread:(nullable TSThread *)thread
+                                   messageBody:(nullable NSString *)body
+                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                              expiresInSeconds:(uint32_t)expiresInSeconds
+                               expireStartedAt:(uint64_t)expireStartedAt
+                                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                  contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

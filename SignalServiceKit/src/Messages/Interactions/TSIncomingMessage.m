@@ -36,24 +36,24 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                        authorId:(NSString *)authorId
-                                  sourceDeviceId:(uint32_t)sourceDeviceId
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
+- (instancetype)initIncomingMessageWithSenderTimestamp:(uint64_t)timestamp
+                                              inThread:(TSThread *)thread
+                                              authorId:(NSString *)authorId
+                                        sourceDeviceId:(uint32_t)sourceDeviceId
+                                           messageBody:(nullable NSString *)body
+                                         attachmentIds:(NSArray<NSString *> *)attachmentIds
+                                      expiresInSeconds:(uint32_t)expiresInSeconds
+                                         quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                          contactShare:(nullable OWSContact *)contactShare
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:0
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare];
+    self = [super initMessageWithSenderTimestamp:timestamp
+                                        inThread:thread
+                                     messageBody:body
+                                   attachmentIds:attachmentIds
+                                expiresInSeconds:expiresInSeconds
+                                 expireStartedAt:0
+                                   quotedMessage:quotedMessage
+                                    contactShare:contactShare];
 
     if (!self) {
         return self;
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
-                                       timestamp:(uint64_t)timestamp
+                                 senderTimestamp:(uint64_t)timestamp
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -76,22 +76,22 @@ NS_ASSUME_NONNULL_BEGIN
     // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
     // be *very* few (millisecond) timestamps with multiple authors.
     [TSDatabaseSecondaryIndexes
-        enumerateMessagesWithTimestamp:timestamp
-                             withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                 TSInteraction *interaction =
-                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
-                                 if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                     TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+        enumerateMessagesWithSenderTimestamp:timestamp
+                                   withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+                                       TSInteraction *interaction =
+                                           [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                       if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                           TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-                                     NSString *messageAuthorId = message.messageAuthorId;
-                                     OWSAssertDebug(messageAuthorId.length > 0);
+                                           NSString *messageAuthorId = message.messageAuthorId;
+                                           OWSAssertDebug(messageAuthorId.length > 0);
 
-                                     if ([messageAuthorId isEqualToString:authorId]) {
-                                         foundMessage = message;
-                                     }
-                                 }
-                             }
-                      usingTransaction:transaction];
+                                           if ([messageAuthorId isEqualToString:authorId]) {
+                                               foundMessage = message;
+                                           }
+                                       }
+                                   }
+                            usingTransaction:transaction];
 
     return foundMessage;
 }
