@@ -73,7 +73,11 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
     for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
-        TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto];
+        TSAttachmentPointer *_Nullable pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto];
+        if (!pointer) {
+            OWSFailDebug(@"Invalid attachment.");
+            continue;
+        }
 
         [attachmentIds addObject:pointer.uniqueId];
         [pointer saveWithTransaction:transaction];

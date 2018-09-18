@@ -110,6 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     DecryptSuccessBlock successBlock
         = ^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
+              // Having received a valid (decryptable) message from this user,
+              // make note of the fact that they have a valid Signal account.
               [SignalRecipient markRecipientAsRegistered:envelope.source
                                                 deviceId:envelope.sourceDevice
                                              transaction:transaction];
@@ -262,13 +264,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
 
-                NSData *plaintextData = [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
+                // plaintextData may be nil for some envelope types.
+                NSData *_Nullable plaintextData =
+                    [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
                 successBlock(plaintextData, transaction);
             } @catch (NSException *exception) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     [self processException:exception envelope:envelope];
                     NSString *errorDescription = [NSString
                         stringWithFormat:@"Exception while decrypting %@: %@", cipherTypeName, exception.description];
+                    OWSFailDebug(@"%@", errorDescription);
                     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
                     failureBlock(error);
                 });
@@ -295,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
             errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:DuplicateMessageException]) {
-            // Duplicate messages are dismissed
+            // Duplicate messages are silently discarded.
             return;
         } else if ([exception.name isEqualToString:InvalidVersionException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);

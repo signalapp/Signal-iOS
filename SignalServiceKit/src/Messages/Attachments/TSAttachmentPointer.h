@@ -29,7 +29,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                   sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
-+ (TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto;
++ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto;
 
 @property (atomic) TSAttachmentPointerState state;
 @property (nullable, atomic) NSString *mostRecentFailureLocalizedText;

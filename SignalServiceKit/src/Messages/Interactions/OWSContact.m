@@ -1002,11 +1002,15 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         if (avatarInfo.avatar) {
             SSKProtoAttachmentPointer *avatarAttachment = avatarInfo.avatar;
 
-            TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment];
-            [attachmentPointer saveWithTransaction:transaction];
-
-            contact.avatarAttachmentId = attachmentPointer.uniqueId;
-            contact.isProfileAvatar = avatarInfo.isProfile;
+            TSAttachmentPointer *_Nullable attachmentPointer =
+                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment];
+            if (attachmentPointer) {
+                [attachmentPointer saveWithTransaction:transaction];
+                contact.avatarAttachmentId = attachmentPointer.uniqueId;
+                contact.isProfileAvatar = avatarInfo.isProfile;
+            } else {
+                OWSFailDebug(@"Invalid avatar attachment.");
+            }
         } else {
             OWSFailDebug(@"avatarInfo.hasAvatar was unexpectedly false");
         }

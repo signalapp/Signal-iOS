@@ -53,6 +53,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)encrypt:(NSData *)dataToEncrypt
 {
+    @try {
+        // Exceptions can be thrown in a number of places in encryptUnsafe, e.g.:
+        //
+        // * Curve25519's generateSharedSecretFromPublicKey.
+        // * [HKDFKit deriveKey].
+        return [self encryptUnsafe:dataToEncrypt];
+    } @catch (NSException *exception) {
+        OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
+            exception.description,
+            exception.name,
+            exception.reason,
+            exception.userInfo);
+        return nil;
+    }
+}
+
+- (nullable NSData *)encryptUnsafe:(NSData *)dataToEncrypt
+{
     NSData *sharedSecret =
         [Curve25519 generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
 
@@ -61,8 +79,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *derivedSecret = [HKDFKit deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
     NSData *cipherKey = [derivedSecret subdataWithRange:NSMakeRange(0, 32)];
     NSData *macKey = [derivedSecret subdataWithRange:NSMakeRange(32, 32)];
-    NSAssert(cipherKey.length == 32, @"Cipher Key must be 32 bytes");
-    NSAssert(macKey.length == 32, @"Mac Key must be 32 bytes");
+    if (cipherKey.length != 32) {
+        OWSFailDebug(@"Cipher Key must be 32 bytes");
+        return nil;
+    }
+    if (macKey.length != 32) {
+        OWSFailDebug(@"Mac Key must be 32 bytes");
+        return nil;
+    }
 
     u_int8_t versionByte[] = { 0x01 };
     NSMutableData *message = [NSMutableData dataWithBytes:&versionByte length:1];
@@ -116,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
         &bytesEncrypted);
 
     if (cryptStatus != kCCSuccess) {
-        OWSLogError(@"Encryption failed with status: %d", cryptStatus);
+        OWSFailDebug(@"Encryption failed with status: %d", cryptStatus);
         return nil;
     }
 

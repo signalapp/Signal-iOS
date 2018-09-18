@@ -449,10 +449,16 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)handleReceivedEnvelopeData:(NSData *)envelopeData
 {
+    if (envelopeData.length < 1) {
+        OWSFailDebug(@"Empty envelope.");
+        return;
+    }
+
     // Drop any too-large messages on the floor. Well behaving clients should never send them.
     NSUInteger kMaxEnvelopeByteCount = 250 * 1024;
     if (envelopeData.length > kMaxEnvelopeByteCount) {
         OWSProdError([OWSAnalyticsEvents messageReceiverErrorOversizeMessage]);
+        OWSFailDebug(@"Oversize message.");
         return;
     }
 
@@ -461,6 +467,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     NSUInteger kLargeEnvelopeWarningByteCount = 25 * 1024;
     if (envelopeData.length > kLargeEnvelopeWarningByteCount) {
         OWSProdError([OWSAnalyticsEvents messageReceiverErrorLargeMessage]);
+        OWSFailDebug(@"Unexpectedly large message.");
     }
 
     [self.processingQueue enqueueEnvelopeData:envelopeData];

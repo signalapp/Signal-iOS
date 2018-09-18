@@ -50,6 +50,18 @@ NS_ASSUME_NONNULL_BEGIN
                              serverEphemeralPublic:(NSData *)serverEphemeralPublic
                                 serverStaticPublic:(NSData *)serverStaticPublic
 {
+    if (!keyPair) {
+        OWSFailDebug(@"Missing keyPair");
+        return nil;
+    }
+    if (serverEphemeralPublic.length < 1) {
+        OWSFailDebug(@"Invalid serverEphemeralPublic");
+        return nil;
+    }
+    if (serverStaticPublic.length < 1) {
+        OWSFailDebug(@"Invalid serverStaticPublic");
+        return nil;
+    }
     RemoteAttestationKeys *keys = [RemoteAttestationKeys new];
     keys.keyPair = keyPair;
     keys.serverEphemeralPublic = serverEphemeralPublic;
@@ -63,21 +75,31 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES on success.
 - (BOOL)deriveKeys
 {
-    NSData *ephemeralToEphemeral =
-        [Curve25519 generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
-    NSData *ephemeralToStatic =
-        [Curve25519 generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
+    NSData *ephemeralToEphemeral;
+    NSData *ephemeralToStatic;
+    @try {
+        ephemeralToEphemeral =
+            [Curve25519 generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
+        ephemeralToStatic =
+            [Curve25519 generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
+    } @catch (NSException *exception) {
+        OWSFailDebug(@"could not generate shared secrets: %@", exception);
+        return NO;
+    }
 
     NSData *masterSecret = [ephemeralToEphemeral dataByAppendingData:ephemeralToStatic];
-    NSData *publicKeys = [[self.keyPair.publicKey dataByAppendingData:self.serverEphemeralPublic]
-        dataByAppendingData:self.serverStaticPublic];
+    NSData *publicKeys = [NSData join:@[
+        self.keyPair.publicKey,
+        self.serverEphemeralPublic,
+        self.serverStaticPublic,
+    ]];
 
     NSData *_Nullable derivedMaterial;
     @try {
         derivedMaterial =
             [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
     } @catch (NSException *exception) {
-        OWSLogError(@"could not derive service key: %@", exception);
+        OWSFailDebug(@"could not derive service key: %@", exception);
         return NO;
     }
 
@@ -197,10 +219,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *_Nullable valueData = [self base64DataForKey:key];
     if (valueData && valueData.length != expectedLength) {
-        OWSLogDebug(@"decoded base 64 value for key: %@, has unexpected length: %zd != %zd",
+        OWSLogDebug(@"decoded base 64 value for key: %@, has unexpected length: %lu != %lu",
             key,
-            valueData.length,
-            expectedLength);
+            (unsigned long)valueData.length,
+            (unsigned long)expectedLength);
         OWSFailDebug(@"decoded base 64 value for key has unexpected length: %lu != %lu",
             (unsigned long)valueData.length,
             (unsigned long)expectedLength);
@@ -241,27 +263,27 @@ NS_ASSUME_NONNULL_BEGIN
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self
-            performRemoteAttestationWithSuccess:^(RemoteAttestation *_Nonnull remoteAttestation) {
+            performRemoteAttestationWithSuccess:^(RemoteAttestation *remoteAttestation) {
                 OWSLogDebug(@"succeeded");
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 OWSLogDebug(@"failed with error: %@", error);
             }];
     });
 }
 
-- (void)performRemoteAttestationWithSuccess:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
-                                    failure:(void (^)(NSError *_Nonnull error))failureHandler
+- (void)performRemoteAttestationWithSuccess:(void (^)(RemoteAttestation *remoteAttestation))successHandler
+                                    failure:(void (^)(NSError *error))failureHandler
 {
     [self
-        getRemoteAttestationAuthWithSuccess:^(RemoteAttestationAuth *_Nonnull auth) {
+        getRemoteAttestationAuthWithSuccess:^(RemoteAttestationAuth *auth) {
             [self performRemoteAttestationWithAuth:auth success:successHandler failure:failureHandler];
         }
                                     failure:failureHandler];
 }
 
 - (void)getRemoteAttestationAuthWithSuccess:(void (^)(RemoteAttestationAuth *))successHandler
-                                    failure:(void (^)(NSError *_Nonnull error))failureHandler
+                                    failure:(void (^)(NSError *error))failureHandler
 {
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequest];
     [[TSNetworkManager sharedManager] makeRequest:request
@@ -280,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            OWSLogVerbose(@"remote attestation auth failure: %zd", response.statusCode);
+            OWSLogVerbose(@"remote attestation auth failure: %lu", (unsigned long)response.statusCode);
             failureHandler(error);
         }];
 }
@@ -311,8 +333,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)performRemoteAttestationWithAuth:(RemoteAttestationAuth *)auth
-                                 success:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
-                                 failure:(void (^)(NSError *_Nonnull error))failureHandler
+                                 success:(void (^)(RemoteAttestation *remoteAttestation))successHandler
+                                 failure:(void (^)(NSError *error))failureHandler
 {
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
@@ -344,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            OWSLogVerbose(@"remote attestation failure: %zd", response.statusCode);
+            OWSLogVerbose(@"remote attestation failure: %lu", (unsigned long)response.statusCode);
             failureHandler(error);
         }];
 }
@@ -596,8 +618,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(enclaveId.length > 0);
 
     if (quote.reportData.length < keys.serverStaticPublic.length) {
-        OWSFailDebug(
-            @"reportData has unexpected length: %zd != %zd.", quote.reportData.length, keys.serverStaticPublic.length);
+        OWSFailDebug(@"reportData has unexpected length: %lu != %lu.",
+            (unsigned long)quote.reportData.length,
+            (unsigned long)keys.serverStaticPublic.length);
         return NO;
     }
 
