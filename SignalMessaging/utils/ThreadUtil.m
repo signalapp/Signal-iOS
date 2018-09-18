@@ -255,7 +255,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dynamic Interactions
 
-// MJK TODO - dynamic interactions
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
@@ -464,31 +463,9 @@ NS_ASSUME_NONNULL_BEGIN
             = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
         if (isContactThread) {
             TSContactThread *contactThread = (TSContactThread *)thread;
+            // MJK only place where `hasDismissedOffers` is read
             if (contactThread.hasDismissedOffers) {
                 shouldHaveContactOffers = NO;
-            }
-        }
-
-        // We want the offers to be the first interactions in their
-        // conversation's timeline, so we back-date them to slightly before
-        // the first message - or at an aribtrary old timestamp if the
-        // conversation has no messages.
-        uint64_t contactOffersTimestamp = [NSDate ows_millisecondTimeStamp];
-
-        // If the contact offers' properties have changed, discard the current
-        // one and create a new one.
-        if (existingContactOffers) {
-            if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
-                || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
-                || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
-                OWSLogInfo(@"Removing stale contact offers: %@ (%llu)",
-                    existingContactOffers.uniqueId,
-                    existingContactOffers.timestampForSorting);
-                // Preserve the timestamp of the existing "contact offers" so that
-                // we replace it in the same position in the timeline.
-                contactOffersTimestamp = existingContactOffers.timestamp;
-                [existingContactOffers removeWithTransaction:transaction];
-                existingContactOffers = nil;
             }
         }
 
@@ -497,20 +474,37 @@ NS_ASSUME_NONNULL_BEGIN
                 existingContactOffers.uniqueId,
                 existingContactOffers.timestampForSorting);
             [existingContactOffers removeWithTransaction:transaction];
-        } else if (!existingContactOffers && shouldHaveContactOffers) {
-            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+        } else if (shouldHaveContactOffers) {
+            if (existingContactOffers) {
+                // If the contact offers' properties have changed, update them
+                if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
+                    || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
+                    || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
+                    OWSLogInfo(@"Updating stale contact offers: %@ (%llu)",
+                        existingContactOffers.uniqueId,
+                        existingContactOffers.timestampForSorting);
 
-            TSInteraction *offersMessage =
-                [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp
-                                                                             thread:thread
-                                                                      hasBlockOffer:shouldHaveBlockOffer
-                                                              hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                                      hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                                        recipientId:recipientId];
-            [offersMessage saveWithTransaction:transaction];
+                    [existingContactOffers updateHasBlockOffer:shouldHaveBlockOffer
+                                         hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                                 hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                                   transaction:transaction];
+                }
+            } else {
+                NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
-            OWSLogInfo(
-                @"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
+                // TODO MJK - remove this timestamp
+                TSInteraction *offersMessage = [[OWSContactOffersInteraction alloc]
+                    initContactOffersWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            thread:thread
+                                     hasBlockOffer:shouldHaveBlockOffer
+                             hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                     hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                       recipientId:recipientId];
+                [offersMessage saveWithTransaction:transaction];
+
+                OWSLogInfo(
+                    @"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
+            }
         }
 
         [self ensureUnreadIndicator:result
