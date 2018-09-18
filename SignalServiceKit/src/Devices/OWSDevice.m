@@ -117,6 +117,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     OWSDevice *device = [MTLJSONAdapter modelOfClass:[self class] fromJSONDictionary:deviceAttributes error:error];
     if (device.deviceId < OWSDevicePrimaryDeviceId) {
         OWSFailDebug(@"Invalid device id: %lu", (unsigned long)device.deviceId);
+        *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Invalid device id.");
         return nil;
     }
     return device;
@@ -181,7 +182,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
             }
             *success = NO;
             OWSLogError(@"unable to decode date from %@", value);
-            *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from %@");
+            *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from JSON.");
             return nil;
         }
             reverseBlock:^id(id value, BOOL *success, NSError **error) {
@@ -194,7 +195,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
                     }
                 }
                 OWSLogError(@"unable to encode date from %@", value);
-                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date");
+                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date to JSON.");
                 *success = NO;
                 return nil;
             }];

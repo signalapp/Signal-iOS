@@ -54,6 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)encrypt:(NSData *)dataToEncrypt
 {
     @try {
+        // Exceptions can be thrown in a number of places in encryptUnsafe, e.g.:
+        //
+        // * Curve25519's generateSharedSecretFromPublicKey.
+        // * [HKDFKit deriveKey].
         return [self encryptUnsafe:dataToEncrypt];
     } @catch (NSException *exception) {
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",

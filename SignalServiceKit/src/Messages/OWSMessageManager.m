@@ -1174,7 +1174,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case SSKProtoGroupContextTypeQuit: {
                 if (!oldGroupThread) {
-                    OWSFailDebug(@"ignoring quit group message from unknown group.");
+                    OWSLogWarn(@"ignoring quit group message from unknown group.");
                     return nil;
                 }
                 [newMemberIds removeObject:envelope.source];

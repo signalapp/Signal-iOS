@@ -54,15 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
 {
     if (attachmentProto.id < 1) {
-        OWSFailDebug("Invalid attachment id.");
+        OWSFailDebug(@"Invalid attachment id.");
         return nil;
     }
     if (attachmentProto.key.length < 1) {
-        OWSFailDebug("Invalid attachment key.");
+        OWSFailDebug(@"Invalid attachment key.");
         return nil;
     }
     if (attachmentProto.contentType.length < 1) {
-        OWSFailDebug("Invalid attachment content type.");
+        OWSFailDebug(@"Invalid attachment content type.");
         return nil;
     }
 

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSData *data in datas) {
         [result appendData:data];
     }
-    return result;
+    return [result copy];
 }
 
 - (NSData *)dataByAppendingData:(NSData *)data
