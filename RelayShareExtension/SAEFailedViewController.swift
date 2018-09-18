@@ -42,7 +42,6 @@ class SAEFailedViewController: UIViewController {
 
         self.view.backgroundColor = UIColor.ows_signalBrandBlue
 
-//        let logoImage = UIImage(named: "logoSignal")
         let logoImageView = UIImageView(image: #imageLiteral(resourceName: "forsta_splash"))
 
 //        let logoImageView = UIImageView(image: logoImage)
