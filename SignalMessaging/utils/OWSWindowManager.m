@@ -14,16 +14,23 @@ NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCa
 
 const CGFloat OWSWindowManagerCallBannerHeight(void)
 {
-    if ([UIDevice currentDevice].isIPhoneX) {
-        // On an iPhoneX, the system return-to-call banner has been replaced by a much subtler green
-        // circle behind the system clock. Instead, we mimic the old system call banner as on older devices,
-        // but it has to be taller to fit beneath the notch.
-        // IOS_DEVICE_CONSTANT, we'll want to revisit this when new device dimensions are introduced.
-        return 64;
-    } else {
-
+    if (@available(iOS 11.4, *)) {
         return CurrentAppContext().statusBarHeight + 20;
     }
+
+
+    if (![UIDevice currentDevice].hasIPhoneXNotch) {
+        return CurrentAppContext().statusBarHeight + 20;
+    }
+
+    // Hardcode CallBanner height for iPhone X's on older iOS.
+    //
+    // As of iOS11.4 and iOS12, this no longer seems to be an issue, but previously statusBarHeight returned
+    // something like 20pts (IIRC), meaning our call banner did not extend sufficiently past the iPhone X notch.
+    //
+    // Before noticing that this behavior changed, I actually assumed that notch height was intentionally excluded from
+    // the statusBarHeight, and that this was not a bug, else I'd have taken better notes.
+    return 64;
 }
 
 // Behind everything, especially the root window.

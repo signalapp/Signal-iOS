@@ -11,7 +11,7 @@ public extension UIDevice {
     }
 
     @objc
-    public var isIPhoneX: Bool {
+    public var hasIPhoneXNotch: Bool {
         switch UIScreen.main.nativeBounds.height {
         case 960:
             //  iPad in iPhone compatibility mode (using old iPhone 4 screen size)
@@ -22,10 +22,17 @@ public extension UIDevice {
         case 1334:
             // iPhone 6/6S/7/8
             return false
+        case 1792:
+            // iPhone XR
+            return true
         case 1920, 2208:
             // iPhone 6+/6S+/7+/8+//
             return false
         case 2436:
+            // iPhone X, iPhone XS
+            return true
+        case 2688:
+            // iPhone X Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
