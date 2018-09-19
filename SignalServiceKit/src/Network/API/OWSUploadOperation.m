@@ -11,6 +11,7 @@
 #import "OWSError.h"
 #import "OWSOperation.h"
 #import "OWSRequestFactory.h"
+#import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -27,7 +28,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
 @interface OWSUploadOperation ()
 
-@property (readonly, nonatomic) TSNetworkManager *networkManager;
 @property (readonly, nonatomic) NSString *attachmentId;
 @property (readonly, nonatomic) YapDatabaseConnection *dbConnection;
 
@@ -40,15 +40,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId
                         dbConnection:(YapDatabaseConnection *)dbConnection
 {
-    return [self initWithAttachmentId:attachmentId
-                         dbConnection:dbConnection
-                       networkManager:[TSNetworkManager sharedManager]];
-}
-
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                      networkManager:(TSNetworkManager *)networkManager
-{
     self = [super init];
     if (!self) {
         return self;
@@ -58,9 +49,13 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     _attachmentId = attachmentId;
     _dbConnection = dbConnection;
-    _networkManager = networkManager;
 
     return self;
+}
+
+- (TSNetworkManager *)networkManager
+{
+    return SSKEnvironment.shared.networkManager;
 }
 
 - (void)run
