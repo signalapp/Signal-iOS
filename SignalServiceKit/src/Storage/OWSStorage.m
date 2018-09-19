@@ -515,6 +515,20 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 {
     OWSLogError(@"%@", extensionName);
 
+    // Don't increment version of a given extension more than once
+    // per launch.
+    static NSMutableSet<NSString *> *incrementedViewSet = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        incrementedViewSet = [NSMutableSet new];
+    });
+    @synchronized(incrementedViewSet) {
+        if ([incrementedViewSet containsObject:extensionName]) {
+            OWSLogInfo(@"Ignoring redundant increment: %@", extensionName);
+        }
+        [incrementedViewSet addObject:extensionName];
+    }
+
     NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
     OWSAssertDebug(appUserDefaults);
     NSMutableDictionary<NSString *, NSNumber *> *_Nullable versionMap =
