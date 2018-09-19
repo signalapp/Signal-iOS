@@ -270,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIImage *_Nullable statusIndicatorImage = nil;
         // TODO: Theme, Review with design.
         UIColor *messageStatusViewTintColor
-            = (Theme.isDarkThemeEnabled ? [UIColor ows_dark30Color] : [UIColor ows_light35Color]);
+            = (Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray45Color]);
         BOOL shouldAnimateStatusIcon = NO;
         if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;

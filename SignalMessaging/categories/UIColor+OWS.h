@@ -45,21 +45,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_signalBlueColor;
 @property (class, readonly, nonatomic) UIColor *ows_greenColor;
 @property (class, readonly, nonatomic) UIColor *ows_redColor;
+
+#pragma mark - GreyScale
+
 @property (class, readonly, nonatomic) UIColor *ows_whiteColor;
-@property (class, readonly, nonatomic) UIColor *ows_light02Color;
-@property (class, readonly, nonatomic) UIColor *ows_light10Color;
-@property (class, readonly, nonatomic) UIColor *ows_light35Color;
-@property (class, readonly, nonatomic) UIColor *ows_light45Color;
-@property (class, readonly, nonatomic) UIColor *ows_light60Color;
-@property (class, readonly, nonatomic) UIColor *ows_light90Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark05Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark30Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark55Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark60Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark70Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark85Color;
-@property (class, readonly, nonatomic) UIColor *ows_dark95Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray02Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray05Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray15Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray25Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray45Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray60Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray75Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray90Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray95Color;
 @property (class, readonly, nonatomic) UIColor *ows_blackColor;
+
+#pragma mark - Conversation Colors
+
 @property (class, readonly, nonatomic) UIColor *ows_red700Color;
 @property (class, readonly, nonatomic) UIColor *ows_pink600Color;
 @property (class, readonly, nonatomic) UIColor *ows_purple600Color;

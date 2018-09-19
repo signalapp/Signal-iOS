@@ -49,7 +49,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)backgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_whiteColor);
 }
 
 + (UIColor *)offBackgroundColor
@@ -60,12 +60,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)primaryColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark05Color : UIColor.ows_light90Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray05Color : UIColor.ows_gray90Color);
 }
 
 + (UIColor *)secondaryColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark30Color : UIColor.ows_light60Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray60Color);
 }
 
 + (UIColor *)boldColor
@@ -82,12 +82,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)placeholderColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark55Color : UIColor.ows_light35Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray45Color : UIColor.ows_gray45Color);
 }
 
 + (UIColor *)hairlineColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light45Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray25Color);
 }
 
 #pragma mark - Global App Colors
@@ -100,7 +100,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)navbarIconColor
 {
     // TODO: Theme, Review with design.
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray60Color);
 }
 
 + (UIColor *)navbarTitleColor
@@ -125,7 +125,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)conversationButtonBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_light02Color);
+    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_gray02Color);
 }
 
 + (UIBlurEffect *)barBlurEffect
@@ -148,7 +148,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)searchFieldBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_light10Color;
+    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_gray05Color;
 }
 
 #pragma mark -
@@ -160,7 +160,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)toastBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray60Color);
 }
 
 @end
