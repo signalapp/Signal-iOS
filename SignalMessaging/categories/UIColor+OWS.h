@@ -51,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_whiteColor;
 @property (class, readonly, nonatomic) UIColor *ows_gray02Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray05Color;
-@property (class, readonly, nonatomic) UIColor *ows_gray15Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray25Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray45Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray60Color;
