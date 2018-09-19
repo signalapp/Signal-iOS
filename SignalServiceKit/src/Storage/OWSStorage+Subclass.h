@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadDatabase;
 
 - (void)runSyncRegistrations;
+// completion will be invoked _off_ the main thread.
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion;
 
 - (BOOL)areAsyncRegistrationsComplete;

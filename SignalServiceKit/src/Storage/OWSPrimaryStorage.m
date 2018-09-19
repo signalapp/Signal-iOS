@@ -213,17 +213,18 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
 
-    [self.database flushExtensionRequestsWithCompletionQueue:nil
-                                             completionBlock:^{
-                                                 OWSAssertIsOnMainThread();
-                                                 OWSAssertDebug(!self.areAsyncRegistrationsComplete);
-                                                 OWSLogVerbose(@"async registrations complete.");
-                                                 self.areAsyncRegistrationsComplete = YES;
+    [self.database
+        flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                  completionBlock:^{
+                                      OWSAssertDebug(!self.areAsyncRegistrationsComplete);
+                                      OWSLogVerbose(@"async registrations complete.");
 
-                                                 completion();
+                                      self.areAsyncRegistrationsComplete = YES;
 
-                                                 [self verifyDatabaseViews];
-                                             }];
+                                      completion();
+
+                                      [self verifyDatabaseViews];
+                                  }];
 }
 
 - (void)verifyDatabaseViews

@@ -58,6 +58,7 @@ typedef void (^OWSStorageMigrationBlock)(void);
 // This object can be used to filter database notifications.
 @property (nonatomic, readonly, nullable) id dbNotificationObject;
 
+// migrationBlock will be invoked _off_ the main thread.
 + (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
 
 #ifdef DEBUG

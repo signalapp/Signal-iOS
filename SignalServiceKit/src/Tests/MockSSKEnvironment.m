@@ -27,7 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)activate
 {
-    [self setShared:[self new]];
+    MockSSKEnvironment *instance = [self new];
+    [self setShared:instance];
+    [instance configure];
 }
 
 - (instancetype)init
@@ -51,17 +53,20 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 + (OWSPrimaryStorage *)createPrimaryStorageForTests
 {
     OWSPrimaryStorage *primaryStorage = [[OWSPrimaryStorage alloc] initStorage];
     [OWSPrimaryStorage protectFiles];
-
-    // TODO: Should we inject a block to do view registrations?
-    primaryStorage.areAsyncRegistrationsComplete = YES;
-    primaryStorage.areSyncRegistrationsComplete = YES;
-
     return primaryStorage;
+}
+
+- (void)configure
+{
+    __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [OWSStorage registerExtensionsWithMigrationBlock:^() {
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 @end

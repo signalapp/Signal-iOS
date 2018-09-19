@@ -68,15 +68,17 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
-            // Don't start database migrations until storage is ready.
-            [VersionMigrations performUpdateCheckWithCompletion:^() {
-                OWSAssertIsOnMainThread();
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // Don't start database migrations until storage is ready.
+                [VersionMigrations performUpdateCheckWithCompletion:^() {
+                    OWSAssertIsOnMainThread();
 
-                migrationCompletion();
+                    migrationCompletion();
 
-                OWSAssertDebug(backgroundTask);
-                backgroundTask = nil;
-            }];
+                    OWSAssertDebug(backgroundTask);
+                    backgroundTask = nil;
+                }];
+            });
         }];
     });
 }
