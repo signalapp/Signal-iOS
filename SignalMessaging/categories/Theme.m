@@ -70,13 +70,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)boldColor
 {
-    // TODO: Review with design.
     return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.blackColor);
 }
 
 + (UIColor *)middleGrayColor
 {
-    // TODO: Review with design.
     return [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
@@ -99,8 +97,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)navbarIconColor
 {
-    // TODO: Theme, Review with design.
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray60Color);
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray60Color);
 }
 
 + (UIColor *)navbarTitleColor
