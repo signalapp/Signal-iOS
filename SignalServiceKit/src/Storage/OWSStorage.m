@@ -525,6 +525,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     @synchronized(incrementedViewSet) {
         if ([incrementedViewSet containsObject:extensionName]) {
             OWSLogInfo(@"Ignoring redundant increment: %@", extensionName);
+            return;
         }
         [incrementedViewSet addObject:extensionName];
     }
