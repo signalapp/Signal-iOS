@@ -15,14 +15,28 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Fake name";
 }
 
-- (NSArray<Contact *> *)signalContacts
+- (NSArray<SignalAccount *> *)signalAccounts
 {
     return @[];
 }
 
-- (NSArray<SignalAccount *> *)signalAccounts
+- (BOOL)isSystemContact:(NSString *)recipientId
 {
-    return @[];
+    return YES;
+}
+
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId
+{
+    return YES;
+}
+
+- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
+                         withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:))
+{
+    // If this method ends up being used by the tests, we should provide a better implementation.
+    OWSAbstractMethod();
+
+    return NSOrderedAscending;
 }
 
 + (BOOL)name:(NSString *_Nonnull)nameString matchesQuery:(NSString *_Nonnull)queryString
@@ -31,6 +45,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)phoneNumber
+{
+    return nil;
+}
+
+- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
+{
+    return nil;
+}
+
+- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId
+{
+    return nil;
+}
+
+- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
 {
     return nil;
 }

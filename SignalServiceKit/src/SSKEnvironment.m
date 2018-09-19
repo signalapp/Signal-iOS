@@ -10,6 +10,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 static SSKEnvironment *sharedSSKEnvironment;
 
+@interface SSKEnvironment ()
+
+@property (nonatomic) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic) OWSMessageSender *messageSender;
+@property (nonatomic) id<ProfileManagerProtocol> profileManager;
+@property (nonatomic) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic) ContactsUpdater *contactsUpdater;
+@property (nonatomic) TSNetworkManager *networkManager;
+
+@end
+
+#pragma mark -
+
 @implementation SSKEnvironment
 
 @synthesize callMessageHandler = _callMessageHandler;

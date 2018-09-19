@@ -6,6 +6,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// This should only be used in the tests.
+#ifdef DEBUG
+
+@interface SSKEnvironment (MockSSKEnvironment)
+
+// Redeclare these properties as mutable so that tests can replace singletons.
+@property (nonatomic) id<ContactsManagerProtocol> contactsManager;
+@property (nonatomic) OWSMessageSender *messageSender;
+@property (nonatomic) id<ProfileManagerProtocol> profileManager;
+@property (nonatomic) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic) ContactsUpdater *contactsUpdater;
+@property (nonatomic) TSNetworkManager *networkManager;
+
+@end
+
+#pragma mark -
+
 @interface MockSSKEnvironment : SSKEnvironment
 
 + (void)activate;
@@ -13,5 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init;
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END
