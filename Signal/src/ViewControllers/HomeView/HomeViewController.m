@@ -880,6 +880,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                                                  withMappings:self.threadMappings];
     }];
 
+    static BOOL hasIncrementedDatabaseView = NO;
+    if (![thread isKindOfClass:[TSThread class]] && !hasIncrementedDatabaseView) {
+        OWSLogError(@"Invalid object in thread view: %@", [thread class]);
+        [OWSStorage incrementVersionOfDatabaseExtension:TSThreadDatabaseViewExtensionName];
+        hasIncrementedDatabaseView = YES;
+    }
+
     return thread;
 }
 
