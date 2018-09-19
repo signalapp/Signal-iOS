@@ -73,11 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(didChangeCallLoggingPreference:)
                                                  name:OWSPreferencesCallLoggingDidChangeNotification
                                                object:nil];
-    _callService = [[CallService alloc]
-        initWithAccountManager:self.accountManager
-               contactsManager:Environment.shared.contactsManager
-                 messageSender:SSKEnvironment.shared.messageSender
-          notificationsAdapter:[[OWSCallNotificationsAdapter alloc] initWithAdaptee:self.notificationsManager]];
+    _callService = [[CallService alloc] initWithAccountManager:self.accountManager
+                                               contactsManager:Environment.shared.contactsManager
+                                                 messageSender:SSKEnvironment.shared.messageSender
+                                          notificationsAdapter:[OWSCallNotificationsAdapter new]];
 
     _callMessageHandler =
         [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
