@@ -4904,11 +4904,9 @@ typedef enum : NSUInteger {
     }];
 
     // Flag to ensure that we only increment once per launch.
-    static BOOL hasIncrementedDatabaseView = NO;
-    if (hasError && !hasIncrementedDatabaseView) {
+    if (hasError) {
         OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
         [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
-        hasIncrementedDatabaseView = YES;
     }
 
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
