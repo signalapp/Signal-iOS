@@ -4,6 +4,7 @@
 
 #import "TSNetworkManager.h"
 #import "AppContext.h"
+#import "NSData+OWS.h"
 #import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
@@ -144,6 +145,45 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     }
 }
 
+#ifdef DEBUG
++ (void)logCurlForTask:(NSURLSessionDataTask *)task
+{
+    NSMutableArray<NSString *> *curlComponents = [NSMutableArray new];
+    [curlComponents addObject:@"curl"];
+    // Verbose
+    [curlComponents addObject:@"-v"];
+    // Insecure
+    [curlComponents addObject:@"-k"];
+    // Method, e.g. GET
+    [curlComponents addObject:@"-X"];
+    [curlComponents addObject:task.originalRequest.HTTPMethod];
+    // Headers
+    for (NSString *header in task.originalRequest.allHTTPHeaderFields) {
+        NSString *headerValue = task.originalRequest.allHTTPHeaderFields[header];
+        // We don't yet support escaping header values.
+        // If these asserts trip, we'll need to add that.
+        OWSAssertDebug([header rangeOfString:@"'"].location == NSNotFound);
+        OWSAssertDebug([headerValue rangeOfString:@"'"].location == NSNotFound);
+
+        [curlComponents addObject:@"-H"];
+        [curlComponents addObject:[NSString stringWithFormat:@"'%@: %@'", header, headerValue]];
+    }
+    // Body/parameters (e.g. JSON payload)
+    if (task.originalRequest.HTTPBody) {
+        NSString *jsonBody =
+            [[NSString alloc] initWithData:task.originalRequest.HTTPBody encoding:NSUTF8StringEncoding];
+        // We don't yet support escaping JSON.
+        // If these asserts trip, we'll need to add that.
+        OWSAssertDebug([jsonBody rangeOfString:@"'"].location == NSNotFound);
+        [curlComponents addObject:@"--data-ascii"];
+        [curlComponents addObject:[NSString stringWithFormat:@"'%@'", jsonBody]];
+    }
+    [curlComponents addObject:task.originalRequest.URL.absoluteString];
+    NSString *curlCommand = [curlComponents componentsJoinedByString:@" "];
+    OWSLogVerbose(@"curl for failed request: %@", curlCommand);
+}
+#endif
+
 + (failureBlock)errorPrettifyingForFailureBlock:(failureBlock)failureBlock request:(TSRequest *)request
 {
     OWSAssertDebug(failureBlock);
@@ -151,6 +191,10 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
     return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
       NSInteger statusCode = [task statusCode];
+
+#ifdef DEBUG
+        [TSNetworkManager logCurlForTask:task];
+#endif
 
       [OutageDetection.sharedManager reportConnectionFailure];
 
