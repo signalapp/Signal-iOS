@@ -219,17 +219,17 @@ class ConversationSearchViewController: UITableViewController {
             cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, blockedPhoneNumber: self.blockedPhoneNumberSet)
             return cell
         case .contacts:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
-                owsFail("cell was unexpectedly nil")
+//            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
+//                owsFail("cell was unexpectedly nil")
+//                return UITableViewCell()
+//            }
+//
+//            guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
+//                owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
-            }
-
-            guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
-                owsFail("searchResult was unexpectedly nil")
-                return UITableViewCell()
-            }
-            cell.configure(withRecipientId: searchResult.signalAccount.recipientId, contactsManager: contactsManager)
-            return cell
+//            }
+//            cell.configure(withRecipientId: searchResult.signalAccount.recipientId, contactsManager: contactsManager)
+//            return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
                 owsFail("cell was unexpectedly nil")

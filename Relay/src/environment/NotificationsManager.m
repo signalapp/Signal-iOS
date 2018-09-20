@@ -319,7 +319,7 @@
 
         BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
-        NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
+        NSString *senderName = [contactsManager displayNameForRecipientId:message.authorId];
         NSString *groupName = [thread.title ows_stripped];
         if (groupName.length < 1) {
             groupName = [MessageStrings newGroupDefaultTitle];

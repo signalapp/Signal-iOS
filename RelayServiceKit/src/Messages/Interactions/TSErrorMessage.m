@@ -125,7 +125,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                     @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
                 NSString *recipientDisplayName =
-                    [[TextSecureKitEnv sharedEnv].contactsManager displayNameForPhoneIdentifier:self.recipientId];
+                    [[TextSecureKitEnv sharedEnv].contactsManager displayNameForRecipientId:self.recipientId];
                 return [NSString stringWithFormat:messageFormat, recipientDisplayName];
             } else {
                 // recipientId will be nil for legacy errors

@@ -10,12 +10,67 @@ import Foundation
 import YapDatabase
 import RelayServiceKit
 
-@objc public class FLContactsManager: NSObject {
+@objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
+    
+    public func displayName(forRecipientId recipientId: String) -> String? {
+        if let recipient:RelayRecipient = self.recipient(withId: recipientId) {
+            if recipient.fullName().count > 0 {
+                return recipient.fullName()
+            } else if (recipient.flTag?.displaySlug.count)! > 0 {
+                return (recipient.flTag?.displaySlug)!
+            }
+        }
+        return NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: "Displayed if for some reason we can't determine a contacts ID *or* name");
+    }
+    
+    public func isSystemContact(_ recipientId: String) -> Bool {
+        // Placeholder for possible future use
+        return false
+    }
+    
+    public func isSystemContact(withRecipientId recipientId: String) -> Bool {
+        // Placeholder for possible future use
+        return false
+    }
+    
+    public func compare(recipient left: RelayRecipient, with right: RelayRecipient) -> ComparisonResult {
+        
+        var comparisonResult: ComparisonResult = (left.lastName!.caseInsensitiveCompare(right.lastName!))
+        
+        if comparisonResult == .orderedSame {
+            comparisonResult = (left.firstName!.caseInsensitiveCompare(right.firstName!))
+            
+            if comparisonResult == .orderedSame {
+                comparisonResult = ((left.flTag!.slug.caseInsensitiveCompare(right.flTag!.slug)))
+            }
+        }
+        return comparisonResult
+    }
+    
+    public func avatarImageRecipientId(_ recipientId: String) -> UIImage? {
+        // TODO: implement gravatars here
+        var image: UIImage? = nil
+        var cacheKey: NSString? = nil
+        
+        // if using gravatars
+        // cacheKey = "gravatar:\(uid)"
+        // else
+        cacheKey = "avatar:\(recipientId)" as NSString
+        image = self.avatarCache.object(forKey: cacheKey!)
+        
+        if image == nil {
+            image = self.recipient(withId: recipientId)?.avatar
+            if image != nil {
+                self.avatarCache.setObject(image!, forKey: cacheKey!)
+            }
+        }
+        return image
+    }
+    
     
     @objc public static let shared = FLContactsManager()
     
-    @objc public var allRecipients: [RelayRecipient] = []
-    @objc public var activeRecipients: [RelayRecipient] = []
+//    @objc public var activeRecipients: [RelayRecipient] = []
     
     private let readConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadConnection }()
     private let readWriteConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadWriteConnection }()
@@ -65,6 +120,11 @@ import RelayServiceKit
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
+    @objc public func allRecipients() -> [RelayRecipient] {
+        return RelayRecipient.allObjectsInCollection() as! [RelayRecipient]
+    }
+
     
     @objc public func selfRecipient() -> RelayRecipient {
         let selfId = TSAccountManager.localUID()! as NSString
@@ -270,43 +330,19 @@ import RelayServiceKit
     }
 
     
-    @objc public func setImage(image: UIImage, recipientId: String) {
+    @objc public func setAvatarImage(image: UIImage, recipientId: String) {
         if let recipient = self.recipient(withId: recipientId) {
             recipient.avatar = image
             self.avatarCache.setObject(image, forKey: recipientId as NSString)
         }
     }
     
-    @objc public func image(forRecipientId uid: String) -> UIImage? {
-        // TODO: implement gravatars here
-        var image: UIImage? = nil
-        var cacheKey: NSString? = nil
-        
-        // if using gravatars
-        // cacheKey = "gravatar:\(uid)"
-        // else
-        cacheKey = "avatar:\(uid)" as NSString
-        image = self.avatarCache.object(forKey: cacheKey!)
-        
-        if image == nil {
-            image = self.recipient(withId: uid)?.avatar
-            if image != nil {
-                self.avatarCache.setObject(image!, forKey: cacheKey!)
-            }
-        }
-        return image
-    }
+//    @objc public func image(forRecipientId uid: String) -> UIImage? {
+//    }
     
-    @objc public func nameString(forRecipientId uid: String) -> String? {
-        if let recipient:RelayRecipient = self.recipient(withId: uid) {
-            if recipient.fullName().count > 0 {
-                return recipient.fullName()
-            } else if (recipient.flTag?.displaySlug.count)! > 0 {
-                return recipient.flTag?.displaySlug
-            }
-        }
-        return NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: "Displayed if for some reason we can't determine a contacts ID *or* name");
-    }
+//    @objc public func nameString(forRecipientId uid: String) -> String? {
+//
+//    }
     
     // MARK: - Recipient management
     @objc public func processRecipientsBlob() {

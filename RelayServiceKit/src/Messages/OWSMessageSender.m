@@ -760,7 +760,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             NSString *localizedErrorDescription =
                 [NSString stringWithFormat:localizedErrorDescriptionFormat,
-                          [self.contactsManager displayNameForPhoneIdentifier:recipient.uniqueId]];
+                          [self.contactsManager displayNameForRecipientId:recipient.uniqueId]];
             NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.uniqueId);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request

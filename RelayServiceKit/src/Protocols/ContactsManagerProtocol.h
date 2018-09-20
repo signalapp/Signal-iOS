@@ -4,28 +4,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class CNContact;
-@class Contact;
-@class PhoneNumber;
-@class SignalAccount;
+//@class CNContact;
+//@class Contact;
+//@class PhoneNumber;
+@class RelayRecipient;
 @class UIImage;
 
 @protocol ContactsManagerProtocol <NSObject>
 
-- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)phoneNumber;
-- (NSArray<SignalAccount *> *)signalAccounts;
+- (nullable NSString *)displayNameForRecipientId:(NSString *)recipientId;
+- (NSArray<RelayRecipient *> *)allRecipients;
 
 - (BOOL)isSystemContact:(NSString *)recipientId;
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
+- (BOOL)isSystemContactWithRecipientId:(NSString *)recipientId;
 
-- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
-                         withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));
+- (NSComparisonResult)compareRecpient:(RelayRecipient *)left
+                         withRecipient:(RelayRecipient *)right NS_SWIFT_NAME(compare(recipient:with:));
 
-#pragma mark - CNContacts
-
-- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;
-- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId;
-- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId;
+-(nullable RelayRecipient *)recipientWithId:(NSString *)recipientId;
+//- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;
+//- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId;
+- (nullable UIImage *)avatarImageRecipientId:(NSString *)recipientId;
 
 @end
 

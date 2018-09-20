@@ -161,9 +161,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Sort the group members using contacts manager.
     NSArray<NSString *> *sortedRecipientIds = [recipientIds sortedArrayUsingComparator:^NSComparisonResult(
         NSString *recipientIdA, NSString *recipientIdB) {
-        SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdA];
-        SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdB];
-        return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
+        RelayRecipient *relayRecipientA = [helper.contactsManager recipientWithId:recipientIdA];
+        RelayRecipient *relayRecipientB = [helper.contactsManager recipientWithId:recipientIdB];
+
+        return [helper.contactsManager compareRecpient:relayRecipientA withRecipient:relayRecipientB];
     }];
     for (NSString *recipientId in sortedRecipientIds) {
         [section addItem:[OWSTableItem

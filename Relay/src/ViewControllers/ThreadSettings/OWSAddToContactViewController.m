@@ -189,19 +189,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contact);
     OWSAssert(self.recipientId);
 
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.logTag);
-        return;
-    }
-    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
-    if (!cnContact) {
-        OWSFail(@"%@ Could not load system contact.", self.logTag);
-        return;
-    }
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
-                                                     fromViewController:self
-                                                        editImmediately:YES
-                                                 addToExistingCnContact:cnContact];
+//    if (!self.contactsManager.supportsContactEditing) {
+//        OWSFail(@"%@ Contact editing not supported", self.logTag);
+//        return;
+//    }
+//    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+//    if (!cnContact) {
+//        OWSFail(@"%@ Could not load system contact.", self.logTag);
+//        return;
+//    }
+//    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
+//                                                     fromViewController:self
+//                                                        editImmediately:YES
+//                                                 addToExistingCnContact:cnContact];
 }
 
 @end

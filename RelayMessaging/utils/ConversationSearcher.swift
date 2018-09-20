@@ -38,22 +38,22 @@ public class ConversationSearchResult: Comparable {
 }
 
 public class ContactSearchResult: Comparable {
-    public let signalAccount: SignalAccount
+    public let relayRecipient: RelayRecipient
     public let contactsManager: ContactsManagerProtocol
 
     public var recipientId: String {
-        return signalAccount.recipientId
+        return relayRecipient.uniqueId
     }
 
-    init(signalAccount: SignalAccount, contactsManager: ContactsManagerProtocol) {
-        self.signalAccount = signalAccount
+    init(relayRecipient: RelayRecipient, contactsManager: ContactsManagerProtocol) {
+        self.relayRecipient = relayRecipient
         self.contactsManager = contactsManager
     }
 
     // Mark: Comparable
 
     public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.contactsManager.compare(signalAccount: lhs.signalAccount, with: rhs.signalAccount) == .orderedAscending
+        return lhs.contactsManager.compare(recipient: lhs.relayRecipient, with: rhs.relayRecipient) == .orderedAscending
     }
 
     // MARK: Equatable
@@ -132,8 +132,8 @@ public class ConversationSearcher: NSObject {
                                                             snippet: snippet)
 
                 messages.append(searchResult)
-            } else if let signalAccount = match as? SignalAccount {
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
+            } else if let relayRecipient = match as? RelayRecipient {
+                let searchResult = ContactSearchResult(relayRecipient: relayRecipient, contactsManager: contactsManager)
                 contacts.append(searchResult)
             } else {
                 owsFail("\(self.logTag) in \(#function) unhandled item: \(match)")

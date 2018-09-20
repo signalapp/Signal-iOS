@@ -175,7 +175,7 @@ public class FullTextSearchFinder: NSObject {
 //    }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
-        let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
+        let displayName = contactsManager.displayName(forRecipientId: recipientId)
         
         var uuid = UUID.init(uuidString: recipientId)
         

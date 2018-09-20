@@ -72,35 +72,36 @@ class ContactCell: UITableViewCell {
 
     func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
 
-        OWSTableItem.configureCell(self)
-
-        self.contact = contact
-        self.showsWhenSelected = showsWhenSelected
-
-        self.titleLabel.textColor = Theme.primaryColor
-        self.subtitleLabel.textColor = Theme.secondaryColor
-
-        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
-        titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
-        updateSubtitle(subtitleType: subtitleType, contact: contact)
-
-        if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
-            contactImageView.image = contactImage
-        } else {
-            let contactIdForDeterminingBackgroundColor: String
-            if let signalId = contact.parsedPhoneNumbers.first?.toE164() {
-                contactIdForDeterminingBackgroundColor = signalId
-            } else {
-                contactIdForDeterminingBackgroundColor = contact.fullName
-            }
-
-            let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
-                                                        colorSeed: contactIdForDeterminingBackgroundColor,
-                                                        diameter: ContactCell.kAvatarDiameter,
-                                                        contactsManager: FLContactsManager.shared)
-
-            contactImageView.image = avatarBuilder.build()
-        }
+        // TODO:  Retool for RelayRecipients
+//        OWSTableItem.configureCell(self)
+//
+//        self.contact = contact
+//        self.showsWhenSelected = showsWhenSelected
+//
+//        self.titleLabel.textColor = Theme.primaryColor
+//        self.subtitleLabel.textColor = Theme.secondaryColor
+//
+//        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
+//        titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
+//        updateSubtitle(subtitleType: subtitleType, contact: contact)
+//
+//        if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
+//            contactImageView.image = contactImage
+//        } else {
+//            let contactIdForDeterminingBackgroundColor: String
+//            if let signalId = contact.parsedPhoneNumbers.first?.toE164() {
+//                contactIdForDeterminingBackgroundColor = signalId
+//            } else {
+//                contactIdForDeterminingBackgroundColor = contact.fullName
+//            }
+//
+//            let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
+//                                                        colorSeed: contactIdForDeterminingBackgroundColor,
+//                                                        diameter: ContactCell.kAvatarDiameter,
+//                                                        contactsManager: FLContactsManager.shared)
+//
+//            contactImageView.image = avatarBuilder.build()
+//        }
     }
 
     func updateSubtitle(subtitleType: SubtitleCellValue, contact: Contact) {

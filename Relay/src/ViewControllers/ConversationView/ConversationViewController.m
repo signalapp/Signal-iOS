@@ -5101,43 +5101,44 @@ typedef enum : NSUInteger {
 {
     OWSAssert(contact);
 
-    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
-    if (!cnContact) {
-        OWSFail(@"%@ Could not load system contact.", self.logTag);
-        return;
-    }
-
-    DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
-
-    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
-    if (!contactShareRecord) {
-        OWSFail(@"%@ Could not convert system contact.", self.logTag);
-        return;
-    }
-
-    BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
-    for (NSString *recipientId in contact.textSecureIdentifiers) {
-        if (avatarImageData) {
-            break;
-        }
-        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
-        if (avatarImageData) {
-            isProfileAvatar = YES;
-        }
-    }
-    contactShareRecord.isProfileAvatar = isProfileAvatar;
-
-    ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
-
-    // TODO: We should probably show this in the same navigation view controller.
-    ContactShareApprovalViewController *approveContactShare =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
-    OWSAssert(contactsPicker.navigationController);
-    [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
+    // TODO: Retool for our environment
+//    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+//    if (!cnContact) {
+//        OWSFail(@"%@ Could not load system contact.", self.logTag);
+//        return;
+//    }
+//
+//    DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
+//
+//    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
+//    if (!contactShareRecord) {
+//        OWSFail(@"%@ Could not convert system contact.", self.logTag);
+//        return;
+//    }
+//
+//    BOOL isProfileAvatar = NO;
+//    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
+//    for (NSString *recipientId in contact.textSecureIdentifiers) {
+//        if (avatarImageData) {
+//            break;
+//        }
+//        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+//        if (avatarImageData) {
+//            isProfileAvatar = YES;
+//        }
+//    }
+//    contactShareRecord.isProfileAvatar = isProfileAvatar;
+//
+//    ContactShareViewModel *contactShare =
+//        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
+//
+//    // TODO: We should probably show this in the same navigation view controller.
+//    ContactShareApprovalViewController *approveContactShare =
+//        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
+//                                                         contactsManager:self.contactsManager
+//                                                                delegate:self];
+//    OWSAssert(contactsPicker.navigationController);
+//    [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts

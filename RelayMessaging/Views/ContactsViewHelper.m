@@ -362,9 +362,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
         cnContact = updatedContact;
     }
-    if (signalAccount && !cnContact) {
-        cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
-    }
+//    if (signalAccount && !cnContact) {
+//        cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
+//    }
     if (cnContact) {
         if (shouldEditImmediately) {
             // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form

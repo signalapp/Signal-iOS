@@ -711,7 +711,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssert(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
+    NSString *name = [self.contactsManager displayNameForRecipientId:envelope.source];
     OWSDisappearingConfigurationUpdateInfoMessage *message =
     [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                       thread:thread
