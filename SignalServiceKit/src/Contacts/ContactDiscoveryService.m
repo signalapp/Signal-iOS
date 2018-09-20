@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.auth.username;
 }
 
-- (NSString *)password
+- (NSString *)authToken
 {
     return self.auth.password;
 }
