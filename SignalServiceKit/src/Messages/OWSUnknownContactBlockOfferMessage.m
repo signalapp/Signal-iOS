@@ -16,29 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
 // TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation OWSUnknownContactBlockOfferMessage
-
-+ (instancetype)unknownContactBlockOfferMessageWithSenderTimestamp:(uint64_t)timestamp
-                                                            thread:(TSThread *)thread
-                                                         contactId:(NSString *)contactId
-{
-    return [[OWSUnknownContactBlockOfferMessage alloc] initWithSenderTimestamp:timestamp
-                                                                        thread:thread
-                                                                     contactId:contactId];
-}
-
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp thread:(TSThread *)thread contactId:(NSString *)contactId
-{
-    self = [super initWithSenderTimestamp:timestamp
-                                 inThread:thread
-                        failedMessageType:TSErrorMessageUnknownContactBlockOffer];
-
-    if (self) {
-        _contactId = contactId;
-    }
-
-    return self;
-}
+#pragma clang diagnostic pop
 
 - (BOOL)shouldUseReceiptDateForSorting
 {

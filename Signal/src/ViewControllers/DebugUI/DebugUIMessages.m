@@ -3598,11 +3598,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                      withTransaction:transaction]];
         [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
                                                        withTransaction:transaction]];
-        
-        
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
             [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
                                                                 withTransaction:transaction];
+#pragma clang diagnostic pop
+
         OWSAssertDebug(blockingSNChangeMessage);
         [result addObject:blockingSNChangeMessage];
         // MJK TODO - should be safe to remove this senderTimestamp

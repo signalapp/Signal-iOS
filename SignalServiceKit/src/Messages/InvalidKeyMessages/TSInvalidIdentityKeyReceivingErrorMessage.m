@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// TODO we can eventually deprecate this, since incoming messages are now always decrypted.
+__attribute__((deprecated))
 @interface TSInvalidIdentityKeyReceivingErrorMessage ()
 
 @property (nonatomic, readonly, copy) NSString *authorId;
@@ -33,13 +33,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize envelopeData = _envelopeData;
 
+#ifdef DEBUG
+// We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
+// create them with the debug UI
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
                                   withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSContactThread *contactThread =
     [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    // MJK - FIXME, can't rely on envelope.timestamp for sorting, ensure this is saved immediately.
+    // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
         [[self alloc] initForUnknownIdentityKeyWithSenderTimestamp:envelope.timestamp
                                                           inThread:contactThread
@@ -69,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     return self;
 }
+#endif
 
 - (nullable SSKProtoEnvelope *)envelope
 {

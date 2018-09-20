@@ -91,16 +91,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    // MJK FIXME - cannot rely on envelope timestamp for sorting, ensure this is saved immediately.
+    // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
+    // a reference to the envelope which we failed to process.
     return [self initWithSenderTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
-}
-
-- (instancetype)initWithFailedMessageType:(TSErrorMessageType)errorMessageType
-{
-    // MJK FIXME - cannot rely on envelope timestamp for sorting, ensure this is saved immediately.
-    return [self initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                inThread:nil
-                       failedMessageType:errorMessageType];
 }
 
 - (OWSInteractionType)interactionType
@@ -160,7 +153,10 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
 + (instancetype)corruptedMessageInUnknownThread
 {
-    return [[self alloc] initWithFailedMessageType:TSErrorMessageInvalidMessage];
+    // MJK TODO - Seems like we could safely remove this timestamp
+    return [[self alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+                                        inThread:nil
+                               failedMessageType:TSErrorMessageInvalidMessage];
 }
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope

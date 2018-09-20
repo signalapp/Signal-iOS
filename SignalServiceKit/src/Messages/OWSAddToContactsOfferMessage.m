@@ -16,7 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
 // TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation OWSAddToContactsOfferMessage
+#pragma clang diagnostic pop
 
 + (instancetype)addToContactsOfferMessageWithSenderTimestamp:(uint64_t)timestamp
                                                       thread:(TSThread *)thread

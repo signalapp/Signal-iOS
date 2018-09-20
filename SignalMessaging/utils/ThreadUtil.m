@@ -305,20 +305,31 @@ NS_ASSUME_NONNULL_BEGIN
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
+#pragma clang diagnostic pop
                               // Delete this legacy interactions, which has been superseded by
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
+#pragma clang diagnostic pop
                               // Delete this legacy interactions, which has been superseded by
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
+#pragma clang diagnostic pop
                               // Delete this legacy interactions, which has been superseded by
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+#pragma clang diagnostic pop
                               // Remove obsolete unread indicator interactions;
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
@@ -465,7 +476,6 @@ NS_ASSUME_NONNULL_BEGIN
             = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
         if (isContactThread) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            // MJK only place where `hasDismissedOffers` is read
             if (contactThread.hasDismissedOffers) {
                 shouldHaveContactOffers = NO;
             }

@@ -206,6 +206,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [interactions copy];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
 {
     NSMutableArray *errorMessages = [NSMutableArray new];
@@ -220,6 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     return [errorMessages copy];
 }
+#pragma clang diagnostic pop
 
 - (NSUInteger)numberOfInteractions
 {

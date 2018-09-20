@@ -1890,7 +1890,11 @@ typedef enum : NSUInteger {
                                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
                                    // but there will be some legacy ones in the wild, behind which await
                                    // as-of-yet-undecrypted messages
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
+#pragma clang diagnostic pop
+
                                        [errorMessage acceptNewIdentityKey];
                                    }
                                }];

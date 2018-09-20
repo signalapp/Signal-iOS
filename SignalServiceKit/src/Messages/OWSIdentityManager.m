@@ -528,6 +528,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
     }
 
+    // MJK TODO - why not save immediately, why build up this array?
     for (TSMessage *message in messages) {
         [message saveWithTransaction:transaction];
     }
