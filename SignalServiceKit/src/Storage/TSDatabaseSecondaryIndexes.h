@@ -11,8 +11,8 @@
 
 + (YapDatabaseSecondaryIndex *)registerTimeStampIndex;
 
-+ (void)enumerateMessagesWithSenderTimestamp:(uint64_t)timestamp
-                                   withBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block
-                            usingTransaction:(YapDatabaseReadTransaction *)transaction;
++ (void)enumerateMessagesWithTimestamp:(uint64_t)timestamp
+                             withBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block
+                      usingTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end

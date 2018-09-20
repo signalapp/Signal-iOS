@@ -18,17 +18,17 @@ NS_ASSUME_NONNULL_BEGIN
 // it's redundant with the interaction's TSContactThread
 @property (nonatomic, readonly) NSString *recipientId;
 
-- (instancetype)initInteractionWithSenderTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // MJK TODO should be safe to remove this timestamp param
-- (instancetype)initContactOffersWithSenderTimestamp:(uint64_t)timestamp
-                                              thread:(TSThread *)thread
-                                       hasBlockOffer:(BOOL)hasBlockOffer
-                               hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-                       hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                                         recipientId:(NSString *)recipientId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initContactOffersWithTimestamp:(uint64_t)timestamp
+                                        thread:(TSThread *)thread
+                                 hasBlockOffer:(BOOL)hasBlockOffer
+                         hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+                 hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                                   recipientId:(NSString *)recipientId NS_DESIGNATED_INITIALIZER;
 
 - (void)updateHasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer

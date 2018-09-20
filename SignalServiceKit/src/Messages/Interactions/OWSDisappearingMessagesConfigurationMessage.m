@@ -27,16 +27,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration thread:(TSThread *)thread
 {
     // MJK TODO - remove sender timestamp
-    self = [super initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                inThread:thread
-                                             messageBody:nil
-                                           attachmentIds:[NSMutableArray new]
-                                        expiresInSeconds:0
-                                         expireStartedAt:0
-                                          isVoiceMessage:NO
-                                        groupMetaMessage:TSGroupMetaMessageUnspecified
-                                           quotedMessage:nil
-                                            contactShare:nil];
+    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:thread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMetaMessageUnspecified
+                                     quotedMessage:nil
+                                      contactShare:nil];
     if (!self) {
         return self;
     }

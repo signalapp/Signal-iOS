@@ -847,8 +847,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
     OWSAssertDebug(contactThread);
     // MJK TODO - should be safe to remove senderTimestamp
-    [messages
-        addObject:[[OWSVerificationStateChangeMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
+    [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                               thread:contactThread
                                                                          recipientId:recipientId
                                                                    verificationState:verificationState
@@ -857,12 +856,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     for (TSGroupThread *groupThread in
         [TSGroupThread groupThreadsWithRecipientId:recipientId transaction:transaction]) {
         // MJK TODO - should be safe to remove senderTimestamp
-        [messages addObject:[[OWSVerificationStateChangeMessage alloc]
-                                initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 thread:groupThread
-                                            recipientId:recipientId
-                                      verificationState:verificationState
-                                          isLocalChange:isLocalChange]];
+        [messages
+            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                            thread:groupThread
+                                                                       recipientId:recipientId
+                                                                 verificationState:verificationState
+                                                                     isLocalChange:isLocalChange]];
     }
 
     // MJK TODO - why not save in-line, vs storing in an array and saving the array?

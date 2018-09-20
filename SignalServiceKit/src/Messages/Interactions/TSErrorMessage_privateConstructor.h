@@ -8,9 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSErrorMessage ()
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(nullable TSThread *)thread
-                      failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
 
 @property (atomic, nullable) NSData *envelopeData;
 

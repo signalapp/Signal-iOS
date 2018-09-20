@@ -84,17 +84,17 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 - (instancetype)init NS_UNAVAILABLE;
 
 // used when receiving quoted messages
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               authorId:(NSString *)authorId
-                                   body:(NSString *_Nullable)body
-                             bodySource:(TSQuotedMessageContentSource)bodySource
-          receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+                       bodySource:(TSQuotedMessageContentSource)bodySource
+    receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
 
 // used when sending quoted messages
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               authorId:(NSString *)authorId
-                                   body:(NSString *_Nullable)body
-            quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+      quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 
 
 + (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage

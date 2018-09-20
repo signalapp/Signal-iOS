@@ -14,18 +14,18 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
 {
-    return [super initOutgoingMessageWithSenderTimestamp:timestamp
-                                                inThread:thread
-                                             messageBody:nil
-                                           attachmentIds:[NSMutableArray new]
-                                        expiresInSeconds:0
-                                         expireStartedAt:0
-                                          isVoiceMessage:NO
-                                        groupMetaMessage:TSGroupMetaMessageUnspecified
-                                           quotedMessage:nil
-                                            contactShare:nil];
+    return [super initOutgoingMessageWithTimestamp:timestamp
+                                          inThread:thread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMetaMessageUnspecified
+                                     quotedMessage:nil
+                                      contactShare:nil];
 }
 
 - (BOOL)shouldBeSaved

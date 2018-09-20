@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSAddToProfileWhitelistOfferMessage
 #pragma clang diagnostic pop
 
-+ (instancetype)addToProfileWhitelistOfferMessageWithSenderTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
++ (instancetype)addToProfileWhitelistOfferMessageWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
 {
     return [[OWSAddToProfileWhitelistOfferMessage alloc]
-        initWithSenderTimestamp:timestamp
-                       inThread:thread
-                    messageType:(thread.isGroupThread ? TSInfoMessageAddGroupToProfileWhitelistOffer
-                                                      : TSInfoMessageAddUserToProfileWhitelistOffer)];
+        initWithTimestamp:timestamp
+                 inThread:thread
+              messageType:(thread.isGroupThread ? TSInfoMessageAddGroupToProfileWhitelistOffer
+                                                : TSInfoMessageAddUserToProfileWhitelistOffer)];
 }
 
 - (BOOL)shouldUseReceiptDateForSorting

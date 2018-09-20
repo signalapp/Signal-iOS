@@ -20,24 +20,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread
 {
-    return [self initWithPlainTextDataBlock:block senderTimestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
+    return [self initWithPlainTextDataBlock:block timestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
 }
 
 // MJK TODO can we remove sender timestamp?
 - (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block
-                           senderTimestamp:(uint64_t)timestamp
+                                 timestamp:(uint64_t)timestamp
                                     thread:(nullable TSThread *)thread
 {
-    self = [super initOutgoingMessageWithSenderTimestamp:timestamp
-                                                inThread:thread
-                                             messageBody:nil
-                                           attachmentIds:[NSMutableArray new]
-                                        expiresInSeconds:0
-                                         expireStartedAt:0
-                                          isVoiceMessage:NO
-                                        groupMetaMessage:TSGroupMetaMessageUnspecified
-                                           quotedMessage:nil
-                                            contactShare:nil];
+    self = [super initOutgoingMessageWithTimestamp:timestamp
+                                          inThread:thread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMetaMessageUnspecified
+                                     quotedMessage:nil
+                                      contactShare:nil];
 
     if (self) {
         _block = block;

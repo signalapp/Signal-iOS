@@ -28,7 +28,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @interface TSInteraction : TSYapDatabaseObject
 
-- (instancetype)initInteractionWithSenderTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 @property (nonatomic, readonly) TSThread *thread;
@@ -47,13 +47,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 #pragma mark Utility Method
 
-+ (NSArray<TSInteraction *> *)interactionsWithSenderTimestamp:(uint64_t)timestamp
-                                                      ofClass:(Class)clazz
-                                              withTransaction:(YapDatabaseReadTransaction *)transaction;
++ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
+                                                ofClass:(Class)clazz
+                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-+ (NSArray<TSInteraction *> *)interactionsWithSenderTimestamp:(uint64_t)timestamp
-                                                       filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                              withTransaction:(YapDatabaseReadTransaction *)transaction;
++ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
+                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (NSDate *)dateForSorting;
 - (uint64_t)timestampForSorting;

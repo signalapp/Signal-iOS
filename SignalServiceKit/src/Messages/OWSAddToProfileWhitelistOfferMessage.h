@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
 __attribute__((deprecated)) @interface OWSAddToProfileWhitelistOfferMessage : TSInfoMessage
 
-+ (instancetype)addToProfileWhitelistOfferMessageWithSenderTimestamp:(uint64_t)timestamp thread:(TSThread *)thread;
++ (instancetype)addToProfileWhitelistOfferMessageWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread;
 
 @property (nonatomic, readonly) NSString *contactId;
 

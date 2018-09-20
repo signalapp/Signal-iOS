@@ -245,11 +245,11 @@ void AssertIsOnDisappearingMessagesQueue()
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                         configuration:disappearingMessagesConfiguration
-                                                                   createdByRemoteName:remoteContactName
-                                                                createdInExistingGroup:createdInExistingGroup];
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                          thread:thread
+                                                                   configuration:disappearingMessagesConfiguration
+                                                             createdByRemoteName:remoteContactName
+                                                          createdInExistingGroup:createdInExistingGroup];
     [infoMessage saveWithTransaction:transaction];
 
     OWSAssertDebug(backgroundTask);

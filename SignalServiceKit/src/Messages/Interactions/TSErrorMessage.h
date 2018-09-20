@@ -28,28 +28,28 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 
 @interface TSErrorMessage : TSMessage <OWSReadTracking>
 
-- (instancetype)initMessageWithSenderTimestamp:(uint64_t)timestamp
-                                      inThread:(nullable TSThread *)thread
-                                   messageBody:(nullable NSString *)body
-                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                              expiresInSeconds:(uint32_t)expiresInSeconds
-                               expireStartedAt:(uint64_t)expireStartedAt
-                                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                  contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(nullable TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                          attachmentIds:(NSArray<NSString *> *)attachmentIds
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                        expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(nullable TSThread *)thread
-                      failedMessageType:(TSErrorMessageType)errorMessageType
-                            recipientId:(nullable NSString *)recipientId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                failedMessageType:(TSErrorMessageType)errorMessageType
+                      recipientId:(nullable NSString *)recipientId NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;

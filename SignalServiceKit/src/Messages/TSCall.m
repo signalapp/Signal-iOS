@@ -45,12 +45,12 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @implementation TSCall
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                         withCallNumber:(NSString *)contactNumber
-                               callType:(RPRecentCallType)callType
-                               inThread:(TSContactThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                   withCallNumber:(NSString *)contactNumber
+                         callType:(RPRecentCallType)callType
+                         inThread:(TSContactThread *)thread
 {
-    self = [super initInteractionWithSenderTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

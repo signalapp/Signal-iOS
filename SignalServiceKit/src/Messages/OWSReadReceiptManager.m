@@ -361,10 +361,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             for (NSNumber *nsSentTimestamp in sentTimestamps) {
                 UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
 
-                NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[TSInteraction
-                    interactionsWithSenderTimestamp:sentTimestamp
-                                            ofClass:[TSOutgoingMessage class]
-                                    withTransaction:transaction];
+                NSArray<TSOutgoingMessage *> *messages
+                    = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:sentTimestamp
+                                                                                       ofClass:[TSOutgoingMessage class]
+                                                                               withTransaction:transaction];
                 if (messages.count > 1) {
                     OWSLogError(@"More than one matching message with timestamp: %llu.", sentTimestamp);
                 }
@@ -461,9 +461,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         }
 
         NSArray<TSIncomingMessage *> *messages
-            = (NSArray<TSIncomingMessage *> *)[TSInteraction interactionsWithSenderTimestamp:messageIdTimestamp
-                                                                                     ofClass:[TSIncomingMessage class]
-                                                                             withTransaction:transaction];
+            = (NSArray<TSIncomingMessage *> *)[TSInteraction interactionsWithTimestamp:messageIdTimestamp
+                                                                               ofClass:[TSIncomingMessage class]
+                                                                       withTransaction:transaction];
         if (messages.count > 0) {
             for (TSIncomingMessage *message in messages) {
                 NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - readTimestamp / 1000;

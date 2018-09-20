@@ -22,16 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               authorId:(NSString *)authorId
-                                   body:(nullable NSString *)body
-                             bodySource:(TSQuotedMessageContentSource)bodySource
-                         thumbnailImage:(nullable UIImage *)thumbnailImage
-                            contentType:(nullable NSString *)contentType
-                         sourceFilename:(nullable NSString *)sourceFilename
-                       attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-             thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-                thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(nullable NSString *)body
+                       bodySource:(TSQuotedMessageContentSource)bodySource
+                   thumbnailImage:(nullable UIImage *)thumbnailImage
+                      contentType:(nullable NSString *)contentType
+                   sourceFilename:(nullable NSString *)sourceFilename
+                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
+          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -40,16 +40,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Initializers
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               authorId:(NSString *)authorId
-                                   body:(nullable NSString *)body
-                             bodySource:(TSQuotedMessageContentSource)bodySource
-                         thumbnailImage:(nullable UIImage *)thumbnailImage
-                            contentType:(nullable NSString *)contentType
-                         sourceFilename:(nullable NSString *)sourceFilename
-                       attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-             thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-                thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(nullable NSString *)body
+                       bodySource:(TSQuotedMessageContentSource)bodySource
+                   thumbnailImage:(nullable UIImage *)thumbnailImage
+                      contentType:(nullable NSString *)contentType
+                   sourceFilename:(nullable NSString *)sourceFilename
+                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
+          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
 {
     self = [super init];
     if (!self) {
@@ -103,16 +103,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    return [[self alloc] initWithSenderTimestamp:quotedMessage.timestamp
-                                        authorId:quotedMessage.authorId
-                                            body:quotedMessage.body
-                                      bodySource:quotedMessage.bodySource
-                                  thumbnailImage:thumbnailImage
-                                     contentType:attachmentInfo.contentType
-                                  sourceFilename:attachmentInfo.sourceFilename
-                                attachmentStream:nil
-                      thumbnailAttachmentPointer:attachmentPointer
-                         thumbnailDownloadFailed:thumbnailDownloadFailed];
+    return [[self alloc] initWithTimestamp:quotedMessage.timestamp
+                                  authorId:quotedMessage.authorId
+                                      body:quotedMessage.body
+                                bodySource:quotedMessage.bodySource
+                            thumbnailImage:thumbnailImage
+                               contentType:attachmentInfo.contentType
+                            sourceFilename:attachmentInfo.sourceFilename
+                          attachmentStream:nil
+                thumbnailAttachmentPointer:attachmentPointer
+                   thumbnailDownloadFailed:thumbnailDownloadFailed];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(ConversationViewItem *)conversationItem
@@ -151,16 +151,16 @@ NS_ASSUME_NONNULL_BEGIN
         // because the QuotedReplyViewModel has some hardcoded assumptions that only quoted attachments have
         // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
         // contactShare avatar in the quoted reply.
-        return [[self alloc] initWithSenderTimestamp:timestamp
-                                            authorId:authorId
-                                                body:[@"👤 " stringByAppendingString:contactShare.displayName]
-                                          bodySource:TSQuotedMessageContentSourceLocal
-                                      thumbnailImage:nil
-                                         contentType:nil
-                                      sourceFilename:nil
-                                    attachmentStream:nil
-                          thumbnailAttachmentPointer:nil
-                             thumbnailDownloadFailed:NO];
+        return [[self alloc] initWithTimestamp:timestamp
+                                      authorId:authorId
+                                          body:[@"👤 " stringByAppendingString:contactShare.displayName]
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:nil
+                                   contentType:nil
+                                sourceFilename:nil
+                              attachmentStream:nil
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
     }
 
     NSString *_Nullable quotedText = message.body;
@@ -223,16 +223,16 @@ NS_ASSUME_NONNULL_BEGIN
         hasText = YES;
     }
 
-    return [[self alloc] initWithSenderTimestamp:timestamp
-                                        authorId:authorId
-                                            body:quotedText
-                                      bodySource:TSQuotedMessageContentSourceLocal
-                                  thumbnailImage:quotedAttachment.thumbnailImageSmallSync
-                                     contentType:quotedAttachment.contentType
-                                  sourceFilename:quotedAttachment.sourceFilename
-                                attachmentStream:quotedAttachment
-                      thumbnailAttachmentPointer:nil
-                         thumbnailDownloadFailed:NO];
+    return [[self alloc] initWithTimestamp:timestamp
+                                  authorId:authorId
+                                      body:quotedText
+                                bodySource:TSQuotedMessageContentSourceLocal
+                            thumbnailImage:quotedAttachment.thumbnailImageSmallSync
+                               contentType:quotedAttachment.contentType
+                            sourceFilename:quotedAttachment.sourceFilename
+                          attachmentStream:quotedAttachment
+                thumbnailAttachmentPointer:nil
+                   thumbnailDownloadFailed:NO];
 }
 
 #pragma mark - Instance Methods
@@ -242,10 +242,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
 
     // Legit usage of senderTimestamp to reference existing message
-    return [[TSQuotedMessage alloc] initWithSenderTimestamp:self.timestamp
-                                                   authorId:self.authorId
-                                                       body:self.body
-                                quotedAttachmentsForSending:attachments];
+    return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
+                                             authorId:self.authorId
+                                                 body:self.body
+                          quotedAttachmentsForSending:attachments];
 }
 
 - (BOOL)isRemotelySourced

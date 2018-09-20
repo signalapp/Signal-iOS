@@ -44,19 +44,19 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(TSThread *)thread
-                            messageType:(TSInfoMessageType)infoMessage
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
 {
     // MJK TODO - remove senderTimestamp
-    self = [super initMessageWithSenderTimestamp:timestamp
-                                        inThread:thread
-                                     messageBody:nil
-                                   attachmentIds:@[]
-                                expiresInSeconds:0
-                                 expireStartedAt:0
-                                   quotedMessage:nil
-                                    contactShare:nil];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:nil
+                             attachmentIds:@[]
+                          expiresInSeconds:0
+                           expireStartedAt:0
+                             quotedMessage:nil
+                              contactShare:nil];
 
     if (!self) {
         return self;
@@ -72,24 +72,24 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(TSThread *)thread
-                            messageType:(TSInfoMessageType)infoMessage
-                          customMessage:(NSString *)customMessage
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+                    customMessage:(NSString *)customMessage
 {
-    self = [self initWithSenderTimestamp:timestamp inThread:thread messageType:infoMessage];
+    self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
     if (self) {
         _customMessage = customMessage;
     }
     return self;
 }
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(TSThread *)thread
-                            messageType:(TSInfoMessageType)infoMessage
-                unregisteredRecipientId:(NSString *)unregisteredRecipientId
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+          unregisteredRecipientId:(NSString *)unregisteredRecipientId
 {
-    self = [self initWithSenderTimestamp:timestamp inThread:thread messageType:infoMessage];
+    self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
     if (self) {
         _unregisteredRecipientId = unregisteredRecipientId;
     }
@@ -102,10 +102,10 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     OWSAssertDebug(recipientId);
 
     // MJK TODO - remove senderTimestamp
-    return [[self alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                        inThread:thread
-                                     messageType:TSInfoMessageUserNotRegistered
-                         unregisteredRecipientId:recipientId];
+    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                  inThread:thread
+                               messageType:TSInfoMessageUserNotRegistered
+                   unregisteredRecipientId:recipientId];
 }
 
 - (OWSInteractionType)interactionType

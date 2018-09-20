@@ -22,16 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(nullable TSThread *)thread messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     // MJK TODO - remove senderTimestamp
-    self = [super initOutgoingMessageWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                inThread:thread
-                                             messageBody:nil
-                                           attachmentIds:[NSMutableArray new]
-                                        expiresInSeconds:0
-                                         expireStartedAt:0
-                                          isVoiceMessage:NO
-                                        groupMetaMessage:TSGroupMetaMessageUnspecified
-                                           quotedMessage:nil
-                                            contactShare:nil];
+    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:thread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMetaMessageUnspecified
+                                     quotedMessage:nil
+                                      contactShare:nil];
     if (!self) {
         return self;
     }

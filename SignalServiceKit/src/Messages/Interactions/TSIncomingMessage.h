@@ -12,14 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
-- (instancetype)initMessageWithSenderTimestamp:(uint64_t)timestamp
-                                      inThread:(nullable TSThread *)thread
-                                   messageBody:(nullable NSString *)body
-                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                              expiresInSeconds:(uint32_t)expiresInSeconds
-                               expireStartedAt:(uint64_t)expireStartedAt
-                                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                  contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
 /**
  *  Inits an incoming group message that expires.
@@ -43,15 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return initiated incoming group message
  */
-- (instancetype)initIncomingMessageWithSenderTimestamp:(uint64_t)timestamp
-                                              inThread:(TSThread *)thread
-                                              authorId:(NSString *)authorId
-                                        sourceDeviceId:(uint32_t)sourceDeviceId
-                                           messageBody:(nullable NSString *)body
-                                         attachmentIds:(NSArray<NSString *> *)attachmentIds
-                                      expiresInSeconds:(uint32_t)expiresInSeconds
-                                         quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                          contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
+- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
+                                        inThread:(TSThread *)thread
+                                        authorId:(NSString *)authorId
+                                  sourceDeviceId:(uint32_t)sourceDeviceId
+                                     messageBody:(nullable NSString *)body
+                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                                expiresInSeconds:(uint32_t)expiresInSeconds
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                    contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  */
 + (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
-                                 senderTimestamp:(uint64_t)timestamp
+                                       timestamp:(uint64_t)timestamp
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This will be 0 for messages created before we were tracking sourceDeviceId

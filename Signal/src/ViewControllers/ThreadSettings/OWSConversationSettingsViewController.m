@@ -909,11 +909,11 @@ const CGFloat kIconViewLength = 24;
         // MJK TODO - should be safe to remove this senderTimestamp
         OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
             [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
-                                 thread:self.thread
-                          configuration:self.disappearingMessagesConfiguration
-                    createdByRemoteName:nil
-                 createdInExistingGroup:NO];
+                     initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                thread:self.thread
+                         configuration:self.disappearingMessagesConfiguration
+                   createdByRemoteName:nil
+                createdInExistingGroup:NO];
         [infoMessage save];
 
         [OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob

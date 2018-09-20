@@ -1417,16 +1417,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message save];
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
         // MJK TODO - remove senderTimestamp
-        [[[TSInfoMessage alloc] initWithSenderTimestamp:message.timestamp
-                                               inThread:thread
-                                            messageType:TSInfoMessageTypeGroupQuit
-                                          customMessage:message.customMessage] save];
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeGroupQuit
+                                    customMessage:message.customMessage] save];
     } else {
         // MJK TODO - remove senderTimestamp
-        [[[TSInfoMessage alloc] initWithSenderTimestamp:message.timestamp
-                                               inThread:thread
-                                            messageType:TSInfoMessageTypeGroupUpdate
-                                          customMessage:message.customMessage] save];
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeGroupUpdate
+                                    customMessage:message.customMessage] save];
     }
 }
 

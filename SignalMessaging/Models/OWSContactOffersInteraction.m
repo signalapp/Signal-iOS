@@ -21,14 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initContactOffersWithSenderTimestamp:(uint64_t)timestamp
-                                              thread:(TSThread *)thread
-                                       hasBlockOffer:(BOOL)hasBlockOffer
-                               hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
-                       hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                                         recipientId:(NSString *)recipientId
+- (instancetype)initContactOffersWithTimestamp:(uint64_t)timestamp
+                                        thread:(TSThread *)thread
+                                 hasBlockOffer:(BOOL)hasBlockOffer
+                         hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+                 hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                                   recipientId:(NSString *)recipientId
 {
-    self = [super initInteractionWithSenderTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
     if (!self) {
         return self;

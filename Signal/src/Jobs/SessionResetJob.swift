@@ -31,7 +31,7 @@ public class SessionResetJob: NSObject {
 
             DispatchQueue.main.async {
                 // MJK TODO - should be safe to remove this senderTimestamp
-                let endSessionMessage = EndSessionMessage(senderTimestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
+                let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
 
                 self.messageSender.enqueue(endSessionMessage, success: {
                     dbConnection.asyncReadWrite { (transaction) in
@@ -42,7 +42,7 @@ public class SessionResetJob: NSObject {
                     }
                     Logger.info("successfully sent EndSessionMessage.")
                     // MJK TODO - should be safe to remove this senderTimestamp
-                    let message = TSInfoMessage(senderTimestamp: NSDate.ows_millisecondTimeStamp(),
+                    let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,
                                                 messageType: TSInfoMessageType.typeSessionDidEnd)
                     message.save()

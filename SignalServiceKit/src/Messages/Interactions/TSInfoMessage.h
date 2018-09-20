@@ -29,37 +29,37 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
 @property (atomic, readonly, nullable) NSString *customMessage;
 @property (atomic, readonly, nullable) NSString *unregisteredRecipientId;
 
-- (instancetype)initMessageWithSenderTimestamp:(uint64_t)timestamp
-                                      inThread:(nullable TSThread *)thread
-                                   messageBody:(nullable NSString *)body
-                                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                              expiresInSeconds:(uint32_t)expiresInSeconds
-                               expireStartedAt:(uint64_t)expireStartedAt
-                                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                  contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(TSThread *)contact
-                            messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)contact
+                      messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(TSThread *)thread
-                            messageType:(TSInfoMessageType)infoMessage
-                          customMessage:(NSString *)customMessage;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+                    customMessage:(NSString *)customMessage;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(TSThread *)thread
-                            messageType:(TSInfoMessageType)infoMessage
-                unregisteredRecipientId:(NSString *)unregisteredRecipientId;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+          unregisteredRecipientId:(NSString *)unregisteredRecipientId;
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp
-                               inThread:(nullable TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                          attachmentIds:(NSArray<NSString *> *)attachmentIds
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                        expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                      messageBody:(nullable NSString *)body
+                    attachmentIds:(NSArray<NSString *> *)attachmentIds
+                 expiresInSeconds:(uint32_t)expiresInSeconds
+                  expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
 
 @end
 

@@ -44,19 +44,17 @@ __attribute__((deprecated))
 
     // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
-        [[self alloc] initForUnknownIdentityKeyWithSenderTimestamp:envelope.timestamp
-                                                          inThread:contactThread
-                                                  incomingEnvelope:envelope];
+        [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
+                                                    inThread:contactThread
+                                            incomingEnvelope:envelope];
     return errorMessage;
 }
 
-- (nullable instancetype)initForUnknownIdentityKeyWithSenderTimestamp:(uint64_t)timestamp
-                                                             inThread:(TSThread *)thread
-                                                     incomingEnvelope:(SSKProtoEnvelope *)envelope
+- (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
+                                                       inThread:(TSThread *)thread
+                                               incomingEnvelope:(SSKProtoEnvelope *)envelope
 {
-    self = [self initWithSenderTimestamp:timestamp
-                                inThread:thread
-                       failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
+    self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
     if (!self) {
         return self;
     }

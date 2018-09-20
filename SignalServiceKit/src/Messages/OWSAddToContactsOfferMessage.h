@@ -11,9 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((deprecated))
 @interface OWSAddToContactsOfferMessage : TSInfoMessage
 
-+ (instancetype)addToContactsOfferMessageWithSenderTimestamp:(uint64_t)timestamp
-                                                      thread:(TSThread *)thread
-                                                   contactId:(NSString *)contactId;
++ (instancetype)addToContactsOfferMessageWithTimestamp:(uint64_t)timestamp
+                                                thread:(TSThread *)thread
+                                             contactId:(NSString *)contactId;
 
 @property (nonatomic, readonly) NSString *contactId;
 

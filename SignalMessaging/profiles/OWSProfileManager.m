@@ -1126,7 +1126,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSProfileKeyMessage *message =
-        [[OWSProfileKeyMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+        [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
 
     BOOL isFeatureEnabled = NO;
     if (!isFeatureEnabled) {

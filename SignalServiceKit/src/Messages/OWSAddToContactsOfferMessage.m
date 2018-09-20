@@ -21,16 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSAddToContactsOfferMessage
 #pragma clang diagnostic pop
 
-+ (instancetype)addToContactsOfferMessageWithSenderTimestamp:(uint64_t)timestamp
-                                                      thread:(TSThread *)thread
-                                                   contactId:(NSString *)contactId
++ (instancetype)addToContactsOfferMessageWithTimestamp:(uint64_t)timestamp
+                                                thread:(TSThread *)thread
+                                             contactId:(NSString *)contactId
 {
-    return [[OWSAddToContactsOfferMessage alloc] initWithSenderTimestamp:timestamp thread:thread contactId:contactId];
+    return [[OWSAddToContactsOfferMessage alloc] initWithTimestamp:timestamp thread:thread contactId:contactId];
 }
 
-- (instancetype)initWithSenderTimestamp:(uint64_t)timestamp thread:(TSThread *)thread contactId:(NSString *)contactId
+- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread contactId:(NSString *)contactId
 {
-    self = [super initWithSenderTimestamp:timestamp inThread:thread messageType:TSInfoMessageAddToContactsOffer];
+    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageAddToContactsOffer];
 
     if (self) {
         _contactId = contactId;
