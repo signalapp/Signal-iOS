@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 // Use same reflector for service and CDN
 #define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
 #define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
+#define contactDiscoveryURL @"https://api.directory.signal.org"
 
 //#else
 //
@@ -42,6 +43,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
 //#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
 //#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
+//#define contactDiscoveryURL @"https://api-staging.directory.signal.org"
 //
 //#endif
 

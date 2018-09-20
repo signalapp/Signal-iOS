@@ -237,7 +237,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ContactDiscoveryService
 
-+ (instancetype)sharedService {
++ (instancetype)shared
+{
     static dispatch_once_t onceToken;
     static id sharedInstance = nil;
     dispatch_once(&onceToken, ^{
