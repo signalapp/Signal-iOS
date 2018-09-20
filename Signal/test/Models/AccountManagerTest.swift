@@ -103,9 +103,6 @@ class AccountManagerTest: SignalBaseTest {
     }
 
     func testSuccessfulRegistration() {
-        Environment.clearSharedForTests()
-        Environment.shared = Release.releaseEnvironment()
-
         let tsAccountManager = TokenObtainingTSAccountManager(networkManager: TSNetworkManager.shared(), primaryStorage: OWSPrimaryStorage.shared())
 
         let accountManager = AccountManager(textSecureAccountManager: tsAccountManager, preferences: self.preferences)

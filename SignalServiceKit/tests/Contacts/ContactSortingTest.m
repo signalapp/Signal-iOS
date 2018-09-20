@@ -7,8 +7,6 @@
 
 @import Contacts;
 
-@import Contacts;
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactSortingTest : SSKBaseTest

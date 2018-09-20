@@ -6,43 +6,9 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
+// TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
-class StubbableEnvironment: SSKEnvironment {
-    let proxy: SSKEnvironment
-
-    init(proxy: SSKEnvironment) {
-        self.proxy = proxy
-        super.init(callMessageHandler: proxy.callMessageHandler, contactsManager: proxy.contactsManager, messageSender: proxy.messageSender, notificationsManager: proxy.notificationsManager, profileManager: proxy.profileManager)
-    }
-
-    var stubbedCallMessageHandler: OWSCallMessageHandler?
-    override var callMessageHandler: OWSCallMessageHandler {
-        return stubbedCallMessageHandler ?? proxy.callMessageHandler
-    }
-
-    var stubbedContactsManager: ContactsManagerProtocol?
-    override var contactsManager: ContactsManagerProtocol {
-        return stubbedContactsManager ?? proxy.contactsManager
-    }
-
-    var stubbedMessageSender: MessageSender?
-    override var messageSender: MessageSender {
-        return stubbedMessageSender ?? proxy.messageSender
-    }
-
-    var stubbedNotificationsManager: NotificationsProtocol?
-    override var notificationsManager: NotificationsProtocol {
-        return stubbedNotificationsManager ?? proxy.notificationsManager
-    }
-
-    var stubbedProfileManager: ProfileManagerProtocol?
-    override var profileManager: ProfileManagerProtocol {
-        return stubbedProfileManager ?? proxy.profileManager
-    }
-}
-
-@objc
-class FakeContactsManager: NSObject, ContactsManagerProtocol {
+class ConversationSearcherContactsManager: NSObject, ContactsManagerProtocol {
 
     func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
         if phoneNumber == aliceRecipientId {
@@ -101,12 +67,8 @@ class ConversationSearcherTest: SignalBaseTest {
 
     // MARK: - Test Life Cycle
 
-    var originalEnvironment: SSKEnvironment?
-
     override func tearDown() {
         super.tearDown()
-
-        SSKEnvironment.shared = originalEnvironment!
     }
 
     override func setUp() {
@@ -118,12 +80,8 @@ class ConversationSearcherTest: SignalBaseTest {
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
-        originalEnvironment = SSKEnvironment.shared
-        assert(originalEnvironment != nil)
-
-        let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
-        testEnvironment.stubbedContactsManager = FakeContactsManager()
-        SSKEnvironment.shared = testEnvironment
+        // Replace this singleton.
+        SSKEnvironment.shared.contactsManager = ConversationSearcherContactsManager()
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))

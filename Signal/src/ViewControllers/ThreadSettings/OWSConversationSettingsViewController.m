@@ -104,7 +104,7 @@ const CGFloat kIconViewLength = 24;
 {
     _accountManager = [TSAccountManager sharedInstance];
     _contactsManager = Environment.shared.contactsManager;
-    _messageSender = Environment.shared.messageSender;
+    _messageSender = SSKEnvironment.shared.messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 

@@ -58,7 +58,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (instancetype)initDefault
 {
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = [SSKEnvironment shared].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
 
     return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
 }

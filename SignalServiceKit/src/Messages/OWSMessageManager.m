@@ -84,10 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    id<ContactsManagerProtocol> contactsManager = [SSKEnvironment shared].contactsManager;
-    id<OWSCallMessageHandler> callMessageHandler = [SSKEnvironment shared].callMessageHandler;
+    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
+    id<OWSCallMessageHandler> callMessageHandler = SSKEnvironment.shared.callMessageHandler;
     OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-    OWSMessageSender *messageSender = [SSKEnvironment shared].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
 
 
     return [self initWithNetworkManager:networkManager
@@ -524,7 +524,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id<ProfileManagerProtocol>)profileManager
 {
-    return [SSKEnvironment shared].profileManager;
+    return SSKEnvironment.shared.profileManager;
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -960,7 +960,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    id<ProfileManagerProtocol> profileManager = [SSKEnvironment shared].profileManager;
+    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
 }
 
@@ -1368,10 +1368,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Update thread preview in inbox
     [thread touchWithTransaction:transaction];
 
-    [[SSKEnvironment shared].notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                      inThread:thread
-                                                               contactsManager:self.contactsManager
-                                                                   transaction:transaction];
+    [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
+                                                                    inThread:thread
+                                                             contactsManager:self.contactsManager
+                                                                 transaction:transaction];
 }
 
 #pragma mark - helpers

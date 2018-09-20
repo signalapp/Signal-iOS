@@ -15,6 +15,7 @@
 #import "OWSMediaGalleryFinder.h"
 #import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
+#import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -64,16 +65,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (instancetype)sharedManager
 {
-    static OWSPrimaryStorage *sharedManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] initStorage];
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
-#if TARGET_OS_IPHONE
-        [OWSPrimaryStorage protectFiles];
-#endif
-    });
-    return sharedManager;
+    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (instancetype)initStorage
@@ -104,6 +98,14 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    // Surface memory leaks by logging the deallocation of this class.
+    OWSLogVerbose(@"Dealloc: %@", self.class);
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
@@ -211,17 +213,18 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
 
-    [self.database flushExtensionRequestsWithCompletionQueue:nil
-                                             completionBlock:^{
-                                                 OWSAssertIsOnMainThread();
-                                                 OWSAssertDebug(!self.areAsyncRegistrationsComplete);
-                                                 OWSLogVerbose(@"async registrations complete.");
-                                                 self.areAsyncRegistrationsComplete = YES;
+    [self.database
+        flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                  completionBlock:^{
+                                      OWSAssertDebug(!self.areAsyncRegistrationsComplete);
+                                      OWSLogVerbose(@"async registrations complete.");
 
-                                                 completion();
+                                      self.areAsyncRegistrationsComplete = YES;
 
-                                                 [self verifyDatabaseViews];
-                                             }];
+                                      completion();
+
+                                      [self verifyDatabaseViews];
+                                  }];
 }
 
 - (void)verifyDatabaseViews

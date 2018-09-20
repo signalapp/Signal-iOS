@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)selfRecipient;
-
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction;
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId

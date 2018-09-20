@@ -2,7 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSStorageHeaders.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+
+@class OWSContactsManager;
+@class OWSPreferences;
 
 /**
  *
@@ -11,32 +14,21 @@
  * It also handles network configuration for testing/deployment server configurations.
  *
  **/
-
-@class ContactsUpdater;
-@class OWSContactsManager;
-@class OWSMessageSender;
-@class OWSNavigationController;
-@class OWSPreferences;
-@class TSGroupThread;
-@class TSNetworkManager;
-@class TSThread;
-
+// TODO: Rename to AppEnvironment?
 @interface Environment : NSObject
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                        contactsUpdater:(ContactsUpdater *)contactsUpdater
-                         networkManager:(TSNetworkManager *)networkManager
-                          messageSender:(OWSMessageSender *)messageSender;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithPreferences:(OWSPreferences *)preferences;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
-@property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 
 @property (class, nonatomic) Environment *shared;
 
+#ifdef DEBUG
 // Should only be called by tests.
 + (void)clearSharedForTests;
+#endif
 
 @end

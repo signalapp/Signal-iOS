@@ -749,8 +749,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
                     YapDatabaseReadWriteTransaction *transaction) {
                     TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                    [[SSKEnvironment shared].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                          transaction:transaction];
+                    [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                        transaction:transaction];
                 }];
             }
 
@@ -985,6 +985,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (void)applyDesiredSocketState
 {
     OWSAssertIsOnMainThread();
+
+#ifdef DEBUG
+    if (CurrentAppContext().isRunningTests) {
+        OWSLogWarn(@"Suppressing socket in tests.");
+        return;
+    }
+#endif
 
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;
