@@ -171,6 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSData *isvEnclaveQuoteBody;
 @property (nonatomic) NSString *isvEnclaveQuoteStatus;
 @property (nonatomic) NSString *timestamp;
+@property (nonatomic) NSNumber *version;
 
 @end
 
@@ -198,6 +199,16 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     return valueString;
+}
+
+- (nullable NSNumber *)numberForKey:(NSString *)key
+{
+    NSNumber *_Nullable value = self[key];
+    if (![value isKindOfClass:[NSNumber class]]) {
+        OWSFailDebug(@"couldn't parse number for key: %@", key);
+        return nil;
+    }
+    return value;
 }
 
 - (nullable NSData *)base64DataForKey:(NSString *)key
@@ -339,7 +350,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
-    // TODO:
     NSString *enclaveId = @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9";
 
     TSRequest *request = [OWSRequestFactory remoteAttestationRequest:keyPair
@@ -530,6 +540,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"isvEnclaveQuoteBody has unexpected length.");
         return NO;
     }
+    // NOTE: This version is separate from and does _NOT_ match the CDS quote version.
+    const NSUInteger kSignatureBodyVersion = 3;
+    if (![signatureBodyEntity.version isEqual:@(kSignatureBodyVersion)]) {
+        OWSFailDebug(@"signatureBodyEntity has unexpected version.");
+        return NO;
+    }
     if (quoteData.length < kQuoteBodyComparisonLength) {
         OWSFailDebug(@"quoteData has unexpected length.");
         return NO;
@@ -542,9 +558,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    // TODO: Before going to production, remove GROUP_OUT_OF_DATE.
-    if (![@"OK" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]
-        && ![@"GROUP_OUT_OF_DATE" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]) {
+    if (![@"OK" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]) {
         OWSFailDebug(@"invalid isvEnclaveQuoteStatus: %@.", signatureBodyEntity.isvEnclaveQuoteStatus);
         return NO;
     }
@@ -604,11 +618,17 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"could not parse signature isvEnclaveQuoteStatus.");
         return nil;
     }
+    NSNumber *_Nullable version = [jsonDict numberForKey:@"version"];
+    if (!version) {
+        OWSFailDebug(@"could not parse signature version.");
+        return nil;
+    }
 
     SignatureBodyEntity *result = [SignatureBodyEntity new];
     result.isvEnclaveQuoteBody = isvEnclaveQuoteBody;
     result.isvEnclaveQuoteStatus = isvEnclaveQuoteStatus;
     result.timestamp = timestamp;
+    result.version = version;
     return result;
 }
 
@@ -644,8 +664,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"enclave ids do not match.");
         return NO;
     }
-    // TODO: Reverse this condition in production.
-    if (!quote.isDebugQuote) {
+    if (quote.isDebugQuote) {
         OWSFailDebug(@"quote has invalid isDebugQuote value.");
         return NO;
     }
