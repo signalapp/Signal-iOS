@@ -192,7 +192,7 @@ CHECKOUT OPTIONS:
     :commit: c058f3bdf4e11f378d3232b0031526c7611c20e0
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: 14bfa06578b6f68aa1ee09ecc9e16ad751e0ebd2
+    :commit: ff5407362fda87b1acea1785de3d43df6ef3ff52
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
