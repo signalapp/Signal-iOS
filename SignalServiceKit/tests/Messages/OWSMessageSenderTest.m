@@ -40,9 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSUploadOperation *uploadingService;
 
-// Private Methods to test
-//- (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers error:(NSError **)error;
-
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler;
