@@ -27,6 +27,7 @@
 #import "OWSRequestFactory.h"
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
+#import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
@@ -200,29 +201,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @interface OWSMessageSender ()
 
-@property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (atomic, readonly) NSMutableDictionary<NSString *, NSOperationQueue *> *sendingQueueMap;
 
 @end
 
 @implementation OWSMessageSender
 
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _networkManager = networkManager;
     _primaryStorage = primaryStorage;
-    _contactsManager = contactsManager;
     _sendingQueueMap = [NSMutableDictionary new];
     _dbConnection = primaryStorage.newDatabaseConnection;
 
@@ -231,12 +225,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return self;
 }
 
-- (void)setBlockingManager:(OWSBlockingManager *)blockingManager
+- (id<ContactsManagerProtocol>)contactsManager
 {
-    OWSAssertDebug(blockingManager);
-    OWSAssertDebug(!_blockingManager);
+    OWSAssertDebug(SSKEnvironment.shared.contactsManager);
 
-    _blockingManager = blockingManager;
+    return SSKEnvironment.shared.contactsManager;
+}
+
+- (OWSBlockingManager *)blockingManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
+
+    return SSKEnvironment.shared.blockingManager;
+}
+
+- (TSNetworkManager *)networkManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.networkManager);
+
+    return SSKEnvironment.shared.networkManager;
 }
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message

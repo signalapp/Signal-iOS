@@ -5,6 +5,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactsUpdater;
+@class OWSBlockingManager;
+@class OWSIdentityManager;
+@class OWSMessageManager;
 @class OWSMessageSender;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
@@ -22,7 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
-                         networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
+                         networkManager:(TSNetworkManager *)networkManager
+                         messageManager:(OWSMessageManager *)messageManager
+                        blockingManager:(OWSBlockingManager *)blockingManager
+                        identityManager:(OWSIdentityManager *)identityManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -41,6 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
+@property (nonatomic, readonly) OWSMessageManager *messageManager;
+@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class SSKProtoEnvelope;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
@@ -15,10 +16,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)sharedManager;
 
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+
 // processEnvelope: can be called from any thread.
 - (void)processEnvelope:(SSKProtoEnvelope *)envelope
           plaintextData:(NSData *_Nullable)plaintextData
             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// This should be invoked by the main app when the app is ready.
+- (void)startObserving;
 
 @end
 

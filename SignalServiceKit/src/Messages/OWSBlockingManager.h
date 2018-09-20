@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class TSGroupModel;
 @class TSThread;
 
@@ -13,6 +14,7 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 @interface OWSBlockingManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 

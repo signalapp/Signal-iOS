@@ -83,7 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];
 }
 
-
 + (NSString *)threadIdFromContactId:(NSString *)contactId {
     return [TSContactThreadPrefix stringByAppendingString:contactId];
 }

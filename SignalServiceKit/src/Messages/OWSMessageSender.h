@@ -37,11 +37,7 @@ NS_SWIFT_NAME(MessageSender)
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       contactsManager:(id<ContactsManagerProtocol>)contactsManager;
-
-- (void)setBlockingManager:(OWSBlockingManager *)blockingManager;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 /**
  * Send and resend text messages or resend messages with existing attachments.
