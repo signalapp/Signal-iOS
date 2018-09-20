@@ -7,7 +7,7 @@ import Foundation
 @objc(OWSLegacyContactDiscoveryOperation)
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
-    private let isCDSEnabled = false
+    private let isCDSEnabled = true
 
     @objc
     var registeredRecipientIds: Set<String>
