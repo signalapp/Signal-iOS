@@ -223,11 +223,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               OWSLogError(
                   @"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
 
-              error.isRetryable = NO;
 
-              // TODO distinguish CDS requests. we don't want a bad CDS request to trigger "Signal deauth" logic.
-              // also, shouldn't this be under 403, not 400?
-              [TSAccountManager.sharedInstance setIsDeregistered:YES];
+              error.isRetryable = NO;
 
               failureBlock(task, error);
               break;
@@ -237,6 +234,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                   networkError.debugDescription,
                   request);
               error.isRetryable = NO;
+              [self deregisterAfterAuthErrorIfNecessary:task statusCode:statusCode];
               failureBlock(task, error);
               break;
           }
@@ -244,6 +242,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               OWSLogError(
                   @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
               error.isRetryable = NO;
+              [self deregisterAfterAuthErrorIfNecessary:task statusCode:statusCode];
               failureBlock(task, error);
               break;
           }
@@ -299,6 +298,19 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           }
       }
     };
+}
+
++ (void)deregisterAfterAuthErrorIfNecessary:(NSURLSessionDataTask *)task statusCode:(NSInteger)statusCode
+{
+    OWSLogVerbose(@"Invalid auth: %@", task.originalRequest.allHTTPHeaderFields);
+
+    // Distinguish CDS requests.
+    // We don't want a bad CDS request to trigger "Signal deauth" logic.
+    if ([task.originalRequest.URL.absoluteString hasPrefix:textSecureServerURL]) {
+        [TSAccountManager.sharedInstance setIsDeregistered:YES];
+    } else {
+        OWSLogWarn(@"Ignoring %d for URL: %@", (int)statusCode, task.originalRequest.URL.absoluteString);
+    }
 }
 
 + (NSError *)errorWithHTTPCode:(NSInteger)code
