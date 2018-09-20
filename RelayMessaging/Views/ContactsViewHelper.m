@@ -163,25 +163,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateContacts
 {
-    OWSAssertIsOnMainThread();
-
-    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
-    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
-    for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
-        if (![self isSignalAccountHidden:signalAccount]) {
-            signalAccountMap[signalAccount.recipientId] = signalAccount;
-            [signalAccounts addObject:signalAccount];
-        }
-    }
-    self.signalAccountMap = [signalAccountMap copy];
-    self.signalAccounts = [signalAccounts copy];
-    self.nonSignalContacts = nil;
-
-    // Don't fire delegate "change" events during initialization.
-    if (!self.shouldNotifyDelegateOfUpdatedContacts) {
-        [self.delegate contactsViewHelperDidUpdateContacts];
-        self.hasUpdatedContactsAtLeastOnce = YES;
-    }
+    // TODO:  Implement later?
+//    OWSAssertIsOnMainThread();
+//
+//    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+//    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
+//    for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
+//        if (![self isSignalAccountHidden:signalAccount]) {
+//            signalAccountMap[signalAccount.recipientId] = signalAccount;
+//            [signalAccounts addObject:signalAccount];
+//        }
+//    }
+//    self.signalAccountMap = [signalAccountMap copy];
+//    self.signalAccounts = [signalAccounts copy];
+//    self.nonSignalContacts = nil;
+//
+//    // Don't fire delegate "change" events during initialization.
+//    if (!self.shouldNotifyDelegateOfUpdatedContacts) {
+//        [self.delegate contactsViewHelperDidUpdateContacts];
+//        self.hasUpdatedContactsAtLeastOnce = YES;
+//    }
 }
 
 - (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
@@ -250,23 +251,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSArray<Contact *> *)nonSignalContacts
 {
-    if (!_nonSignalContacts) {
-        NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
-                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                if (signalRecipients.count < 1) {
-                    [nonSignalContacts addObject:contact];
-                }
-            }
-        }];
-        _nonSignalContacts = [nonSignalContacts.allObjects
-            sortedArrayUsingComparator:^NSComparisonResult(Contact *_Nonnull left, Contact *_Nonnull right) {
-                return [left.fullName compare:right.fullName];
-            }];
-    }
-
-    return _nonSignalContacts;
+    // TODO: Implement later?
+//    if (!_nonSignalContacts) {
+//        NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
+//        [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//            for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
+//                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
+//                if (signalRecipients.count < 1) {
+//                    [nonSignalContacts addObject:contact];
+//                }
+//            }
+//        }];
+//        _nonSignalContacts = [nonSignalContacts.allObjects
+//            sortedArrayUsingComparator:^NSComparisonResult(Contact *_Nonnull left, Contact *_Nonnull right) {
+//                return [left.fullName compare:right.fullName];
+//            }];
+//    }
+//
+//    return _nonSignalContacts;
+    return NSArray.new;
 }
 
 #pragma mark - Editing

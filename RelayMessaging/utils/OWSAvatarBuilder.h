@@ -5,14 +5,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
-@class OWSContactsManager;
+@class FLContactsManager;
 @class UIImage;
 
 @interface OWSAvatarBuilder : NSObject
 
 + (UIImage *)buildImageForThread:(TSThread *)thread
                         diameter:(NSUInteger)diameter
-                 contactsManager:(OWSContactsManager *)contactsManager NS_SWIFT_NAME(buildImage(thread:diameter:contactsManager:));
+                 contactsManager:(FLContactsManager *)contactsManager NS_SWIFT_NAME(buildImage(thread:diameter:contactsManager:));
 
 + (UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
 

@@ -3,7 +3,7 @@
 //
 
 #import "BlockListUIUtils.h"
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayServiceKit/Contact.h>
@@ -163,15 +163,15 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 + (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
                          fromViewController:(UIViewController *)fromViewController
                             blockingManager:(OWSBlockingManager *)blockingManager
-                            contactsManager:(OWSContactsManager *)contactsManager
+                            contactsManager:(FLContactsManager *)contactsManager
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
-    [self showUnblockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
-                                 displayName:displayName
-                          fromViewController:fromViewController
-                             blockingManager:blockingManager
-                             completionBlock:completionBlock];
+//    NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
+//    [self showUnblockPhoneNumbersActionSheet:@[ signalAccount.recipientId ]
+//                                 displayName:displayName
+//                          fromViewController:fromViewController
+//                             blockingManager:blockingManager
+//                             completionBlock:completionBlock];
 }
 
 + (void)showUnblockPhoneNumbersActionSheet:(NSArray<NSString *> *)phoneNumbers

@@ -426,13 +426,34 @@ import RelayServiceKit
     }
     
 
-    @objc func nukeAndPave() {
+    @objc public func nukeAndPave() {
         self.tagCache.removeAllObjects()
         self.recipientCache.removeAllObjects()
         RelayRecipient.removeAllObjectsInCollection()
         FLTag.removeAllObjectsInCollection()
     }
     
+    @objc public func supportsContactEditing() -> Bool {
+        return false
+    }
+    
+    @objc public func isSystemContactsAuthorized() -> Bool {
+        return false
+    }
+    
+    @objc public func formattedFullName(forRecipientId recipientId: String, font: UIFont) -> NSAttributedString? {
+        
+        if let recipient = self.recipient(withId: recipientId) {
+            let rawName = recipient.fullName()
+            
+            let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
+            
+            let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
+
+            return attrName
+        }
+        return nil
+    }
     // MARK: - Helpers
 
 }

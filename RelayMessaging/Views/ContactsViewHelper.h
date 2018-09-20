@@ -30,13 +30,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class OWSBlockingManager;
-@class OWSContactsManager;
+@class FLContactsManager;
 
 @interface ContactsViewHelper : NSObject
 
 @property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
 @property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;

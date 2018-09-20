@@ -4,7 +4,7 @@
 
 #import "ContactCellView.h"
 #import "OWSContactAvatarBuilder.h"
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
@@ -26,7 +26,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UIStackView *nameContainerView;
 @property (nonatomic) UIView *accessoryViewContainer;
 
-@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic) FLContactsManager *contactsManager;
 @property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) NSString *recipientId;
 
@@ -101,7 +101,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(recipientId.length > 0);
     OWSAssert(contactsManager);
@@ -131,7 +131,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithThread:(TSThread *)thread contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(thread);
     self.thread = thread;
@@ -181,7 +181,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
+    FLContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
         OWSFail(@"%@ contactsManager should not be nil", self.logTag);
         self.avatarView.image = nil;
@@ -213,7 +213,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateProfileName
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
+    FLContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
         OWSFail(@"%@ contactsManager should not be nil", self.logTag);
         self.profileNameLabel.text = nil;
@@ -227,14 +227,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    if ([contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
-        // Don't display profile name when we have a veritas name in system Contacts
-        self.profileNameLabel.text = nil;
-    } else {
-        // Use profile name, if any is available
-        self.profileNameLabel.text = [contactsManager formattedProfileNameForRecipientId:recipientId];
-    }
-
+    self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].fullName;
+    
     [self.profileNameLabel setNeedsLayout];
 }
 

@@ -215,14 +215,14 @@ public class ConversationSearcher: NSObject {
         return self.indexingString(recipientId: recipientId)
     }
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+    private var contactsManager: FLContactsManager {
+        return Environment.current()!.contactsManager
     }
 
     private func indexingString(recipientId: String) -> String {
-        let contactName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let profileName = contactsManager.profileName(forRecipientId: recipientId)
+        let recipientName = contactsManager.displayName(forRecipientId: recipientId)
+        let tagName = contactsManager.recipient(withId: recipientId)?.flTag?.slug
 
-        return "\(recipientId) \(contactName) \(profileName ?? "")"
+        return "\(recipientId) \(recipientName ?? "") \(tagName ?? "")"
     }
 }

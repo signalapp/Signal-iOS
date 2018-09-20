@@ -26,7 +26,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     MessageApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate>
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
@@ -409,7 +409,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-        NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:untrustedRecipientId];
+        NSString *displayName = [self.contactsManager displayNameForRecipientId:untrustedRecipientId];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
