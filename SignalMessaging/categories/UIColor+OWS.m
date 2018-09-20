@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)ows_gray95Color
 {
-    return [UIColor colorWithRGBHex:0x0A0C11];
+    return [UIColor colorWithRGBHex:0x0F1012];
 }
 
 + (UIColor *)ows_blackColor
