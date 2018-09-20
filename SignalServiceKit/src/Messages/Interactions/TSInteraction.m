@@ -116,12 +116,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
-- (NSDate *)dateForSorting
+- (NSDate *)dateForLegacySorting
 {
-    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForSorting];
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForLegacySorting];
 }
 
-- (uint64_t)timestampForSorting
+- (uint64_t)timestampForLegacySorting
 {
     return self.timestamp;
 }

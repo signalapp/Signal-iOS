@@ -137,8 +137,8 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
             return NSOrderedSame;
         }
         TSMessage *message2 = (TSMessage *)object2;
-        
-        return [@(message1.timestampForSorting) compare:@(message2.timestampForSorting)];
+        // MJK FIXME - this needs to use sortId
+        return [@(message1.timestampForLegacySorting) compare:@(message2.timestampForLegacySorting)];
     }];
     
     YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction * _Nonnull transaction, NSString * _Nonnull collection, NSString * _Nonnull key, id  _Nonnull object) {

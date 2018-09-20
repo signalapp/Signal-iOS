@@ -497,7 +497,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     //
     // Use `timestampForSorting` which reflects local received order, rather than `timestamp`
     // which reflect sender time.
-    [self markAsReadBeforeTimestamp:message.timestampForSorting
+    // MJK FIXME - use sortID
+    [self markAsReadBeforeTimestamp:message.timestampForLegacySorting
                              thread:[message threadWithTransaction:transaction]
                       readTimestamp:readTimestamp
                            wasLocal:NO
@@ -536,12 +537,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
              return;
          }
          id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-         
-         if (possiblyRead.timestampForSorting > timestamp) {
+         // MJK FIXME - use sortId
+         if (possiblyRead.timestampForLegacySorting > timestamp) {
              *stop = YES;
              return;
          }
-         
+
          OWSAssertDebug(!possiblyRead.read);
          OWSAssertDebug(possiblyRead.expireStartedAt == 0);
          if (!possiblyRead.read) {

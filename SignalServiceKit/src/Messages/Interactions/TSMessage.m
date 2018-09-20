@@ -47,6 +47,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
  */
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
+// MJK FIXME - update this comment
 // The timestamp property is populated by the envelope,
 // which is created by the sender.
 //
@@ -340,7 +341,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.expiresInSeconds > 0;
 }
 
-- (uint64_t)timestampForSorting
+- (uint64_t)timestampForLegacySorting
 {
     if ([self shouldUseReceiptDateForSorting] && self.receivedAtTimestamp > 0) {
         return self.receivedAtTimestamp;

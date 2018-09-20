@@ -370,7 +370,8 @@ NS_ASSUME_NONNULL_BEGIN
             TSInteraction *_Nullable firstUnseenInteraction =
                 [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
-                firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
+                // MJK FIXME - use sortId
+                firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForLegacySorting);
             }
         }
 
@@ -482,9 +483,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (existingContactOffers && !shouldHaveContactOffers) {
+            // MJK FIXME - use sortId
             OWSLogInfo(@"Removing contact offers: %@ (%llu)",
                 existingContactOffers.uniqueId,
-                existingContactOffers.timestampForSorting);
+                existingContactOffers.timestampForLegacySorting);
             [existingContactOffers removeWithTransaction:transaction];
         } else if (shouldHaveContactOffers) {
             if (existingContactOffers) {
@@ -492,9 +494,10 @@ NS_ASSUME_NONNULL_BEGIN
                 if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
                     || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
                     || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
+                    // MJK FIXME - use sortId
                     OWSLogInfo(@"Updating stale contact offers: %@ (%llu)",
                         existingContactOffers.uniqueId,
-                        existingContactOffers.timestampForSorting);
+                        existingContactOffers.timestampForLegacySorting);
 
                     [existingContactOffers updateHasBlockOffer:shouldHaveBlockOffer
                                          hasAddToContactsOffer:shouldHaveAddToContactsOffer
@@ -514,8 +517,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        recipientId:recipientId];
                 [offersMessage saveWithTransaction:transaction];
 
-                OWSLogInfo(
-                    @"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
+                // MJK FIXME - use sortId
+                OWSLogInfo(@"Creating contact offers: %@ (%llu)",
+                    offersMessage.uniqueId,
+                    offersMessage.timestampForLegacySorting);
             }
         }
 
@@ -595,7 +600,9 @@ NS_ASSUME_NONNULL_BEGIN
                           return;
                       }
 
-                      if (interaction.timestampForSorting < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                      // MJK FIXME - use sortId
+                      if (interaction.timestampForLegacySorting
+                          < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
                           // By default we want the unread indicator to appear just before
                           // the first unread message.
                           *stop = YES;
@@ -627,13 +634,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasMoreUnseenMessages) {
         NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
         for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
+            // MJK FIXME - use sortId
             BOOL isUnseen
-                = safetyNumberChange.timestampForSorting >= firstUnseenInteractionTimestamp.unsignedLongLongValue;
+                = safetyNumberChange.timestampForLegacySorting >= firstUnseenInteractionTimestamp.unsignedLongLongValue;
             if (!isUnseen) {
                 continue;
             }
-            BOOL isMissing
-                = safetyNumberChange.timestampForSorting < interactionAfterUnreadIndicator.timestampForSorting;
+            // MJK FIXME - use sortId
+            BOOL isMissing = safetyNumberChange.timestampForLegacySorting
+                < interactionAfterUnreadIndicator.timestampForLegacySorting;
             if (!isMissing) {
                 continue;
             }
@@ -658,8 +667,9 @@ NS_ASSUME_NONNULL_BEGIN
         unreadIndicatorPosition++;
     }
 
+    // MJK FIXME - use sortId, or maybe just timestamp, do we even need timestamp?
     dynamicInteractions.unreadIndicator = [[OWSUnreadIndicator alloc]
-            initUnreadIndicatorWithTimestamp:interactionAfterUnreadIndicator.timestampForSorting
+            initUnreadIndicatorWithTimestamp:interactionAfterUnreadIndicator.timestampForLegacySorting
                        hasMoreUnseenMessages:hasMoreUnseenMessages
         missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
                      unreadIndicatorPosition:unreadIndicatorPosition

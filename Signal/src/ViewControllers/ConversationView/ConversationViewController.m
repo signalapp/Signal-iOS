@@ -2679,7 +2679,8 @@ typedef enum : NSUInteger {
         ConversationViewItem *lastViewItem = [self.viewItems lastObject];
         OWSAssertDebug(lastViewItem);
 
-        if (lastViewItem.interaction.timestampForSorting > self.lastVisibleTimestamp) {
+        // MJK FIXME - use sortId
+        if (lastViewItem.interaction.timestampForLegacySorting > self.lastVisibleTimestamp) {
             shouldShowScrollDownButton = YES;
         } else if (isScrolledUp) {
             shouldShowScrollDownButton = YES;
@@ -2778,7 +2779,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
 
-    [self updateLastVisibleTimestamp:message.timestampForSorting];
+    // MJK FIXME - use sortId
+    [self updateLastVisibleTimestamp:message.timestampForLegacySorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
@@ -3875,7 +3877,8 @@ typedef enum : NSUInteger {
 
     ConversationViewItem *_Nullable lastVisibleViewItem = [self.viewItems lastObject];
     if (lastVisibleViewItem) {
-        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
+        // MJK FIXME - use sortId
+        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForLegacySorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
     }
 
@@ -3888,7 +3891,8 @@ typedef enum : NSUInteger {
 {
     ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
     if (lastVisibleViewItem) {
-        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
+        // MJK FIXME - use sortId
+        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForLegacySorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
     }
 
@@ -4935,7 +4939,9 @@ typedef enum : NSUInteger {
                 break;
         }
 
-        uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
+        // MJK FIXME - should this be sentTime or receivedTime?
+        // we sorted by received time, but we should display sent time
+        uint64_t viewItemTimestamp = viewItem.interaction.timestampForLegacySorting;
         OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
@@ -4977,7 +4983,10 @@ typedef enum : NSUInteger {
 
         // Place the unread indicator onto the first appropriate view item,
         // if any.
-        if (unreadIndicator && viewItem.interaction.timestampForSorting >= unreadIndicator.timestamp) {
+        // MJK FIXME - use sortId
+        // I'm not sure why we need a comparison here, vs. an equality. Maybe if the first unread
+        // message is deleted, we'd need to be sure everything still works.
+        if (unreadIndicator && viewItem.interaction.timestampForLegacySorting >= unreadIndicator.timestamp) {
             viewItem.unreadIndicator = unreadIndicator;
             unreadIndicator = nil;
             hasPlacedUnreadIndicator = YES;
@@ -5127,7 +5136,8 @@ typedef enum : NSUInteger {
             }
         }
 
-        if (viewItem.interaction.timestampForSorting > collapseCutoffTimestamp) {
+        // MJK FIXME - investigate this more
+        if (viewItem.interaction.timestampForLegacySorting > collapseCutoffTimestamp) {
             shouldHideFooter = NO;
         }
 

@@ -204,8 +204,10 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             TSInteraction *interaction1 = (TSInteraction *)object1;
             TSInteraction *interaction2 = (TSInteraction *)object2;
 
-            uint64_t timestamp1 = interaction1.timestampForSorting;
-            uint64_t timestamp2 = interaction2.timestampForSorting;
+            // Legit usage of timestampForLegacySorting since we're registering the
+            // legacy extension
+            uint64_t timestamp1 = interaction1.timestampForLegacySorting;
+            uint64_t timestamp2 = interaction2.timestampForLegacySorting;
 
             if (timestamp1 > timestamp2) {
                 return NSOrderedDescending;

@@ -355,7 +355,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.hasEverHadMessage = YES;
 
-    NSDate *lastMessageDate = [lastMessage dateForSorting];
+    // MJK FIXME - this needs to use sortId
+    NSDate *lastMessageDate = lastMessage.dateForLegacySorting;
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;
 

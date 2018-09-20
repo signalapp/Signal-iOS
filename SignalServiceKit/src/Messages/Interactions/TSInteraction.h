@@ -55,8 +55,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
                                                  filter:(BOOL (^_Nonnull)(TSInteraction *))filter
                                         withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (NSDate *)dateForSorting;
-- (uint64_t)timestampForSorting;
+- (NSDate *)dateForLegacySorting;
+- (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
 // "Dynamic" interactions are not messages or static events (like

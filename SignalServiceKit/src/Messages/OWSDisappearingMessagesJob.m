@@ -393,7 +393,8 @@ void AssertIsOnDisappearingMessagesQueue()
             OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
-            uint64_t readTimeBestGuess = message.timestampForSorting;
+            // MJK FIXME - this needs to use sortId
+            uint64_t readTimeBestGuess = message.timestampForLegacySorting;
             [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
         }
                                                  transaction:transaction];

@@ -29,7 +29,8 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
                     }
 
                     interaction.saveNextSortId(transaction: transaction)
-                    Logger.debug("thread: \(interaction.uniqueThreadId), timestampForSorting:\(interaction.timestampForSorting()), sortId: \(interaction.sortId)")
+                    // Legit usage of legacy sorting for migration to new sorting
+                    Logger.debug("thread: \(interaction.uniqueThreadId), timestampForLegacySorting:\(interaction.timestampForLegacySorting()), sortId: \(interaction.sortId)")
                 }
             }
         }

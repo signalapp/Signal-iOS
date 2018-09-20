@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSUnreadIndicator : NSObject
 
+// MJK FIXME - do we need this timestamp column?
 @property (nonatomic, readonly) uint64_t timestamp;
 
 @property (nonatomic, readonly) BOOL hasMoreUnseenMessages;

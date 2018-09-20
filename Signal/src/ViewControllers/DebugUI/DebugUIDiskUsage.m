@@ -93,8 +93,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                           TSInteraction *interaction,
                                                           NSUInteger index,
                                                           BOOL *stop) {
-                                                          NSTimeInterval ageSeconds
-                                                              = fabs(interaction.dateForSorting.timeIntervalSinceNow);
+                                                          // MJK FIXME - use receivedTime?
+                                                          NSTimeInterval ageSeconds = fabs(
+                                                              interaction.dateForLegacySorting.timeIntervalSinceNow);
                                                           if (ageSeconds < maxAgeSeconds) {
                                                               *stop = YES;
                                                               return;
