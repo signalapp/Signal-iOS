@@ -18,7 +18,7 @@
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import "NSAttributedString+OWS.h"
-#import "NewGroupViewController.h"
+//#import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
@@ -160,7 +160,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL peek;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
@@ -308,10 +308,10 @@ typedef enum : NSUInteger {
                                              selector:@selector(profileWhitelistDidChange:)
                                                  name:kNSNotificationName_ProfileWhitelistDidChange
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
-                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(signalAccountsDidChange:)
+//                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+//                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillChangeFrame:)
                                                  name:UIKeyboardWillChangeFrameNotification
@@ -659,7 +659,7 @@ typedef enum : NSUInteger {
 
     // We should have already requested contact access at this point, so this should be a no-op
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
-    [self.contactsManager requestSystemContactsOnce];
+//    [self.contactsManager requestSystemContactsOnce];
 
     [self updateDisappearingMessagesConfiguration];
 
@@ -807,7 +807,7 @@ typedef enum : NSUInteger {
                 @"Indicates that more than one member of this group conversation is no longer verified.");
         } else {
             NSString *recipientId = [noLongerVerifiedRecipientIds firstObject];
-            NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
+            NSString *displayName = [self.contactsManager displayNameForRecipientId:recipientId];
             NSString *format
                 = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                   @"Indicates that one member of this group conversation is no longer "
@@ -1836,7 +1836,7 @@ typedef enum : NSUInteger {
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
 {
-    NSString *keyOwner = [self.contactsManager displayNameForPhoneIdentifier:errorMessage.theirSignalId];
+    NSString *keyOwner = [self.contactsManager displayNameForRecipientId:errorMessage.theirSignalId];
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
@@ -1884,7 +1884,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:self.thread.otherParticipantId];
+    NSString *displayName = [self.contactsManager displayNameForRecipientId:self.thread.otherParticipantId];
 
     UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:[CallStrings callBackAlertTitle]
@@ -2024,7 +2024,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(recipientId.length > 0);
 
-    return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
+    return [[NSAttributedString alloc] initWithString:[self.contactsManager displayNameForRecipientId:recipientId]];
 }
 
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2035,7 +2035,7 @@ typedef enum : NSUInteger {
     }
     TSThread *contactThread = (TSThread *)self.thread;
 
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.recipientId];
+    NSString *displayName = [self.contactsManager displayNameForRecipientId:interaction.recipientId];
     NSString *title =
         [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
                                        @"Title format for action sheet that offers to block an unknown user."
@@ -4968,12 +4968,16 @@ typedef enum : NSUInteger {
                             || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager
-                        attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
-                                                       primaryAttributes:[OWSMessageBubbleView
-                                                                             senderNamePrimaryAttributes]
-                                                     secondaryAttributes:[OWSMessageBubbleView
-                                                                             senderNameSecondaryAttributes]];
+                    
+                    senderName = [[NSAttributedString alloc] initWithString:[self.contactsManager displayNameForRecipientId:incomingSenderId]
+                                                                 attributes:[OWSMessageBubbleView
+                                                                             senderNamePrimaryAttributes]];
+//                    senderName = [self.contactsManager
+//                        attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
+//                                                       primaryAttributes:[OWSMessageBubbleView
+//                                                                             senderNamePrimaryAttributes]
+//                                                     secondaryAttributes:[OWSMessageBubbleView
+//                                                                             senderNameSecondaryAttributes]];
                 }
 
                 // Show the sender avatar for incoming group messages unless

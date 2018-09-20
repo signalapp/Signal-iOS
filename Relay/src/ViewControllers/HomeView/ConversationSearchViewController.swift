@@ -35,7 +35,7 @@ class ConversationSearchViewController: UITableViewController {
         return ConversationSearcher.shared
     }
 
-    private var contactsManager: OWSContactsManager {
+    private var contactsManager: FLContactsManager {
         return Environment.current().contactsManager
     }
 

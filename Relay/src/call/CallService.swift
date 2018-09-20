@@ -217,7 +217,7 @@ private class SignalCallData: NSObject {
 
     private let accountManager: AccountManager
     private let messageSender: MessageSender
-    private let contactsManager: OWSContactsManager
+    private let contactsManager: FLContactsManager
     private let primaryStorage: OWSPrimaryStorage
 
     // Exposed by environment.m
@@ -302,7 +302,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    @objc public required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
+    @objc public required init(accountManager: AccountManager, contactsManager: FLContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
         self.contactsManager = contactsManager
         self.messageSender = messageSender
@@ -588,16 +588,16 @@ private class SignalCallData: NSObject {
         guard untrustedIdentity == nil else {
             Logger.warn("\(self.logTag) missed a call due to untrusted identity: \(newCall.identifiersForLogs)")
 
-            let callerName = self.contactsManager.displayName(forPhoneIdentifier: thread.uniqueId)
+            let callerName = self.contactsManager.displayName(forRecipientId: thread.uniqueId)
 
             switch untrustedIdentity!.verificationState {
             case .verified:
                 owsFail("\(self.logTag) shouldn't have missed a call due to untrusted identity if the identity is verified")
-                self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
+                self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName!)
             case .default:
-                self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
+                self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName!)
             case .noLongerVerified:
-                self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
+                self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName!)
             }
 
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
@@ -682,7 +682,7 @@ private class SignalCallData: NSObject {
 
             // For contacts not stored in our system contacts, we assume they are an unknown caller, and we force
             // a TURN connection, so as not to reveal any connectivity information (IP/port) to the caller.
-            let isUnknownCaller = !self.contactsManager.hasSignalAccount(forRecipientId: thread.uniqueId)
+            let isUnknownCaller = false // !self.contactsManager.hasSignalAccount(forRecipientId: thread.uniqueId)
 
             let useTurnOnly = isUnknownCaller || Environment.current().preferences.doCallsHideIPAddress()
 

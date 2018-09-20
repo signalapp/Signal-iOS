@@ -13,7 +13,7 @@
 #import <RelayMessaging/ContactsViewHelper.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/NSString+OWS.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSTableViewController.h>
 #import <RelayServiceKit/SignalKeyingStorage.h>
 #import <RelayMessaging/UIUtil.h>

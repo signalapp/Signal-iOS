@@ -12,7 +12,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayServiceKit/OWSBlockingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN

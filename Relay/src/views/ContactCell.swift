@@ -70,7 +70,7 @@ class ContactCell: UITableViewCell {
         self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
 
-    func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
+    func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: FLContactsManager) {
 
         // TODO:  Retool for RelayRecipients
 //        OWSTableItem.configureCell(self)

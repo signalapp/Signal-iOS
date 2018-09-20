@@ -578,7 +578,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 {
     __block TSThread *thread = nil;
     __block NSCountedSet *testSet = [NSCountedSet setWithArray:participantIDs];
-    [transaction enumerateKeysAndObjectsInCollection:[self collection] usingBlock:^(NSString *key, TSThread *aThread, BOOL *stop) {
+    [transaction enumerateKeysAndObjectsInCollection:[TSThread collection] usingBlock:^(NSString *key, TSThread *aThread, BOOL *stop) {
         NSCountedSet *aSet = [NSCountedSet setWithArray:aThread.participantIds];
         if ([aSet isEqual:testSet]) {
             thread = aThread;

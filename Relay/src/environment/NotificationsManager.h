@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContactsManager;
+@class FLContactsManager;
 @class OWSPreferences;
 @class SignalCall;
 @class TSCall;

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ContactShareViewModel *contactShare;
 @property (nonatomic, weak) id<OWSContactShareButtonsViewDelegate> delegate;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 
 @property (nonatomic, nullable) UIView *buttonView;
 
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (BOOL)hasSendTextButton:(ContactShareViewModel *)contactShare contactsManager:(OWSContactsManager *)contactsManager
++ (BOOL)hasSendTextButton:(ContactShareViewModel *)contactShare contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(contactShare);
     OWSAssert(contactsManager);
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [contactShare systemContactsWithSignalAccountPhoneNumbers:contactsManager].count > 0;
 }
 
-+ (BOOL)hasInviteButton:(ContactShareViewModel *)contactShare contactsManager:(OWSContactsManager *)contactsManager
++ (BOOL)hasInviteButton:(ContactShareViewModel *)contactShare contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(contactShare);
     OWSAssert(contactsManager);
@@ -74,12 +74,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(contactShare);
 
-    OWSContactsManager *contactsManager = [Environment current].contactsManager;
+    FLContactsManager *contactsManager = [Environment current].contactsManager;
 
     return [self hasAnyButton:contactShare contactsManager:contactsManager];
 }
 
-+ (BOOL)hasAnyButton:(ContactShareViewModel *)contactShare contactsManager:(OWSContactsManager *)contactsManager
++ (BOOL)hasAnyButton:(ContactShareViewModel *)contactShare contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(contactShare);
 

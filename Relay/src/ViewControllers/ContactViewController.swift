@@ -31,7 +31,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         }
     }
 
-    private let contactsManager: OWSContactsManager
+    private let contactsManager: FLContactsManager
 
     private var reachability: Reachability?
 
@@ -60,10 +60,10 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         updateMode()
 
-        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.updateMode()
-        }
+//        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
+//            guard let strongSelf = self else { return }
+//            strongSelf.updateMode()
+//        }
 
         reachability = Reachability.forInternetConnection()
 
@@ -88,10 +88,10 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         postDismissNavigationController = navigationController
         navigationController.isNavigationBarHidden = true
 
-        contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.updateMode()
-        })
+//        contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
+//            guard let strongSelf = self else { return }
+//            strongSelf.updateMode()
+//        })
     }
 
     override func viewWillDisappear(_ animated: Bool) {

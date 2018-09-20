@@ -36,8 +36,8 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     private let TAG = "[ContactsPicker]"
     private let contactCellReuseIdentifier = "contactCellReuseIdentifier"
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+    private var contactsManager: FLContactsManager {
+        return Environment.current()!.contactsManager
     }
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.

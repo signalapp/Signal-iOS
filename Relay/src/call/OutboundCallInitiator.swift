@@ -12,10 +12,10 @@ import RelayMessaging
 @objc public class OutboundCallInitiator: NSObject {
     let TAG = "[OutboundCallInitiator]"
 
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
     let contactsUpdater: ContactsUpdater
 
-    @objc public init(contactsManager: OWSContactsManager, contactsUpdater: ContactsUpdater) {
+    @objc public init(contactsManager: FLContactsManager, contactsUpdater: ContactsUpdater) {
         self.contactsManager = contactsManager
         self.contactsUpdater = contactsUpdater
 

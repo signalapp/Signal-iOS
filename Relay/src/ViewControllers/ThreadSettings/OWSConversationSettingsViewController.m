@@ -18,7 +18,7 @@
 #import <Curve25519Kit/Curve25519.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/OWSAvatarBuilder.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/OWSSounds.h>
 #import <RelayMessaging/OWSUserProfile.h>
@@ -50,7 +50,7 @@ const CGFloat kIconViewLength = 24;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 @property (nullable, nonatomic) MediaGalleryViewController *mediaGalleryViewController;
 @property (nonatomic, readonly) TSAccountManager *accountManager;
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -169,23 +169,24 @@ const CGFloat kIconViewLength = 24;
 
 - (void)updateEditButton
 {
-    OWSAssert(self.thread);
-
-    if ([self.thread isKindOfClass:[TSThread class]] && self.contactsManager.supportsContactEditing
-        && self.hasExistingContact) {
-        self.navigationItem.rightBarButtonItem =
-            [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
-                                             style:UIBarButtonItemStylePlain
-                                            target:self
-                                            action:@selector(didTapEditButton)];
-    }
+//    OWSAssert(self.thread);
+//
+//    if ([self.thread isKindOfClass:[TSThread class]] && self.contactsManager.supportsContactEditing
+//        && self.hasExistingContact) {
+//        self.navigationItem.rightBarButtonItem =
+//            [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"EDIT_TXT", nil)
+//                                             style:UIBarButtonItemStylePlain
+//                                            target:self
+//                                            action:@selector(didTapEditButton)];
+//    }
 }
 
 - (BOOL)hasExistingContact
 {
-    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
-    NSString *recipientId = self.thread.otherParticipantId;
-    return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
+    return false;
+//    OWSAssert([self.thread isKindOfClass:[TSThread class]]);
+//    NSString *recipientId = self.thread.otherParticipantId;
+//    return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -681,21 +682,15 @@ const CGFloat kIconViewLength = 24;
             [subtitleLabel autoPinLeadingToSuperviewMargin];
             lastTitleView = subtitleLabel;
         };
-
+        
         NSString *recipientId = self.thread.otherParticipantId;
-
-        BOOL hasName = ![self.thread.title isEqualToString:recipientId];
-        if (hasName) {
-            NSAttributedString *subtitle = [[NSAttributedString alloc]
-                initWithString:[PhoneNumber
-                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
-            addSubtitle(subtitle);
-        } else {
-            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
-            if (profileName) {
-                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
-            }
+        
+        NSString *subTitleString = [self.contactsManager recipientWithId:recipientId].flTag.displaySlug;
+        
+        if (subTitleString) {
+            addSubtitle([[NSAttributedString alloc] initWithString:subTitleString]);
         }
+    
 
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
             == OWSVerificationStateVerified;
@@ -1186,7 +1181,7 @@ const CGFloat kIconViewLength = 24;
         [self.thread updateConversationColorName:colorName transaction:transaction];
     }];
 
-    [self.contactsManager.avatarCache removeAllImages];
+    [self.contactsManager flushAvatarCache];
     [self updateTableContents];
     [self.conversationSettingsViewDelegate conversationColorWasUpdated];
 

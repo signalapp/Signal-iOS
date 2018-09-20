@@ -4,7 +4,7 @@
 
 #import "ThreadUtil.h"
 #import "OWSContactOffersInteraction.h"
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
 #import "TSUnreadIndicatorInteraction.h"
@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  contactsManager:(OWSContactsManager *)contactsManager
+                                                  contactsManager:(FLContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator

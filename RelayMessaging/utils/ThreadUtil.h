@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSBlockingManager;
-@class OWSContactsManager;
+@class FLContactsManager;
 @class OWSMessageSender;
 @class OWSUnreadIndicator;
 @class SignalAttachment;
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 //   size of the "load window" in that view. The unread indicator should
 //   always be inserted within that window.
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  contactsManager:(OWSContactsManager *)contactsManager
+                                                  contactsManager:(FLContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator

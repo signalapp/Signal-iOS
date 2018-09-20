@@ -12,6 +12,8 @@ import RelayServiceKit
 
 @objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
     
+    @objc public var isSystemContactsDenied: Bool = false // for future use
+    
     public func displayName(forRecipientId recipientId: String) -> String? {
         if let recipient:RelayRecipient = self.recipient(withId: recipientId) {
             if recipient.fullName().count > 0 {
@@ -84,6 +86,10 @@ import RelayServiceKit
 
     // TODO: require for gravatar implementation
 //    private var prefs: PropertyListPreferences?
+    
+    @objc public func flushAvatarCache() {
+        avatarCache.removeAllObjects()
+    }
 
     override init() {
         avatarCache = NSCache<NSString, UIImage>()

@@ -16,7 +16,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MARK: Properties
 
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
     let uiDatabaseConnection: YapDatabaseConnection
 
@@ -196,10 +196,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
             let senderId = incomingMessage.authorId
-            let senderName = contactsManager.contactOrProfileName(forPhoneIdentifier: senderId)
+            let senderName = contactsManager.displayName(forRecipientId: senderId)
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENDER",
                                                          comment: "Label for the 'sender' field of the 'message metadata' view."),
-                                 value: senderName))
+                                 value: senderName!))
         }
 
         // Recipient(s)

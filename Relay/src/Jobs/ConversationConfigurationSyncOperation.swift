@@ -19,7 +19,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         return Environment.current().messageSender
     }
 
-    private var contactsManager: OWSContactsManager {
+    private var contactsManager: FLContactsManager {
         return Environment.current().contactsManager
     }
 

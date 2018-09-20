@@ -8,7 +8,7 @@
 #import <AudioToolbox/AudioServices.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/NSString+OWS.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/OWSSounds.h>
 #import <RelayServiceKit/NSString+SSK.h>

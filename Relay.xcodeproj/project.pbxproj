@@ -171,8 +171,6 @@
 		34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */; };
 		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
-		34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
-		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
 		34B6D27420F664C900765BE2 /* OWSUnreadIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = 34B6D27220F664C800765BE2 /* OWSUnreadIndicator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34B6D27520F664C900765BE2 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */; };
@@ -548,11 +546,9 @@
 		7D2CD5B3214C3C9C004E957A /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
 		7D2CD5B4214C3C9C004E957A /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = 342197FF210612F600C57195 /* iRate.m */; };
 		7D2CD5B5214C3C9C004E957A /* MediaDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */; };
-		7D2CD5B6214C3C9C004E957A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		7D2CD5B7214C3C9C004E957A /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
 		7D2CD5B8214C3C9C004E957A /* OWSMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */; };
 		7D2CD5B9214C3C9C004E957A /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
-		7D2CD5BA214C3C9C004E957A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
 		7D2CD5BB214C3C9C004E957A /* PinEntryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D308AC2049A439000189E4 /* PinEntryView.m */; };
 		7D2CD5BC214C3C9C004E957A /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		7D2CD5BD214C3C9C004E957A /* DirectoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705DA6214827EF00488180 /* DirectoryCell.swift */; };
@@ -1198,10 +1194,6 @@
 		34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsPicker.xib; sourceTree = "<group>"; };
 		34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradesPageViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
-		34B3F84F1E8DF1700035BE1A /* NewContactThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewContactThreadViewController.h; sourceTree = "<group>"; };
-		34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewContactThreadViewController.m; sourceTree = "<group>"; };
-		34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
-		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34B3F86D1E8DF1700035BE1A /* SignalsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsNavigationController.h; sourceTree = "<group>"; };
 		34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
 		34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTableViewController.h; sourceTree = "<group>"; };
@@ -2228,10 +2220,6 @@
 				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
 				4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */,
 				34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */,
-				34B3F84F1E8DF1700035BE1A /* NewContactThreadViewController.h */,
-				34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */,
-				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
-				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
 				34A55F3620485464002CC6DE /* OWS2FARegistrationViewController.h */,
 				34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */,
 				45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */,
@@ -4254,11 +4242,9 @@
 				7D2CD5B3214C3C9C004E957A /* DebugUITableViewController.m in Sources */,
 				7D2CD5B4214C3C9C004E957A /* iRate.m in Sources */,
 				7D2CD5B5214C3C9C004E957A /* MediaDetailViewController.m in Sources */,
-				7D2CD5B6214C3C9C004E957A /* NewGroupViewController.m in Sources */,
 				7D2CD5B7214C3C9C004E957A /* DebugUIMessages.m in Sources */,
 				7D2CD5B8214C3C9C004E957A /* OWSMessageTextView.m in Sources */,
 				7D2CD5B9214C3C9C004E957A /* ConversationCollectionView.m in Sources */,
-				7D2CD5BA214C3C9C004E957A /* NewContactThreadViewController.m in Sources */,
 				7D2CD5BB214C3C9C004E957A /* PinEntryView.m in Sources */,
 				7D2CD5BC214C3C9C004E957A /* BlockListViewController.m in Sources */,
 				7D2CD5BD214C3C9C004E957A /* DirectoryCell.swift in Sources */,
@@ -4465,11 +4451,9 @@
 				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				34219801210612F600C57195 /* iRate.m in Sources */,
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
-				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
-				34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */,
 				45D308AD2049A439000189E4 /* PinEntryView.m in Sources */,
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
 				7D705DA7214827EF00488180 /* DirectoryCell.swift in Sources */,

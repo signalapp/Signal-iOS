@@ -10,7 +10,7 @@
 #import <RelayMessaging/ContactTableViewCell.h>
 #import <RelayMessaging/ContactsViewHelper.h>
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayServiceKit/OWSBlockingManager.h>
 #import <RelayServiceKit/SignalAccount.h>

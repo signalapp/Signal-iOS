@@ -5,7 +5,6 @@
 #import "ConversationInputToolbar.h"
 #import "ConversationInputTextView.h"
 #import "Environment.h"
-#import "OWSContactsManager.h"
 #import "OWSMath.h"
 #import "Relay-Swift.h"
 #import "UIColor+OWS.h"

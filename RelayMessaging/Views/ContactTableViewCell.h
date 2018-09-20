@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

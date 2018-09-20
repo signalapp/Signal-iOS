@@ -6,8 +6,9 @@
 #import "OWSNavigationController.h"
 #import "Relay-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
+//#import <RelayMessaging/OWSAlerts.h>
 #import <RelayServiceKit/PhoneNumber.h>
 #import <RelayServiceKit/TSThread.h>
 

@@ -6,7 +6,7 @@
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
-#import "NewContactThreadViewController.h"
+//#import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
@@ -19,7 +19,7 @@
 #import "TSThread.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSFormat.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayServiceKit/NSDate+OWS.h>
@@ -86,7 +86,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 // Dependencies
 
 @property (nonatomic, readonly) AccountManager *accountManager;
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
@@ -162,10 +162,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(blockedPhoneNumbersDidChange:)
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
-                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(signalAccountsDidChange:)
+//                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+//                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:OWSApplicationWillEnterForegroundNotification
@@ -572,13 +572,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
         hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
     }];
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderViews];
-            });
-        }];
-    }
+//    if (hasAnyMessages) {
+//        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [self updateReminderViews];
+//            });
+//        }];
+//    }
 
     self.isViewVisible = YES;
 
@@ -685,9 +685,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
         hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
     }];
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnce];
-    }
+//    if (hasAnyMessages) {
+//        [self.contactsManager requestSystemContactsOnce];
+//    }
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -711,13 +711,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
     }];
     
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderViews];
-            });
-        }];
-    }
+//    if (hasAnyMessages) {
+//        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [self updateReminderViews];
+//            });
+//        }];
+//    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -1364,9 +1364,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
     }];
 
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnce];
-    }
+//    if (hasAnyMessages) {
+//        [self.contactsManager requestSystemContactsOnce];
+//    }
 
     NSArray *sectionChanges = nil;
     NSArray *rowChanges = nil;

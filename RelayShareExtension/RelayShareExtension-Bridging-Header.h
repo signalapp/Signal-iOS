@@ -10,7 +10,7 @@
 #import "ShareAppExtensionContext.h"
 #import <RelayMessaging/DebugLogger.h>
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 //#import <RelayMessaging/OWSContactsSyncing.h>
 #import <RelayMessaging/OWSMath.h>
 #import <RelayMessaging/OWSPreferences.h>
