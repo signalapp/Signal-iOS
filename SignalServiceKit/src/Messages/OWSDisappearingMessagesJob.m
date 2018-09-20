@@ -13,6 +13,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"
@@ -110,6 +111,15 @@ void AssertIsOnDisappearingMessagesQueue()
     return queue;
 }
 
+#pragma mark - Dependencies
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
+#pragma mark -
+
 - (NSUInteger)deleteExpiredMessages
 {
     AssertIsOnDisappearingMessagesQueue();
@@ -193,39 +203,24 @@ void AssertIsOnDisappearingMessagesQueue()
                     }];
 }
 
-- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
-                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                                        transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    TSThread *thread = [message threadWithTransaction:transaction];
-    NSString *remoteContactName = nil;
-    if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        remoteContactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
-    }
 
-    // MJK - we can't rely on timestampForSorting
-    [self becomeConsistentWithDisappearingDuration:message.expiresInSeconds
-                                            thread:thread
-                       appearBeforeSenderTimestamp:message.timestampForSorting
-                        createdByRemoteContactName:remoteContactName
-                            createdInExistingGroup:NO
-                                       transaction:transaction];
-}
+#pragma mark - Apply Remote Configuration
 
-// MJK - we can't rely on timestampForSorting
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
-                     appearBeforeSenderTimestamp:(uint64_t)timestampForSorting
-                      createdByRemoteContactName:(nullable NSString *)remoteContactName
+                      createdByRemoteRecipientId:(nullable NSString *)remoteRecipientId
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(timestampForSorting > 0);
     OWSAssertDebug(transaction);
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
+    NSString *_Nullable remoteContactName = nil;
+    if (remoteRecipientId) {
+        remoteContactName = [self.contactsManager displayNameForPhoneIdentifier:remoteRecipientId];
+    }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
@@ -248,10 +243,9 @@ void AssertIsOnDisappearingMessagesQueue()
 
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
 
-    // We want the info message to appear _before_ the message.
-    // MJK FIXME - we have to affect ordering by creation sequence, not sender timestamp
+    // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithSenderTimestamp:timestampForSorting - 1
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithSenderTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                                 thread:thread
                                                                          configuration:disappearingMessagesConfiguration
                                                                    createdByRemoteName:remoteContactName
@@ -261,6 +255,8 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
 }
+
+#pragma mark -
 
 - (void)startIfNecessary
 {
