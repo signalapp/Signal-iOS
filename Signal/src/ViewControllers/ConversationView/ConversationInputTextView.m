@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.delegate = self;
 
-        self.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_dark85Color : UIColor.ows_light02Color);
+        self.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_gray02Color);
         self.layer.borderColor
             = (Theme.isDarkThemeEnabled ? [Theme.primaryColor colorWithAlphaComponent:0.06f].CGColor
                                         : [Theme.primaryColor colorWithAlphaComponent:0.12f].CGColor);

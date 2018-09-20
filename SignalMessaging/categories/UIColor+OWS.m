@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIColor+OWS.h"
+#import "OWSMath.h"
 #import <SignalServiceKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -142,80 +142,59 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRGBHex:0xf44336];
 }
 
+#pragma mark - GreyScale
+
 + (UIColor *)ows_whiteColor
 {
     return [UIColor colorWithRGBHex:0xFFFFFF];
 }
 
-+ (UIColor *)ows_light02Color
++ (UIColor *)ows_gray02Color
 {
-    return [UIColor colorWithRGBHex:0xF9FAFA];
+    return [UIColor colorWithRGBHex:0xF8F9F9];
 }
 
-+ (UIColor *)ows_light10Color
++ (UIColor *)ows_gray05Color
 {
     return [UIColor colorWithRGBHex:0xEEEFEF];
 }
 
-+ (UIColor *)ows_light35Color
++ (UIColor *)ows_gray25Color
 {
-    return [UIColor colorWithRGBHex:0xA4A6A9];
+    return [UIColor colorWithRGBHex:0xBBBDBE];
 }
 
-+ (UIColor *)ows_light45Color
++ (UIColor *)ows_gray45Color
 {
-    return [UIColor colorWithRGBHex:0x8B8E91];
+    return [UIColor colorWithRGBHex:0x898A8C];
 }
 
-+ (UIColor *)ows_light60Color
++ (UIColor *)ows_gray60Color
 {
-    return [UIColor colorWithRGBHex:0x62656A];
+    return [UIColor colorWithRGBHex:0x636467];
 }
 
-+ (UIColor *)ows_light90Color
++ (UIColor *)ows_gray75Color
 {
-    return [UIColor colorWithRGBHex:0x070C14];
+    return [UIColor colorWithRGBHex:0x3D3E44];
 }
 
-+ (UIColor *)ows_dark05Color
++ (UIColor *)ows_gray90Color
 {
-    return [UIColor colorWithRGBHex:0xEFEFEF];
+    return [UIColor colorWithRGBHex:0x17191D];
 }
 
-+ (UIColor *)ows_dark30Color
++ (UIColor *)ows_gray95Color
 {
-    return [UIColor colorWithRGBHex:0xA8A9AA];
-}
-
-+ (UIColor *)ows_dark55Color
-{
-    return [UIColor colorWithRGBHex:0x88898C];
-}
-
-+ (UIColor *)ows_dark60Color
-{
-    return [UIColor colorWithRGBHex:0x797A7C];
-}
-
-+ (UIColor *)ows_dark70Color
-{
-    return [UIColor colorWithRGBHex:0x414347];
-}
-
-+ (UIColor *)ows_dark85Color
-{
-    return [UIColor colorWithRGBHex:0x1A1C20];
-}
-
-+ (UIColor *)ows_dark95Color
-{
-    return [UIColor colorWithRGBHex:0x0A0C11];
+    return [UIColor colorWithRGBHex:0x0F1012];
 }
 
 + (UIColor *)ows_blackColor
 {
     return [UIColor colorWithRGBHex:0x000000];
 }
+
+#pragma mark - Conversation Colors
 
 + (UIColor *)ows_red700Color
 {

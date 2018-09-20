@@ -145,7 +145,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_dark70 : UIColor.ows_messageBubbleLightGray
+        return Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_messageBubbleLightGray
     }
 
     @objc
@@ -158,7 +158,7 @@ public class ConversationStyle: NSObject {
     public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
 
     @objc
-    public let dateBreakTextColor = UIColor.ows_light60
+    public let dateBreakTextColor = UIColor.ows_gray60
 
     @objc
     public var primaryColor: UIColor
@@ -193,7 +193,7 @@ public class ConversationStyle: NSObject {
 
     @objc
     public static var bubbleTextColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_white : UIColor.ows_light90
+        return Theme.isDarkThemeEnabled ? UIColor.ows_white : UIColor.ows_gray90
     }
 
     @objc
@@ -254,12 +254,12 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return UIColor.ows_light90
+        return UIColor.ows_gray90
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        return UIColor.ows_light90
+        return UIColor.ows_gray90
     }
 
     @objc
