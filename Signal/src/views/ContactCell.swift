@@ -5,6 +5,7 @@
 import UIKit
 import Contacts
 import SignalServiceKit
+import SignalMessaging
 
 class ContactCell: UITableViewCell {
 

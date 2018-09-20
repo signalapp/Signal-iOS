@@ -5,6 +5,7 @@
 import XCTest
 import PromiseKit
 import SignalServiceKit
+import SignalMessaging
 @testable import Signal
 
 struct VerificationFailedError: Error { }

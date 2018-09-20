@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import ContactsUI
+import SignalMessaging
 
 class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPickerDelegate, CNContactViewControllerDelegate {
 

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 protocol QuotedReplyPreviewDelegate: class {

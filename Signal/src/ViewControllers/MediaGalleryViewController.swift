@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public enum GalleryDirection {
     case before, after, around
