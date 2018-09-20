@@ -178,6 +178,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [curlComponents addObject:@"--data-ascii"];
         [curlComponents addObject:[NSString stringWithFormat:@"'%@'", jsonBody]];
     }
+    // TODO: Add support for cookies.
     [curlComponents addObject:task.originalRequest.URL.absoluteString];
     NSString *curlCommand = [curlComponents componentsJoinedByString:@" "];
     OWSLogVerbose(@"curl for failed request: %@", curlCommand);
