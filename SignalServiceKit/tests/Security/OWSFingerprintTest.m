@@ -10,6 +10,8 @@
 
 @end
 
+#pragma mark -
+
 @implementation OWSFingerprintTest
 
 - (void)testDisplayableTextInsertsSpaces

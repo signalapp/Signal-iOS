@@ -2,12 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "MockSSKEnvironment.h"
 #import "NSDate+OWS.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTest.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
+#import "TestAppContext.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,33 +22,51 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
 
 @interface OWSDisappearingMessageFinderTest : SSKBaseTest
 
-@property YapDatabaseConnection *dbConnection;
-@property OWSDisappearingMessagesFinder *finder;
-@property OWSPrimaryStorage *storageManager;
-@property TSThread *thread;
-@property uint64_t now;
+@property (nonatomic, nullable) YapDatabaseConnection *dbConnection;
+@property (nonatomic, nullable) OWSDisappearingMessagesFinder *finder;
+@property (nonatomic, nullable) TSThread *thread;
+@property (nonatomic) uint64_t now;
 
 @end
 
+#pragma mark -
+
 @implementation OWSDisappearingMessageFinderTest
+
+#ifdef BROKEN_TESTS
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssert(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
 
 - (void)setUp
 {
     [super setUp];
-    [TSMessage removeAllObjectsInCollection];
 
-    self.storageManager = [OWSPrimaryStorage sharedManager];
-    self.dbConnection = self.storageManager.newDatabaseConnection;
+    self.dbConnection = self.primaryStorage.newDatabaseConnection;
+
+    // TODO: This shouldn't be necessary.
+    //    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.primaryStorage];
+
     self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
-
     self.now = [NSDate ows_millisecondTimeStamp];
 
     // Test subject
     self.finder = [OWSDisappearingMessagesFinder new];
-    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.storageManager];
+}
+
+- (void)tearDown
+{
+    self.dbConnection = nil;
+
+    [super tearDown];
 }
 
 - (TSMessage *)messageWithBody:(NSString *)body
@@ -64,10 +85,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testExpiredMessages
 {
-
-
-    TSMessage *expiredMessage1 =
-        [self messageWithBody:@"expiredMessage1" expiresInSeconds:1 expireStartedAt:self.now - 20000];
+    TSMessage *expiredMessage1 = [[TSMessage alloc] initMessageWithTimestamp:1
+                                                                    inThread:self.thread
+                                                                 messageBody:@"expiredMessage1"
+                                                               attachmentIds:@[]
+                                                            expiresInSeconds:1
+                                                             expireStartedAt:self.now - 20000
+                                                               quotedMessage:nil
+                                                                contactShare:nil];
     [expiredMessage1 save];
 
     TSMessage *expiredMessage2 =
@@ -89,10 +114,10 @@ NS_ASSUME_NONNULL_BEGIN
     [unExpiringMessage2 save];
 
     __block NSArray<TSMessage *> *actualMessages;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         actualMessages = [self.finder fetchExpiredMessagesWithTransaction:transaction];
     }];
-    
+
     NSArray<TSMessage *> *expectedMessages = @[ expiredMessage1, expiredMessage2 ];
     XCTAssertEqualObjects(expectedMessages, actualMessages);
 }
@@ -118,11 +143,11 @@ NS_ASSUME_NONNULL_BEGIN
     [unExpiringMessage2 save];
 
     __block NSArray<TSMessage *> *actualMessages;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         actualMessages = [self.finder fetchUnstartedExpiringMessagesInThread:self.thread
                                                                  transaction:transaction];
     }];
-    
+
     NSArray<TSMessage *> *expectedMessages = @[ unreadExpiringMessage ];
     XCTAssertEqualObjects(expectedMessages, actualMessages);
 }
@@ -130,12 +155,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSNumber *)nextExpirationTimestamp
 {
     __block NSNumber *nextExpirationTimestamp;
-    
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         XCTAssertNotNil(self.finder);
         nextExpirationTimestamp = [self.finder nextExpirationTimestampWithTransaction:transaction];
     }];
-        
+
     return nextExpirationTimestamp;
 }
 
@@ -167,6 +192,8 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertNotNil(self.nextExpirationTimestamp);
     XCTAssertEqual(self.now - 1000, [self.nextExpirationTimestamp unsignedLongLongValue]);
 }
+
+#endif
 
 @end
 

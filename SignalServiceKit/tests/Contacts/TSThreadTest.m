@@ -23,10 +23,6 @@
 - (void)setUp
 {
     [super setUp];
-
-    // Register views, etc.
-    [[OWSPrimaryStorage sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
-    }];
 }
 
 - (void)tearDown
@@ -37,21 +33,35 @@
 
 - (void)testDeletingThreadDeletesInteractions
 {
-    TSContactThread *thread = [[TSContactThread alloc] initWithUniqueId:@"fake-test-thread"];
+    TSContactThread *thread =
+        [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
     [thread save];
 
-    [TSInteraction removeAllObjectsInCollection];
     XCTAssertEqual(0, [thread numberOfInteractions]);
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
-                                                                             inThread:thread
-                                                                             authorId:@"fake-author-id"
-                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                                          messageBody:@"Incoming message body"];
+    TSIncomingMessage *incomingMessage =
+        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
+                                                           inThread:thread
+                                                           authorId:@"+12223334444"
+                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                        messageBody:@"Incoming message body"
+                                                      attachmentIds:@[]
+                                                   expiresInSeconds:0
+                                                      quotedMessage:nil
+                                                       contactShare:nil];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initWithTimestamp:20000 inThread:thread messageBody:@"outgoing message body"];
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:20000
+                                                           inThread:thread
+                                                        messageBody:@"outgoing message body"
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:0
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                      quotedMessage:nil
+                                                       contactShare:nil];
     [outgoingMessage save];
 
     XCTAssertEqual(2, [thread numberOfInteractions]);
@@ -63,45 +73,57 @@
 
 - (void)testDeletingThreadDeletesAttachmentFiles
 {
-    TSContactThread *thread = [[TSContactThread alloc] initWithUniqueId:@"fake-test-thread"];
+    TSContactThread *thread =
+        [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
     [thread save];
 
     // Sanity check
-    [TSInteraction removeAllObjectsInCollection];
     XCTAssertEqual(0, [thread numberOfInteractions]);
 
     NSError *error;
-    TSAttachmentStream *incomingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
-                                                                              sourceFilename:nil];
+    TSAttachmentStream *incomingAttachment =
+        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
     [incomingAttachment writeData:[NSData new] error:&error];
     [incomingAttachment save];
 
     // Sanity check
-    BOOL incomingFileWasCreated = [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment filePath]];
+    BOOL incomingFileWasCreated =
+        [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];
     XCTAssert(incomingFileWasCreated);
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:10000
-                                                                             inThread:thread
-                                                                             authorId:@"fake-author-id"
-                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                                          messageBody:@"incoming message body"
-                                                                        attachmentIds:@[ incomingAttachment.uniqueId ]
-                                                                     expiresInSeconds:0];
+    TSIncomingMessage *incomingMessage =
+        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
+                                                           inThread:thread
+                                                           authorId:@"+12223334444"
+                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                        messageBody:@"incoming message body"
+                                                      attachmentIds:@[ incomingAttachment.uniqueId ]
+                                                   expiresInSeconds:0
+                                                      quotedMessage:nil
+                                                       contactShare:nil];
     [incomingMessage save];
 
-    TSAttachmentStream *outgoingAttachment = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
-                                                                              sourceFilename:nil];
+    TSAttachmentStream *outgoingAttachment =
+        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
     [outgoingAttachment writeData:[NSData new] error:&error];
     [outgoingAttachment save];
 
     // Sanity check
-    BOOL outgoingFileWasCreated = [[NSFileManager defaultManager] fileExistsAtPath:[outgoingAttachment filePath]];
+    BOOL outgoingFileWasCreated =
+        [[NSFileManager defaultManager] fileExistsAtPath:[outgoingAttachment originalFilePath]];
     XCTAssert(outgoingFileWasCreated);
 
-    TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessage alloc] initWithTimestamp:10000
-                                                                             inThread:thread
-                                                                          messageBody:@"outgoing message body"
-                                                                        attachmentIds:[@[ outgoingAttachment.uniqueId ] mutableCopy]];
+    TSOutgoingMessage *outgoingMessage =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:10000
+                                                           inThread:thread
+                                                        messageBody:@"outgoing message body"
+                                                      attachmentIds:[@[ outgoingAttachment.uniqueId ] mutableCopy]
+                                                   expiresInSeconds:0
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                      quotedMessage:nil
+                                                       contactShare:nil];
     [outgoingMessage save];
 
     // Sanity check
@@ -111,10 +133,12 @@
     [thread remove];
     XCTAssertEqual(0, [thread numberOfInteractions]);
 
-    BOOL incomingFileStillExists = [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment filePath]];
+    BOOL incomingFileStillExists =
+        [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];
     XCTAssertFalse(incomingFileStillExists);
 
-    BOOL outgoingFileStillExists = [[NSFileManager defaultManager] fileExistsAtPath:[outgoingAttachment filePath]];
+    BOOL outgoingFileStillExists =
+        [[NSFileManager defaultManager] fileExistsAtPath:[outgoingAttachment originalFilePath]];
     XCTAssertFalse(outgoingFileStillExists);
 }
 

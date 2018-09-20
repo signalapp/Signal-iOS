@@ -28,10 +28,9 @@
 }
 
 - (void)testSignedPreKeyDeletion {
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction removeAllObjectsInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
-        }];
+    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
+    }];
 
     int days = 20;
     int lastPreKeyId = days;
@@ -67,10 +66,9 @@
 
 - (void)testSignedPreKeyDeletionKeepsSomeOldKeys
 {
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction removeAllObjectsInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
-        }];
+    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
+    }];
 
     int lastPreKeyId = 10;
     for (int i = 0; i <= 10; i++) {
@@ -111,10 +109,10 @@
 }
 
 - (void)testOlderRecordsNotDeletedIfNoReplacement {
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction removeAllObjectsInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection];
-        }];
+
+    [[OWSPrimaryStorage sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
+    }];
 
     int days = 3;
     int lastPreKeyId = days;

@@ -31,10 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp
 {
     [super setUp];
-    self.sourceId = @"some-source-id";
+    self.sourceId = @"+19999999999";
     self.thread = [TSContactThread getOrCreateThreadWithContactId:self.sourceId];
     self.finder = [OWSIncomingMessageFinder new];
-    [self.finder registerExtension];
     self.dbConnection = [OWSPrimaryStorage sharedManager].dbReadConnection;
 }
 
