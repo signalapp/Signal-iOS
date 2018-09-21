@@ -29,9 +29,6 @@ import YapDatabase
     fileprivate var _devices = NSOrderedSet()
     @objc public var devices: NSOrderedSet {
         get {
-            if _devices.count == 0 {
-                _devices = NSOrderedSet(object: NSNumber(value: 1) )
-            }
             return _devices
         }
     }
