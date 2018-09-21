@@ -111,7 +111,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"1"
+                                      version:@"2"
                                       storage:storage];
 }
 
@@ -130,7 +130,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"1"
+                                      version:@"2"
                                       storage:storage];
 }
 
@@ -158,7 +158,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSThreadSpecialMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"1"
+                                      version:@"2"
                                       storage:storage];
 }
 
@@ -244,7 +244,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"1"
+                                      version:@"2"
                                       storage:storage];
 }
 
@@ -260,7 +260,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSThreadOutgoingMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"2"
+                                      version:@"3"
                                       storage:storage];
 }
 
