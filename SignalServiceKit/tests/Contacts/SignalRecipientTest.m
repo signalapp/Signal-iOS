@@ -42,24 +42,11 @@
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
 
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
 
-            XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
-        }];
-}
-
-- (void)testSelfRecipientWithoutExistingRecord
-{
-    XCTAssertNotNil(self.localNumber);
-
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[SignalRecipient fetchObjectWithUniqueID:self.localNumber] removeWithTransaction:transaction];
-
-            XCTAssertFalse([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
-        }];
+        XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
+    }];
 }
 
 @end

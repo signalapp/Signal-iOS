@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSMessage *expiringMessage = [self messageWithBody:@"notYetExpiredMessage" expiresInSeconds:20 expireStartedAt:0];
     [expiringMessage save];
 
-    [SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    [self
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [job becomeConsistentWithConfigurationForMessage:expiringMessage
                                              contactsManager:[OWSFakeContactsManager new]
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
     [unExpiringMessage save];
-    [SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    [self
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [job becomeConsistentWithConfigurationForMessage:unExpiringMessage
                                              contactsManager:[OWSFakeContactsManager new]

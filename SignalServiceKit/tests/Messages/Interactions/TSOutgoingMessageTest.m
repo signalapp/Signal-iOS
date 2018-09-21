@@ -43,10 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:nil];
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
-        }];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
+    }];
 }
 
 - (void)testShouldStartExpireTimerWithSentMessage
@@ -62,11 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:nil];
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [message updateWithSentRecipient:self.contactId transaction:transaction];
-            XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
-        }];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message updateWithSentRecipient:self.contactId transaction:transaction];
+        XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
+    }];
 }
 
 - (void)testShouldNotStartExpireTimerWithUnsentMessage
@@ -82,10 +80,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:nil];
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
-        }];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
+    }];
 }
 
 - (void)testShouldNotStartExpireTimerWithAttemptingOutMessage
@@ -101,11 +98,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:nil
                                                        contactShare:nil];
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
-            XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
-        }];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
+        XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
+    }];
 }
 
 #endif

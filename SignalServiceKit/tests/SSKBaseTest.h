@@ -4,12 +4,17 @@
 
 #import "MockSSKEnvironment.h"
 #import <XCTest/XCTest.h>
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
 @interface SSKBaseTest : XCTestCase
+
+- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block;
+
+- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block;
 
 @end
 

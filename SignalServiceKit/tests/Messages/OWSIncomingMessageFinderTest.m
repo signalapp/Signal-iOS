@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *sourceId;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) OWSIncomingMessageFinder *finder;
-@property (nonatomic) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -34,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.sourceId = @"+19999999999";
     self.thread = [TSContactThread getOrCreateThreadWithContactId:self.sourceId];
     self.finder = [OWSIncomingMessageFinder new];
-    self.dbConnection = [OWSPrimaryStorage sharedManager].dbReadConnection;
 }
 
 - (void)tearDown
@@ -66,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = 1234;
     __block BOOL result;
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -82,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     authorId:self.sourceId
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -96,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     authorId:@"some-other-author-id"
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -109,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     authorId:self.sourceId
                               sourceDeviceId:OWSDevicePrimaryDeviceId + 1];
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -120,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     // The real deal...
     [self createIncomingMessageWithTimestamp:timestamp authorId:self.sourceId sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId

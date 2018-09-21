@@ -27,12 +27,11 @@
 {
     [super setUp];
 
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        self.thread = [TSContactThread getOrCreateThreadWithContactId:@"aStupidId" transaction:transaction];
 
-            [self.thread saveWithTransaction:transaction];
-        }];
+        [self.thread saveWithTransaction:transaction];
+    }];
 }
 
 - (void)tearDown
@@ -62,11 +61,10 @@
                                                       quotedMessage:nil
                                                        contactShare:nil];
 
-    [[OWSPrimaryStorage sharedManager].newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [newMessage saveWithTransaction:transaction];
-            messageId = newMessage.uniqueId;
-        }];
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [newMessage saveWithTransaction:transaction];
+        messageId = newMessage.uniqueId;
+    }];
 
     TSIncomingMessage *fetchedMessage = [TSIncomingMessage fetchObjectWithUniqueID:messageId];
 
@@ -129,8 +127,7 @@
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     __block TSGroupThread *thread;
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *transaction) {
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:[[TSGroupModel alloc] initWithTitle:@"fdsfsd"
                                                                                           memberIds:[@[] mutableCopy]
                                                                                               image:nil

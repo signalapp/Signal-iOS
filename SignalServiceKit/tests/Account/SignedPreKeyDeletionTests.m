@@ -9,7 +9,7 @@
 
 @interface  TSPreKeyManager (Testing)
 
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)())successHandler;
++ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId success:(void (^_Nullable)(void))successHandler;
 
 @end
 
@@ -28,7 +28,7 @@
 }
 
 - (void)testSignedPreKeyDeletion {
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
     }];
 
@@ -66,7 +66,7 @@
 
 - (void)testSignedPreKeyDeletionKeepsSomeOldKeys
 {
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
     }];
 
@@ -110,7 +110,7 @@
 
 - (void)testOlderRecordsNotDeletedIfNoReplacement {
 
-    [[OWSPrimaryStorage sharedManager].dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
     }];
 

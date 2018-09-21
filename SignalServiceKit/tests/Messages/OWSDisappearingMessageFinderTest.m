@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessageFinderTest : SSKBaseTest
 
-@property (nonatomic, nullable) YapDatabaseConnection *dbConnection;
 @property (nonatomic, nullable) OWSDisappearingMessagesFinder *finder;
 @property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) uint64_t now;
@@ -39,18 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef BROKEN_TESTS
 
-- (OWSPrimaryStorage *)primaryStorage
-{
-    OWSAssert(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
-
 - (void)setUp
 {
     [super setUp];
-
-    self.dbConnection = self.primaryStorage.newDatabaseConnection;
 
     // TODO: This shouldn't be necessary.
     //    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.primaryStorage];
@@ -114,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     [unExpiringMessage2 save];
 
     __block NSArray<TSMessage *> *actualMessages;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         actualMessages = [self.finder fetchExpiredMessagesWithTransaction:transaction];
     }];
 
@@ -143,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
     [unExpiringMessage2 save];
 
     __block NSArray<TSMessage *> *actualMessages;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         actualMessages = [self.finder fetchUnstartedExpiringMessagesInThread:self.thread
                                                                  transaction:transaction];
     }];
@@ -156,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     __block NSNumber *nextExpirationTimestamp;
 
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         XCTAssertNotNil(self.finder);
         nextExpirationTimestamp = [self.finder nextExpirationTimestampWithTransaction:transaction];
     }];

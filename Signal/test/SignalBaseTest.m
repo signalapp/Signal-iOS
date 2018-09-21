@@ -40,6 +40,21 @@ NS_ASSUME_NONNULL_BEGIN
     [super tearDown];
 }
 
+- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    OWSAssert(block);
+
+    [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWithBlock:block];
+}
+
+
+- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+{
+    OWSAssert(block);
+
+    [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWriteWithBlock:block];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

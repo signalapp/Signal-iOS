@@ -36,7 +36,7 @@ extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
     NSData *newKey = [Randomness generateRandomBytes:32];
     NSString *recipientId = @"test@gmail.com";
 
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
+    [self
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             XCTAssert([[OWSIdentityManager sharedManager] isTrustedIdentityKey:newKey
                                                                    recipientId:recipientId
@@ -54,7 +54,7 @@ extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
     NSData *newKey = [Randomness generateRandomBytes:32];
     NSString *recipientId = @"test@gmail.com";
 
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
+    [self
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey
                                                        recipientId:recipientId
@@ -77,7 +77,7 @@ extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
     NSData *originalKey = [Randomness generateRandomBytes:32];
     NSString *recipientId = @"test@protonmail.com";
 
-    [[OWSPrimaryStorage sharedManager].dbReadWriteConnection
+    [self
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [[OWSIdentityManager sharedManager] saveRemoteIdentity:originalKey
                                                        recipientId:recipientId
