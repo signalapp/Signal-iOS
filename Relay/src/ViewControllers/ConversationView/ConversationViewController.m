@@ -1172,12 +1172,7 @@ typedef enum : NSUInteger {
 
 - (void)updateNavigationTitle
 {
-    NSAttributedString *name;
-        if (self.thread.title.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
-        } else {
-            name = [[NSAttributedString alloc] initWithString:self.thread.title];
-        }
+    NSAttributedString *name = [[NSAttributedString alloc] initWithString:self.thread.displayName];
     self.title = nil;
 
     if ([name isEqual:self.headerView.attributedTitle]) {

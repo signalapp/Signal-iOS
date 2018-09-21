@@ -22,7 +22,7 @@ public class ThreadViewModel: NSObject {
     public init(thread: TSThread, transaction: YapDatabaseReadTransaction) {
         self.threadRecord = thread
         self.lastMessageDate = thread.lastMessageDate()
-        self.title = thread.displayName
+        self.title = thread.displayName()
         self.isMuted = thread.isMuted
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)

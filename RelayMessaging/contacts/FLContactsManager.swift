@@ -85,8 +85,8 @@ import RelayServiceKit
     
 //    @objc public var activeRecipients: [RelayRecipient] = []
     
-    private let readConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadConnection }()
-    private let readWriteConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadWriteConnection }()
+    private let readConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+    private let readWriteConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
     private var latestRecipientsById: [AnyHashable : Any] = [:]
     private var activeRecipientsBacker: [ RelayRecipient ] = []
     private var visibleRecipientsPredicate: NSCompoundPredicate?
