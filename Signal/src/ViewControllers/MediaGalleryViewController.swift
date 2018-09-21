@@ -731,15 +731,13 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         Bench(title: "sorting gallery items") {
             galleryItems.sort { lhs, rhs -> Bool in
-                // MJK FIXME - use sortID
-                return lhs.message.timestampForLegacySorting() < rhs.message.timestampForLegacySorting()
+                return lhs.message.sortId < rhs.message.sortId
             }
             sectionDates.sort()
 
             for (date, galleryItems) in sections {
                 sortedSections[date] = galleryItems.sorted { lhs, rhs -> Bool in
-                    // MJK FIXME - use sortID
-                    return lhs.message.timestampForLegacySorting() < rhs.message.timestampForLegacySorting()
+                    return lhs.message.sortId < rhs.message.sortId
                 }
             }
         }
