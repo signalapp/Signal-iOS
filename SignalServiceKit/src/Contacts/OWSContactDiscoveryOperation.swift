@@ -7,6 +7,7 @@ import Foundation
 @objc(OWSLegacyContactDiscoveryOperation)
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
+    // TODO: Remove this feature flag.
     private let isCDSEnabled = true
 
     @objc
