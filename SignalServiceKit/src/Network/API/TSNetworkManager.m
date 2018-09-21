@@ -117,6 +117,17 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                                                                              password:request.authPassword];
         }
 
+        // Honor the request's preferences about default cookie handling.
+        //
+        // Default is YES.
+        sessionManager.requestSerializer.HTTPShouldHandleCookies = request.HTTPShouldHandleCookies;
+
+        // Honor the request's headers.
+        for (NSString *headerField in request.allHTTPHeaderFields) {
+            NSString *headerValue = request.allHTTPHeaderFields[headerField];
+            [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+        }
+
         if ([request.HTTPMethod isEqualToString:@"GET"]) {
             [sessionManager GET:request.URL.absoluteString
                      parameters:request.parameters
@@ -222,7 +233,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           case 400: {
               OWSLogError(
                   @"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
-
 
               error.isRetryable = NO;
 
