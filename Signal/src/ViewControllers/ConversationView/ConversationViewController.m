@@ -214,7 +214,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic) BOOL showLoadMoreHeader;
 @property (nonatomic) UILabel *loadMoreHeader;
-@property (nonatomic) uint64_t lastVisibleTimestamp;
+@property (nonatomic) uint64_t lastVisibleSortId;
 
 @property (nonatomic) BOOL isUserScrolling;
 
@@ -705,7 +705,7 @@ typedef enum : NSUInteger {
         [self scrollToDefaultPosition];
     }
 
-    [self updateLastVisibleTimestamp];
+    [self updateLastVisibleSortId];
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
@@ -2679,8 +2679,7 @@ typedef enum : NSUInteger {
         ConversationViewItem *lastViewItem = [self.viewItems lastObject];
         OWSAssertDebug(lastViewItem);
 
-        // MJK FIXME - use sortId
-        if (lastViewItem.interaction.timestampForLegacySorting > self.lastVisibleTimestamp) {
+        if (lastViewItem.interaction.sortId > self.lastVisibleSortId) {
             shouldShowScrollDownButton = YES;
         } else if (isScrolledUp) {
             shouldShowScrollDownButton = YES;
@@ -2779,8 +2778,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
 
-    // MJK FIXME - use sortId
-    [self updateLastVisibleTimestamp:message.timestampForLegacySorting];
+    [self updateLastVisibleSortId:message.sortId];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
@@ -3332,7 +3330,7 @@ typedef enum : NSUInteger {
         // using the more extreme actions in the debug UI.
         OWSFailDebug(@"hasMalformedRowChange");
         [self resetMappings];
-        [self updateLastVisibleTimestamp];
+        [self updateLastVisibleSortId];
         [self scrollToBottomAnimated:NO];
         return;
     }
@@ -3342,7 +3340,7 @@ typedef enum : NSUInteger {
         // These errors are rare.
         OWSFailDebug(@"could not reload view items; hard resetting message mappings.");
         [self resetMappings];
-        [self updateLastVisibleTimestamp];
+        [self updateLastVisibleSortId];
         [self scrollToBottomAnimated:NO];
         return;
     }
@@ -3420,8 +3418,8 @@ typedef enum : NSUInteger {
         if (!finished) {
             OWSLogInfo(@"performBatchUpdates did not finish");
         }
-        
-        [self updateLastVisibleTimestamp];
+
+        [self updateLastVisibleSortId];
 
         if (scrollToBottom && shouldAnimateUpdates) {
             [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
@@ -3877,9 +3875,8 @@ typedef enum : NSUInteger {
 
     ConversationViewItem *_Nullable lastVisibleViewItem = [self.viewItems lastObject];
     if (lastVisibleViewItem) {
-        // MJK FIXME - use sortId
-        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForLegacySorting;
-        self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
+        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
+        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
     }
 
     self.scrollDownButton.hidden = YES;
@@ -3887,13 +3884,12 @@ typedef enum : NSUInteger {
     self.hasUnreadMessages = NO;
 }
 
-- (void)updateLastVisibleTimestamp
+- (void)updateLastVisibleSortId
 {
     ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
     if (lastVisibleViewItem) {
-        // MJK FIXME - use sortId
-        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForLegacySorting;
-        self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
+        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
+        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
     }
 
     [self ensureScrollDownButton];
@@ -3906,11 +3902,11 @@ typedef enum : NSUInteger {
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
 }
 
-- (void)updateLastVisibleTimestamp:(uint64_t)timestamp
+- (void)updateLastVisibleSortId:(uint64_t)sortId
 {
-    OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(sortId > 0);
 
-    self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, timestamp);
+    self.lastVisibleSortId = MAX(self.lastVisibleSortId, sortId);
 
     [self ensureScrollDownButton];
 }
@@ -3930,15 +3926,16 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateLastVisibleTimestamp];
+    [self updateLastVisibleSortId];
 
-    uint64_t lastVisibleTimestamp = self.lastVisibleTimestamp;
+    uint64_t lastVisibleSortId = self.lastVisibleSortId;
 
-    if (lastVisibleTimestamp == 0) {
+    if (lastVisibleSortId == 0) {
         // No visible messages yet. New Thread.
         return;
     }
-    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeTimestamp:lastVisibleTimestamp thread:self.thread];
+    // MJK FIXME - uncomment and implement
+    //    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:lastVisibleSortId thread:self.thread];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
@@ -4335,7 +4332,7 @@ typedef enum : NSUInteger {
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    [self updateLastVisibleTimestamp];
+    [self updateLastVisibleSortId];
     [self autoLoadMoreIfNecessary];
 }
 
@@ -4855,7 +4852,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self updateLastVisibleTimestamp];
+    [self updateLastVisibleSortId];
     self.conversationStyle.viewWidth = self.collectionView.width;
 }
 
