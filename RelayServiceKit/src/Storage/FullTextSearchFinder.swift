@@ -175,7 +175,7 @@ public class FullTextSearchFinder: NSObject {
 //    }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
-        let displayName = contactsManager.displayName(forRecipientId: recipientId)
+        let displayName = contactsManager.cachedDisplayName(forRecipientId: recipientId)
         
         var uuid = UUID.init(uuidString: recipientId)
         
@@ -184,7 +184,7 @@ public class FullTextSearchFinder: NSObject {
             return ""
         }
         
-        return "\(recipientId) \(displayName)"
+        return "\(recipientId) \(String(describing: displayName))"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in

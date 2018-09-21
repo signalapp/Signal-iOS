@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ContactsManagerProtocol <NSObject>
 
 - (nullable NSString *)displayNameForRecipientId:(NSString *)recipientId;
+- (nullable NSString *)cachedDisplayNameForRecipientId:(NSString *)recipientId;
+
 - (NSArray<RelayRecipient *> *)allRecipients;
 
 - (BOOL)isSystemContact:(NSString *)recipientId;

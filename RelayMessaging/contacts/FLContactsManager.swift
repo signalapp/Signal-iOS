@@ -14,6 +14,17 @@ import RelayServiceKit
     
     @objc public var isSystemContactsDenied: Bool = false // for future use
     
+    public func cachedDisplayName(forRecipientId recipientId: String) -> String? {
+        if let recipient:RelayRecipient = recipientCache.object(forKey: recipientId as NSString) {
+            if recipient.fullName().count > 0 {
+                return recipient.fullName()
+            } else if (recipient.flTag?.displaySlug.count)! > 0 {
+                return (recipient.flTag?.displaySlug)!
+            }
+        }
+        return ""
+    }
+    
     public func displayName(forRecipientId recipientId: String) -> String? {
         if let recipient:RelayRecipient = self.recipient(withId: recipientId) {
             if recipient.fullName().count > 0 {
