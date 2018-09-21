@@ -18,6 +18,9 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) ContactsUpdater *contactsUpdater;
 @property (nonatomic) TSNetworkManager *networkManager;
+@property (nonatomic) OWSMessageManager *messageManager;
+@property (nonatomic) OWSBlockingManager *blockingManager;
+@property (nonatomic) OWSIdentityManager *identityManager;
 
 @end
 
@@ -35,6 +38,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
+                         messageManager:(OWSMessageManager *)messageManager
+                        blockingManager:(OWSBlockingManager *)blockingManager
+                        identityManager:(OWSIdentityManager *)identityManager
 {
     self = [super init];
     if (!self) {
@@ -47,6 +53,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(primaryStorage);
     OWSAssertDebug(contactsUpdater);
     OWSAssertDebug(networkManager);
+    OWSAssertDebug(messageManager);
+    OWSAssertDebug(blockingManager);
+    OWSAssertDebug(identityManager);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -54,6 +63,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     _primaryStorage = primaryStorage;
     _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
+    _messageManager = messageManager;
+    _blockingManager = blockingManager;
+    _identityManager = identityManager;
 
     return self;
 }

@@ -3,6 +3,7 @@
 //
 
 #import "MockSSKEnvironment.h"
+#import "OWSBlockingManager.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
@@ -10,6 +11,8 @@
 #import "OWSFakeNetworkManager.h"
 #import "OWSFakeNotificationsManager.h"
 #import "OWSFakeProfileManager.h"
+#import "OWSIdentityManager.h"
+#import "OWSMessageManager.h"
 #import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,12 +42,19 @@ NS_ASSUME_NONNULL_BEGIN
     TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageSender *messageSender = [OWSFakeMessageSender new];
 
+    OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
+
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
                            profileManager:[OWSFakeProfileManager new]
                            primaryStorage:primaryStorage
                           contactsUpdater:[OWSFakeContactsUpdater new]
-                           networkManager:networkManager];
+                           networkManager:networkManager
+                           messageManager:messageManager
+                          blockingManager:blockingManager
+                          identityManager:identityManager];
     if (!self) {
         return nil;
     }

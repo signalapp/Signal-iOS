@@ -22,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)contactIdFromThreadId:(NSString *)threadId;
 
+// This is only exposed for tests.
+#ifdef DEBUG
++ (NSString *)threadIdFromContactId:(NSString *)contactId;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

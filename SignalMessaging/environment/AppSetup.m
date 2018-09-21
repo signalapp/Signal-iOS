@@ -10,6 +10,9 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
+#import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 
@@ -42,13 +45,15 @@ NS_ASSUME_NONNULL_BEGIN
         TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];
         OWSContactsManager *contactsManager = [[OWSContactsManager alloc] initWithPrimaryStorage:primaryStorage];
         ContactsUpdater *contactsUpdater = [ContactsUpdater new];
-        OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
-                                                                            primaryStorage:primaryStorage
-                                                                           contactsManager:contactsManager];
+        OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithPrimaryStorage:primaryStorage];
 
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage
                                                                                 messageSender:messageSender
                                                                                networkManager:networkManager];
+
+        OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -57,7 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    profileManager:profileManager
                                                                    primaryStorage:primaryStorage
                                                                   contactsUpdater:contactsUpdater
-                                                                   networkManager:networkManager]];
+                                                                   networkManager:networkManager
+                                                                   messageManager:messageManager
+                                                                  blockingManager:blockingManager
+                                                                  identityManager:identityManager]];
 
         appSpecificSingletonBlock();
 

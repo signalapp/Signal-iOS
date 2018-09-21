@@ -1080,6 +1080,8 @@ static NSTimeInterval launchStartedAt;
 
     [OWSBackup.sharedManager setup];
 
+    [SSKEnvironment.shared.messageManager startObserving];
+
 #ifdef DEBUG
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];

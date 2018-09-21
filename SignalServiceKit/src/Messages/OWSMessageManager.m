@@ -54,15 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageManager ()
 
-@property (nonatomic, readonly) id<OWSCallMessageHandler> callMessageHandler;
-@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) OWSIdentityManager *identityManager;
-@property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) OWSIncomingMessageFinder *incomingMessageFinder;
 
 @end
 
@@ -72,38 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedManager
 {
-    static OWSMessageManager *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
+    OWSAssertDebug(SSKEnvironment.shared.messageManager);
+
+    return SSKEnvironment.shared.messageManager;
 }
 
-- (instancetype)initDefault
-{
-    TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
-    id<OWSCallMessageHandler> callMessageHandler = SSKEnvironment.shared.callMessageHandler;
-    OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-
-
-    return [self initWithNetworkManager:networkManager
-                         primaryStorage:primaryStorage
-                     callMessageHandler:callMessageHandler
-                        contactsManager:contactsManager
-                        identityManager:identityManager
-                          messageSender:messageSender];
-}
-
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
-                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                       identityManager:(OWSIdentityManager *)identityManager
-                         messageSender:(OWSMessageSender *)messageSender
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
 
@@ -112,22 +80,55 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _primaryStorage = primaryStorage;
-    _networkManager = networkManager;
-    _callMessageHandler = callMessageHandler;
-    _contactsManager = contactsManager;
-    _identityManager = identityManager;
-    _messageSender = messageSender;
-
     _dbConnection = primaryStorage.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
-    _blockingManager = [OWSBlockingManager sharedManager];
 
     OWSSingletonAssert();
     OWSAssertDebug(CurrentAppContext().isMainApp);
 
-    [self startObserving];
-
     return self;
+}
+
+- (id<OWSCallMessageHandler>)callMessageHandler
+{
+    OWSAssertDebug(SSKEnvironment.shared.callMessageHandler);
+
+    return SSKEnvironment.shared.callMessageHandler;
+}
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.contactsManager);
+
+    return SSKEnvironment.shared.contactsManager;
+}
+
+- (OWSMessageSender *)messageSender
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageSender);
+
+    return SSKEnvironment.shared.messageSender;
+}
+
+- (OWSBlockingManager *)blockingManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
+
+    return SSKEnvironment.shared.blockingManager;
+}
+
+- (OWSIdentityManager *)identityManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.identityManager);
+
+    return SSKEnvironment.shared.identityManager;
+}
+
+- (TSNetworkManager *)networkManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.networkManager);
+
+    return SSKEnvironment.shared.networkManager;
 }
 
 - (void)startObserving
@@ -162,7 +163,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(envelope);
 
-    return [_blockingManager isRecipientIdBlocked:envelope.source];
+    return [self.blockingManager isRecipientIdBlocked:envelope.source];
 }
 
 - (BOOL)isDataMessageBlocked:(SSKProtoDataMessage *)dataMessage envelope:(SSKProtoEnvelope *)envelope
@@ -825,7 +826,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
-            [_blockingManager syncBlockList];
+            [self.blockingManager syncBlockList];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
             BOOL areReadReceiptsEnabled =
                 [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];

@@ -31,7 +31,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 @interface OWSBlockingManager ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 
 // We don't store the phone numbers as instances of PhoneNumber to avoid
 // consistency issues between clients, but these should all be valid e164
@@ -47,24 +46,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 + (instancetype)sharedManager
 {
-    static OWSBlockingManager *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
+    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
 
-- (instancetype)initDefault
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-
-    return [self initWithPrimaryStorage:primaryStorage messageSender:messageSender];
+    return SSKEnvironment.shared.blockingManager;
 }
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
-                         messageSender:(OWSMessageSender *)messageSender
 {
     self = [super init];
 
@@ -73,16 +60,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     OWSAssertDebug(primaryStorage);
-    OWSAssertDebug(messageSender);
 
     _dbConnection = primaryStorage.newDatabaseConnection;
-    _messageSender = messageSender;
 
     OWSSingletonAssert();
-
-    // Register this manager with the message sender.
-    // This is a circular dependency.
-    [messageSender setBlockingManager:self];
 
     return self;
 }
@@ -100,8 +81,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                                                object:nil];
 }
 
-#pragma mark -
+- (OWSMessageSender *)messageSender
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
+    return SSKEnvironment.shared.messageSender;
+}
+
+#pragma mark -
 
 - (BOOL)isThreadBlocked:(TSThread *)thread
 {
