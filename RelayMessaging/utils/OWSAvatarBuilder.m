@@ -8,6 +8,7 @@
 #import "TSThread.h"
 #import "UIColor+OWS.h"
 #import "JSQMessagesAvatarImageFactory.h"
+#import <RelayMessaging/RelayMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIImage *)buildImageForThread:(TSThread *)thread
                         diameter:(NSUInteger)diameter
-                 contactsManager:(OWSContactsManager *)contactsManager
+                 contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(thread);
     OWSAssert(contactsManager);

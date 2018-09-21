@@ -85,11 +85,11 @@ extension CallUIAdaptee {
 
     let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
-    private let contactsManager: OWSContactsManager
+    private let contactsManager: FLContactsManager
     internal let audioService: CallAudioService
     internal let callService: CallService
 
-    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
+    public required init(callService: CallService, contactsManager: FLContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         SwiftAssertIsOnMainThread(#function)
 
         self.contactsManager = contactsManager
@@ -136,15 +136,15 @@ extension CallUIAdaptee {
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)
 
-        let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
-        adaptee.reportIncomingCall(call, callerName: callerName)
+        let callerName = self.contactsManager.displayName(forRecipientId: call.remotePhoneNumber)
+        adaptee.reportIncomingCall(call, callerName: callerName!)
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
         SwiftAssertIsOnMainThread(#function)
 
-        let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
-        adaptee.reportMissedCall(call, callerName: callerName)
+        let callerName = self.contactsManager.displayName(forRecipientId: call.remotePhoneNumber)
+        adaptee.reportMissedCall(call, callerName: callerName!)
     }
 
     internal func startOutgoingCall(handle: String) -> SignalCall {

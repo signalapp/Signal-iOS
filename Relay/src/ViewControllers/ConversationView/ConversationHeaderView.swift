@@ -56,7 +56,7 @@ public class ConversationHeaderView: UIStackView {
     private let avatarView: ConversationAvatarImageView
 
     @objc
-    public required init(thread: TSThread, contactsManager: OWSContactsManager) {
+    public required init(thread: TSThread, contactsManager: FLContactsManager) {
 
         let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36, contactsManager: contactsManager)
         self.avatarView = avatarView

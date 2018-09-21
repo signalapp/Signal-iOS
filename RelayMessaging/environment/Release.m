@@ -5,10 +5,11 @@
 #import "Release.h"
 #import "Environment.h"
 #import "NotificationsManager.h"
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 #import <RelayServiceKit/ContactsUpdater.h>
 #import <RelayServiceKit/OWSMessageSender.h>
 #import <RelayServiceKit/TSNetworkManager.h>
+#import <RelayMessaging/RelayMessaging-Swift.h>
 
 @implementation Release
 
@@ -20,7 +21,7 @@
         // Order matters here.
         OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
         TSNetworkManager *networkManager = [TSNetworkManager sharedManager];
-        OWSContactsManager *contactsManager = [OWSContactsManager new];
+        FLContactsManager *contactsManager = [FLContactsManager shared];
         ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
                                                                             primaryStorage:primaryStorage

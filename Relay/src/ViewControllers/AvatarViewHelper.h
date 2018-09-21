@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AvatarViewHelper;
-@class OWSContactsManager;
+@class FLContactsManager;
 @class SignalAccount;
 @class TSThread;
 

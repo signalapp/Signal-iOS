@@ -9,6 +9,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayServiceKit/SignalAccount.h>
+#import <RelayMessaging/RelayMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -53,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.userInteractionEnabled = NO;
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(FLContactsManager *)contactsManager
 {
     [OWSTableItem configureCell:self];
 
@@ -63,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithThread:(TSThread *)thread contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(thread);
 

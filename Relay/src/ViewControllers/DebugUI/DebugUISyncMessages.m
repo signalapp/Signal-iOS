@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [Environment current].messageSender;
 }
 
-+ (OWSContactsManager *)contactsManager
++ (FLContactsManager *)contactsManager
 {
     return [Environment current].contactsManager;
 }

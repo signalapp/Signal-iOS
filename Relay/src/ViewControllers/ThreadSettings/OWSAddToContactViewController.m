@@ -5,9 +5,10 @@
 #import "OWSAddToContactViewController.h"
 #import <RelayMessaging/ContactsViewHelper.h>
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+#import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIUtil.h>
 
+@import RelayServiceKit;
 @import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSString *recipientId;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @end
@@ -127,27 +128,27 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-- (nullable NSString *)displayNameForContact:(Contact *)contact
-{
-    OWSAssert(contact);
-
-    if (contact.fullName.length > 0) {
-        return contact.fullName;
-    }
-
-    for (NSString *email in contact.emails) {
-        if (email.length > 0) {
-            return email;
-        }
-    }
-    for (NSString *phoneNumber in contact.userTextPhoneNumbers) {
-        if (phoneNumber.length > 0) {
-            return phoneNumber;
-        }
-    }
-
-    return nil;
-}
+//- (nullable NSString *)displayNameForContact:(Contact *)contact
+//{
+//    OWSAssert(contact);
+//
+//    if (contact.fullName.length > 0) {
+//        return contact.fullName;
+//    }
+//
+//    for (NSString *email in contact.emails) {
+//        if (email.length > 0) {
+//            return email;
+//        }
+//    }
+//    for (NSString *phoneNumber in contact.userTextPhoneNumbers) {
+//        if (phoneNumber.length > 0) {
+//            return phoneNumber;
+//        }
+//    }
+//
+//    return nil;
+//}
 
 - (void)updateTableContents
 {
@@ -160,16 +161,16 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_CONTACTS_SECTION_TITLE", @"a title for the contacts section of the 'new/update group' view.");
 
-    for (Contact *contact in self.contactsViewHelper.contactsManager.allContacts) {
-        NSString *_Nullable displayName = [self displayNameForContact:contact];
+    for (RelayRecipient *recipient in [self.contactsViewHelper.contactsManager allRecipients]) {
+        NSString *_Nullable displayName = [self.contactsViewHelper.contactsManager displayNameForRecipientId:recipient.uniqueId];
         if (displayName.length < 1) {
             continue;
         }
 
-        [section addItem:[OWSTableItem disclosureItemWithText:displayName
-                                                  actionBlock:^{
-                                                      [weakSelf presentContactViewControllerForContact:contact];
-                                                  }]];
+//        [section addItem:[OWSTableItem disclosureItemWithText:displayName
+//                                                  actionBlock:^{
+//                                                      [weakSelf presentContactViewControllerForContact:contact];
+//                                                  }]];
     }
     [contents addSection:section];
 
@@ -189,19 +190,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contact);
     OWSAssert(self.recipientId);
 
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFail(@"%@ Contact editing not supported", self.logTag);
-        return;
-    }
-    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
-    if (!cnContact) {
-        OWSFail(@"%@ Could not load system contact.", self.logTag);
-        return;
-    }
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
-                                                     fromViewController:self
-                                                        editImmediately:YES
-                                                 addToExistingCnContact:cnContact];
+    // TODO: Modify for recipients
+//    if (!self.contactsManager.supportsContactEditing) {
+//        OWSFail(@"%@ Contact editing not supported", self.logTag);
+//        return;
+//    }
+//    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+//    if (!cnContact) {
+//        OWSFail(@"%@ Could not load system contact.", self.logTag);
+//        return;
+//    }
+//    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
+//                                                     fromViewController:self
+//                                                        editImmediately:YES
+//                                                 addToExistingCnContact:cnContact];
 }
 
 @end

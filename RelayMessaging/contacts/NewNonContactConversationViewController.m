@@ -5,7 +5,7 @@
 #import "NewNonContactConversationViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayServiceKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN

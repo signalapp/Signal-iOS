@@ -8,7 +8,7 @@
 #import <AudioToolbox/AudioServices.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/NSString+OWS.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/OWSSounds.h>
 #import <RelayServiceKit/NSString+SSK.h>
@@ -319,7 +319,7 @@
 
         BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
-        NSString *senderName = [contactsManager displayNameForPhoneIdentifier:message.authorId];
+        NSString *senderName = [contactsManager displayNameForRecipientId:message.authorId];
         NSString *groupName = [thread.title ows_stripped];
         if (groupName.length < 1) {
             groupName = [MessageStrings newGroupDefaultTitle];

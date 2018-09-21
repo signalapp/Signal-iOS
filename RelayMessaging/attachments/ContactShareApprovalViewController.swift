@@ -224,7 +224,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     weak var delegate: ContactShareApprovalViewControllerDelegate?
 
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
     var contactShare: ContactShareViewModel
 
@@ -240,7 +240,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     @objc
-    required public init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, delegate: ContactShareApprovalViewControllerDelegate) {
+    required public init(contactShare: ContactShareViewModel, contactsManager: FLContactsManager, delegate: ContactShareApprovalViewControllerDelegate) {
         self.contactsManager = contactsManager
         self.contactShare = contactShare
         self.delegate = delegate

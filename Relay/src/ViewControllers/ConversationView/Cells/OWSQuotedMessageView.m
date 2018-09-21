@@ -7,7 +7,7 @@
 #import "Environment.h"
 #import "OWSBubbleView.h"
 #import "Relay-Swift.h"
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
@@ -429,8 +429,8 @@ NS_ASSUME_NONNULL_BEGIN
                 @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
         }
     } else {
-        OWSContactsManager *contactsManager = Environment.current.contactsManager;
-        NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        FLContactsManager *contactsManager = Environment.current.contactsManager;
+        NSString *quotedAuthor = [contactsManager displayNameForRecipientId:self.quotedMessage.authorId];
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",

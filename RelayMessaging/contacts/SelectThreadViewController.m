@@ -9,7 +9,7 @@
 #import "Environment.h"
 #import "NSString+OWS.h"
 #import "NewNonContactConversationViewController.h"
-#import "OWSContactsManager.h"
+//#import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"

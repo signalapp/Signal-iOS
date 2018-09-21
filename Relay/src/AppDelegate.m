@@ -1045,8 +1045,8 @@ static NSTimeInterval launchStartedAt;
 
     [AppVersion.instance mainAppLaunchDidComplete];
 
-    [Environment.current.contactsManager loadSignalAccountsFromCache];
-    [Environment.current.contactsManager startObserving];
+//    [Environment.current.contactsManager loadSignalAccountsFromCache];
+//    [Environment.current.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];

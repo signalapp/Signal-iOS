@@ -10,15 +10,83 @@ import Foundation
 import YapDatabase
 import RelayServiceKit
 
-@objc public class FLContactsManager: NSObject {
+@objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
+    
+    @objc public var isSystemContactsDenied: Bool = false // for future use
+    
+    public func cachedDisplayName(forRecipientId recipientId: String) -> String? {
+        if let recipient:RelayRecipient = recipientCache.object(forKey: recipientId as NSString) {
+            if recipient.fullName().count > 0 {
+                return recipient.fullName()
+            } else if (recipient.flTag?.displaySlug.count)! > 0 {
+                return (recipient.flTag?.displaySlug)!
+            }
+        }
+        return ""
+    }
+    
+    public func displayName(forRecipientId recipientId: String) -> String? {
+        if let recipient:RelayRecipient = self.recipient(withId: recipientId) {
+            if recipient.fullName().count > 0 {
+                return recipient.fullName()
+            } else if (recipient.flTag?.displaySlug.count)! > 0 {
+                return (recipient.flTag?.displaySlug)!
+            }
+        }
+        return NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: "Displayed if for some reason we can't determine a contacts ID *or* name");
+    }
+    
+    public func isSystemContact(_ recipientId: String) -> Bool {
+        // Placeholder for possible future use
+        return false
+    }
+    
+    public func isSystemContact(withRecipientId recipientId: String) -> Bool {
+        // Placeholder for possible future use
+        return false
+    }
+    
+    public func compare(recipient left: RelayRecipient, with right: RelayRecipient) -> ComparisonResult {
+        
+        var comparisonResult: ComparisonResult = (left.lastName!.caseInsensitiveCompare(right.lastName!))
+        
+        if comparisonResult == .orderedSame {
+            comparisonResult = (left.firstName!.caseInsensitiveCompare(right.firstName!))
+            
+            if comparisonResult == .orderedSame {
+                comparisonResult = ((left.flTag!.slug.caseInsensitiveCompare(right.flTag!.slug)))
+            }
+        }
+        return comparisonResult
+    }
+    
+    public func avatarImageRecipientId(_ recipientId: String) -> UIImage? {
+        // TODO: implement gravatars here
+        var image: UIImage? = nil
+        var cacheKey: NSString? = nil
+        
+        // if using gravatars
+        // cacheKey = "gravatar:\(uid)"
+        // else
+        cacheKey = "avatar:\(recipientId)" as NSString
+        image = self.avatarCache.object(forKey: cacheKey!)
+        
+        if image == nil {
+            image = self.recipient(withId: recipientId)?.avatar
+            if image != nil {
+                self.avatarCache.setObject(image!, forKey: cacheKey!)
+            }
+        }
+        return image
+    }
+    
     
     @objc public static let shared = FLContactsManager()
     
-    @objc public var allRecipients: [RelayRecipient] = []
-    @objc public var activeRecipients: [RelayRecipient] = []
+//    @objc public var activeRecipients: [RelayRecipient] = []
     
-    private let readConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadConnection }()
-    private let readWriteConnection: YapDatabaseConnection = { return OWSPrimaryStorage.shared().dbReadWriteConnection }()
+    private let readConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+    private let readWriteConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
     private var latestRecipientsById: [AnyHashable : Any] = [:]
     private var activeRecipientsBacker: [ RelayRecipient ] = []
     private var visibleRecipientsPredicate: NSCompoundPredicate?
@@ -29,6 +97,10 @@ import RelayServiceKit
 
     // TODO: require for gravatar implementation
 //    private var prefs: PropertyListPreferences?
+    
+    @objc public func flushAvatarCache() {
+        avatarCache.removeAllObjects()
+    }
 
     override init() {
         avatarCache = NSCache<NSString, UIImage>()
@@ -65,6 +137,11 @@ import RelayServiceKit
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
+    @objc public func allRecipients() -> [RelayRecipient] {
+        return RelayRecipient.allObjectsInCollection() as! [RelayRecipient]
+    }
+
     
     @objc public func selfRecipient() -> RelayRecipient {
         let selfId = TSAccountManager.localUID()! as NSString
@@ -270,43 +347,19 @@ import RelayServiceKit
     }
 
     
-    @objc public func setImage(image: UIImage, recipientId: String) {
+    @objc public func setAvatarImage(image: UIImage, recipientId: String) {
         if let recipient = self.recipient(withId: recipientId) {
             recipient.avatar = image
             self.avatarCache.setObject(image, forKey: recipientId as NSString)
         }
     }
     
-    @objc public func image(forRecipientId uid: String) -> UIImage? {
-        // TODO: implement gravatars here
-        var image: UIImage? = nil
-        var cacheKey: NSString? = nil
-        
-        // if using gravatars
-        // cacheKey = "gravatar:\(uid)"
-        // else
-        cacheKey = "avatar:\(uid)" as NSString
-        image = self.avatarCache.object(forKey: cacheKey!)
-        
-        if image == nil {
-            image = self.recipient(withId: uid)?.avatar
-            if image != nil {
-                self.avatarCache.setObject(image!, forKey: cacheKey!)
-            }
-        }
-        return image
-    }
+//    @objc public func image(forRecipientId uid: String) -> UIImage? {
+//    }
     
-    @objc public func nameString(forRecipientId uid: String) -> String? {
-        if let recipient:RelayRecipient = self.recipient(withId: uid) {
-            if recipient.fullName().count > 0 {
-                return recipient.fullName()
-            } else if (recipient.flTag?.displaySlug.count)! > 0 {
-                return recipient.flTag?.displaySlug
-            }
-        }
-        return NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: "Displayed if for some reason we can't determine a contacts ID *or* name");
-    }
+//    @objc public func nameString(forRecipientId uid: String) -> String? {
+//
+//    }
     
     // MARK: - Recipient management
     @objc public func processRecipientsBlob() {
@@ -390,13 +443,34 @@ import RelayServiceKit
     }
     
 
-    @objc func nukeAndPave() {
+    @objc public func nukeAndPave() {
         self.tagCache.removeAllObjects()
         self.recipientCache.removeAllObjects()
         RelayRecipient.removeAllObjectsInCollection()
         FLTag.removeAllObjectsInCollection()
     }
     
+    @objc public func supportsContactEditing() -> Bool {
+        return false
+    }
+    
+    @objc public func isSystemContactsAuthorized() -> Bool {
+        return false
+    }
+    
+    @objc public func formattedFullName(forRecipientId recipientId: String, font: UIFont) -> NSAttributedString? {
+        
+        if let recipient = self.recipient(withId: recipientId) {
+            let rawName = recipient.fullName()
+            
+            let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
+            
+            let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
+
+            return attrName
+        }
+        return nil
+    }
     // MARK: - Helpers
 
 }

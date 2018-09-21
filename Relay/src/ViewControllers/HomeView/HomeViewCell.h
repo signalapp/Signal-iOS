@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContactsManager;
+@class FLContactsManager;
 @class ThreadViewModel;
 @class YapDatabaseReadTransaction;
 
@@ -13,11 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)cellReuseIdentifier;
 
 - (void)configureWithThread:(ThreadViewModel *)thread
-            contactsManager:(OWSContactsManager *)contactsManager
+            contactsManager:(FLContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet;
 
 - (void)configureWithThread:(ThreadViewModel *)thread
-            contactsManager:(OWSContactsManager *)contactsManager
+            contactsManager:(FLContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
                overrideDate:(nullable NSDate *)overrideDate;

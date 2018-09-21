@@ -17,14 +17,14 @@
 #import "RegistrationUtils.h"
 #import "Relay-Swift.h"
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayServiceKit/TSAccountManager.h>
 #import <RelayServiceKit/TSSocketManager.h>
 
 @interface AppSettingsViewController ()
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 
 @end
 

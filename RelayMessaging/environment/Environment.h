@@ -14,7 +14,7 @@
  **/
 
 @class ContactsUpdater;
-@class OWSContactsManager;
+@class FLContactsManager;
 @class OWSMessageSender;
 @class OWSNavigationController;
 @class TSGroupThread;
@@ -23,12 +23,12 @@
 
 @interface Environment : NSObject
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+- (instancetype)initWithContactsManager:(FLContactsManager *)contactsManager
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                           messageSender:(OWSMessageSender *)messageSender;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;

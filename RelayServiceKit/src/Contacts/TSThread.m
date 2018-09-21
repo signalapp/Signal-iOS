@@ -19,6 +19,7 @@
 #import "TSAttachmentStream.h"
 #import "CCSMKeys.h"
 #import "CCSMCommunication.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 @import YapDatabase;
 
@@ -578,7 +579,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 {
     __block TSThread *thread = nil;
     __block NSCountedSet *testSet = [NSCountedSet setWithArray:participantIDs];
-    [transaction enumerateKeysAndObjectsInCollection:[self collection] usingBlock:^(NSString *key, TSThread *aThread, BOOL *stop) {
+    [transaction enumerateKeysAndObjectsInCollection:[TSThread collection] usingBlock:^(NSString *key, TSThread *aThread, BOOL *stop) {
         NSCountedSet *aSet = [NSCountedSet setWithArray:aThread.participantIds];
         if ([aSet isEqual:testSet]) {
             thread = aThread;
@@ -589,7 +590,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     if (thread == nil) {
         thread = [TSThread getOrCreateThreadWithId:[[NSUUID UUID] UUIDString] transaction:transaction];
         thread.participantIds = [participantIDs copy];
-        [thread saveWithTransaction:transaction];
+//        [thread saveWithTransaction:transaction];
     }
     
     return thread;
@@ -677,6 +678,22 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
         }
     }
     return nil;
+}
+
+-(NSString *)displayName
+{
+    if (self.title.length > 0) {
+        return self.title;
+    } else if (self.participantIds.count == 1 && [self.participantIds.lastObject isEqualToString:TSAccountManager.localUID]) {
+        return NSLocalizedString(@"ME_STRING", @"");
+    } else if (self.isOneOnOne) {
+        RelayRecipient *recipient = [RelayRecipient recipientWithUid:self.otherParticipantId];
+        return recipient.fullName;
+    } else if (self.prettyExpression.length > 0) {
+        return self.prettyExpression;
+    } else {
+        return NSLocalizedString(@"Unnamed converstaion", @"");
+    }
 }
 
 @end

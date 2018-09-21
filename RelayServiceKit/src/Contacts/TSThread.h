@@ -175,7 +175,6 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 @property (nonnull) NSArray<NSString *> *participantIds;
 @property (nullable) NSString *universalExpression;
 @property (nullable) NSString *prettyExpression;
-@property (readonly, nonnull) NSString *displayName;
 @property (nonnull) NSCountedSet *monitorIds;
 @property (nullable) NSNumber *pinPosition;
 @property (readonly, assign) BOOL isOneOnOne;
@@ -216,6 +215,12 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
  * thread containing participant id
  */
 +(NSArray<TSThread *> *)threadsContainingParticipant:(NSString *)participantId transaction:transaction;
+
+/**
+ * returns some string representation of the thread suitable for display.
+ */
+-(nonnull NSString *)displayName;
+
 
 @end
 

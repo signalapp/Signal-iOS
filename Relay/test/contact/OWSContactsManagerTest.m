@@ -3,7 +3,7 @@
 //
 
 #import "TestUtil.h"
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <XCTest/XCTest.h>
 
 @interface OWSContactsManagerTest : XCTestCase

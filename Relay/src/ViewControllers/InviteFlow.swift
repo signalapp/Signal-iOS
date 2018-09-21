@@ -23,12 +23,12 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     let actionSheetController: UIAlertController
     @objc
     let presentingViewController: UIViewController
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
     var channel: Channel?
 
     @objc
-    required init(presentingViewController: UIViewController, contactsManager: OWSContactsManager) {
+    required init(presentingViewController: UIViewController, contactsManager: FLContactsManager) {
         self.presentingViewController = presentingViewController
         self.contactsManager = contactsManager
         actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)

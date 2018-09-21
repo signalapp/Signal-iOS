@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    OWSContactsManager *contactsManager = self.delegate.contactsManager;
+    FLContactsManager *contactsManager = self.delegate.contactsManager;
     if (contactsManager == nil) {
         OWSFail(@"%@ contactsManager should not be nil", self.logTag);
         return NO;

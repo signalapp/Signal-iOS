@@ -28,7 +28,7 @@ class DirectoryCell: UITableViewCell {
             self.nameLabel.attributedText = self.attributedString(recipient: recipient)
             self.detailLabel.text = recipient?.orgSlug
             
-            let avatar: UIImage? = FLContactsManager.shared.image(forRecipientId: (recipient?.uniqueId)!)
+            let avatar: UIImage? = FLContactsManager.shared.avatarImageRecipientId((recipient?.uniqueId)!)
             
             if avatar != nil {
                 self.avatarImageView.image = avatar

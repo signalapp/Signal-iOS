@@ -20,7 +20,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     let thread: TSThread
     let initialMessageText: String
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
     private(set) var textView: UITextView!
     private var sendButton: UIBarButtonItem!
@@ -33,7 +33,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     }
 
     @objc
-    required public init(messageText: String, thread: TSThread, contactsManager: OWSContactsManager, delegate: MessageApprovalViewControllerDelegate) {
+    required public init(messageText: String, thread: TSThread, contactsManager: FLContactsManager, delegate: MessageApprovalViewControllerDelegate) {
         self.initialMessageText = messageText
         self.thread = thread
         self.contactsManager = contactsManager
@@ -149,9 +149,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.setCompressionResistanceHorizontalLow()
         nameLabel.autoPinTopToSuperviewMargin(withInset: vMargin)
         
-        let groupName = ((thread.displayName.count) > 0
-            ? thread.displayName
-            : MessageStrings.newGroupDefaultTitle)
+        let groupName = thread.displayName()
         
         nameLabel.text = groupName
         nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)

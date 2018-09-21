@@ -42,7 +42,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     }()
     
     private let uiDBConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().dbReadConnection
-    private let searchDBConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().dbReadWriteConnection
+    private let searchDBConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
     
     private var tagMappings: YapDatabaseViewMappings?
     
@@ -467,13 +467,14 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             })
         } else {
             // build thread and go
+            let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
+            thread.type = FLThreadTypeConversation
+            thread.prettyExpression = results.object(forKey: "pretty") as? String
+            thread.universalExpression = results.object(forKey: "universal") as? String
+            thread.save()
+
             DispatchQueue.main.async {
                 self.navigationController?.dismiss(animated: true, completion: {
-                    let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
-                    thread.type = FLThreadTypeConversation
-                    thread.prettyExpression = results.object(forKey: "pretty") as? String
-                    thread.universalExpression = results.object(forKey: "universal") as? String
-                    thread.save()
                     
                     // Spin off background process to pull in participants
                     DispatchQueue.global(qos: .background).async {

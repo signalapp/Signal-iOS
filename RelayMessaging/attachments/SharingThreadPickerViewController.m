@@ -26,7 +26,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     MessageApprovalViewControllerDelegate,
     ContactShareApprovalViewControllerDelegate>
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
@@ -172,41 +172,41 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)showContactShareApproval
 {
-    OWSAssert(self.attachment);
-    OWSAssert(self.thread);
-    OWSAssert(self.attachment.isConvertibleToContactShare);
-
-    NSData *data = self.attachment.data;
-
-    CNContact *_Nullable cnContact = [Contact cnContactWithVCardData:data];
-    Contact *_Nullable contact = [[Contact alloc] initWithSystemContact:cnContact];
-    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
-    if (!contactShareRecord) {
-        DDLogError(@"%@ Could not convert system contact.", self.logTag);
-        return;
-    }
-
-    BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:contact.cnContactId];
-    for (NSString *recipientId in contact.textSecureIdentifiers) {
-        if (avatarImageData) {
-            break;
-        }
-        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
-        if (avatarImageData) {
-            isProfileAvatar = YES;
-        }
-    }
-    contactShareRecord.isProfileAvatar = isProfileAvatar;
-
-    ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
-
-    ContactShareApprovalViewController *approvalVC =
-        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                         contactsManager:self.contactsManager
-                                                                delegate:self];
-    [self.navigationController pushViewController:approvalVC animated:YES];
+//    OWSAssert(self.attachment);
+//    OWSAssert(self.thread);
+//    OWSAssert(self.attachment.isConvertibleToContactShare);
+//
+//    NSData *data = self.attachment.data;
+//
+//    CNContact *_Nullable cnContact = [Contact cnContactWithVCardData:data];
+//    Contact *_Nullable contact = [[Contact alloc] initWithSystemContact:cnContact];
+//    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
+//    if (!contactShareRecord) {
+//        DDLogError(@"%@ Could not convert system contact.", self.logTag);
+//        return;
+//    }
+//
+//    BOOL isProfileAvatar = NO;
+//    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:contact.cnContactId];
+//    for (NSString *recipientId in contact.textSecureIdentifiers) {
+//        if (avatarImageData) {
+//            break;
+//        }
+//        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+//        if (avatarImageData) {
+//            isProfileAvatar = YES;
+//        }
+//    }
+//    contactShareRecord.isProfileAvatar = isProfileAvatar;
+//
+//    ContactShareViewModel *contactShare =
+//        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
+//
+//    ContactShareApprovalViewController *approvalVC =
+//        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
+//                                                         contactsManager:self.contactsManager
+//                                                                delegate:self];
+//    [self.navigationController pushViewController:approvalVC animated:YES];
 }
 
 // override
@@ -409,7 +409,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-        NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:untrustedRecipientId];
+        NSString *displayName = [self.contactsManager displayNameForRecipientId:untrustedRecipientId];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle

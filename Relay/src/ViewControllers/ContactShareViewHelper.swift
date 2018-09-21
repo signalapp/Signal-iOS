@@ -18,10 +18,10 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     @objc
     weak var delegate: ContactShareViewHelperDelegate?
 
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
     @objc
-    public required init(contactsManager: OWSContactsManager) {
+    public required init(contactsManager: FLContactsManager) {
         SwiftAssertIsOnMainThread(#function)
 
         self.contactsManager = contactsManager
@@ -142,7 +142,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     // MARK: -
 
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        guard contactsManager.supportsContactEditing else {
+        guard contactsManager.supportsContactEditing() else {
             owsFail("\(logTag) Contact editing not supported")
             return
         }
@@ -152,7 +152,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        guard contactsManager.isSystemContactsAuthorized else {
+        guard contactsManager.isSystemContactsAuthorized() else {
             ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
             return
         }
@@ -171,12 +171,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        guard contactsManager.supportsContactEditing else {
+        guard contactsManager.supportsContactEditing() else {
             owsFail("\(logTag) Contact editing not supported")
             return
         }
 
-        guard contactsManager.isSystemContactsAuthorized else {
+        guard contactsManager.isSystemContactsAuthorized() else {
             ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
             return
         }

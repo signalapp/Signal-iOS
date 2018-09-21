@@ -562,14 +562,14 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: Dynamic Header
 
-    private var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+    private var contactsManager: FLContactsManager {
+        return Environment.current()!.contactsManager
     }
 
     private func senderName(message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            return self.contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+            return self.contactsManager.displayName(forRecipientId: incomingMessage.authorId)!
         case is TSOutgoingMessage:
             return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
         default:

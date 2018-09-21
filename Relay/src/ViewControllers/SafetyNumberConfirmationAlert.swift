@@ -10,31 +10,31 @@ public class SafetyNumberConfirmationAlert: NSObject {
 
     let TAG = "[SafetyNumberConfirmationAlert]"
 
-    private let contactsManager: OWSContactsManager
+    private let contactsManager: FLContactsManager
     private let primaryStorage: OWSPrimaryStorage
 
-    init(contactsManager: OWSContactsManager) {
+    init(contactsManager: FLContactsManager) {
         self.contactsManager = contactsManager
         self.primaryStorage = OWSPrimaryStorage.shared()
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
+    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: FLContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
         return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: FLContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
         return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: beforePresentationHandler)
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
+    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: FLContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
         return self.presentAlertIfNecessary(recipientIds: recipientIds, confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: FLContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
         return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(recipientIds: recipientIds,
                                                                                                   confirmationText: confirmationText,
                                                                                                   completion: completion,
@@ -54,15 +54,15 @@ public class SafetyNumberConfirmationAlert: NSObject {
             return false
         }
 
-        let displayName = contactsManager.displayName(forPhoneIdentifier: untrustedIdentity.recipientId)
+        let displayName = contactsManager.displayName(forRecipientId: untrustedIdentity.recipientId)
 
         let titleFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
                                             comment: "Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
-        let title = String(format: titleFormat, displayName)
+        let title = String(format: titleFormat, displayName!)
 
         let bodyFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT",
                                            comment: "Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
-        let body = String(format: bodyFormat, displayName)
+        let body = String(format: bodyFormat, displayName!)
 
         let actionSheetController = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)
 
@@ -83,7 +83,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
 
             self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
                                                    theirRecipientId: untrustedIdentity.recipientId,
-                                                   theirDisplayName: displayName,
+                                                   theirDisplayName: displayName!,
                                                    completion: { completion(false) })
 
         }

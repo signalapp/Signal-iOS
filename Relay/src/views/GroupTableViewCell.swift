@@ -44,7 +44,7 @@ import RelayServiceKit
     }
 
     @objc
-    public func configure(thread: TSThread, contactsManager: OWSContactsManager) {
+    public func configure(thread: TSThread, contactsManager: FLContactsManager) {
         if let groupName = thread.title, !groupName.isEmpty {
             self.nameLabel.text = groupName
         } else {
@@ -53,7 +53,7 @@ import RelayServiceKit
 
         let groupMemberIds: [String] = thread.participantIds
         let groupMemberNames = groupMemberIds.map { (recipientId: String) in
-            contactsManager.displayName(forPhoneIdentifier: recipientId)
+            contactsManager.displayName(forRecipientId: recipientId)!
         }.joined(separator: ", ")
         self.subtitleLabel.text = groupMemberNames
 

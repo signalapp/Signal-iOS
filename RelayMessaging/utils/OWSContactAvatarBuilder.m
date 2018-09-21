@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
                  contactsManager:(FLContactsManager *)contactsManager
 {
     // Name for avatar initials.
-    NSString *_Nullable name = [contactsManager nameStringForRecipientId:signalId];
+    NSString *_Nullable name = [contactsManager displayNameForRecipientId:signalId];
 
     return [self initWithContactId:signalId name:name color:color diameter:diameter contactsManager:contactsManager];
 }
@@ -77,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    return [self.contactsManager imageForRecipientId:self.signalId];
+    return [self.contactsManager avatarImageRecipientId:self.signalId];
 }
 
 - (UIImage *)buildDefaultImage
 {
     UIImage *cachedAvatar =
-        [self.contactsManager imageForRecipientId:self.signalId];
+        [self.contactsManager avatarImageRecipientId:self.signalId];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             font:[UIFont ows_boldFontWithSize:fontSize]
                                                                         diameter:self.diameter] avatarImage];
     
-    [self.contactsManager setImageWithImage:image recipientId:self.signalId];
+    [self.contactsManager setAvatarImageWithImage:image recipientId:self.signalId];
     
 //    [self.contactsManager.avatarCache setImage:image forKey:self.signalId diameter:self.diameter];
     return image;

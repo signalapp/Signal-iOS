@@ -10,7 +10,7 @@
 #import "UIView+OWS.h"
 #import "UIViewController+Permissions.h"
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayServiceKit/OWSError.h>
 #import <RelayServiceKit/OWSFingerprint.h>
@@ -41,8 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.recipientId = recipientId;
     self.accountManager = [TSAccountManager sharedInstance];
 
-    OWSContactsManager *contactsManager = [Environment current].contactsManager;
-    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+    FLContactsManager *contactsManager = [Environment current].contactsManager;
+    self.contactName = [contactsManager displayNameForRecipientId:recipientId];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];

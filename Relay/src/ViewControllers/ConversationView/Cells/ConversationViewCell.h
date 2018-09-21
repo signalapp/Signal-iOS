@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationViewCell;
 @class ConversationViewItem;
 @class OWSContactOffersInteraction;
-@class OWSContactsManager;
+@class FLContactsManager;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSCall;
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (OWSContactsManager *)contactsManager;
+- (FLContactsManager *)contactsManager;
 
 @end
 

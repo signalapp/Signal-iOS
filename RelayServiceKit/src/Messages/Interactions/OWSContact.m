@@ -522,7 +522,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [contactsManager isSystemContactWithSignalAccount:recipientId];
+            return [contactsManager isSystemContactWithRecipientId:recipientId];
         }]];
 }
 

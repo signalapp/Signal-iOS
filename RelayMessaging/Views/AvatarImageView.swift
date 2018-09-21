@@ -49,7 +49,7 @@ public class ConversationAvatarImageView: AvatarImageView {
 
     let thread: TSThread
     let diameter: UInt
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
 //    // nil if group avatar
 //    let recipientId: String?
@@ -57,7 +57,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     // nil if contact avatar
     let groupThreadId: String?
 
-    required public init(thread: TSThread, diameter: UInt, contactsManager: OWSContactsManager) {
+    required public init(thread: TSThread, diameter: UInt, contactsManager: FLContactsManager) {
         self.thread = thread
         self.diameter = diameter
         self.contactsManager = contactsManager

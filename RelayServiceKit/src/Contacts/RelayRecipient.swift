@@ -127,7 +127,7 @@ import YapDatabase
         if let recipient  = self.registeredRecipient(forRecipientId: recipientId, transaction: transaction) {
             return recipient
         } else {
-            return RelayRecipient.recipient(uid: recipientId)
+            return RelayRecipient.init(uniqueId: recipientId)
         }
     }
     
@@ -188,10 +188,25 @@ import YapDatabase
         latest?.save(with: transaction)
     }
     
-    private class func recipient(uid: String?) -> RelayRecipient {
+    @objc public class func recipient(uid: String?) -> RelayRecipient? {
         assert((TSAccountManager.localUID()?.count)! > 0)
+  
+        // Validate something was passed
+        guard uid != nil else {
+            return nil
+        }
         
-        let recipient = RelayRecipient.init(uniqueId: uid)
+        // Validate uid represents a UUID
+        guard UUID.init(uuidString: uid!) != nil else {
+            return nil
+        }
+        
+        if let recipient: RelayRecipient = self.dbReadConnection().object(forKey: uid!, inCollection: RelayRecipient.collection()) as? RelayRecipient {
+            return recipient
+        }
+        return nil
+        
+//        let recipient = RelayRecipient.init(uniqueId: uid)
         
 //        if (TSAccountManager.localUID() == uid) {
 //            // Default to no devices.
@@ -208,7 +223,7 @@ import YapDatabase
 //            // we send a message to this recipient.
 //            recipient.devices = NSOrderedSet(object: 1)
 //        }
-        return recipient
+//        return recipient
     }
 
     

@@ -8,7 +8,7 @@
 #import "Relay-Swift.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayServiceKit/AppReadiness.h>
 #import <RelayServiceKit/NSDate+OWS.h>
 #import <RelayServiceKit/NSString+SSK.h>

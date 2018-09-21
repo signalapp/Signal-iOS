@@ -19,8 +19,8 @@ class DebugUINotifications: DebugUIPage {
     var messageSender: MessageSender {
         return Environment.current().messageSender
     }
-    var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+    var contactsManager: FLContactsManager {
+        return Environment.current()!.contactsManager
     }
 
     // MARK: Overrides

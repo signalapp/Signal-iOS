@@ -10,7 +10,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayServiceKit/OWSVerificationStateChangeMessage.h>
 #import <RelayServiceKit/TSCall.h>
 #import <RelayServiceKit/TSErrorMessage.h>
@@ -331,7 +331,7 @@ typedef void (^SystemMessageActionBlock)(void);
             OWSVerificationStateChangeMessage *verificationMessage = (OWSVerificationStateChangeMessage *)infoMessage;
             BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
             NSString *displayName =
-                [[Environment current].contactsManager displayNameForPhoneIdentifier:verificationMessage.recipientId];
+                [[Environment current].contactsManager displayNameForRecipientId:verificationMessage.recipientId];
             NSString *titleFormat = (isVerified
                     ? (verificationMessage.isLocalChange
                               ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",

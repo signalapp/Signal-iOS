@@ -12,11 +12,13 @@
 #import <RelayServiceKit/TSThread.h>
 #import <RelayServiceKit/Threading.h>
 
+#import <RelayMessaging/RelayMessaging-Swift.h>
+
 static Environment *sharedEnvironment = nil;
 
 @interface Environment ()
 
-@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic) FLContactsManager *contactsManager;
 @property (nonatomic) ContactsUpdater *contactsUpdater;
 @property (nonatomic) TSNetworkManager *networkManager;
 @property (nonatomic) OWSMessageSender *messageSender;
@@ -54,7 +56,7 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = nil;
 }
 
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
+- (instancetype)initWithContactsManager:(FLContactsManager *)contactsManager
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                           messageSender:(OWSMessageSender *)messageSender
@@ -75,7 +77,7 @@ static Environment *sharedEnvironment = nil;
     return self;
 }
 
-- (OWSContactsManager *)contactsManager
+- (FLContactsManager *)contactsManager
 {
     OWSAssert(_contactsManager);
 

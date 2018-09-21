@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *unreadBadgeContainer;
 
 @property (nonatomic, nullable) ThreadViewModel *thread;
-@property (nonatomic, nullable) OWSContactsManager *contactsManager;
+@property (nonatomic, nullable) FLContactsManager *contactsManager;
 
 @property (nonatomic, readonly) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
-            contactsManager:(OWSContactsManager *)contactsManager
+            contactsManager:(FLContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
     [self configureWithThread:thread
@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
-            contactsManager:(OWSContactsManager *)contactsManager
+            contactsManager:(FLContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
                overrideDate:(nullable NSDate *)overrideDate
@@ -321,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
+    FLContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
         OWSFail(@"%@ contactsManager should not be nil", self.logTag);
         self.avatarView.image = nil;
@@ -495,7 +495,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSContactsManager *contactsManager = self.contactsManager;
+    FLContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
         OWSFail(@"%@ contacts manager should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;

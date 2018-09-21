@@ -22,7 +22,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // Feature Flag
     @objc public static let kShowCallViewOnSeparateWindow = true
 
-    let contactsManager: OWSContactsManager
+    let contactsManager: FLContactsManager
 
     // MARK: - Properties
 
@@ -198,13 +198,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contactNameLabel.text = self.thread.displayName
+        contactNameLabel.text = self.thread.displayName()
         updateAvatarImage()
-        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.TAG) updating avatar image")
-            strongSelf.updateAvatarImage()
-        }
+//        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
+//            guard let strongSelf = self else { return }
+//            Logger.info("\(strongSelf.TAG) updating avatar image")
+//            strongSelf.updateAvatarImage()
+//        }
 
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)

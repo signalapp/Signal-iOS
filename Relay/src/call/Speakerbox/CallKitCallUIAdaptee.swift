@@ -23,7 +23,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     private let callManager: CallKitCallManager
     internal let callService: CallService
     internal let notificationsAdapter: CallNotificationsAdapter
-    internal let contactsManager: OWSContactsManager
+    internal let contactsManager: FLContactsManager
     private let showNamesOnCallScreen: Bool
     private let provider: CXProvider
     private let audioActivity: AudioActivity
@@ -78,7 +78,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         return providerConfiguration
     }
 
-    init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
+    init(callService: CallService, contactsManager: FLContactsManager, notificationsAdapter: CallNotificationsAdapter, showNamesOnCallScreen: Bool, useSystemCallLog: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(self.TAG) \(#function)")
@@ -142,7 +142,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
 
         if showNamesOnCallScreen {
-            update.localizedCallerName = self.contactsManager.stringForConversationTitle(withPhoneIdentifier: call.remotePhoneNumber)
+            update.localizedCallerName = self.contactsManager.displayName(forRecipientId: call.remotePhoneNumber)
             update.remoteHandle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString

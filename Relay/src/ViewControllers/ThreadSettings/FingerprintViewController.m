@@ -10,7 +10,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
-#import <RelayMessaging/OWSContactsManager.h>
+//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayServiceKit/NSDate+OWS.h>
 #import <RelayServiceKit/OWSError.h>
@@ -144,8 +144,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     self.recipientId = recipientId;
 
-    OWSContactsManager *contactsManager = [Environment current].contactsManager;
-    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+    FLContactsManager *contactsManager = [Environment current].contactsManager;
+    self.contactName = [contactsManager displayNameForRecipientId:recipientId];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
