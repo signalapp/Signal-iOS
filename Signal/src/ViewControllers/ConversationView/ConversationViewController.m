@@ -3934,8 +3934,8 @@ typedef enum : NSUInteger {
         // No visible messages yet. New Thread.
         return;
     }
-    // MJK FIXME - uncomment and implement
-    //    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:lastVisibleSortId thread:self.thread];
+
+    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
