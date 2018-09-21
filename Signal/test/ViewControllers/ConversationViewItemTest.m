@@ -45,7 +45,7 @@
         [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:self.fakeTextMessageText attachmentId:nil];
     [message save];
     __block ConversationViewItem *viewItem = nil;
-    [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         viewItem = [[ConversationViewItem alloc] initWithInteraction:message
                                                        isGroupThread:NO
                                                          transaction:transaction
@@ -75,7 +75,7 @@
     [message save];
 
     __block ConversationViewItem *viewItem = nil;
-    [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         viewItem = [[ConversationViewItem alloc] initWithInteraction:message
                                                        isGroupThread:NO
                                                          transaction:transaction

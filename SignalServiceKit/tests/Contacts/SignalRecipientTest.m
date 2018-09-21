@@ -3,6 +3,7 @@
 //
 
 #import "SignalRecipient.h"
+#import "MockSSKEnvironment.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTest.h"
 #import "TSAccountManager.h"
@@ -26,32 +27,26 @@
 - (void)setUp
 {
     [super setUp];
+
     self.localNumber = @"+13231231234";
     [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber];
+}
+
+- (void)tearDown
+{
+    [super tearDown];
 }
 
 - (void)testSelfRecipientWithExistingRecord
 {
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
-    [[[SignalRecipient alloc] initWithTextSecureIdentifier:self.localNumber relay:nil] save];
-    XCTAssertNotNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
 
-    SignalRecipient *me = [SignalRecipient selfRecipient];
-    XCTAssert(me);
-    XCTAssertEqualObjects(self.localNumber, me.uniqueId);
-}
+    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
 
-- (void)testSelfRecipientWithoutExistingRecord
-{
-    XCTAssertNotNil(self.localNumber);
-    [[SignalRecipient fetchObjectWithUniqueID:self.localNumber] remove];
-    // Sanity Check that there's no existing user.
-    XCTAssertNil([SignalRecipient recipientWithTextSecureIdentifier:self.localNumber]);
-
-    SignalRecipient *me = [SignalRecipient selfRecipient];
-    XCTAssert(me);
-    XCTAssertEqualObjects(self.localNumber, me.uniqueId);
+        XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
+    }];
 }
 
 @end

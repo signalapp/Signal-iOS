@@ -447,7 +447,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // If we want to be cautious, we can disable orphan deletion using
     // flag - the cleanup will just be a dry run with logging.
     BOOL shouldRemoveOrphans = NO;
-    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection];
+    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:nil];
 }
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
@@ -455,7 +455,15 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
     YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
 
-    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection];
+    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:nil];
+}
+
++ (void)auditAndCleanup:(BOOL)shouldRemoveOrphans completion:(dispatch_block_t)completion
+{
+    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
+    YapDatabaseConnection *databaseConnection = primaryStorage.dbReadWriteConnection;
+
+    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:completion];
 }
 
 // We use the lowest priority possible.
@@ -464,7 +472,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
 }
 
-+ (void)auditAndCleanup:(BOOL)shouldRemoveOrphans databaseConnection:(YapDatabaseConnection *)databaseConnection
++ (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
+     databaseConnection:(YapDatabaseConnection *)databaseConnection
+             completion:(nullable dispatch_block_t)completion
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(databaseConnection);
@@ -521,13 +531,23 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                       forKey:OWSOrphanDataCleaner_LastCleaningDateKey
                                 inCollection:OWSOrphanDataCleaner_Collection];
                     }];
+
+                    if (completion) {
+                        completion();
+                    }
                 }
                 failure:^{
                     OWSLogInfo(@"Aborting orphan data cleanup.");
+                    if (completion) {
+                        completion();
+                    }
                 }];
         }
         failure:^{
             OWSLogInfo(@"Aborting orphan data cleanup.");
+            if (completion) {
+                completion();
+            }
         }];
 }
 

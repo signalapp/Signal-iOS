@@ -62,6 +62,20 @@ PODS:
     - SocketRocket
     - SwiftProtobuf
     - YapDatabase/SQLCipher
+  - SignalServiceKit/Tests (0.9.0):
+    - AFNetworking
+    - AxolotlKit
+    - CocoaLumberjack
+    - Curve25519Kit
+    - GRKOpenSSLFramework
+    - libPhoneNumber-iOS
+    - Mantle
+    - PromiseKit (~> 4.0)
+    - Reachability
+    - SAMKeychain
+    - SocketRocket
+    - SwiftProtobuf
+    - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
   - SQLCipher (3.4.2):
     - SQLCipher/standard (= 3.4.2)
@@ -146,6 +160,7 @@ DEPENDENCIES:
   - PureLayout
   - Reachability
   - SignalServiceKit (from `.`)
+  - SignalServiceKit/Tests (from `.`)
   - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
   - SQLCipher (from `https://github.com/sqlcipher/sqlcipher.git`, commit `d5c2bec`)
   - SSZipArchive
@@ -231,6 +246,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: cb4f38eaa6b1bdf86cfe440ef964c628e6d8321d
+PODFILE CHECKSUM: 40c4fc7dfb6066c4fdb80bc08600096e172dd4d7
 
 COCOAPODS: 1.5.3

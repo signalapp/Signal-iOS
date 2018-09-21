@@ -76,10 +76,6 @@ class ConversationSearcherTest: SignalBaseTest {
 
         FullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
 
-        TSContactThread.removeAllObjectsInCollection()
-        TSGroupThread.removeAllObjectsInCollection()
-        TSMessage.removeAllObjectsInCollection()
-
         // Replace this singleton.
         SSKEnvironment.shared.contactsManager = ConversationSearcherContactsManager()
 
