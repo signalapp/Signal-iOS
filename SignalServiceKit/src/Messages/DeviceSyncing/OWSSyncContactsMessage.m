@@ -5,7 +5,6 @@
 #import "OWSSyncContactsMessage.h"
 #import "Contact.h"
 #import "ContactsManagerProtocol.h"
-#import "NSDate+OWS.h"
 #import "OWSContactsOutputStream.h"
 #import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
@@ -14,6 +13,7 @@
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

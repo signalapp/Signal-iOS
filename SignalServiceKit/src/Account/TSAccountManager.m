@@ -4,7 +4,6 @@
 
 #import "TSAccountManager.h"
 #import "AppContext.h"
-#import "NSData+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
@@ -16,6 +15,7 @@
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

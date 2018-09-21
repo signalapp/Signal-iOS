@@ -3,11 +3,11 @@
 //
 
 #import "Cryptography.h"
-#import "NSData+OWS.h"
 #import "OWSError.h"
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonHMAC.h>
 #import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <openssl/evp.h>
 
 #define HMAC256_KEY_LENGTH 32

@@ -2,11 +2,11 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSMessage.h"
-#import "NSDate+OWS.h"
 #import "SSKBaseTest.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
+#import "TSMessage.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -9,9 +9,9 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>

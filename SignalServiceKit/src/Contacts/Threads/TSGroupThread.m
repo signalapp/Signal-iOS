@@ -3,8 +3,8 @@
 //
 
 #import "TSGroupThread.h"
-#import "NSData+OWS.h"
 #import "TSAttachmentStream.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

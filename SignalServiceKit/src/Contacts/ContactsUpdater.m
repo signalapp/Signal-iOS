@@ -10,7 +10,7 @@
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
-#import "Threading.h"
+#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

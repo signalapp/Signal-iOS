@@ -15,7 +15,7 @@
     static const NSUInteger ddLogLevel = DDLogLevelInfo;
     #endif
 
-    #import <SignalServiceKit/OWSAsserts.h>
+    #import <SignalCoreKit/OWSAsserts.h>
     #import <SignalServiceKit/OWSAnalytics.h>
-    #import <SignalServiceKit/NSObject+OWS.h>
+    #import <SignalCoreKit/NSObject+OWS.h>
 #endif

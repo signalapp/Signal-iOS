@@ -4,11 +4,11 @@
 
 #import "OWSMessageTimerView.h"
 #import "ConversationViewController.h"
-#import "NSDate+OWS.h"
 #import "OWSMath.h"
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <QuartzCore/QuartzCore.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -7,8 +7,8 @@
 #import "NSData+Image.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
-#import "Threading.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

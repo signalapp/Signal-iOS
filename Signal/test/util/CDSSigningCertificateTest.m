@@ -3,8 +3,8 @@
 //
 
 #import "SignalBaseTest.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/CDSSigningCertificate.h>
-#import <SignalServiceKit/NSData+OWS.h>
 
 @interface CDSSigningCertificateTest : SignalBaseTest
 

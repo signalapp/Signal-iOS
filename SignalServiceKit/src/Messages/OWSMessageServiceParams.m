@@ -3,8 +3,8 @@
 //
 
 #import "OWSMessageServiceParams.h"
-#import "NSData+OWS.h"
 #import "TSConstants.h"
+#import <SignalCoreKit/NSData+OWS.h>
 
 @implementation OWSMessageServiceParams
 

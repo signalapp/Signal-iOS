@@ -3,13 +3,13 @@
 //
 
 #import "OWSSyncGroupsMessage.h"
-#import "NSDate+OWS.h"
 #import "OWSGroupsOutputStream.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

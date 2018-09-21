@@ -3,10 +3,10 @@
 //
 
 #import "TSInteraction.h"
-#import "NSDate+OWS.h"
 #import "OWSPrimaryStorage+messageIDs.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

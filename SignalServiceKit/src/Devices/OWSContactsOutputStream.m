@@ -7,13 +7,13 @@
 #import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
-#import "NSData+OWS.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
 #import "SignalAccount.h"
 #import "TSContactThread.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

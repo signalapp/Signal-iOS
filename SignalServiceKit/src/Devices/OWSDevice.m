@@ -3,13 +3,13 @@
 //
 
 #import "OWSDevice.h"
-#import "NSDate+OWS.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

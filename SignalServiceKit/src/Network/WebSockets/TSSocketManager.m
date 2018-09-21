@@ -21,7 +21,7 @@
 #import "TSConstants.h"
 #import "TSErrorMessage.h"
 #import "TSRequest.h"
-#import "Threading.h"
+#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

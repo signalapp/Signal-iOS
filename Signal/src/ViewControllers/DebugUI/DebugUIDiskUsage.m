@@ -6,7 +6,7 @@
 #import "OWSOrphanDataCleaner.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSInteraction.h>

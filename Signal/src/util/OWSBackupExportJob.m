@@ -6,8 +6,9 @@
 #import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
-#import <SignalServiceKit/NSData+OWS.h>
-#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -15,7 +16,6 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

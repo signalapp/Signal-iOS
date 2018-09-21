@@ -3,10 +3,10 @@
 //
 
 #import "OWSFingerprint.h"
-#import "NSData+OWS.h"
 #import "OWSError.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <CommonCrypto/CommonDigest.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <UIKit/UIImage.h>
 

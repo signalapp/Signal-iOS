@@ -4,9 +4,9 @@
 
 #import "OWSIncompleteCallsJob.h"
 #import "AppContext.h"
-#import "NSDate+OWS.h"
 #import "OWSPrimaryStorage.h"
 #import "TSCall.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>

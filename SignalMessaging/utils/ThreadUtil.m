@@ -8,9 +8,9 @@
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
 #import "TSUnreadIndicatorInteraction.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBlockingManager.h>

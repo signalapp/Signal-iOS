@@ -50,6 +50,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SAMKeychain'
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf'
+  s.dependency 'SignalCoreKit'
 
   # Avoid PromiseKit 5/6 for now.
   # From the maintainer:

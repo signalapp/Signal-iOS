@@ -6,8 +6,8 @@
 #import "Signal-Swift.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

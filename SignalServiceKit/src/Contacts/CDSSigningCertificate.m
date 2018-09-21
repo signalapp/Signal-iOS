@@ -4,8 +4,8 @@
 
 #import "CDSSigningCertificate.h"
 #import "Cryptography.h"
-#import "NSData+OWS.h"
 #import <CommonCrypto/CommonCrypto.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <openssl/x509.h>
 
 NS_ASSUME_NONNULL_BEGIN

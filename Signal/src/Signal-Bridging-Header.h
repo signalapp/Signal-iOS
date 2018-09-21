@@ -48,6 +48,12 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+SSK.h>
+#import <SignalCoreKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSLogger.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
@@ -74,14 +80,10 @@
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
-#import <SignalServiceKit/NSData+OWS.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAnalytics.h>
 #import <SignalServiceKit/OWSAnalyticsEvents.h>
-#import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSCallMessageHandler.h>
@@ -91,7 +93,6 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSLogger.h>
 #import <SignalServiceKit/OWSMediaGalleryFinder.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
@@ -122,7 +123,6 @@
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
