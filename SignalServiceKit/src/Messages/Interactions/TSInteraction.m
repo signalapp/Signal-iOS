@@ -170,7 +170,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     [super saveWithTransaction:transaction];
 
-    TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
+    TSThread *fetchedThread = [self threadWithTransaction:transaction];
 
     [fetchedThread updateWithLastMessage:self transaction:transaction];
 }

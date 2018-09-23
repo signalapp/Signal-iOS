@@ -2778,7 +2778,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
 
-    [self updateLastVisibleSortId:message.sortId];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
@@ -3900,15 +3899,6 @@ typedef enum : NSUInteger {
             [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
-}
-
-- (void)updateLastVisibleSortId:(uint64_t)sortId
-{
-    OWSAssertDebug(sortId > 0);
-
-    self.lastVisibleSortId = MAX(self.lastVisibleSortId, sortId);
-
-    [self ensureScrollDownButton];
 }
 
 - (void)markVisibleMessagesAsRead

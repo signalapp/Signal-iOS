@@ -293,13 +293,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             }
         }
 
-        if (thread.archivalDate) {
-            return ([self threadShouldBeInInbox:thread]) ? TSInboxGroup : TSArchiveGroup;
-        } else if (thread.archivalDate) {
-            return TSArchiveGroup;
-        } else {
-            return TSInboxGroup;
-        }
+        return thread.isArchived ? TSArchiveGroup : TSInboxGroup;
     }];
 
     YapDatabaseViewSorting *viewSorting = [self threadSorting];
@@ -313,29 +307,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
     [storage asyncRegisterExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
-}
-
-/**
- *  Determines whether a thread belongs to the archive or inbox
- *
- *  @param thread TSThread
- *
- *  @return Inbox if true, Archive if false
- */
-
-+ (BOOL)threadShouldBeInInbox:(TSThread *)thread {
-    NSDate *lastMessageDate = thread.lastMessageDate;
-    NSDate *archivalDate    = thread.archivalDate;
-    if (lastMessageDate && archivalDate) { // this is what is called
-        return ([lastMessageDate timeIntervalSinceDate:archivalDate] > 0)
-                   ? YES
-                   : NO; // if there hasn't been a new message since the archive date, it's in the archive. an issue is
-                         // that empty threads are always given with a lastmessage date of the present on every launch
-    } else if (archivalDate) {
-        return NO;
-    }
-
-    return YES;
 }
 
 + (YapDatabaseViewSorting *)threadSorting {
@@ -358,7 +329,11 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         TSThread *thread1 = (TSThread *)object1;
         TSThread *thread2 = (TSThread *)object2;
         if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
-            return [thread1.lastMessageDate compare:thread2.lastMessageDate];
+            if (thread1.latestMessageSortId == 0 && thread2.latestMessageSortId == 0) {
+                return [thread1.creationDate compare:thread2.creationDate];
+            }
+
+            return [@(thread1.latestMessageSortId) compare:@(thread2.latestMessageSortId)];
         }
 
         return NSOrderedSame;

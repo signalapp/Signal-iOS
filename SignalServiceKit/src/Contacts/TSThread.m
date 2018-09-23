@@ -22,9 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSThread ()
 
 @property (nonatomic) NSDate *creationDate;
-@property (nonatomic, copy, nullable) NSDate *archivalDate;
 @property (nonatomic, nullable) NSString *conversationColorName;
-@property (nonatomic, nullable) NSDate *lastMessageDate;
+
+@property (nonatomic) uint64_t latestMessageSortId;
+@property (nonatomic) uint64_t archivedAsOfMessageSortId;
+
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
@@ -43,8 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithUniqueId:uniqueId];
 
     if (self) {
-        _archivalDate    = nil;
-        _lastMessageDate = nil;
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
 
@@ -76,7 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
             _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
         }
     }
-    
+
+    NSDate *_Nullable lastMessageDate = [coder decodeObjectOfClass:NSDate.class forKey:@"lastMessageDate"];
+    NSDate *_Nullable archivalDate = [coder decodeObjectOfClass:NSDate.class forKey:@"archivalDate"];
+    _isArchivedByLegacyTimestampForSorting =
+        [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
+
     return self;
 }
 
@@ -300,14 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
     return last;
 }
 
-- (NSDate *)lastMessageDate {
-    if (_lastMessageDate) {
-        return _lastMessageDate;
-    } else {
-        return _creationDate;
-    }
-}
-
 - (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
@@ -354,12 +351,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.hasEverHadMessage = YES;
-
-    // MJK FIXME - this needs to use sortId
-    NSDate *lastMessageDate = lastMessage.dateForLegacySorting;
-    if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
-        _lastMessageDate = lastMessageDate;
-
+    if (lastMessage.sortId > self.latestMessageSortId) {
+        self.latestMessageSortId = lastMessage.sortId;
         [self saveWithTransaction:transaction];
     }
 }
@@ -384,30 +377,46 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark Archival
+#pragma mark - Archival
 
-- (nullable NSDate *)archivalDate
+- (BOOL)isArchived
 {
-    return _archivalDate;
+    return self.archivedAsOfMessageSortId >= self.latestMessageSortId;
 }
 
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [self archiveThreadWithTransaction:transaction referenceDate:[NSDate date]];
++ (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
+                               archivalDate:(nullable NSDate *)archivalDate
+{
+    if (!archivalDate) {
+        return NO;
+    }
+
+    if (!lastMessageDate) {
+        return YES;
+    }
+
+    return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction referenceDate:(NSDate *)date {
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 thread.archivedAsOfMessageSortId = self.latestMessageSortId;
+                             }];
+
     [self markAllAsReadWithTransaction:transaction];
-    _archivalDate = date;
-
-    [self saveWithTransaction:transaction];
 }
 
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    _archivalDate = nil;
-    [self saveWithTransaction:transaction];
+- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 thread.archivedAsOfMessageSortId = 0;
+                             }];
 }
 
-#pragma mark Drafts
+#pragma mark - Drafts
 
 - (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction {
     TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
