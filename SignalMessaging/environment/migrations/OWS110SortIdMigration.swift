@@ -13,7 +13,15 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
         Logger.debug("")
+        BenchAsync(title: "Sort Migration") { completeBenchmark in
+            self.doMigration {
+                completeBenchmark()
+                completion()
+            }
+        }
+    }
 
+    private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
         // TODO batch this?
         self.dbReadWriteConnection().readWrite { transaction in
 
