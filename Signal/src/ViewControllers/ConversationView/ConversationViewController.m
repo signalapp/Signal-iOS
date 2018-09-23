@@ -4926,9 +4926,7 @@ typedef enum : NSUInteger {
                 break;
         }
 
-        // MJK FIXME - should this be sentTime or receivedTime?
-        // we sorted by received time, but we should display sent time
-        uint64_t viewItemTimestamp = viewItem.interaction.timestampForLegacySorting;
+        uint64_t viewItemTimestamp = viewItem.interaction.receivedAtTimestamp;
         OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;

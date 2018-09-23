@@ -292,10 +292,9 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         rows.append(sentRow)
 
         if message as? TSIncomingMessage != nil {
-            // MJK FIXME - expose and use `receivedTime`?
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForLegacySorting())))
+                                 value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp)))
         }
 
         rows += addAttachmentMetadataRows()

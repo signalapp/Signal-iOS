@@ -47,14 +47,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
  */
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
-// MJK FIXME - update this comment
-// The timestamp property is populated by the envelope,
-// which is created by the sender.
-//
-// We typically want to order messages locally by when
-// they were received & decrypted, not by when they were sent.
-@property (nonatomic) uint64_t receivedAtTimestamp;
-
 @end
 
 #pragma mark -
@@ -83,7 +75,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expiresInSeconds = expiresInSeconds;
     _expireStartedAt = expireStartedAt;
     [self updateExpiresAt];
-    _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
 
@@ -134,18 +125,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (!_attachmentIds) {
         _attachmentIds = [NSMutableArray new];
-    }
-
-    if (_receivedAtTimestamp == 0) {
-        // Upgrade from the older "receivedAtDate" and "receivedAt" properties if
-        // necessary.
-        NSDate *receivedAtDate = [coder decodeObjectForKey:@"receivedAtDate"];
-        if (!receivedAtDate) {
-            receivedAtDate = [coder decodeObjectForKey:@"receivedAt"];
-        }
-        if (receivedAtDate) {
-            _receivedAtTimestamp = [NSDate ows_millisecondsSince1970ForDate:receivedAtDate];
-        }
     }
 
     _schemaVersion = OWSMessageSchemaVersion;

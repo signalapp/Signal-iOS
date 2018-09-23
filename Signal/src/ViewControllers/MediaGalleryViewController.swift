@@ -54,8 +54,7 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     let month: Int
 
     init(message: TSMessage) {
-        // MJK FIXME - use `receivedTime` semantics are the same but would be clearer
-        let date = message.dateForLegacySorting()
+        let date = message.receivedAtDate()
 
         self.year = Calendar.current.component(.year, from: date)
         self.month = Calendar.current.component(.month, from: date)

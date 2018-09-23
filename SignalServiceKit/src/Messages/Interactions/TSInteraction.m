@@ -92,6 +92,37 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     _timestamp = timestamp;
     _uniqueThreadId = thread.uniqueId;
+    _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return nil;
+    }
+
+    // Previously the receivedAtTimestamp field lived on TSMessage, but we've moved it up
+    // to the TSInteraction superclass.
+    if (_receivedAtTimestamp == 0) {
+        // Upgrade from the older "TSMessage.receivedAtDate" and "TSMessage.receivedAt" properties if
+        // necessary.
+        NSDate *receivedAtDate = [coder decodeObjectForKey:@"receivedAtDate"];
+        if (!receivedAtDate) {
+            receivedAtDate = [coder decodeObjectForKey:@"receivedAt"];
+        }
+
+        if (receivedAtDate) {
+            _receivedAtTimestamp = [NSDate ows_millisecondsSince1970ForDate:receivedAtDate];
+        }
+
+        // For TSInteractions which are not TSMessage's, the timestamp *is* the receivedAtTimestamp
+        if (_receivedAtTimestamp == 0) {
+            _receivedAtTimestamp = _timestamp;
+        }
+    }
 
     return self;
 }
@@ -124,6 +155,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (uint64_t)timestampForLegacySorting
 {
     return self.timestamp;
+}
+
+- (NSDate *)receivedAtDate
+{
+    return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other

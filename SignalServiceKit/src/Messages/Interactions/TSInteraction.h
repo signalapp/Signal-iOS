@@ -34,6 +34,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
+@property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+- (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;
 
