@@ -111,7 +111,7 @@ public class ConversationSearcher: NSObject {
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let sortKey = NSDate.ows_millisecondsSince1970(for: threadViewModel.lastMessageDate)
+                let sortKey = thread.latestMessageSortId
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
@@ -124,7 +124,7 @@ public class ConversationSearcher: NSObject {
                 let thread = message.thread(with: transaction)
 
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let sortKey = message.timestamp
+                let sortKey = message.sortId
                 let searchResult = ConversationSearchResult(thread: threadViewModel,
                                                             sortKey: sortKey,
                                                             messageId: message.uniqueId,
