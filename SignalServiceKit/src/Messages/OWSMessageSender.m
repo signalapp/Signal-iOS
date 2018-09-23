@@ -466,10 +466,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSAssertDebug(message.recipientIds.count == 1);
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
-                    // MJK FIXME - read time == creation time. (the stakes are low here, self sent messages should have
-                    // more or less identical timestamp vs. legacyTimestampForSorting)
                     [message updateWithReadRecipientId:recipientId
-                                         readTimestamp:message.timestampForLegacySorting
+                                         readTimestamp:message.timestamp
                                            transaction:transaction];
                 }
             }];
