@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
-@property (nonatomic) UIView *unreadBadgeContainer;
 
 @property (nonatomic, nullable) ThreadViewModel *thread;
 @property (nonatomic, nullable) OWSContactsManager *contactsManager;
@@ -113,6 +112,16 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
 
+    [self.contentView addSubview:vStackView];
+    [vStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
+    [vStackView autoVCenterInSuperview];
+    // Ensure that the cell's contents never overflow the cell bounds.
+    [vStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinTrailingToSuperviewMargin];
+
+    vStackView.userInteractionEnabled = NO;
+
     self.unreadLabel = [UILabel new];
     self.unreadLabel.textColor = [UIColor ows_whiteColor];
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -122,34 +131,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    // TODO: Review with design.
+    self.unreadBadge.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.unreadBadge.layer.shadowOffset = CGSizeMake(0.f, 1.f);
+    self.unreadBadge.layer.shadowRadius = 1.f;
+    self.unreadBadge.layer.shadowOpacity = 0.2f;
     [self.unreadBadge addSubview:self.unreadLabel];
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
-    self.unreadBadgeContainer = [UIView containerView];
-    [self.unreadBadgeContainer addSubview:self.unreadBadge];
-    [self.unreadBadge autoPinWidthToSuperview];
-    [self.unreadBadgeContainer setContentHuggingHigh];
-    [self.unreadBadgeContainer setCompressionResistanceHigh];
-
-    UIStackView *hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        vStackView,
-        self.unreadBadgeContainer,
-    ]];
-    hStackView.axis = UILayoutConstraintAxisHorizontal;
-    hStackView.spacing = 6.f;
-    [self.contentView addSubview:hStackView];
-    [hStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [hStackView autoVCenterInSuperview];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
-    [hStackView autoPinTrailingToSuperviewMargin];
-
+    [self.contentView addSubview:self.unreadBadge];
     [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
-
-    hStackView.userInteractionEnabled = NO;
 }
 
 - (void)dealloc
@@ -233,12 +226,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (overrideSnippet) {
         // If we're using the home view cell to render search results,
         // don't show "unread badge" or "message status" indicator.
-        self.unreadBadgeContainer.hidden = YES;
+        self.unreadBadge.hidden = YES;
         self.messageStatusView.hidden = YES;
     } else if (unreadCount > 0) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
-        self.unreadBadgeContainer.hidden = NO;
+        self.unreadBadge.hidden = NO;
         self.messageStatusView.hidden = YES;
 
         self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
@@ -264,6 +257,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  toSize:unreadBadgeHeight
                                                                relation:NSLayoutRelationGreaterThanOrEqual],
                                      [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
+                                     [self.unreadBadge autoPinEdge:ALEdgeTrailing
+                                                            toEdge:ALEdgeTrailing
+                                                            ofView:self.avatarView
+                                                        withOffset:6.f],
                                  ]];
                              }];
     } else {
@@ -302,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         self.messageStatusView.tintColor = messageStatusViewTintColor;
         self.messageStatusView.hidden = statusIndicatorImage == nil;
-        self.unreadBadgeContainer.hidden = YES;
+        self.unreadBadge.hidden = YES;
         if (shouldAnimateStatusIcon) {
             CABasicAnimation *animation;
             animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
