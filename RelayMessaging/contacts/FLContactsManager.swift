@@ -12,7 +12,7 @@ import RelayServiceKit
 
 @objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
     
-    @objc public static let FLRecipientsNeedsRefreshNotification = "FLRecipientsNeedsRefreshNotification"
+//    @objc public static let FLRecipientsNeedRefreshNotification = "FLRecipientsNeedRefreshNotification"
     
     @objc public var isSystemContactsDenied: Bool = false // for future use
     
@@ -129,7 +129,7 @@ import RelayServiceKit
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.processRecipientsBlob), name: NSNotification.Name(rawValue: FLCCSMUsersUpdated), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.processTagsBlob), name: NSNotification.Name(rawValue: FLCCSMTagsUpdated), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleRecipientRefresh(notification:)), name: NSNotification.Name(FLContactsManager.FLRecipientsNeedsRefreshNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleRecipientRefresh(notification:)), name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification), object: nil)
 
 
         avatarCache.delegate = self
@@ -196,7 +196,7 @@ import RelayServiceKit
     }
     
     fileprivate func updateRecipients(userIds: Array<String>) {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
                                         object: self, userInfo: ["userIds" : userIds])
     }
     
@@ -248,7 +248,7 @@ import RelayServiceKit
             recipientCache.setObject(recipient, forKey: userId as NSString)
             return recipient
         } else {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
                                             object: self, userInfo: ["userIds" : [userId]])
         }
         return nil
@@ -340,7 +340,7 @@ import RelayServiceKit
                 return false
             }
         }
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
                                         object: self, userInfo: ["userIds" : nonOrgRecipients])
     }
 

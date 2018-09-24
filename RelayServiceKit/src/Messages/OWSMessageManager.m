@@ -1092,7 +1092,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     [thread updateWithPayload:jsonPayload];
     [thread saveWithTransaction:transaction];
-
     
     // Check to see if we already have this message
     
