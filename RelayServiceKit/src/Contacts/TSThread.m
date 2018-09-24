@@ -20,6 +20,8 @@
 #import "CCSMKeys.h"
 #import "CCSMCommunication.h"
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
+#import "TextSecureKitEnv.h"
+#import "ContactsManagerProtocol.h"
 
 @import YapDatabase;
 
@@ -687,8 +689,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     } else if (self.participantIds.count == 1 && [self.participantIds.lastObject isEqualToString:TSAccountManager.localUID]) {
         return NSLocalizedString(@"ME_STRING", @"");
     } else if (self.isOneOnOne) {
-        RelayRecipient *recipient = [RelayRecipient recipientWithUid:self.otherParticipantId];
-        return recipient.fullName;
+        return [TextSecureKitEnv.sharedEnv.contactsManager displayNameForRecipientId:self.otherParticipantId];
     } else if (self.prettyExpression.length > 0) {
         return self.prettyExpression;
     } else {

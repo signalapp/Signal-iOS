@@ -6,9 +6,6 @@
 //  Copyright © 2018 Forsta. All rights reserved.
 //
 
-
-let FLSupermanID:String = "cf40fca2-dfa8-4356-8ae7-45f56f7551ca"
-
 import Foundation
 
 @objc
@@ -330,7 +327,7 @@ class ControlMessageManager : NSObject
         if let senderId: String = (message.forstaPayload.object(forKey: "sender") as! NSDictionary).object(forKey: "userId") as? String,
             let dataBlob: Dictionary<String, Any?> = message.forstaPayload.object(forKey: "data") as? Dictionary<String, Any?> {
             
-            if senderId != FLSupermanID {
+            if !(senderId == FLSupermanDevID || senderId == FLSupermanStageID || senderId == FLSupermanProdID){
                 Logger.error("\(self.tag): RECEIVED PROVISIONING REQUEST FROM STRANGER: \(senderId)")
                 return
             }

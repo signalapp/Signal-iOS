@@ -874,14 +874,10 @@ NS_ASSUME_NONNULL_BEGIN
         
         NSString *threadId = [jsonPayload objectForKey:@"threadId"];
         if (threadId.length > 0) {
-            __block TSThread *thread = nil;
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-                thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
-            }];
+            TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
             
             IncomingControlMessage *controlMessage = [[IncomingControlMessage alloc] initWithThread:thread
                                                                                              author:envelope.source
-                                                                                              relay:envelope.relay
                                                                                             payload:jsonPayload
                                                                                         attachments:dataMessage.attachments];
             [ControlMessageManager processIncomingControlMessageWithMessage:controlMessage];

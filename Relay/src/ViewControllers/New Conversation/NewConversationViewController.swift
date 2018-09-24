@@ -407,11 +407,8 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                             // take this opportunity to store any userids
                                             let userids = results["userids"] as! Array<String>
                                             if userids.count > 0 {
-                                                DispatchQueue.global(qos: .background).async {
-                                                    for uid in userids {
-                                                        FLContactsManager.shared.updateRecipient(userId: uid)
-                                                    }
-                                                }
+                                                NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                                                                object: self, userInfo: ["userIds" : userids])
                                             }
             },
                                            failure:{ (error) in
@@ -433,19 +430,18 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     // MARK: - Thread creation methods
     private func storeUsersIn(results: NSDictionary) {
         DispatchQueue.global(qos: .background).async {
-            let usersIds: NSArray = results.object(forKey: "userids") as! NSArray
+            let usersIds: Array<String> = results.object(forKey: "userids") as! Array<String>
             
-            for uid in usersIds {
-                FLContactsManager.shared.updateRecipient(userId: uid as! String)
-            }
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                            object: self, userInfo: ["userIds" : usersIds])
         }
     }
     
     private func buildThreadWith(results: NSDictionary) {
-        let userIds = results.object(forKey: "userids") as! NSArray
+        let userIds = results.object(forKey: "userids") as! Array<String>
         
         // Verify myself is included
-        if !(userIds.contains(TSAccountManager.sharedInstance().selfRecipient().uniqueId as Any)) {
+        if !(userIds.contains(TSAccountManager.sharedInstance().selfRecipient().uniqueId)) {
             // If not, add self and run again
             var pretty = results.object(forKey: "pretty") as! String
             let mySlug = TSAccountManager.sharedInstance().selfRecipient().flTag?.slug
@@ -467,21 +463,16 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             })
         } else {
             // build thread and go
-            let thread = TSThread.getOrCreateThread(withParticipants: userIds as! [String])
+            let thread = TSThread.getOrCreateThread(withParticipants: userIds)
             thread.type = FLThreadTypeConversation
             thread.prettyExpression = results.object(forKey: "pretty") as? String
             thread.universalExpression = results.object(forKey: "universal") as? String
             thread.save()
 
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                            object: self, userInfo: ["userIds" : userIds])
             DispatchQueue.main.async {
                 self.navigationController?.dismiss(animated: true, completion: {
-                    
-                    // Spin off background process to pull in participants
-                    DispatchQueue.global(qos: .background).async {
-                        for uid in userIds {
-                            FLContactsManager.shared.updateRecipient(userId: uid as! String)
-                        }
-                    }
                     SignalApp.shared().presentConversation(for: thread, action: .compose)
                 })
             }

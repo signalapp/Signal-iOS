@@ -12,11 +12,9 @@ import UIKit
     
     @objc let controlMessageType: String
     @objc let attachmentPointers: Array<OWSSignalServiceProtosAttachmentPointer>?
-    @objc let relay: String
     
     @objc required public init?(thread: TSThread,
                                 author: String,
-                                relay: String?,
                                 payload: NSDictionary,
                                 attachments: Array<OWSSignalServiceProtosAttachmentPointer>?) {
         
@@ -41,7 +39,6 @@ import UIKit
         
         self.attachmentPointers = attachments
         self.controlMessageType = dataBlob.object(forKey: "control") as! String
-        self.relay = relay!
         
         var attachmentIds:[String] = []
         if ((dataBlob.object(forKey: "attachments")) != nil) {
