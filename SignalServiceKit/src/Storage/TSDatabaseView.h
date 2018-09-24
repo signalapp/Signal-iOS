@@ -32,10 +32,8 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 // otherwise it returns the "unread" database view.
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;
 
-// MJK TODO - dynamic interactions
 + (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
-// MJK reconsider this? It used to be for SN changes and dynamic interactions. Now maybe only SN changes?
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark - Registration
@@ -48,7 +46,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 + (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage;
 + (void)asyncRegisterLegacyThreadInteractionsDatabaseView:(OWSStorage *)storage;
 
-// MJK TODO - dynamic interactions
 + (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.
@@ -61,7 +58,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 // Instances of OWSReadTracking for wasRead is NO.
 + (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
 
-// MJK reconsider this? It used to be for SN changes and dynamic interactions. Now maybe only SN changes?
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
