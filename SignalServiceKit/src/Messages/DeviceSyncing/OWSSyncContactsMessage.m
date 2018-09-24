@@ -63,9 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoSyncMessageContactsBuilder *contactsBuilder =
-        [SSKProtoSyncMessageContactsBuilder new];
-    [contactsBuilder setBlob:attachmentProto];
+    SSKProtoSyncMessageContactsBuilder *contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
     [contactsBuilder setIsComplete:YES];
 
     NSError *error;
@@ -74,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setContacts:contactsProto];
     return syncMessageBuilder;
 }

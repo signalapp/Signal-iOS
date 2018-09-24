@@ -31,9 +31,9 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssertDebug(signalAccount.contact);
     OWSAssertDebug(contactsManager);
 
-    SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetailsBuilder new];
+    SSKProtoContactDetailsBuilder *contactBuilder =
+        [SSKProtoContactDetails builderWithNumber:signalAccount.recipientId];
     [contactBuilder setName:signalAccount.contact.fullName];
-    [contactBuilder setNumber:signalAccount.recipientId];
     [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {
@@ -53,8 +53,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     if (rawAvatar) {
         avatarPng = UIImagePNGRepresentation(rawAvatar);
         if (avatarPng) {
-            SSKProtoContactDetailsAvatarBuilder *avatarBuilder =
-                [SSKProtoContactDetailsAvatarBuilder new];
+            SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
             [avatarBuilder setContentType:OWSMimeTypeImagePng];
             [avatarBuilder setLength:(uint32_t)avatarPng.length];
 

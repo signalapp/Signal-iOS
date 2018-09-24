@@ -143,7 +143,7 @@ public class MessageFetcherJob: NSObject {
                 throw ParamParser.ParseError.invalidFormat("sourceDevice")
             }
 
-            let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder(type: type, source: source, sourceDevice: sourceDevice, timestamp: timestamp)
+            let builder = SSKProtoEnvelope.builder(type: type, source: source, sourceDevice: sourceDevice, timestamp: timestamp)
 
             if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
                 builder.setLegacyMessage(legacyMessage)

@@ -47,8 +47,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     // will figure that out on it's own.
     OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
-    verifiedBuilder.destination = destinationRecipientId;
+    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builderWithDestination:destinationRecipientId];
     verifiedBuilder.identityKey = identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
 

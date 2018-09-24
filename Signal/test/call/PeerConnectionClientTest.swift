@@ -115,11 +115,10 @@ class PeerConnectionClientTest: SignalBaseTest {
     func testDataChannelMessage() {
         XCTAssertEqual(0, clientDelegate.dataChannelMessages.count)
 
-        let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder()
-        hangupBuilder.setId(123)
+        let hangupBuilder = WebRTCProtoHangup.builder(id: 123)
         let hangup = try! hangupBuilder.build()
 
-        let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+        let dataBuilder = WebRTCProtoData.builder()
         dataBuilder.setHangup(hangup)
         let hangupData = try! dataBuilder.buildSerializedData()
         let hangupBuffer = RTCDataBuffer(data: hangupData, isBinary: false)

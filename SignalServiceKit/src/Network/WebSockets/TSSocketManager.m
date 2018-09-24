@@ -491,9 +491,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     WebSocketProtoWebSocketRequestMessageBuilder *requestBuilder =
-        [[WebSocketProtoWebSocketRequestMessageBuilder alloc] initWithVerb:request.HTTPMethod
-                                                                      path:requestPath
-                                                                 requestID:socketMessage.requestId];
+        [WebSocketProtoWebSocketRequestMessage builderWithVerb:request.HTTPMethod
+                                                          path:requestPath
+                                                     requestID:socketMessage.requestId];
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
@@ -509,8 +509,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessageBuilder new];
-    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeRequest];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
+        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeRequest];
     [messageBuilder setRequest:requestProto];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
@@ -778,7 +778,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
 
     WebSocketProtoWebSocketResponseMessageBuilder *responseBuilder =
-        [[WebSocketProtoWebSocketResponseMessageBuilder alloc] initWithRequestID:request.requestID status:200];
+        [WebSocketProtoWebSocketResponseMessage builderWithRequestID:request.requestID status:200];
     [responseBuilder setMessage:@"OK"];
     WebSocketProtoWebSocketResponseMessage *_Nullable response = [responseBuilder buildAndReturnError:&error];
     if (!response || error) {
@@ -786,9 +786,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessageBuilder new];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
+        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeResponse];
     [messageBuilder setResponse:response];
-    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeResponse];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
     if (!messageData || error) {

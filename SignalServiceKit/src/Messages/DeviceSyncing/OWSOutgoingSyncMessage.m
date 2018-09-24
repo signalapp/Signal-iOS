@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAbstractMethod();
 
-    return [SSKProtoSyncMessageBuilder new];
+    return [SSKProtoSyncMessage builder];
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     [contentBuilder setSyncMessage:syncMessage];
 
     NSError *error;

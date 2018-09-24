@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(recipient);
 
-    SSKProtoContentBuilder *builder = [SSKProtoContentBuilder new];
+    SSKProtoContentBuilder *builder = [SSKProtoContent builder];
     [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
     
     NSError *error;
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoCallMessage *)buildCallMessage:(NSString *)recipientId
 {
-    SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessageBuilder new];
+    SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 
     if (self.offerMessage) {
         [builder setOffer:self.offerMessage];

@@ -66,28 +66,14 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
         }
     }
 
-    func testParse_buildVsRequired() {
-        let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder()
-
-        XCTAssertThrowsError(try builder.build()) { (error) -> Void in
-            switch error {
-            case SSKProtoError.invalidProtobuf:
-                break
-            default:
-                XCTFail("unexpected error: \(error)")
-            }
-        }
-    }
-
     func testParse_roundtrip() {
-        let builder = SSKProtoEnvelope.SSKProtoEnvelopeBuilder()
+        let builder = SSKProtoEnvelope.builder(type: SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle,
+                                               source: "+13213214321",
+                                               sourceDevice: 1,
+                                               timestamp: 123)
 
         let phonyContent = "phony data".data(using: .utf8)!
 
-        builder.setType(SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
-        builder.setTimestamp(123)
-        builder.setSource("+13213214321")
-        builder.setSourceDevice(1)
         builder.setContent(phonyContent)
 
         var envelopeData: Data

@@ -69,13 +69,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageManager *messagesManager = OWSMessageManager.sharedManager;
 
-    SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequestBuilder new];
+    SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequest builder];
     [requestBuilder setType:SSKProtoSyncMessageRequestTypeGroups];
 
-    SSKProtoSyncMessageBuilder *messageBuilder = [SSKProtoSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *messageBuilder = [SSKProtoSyncMessage builder];
     [messageBuilder setRequest:[requestBuilder buildIgnoringErrors]];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
     [envelopeBuilder setSource:@"+13213214321"];
     [envelopeBuilder setSourceDevice:1];
@@ -99,14 +99,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageManager *messagesManager = SSKEnvironment.shared.messageManager;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
 
-    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builder];
     groupContextBuilder.name = @"Newly created Group Name";
     groupContextBuilder.id = groupIdData;
     groupContextBuilder.type = SSKProtoGroupContextTypeUpdate;
 
-    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
     messageBuilder.group = [groupContextBuilder buildIgnoringErrors];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
@@ -126,21 +126,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageManager *messagesManager = SSKEnvironment.shared.messageManager;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
 
-    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builder];
     groupContextBuilder.name = @"Newly created Group with Avatar Name";
     groupContextBuilder.id = groupIdData;
     groupContextBuilder.type = SSKProtoGroupContextTypeUpdate;
 
-    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointerBuilder new];
+    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointer builder];
     attachmentBuilder.id = 1234;
     attachmentBuilder.contentType = @"image/png";
     attachmentBuilder.key = [NSData new];
     attachmentBuilder.size = 123;
     groupContextBuilder.avatar = [attachmentBuilder buildIgnoringErrors];
 
-    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
     messageBuilder.group = [groupContextBuilder buildIgnoringErrors];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
@@ -161,16 +161,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageManager *messagesManager = SSKEnvironment.shared.messageManager;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelopeBuilder new];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
 
-    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builder];
     groupContextBuilder.name = @"Newly created Group with Avatar Name";
     groupContextBuilder.id = groupIdData;
 
     // e.g. some future feature sent from another device that we don't yet support.
     groupContextBuilder.type = 666;
 
-    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
     messageBuilder.group = [groupContextBuilder buildIgnoringErrors];
 
     [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]

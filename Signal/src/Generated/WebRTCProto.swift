@@ -348,17 +348,17 @@ extension WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder
     }
 
     fileprivate class func parseProto(_ proto: WebRTCProtos_Data) throws -> WebRTCProtoData {
-        var connected: WebRTCProtoConnected? = nil
+        var connected: WebRTCProtoConnected?
         if proto.hasConnected {
             connected = try WebRTCProtoConnected.parseProto(proto.connected)
         }
 
-        var hangup: WebRTCProtoHangup? = nil
+        var hangup: WebRTCProtoHangup?
         if proto.hasHangup {
             hangup = try WebRTCProtoHangup.parseProto(proto.hangup)
         }
 
-        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus? = nil
+        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus?
         if proto.hasVideoStreamingStatus {
             videoStreamingStatus = try WebRTCProtoVideoStreamingStatus.parseProto(proto.videoStreamingStatus)
         }
