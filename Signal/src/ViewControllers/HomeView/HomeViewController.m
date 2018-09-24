@@ -197,6 +197,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(themeDidChange:)
                                                  name:ThemeDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(localProfileDidChange:)
+                                                 name:kNSNotificationName_LocalProfileDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -225,6 +229,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     [self updateReminderViews];
+}
+
+- (void)localProfileDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateBarButtonItems];
 }
 
 #pragma mark - Theme
@@ -485,10 +496,24 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     //  Settings button.
-    //
-    // TODO: Theme
-    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsButtonPressed:)];
+    const NSUInteger kAvatarSize = 28;
+    // TODO: Replace this icon.
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *avatarImage = (localProfileAvatarImage
+            ?: [[UIImage imageNamed:@"profile_avatar_default"]
+                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+    OWSAssertDebug(avatarImage);
+
+    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
+    if (!localProfileAvatarImage) {
+        avatarView.tintColor = Theme.middleGrayColor;
+    }
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
+    avatarView.userInteractionEnabled = YES;
+    [avatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                             action:@selector(settingsButtonPressed:)]];
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
 
