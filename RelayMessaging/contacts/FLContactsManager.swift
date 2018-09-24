@@ -12,6 +12,8 @@ import RelayServiceKit
 
 @objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
     
+    @objc public static let FLRecipientsNeedsRefreshNotification = "FLRecipientsNeedsRefreshNotification"
+    
     @objc public var isSystemContactsDenied: Bool = false // for future use
     
     public func cachedDisplayName(forRecipientId recipientId: String) -> String? {
@@ -127,6 +129,7 @@ import RelayServiceKit
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.processRecipientsBlob), name: NSNotification.Name(rawValue: FLCCSMUsersUpdated), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.processTagsBlob), name: NSNotification.Name(rawValue: FLCCSMTagsUpdated), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleRecipientRefresh(notification:)), name: NSNotification.Name(FLContactsManager.FLRecipientsNeedsRefreshNotification), object: nil)
 
 
         avatarCache.delegate = self
@@ -149,7 +152,7 @@ import RelayServiceKit
         
         if recipient == nil {
             recipient = RelayRecipient.fetch(uniqueId: selfId as String)
-            recipientCache .setObject(recipient!, forKey: selfId)
+            recipientCache.setObject(recipient!, forKey: selfId)
         }
         return recipient!
     }
@@ -172,49 +175,54 @@ import RelayServiceKit
     @objc public func doAfterEnvironmentInitSetup() {
     }
     
-    @objc public func updateRecipient(userId: String) {
-            self.readWriteConnection.asyncReadWrite { (transaction) in
-                self.updateRecipient(userId: userId, with: transaction)
+    @objc public func handleRecipientRefresh(notification: Notification) {
+        if let payloadArray: Array<String> = notification.userInfo!["userIds"] as? Array<String> {
+            var lookupString: String = ""
+            for uid: String in payloadArray {
+                if UUID.init(uuidString: uid) != nil {
+                    if lookupString.count == 0 {
+                        lookupString = uid
+                    } else {
+                        lookupString.append(",\(uid)")
+                    }
+                }
             }
-    }
-    
-    fileprivate func updateRecipient(userId: String, with transaction: YapDatabaseReadWriteTransaction) {
-        
-        if let updateDict:Dictionary<String, Any> = ccsmFetchRecipientDictionary(userId: userId) {
-            if let recipient = recipient(fromDictionary: updateDict, transaction: transaction) {
-                save(recipient: recipient, with: transaction)
+            if lookupString.count > 0 {
+                DispatchQueue.global(qos: .background).async {
+                    self.ccsmFetchRecipients(uids: lookupString)
+                }
             }
         }
     }
     
-    fileprivate func ccsmFetchRecipientDictionary(userId: String) -> Dictionary<String, Any>? {
+    fileprivate func updateRecipients(userIds: Array<String>) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                        object: self, userInfo: ["userIds" : userIds])
+    }
+    
+    fileprivate func ccsmFetchRecipients(uids: String) {
         
         // must not execute on main thread
         assert(!Thread.isMainThread)
         
-        var result: Dictionary<String, Any>?
-        
-        let url = "\(CCSMEnvironment.sharedInstance().ccsmURLString!)/v1/directory/user/?id=\(userId)"
-        
-        let semaphore = DispatchSemaphore(value: 0)
+        let url = "\(CCSMEnvironment.sharedInstance().ccsmURLString!)/v1/directory/user/?id_in=\(uids)"
         
         CCSMCommManager.getThing(url,
                                  success: { (payload) in
                                     
                                     if let resultsArray: Array = payload?["results"] as? Array<Dictionary<String, Any>> {
-                                        result = resultsArray.last
+                                        self.readWriteConnection .asyncReadWrite({ (transaction) in
+                                            for userDict: Dictionary<String, Any> in resultsArray {
+                                                if let recipient: RelayRecipient = self.recipient(fromDictionary: userDict, transaction: transaction){
+                                                    recipient.save(with: transaction)
+                                                }
+                                            }
+                                        })
                                     }
-                                    semaphore.signal()
         }, failure: { (error) in
             Logger.debug("CCSM User lookup failed.")
-            semaphore.signal()
         })
         
-        let timeout = DispatchTime.now() + .seconds(3)
-        if semaphore.wait(timeout: timeout) == .timedOut {
-            Logger.debug("CCSM user lookup timed out.")
-        }
-        return result
     }
     
     @objc public func recipient(withId userId: String) -> RelayRecipient? {
@@ -228,35 +236,22 @@ import RelayServiceKit
                 recipient = self.recipient(withId: userId, transaction: transaction)
             }
         }
-        
         return recipient
     }
     
     @objc public func recipient(withId userId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
-        
-        var recipient: RelayRecipient? = RelayRecipient.fetch(uniqueId: userId, transaction: transaction)
-        
-        if recipient == nil {
-            
-            let semaphore = DispatchSemaphore(value: 0)
-            
-            DispatchQueue.global(qos: .background).async {
-                if let userDict = self.ccsmFetchRecipientDictionary(userId: userId) {
-                        recipient = self.recipient(fromDictionary: userDict, transaction: transaction)
-                }
-                semaphore.signal()
-            }
-            let timeout = DispatchTime.now() + .seconds(3)
-            if semaphore.wait(timeout: timeout) == .timedOut {
-                Logger.debug("CCSM user lookup timed out.")
-            }
+
+        // Check the cache
+        if let recipient:RelayRecipient = recipientCache.object(forKey: userId as NSString) {
+            return recipient
+        } else if let recipient: RelayRecipient = RelayRecipient.fetch(uniqueId: userId, transaction: transaction) {
+            recipientCache.setObject(recipient, forKey: userId as NSString)
+            return recipient
+        } else {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                            object: self, userInfo: ["userIds" : [userId]])
         }
-        
-        if recipient != nil {
-            recipientCache.setObject(recipient!, forKey: userId as NSString)
-        }
-        
-        return recipient
+        return nil
     }
 
     @objc public func recipient(fromDictionary userDict: Dictionary<String, Any>) -> RelayRecipient? {
@@ -335,15 +330,18 @@ import RelayServiceKit
     }
     
     private func validateNonOrgRecipients() {
-        for obj in RelayRecipient.allObjectsInCollection() {
-            if let recipient = obj as? RelayRecipient {
-                if recipient.orgID != TSAccountManager.selfRecipient().orgID ||
-                   recipient.orgID == "public" ||
-                   recipient.orgID == "forsta" {
-                    self.updateRecipient(userId: recipient.uniqueId)
-                }
+        
+        let nonOrgRecipients = RelayRecipient.allObjectsInCollection().filter() {
+            if let recipient = ($0 as? RelayRecipient) {
+                return (recipient.orgID != TSAccountManager.selfRecipient().orgID ||
+                    recipient.orgID == "public" ||
+                    recipient.orgID == "forsta" )
+            } else {
+                return false
             }
         }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                        object: self, userInfo: ["userIds" : nonOrgRecipients])
     }
 
     
