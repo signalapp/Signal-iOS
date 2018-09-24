@@ -131,11 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
-    // TODO: Review with design.
-    self.unreadBadge.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.unreadBadge.layer.shadowOffset = CGSizeMake(0.f, 1.f);
-    self.unreadBadge.layer.shadowRadius = 1.f;
-    self.unreadBadge.layer.shadowOpacity = 0.2f;
     [self.unreadBadge addSubview:self.unreadLabel];
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadBadge setContentHuggingHigh];
@@ -238,6 +233,8 @@ NS_ASSUME_NONNULL_BEGIN
         self.unreadLabel.font = self.unreadFont;
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
+        self.unreadBadge.layer.borderColor = Theme.backgroundColor.CGColor;
+        self.unreadBadge.layer.borderWidth = 1.f;
 
         [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
                              forConstraints:^{
