@@ -285,7 +285,6 @@ const CGFloat kIconViewLength = 24;
                                  [weakSelf showMediaGallery];
                              }]];
 
-#ifdef CONVERSATION_COLORS_ENABLED
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  NSString *colorName = self.thread.conversationColorName;
@@ -299,7 +298,6 @@ const CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf showColorPicker];
                              }]];
-#endif
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
