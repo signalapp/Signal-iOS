@@ -482,10 +482,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (existingContactOffers && !shouldHaveContactOffers) {
-            // MJK FIXME - use sortId
-            OWSLogInfo(@"Removing contact offers: %@ (%llu)",
-                existingContactOffers.uniqueId,
-                existingContactOffers.timestampForLegacySorting);
+            OWSLogInfo(
+                @"Removing contact offers: %@ (%llu)", existingContactOffers.uniqueId, existingContactOffers.sortId);
             [existingContactOffers removeWithTransaction:transaction];
         } else if (shouldHaveContactOffers) {
             if (existingContactOffers) {
@@ -493,10 +491,9 @@ NS_ASSUME_NONNULL_BEGIN
                 if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
                     || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
                     || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
-                    // MJK FIXME - use sortId
                     OWSLogInfo(@"Updating stale contact offers: %@ (%llu)",
                         existingContactOffers.uniqueId,
-                        existingContactOffers.timestampForLegacySorting);
+                        existingContactOffers.sortId);
 
                     [existingContactOffers updateHasBlockOffer:shouldHaveBlockOffer
                                          hasAddToContactsOffer:shouldHaveAddToContactsOffer
@@ -516,10 +513,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        recipientId:recipientId];
                 [offersMessage saveWithTransaction:transaction];
 
-                // MJK FIXME - use sortId
-                OWSLogInfo(@"Creating contact offers: %@ (%llu)",
-                    offersMessage.uniqueId,
-                    offersMessage.timestampForLegacySorting);
+                OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
             }
         }
 
