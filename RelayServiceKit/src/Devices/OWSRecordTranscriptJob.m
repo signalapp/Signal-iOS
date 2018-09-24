@@ -14,6 +14,8 @@
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
+#import "TSThread.h"
+#import "FLCCSMJSONService.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -78,6 +80,26 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    __block NSDictionary *jsonPayload = [FLCCSMJSONService payloadDictionaryFromMessageBody:transcript.body];
+    
+    NSDictionary *dataBlob = [jsonPayload objectForKey:@"data"];
+    if ([dataBlob allKeys].count == 0) {
+        DDLogDebug(@"Received sync message contained no data object.");
+        return;
+    }
+
+    NSString *threadId = [jsonPayload objectForKey:@"threadId"];
+    if (threadId.length > 0) {
+        TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
+        // TODO: most this to TSThread
+        NSString *expression = [[jsonPayload objectForKey:@"distribution"] objectForKey:@"expression"];
+        thread.universalExpression = expression;
+        [thread saveWithTransaction:transaction];
+        [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
+                                                          object:thread
+                                                        userInfo:nil];
+    }
+    
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
                                                    networkManager:self.networkManager

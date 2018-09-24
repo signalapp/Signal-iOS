@@ -15,6 +15,7 @@
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import "FLCCSMJSONService.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -388,9 +389,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 -(nullable NSString *)plainTextBody {
     if (_plainTextBody == nil) {
-        if (self.forstaPayload) {
-            _plainTextBody = [self plainBodyStringFromPayload];
+        if (!self.forstaPayload) {
+            self.forstaPayload = [[FLCCSMJSONService payloadDictionaryFromMessageBody:self.body] mutableCopy];
         }
+        _plainTextBody = [self plainBodyStringFromPayload];
     }
     return _plainTextBody.filterStringForDisplay;
 }
