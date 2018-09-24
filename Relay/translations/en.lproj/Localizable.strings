@@ -2375,3 +2375,4 @@
 "FORGOT_PASSWORD" = "Forgot Password?";
 "RESET_PASSWORD_MESSAGE" = "This will cause a password-reset link to be sent to you.";
 "RESET_PASSWORD" = "Reset Password";
+"DELETE_THREAD_VALIDATION_MESSAGE" = "Please Confirm: Delete Thread?";
