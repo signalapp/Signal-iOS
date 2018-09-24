@@ -49,7 +49,7 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage {
+    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage? {
         if let avatarImage = avatarImage {
             return avatarImage
         }

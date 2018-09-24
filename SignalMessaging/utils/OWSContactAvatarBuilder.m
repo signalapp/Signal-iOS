@@ -10,7 +10,6 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import "JSQMessagesAvatarImageFactory.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) NSString *signalId;
 @property (nonatomic, readonly) NSString *contactName;
-@property (nonatomic, readonly) UIColor *color;
+@property (nonatomic, readonly) NSString *colorName;
 @property (nonatomic, readonly) NSUInteger diameter;
 
 @end
@@ -30,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactId:(NSString *)contactId
                              name:(NSString *)name
-                            color:(UIColor *)color
+                        colorName:(NSString *)colorName
                          diameter:(NSUInteger)diameter
                   contactsManager:(OWSContactsManager *)contactsManager
 {
@@ -39,9 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    OWSAssertDebug(colorName.length > 0);
+
     _signalId = contactId;
     _contactName = name;
-    _color = color;
+    _colorName = colorName;
     _diameter = diameter;
     _contactsManager = contactsManager;
 
@@ -49,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithSignalId:(NSString *)signalId
-                           color:(UIColor *)color
+                       colorName:(NSString *)colorName
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager
 {
@@ -61,7 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (name.length == 0) {
         name = signalId;
     }
-    return [self initWithContactId:signalId name:name color:color diameter:diameter contactsManager:contactsManager];
+    return [self initWithContactId:signalId
+                              name:name
+                         colorName:colorName
+                          diameter:diameter
+                   contactsManager:contactsManager];
 }
 
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
@@ -71,11 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     
     NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
-    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
-    OWSAssertDebug(color);
     return [self initWithContactId:colorSeed
                               name:nonSignalName
-                             color:color
+                         colorName:(NSString *)colorName
                           diameter:diameter
                    contactsManager:contactsManager];
 }
@@ -87,10 +90,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.contactsManager imageForPhoneIdentifier:self.signalId];
 }
 
-- (UIImage *)buildDefaultImage
+- (id)cacheKey
+{
+    return [NSString stringWithFormat:@"%@-%d", self.signalId, Theme.isDarkThemeEnabled];
+}
+
+- (nullable UIImage *)buildDefaultImage
 {
     UIImage *cachedAvatar =
-        [self.contactsManager.avatarCache imageForKey:self.signalId diameter:(CGFloat)self.diameter];
+        [self.contactsManager.avatarCache imageForKey:self.cacheKey diameter:(CGFloat)self.diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -121,18 +129,18 @@ NS_ASSUME_NONNULL_BEGIN
         [initials appendString:@"#"];
     }
 
-    CGFloat fontSize = (CGFloat)self.diameter / 2.8f;
-    
-    UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
-                                                                 backgroundColor:self.color
-                                                                       textColor:[UIColor whiteColor]
-                                                                            font:[UIFont ows_boldFontWithSize:fontSize]
-                                                                        diameter:self.diameter] avatarImage];
+    UIColor *color = [UIColor ows_conversationColorForColorName:self.colorName isShaded:Theme.isDarkThemeEnabled];
+    OWSAssertDebug(color);
 
-    [self.contactsManager.avatarCache setImage:image forKey:self.signalId diameter:self.diameter];
+    UIImage *_Nullable image =
+        [OWSAvatarBuilder avatarImageWithInitials:initials backgroundColor:color diameter:self.diameter];
+    if (!image) {
+        return nil;
+    }
+
+    [self.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
     return image;
 }
-
 
 @end
 

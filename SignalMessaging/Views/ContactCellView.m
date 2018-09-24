@@ -200,10 +200,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
             return [TSThread stableConversationColorNameForString:self.recipientId];
         }
     }();
-    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
-    
+
     self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
-                                                                         color:color
+                                                                     colorName:colorName
                                                                       diameter:kContactCellAvatarSize
                                                                contactsManager:contactsManager] build];
 }

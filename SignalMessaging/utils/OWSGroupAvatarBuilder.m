@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.thread.groupModel.groupImage;
 }
 
-- (UIImage *)buildDefaultImage
+- (nullable UIImage *)buildDefaultImage
 {
     return self.class.defaultGroupImage;
 }
