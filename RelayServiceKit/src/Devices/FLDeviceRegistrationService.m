@@ -214,8 +214,9 @@
     
     // PUT the things to TSS
     NSString *name = [NSString stringWithFormat:@"%@ (%@)", UIDevice.currentDevice.localizedModel, UIDevice.currentDevice.name];
-    [OWSIdentityManager.sharedManager generateNewIdentityKey];
-//    __block ECKeyPair *keyPair = [Curve25519 generateKeyPairWithPrivateKey:messageProto.identityKeyPrivate];
+    
+    [OWSIdentityManager.sharedManager generateKeyPairWithPrivateKey:messageProto.identityKeyPrivate];
+    
     NSNumber *registrationId = [NSNumber numberWithUnsignedInteger:[TSAccountManager getOrGenerateRegistrationId]];
     [SignalKeyingStorage generateServerAuthPassword];
     __block NSString *password = [SignalKeyingStorage serverAuthPassword];
@@ -242,7 +243,6 @@
                                                DDLogDebug(@"Device provision PUT response: %@", response);
                                                NSNumber *deviceId = [response objectForKey:@"deviceId"];
                                                if (deviceId) {
-//                                                   [TSStorageManager.sharedManager setIdentityKey:keyPair withProtocolContext:nil];
                                                    [OWSDeviceManager.sharedManager setCurrentDeviceId:[deviceId unsignedIntValue]];
                                                    [TSAccountManager.sharedInstance storeServerAuthToken:password signalingKey:signalingKey];
                                                    [TSPreKeyManager registerPreKeysWithMode:RefreshPreKeysMode_SignedAndOneTime

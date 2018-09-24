@@ -12,8 +12,6 @@ import RelayServiceKit
 
 @objc public class FLContactsManager: NSObject, ContactsManagerProtocol {
     
-//    @objc public static let FLRecipientsNeedRefreshNotification = "FLRecipientsNeedRefreshNotification"
-    
     @objc public var isSystemContactsDenied: Bool = false // for future use
     
     public func cachedDisplayName(forRecipientId recipientId: String) -> String? {
