@@ -407,7 +407,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                             // take this opportunity to store any userids
                                             let userids = results["userids"] as! Array<String>
                                             if userids.count > 0 {
-                                                NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+                                                NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
                                                                                 object: self, userInfo: ["userIds" : userids])
                                             }
             },
@@ -432,7 +432,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         DispatchQueue.global(qos: .background).async {
             let usersIds: Array<String> = results.object(forKey: "userids") as! Array<String>
             
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
                                             object: self, userInfo: ["userIds" : usersIds])
         }
     }
@@ -469,7 +469,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             thread.universalExpression = results.object(forKey: "universal") as? String
             thread.save()
 
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLContactsManager.FLRecipientsNeedsRefreshNotification),
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
                                             object: self, userInfo: ["userIds" : userIds])
             DispatchQueue.main.async {
                 self.navigationController?.dismiss(animated: true, completion: {

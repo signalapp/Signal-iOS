@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define FLSettingsUpdatedNotification @"FLSettingsUpdatedNotification"
 #define FLUserSelectedFromPopoverDirectoryNotification @"FLUserSelectedFromPopoverDirectoryNotification"
 #define FLMarkAllReadNotification @"FLMarkAllReadNotification"
+#define FLRecipientsNeedRefreshNotification @"FLRecipientsNeedRefreshNotification"
 #define FLCCSMUsersUpdated @"FLCCSMUsersUpdated"
 #define FLCCSMTagsUpdated @"FLCCSMTagsUpdated"
 #define FLRegistrationStatusUpdateNotification @"FLRegistrationStatusUpdateNotification"
