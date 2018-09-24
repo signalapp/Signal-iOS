@@ -5116,8 +5116,8 @@ typedef enum : NSUInteger {
             }
         }
 
-        // MJK FIXME - investigate this more
-        if (viewItem.interaction.timestampForLegacySorting > collapseCutoffTimestamp) {
+        // Avoid animation churn by supressing footer-collapse on messages received recently.
+        if (viewItem.interaction.receivedAtTimestamp > collapseCutoffTimestamp) {
             shouldHideFooter = NO;
         }
 
