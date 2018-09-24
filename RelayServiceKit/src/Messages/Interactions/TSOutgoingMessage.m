@@ -661,10 +661,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFail(@"%@ Missing recipient state for delivered recipient: %@",
-                                         self.logTag,
-                                         recipientId);
-                                     return;
+                                     recipientState = [TSOutgoingMessageRecipientState new];
+//                                     OWSFail(@"%@ Missing recipient state for delivered recipient: %@",
+//                                         self.logTag,
+//                                         recipientId);
+//                                     return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
                                      DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
@@ -686,10 +687,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
-                                     OWSFail(@"%@ Missing recipient state for delivered recipient: %@",
-                                         self.logTag,
-                                         recipientId);
-                                     return;
+                                     recipientState = [TSOutgoingMessageRecipientState new];
+//                                     OWSFail(@"%@ Missing recipient state for delivered recipient: %@",
+//                                         self.logTag,
+//                                         recipientId);
+//                                     return;
                                  }
                                  if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
                                      DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);

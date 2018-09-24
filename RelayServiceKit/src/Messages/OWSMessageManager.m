@@ -593,37 +593,20 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(dataMessage);
         NSString *destination = syncMessage.sent.destination;
         if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
-            // If we observe a linked device sending our profile key to another
-            // user, we can infer that that user belongs in our profile whitelist.
-            if (dataMessage.hasGroup) {
-                [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
-            } else {
+//            // If we observe a linked device sending our profile key to another
+//            // user, we can infer that that user belongs in our profile whitelist.
+//            if (dataMessage.hasGroup) {
+//                [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
+//            } else {
                 [self.profileManager addUserToProfileWhitelist:destination];
-            }
+//            }
         }
         
-        if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
-            // These are handled by control message in Forsta land
-            DDLogDebug(@"%@: Received unhandled old style avatar update message", self.logTag);
-            //            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
-            //                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            //                    TSGroupThread *_Nullable groupThread =
-            //                        [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
-            //                    if (!groupThread) {
-            //                        OWSFail(@"%@ ignoring sync group avatar update for unknown group.", self.logTag);
-            //                        return;
-            //                    }
-            //
-            //                    [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
-            //                }];
-            //            }
-            //                                    transaction:transaction];
-        } else {
-            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
-                DDLogDebug(@"%@ successfully fetched transcript attachment: %@", self.logTag, attachmentStream);
-            }
-                                    transaction:transaction];
+        [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
+            DDLogDebug(@"%@ successfully fetched transcript attachment: %@", self.logTag, attachmentStream);
         }
+                                transaction:transaction];
+        
     } else if (syncMessage.hasRequest) {
         if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeBlocked) {
             DDLogInfo(@"%@ Received request for block list", self.logTag);
