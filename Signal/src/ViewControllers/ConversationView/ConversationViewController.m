@@ -4958,20 +4958,15 @@ typedef enum : NSUInteger {
             && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
         if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator) {
 
-            unreadIndicator =
-                [[OWSUnreadIndicator alloc] initUnreadIndicatorWithTimestamp:viewItem.interaction.timestamp
-                                                       hasMoreUnseenMessages:NO
-                                        missingUnseenSafetyNumberChangeCount:0
-                                                     unreadIndicatorPosition:0
-                                             firstUnseenInteractionTimestamp:viewItem.interaction.timestamp];
+            unreadIndicator = [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:viewItem.interaction.sortId
+                                                              hasMoreUnseenMessages:NO
+                                               missingUnseenSafetyNumberChangeCount:0
+                                                            unreadIndicatorPosition:0];
         }
 
         // Place the unread indicator onto the first appropriate view item,
         // if any.
-        // MJK FIXME - use sortId
-        // I'm not sure why we need a comparison here, vs. an equality. Maybe if the first unread
-        // message is deleted, we'd need to be sure everything still works.
-        if (unreadIndicator && viewItem.interaction.timestampForLegacySorting >= unreadIndicator.timestamp) {
+        if (unreadIndicator && viewItem.interaction.sortId >= unreadIndicator.firstUnseenSortId) {
             viewItem.unreadIndicator = unreadIndicator;
             unreadIndicator = nil;
             hasPlacedUnreadIndicator = YES;
