@@ -52,7 +52,7 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/OWSAsserts.h>
-#import <SignalCoreKit/OWSLogger.h>
+#import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/ContactTableViewCell.h>
