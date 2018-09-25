@@ -61,6 +61,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @implementation TSMessage
 
 @synthesize plainTextBody = _plainTextBody;
+@synthesize forstaPayload = _forstaPayload;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
@@ -334,10 +335,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return YES;
 }
 
-//- (nullable NSString *)body
-//{
-//    return _body.filterStringForDisplay;
-//}
+
+// MARK: Accessors
+-(NSMutableDictionary *)forstaPayload
+{
+    if (_forstaPayload == nil) {
+        _forstaPayload = [[FLCCSMJSONService payloadDictionaryFromMessageBody:self.body] mutableCopy];
+    }
+    return _forstaPayload;
+}
 
 -(void)setPlainTextBody:(nullable NSString *)value
 {
@@ -389,9 +395,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 -(nullable NSString *)plainTextBody {
     if (_plainTextBody == nil) {
-        if (!self.forstaPayload) {
-            self.forstaPayload = [[FLCCSMJSONService payloadDictionaryFromMessageBody:self.body] mutableCopy];
-        }
         _plainTextBody = [self plainBodyStringFromPayload];
     }
     return _plainTextBody.filterStringForDisplay;
