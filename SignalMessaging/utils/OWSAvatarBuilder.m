@@ -221,6 +221,8 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
                                        context:nil]
                     .size;
         }
+    } else {
+        OWSFailDebug(@"Text has invalid bounds.");
     }
 
     CGPoint drawPoint = CGPointMake((diameter - textSize.width) * 0.5f, (diameter - textSize.height) * 0.5f);

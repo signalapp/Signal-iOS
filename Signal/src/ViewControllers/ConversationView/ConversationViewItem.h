@@ -33,6 +33,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
+@class TSThread;
 @class YapDatabaseReadTransaction;
 
 // This is a ViewModel for cells in the conversation view.
@@ -45,6 +46,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @interface ConversationViewItem : NSObject <ConversationViewLayoutItem, OWSAudioPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
+@property (nonatomic, nullable, readonly) TSThread *incomingMessageAuthorThread;
+
 @property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
 
 @property (nonatomic, readonly) BOOL isGroupThread;

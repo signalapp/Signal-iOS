@@ -63,12 +63,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
-@property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
-@property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
 @property (nonatomic) CGSize mediaSize;
+@property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
 
 @end
 
@@ -94,6 +93,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _interaction = interaction;
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
+    _incomingMessageAuthorThread = ([interaction isKindOfClass:[TSIncomingMessage class]]
+            ? [TSContactThread getOrCreateThreadWithContactId:((TSIncomingMessage *)interaction).authorId]
+            : nil);
 
     [self ensureViewState:transaction];
 
@@ -105,6 +107,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssertDebug(interaction);
 
     _interaction = interaction;
+    _incomingMessageAuthorThread = ([interaction isKindOfClass:[TSIncomingMessage class]]
+            ? [TSContactThread getOrCreateThreadWithContactId:((TSIncomingMessage *)interaction).authorId]
+            : nil);
 
     self.hasViewState = NO;
     self.messageCellType = OWSMessageCellType_Unknown;
