@@ -28,7 +28,7 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
             var archivedThreads: [TSThread] = []
 
             // get archived threads before migration
-            TSThread.enumerateCollectionObjects({ (object, _) in
+            TSThread.enumerateCollectionObjects(with: transaction) { (object, _) in
                 guard let thread = object as? TSThread else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
@@ -37,7 +37,7 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
                 if thread.isArchivedByLegacyTimestampForSorting {
                     archivedThreads.append(thread)
                 }
-            })
+            }
 
             guard let legacySorting: YapDatabaseAutoViewTransaction = transaction.extension(TSMessageDatabaseViewExtensionName_Legacy) as? YapDatabaseAutoViewTransaction else {
                 owsFailDebug("legacySorting was unexpectedly nil")
@@ -61,6 +61,8 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
             for archivedThread in archivedThreads {
                 archivedThread.archiveThread(with: transaction)
             }
+
+            self.save(with: transaction)
         }
 
         completion()
