@@ -15,6 +15,7 @@
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSDate *creationDate;
 @property (nonatomic, nullable) NSString *conversationColorName;
 
-@property (nonatomic) uint64_t latestMessageSortId;
-@property (nonatomic) uint64_t archivedAsOfMessageSortId;
+@property (nonatomic) NSNumber *archivedAsOfMessageSortId;
 
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
@@ -350,9 +350,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    self.hasEverHadMessage = YES;
-    if (lastMessage.sortId > self.latestMessageSortId) {
-        self.latestMessageSortId = lastMessage.sortId;
+    if (!self.hasEverHadMessage) {
+        self.hasEverHadMessage = YES;
         [self saveWithTransaction:transaction];
     }
 }
@@ -379,9 +378,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Archival
 
-- (BOOL)isArchived
+- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
 {
-    return self.archivedAsOfMessageSortId >= self.latestMessageSortId;
+    if (!self.archivedAsOfMessageSortId) {
+        return NO;
+    }
+
+    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
+    uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
+    return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
 }
 
 + (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
@@ -402,7 +407,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSThread *thread) {
-                                 thread.archivedAsOfMessageSortId = self.latestMessageSortId;
+                                 uint64_t latestId = [SSKIncrementingIdFinder previousIdWithKey:TSInteraction.collection
+                                                                                    transaction:transaction];
+                                 thread.archivedAsOfMessageSortId = @(latestId);
                              }];
 
     [self markAllAsReadWithTransaction:transaction];
@@ -412,7 +419,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSThread *thread) {
-                                 thread.archivedAsOfMessageSortId = 0;
+                                 thread.archivedAsOfMessageSortId = nil;
                              }];
 }
 

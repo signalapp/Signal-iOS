@@ -293,7 +293,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             }
         }
 
-        return thread.isArchived ? TSArchiveGroup : TSInboxGroup;
+        return [thread isArchivedWithTransaction:transaction] ? TSArchiveGroup : TSInboxGroup;
     }];
 
     YapDatabaseViewSorting *viewSorting = [self threadSorting];
@@ -304,7 +304,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
     YapDatabaseView *databaseView =
-        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"4" options:options];
 
     [storage asyncRegisterExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }
@@ -329,11 +329,16 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         TSThread *thread1 = (TSThread *)object1;
         TSThread *thread2 = (TSThread *)object2;
         if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
-            if (thread1.latestMessageSortId == 0 && thread2.latestMessageSortId == 0) {
-                return [thread1.creationDate compare:thread2.creationDate];
-            }
 
-            return [@(thread1.latestMessageSortId) compare:@(thread2.latestMessageSortId)];
+            TSInteraction *_Nullable lastInteractionForInbox1 =
+                [thread1 lastInteractionForInboxWithTransaction:transaction];
+            NSDate *date1 = lastInteractionForInbox1 ? lastInteractionForInbox1.receivedAtDate : thread1.creationDate;
+
+            TSInteraction *_Nullable lastInteractionForInbox2 =
+                [thread2 lastInteractionForInboxWithTransaction:transaction];
+            NSDate *date2 = lastInteractionForInbox2 ? lastInteractionForInbox2.receivedAtDate : thread2.creationDate;
+
+            return [date1 compare:date2];
         }
 
         return NSOrderedSame;

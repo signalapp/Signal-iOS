@@ -5,7 +5,21 @@
 import Foundation
 import SignalServiceKit
 
-public class ConversationSearchResult: Comparable {
+public typealias MessageSortKey = UInt64
+public struct ConversationSortKey: Comparable {
+    let creationDate: Date
+    let lastMessageReceivedAtDate: Date?
+
+    // MARK: Comparable
+
+    public static func < (lhs: ConversationSortKey, rhs: ConversationSortKey) -> Bool {
+        let lhsDate = lhs.lastMessageReceivedAtDate ?? lhs.creationDate
+        let rhsDate = rhs.lastMessageReceivedAtDate ?? rhs.creationDate
+        return lhsDate < rhsDate
+    }
+}
+
+public class ConversationSearchResult<SortKey>: Comparable where SortKey: Comparable {
     public let thread: ThreadViewModel
 
     public let messageId: String?
@@ -13,9 +27,9 @@ public class ConversationSearchResult: Comparable {
 
     public let snippet: String?
 
-    private let sortKey: UInt64
+    private let sortKey: SortKey
 
-    init(thread: ThreadViewModel, sortKey: UInt64, messageId: String? = nil, messageDate: Date? = nil, snippet: String? = nil) {
+    init(thread: ThreadViewModel, sortKey: SortKey, messageId: String? = nil, messageDate: Date? = nil, snippet: String? = nil) {
         self.thread = thread
         self.sortKey = sortKey
         self.messageId = messageId
@@ -65,11 +79,11 @@ public class ContactSearchResult: Comparable {
 
 public class SearchResultSet {
     public let searchText: String
-    public let conversations: [ConversationSearchResult]
+    public let conversations: [ConversationSearchResult<ConversationSortKey>]
     public let contacts: [ContactSearchResult]
-    public let messages: [ConversationSearchResult]
+    public let messages: [ConversationSearchResult<MessageSortKey>]
 
-    public init(searchText: String, conversations: [ConversationSearchResult], contacts: [ContactSearchResult], messages: [ConversationSearchResult]) {
+    public init(searchText: String, conversations: [ConversationSearchResult<ConversationSortKey>], contacts: [ContactSearchResult], messages: [ConversationSearchResult<MessageSortKey>]) {
         self.searchText = searchText
         self.conversations = conversations
         self.contacts = contacts
@@ -101,9 +115,9 @@ public class ConversationSearcher: NSObject {
                         transaction: YapDatabaseReadTransaction,
                         contactsManager: ContactsManagerProtocol) -> SearchResultSet {
 
-        var conversations: [ConversationSearchResult] = []
+        var conversations: [ConversationSearchResult<ConversationSortKey>] = []
         var contacts: [ContactSearchResult] = []
-        var messages: [ConversationSearchResult] = []
+        var messages: [ConversationSearchResult<MessageSortKey>] = []
 
         var existingConversationRecipientIds: Set<String> = Set()
 
@@ -111,7 +125,8 @@ public class ConversationSearcher: NSObject {
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let sortKey = thread.latestMessageSortId
+                let sortKey = ConversationSortKey(creationDate: thread.creationDate,
+                                                  lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {

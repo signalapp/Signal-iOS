@@ -73,12 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
- * @return the latest sortId of a message in the thread or 0 if there are no messages in that
- * thread.
- */
-@property (nonatomic, readonly) uint64_t latestMessageSortId;
-
-/**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
  *received in this thread.
  *
@@ -103,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @return YES if no new messages have been sent or received since the thread was last archived.
  */
-- (BOOL)isArchived;
+- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  *  Archives a thread

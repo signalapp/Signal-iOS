@@ -59,9 +59,6 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
 
             Logger.info("re-archiving \(archivedThreads.count) threads which were previously archived")
             for archivedThread in archivedThreads {
-                // latestMessageSortId will have been modified by saving all
-                // the interactions above, make sure we get the latest value.
-                archivedThread.reload(with: transaction)
                 archivedThread.archiveThread(with: transaction)
             }
         }
