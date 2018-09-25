@@ -8,8 +8,8 @@
 #import "DebugUIMessagesAssetLoader.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import <Curve25519Kit/Randomness.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>

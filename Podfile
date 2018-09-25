@@ -11,12 +11,14 @@ def shared_pods
   pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
-  # pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git'
-  pod 'AxolotlKit', path: '../SignalProtocolKit'
-  # pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git'
-  pod 'HKDFKit', path: '../HKDFKit'
-  # pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit'
-  pod 'Curve25519Kit', path: '../Curve25519Kit'
+  # pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', testspecs: ["Tests"]
+  pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
+  # pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
+  pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
+  # pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
+  pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
+  # pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+  pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
   pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
   #pod 'GRKOpenSSLFramework', path: '../GRKOpenSSLFramework'

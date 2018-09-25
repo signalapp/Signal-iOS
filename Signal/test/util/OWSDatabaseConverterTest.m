@@ -3,8 +3,8 @@
 //
 
 #import "OWSDatabaseConverterTest.h"
-#import <Curve25519Kit/Randomness.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>

@@ -6,8 +6,8 @@
 #import "OWSError.h"
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonHMAC.h>
-#import <Curve25519Kit/Randomness.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <openssl/evp.h>
 
 #define HMAC256_KEY_LENGTH 32

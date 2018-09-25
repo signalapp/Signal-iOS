@@ -7,8 +7,8 @@
 #import "OWSTableViewController.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
-#import <Curve25519Kit/Randomness.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
