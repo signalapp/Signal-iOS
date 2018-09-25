@@ -2,14 +2,14 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "ContactsUtils.h"
+#import "DebugContactsUtils.h"
 #import "Signal-Swift.h"
 #import <Contacts/Contacts.h>
 #import <Curve25519Kit/Randomness.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation ContactsUtils
+@implementation DebugContactsUtils
 
 + (NSString *)randomFirstName
 {

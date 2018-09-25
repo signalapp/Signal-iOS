@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 
-@interface ContactsUtils : NSObject
+@interface DebugContactsUtils : NSObject
 
 + (NSString *)randomPhoneNumber;
 

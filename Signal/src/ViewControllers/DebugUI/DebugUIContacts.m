@@ -3,7 +3,7 @@
 //
 
 #import "DebugUIContacts.h"
-#import "ContactsUtils.h"
+#import "DebugContactsUtils.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -27,27 +27,27 @@ NS_ASSUME_NONNULL_BEGIN
                                        items:@[
                                            [OWSTableItem itemWithTitle:@"Create 1 Random Contact"
                                                            actionBlock:^{
-                                                               [ContactsUtils createRandomContacts:1];
+                                                               [DebugContactsUtils createRandomContacts:1];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Create 100 Random Contacts"
                                                            actionBlock:^{
-                                                               [ContactsUtils createRandomContacts:100];
+                                                               [DebugContactsUtils createRandomContacts:100];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Create 1k Random Contacts"
                                                            actionBlock:^{
-                                                               [ContactsUtils createRandomContacts:1000];
+                                                               [DebugContactsUtils createRandomContacts:1000];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Create 10k Random Contacts"
                                                            actionBlock:^{
-                                                               [ContactsUtils createRandomContacts:10 * 1000];
+                                                               [DebugContactsUtils createRandomContacts:10 * 1000];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Delete Random Contacts"
                                                            actionBlock:^{
-                                                               [ContactsUtils deleteAllRandomContacts];
+                                                               [DebugContactsUtils deleteAllRandomContacts];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Delete All Contacts"
                                                            actionBlock:^{
-                                                               [ContactsUtils deleteAllContacts];
+                                                               [DebugContactsUtils deleteAllContacts];
                                                            }],
                                            [OWSTableItem itemWithTitle:@"Clear SignalAccount Cache"
                                                            actionBlock:^{
