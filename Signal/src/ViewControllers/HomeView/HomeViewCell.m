@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HomeViewCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic) UIStackView *topRowView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
@@ -90,14 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageStatusView setContentHuggingHorizontalHigh];
     [self.messageStatusView setCompressionResistanceHorizontalHigh];
 
-    self.topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
         self.dateTimeLabel,
-        self.messageStatusView,
     ]];
-    self.topRowView.axis = UILayoutConstraintAxisHorizontal;
-    self.topRowView.alignment = UIStackViewAlignmentLastBaseline;
-    self.topRowView.spacing = 6.f;
+    topRowView.axis = UILayoutConstraintAxisHorizontal;
+    topRowView.alignment = UIStackViewAlignmentLastBaseline;
+    topRowView.spacing = 6.f;
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
@@ -106,9 +104,17 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
-    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.topRowView,
+    UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.snippetLabel,
+        self.messageStatusView,
+    ]];
+    bottomRowView.axis = UILayoutConstraintAxisHorizontal;
+    bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
+    bottomRowView.spacing = 6.f;
+
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        topRowView,
+        bottomRowView,
     ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
 
