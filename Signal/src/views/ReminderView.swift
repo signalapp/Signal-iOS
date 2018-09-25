@@ -61,12 +61,18 @@ class ReminderView: UIView {
     }
 
     func setupSubviews() {
+        let textColor: UIColor
+        let iconColor: UIColor
         switch (mode) {
         case .nag:
             self.backgroundColor = UIColor.ows_reminderYellow
+            textColor = UIColor.ows_gray90
+            iconColor = UIColor.ows_gray60
         case .explanation:
             // TODO: Theme, review with design.
             self.backgroundColor = Theme.offBackgroundColor
+            textColor = Theme.primaryColor
+            iconColor = Theme.secondaryColor
         }
         self.clipsToBounds = true
 
@@ -85,7 +91,7 @@ class ReminderView: UIView {
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline
         container.addArrangedSubview(label)
-        label.textColor = Theme.primaryColor
+        label.textColor = textColor
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
@@ -99,7 +105,7 @@ class ReminderView: UIView {
             }
             let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
             iconView.contentMode = .scaleAspectFit
-            iconView.tintColor = Theme.secondaryColor
+            iconView.tintColor = iconColor
             iconView.autoSetDimension(.width, toSize: 13)
             container.addArrangedSubview(iconView)
         }

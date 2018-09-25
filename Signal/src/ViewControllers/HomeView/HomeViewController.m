@@ -157,7 +157,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 #pragma GCC diagnostic ignored "-Wunused-result"
     [ExperienceUpgradeFinder sharedManager];
 #pragma GCC diagnostic pop
+}
 
+- (void)observeNotifications
+{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
@@ -332,8 +335,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
-    
-    [self updateReminderViews];
 }
 
 - (void)updateReminderViews
@@ -349,6 +350,16 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         || !self.deregisteredView.isHidden || !self.outageView.isHidden;
 }
 
+- (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
+{
+    if (_hasVisibleReminders == hasVisibleReminders) {
+        return;
+    }
+    _hasVisibleReminders = hasVisibleReminders;
+    // If the reminders show/hide, reload the table.
+    [self.tableView reloadData];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -361,6 +372,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateMappings];
     [self checkIfEmptyView];
     [self updateReminderViews];
+    [self observeNotifications];
 
     // because this uses the table data source, `tableViewSetup` must happen
     // after mappings have been set up in `showInboxGrouping`
@@ -411,6 +423,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
     searchResultsController.view.hidden = YES;
 
+    [self updateReminderViews];
     [self updateBarButtonItems];
 
     [self applyTheme];
@@ -802,6 +815,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
     switch (section) {
         case HomeViewControllerSectionReminders: {
+            OWSAssert(self.reminderStackView);
+
             return self.reminderViewCell;
         }
         case HomeViewControllerSectionConversations: {
