@@ -3,10 +3,10 @@
 //
 
 #import "OWSLinkDeviceViewController.h"
-#import "Cryptography.h"
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "Signal-Swift.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>

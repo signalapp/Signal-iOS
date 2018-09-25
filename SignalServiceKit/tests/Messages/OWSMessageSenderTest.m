@@ -3,7 +3,6 @@
 //
 
 #import "OWSMessageSender.h"
-#import "Cryptography.h"
 #import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
@@ -21,6 +20,7 @@
 #import "TSRequest.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
+#import <SignalCoreKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

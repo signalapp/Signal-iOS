@@ -3,13 +3,13 @@
 //
 
 #import "ContactsUpdater.h"
-#import "Cryptography.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>

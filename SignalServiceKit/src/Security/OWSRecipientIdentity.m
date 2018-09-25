@@ -3,10 +3,10 @@
 //
 
 #import "OWSRecipientIdentity.h"
-#import "Cryptography.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

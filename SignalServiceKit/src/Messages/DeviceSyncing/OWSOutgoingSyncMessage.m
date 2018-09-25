@@ -3,8 +3,8 @@
 //
 
 #import "OWSOutgoingSyncMessage.h"
-#import "Cryptography.h"
 #import "ProtoUtils.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

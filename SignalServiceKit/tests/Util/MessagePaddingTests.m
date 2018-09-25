@@ -2,9 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "Cryptography.h"
 #import "NSData+messagePadding.h"
 #import "SSKBaseTest.h"
+#import <SignalCoreKit/Cryptography.h>
 
 @interface MessagePaddingTests : SSKBaseTest
 

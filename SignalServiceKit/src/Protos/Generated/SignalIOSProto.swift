@@ -46,6 +46,10 @@ public enum SignalIOSProtoError: Error {
 
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
+    @objc public class func builder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+        return SignalIOSProtoBackupSnapshotBackupEntityBuilder()
+    }
+
     @objc public class SignalIOSProtoBackupSnapshotBackupEntityBuilder: NSObject {
 
         private var proto = IOSProtos_BackupSnapshot.BackupEntity()
@@ -144,6 +148,10 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 @objc public class SignalIOSProtoBackupSnapshot: NSObject {
 
     // MARK: - SignalIOSProtoBackupSnapshotBuilder
+
+    @objc public class func builder() -> SignalIOSProtoBackupSnapshotBuilder {
+        return SignalIOSProtoBackupSnapshotBuilder()
+    }
 
     @objc public class SignalIOSProtoBackupSnapshotBuilder: NSObject {
 

@@ -16,6 +16,10 @@ public enum WebRTCProtoError: Error {
 
     // MARK: - WebRTCProtoConnectedBuilder
 
+    @objc public class func builder() -> WebRTCProtoConnectedBuilder {
+        return WebRTCProtoConnectedBuilder()
+    }
+
     @objc public class WebRTCProtoConnectedBuilder: NSObject {
 
         private var proto = WebRTCProtos_Connected()
@@ -100,6 +104,10 @@ extension WebRTCProtoConnected.WebRTCProtoConnectedBuilder {
 
     // MARK: - WebRTCProtoHangupBuilder
 
+    @objc public class func builder() -> WebRTCProtoHangupBuilder {
+        return WebRTCProtoHangupBuilder()
+    }
+
     @objc public class WebRTCProtoHangupBuilder: NSObject {
 
         private var proto = WebRTCProtos_Hangup()
@@ -183,6 +191,10 @@ extension WebRTCProtoHangup.WebRTCProtoHangupBuilder {
 @objc public class WebRTCProtoVideoStreamingStatus: NSObject {
 
     // MARK: - WebRTCProtoVideoStreamingStatusBuilder
+
+    @objc public class func builder() -> WebRTCProtoVideoStreamingStatusBuilder {
+        return WebRTCProtoVideoStreamingStatusBuilder()
+    }
 
     @objc public class WebRTCProtoVideoStreamingStatusBuilder: NSObject {
 
@@ -279,6 +291,10 @@ extension WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder
 
     // MARK: - WebRTCProtoDataBuilder
 
+    @objc public class func builder() -> WebRTCProtoDataBuilder {
+        return WebRTCProtoDataBuilder()
+    }
+
     @objc public class WebRTCProtoDataBuilder: NSObject {
 
         private var proto = WebRTCProtos_Data()
@@ -335,17 +351,17 @@ extension WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder
     }
 
     fileprivate class func parseProto(_ proto: WebRTCProtos_Data) throws -> WebRTCProtoData {
-        var connected: WebRTCProtoConnected? = nil
+        var connected: WebRTCProtoConnected?
         if proto.hasConnected {
             connected = try WebRTCProtoConnected.parseProto(proto.connected)
         }
 
-        var hangup: WebRTCProtoHangup? = nil
+        var hangup: WebRTCProtoHangup?
         if proto.hasHangup {
             hangup = try WebRTCProtoHangup.parseProto(proto.hangup)
         }
 
-        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus? = nil
+        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus?
         if proto.hasVideoStreamingStatus {
             videoStreamingStatus = try WebRTCProtoVideoStreamingStatus.parseProto(proto.videoStreamingStatus)
         }

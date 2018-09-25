@@ -16,6 +16,10 @@ public enum WebSocketProtoError: Error {
 
     // MARK: - WebSocketProtoWebSocketRequestMessageBuilder
 
+    @objc public class func builder() -> WebSocketProtoWebSocketRequestMessageBuilder {
+        return WebSocketProtoWebSocketRequestMessageBuilder()
+    }
+
     @objc public class WebSocketProtoWebSocketRequestMessageBuilder: NSObject {
 
         private var proto = WebSocketProtos_WebSocketRequestMessage()
@@ -157,6 +161,10 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
 @objc public class WebSocketProtoWebSocketResponseMessage: NSObject {
 
     // MARK: - WebSocketProtoWebSocketResponseMessageBuilder
+
+    @objc public class func builder() -> WebSocketProtoWebSocketResponseMessageBuilder {
+        return WebSocketProtoWebSocketResponseMessageBuilder()
+    }
 
     @objc public class WebSocketProtoWebSocketResponseMessageBuilder: NSObject {
 
@@ -323,6 +331,10 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
     // MARK: - WebSocketProtoWebSocketMessageBuilder
 
+    @objc public class func builder() -> WebSocketProtoWebSocketMessageBuilder {
+        return WebSocketProtoWebSocketMessageBuilder()
+    }
+
     @objc public class WebSocketProtoWebSocketMessageBuilder: NSObject {
 
         private var proto = WebSocketProtos_WebSocketMessage()
@@ -391,12 +403,12 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         }
         let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
 
-        var request: WebSocketProtoWebSocketRequestMessage? = nil
+        var request: WebSocketProtoWebSocketRequestMessage?
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
         }
 
-        var response: WebSocketProtoWebSocketResponseMessage? = nil
+        var response: WebSocketProtoWebSocketResponseMessage?
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage.parseProto(proto.response)
         }

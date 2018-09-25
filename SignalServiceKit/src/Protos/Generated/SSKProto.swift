@@ -46,6 +46,10 @@ public enum SSKProtoError: Error {
 
     // MARK: - SSKProtoEnvelopeBuilder
 
+    @objc public class func builder() -> SSKProtoEnvelopeBuilder {
+        return SSKProtoEnvelopeBuilder()
+    }
+
     @objc public class SSKProtoEnvelopeBuilder: NSObject {
 
         private var proto = SignalServiceProtos_Envelope()
@@ -217,6 +221,10 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
     // MARK: - SSKProtoContentBuilder
 
+    @objc public class func builder() -> SSKProtoContentBuilder {
+        return SSKProtoContentBuilder()
+    }
+
     @objc public class SSKProtoContentBuilder: NSObject {
 
         private var proto = SignalServiceProtos_Content()
@@ -289,27 +297,27 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Content) throws -> SSKProtoContent {
-        var dataMessage: SSKProtoDataMessage? = nil
+        var dataMessage: SSKProtoDataMessage?
         if proto.hasDataMessage {
             dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
         }
 
-        var syncMessage: SSKProtoSyncMessage? = nil
+        var syncMessage: SSKProtoSyncMessage?
         if proto.hasSyncMessage {
             syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
-        var callMessage: SSKProtoCallMessage? = nil
+        var callMessage: SSKProtoCallMessage?
         if proto.hasCallMessage {
             callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
         }
 
-        var nullMessage: SSKProtoNullMessage? = nil
+        var nullMessage: SSKProtoNullMessage?
         if proto.hasNullMessage {
             nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
         }
 
-        var receiptMessage: SSKProtoReceiptMessage? = nil
+        var receiptMessage: SSKProtoReceiptMessage?
         if proto.hasReceiptMessage {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
@@ -349,6 +357,10 @@ extension SSKProtoContent.SSKProtoContentBuilder {
 @objc public class SSKProtoCallMessageOffer: NSObject {
 
     // MARK: - SSKProtoCallMessageOfferBuilder
+
+    @objc public class func builder() -> SSKProtoCallMessageOfferBuilder {
+        return SSKProtoCallMessageOfferBuilder()
+    }
 
     @objc public class SSKProtoCallMessageOfferBuilder: NSObject {
 
@@ -449,6 +461,10 @@ extension SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder {
 
     // MARK: - SSKProtoCallMessageAnswerBuilder
 
+    @objc public class func builder() -> SSKProtoCallMessageAnswerBuilder {
+        return SSKProtoCallMessageAnswerBuilder()
+    }
+
     @objc public class SSKProtoCallMessageAnswerBuilder: NSObject {
 
         private var proto = SignalServiceProtos_CallMessage.Answer()
@@ -547,6 +563,10 @@ extension SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder {
 @objc public class SSKProtoCallMessageIceUpdate: NSObject {
 
     // MARK: - SSKProtoCallMessageIceUpdateBuilder
+
+    @objc public class func builder() -> SSKProtoCallMessageIceUpdateBuilder {
+        return SSKProtoCallMessageIceUpdateBuilder()
+    }
 
     @objc public class SSKProtoCallMessageIceUpdateBuilder: NSObject {
 
@@ -677,6 +697,10 @@ extension SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder {
 
     // MARK: - SSKProtoCallMessageBusyBuilder
 
+    @objc public class func builder() -> SSKProtoCallMessageBusyBuilder {
+        return SSKProtoCallMessageBusyBuilder()
+    }
+
     @objc public class SSKProtoCallMessageBusyBuilder: NSObject {
 
         private var proto = SignalServiceProtos_CallMessage.Busy()
@@ -761,6 +785,10 @@ extension SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder {
 
     // MARK: - SSKProtoCallMessageHangupBuilder
 
+    @objc public class func builder() -> SSKProtoCallMessageHangupBuilder {
+        return SSKProtoCallMessageHangupBuilder()
+    }
+
     @objc public class SSKProtoCallMessageHangupBuilder: NSObject {
 
         private var proto = SignalServiceProtos_CallMessage.Hangup()
@@ -844,6 +872,10 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
 @objc public class SSKProtoCallMessage: NSObject {
 
     // MARK: - SSKProtoCallMessageBuilder
+
+    @objc public class func builder() -> SSKProtoCallMessageBuilder {
+        return SSKProtoCallMessageBuilder()
+    }
 
     @objc public class SSKProtoCallMessageBuilder: NSObject {
 
@@ -937,12 +969,12 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_CallMessage) throws -> SSKProtoCallMessage {
-        var offer: SSKProtoCallMessageOffer? = nil
+        var offer: SSKProtoCallMessageOffer?
         if proto.hasOffer {
             offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
         }
 
-        var answer: SSKProtoCallMessageAnswer? = nil
+        var answer: SSKProtoCallMessageAnswer?
         if proto.hasAnswer {
             answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
         }
@@ -950,12 +982,12 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup? = nil
+        var hangup: SSKProtoCallMessageHangup?
         if proto.hasHangup {
             hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
-        var busy: SSKProtoCallMessageBusy? = nil
+        var busy: SSKProtoCallMessageBusy?
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
@@ -1013,6 +1045,10 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
     }
 
     // MARK: - SSKProtoDataMessageQuoteQuotedAttachmentBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageQuoteQuotedAttachmentBuilder {
+        return SSKProtoDataMessageQuoteQuotedAttachmentBuilder()
+    }
 
     @objc public class SSKProtoDataMessageQuoteQuotedAttachmentBuilder: NSObject {
 
@@ -1093,7 +1129,7 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var thumbnail: SSKProtoAttachmentPointer? = nil
+        var thumbnail: SSKProtoAttachmentPointer?
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
         }
@@ -1129,6 +1165,10 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
 @objc public class SSKProtoDataMessageQuote: NSObject {
 
     // MARK: - SSKProtoDataMessageQuoteBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageQuoteBuilder {
+        return SSKProtoDataMessageQuoteBuilder()
+    }
 
     @objc public class SSKProtoDataMessageQuoteBuilder: NSObject {
 
@@ -1260,6 +1300,10 @@ extension SSKProtoDataMessageQuote.SSKProtoDataMessageQuoteBuilder {
 @objc public class SSKProtoDataMessageContactName: NSObject {
 
     // MARK: - SSKProtoDataMessageContactNameBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageContactNameBuilder {
+        return SSKProtoDataMessageContactNameBuilder()
+    }
 
     @objc public class SSKProtoDataMessageContactNameBuilder: NSObject {
 
@@ -1435,6 +1479,10 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
 
     // MARK: - SSKProtoDataMessageContactPhoneBuilder
 
+    @objc public class func builder() -> SSKProtoDataMessageContactPhoneBuilder {
+        return SSKProtoDataMessageContactPhoneBuilder()
+    }
+
     @objc public class SSKProtoDataMessageContactPhoneBuilder: NSObject {
 
         private var proto = SignalServiceProtos_DataMessage.Contact.Phone()
@@ -1564,6 +1612,10 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
 
     // MARK: - SSKProtoDataMessageContactEmailBuilder
 
+    @objc public class func builder() -> SSKProtoDataMessageContactEmailBuilder {
+        return SSKProtoDataMessageContactEmailBuilder()
+    }
+
     @objc public class SSKProtoDataMessageContactEmailBuilder: NSObject {
 
         private var proto = SignalServiceProtos_DataMessage.Contact.Email()
@@ -1689,6 +1741,10 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
     }
 
     // MARK: - SSKProtoDataMessageContactPostalAddressBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageContactPostalAddressBuilder {
+        return SSKProtoDataMessageContactPostalAddressBuilder()
+    }
 
     @objc public class SSKProtoDataMessageContactPostalAddressBuilder: NSObject {
 
@@ -1876,6 +1932,10 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
 
     // MARK: - SSKProtoDataMessageContactAvatarBuilder
 
+    @objc public class func builder() -> SSKProtoDataMessageContactAvatarBuilder {
+        return SSKProtoDataMessageContactAvatarBuilder()
+    }
+
     @objc public class SSKProtoDataMessageContactAvatarBuilder: NSObject {
 
         private var proto = SignalServiceProtos_DataMessage.Contact.Avatar()
@@ -1927,7 +1987,7 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws -> SSKProtoDataMessageContactAvatar {
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -1963,6 +2023,10 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
 @objc public class SSKProtoDataMessageContact: NSObject {
 
     // MARK: - SSKProtoDataMessageContactBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageContactBuilder {
+        return SSKProtoDataMessageContactBuilder()
+    }
 
     @objc public class SSKProtoDataMessageContactBuilder: NSObject {
 
@@ -2068,7 +2132,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact) throws -> SSKProtoDataMessageContact {
-        var name: SSKProtoDataMessageContactName? = nil
+        var name: SSKProtoDataMessageContactName?
         if proto.hasName {
             name = try SSKProtoDataMessageContactName.parseProto(proto.name)
         }
@@ -2082,7 +2146,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
         var address: [SSKProtoDataMessageContactPostalAddress] = []
         address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
-        var avatar: SSKProtoDataMessageContactAvatar? = nil
+        var avatar: SSKProtoDataMessageContactAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
@@ -2146,6 +2210,10 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
     }
 
     // MARK: - SSKProtoDataMessageBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageBuilder {
+        return SSKProtoDataMessageBuilder()
+    }
 
     @objc public class SSKProtoDataMessageBuilder: NSObject {
 
@@ -2287,12 +2355,12 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         var attachments: [SSKProtoAttachmentPointer] = []
         attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
-        var group: SSKProtoGroupContext? = nil
+        var group: SSKProtoGroupContext?
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
         }
 
-        var quote: SSKProtoDataMessageQuote? = nil
+        var quote: SSKProtoDataMessageQuote?
         if proto.hasQuote {
             quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
         }
@@ -2334,6 +2402,10 @@ extension SSKProtoDataMessage.SSKProtoDataMessageBuilder {
 @objc public class SSKProtoNullMessage: NSObject {
 
     // MARK: - SSKProtoNullMessageBuilder
+
+    @objc public class func builder() -> SSKProtoNullMessageBuilder {
+        return SSKProtoNullMessageBuilder()
+    }
 
     @objc public class SSKProtoNullMessageBuilder: NSObject {
 
@@ -2432,6 +2504,10 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
     }
 
     // MARK: - SSKProtoReceiptMessageBuilder
+
+    @objc public class func builder() -> SSKProtoReceiptMessageBuilder {
+        return SSKProtoReceiptMessageBuilder()
+    }
 
     @objc public class SSKProtoReceiptMessageBuilder: NSObject {
 
@@ -2554,6 +2630,10 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
     }
 
     // MARK: - SSKProtoVerifiedBuilder
+
+    @objc public class func builder() -> SSKProtoVerifiedBuilder {
+        return SSKProtoVerifiedBuilder()
+    }
 
     @objc public class SSKProtoVerifiedBuilder: NSObject {
 
@@ -2678,6 +2758,10 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
 
     // MARK: - SSKProtoSyncMessageSentBuilder
 
+    @objc public class func builder() -> SSKProtoSyncMessageSentBuilder {
+        return SSKProtoSyncMessageSentBuilder()
+    }
+
     @objc public class SSKProtoSyncMessageSentBuilder: NSObject {
 
         private var proto = SignalServiceProtos_SyncMessage.Sent()
@@ -2754,7 +2838,7 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var message: SSKProtoDataMessage? = nil
+        var message: SSKProtoDataMessage?
         if proto.hasMessage {
             message = try SSKProtoDataMessage.parseProto(proto.message)
         }
@@ -2790,6 +2874,10 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 @objc public class SSKProtoSyncMessageContacts: NSObject {
 
     // MARK: - SSKProtoSyncMessageContactsBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageContactsBuilder {
+        return SSKProtoSyncMessageContactsBuilder()
+    }
 
     @objc public class SSKProtoSyncMessageContactsBuilder: NSObject {
 
@@ -2886,6 +2974,10 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
 
     // MARK: - SSKProtoSyncMessageGroupsBuilder
 
+    @objc public class func builder() -> SSKProtoSyncMessageGroupsBuilder {
+        return SSKProtoSyncMessageGroupsBuilder()
+    }
+
     @objc public class SSKProtoSyncMessageGroupsBuilder: NSObject {
 
         private var proto = SignalServiceProtos_SyncMessage.Groups()
@@ -2926,7 +3018,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer? = nil
+        var blob: SSKProtoAttachmentPointer?
         if proto.hasBlob {
             blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
@@ -2962,6 +3054,10 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
 @objc public class SSKProtoSyncMessageBlocked: NSObject {
 
     // MARK: - SSKProtoSyncMessageBlockedBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageBlockedBuilder {
+        return SSKProtoSyncMessageBlockedBuilder()
+    }
 
     @objc public class SSKProtoSyncMessageBlockedBuilder: NSObject {
 
@@ -3084,6 +3180,10 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
 
     // MARK: - SSKProtoSyncMessageRequestBuilder
 
+    @objc public class func builder() -> SSKProtoSyncMessageRequestBuilder {
+        return SSKProtoSyncMessageRequestBuilder()
+    }
+
     @objc public class SSKProtoSyncMessageRequestBuilder: NSObject {
 
         private var proto = SignalServiceProtos_SyncMessage.Request()
@@ -3167,6 +3267,10 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 @objc public class SSKProtoSyncMessageRead: NSObject {
 
     // MARK: - SSKProtoSyncMessageReadBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageReadBuilder {
+        return SSKProtoSyncMessageReadBuilder()
+    }
 
     @objc public class SSKProtoSyncMessageReadBuilder: NSObject {
 
@@ -3267,6 +3371,10 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 
     // MARK: - SSKProtoSyncMessageConfigurationBuilder
 
+    @objc public class func builder() -> SSKProtoSyncMessageConfigurationBuilder {
+        return SSKProtoSyncMessageConfigurationBuilder()
+    }
+
     @objc public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
 
         private var proto = SignalServiceProtos_SyncMessage.Configuration()
@@ -3340,6 +3448,10 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 @objc public class SSKProtoSyncMessage: NSObject {
 
     // MARK: - SSKProtoSyncMessageBuilder
+
+    @objc public class func builder() -> SSKProtoSyncMessageBuilder {
+        return SSKProtoSyncMessageBuilder()
+    }
 
     @objc public class SSKProtoSyncMessageBuilder: NSObject {
 
@@ -3457,22 +3569,22 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent? = nil
+        var sent: SSKProtoSyncMessageSent?
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
         }
 
-        var contacts: SSKProtoSyncMessageContacts? = nil
+        var contacts: SSKProtoSyncMessageContacts?
         if proto.hasContacts {
             contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
         }
 
-        var groups: SSKProtoSyncMessageGroups? = nil
+        var groups: SSKProtoSyncMessageGroups?
         if proto.hasGroups {
             groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
         }
 
-        var request: SSKProtoSyncMessageRequest? = nil
+        var request: SSKProtoSyncMessageRequest?
         if proto.hasRequest {
             request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
         }
@@ -3480,17 +3592,17 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         var read: [SSKProtoSyncMessageRead] = []
         read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
-        var blocked: SSKProtoSyncMessageBlocked? = nil
+        var blocked: SSKProtoSyncMessageBlocked?
         if proto.hasBlocked {
             blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
 
-        var configuration: SSKProtoSyncMessageConfiguration? = nil
+        var configuration: SSKProtoSyncMessageConfiguration?
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
@@ -3551,6 +3663,10 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
     }
 
     // MARK: - SSKProtoAttachmentPointerBuilder
+
+    @objc public class func builder() -> SSKProtoAttachmentPointerBuilder {
+        return SSKProtoAttachmentPointerBuilder()
+    }
 
     @objc public class SSKProtoAttachmentPointerBuilder: NSObject {
 
@@ -3780,6 +3896,10 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
     // MARK: - SSKProtoGroupContextBuilder
 
+    @objc public class func builder() -> SSKProtoGroupContextBuilder {
+        return SSKProtoGroupContextBuilder()
+    }
+
     @objc public class SSKProtoGroupContextBuilder: NSObject {
 
         private var proto = SignalServiceProtos_GroupContext()
@@ -3882,7 +4002,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         }
         let type = SSKProtoGroupContextTypeWrap(proto.type)
 
-        var avatar: SSKProtoAttachmentPointer? = nil
+        var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -3920,6 +4040,10 @@ extension SSKProtoGroupContext.SSKProtoGroupContextBuilder {
 @objc public class SSKProtoContactDetailsAvatar: NSObject {
 
     // MARK: - SSKProtoContactDetailsAvatarBuilder
+
+    @objc public class func builder() -> SSKProtoContactDetailsAvatarBuilder {
+        return SSKProtoContactDetailsAvatarBuilder()
+    }
 
     @objc public class SSKProtoContactDetailsAvatarBuilder: NSObject {
 
@@ -4008,6 +4132,10 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 @objc public class SSKProtoContactDetails: NSObject {
 
     // MARK: - SSKProtoContactDetailsBuilder
+
+    @objc public class func builder() -> SSKProtoContactDetailsBuilder {
+        return SSKProtoContactDetailsBuilder()
+    }
 
     @objc public class SSKProtoContactDetailsBuilder: NSObject {
 
@@ -4141,12 +4269,12 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         }
         let number = proto.number
 
-        var avatar: SSKProtoContactDetailsAvatar? = nil
+        var avatar: SSKProtoContactDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
         }
 
-        var verified: SSKProtoVerified? = nil
+        var verified: SSKProtoVerified?
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
@@ -4184,6 +4312,10 @@ extension SSKProtoContactDetails.SSKProtoContactDetailsBuilder {
 @objc public class SSKProtoGroupDetailsAvatar: NSObject {
 
     // MARK: - SSKProtoGroupDetailsAvatarBuilder
+
+    @objc public class func builder() -> SSKProtoGroupDetailsAvatarBuilder {
+        return SSKProtoGroupDetailsAvatarBuilder()
+    }
 
     @objc public class SSKProtoGroupDetailsAvatarBuilder: NSObject {
 
@@ -4272,6 +4404,10 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 @objc public class SSKProtoGroupDetails: NSObject {
 
     // MARK: - SSKProtoGroupDetailsBuilder
+
+    @objc public class func builder() -> SSKProtoGroupDetailsBuilder {
+        return SSKProtoGroupDetailsBuilder()
+    }
 
     @objc public class SSKProtoGroupDetailsBuilder: NSObject {
 
@@ -4408,7 +4544,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         }
         let id = proto.id
 
-        var avatar: SSKProtoGroupDetailsAvatar? = nil
+        var avatar: SSKProtoGroupDetailsAvatar?
         if proto.hasAvatar {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }

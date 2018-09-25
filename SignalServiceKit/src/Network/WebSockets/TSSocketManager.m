@@ -5,7 +5,6 @@
 #import "TSSocketManager.h"
 #import "AppContext.h"
 #import "AppReadiness.h"
-#import "Cryptography.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
 #import "NotificationsProtocol.h"
@@ -21,6 +20,7 @@
 #import "TSConstants.h"
 #import "TSErrorMessage.h"
 #import "TSRequest.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

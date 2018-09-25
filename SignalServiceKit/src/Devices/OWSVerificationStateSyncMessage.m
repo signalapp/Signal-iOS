@@ -3,8 +3,8 @@
 //
 
 #import "OWSVerificationStateSyncMessage.h"
-#import "Cryptography.h"
 #import "OWSIdentityManager.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

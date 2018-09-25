@@ -405,11 +405,6 @@ class MessageContext(BaseContext):
         
         writer.push_context(self.proto_name, self.swift_name)
         
-        if self.args.add_log_tag:
-            writer.add('fileprivate static let logTag = "%s"' % self.swift_name)
-            writer.add('fileprivate let logTag = "%s"' % self.swift_name)
-            writer.newline()
-        
         for child in self.enums:
             child.generate(writer)
 
@@ -668,6 +663,11 @@ public func serializedData() throws -> Data {
         wrapped_swift_name = self.derive_wrapped_swift_name()
         
         writer.add('// MARK: - %s' % self.swift_builder_name)
+        writer.newline()
+        
+        # Convenience accessor.
+        with writer.braced('@objc public class func builder() -> %s' % self.swift_builder_name) as writer:
+            writer.add('return %s()' % (self.swift_builder_name, ))
         writer.newline()
         
         writer.add('@objc public class %s: NSObject {' % self.swift_builder_name)

@@ -48,6 +48,7 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
@@ -76,7 +77,6 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>

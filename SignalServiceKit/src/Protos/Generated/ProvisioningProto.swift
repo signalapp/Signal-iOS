@@ -16,6 +16,10 @@ public enum ProvisioningProtoError: Error {
 
     // MARK: - ProvisioningProtoProvisionEnvelopeBuilder
 
+    @objc public class func builder() -> ProvisioningProtoProvisionEnvelopeBuilder {
+        return ProvisioningProtoProvisionEnvelopeBuilder()
+    }
+
     @objc public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
 
         private var proto = ProvisioningProtos_ProvisionEnvelope()
@@ -114,6 +118,10 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 @objc public class ProvisioningProtoProvisionMessage: NSObject {
 
     // MARK: - ProvisioningProtoProvisionMessageBuilder
+
+    @objc public class func builder() -> ProvisioningProtoProvisionMessageBuilder {
+        return ProvisioningProtoProvisionMessageBuilder()
+    }
 
     @objc public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 

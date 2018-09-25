@@ -6,7 +6,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <HKDFKit/HKDFKit.h>
-#import <SignalServiceKit/Cryptography.h>
+#import <SignalCoreKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

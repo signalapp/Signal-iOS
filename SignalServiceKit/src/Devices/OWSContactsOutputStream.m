@@ -5,7 +5,6 @@
 #import "OWSContactsOutputStream.h"
 #import "Contact.h"
 #import "ContactsManagerProtocol.h"
-#import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "OWSBlockingManager.h"
@@ -13,6 +12,7 @@
 #import "OWSRecipientIdentity.h"
 #import "SignalAccount.h"
 #import "TSContactThread.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

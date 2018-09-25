@@ -3,9 +3,9 @@
 //
 
 #import "OWSOutgoingNullMessage.h"
-#import "Cryptography.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSContactThread.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

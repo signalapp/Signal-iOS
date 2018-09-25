@@ -16,6 +16,10 @@ public enum FingerprintProtoError: Error {
 
     // MARK: - FingerprintProtoLogicalFingerprintBuilder
 
+    @objc public class func builder() -> FingerprintProtoLogicalFingerprintBuilder {
+        return FingerprintProtoLogicalFingerprintBuilder()
+    }
+
     @objc public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
 
         private var proto = FingerprintProtos_LogicalFingerprint()
@@ -99,6 +103,10 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
 @objc public class FingerprintProtoLogicalFingerprints: NSObject {
 
     // MARK: - FingerprintProtoLogicalFingerprintsBuilder
+
+    @objc public class func builder() -> FingerprintProtoLogicalFingerprintsBuilder {
+        return FingerprintProtoLogicalFingerprintsBuilder()
+    }
 
     @objc public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
 

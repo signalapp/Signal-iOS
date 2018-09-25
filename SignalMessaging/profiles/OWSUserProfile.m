@@ -3,10 +3,10 @@
 //
 
 #import "OWSUserProfile.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>

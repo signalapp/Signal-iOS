@@ -6,7 +6,6 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "ContactsManagerProtocol.h"
-#import "Cryptography.h"
 #import "MimeTypeUtil.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
@@ -45,6 +44,7 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
