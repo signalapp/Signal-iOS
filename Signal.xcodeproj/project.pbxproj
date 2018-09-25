@@ -276,6 +276,7 @@
 		34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */; };
 		34DBF004206BD5A500025978 /* OWSBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF001206BD5A500025978 /* OWSBubbleView.m */; };
 		34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBF006206C3CB200025978 /* OWSBubbleShapeView.m */; };
+		34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DC9BD721543E0A00FDDCEC /* DebugContactsUtils.m */; };
 		34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E5671EC4B19400495BAC /* AudioProgressView.swift */; };
 		34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
@@ -963,6 +964,8 @@
 		34DBF002206BD5A500025978 /* OWSBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBubbleView.h; sourceTree = "<group>"; };
 		34DBF005206C3CB100025978 /* OWSBubbleShapeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBubbleShapeView.h; sourceTree = "<group>"; };
 		34DBF006206C3CB200025978 /* OWSBubbleShapeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBubbleShapeView.m; sourceTree = "<group>"; };
+		34DC9BD721543E0A00FDDCEC /* DebugContactsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugContactsUtils.m; sourceTree = "<group>"; };
+		34DC9BD821543E0B00FDDCEC /* DebugContactsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugContactsUtils.h; sourceTree = "<group>"; };
 		34E3E5671EC4B19400495BAC /* AudioProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioProgressView.swift; sourceTree = "<group>"; };
 		34E3EF0B1EFC235B007F6822 /* DebugUIDiskUsage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIDiskUsage.h; sourceTree = "<group>"; };
 		34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIDiskUsage.m; sourceTree = "<group>"; };
@@ -1882,6 +1885,8 @@
 		34D8C0221ED3673300188D7C /* DebugUI */ = {
 			isa = PBXGroup;
 			children = (
+				34DC9BD821543E0B00FDDCEC /* DebugContactsUtils.h */,
+				34DC9BD721543E0A00FDDCEC /* DebugContactsUtils.m */,
 				340FC8C3204DE223007AEB0F /* DebugUIBackup.h */,
 				340FC8C4204DE223007AEB0F /* DebugUIBackup.m */,
 				45638BDB1F3DD0D400128435 /* DebugUICalling.swift */,
@@ -3292,6 +3297,7 @@
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
 				34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */,
+				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
 				34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
