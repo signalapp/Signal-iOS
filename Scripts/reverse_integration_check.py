@@ -39,7 +39,7 @@ def main():
     # Don't reverse integrate tags for adhoc builds
     tags_of_concern = [tag for tag in tags_of_concern if "adhoc" not in tag]
 
-    tags_to_ignore = ['2.23.3.0', '2.23.3.1', '2.26.0.15', '2.26.0.16', '2.26.0.6', '2.26.0.7', '3.0', '3.0.1', '3.0.2']
+    tags_to_ignore = ['2.23.3.0', '2.23.3.1', '2.26.0.15', '2.26.0.16', '2.26.0.6', '2.26.0.7', '3.0', '3.0.1', '3.0.2', '2.30.0.0', '2.30.0.1']
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 
     if len(tags_of_concern) > 0:
