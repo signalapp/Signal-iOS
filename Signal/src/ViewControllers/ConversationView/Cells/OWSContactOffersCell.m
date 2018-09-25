@@ -100,6 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.layer.cornerRadius = 4.f;
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+    button.contentEdgeInsets = UIEdgeInsetsMake(0, 10.f, 0, 10.f);
     return button;
 }
 
