@@ -94,7 +94,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
     _incomingMessageAuthorThread = ([interaction isKindOfClass:[TSIncomingMessage class]]
-            ? [TSContactThread getOrCreateThreadWithContactId:((TSIncomingMessage *)interaction).authorId]
+            ? [TSContactThread getThreadWithContactId:((TSIncomingMessage *)interaction).authorId
+                                          transaction:transaction]
             : nil);
 
     [self ensureViewState:transaction];
@@ -108,7 +109,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _incomingMessageAuthorThread = ([interaction isKindOfClass:[TSIncomingMessage class]]
-            ? [TSContactThread getOrCreateThreadWithContactId:((TSIncomingMessage *)interaction).authorId]
+            ? [TSContactThread getThreadWithContactId:((TSIncomingMessage *)interaction).authorId
+                                          transaction:transaction]
             : nil);
 
     self.hasViewState = NO;
