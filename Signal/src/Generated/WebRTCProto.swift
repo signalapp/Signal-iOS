@@ -16,18 +16,17 @@ public enum WebRTCProtoError: Error {
 
     // MARK: - WebRTCProtoConnectedBuilder
 
-    @objc public class func builder() -> WebRTCProtoConnectedBuilder {
-        return WebRTCProtoConnectedBuilder()
+    @objc public class func builder(id: UInt64) -> WebRTCProtoConnectedBuilder {
+        return WebRTCProtoConnectedBuilder(id: id)
     }
 
     @objc public class WebRTCProtoConnectedBuilder: NSObject {
 
         private var proto = WebRTCProtos_Connected()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(id: UInt64) {
+        @objc fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
@@ -104,18 +103,17 @@ extension WebRTCProtoConnected.WebRTCProtoConnectedBuilder {
 
     // MARK: - WebRTCProtoHangupBuilder
 
-    @objc public class func builder() -> WebRTCProtoHangupBuilder {
-        return WebRTCProtoHangupBuilder()
+    @objc public class func builder(id: UInt64) -> WebRTCProtoHangupBuilder {
+        return WebRTCProtoHangupBuilder(id: id)
     }
 
     @objc public class WebRTCProtoHangupBuilder: NSObject {
 
         private var proto = WebRTCProtos_Hangup()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(id: UInt64) {
+        @objc fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
@@ -192,18 +190,17 @@ extension WebRTCProtoHangup.WebRTCProtoHangupBuilder {
 
     // MARK: - WebRTCProtoVideoStreamingStatusBuilder
 
-    @objc public class func builder() -> WebRTCProtoVideoStreamingStatusBuilder {
-        return WebRTCProtoVideoStreamingStatusBuilder()
+    @objc public class func builder(id: UInt64) -> WebRTCProtoVideoStreamingStatusBuilder {
+        return WebRTCProtoVideoStreamingStatusBuilder(id: id)
     }
 
     @objc public class WebRTCProtoVideoStreamingStatusBuilder: NSObject {
 
         private var proto = WebRTCProtos_VideoStreamingStatus()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(id: UInt64) {
+        @objc fileprivate init(id: UInt64) {
             super.init()
 
             setId(id)
@@ -299,7 +296,7 @@ extension WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder
 
         private var proto = WebRTCProtos_Data()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
         @objc public func setConnected(_ valueParam: WebRTCProtoConnected) {
             proto.connected = valueParam.proto
@@ -351,17 +348,17 @@ extension WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder
     }
 
     fileprivate class func parseProto(_ proto: WebRTCProtos_Data) throws -> WebRTCProtoData {
-        var connected: WebRTCProtoConnected?
+        var connected: WebRTCProtoConnected? = nil
         if proto.hasConnected {
             connected = try WebRTCProtoConnected.parseProto(proto.connected)
         }
 
-        var hangup: WebRTCProtoHangup?
+        var hangup: WebRTCProtoHangup? = nil
         if proto.hasHangup {
             hangup = try WebRTCProtoHangup.parseProto(proto.hangup)
         }
 
-        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus?
+        var videoStreamingStatus: WebRTCProtoVideoStreamingStatus? = nil
         if proto.hasVideoStreamingStatus {
             videoStreamingStatus = try WebRTCProtoVideoStreamingStatus.parseProto(proto.videoStreamingStatus)
         }

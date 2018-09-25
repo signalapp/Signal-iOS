@@ -46,18 +46,17 @@ public enum SignalIOSProtoError: Error {
 
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
-    @objc public class func builder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
-        return SignalIOSProtoBackupSnapshotBackupEntityBuilder()
+    @objc public class func builder(type: SignalIOSProtoBackupSnapshotBackupEntityType, entityData: Data) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+        return SignalIOSProtoBackupSnapshotBackupEntityBuilder(type: type, entityData: entityData)
     }
 
     @objc public class SignalIOSProtoBackupSnapshotBackupEntityBuilder: NSObject {
 
         private var proto = IOSProtos_BackupSnapshot.BackupEntity()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(type: SignalIOSProtoBackupSnapshotBackupEntityType, entityData: Data) {
+        @objc fileprivate init(type: SignalIOSProtoBackupSnapshotBackupEntityType, entityData: Data) {
             super.init()
 
             setType(type)
@@ -157,7 +156,7 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 
         private var proto = IOSProtos_BackupSnapshot()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
         @objc public func addEntity(_ valueParam: SignalIOSProtoBackupSnapshotBackupEntity) {
             var items = proto.entity

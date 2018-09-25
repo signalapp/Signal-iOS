@@ -16,18 +16,17 @@ public enum ProvisioningProtoError: Error {
 
     // MARK: - ProvisioningProtoProvisionEnvelopeBuilder
 
-    @objc public class func builder() -> ProvisioningProtoProvisionEnvelopeBuilder {
-        return ProvisioningProtoProvisionEnvelopeBuilder()
+    @objc public class func builder(publicKey: Data, body: Data) -> ProvisioningProtoProvisionEnvelopeBuilder {
+        return ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
     }
 
     @objc public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
 
         private var proto = ProvisioningProtos_ProvisionEnvelope()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(publicKey: Data, body: Data) {
+        @objc fileprivate init(publicKey: Data, body: Data) {
             super.init()
 
             setPublicKey(publicKey)
@@ -119,18 +118,17 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
     // MARK: - ProvisioningProtoProvisionMessageBuilder
 
-    @objc public class func builder() -> ProvisioningProtoProvisionMessageBuilder {
-        return ProvisioningProtoProvisionMessageBuilder()
+    @objc public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) -> ProvisioningProtoProvisionMessageBuilder {
+        return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, number: number, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
     }
 
     @objc public class ProvisioningProtoProvisionMessageBuilder: NSObject {
 
         private var proto = ProvisioningProtos_ProvisionMessage()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) {
+        @objc fileprivate init(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) {
             super.init()
 
             setIdentityKeyPublic(identityKeyPublic)
