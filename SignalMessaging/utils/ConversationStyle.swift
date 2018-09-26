@@ -162,7 +162,7 @@ public class ConversationStyle: NSObject {
         if isIncoming {
             return ConversationStyle.defaultBubbleColorIncoming
         } else {
-            return conversationColors.themeColor
+            return conversationColors.defaultColor
         }
     }
 
@@ -204,17 +204,15 @@ public class ConversationStyle: NSObject {
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
             return conversationColors.shadeColor
-        } else if isIncoming {
-            return conversationColors.tintColor
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
+            return conversationColors.tintColor
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return conversationColors.themeColor
+            return conversationColors.defaultColor
         } else {
             return Theme.backgroundColor
         }
@@ -228,12 +226,16 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return UIColor.ows_gray90
+        return quotedReplyTextColor()
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        return UIColor.ows_gray90
+        if Theme.isDarkThemeEnabled {
+            return UIColor.ows_gray05
+        } else {
+            return UIColor.ows_gray90
+        }
     }
 
     @objc
