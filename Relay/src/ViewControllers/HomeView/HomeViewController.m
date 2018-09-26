@@ -52,6 +52,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     HomeViewControllerSectionReminders,
+    HomeViewControllerSectionAnnouncements,
+    HomeViewControllerSectionPinned,
     HomeViewControllerSectionConversations,
     HomeViewControllerSectionArchiveButton,
 };
@@ -764,6 +766,32 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 #pragma mark - Table View Data Source
 
+-(nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSInteger rows = [self tableView:tableView numberOfRowsInSection:section];
+    
+    if (rows > 0) {
+        switch (section) {
+            case HomeViewControllerSectionReminders: {
+                return nil;
+            }
+            case HomeViewControllerSectionAnnouncements: {
+                return NSLocalizedString(@"ANNOUNCEMENTS_SECTION", nil);
+            }
+            case HomeViewControllerSectionPinned: {
+                return NSLocalizedString(@"PINNED_CONVERSATION_SECTION", nil);
+            }
+            case HomeViewControllerSectionConversations: {
+                return NSLocalizedString(@"RECENT_CONVERSATION_SECTION", nil);
+            }
+            case HomeViewControllerSectionArchiveButton: {
+                return nil;
+            }
+        }
+    }
+    return nil;
+}
+
 // Returns YES IFF this value changes.
 - (BOOL)updateHasArchivedThreadsRow
 {
@@ -788,9 +816,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         case HomeViewControllerSectionReminders: {
             return self.hasVisibleReminders ? 1 : 0;
         }
+        case HomeViewControllerSectionAnnouncements: {
+            return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+        }
+        case HomeViewControllerSectionPinned: {
+            return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+        }
         case HomeViewControllerSectionConversations: {
-            NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-            return result;
+            return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
         }
         case HomeViewControllerSectionArchiveButton: {
             return self.hasArchivedThreadsRow ? 1 : 0;
@@ -1292,7 +1325,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     self.threadMappings = [[YapDatabaseViewMappings alloc]
-        initWithGroups:@[ kReminderViewPseudoGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
+        initWithGroups:@[ kReminderViewPseudoGroup, FLAnnouncementsGroup, FLPinnedGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
                   view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
 
@@ -1530,6 +1563,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:Theme.secondaryColor
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
+}
+
+-(void)togglePinningForThreadAtIndexPath:(NSIndexPath *)indexPath
+{
+    __block TSThread *thread = [self threadForIndexPath:indexPath];
+    
+    if (thread) {
+        if (thread.pinPosition) {
+            thread.pinPosition = nil;
+        } else {
+            thread.pinPosition = [NSNumber numberWithInteger:[self.tableView numberOfRowsInSection:HomeViewControllerSectionPinned] + 1];
+        }
+        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [thread saveWithTransaction:transaction];
+        }];
+    }
 }
 
 @end
