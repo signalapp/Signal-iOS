@@ -45,51 +45,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@-%d", self.thread.uniqueId, Theme.isDarkThemeEnabled];
+    return [self.class defaultAvatarForGroupId:self.thread.groupModel.groupId
+                         conversationColorName:self.thread.conversationColorName
+                                      diameter:self.diameter];
+}
 
-    UIImage *cachedAvatar =
-        [OWSGroupAvatarBuilder.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)self.diameter];
++ (nullable UIImage *)defaultAvatarForGroupId:(NSData *)groupId
+                        conversationColorName:(NSString *)conversationColorName
+                                     diameter:(NSUInteger)diameter
+{
+    NSString *cacheKey = [NSString stringWithFormat:@"%@-%d", groupId.hexadecimalString, Theme.isDarkThemeEnabled];
+
+    UIImage *_Nullable cachedAvatar =
+        [OWSGroupAvatarBuilder.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
 
     UIColor *backgroundColor =
-        [UIColor ows_conversationColorForColorName:self.thread.conversationColorName isShaded:Theme.isDarkThemeEnabled];
+        [UIColor ows_conversationColorForColorName:conversationColorName isShaded:Theme.isDarkThemeEnabled];
     UIImage *_Nullable image =
-        [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:self.diameter];
+        [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
     if (!image) {
         return nil;
     }
 
-    [OWSGroupAvatarBuilder.contactsManager.avatarCache setImage:image forKey:cacheKey diameter:self.diameter];
-    return image;
-}
-
-+ (nullable UIImage *)defaultGroupAvatarImage
-{
-    NSUInteger diameter = 200;
-    NSString *cacheKey = [NSString stringWithFormat:@"default-group-avatar-%d", Theme.isDarkThemeEnabled];
-
-    UIImage *cachedAvatar = [self.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)diameter];
-    if (cachedAvatar) {
-        return cachedAvatar;
-    }
-
-    // TODO: Verify with Myles.
-    UIColor *backgroundColor = UIColor.ows_signalBlueColor;
-    UIImage *_Nullable image = [self groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
-    if (!image) {
-        return nil;
-    }
-
-    [self.contactsManager.avatarCache setImage:image forKey:cacheKey diameter:diameter];
+    [OWSGroupAvatarBuilder.contactsManager.avatarCache setImage:image forKey:cacheKey diameter:diameter];
     return image;
 }
 
 + (nullable UIImage *)groupAvatarImageWithBackgroundColor:(UIColor *)backgroundColor diameter:(NSUInteger)diameter
 {
     UIImage *icon = [UIImage imageNamed:@"group-avatar"];
-    CGSize iconSize = CGSizeScale(icon.size, diameter / kStandardAvatarSize);
+    // The group-avatar asset is designed for the kStandardAvatarSize.
+    // Adjust its size to reflect the actual output diameter.
+    CGFloat scaling = diameter / (CGFloat)kStandardAvatarSize;
+    CGSize iconSize = CGSizeScale(icon.size, scaling);
     return
         [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:backgroundColor diameter:diameter];
 }

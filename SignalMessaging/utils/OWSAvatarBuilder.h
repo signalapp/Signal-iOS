@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kStandardAvatarSize;
+extern const NSUInteger kLargeAvatarSize;
 
 @class TSThread;
 @class UIImage;
