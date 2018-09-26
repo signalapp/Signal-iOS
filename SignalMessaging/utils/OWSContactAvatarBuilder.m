@@ -124,7 +124,10 @@ NS_ASSUME_NONNULL_BEGIN
         [initials appendString:@"#"];
     }
 
-    UIColor *color = [UIColor ows_conversationThemeColorForColorName:self.colorName];
+    UIColor *color =
+        [UIColor ows_conversationColorForColorName:self.colorName
+                                              mode:(Theme.isDarkThemeEnabled ? ConversationColorMode_Shade
+                                                                             : ConversationColorMode_Default)];
     OWSAssertDebug(color);
 
     UIImage *_Nullable image =

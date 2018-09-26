@@ -110,7 +110,8 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
             owsFailDebug("color was unexpectedly nil")
             return ColorView(color: .white)
         }
-        guard let color = UIColor.ows_conversationThemeColor(colorName: colorName) else {
+        guard let color = UIColor.ows_conversationColor(colorName: colorName,
+                                                        mode: Theme.isDarkThemeEnabled ? .shade : .default) else {
             owsFailDebug("unknown color name")
             return ColorView(color: .white)
         }

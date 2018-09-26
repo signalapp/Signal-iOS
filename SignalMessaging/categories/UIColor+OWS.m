@@ -459,12 +459,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self.ows_conversationColorMap.allKeys;
 }
 
-+ (nullable UIColor *)ows_conversationThemeColorForColorName:(NSString *)colorName
++ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName mode:(ConversationColorMode)mode
 {
     OWSAssertDebug(colorName.length > 0);
 
-    BOOL isShaded = Theme.isDarkThemeEnabled;
-    return (isShaded ? self.ows_conversationColorMapShade : self.ows_conversationColorMap)[colorName];
+    switch (mode) {
+        case ConversationColorMode_Default:
+            return self.ows_conversationColorMap[colorName];
+        case ConversationColorMode_Shade:
+            return self.ows_conversationColorMapShade[colorName];
+        case ConversationColorMode_Tint:
+            return self.ows_conversationColorMapTint[colorName];
+    }
 }
 
 + (nullable UIColor *)ows_conversationTintColorForColorName:(NSString *)colorName

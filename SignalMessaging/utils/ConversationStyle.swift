@@ -136,7 +136,8 @@ public class ConversationStyle: NSObject {
             return self.defaultBubbleColorIncoming
         }
 
-        guard let color = UIColor.ows_conversationThemeColor(colorName: colorName) else {
+        guard let color = UIColor.ows_conversationColor(colorName: colorName,
+                                                        mode: Theme.isDarkThemeEnabled ? .shade : .default) else {
             return self.defaultBubbleColorIncoming
         }
 

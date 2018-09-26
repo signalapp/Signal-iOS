@@ -7,6 +7,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, ConversationColorMode) {
+    ConversationColorMode_Default,
+    ConversationColorMode_Shade,
+    ConversationColorMode_Tint,
+};
+
 @interface UIColor (OWS)
 
 #pragma mark -
@@ -96,8 +102,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Conversation Colors
 
-+ (nullable UIColor *)ows_conversationThemeColorForColorName:(NSString *)colorName
-    NS_SWIFT_NAME(ows_conversationThemeColor(colorName:));
++ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
+                                                   mode:(ConversationColorMode)mode
+    NS_SWIFT_NAME(ows_conversationColor(colorName:mode:));
 
 @property (class, readonly, nonatomic) NSArray<NSString *> *ows_conversationColorNames;
 
