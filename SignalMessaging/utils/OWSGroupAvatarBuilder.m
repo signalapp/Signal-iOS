@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
-    NSString *cacheKey = self.thread.uniqueId;
+    NSString *cacheKey = [NSString stringWithFormat:@"%@-%d", self.thread.uniqueId, Theme.isDarkThemeEnabled];
 
     UIImage *cachedAvatar =
         [OWSGroupAvatarBuilder.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)self.diameter];
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable UIImage *)defaultGroupAvatarImage
 {
     NSUInteger diameter = 200;
-    NSString *cacheKey = @"default-group-avatar";
+    NSString *cacheKey = [NSString stringWithFormat:@"default-group-avatar-%d", Theme.isDarkThemeEnabled];
 
     UIImage *cachedAvatar = [self.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)diameter];
     if (cachedAvatar) {
