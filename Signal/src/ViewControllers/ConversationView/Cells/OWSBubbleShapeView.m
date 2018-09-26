@@ -13,6 +13,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     OWSBubbleShapeViewMode_Draw,
     OWSBubbleShapeViewMode_Shadow,
     OWSBubbleShapeViewMode_Clip,
+    OWSBubbleShapeViewMode_InnerShadow,
 };
 
 @interface OWSBubbleShapeView ()
@@ -71,6 +72,13 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     return instance;
 }
 
++ (OWSBubbleShapeView *)bubbleInnerShadowView
+{
+    OWSBubbleShapeView *instance = [OWSBubbleShapeView new];
+    instance.mode = OWSBubbleShapeViewMode_InnerShadow;
+    return instance;
+}
+
 - (void)setFillColor:(nullable UIColor *)fillColor
 {
     _fillColor = fillColor;
@@ -88,6 +96,27 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 - (void)setStrokeThickness:(CGFloat)strokeThickness
 {
     _strokeThickness = strokeThickness;
+
+    [self updateLayers];
+}
+
+- (void)setInnerShadowColor:(nullable UIColor *)innerShadowColor
+{
+    _innerShadowColor = innerShadowColor;
+
+    [self updateLayers];
+}
+
+- (void)setInnerShadowRadius:(CGFloat)innerShadowRadius
+{
+    _innerShadowRadius = innerShadowRadius;
+
+    [self updateLayers];
+}
+
+- (void)setInnerShadowOpacity:(float)innerShadowOpacity
+{
+    _innerShadowOpacity = innerShadowOpacity;
 
     [self updateLayers];
 }
@@ -188,6 +217,32 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
             self.maskLayer.path = bezierPath.CGPath;
             self.layer.mask = self.maskLayer;
             break;
+        case OWSBubbleShapeViewMode_InnerShadow: {
+            self.maskLayer.path = bezierPath.CGPath;
+            self.layer.mask = self.maskLayer;
+
+            // Inner shadow.
+            // This should usually not be visible; it is used to distinguish
+            // profile pics from the background if they are similar.
+            self.shapeLayer.frame = self.bounds;
+            self.shapeLayer.masksToBounds = YES;
+            CGRect shadowBounds = self.bounds;
+            UIBezierPath *shadowPath = [bezierPath copy];
+            // This can be any value large enough to cast a sufficiently large shadow.
+            CGFloat shadowInset = -(self.innerShadowRadius * 4.f);
+            [shadowPath
+                appendPath:[UIBezierPath bezierPathWithRect:CGRectInset(shadowBounds, shadowInset, shadowInset)]];
+            // This can be any color since the fill should be clipped.
+            self.shapeLayer.fillColor = UIColor.blackColor.CGColor;
+            self.shapeLayer.path = shadowPath.CGPath;
+            self.shapeLayer.fillRule = kCAFillRuleEvenOdd;
+            self.shapeLayer.shadowColor = self.innerShadowColor.CGColor;
+            self.shapeLayer.shadowRadius = self.innerShadowRadius;
+            self.shapeLayer.shadowOpacity = self.innerShadowOpacity;
+            self.shapeLayer.shadowOffset = CGSizeZero;
+
+            break;
+        }
     }
 
     [CATransaction commit];

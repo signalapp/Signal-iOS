@@ -24,11 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIColor *strokeColor;
 @property (nonatomic) CGFloat strokeThickness;
 
+@property (nonatomic, nullable) UIColor *innerShadowColor;
+@property (nonatomic) CGFloat innerShadowRadius;
+@property (nonatomic) float innerShadowOpacity;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 + (OWSBubbleShapeView *)bubbleDrawView;
 + (OWSBubbleShapeView *)bubbleShadowView;
 + (OWSBubbleShapeView *)bubbleClipView;
++ (OWSBubbleShapeView *)bubbleInnerShadowView;
 
 @end
 
