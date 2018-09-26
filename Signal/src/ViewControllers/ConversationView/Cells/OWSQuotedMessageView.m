@@ -122,7 +122,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (UIColor *)highlightColor
 {
     BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-    return (isQuotingSelf ? self.conversationStyle.bubbleColorOutgoingSent
+    return (isQuotingSelf ? [self.conversationStyle bubbleColorWithIsIncoming:NO]
                           : [self.conversationStyle quotingSelfHighlightColor]);
 }
 

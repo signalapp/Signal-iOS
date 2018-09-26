@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSDate *creationDate;
 @property (nonatomic, copy, nullable) NSDate *archivalDate;
-@property (nonatomic, nullable) NSString *conversationColorName;
+@property (nonatomic) NSString *conversationColorName;
 @property (nonatomic, nullable) NSDate *lastMessageDate;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;

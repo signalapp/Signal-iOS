@@ -162,4 +162,15 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 @end
 
+#pragma mark -
+
+@implementation OWSConversationColors (Theme)
+
+- (UIColor *)themeColor
+{
+    return Theme.isDarkThemeEnabled ? self.shadeColor : self.defaultColor;
+}
+
+@end
+
 NS_ASSUME_NONNULL_END

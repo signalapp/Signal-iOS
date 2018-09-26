@@ -8,6 +8,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/Theme.h>
 #import <SignalServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN

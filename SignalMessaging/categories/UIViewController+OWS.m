@@ -2,9 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIViewController+OWS.h"
+#import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
+#import "UIViewController+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/iOSVersions.h>
 

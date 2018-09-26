@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "UIColor+OWS.h"
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -53,6 +54,14 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIColor *toastForegroundColor;
 @property (class, readonly, nonatomic) UIColor *toastBackgroundColor;
+
+@end
+
+#pragma mark -
+
+@interface OWSConversationColors (Theme)
+
+@property (nonatomic, readonly) UIColor *themeColor;
 
 @end
 

@@ -2,16 +2,23 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "Theme.h"
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, ConversationColorMode) {
-    ConversationColorMode_Default,
-    ConversationColorMode_Shade,
-    ConversationColorMode_Tint,
-};
+@interface OWSConversationColors : NSObject
+
+@property (nonatomic, readonly) UIColor *defaultColor;
+@property (nonatomic, readonly) UIColor *shadeColor;
+@property (nonatomic, readonly) UIColor *tintColor;
+
++ (OWSConversationColors *)conversationColorsWithDefaultColor:(UIColor *)defaultColor
+                                                   shadeColor:(UIColor *)shadeColor
+                                                    tintColor:(UIColor *)tintColor;
+
+@end
+
+#pragma mark -
 
 @interface UIColor (OWS)
 
@@ -102,15 +109,18 @@ typedef NS_ENUM(NSUInteger, ConversationColorMode) {
 
 #pragma mark - Conversation Colors
 
-+ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
-                                                   mode:(ConversationColorMode)mode
-    NS_SWIFT_NAME(ows_conversationColor(colorName:mode:));
++ (nullable OWSConversationColors *)ows_conversationColorsForColorName:(NSString *)colorName
+    NS_SWIFT_NAME(ows_conversationColors(colorName:));
+
+// If the conversation color name is valid, return its colors.
+// Otherwise return the "default" conversation colors.
++ (OWSConversationColors *)ows_conversationColorsOrDefaultForColorName:(NSString *)conversationColorName
+    NS_SWIFT_NAME(ows_conversationColorsOrDefault(colorName:));
 
 @property (class, readonly, nonatomic) NSArray<NSString *> *ows_conversationColorNames;
 
-+ (nullable UIColor *)ows_conversationTintColorForColorName:(NSString *)colorName;
-
 + (NSString *)ows_defaultConversationColorName;
++ (OWSConversationColors *)ows_defaultConversationColors;
 
 // TODO: Remove
 @property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;
