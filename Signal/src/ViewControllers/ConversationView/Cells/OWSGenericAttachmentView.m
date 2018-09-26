@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)iconHeight
 {
-    return 48.f;
+    return kStandardAvatarSize;
 }
 
 - (void)createContentsWithConversationStyle:(ConversationStyle *)conversationStyle

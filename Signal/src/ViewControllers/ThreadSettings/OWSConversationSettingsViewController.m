@@ -759,8 +759,7 @@ const CGFloat kIconViewLength = 24;
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
     const NSUInteger kAvatarSize = 68;
-    UIImage *avatarImage =
-        [OWSAvatarBuilder buildImageForThread:self.thread diameter:kAvatarSize contactsManager:self.contactsManager];
+    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kAvatarSize];
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];

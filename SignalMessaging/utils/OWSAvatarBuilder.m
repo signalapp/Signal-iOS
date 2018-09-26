@@ -9,8 +9,11 @@
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
+#import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+const NSUInteger kStandardAvatarSize = 48;
 
 typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
@@ -18,10 +21,8 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
                                  diameter:(NSUInteger)diameter
-                          contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(contactsManager);
 
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -29,10 +30,9 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
         NSString *colorName = thread.conversationColorName;
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
                                                                 colorName:colorName
-                                                                 diameter:diameter
-                                                          contactsManager:contactsManager];
+                                                                 diameter:diameter];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
-        avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread];
+        avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];
     } else {
         OWSLogError(@"called with unsupported thread: %@", thread);
     }
@@ -106,16 +106,19 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 }
 
 + (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                                 iconSize:(CGSize)iconSize
                           backgroundColor:(UIColor *)backgroundColor
                                  diameter:(NSUInteger)diameter
 {
     return [self avatarImageWithIcon:icon
+                            iconSize:iconSize
                            iconColor:self.avatarForegroundColor
                      backgroundColor:backgroundColor
                             diameter:diameter];
 }
 
 + (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                                 iconSize:(CGSize)iconSize
                                 iconColor:(UIColor *)iconColor
                           backgroundColor:(UIColor *)backgroundColor
                                  diameter:(NSUInteger)diameter
@@ -126,7 +129,11 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     return [self avatarImageWithDiameter:diameter
                          backgroundColor:backgroundColor
                                drawBlock:^(CGContextRef context) {
-                                   [self drawIconInAvatar:icon iconColor:iconColor diameter:diameter];
+                                   [self drawIconInAvatar:icon
+                                                 iconSize:iconSize
+                                                iconColor:iconColor
+                                                 diameter:diameter
+                                                  context:context];
                                }];
 }
 
@@ -230,14 +237,34 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     [initials drawAtPoint:drawPoint withAttributes:textAttributes];
 }
 
-+ (void)drawIconInAvatar:(UIImage *)icon iconColor:(UIColor *)iconColor diameter:(NSUInteger)diameter
++ (void)drawIconInAvatar:(UIImage *)icon
+                iconSize:(CGSize)iconSize
+               iconColor:(UIColor *)iconColor
+                diameter:(NSUInteger)diameter
+                 context:(CGContextRef)context
 {
     OWSAssertDebug(icon);
     OWSAssertDebug(iconColor);
     OWSAssertDebug(diameter > 0);
+    OWSAssertDebug(context);
 
-    CGPoint drawPoint = CGPointMake((diameter - icon.size.width) * 0.5f, (diameter - icon.size.height) * 0.5f);
-    [icon drawAtPoint:drawPoint];
+    // UIKit uses an ULO coordinate system (upper-left-origin).
+    // Core Graphics uses an LLO coordinate system (lower-left-origin).
+    CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, diameter);
+    CGContextConcatCTM(context, flipVertical);
+
+    CGRect imageRect = CGRectZero;
+    imageRect.size = CGSizeMake(diameter, diameter);
+
+    // The programmatic equivalent of UIImageRenderingModeAlwaysTemplate/tintColor.
+    CGContextSetBlendMode(context, kCGBlendModeNormal);
+    CGRect maskRect = CGRectZero;
+    maskRect.origin = CGPointScale(
+        CGPointSubtract(CGPointMake(diameter, diameter), CGPointMake(iconSize.width, iconSize.height)), 0.5f);
+    maskRect.size = iconSize;
+    CGContextClipToMask(context, maskRect, icon.CGImage);
+    CGContextSetFillColor(context, CGColorGetComponents(iconColor.CGColor));
+    CGContextFillRect(context, imageRect);
 }
 
 - (nullable UIImage *)build

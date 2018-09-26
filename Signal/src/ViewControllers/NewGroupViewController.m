@@ -529,7 +529,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)updateAvatarView
 {
-    self.avatarView.image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar"]);
+    self.avatarView.image = (self.groupAvatar ?: [OWSGroupAvatarBuilder defaultGroupAvatarImage]);
 }
 
 #pragma mark - Event Handling

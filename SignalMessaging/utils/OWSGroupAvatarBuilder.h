@@ -10,8 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSGroupAvatarBuilder : OWSAvatarBuilder
 
-- (instancetype)initWithThread:(TSGroupThread *)thread;
-+ (UIImage *)defaultGroupImage;
+- (instancetype)initWithThread:(TSGroupThread *)thread diameter:(NSUInteger)diameter;
+
++ (nullable UIImage *)defaultGroupAvatarImage;
 
 @end
 

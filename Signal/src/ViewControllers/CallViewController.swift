@@ -449,7 +449,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func updateAvatarImage() {
-        contactAvatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: 400, contactsManager: contactsManager)
+        contactAvatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: 400)
     }
 
     func createIncomingCallControls() {
