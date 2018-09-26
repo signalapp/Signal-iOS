@@ -42,26 +42,6 @@ public class AvatarImageView: UIImageView {
     }
 
     override public func layoutSubviews() {
-        updateLayers()
-    }
-
-    @objc public override var bounds: CGRect {
-        didSet {
-            if oldValue != bounds {
-                updateLayers()
-            }
-        }
-    }
-
-    @objc public override var frame: CGRect {
-        didSet {
-            if oldValue != frame {
-                updateLayers()
-            }
-        }
-    }
-
-    private func updateLayers() {
         self.layer.cornerRadius = self.frame.size.width / 2
 
         // Inner shadow.
