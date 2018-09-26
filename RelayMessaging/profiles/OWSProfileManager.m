@@ -670,9 +670,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
 {
-    OWSAssert(thread);
-
+    if (thread != nil) {
         return [self isGroupIdInProfileWhitelist:thread.uniqueId];
+    } else {
+        return NO;
+    }
 }
 
 - (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds

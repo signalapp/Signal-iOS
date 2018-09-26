@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
-    OWSAssert(thread);
+//    OWSAssert(thread);
 
     id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
 
@@ -46,7 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
-    OWSAssert(thread);
+    // Monitor sends have legitimate nil threads
+//    OWSAssert(thread);
 
     if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
         [self setProfileKey:self.localProfileKey.keyData];

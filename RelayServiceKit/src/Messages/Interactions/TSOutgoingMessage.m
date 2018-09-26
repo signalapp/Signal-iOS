@@ -778,10 +778,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 #pragma mark -
 
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
-{
-    TSThread *thread = self.thread;
-    OWSAssert(thread);
-    
+{    
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
 
@@ -907,7 +904,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
-    OWSAssert(self.thread);
+    // Monitor sends have nil threads
+//    OWSAssert(self.thread);
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
 
