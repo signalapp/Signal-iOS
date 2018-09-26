@@ -7,6 +7,8 @@ import UIKit
 @objc
 public class AvatarImageView: UIImageView {
 
+    private let shadowLayer = CAShapeLayer()
+
     public init() {
         super.init(frame: .zero)
         self.configureView()
@@ -32,14 +34,54 @@ public class AvatarImageView: UIImageView {
 
         self.layer.minificationFilter = kCAFilterTrilinear
         self.layer.magnificationFilter = kCAFilterTrilinear
-        self.layer.borderWidth = 0.5
         self.layer.masksToBounds = true
+
+        self.layer.addSublayer(self.shadowLayer)
+
         self.contentMode = .scaleToFill
     }
 
     override public func layoutSubviews() {
-        self.layer.borderColor = UIColor(white: 0, alpha: 0.15).cgColor
+        updateLayers()
+    }
+
+    @objc public override var bounds: CGRect {
+        didSet {
+            if oldValue != bounds {
+                updateLayers()
+            }
+        }
+    }
+
+    @objc public override var frame: CGRect {
+        didSet {
+            if oldValue != frame {
+                updateLayers()
+            }
+        }
+    }
+
+    private func updateLayers() {
         self.layer.cornerRadius = self.frame.size.width / 2
+
+        // Inner shadow.
+        // This should usually not be visible; it is used to distinguish
+        // profile pics from the background if they are similar.
+        self.shadowLayer.frame = self.bounds
+        self.shadowLayer.masksToBounds = true
+        let shadowBounds = self.bounds
+        let shadowPath = UIBezierPath(ovalIn: shadowBounds)
+        // This can be any value large enough to cast a sufficiently large shadow.
+        let shadowInset: CGFloat = -3
+        shadowPath.append(UIBezierPath(rect: shadowBounds.insetBy(dx: shadowInset, dy: shadowInset)))
+        // This can be any color since the fill should be clipped.
+        self.shadowLayer.fillColor = UIColor.black.cgColor
+        self.shadowLayer.path = shadowPath.cgPath
+        self.shadowLayer.fillRule = kCAFillRuleEvenOdd
+        self.shadowLayer.shadowColor = (Theme.isDarkThemeEnabled ? UIColor.white : UIColor.black).cgColor
+        self.shadowLayer.shadowRadius = 0.5
+        self.shadowLayer.shadowOpacity = 0.15
+        self.shadowLayer.shadowOffset = .zero
     }
 }
 
