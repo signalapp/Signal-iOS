@@ -328,6 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
     // these cookies are ephemeral.
     [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
+    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
     [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
 
     return request;

@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RemoteAttestationAuth : NSObject
+@interface RemoteAttestationAuth ()
 
 @property (nonatomic) NSString *username;
 @property (nonatomic) NSString *password;
@@ -151,16 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation RemoteAttestation
-
-- (NSString *)authUsername
-{
-    return self.auth.username;
-}
-
-- (NSString *)authToken
-{
-    return self.auth.password;
-}
 
 @end
 

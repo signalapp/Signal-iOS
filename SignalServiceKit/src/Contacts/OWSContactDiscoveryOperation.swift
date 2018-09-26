@@ -7,9 +7,6 @@ import Foundation
 @objc(OWSLegacyContactDiscoveryOperation)
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
-    // TODO: Remove this feature flag.
-    private let isCDSEnabled = true
-
     @objc
     var registeredRecipientIds: Set<String>
 
@@ -86,9 +83,6 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     // Called at most one time.
     override func didSucceed() {
-        guard isCDSEnabled else {
-            return
-        }
         // Compare against new CDS service
         let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
         let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
@@ -271,8 +265,8 @@ class CDSBatchOperation: OWSOperation {
                                                                        cryptIv: encryptionResult.initializationVector,
                                                                        cryptMac: encryptionResult.authTag,
                                                                        enclaveId: remoteAttestation.enclaveId,
-                                                                       authUsername: remoteAttestation.authUsername,
-                                                                       authPassword: remoteAttestation.authToken,
+                                                                       authUsername: remoteAttestation.auth.username,
+                                                                       authPassword: remoteAttestation.auth.password,
                                                                        cookies: remoteAttestation.cookies)
 
         self.networkManager.makeRequest(request,
