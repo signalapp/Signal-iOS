@@ -46,7 +46,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @interface ConversationViewItem : NSObject <ConversationViewLayoutItem, OWSAudioPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
-@property (nonatomic, nullable, readonly) TSThread *incomingMessageAuthorThread;
 
 @property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
 
@@ -112,7 +111,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;
 
-@property (nonatomic, nullable) NSString *systemMessageText;
+@property (nonatomic, readonly, nullable) NSString *systemMessageText;
+
+// NOTE: This property is only set for incoming messages.
+@property (nonatomic, readonly, nullable) NSString *authorConversationColorName;
 
 #pragma mark - MessageActions
 

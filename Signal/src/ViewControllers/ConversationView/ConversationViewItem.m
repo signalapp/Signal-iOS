@@ -67,7 +67,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
 @property (nonatomic) CGSize mediaSize;
+@property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
+@property (nonatomic, nullable) NSString *authorConversationColorName;
 
 @end
 
@@ -93,10 +95,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _interaction = interaction;
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
-    _incomingMessageAuthorThread = ([interaction isKindOfClass:[TSIncomingMessage class]]
-            ? [TSContactThread getThreadWithContactId:((TSIncomingMessage *)interaction).authorId
-                                          transaction:transaction]
-            : nil);
+
+    [self updateAuthorConversationColorNameWithTransaction:transaction];
 
     [self ensureViewState:transaction];
 
@@ -108,10 +108,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssertDebug(interaction);
 
     _interaction = interaction;
-    _incomingMessageAuthorThread = ([interaction isKindOfClass:[TSIncomingMessage class]]
-            ? [TSContactThread getThreadWithContactId:((TSIncomingMessage *)interaction).authorId
-                                          transaction:transaction]
-            : nil);
 
     self.hasViewState = NO;
     self.messageCellType = OWSMessageCellType_Unknown;
@@ -123,9 +119,25 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.quotedReply = nil;
     self.systemMessageText = nil;
 
+    [self updateAuthorConversationColorNameWithTransaction:transaction];
+
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
+}
+
+- (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    if (self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        _authorConversationColorName = nil;
+        return;
+    }
+
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+    _authorConversationColorName =
+        [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
 }
 
 - (BOOL)hasBodyText

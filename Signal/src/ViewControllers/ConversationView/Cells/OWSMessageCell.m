@@ -268,10 +268,12 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    OWSAssertDebug(self.viewItem.incomingMessageAuthorThread);
-    TSThread *authorThread = self.viewItem.incomingMessageAuthorThread;
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
     UIImage *_Nullable authorAvatarImage =
-        [OWSAvatarBuilder buildImageForThread:authorThread diameter:self.avatarSize contactsManager:contactsManager];
+        [[[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
+                                                 colorName:self.viewItem.authorConversationColorName
+                                                  diameter:self.avatarSize
+                                           contactsManager:contactsManager] build];
     self.avatarView.image = authorAvatarImage;
     [self.contentView addSubview:self.avatarView];
 
