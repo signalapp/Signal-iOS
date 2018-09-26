@@ -196,100 +196,259 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Conversation Colors
 
-+ (UIColor *)ows_red700Color
++ (UIColor *)ows_crimsonColor
 {
-    return [UIColor colorWithRGBHex:0xd32f2f];
+    return [UIColor colorWithRGBHex:0xCC163D];
 }
 
-+ (UIColor *)ows_pink600Color
++ (UIColor *)ows_vermilionColor
 {
-    return [UIColor colorWithRGBHex:0xd81b60];
+    return [UIColor colorWithRGBHex:0xC73800];
 }
 
-+ (UIColor *)ows_purple600Color
++ (UIColor *)ows_burlapColor
 {
-    return [UIColor colorWithRGBHex:0x8e24aa];
+    return [UIColor colorWithRGBHex:0x746C53];
 }
 
-+ (UIColor *)ows_indigo600Color
++ (UIColor *)ows_forestColor
 {
-    return [UIColor colorWithRGBHex:0x3949ab];
+    return [UIColor colorWithRGBHex:0x3B7845];
 }
 
-+ (UIColor *)ows_blue700Color
++ (UIColor *)ows_wintergreenColor
 {
-    return [UIColor colorWithRGBHex:0x1976d2];
+    return [UIColor colorWithRGBHex:0x1C8260];
 }
 
-+ (UIColor *)ows_cyan800Color
++ (UIColor *)ows_tealColor
 {
-    return [UIColor colorWithRGBHex:0x00838f];
+    return [UIColor colorWithRGBHex:0x067589];
 }
 
-+ (UIColor *)ows_teal700Color
++ (UIColor *)ows_blueColor
 {
-    return [UIColor colorWithRGBHex:0x00796b];
+    return [UIColor colorWithRGBHex:0x336BA3];
 }
 
-+ (UIColor *)ows_green800Color
++ (UIColor *)ows_indigoColor
 {
-    return [UIColor colorWithRGBHex:0x2e7d32];
+    return [UIColor colorWithRGBHex:0x5951C8];
 }
 
-+ (UIColor *)ows_deepOrange900Color
++ (UIColor *)ows_violetColor
 {
-    return [UIColor colorWithRGBHex:0xbf360c];
+    return [UIColor colorWithRGBHex:0x862CAF];
 }
 
-+ (UIColor *)ows_grey600Color
++ (UIColor *)ows_plumColor
 {
-    return [UIColor colorWithRGBHex:0x757575];
+    return [UIColor colorWithRGBHex:0xA23474];
 }
 
-+ (UIColor *)ows_darkSkyBlueColor
++ (UIColor *)ows_taupeColor
 {
-    return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
+    return [UIColor colorWithRGBHex:0x895D66];
 }
 
-+ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMapLight
++ (UIColor *)ows_steelColor
+{
+    return [UIColor colorWithRGBHex:0x6B6B78];
+}
+
+#pragma mark - Conversation Colors (Tint)
+
++ (UIColor *)ows_crimsonTintColor
+{
+    return [UIColor colorWithRGBHex:0xEDA6AE];
+}
+
++ (UIColor *)ows_vermilionTintColor
+{
+    return [UIColor colorWithRGBHex:0xEBA78E];
+}
+
++ (UIColor *)ows_burlapTintColor
+{
+    return [UIColor colorWithRGBHex:0xC4B997];
+}
+
++ (UIColor *)ows_forestTintColor
+{
+    return [UIColor colorWithRGBHex:0x8FCC9A];
+}
+
++ (UIColor *)ows_wintergreenTintColor
+{
+    return [UIColor colorWithRGBHex:0x9BCFBD];
+}
+
++ (UIColor *)ows_tealTintColor
+{
+    return [UIColor colorWithRGBHex:0xA5CAD5];
+}
+
++ (UIColor *)ows_blueTintColor
+{
+    return [UIColor colorWithRGBHex:0xADC8E1];
+}
+
++ (UIColor *)ows_indigoTintColor
+{
+    return [UIColor colorWithRGBHex:0xC2C1E7];
+}
+
++ (UIColor *)ows_violetTintColor
+{
+    return [UIColor colorWithRGBHex:0xCDADDC];
+}
+
++ (UIColor *)ows_plumTintColor
+{
+    return [UIColor colorWithRGBHex:0xDCB2CA];
+}
+
++ (UIColor *)ows_taupeTintColor
+{
+    return [UIColor colorWithRGBHex:0xCFB5BB];
+}
+
++ (UIColor *)ows_steelTintColor
+{
+    return [UIColor colorWithRGBHex:0xBEBEC6];
+}
+
+#pragma mark - Conversation Colors (Shade)
+
++ (UIColor *)ows_crimsonShadeColor
+{
+    return [UIColor colorWithRGBHex:0x8A0F29];
+}
+
++ (UIColor *)ows_vermilionShadeColor
+{
+    return [UIColor colorWithRGBHex:0x872600];
+}
+
++ (UIColor *)ows_burlapShadeColor
+{
+    return [UIColor colorWithRGBHex:0x58513C];
+}
+
++ (UIColor *)ows_forestShadeColor
+{
+    return [UIColor colorWithRGBHex:0x2B5934];
+}
+
++ (UIColor *)ows_wintergreenShadeColor
+{
+    return [UIColor colorWithRGBHex:0x36544A];
+}
+
++ (UIColor *)ows_tealShadeColor
+{
+    return [UIColor colorWithRGBHex:0x055968];
+}
+
++ (UIColor *)ows_blueShadeColor
+{
+    return [UIColor colorWithRGBHex:0x285480];
+}
+
++ (UIColor *)ows_indigoShadeColor
+{
+    return [UIColor colorWithRGBHex:0x4840A0];
+}
+
++ (UIColor *)ows_violetShadeColor
+{
+    return [UIColor colorWithRGBHex:0x6B248A];
+}
+
++ (UIColor *)ows_plumShadeColor
+{
+    return [UIColor colorWithRGBHex:0x881B5B];
+}
+
++ (UIColor *)ows_taupeShadeColor
+{
+    return [UIColor colorWithRGBHex:0x6A4E54];
+}
+
++ (UIColor *)ows_steelShadeColor
+{
+    return [UIColor colorWithRGBHex:0x5A5A63];
+}
+
++ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMap
 {
     static NSDictionary<NSString *, UIColor *> *colorMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         colorMap = @{
-            @"red" : self.ows_red700Color,
-            @"pink" : self.ows_pink600Color,
-            @"purple" : self.ows_purple600Color,
-            @"indigo" : self.ows_indigo600Color,
-            @"blue" : self.ows_blue700Color,
-            @"cyan" : self.ows_cyan800Color,
-            @"teal" : self.ows_teal700Color,
-            @"green" : self.ows_green800Color,
-            @"deep_orange" : self.ows_deepOrange900Color,
-            @"grey" : self.ows_grey600Color
+            @"crimson" : self.ows_crimsonColor,
+            @"vermilion" : self.ows_vermilionColor,
+            @"burlap" : self.ows_burlapColor,
+            @"forest" : self.ows_forestColor,
+            @"wintergreen" : self.ows_wintergreenColor,
+            @"teal" : self.ows_tealColor,
+            @"blue" : self.ows_blueColor,
+            @"indigo" : self.ows_indigoColor,
+            @"violet" : self.ows_violetColor,
+            @"plum" : self.ows_plumColor,
+            @"taupe" : self.ows_taupeColor,
+            @"steel" : self.ows_steelColor,
         };
     });
 
     return colorMap;
 }
 
-+ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMapDark
++ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMapShade
 {
     static NSDictionary<NSString *, UIColor *> *colorMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         colorMap = @{
-            @"red" : self.ows_red700Color,
-            @"pink" : self.ows_pink600Color,
-            @"purple" : self.ows_purple600Color,
-            @"indigo" : self.ows_indigo600Color,
-            @"blue" : self.ows_blue700Color,
-            @"cyan" : self.ows_cyan800Color,
-            @"teal" : self.ows_teal700Color,
-            @"green" : self.ows_green800Color,
-            @"deep_orange" : self.ows_deepOrange900Color,
-            @"grey" : self.ows_grey600Color
+            @"crimson" : self.ows_crimsonShadeColor,
+            @"vermilion" : self.ows_vermilionShadeColor,
+            @"burlap" : self.ows_burlapShadeColor,
+            @"forest" : self.ows_forestShadeColor,
+            @"wintergreen" : self.ows_wintergreenShadeColor,
+            @"teal" : self.ows_tealShadeColor,
+            @"blue" : self.ows_blueShadeColor,
+            @"indigo" : self.ows_indigoShadeColor,
+            @"violet" : self.ows_violetShadeColor,
+            @"plum" : self.ows_plumShadeColor,
+            @"taupe" : self.ows_taupeShadeColor,
+            @"steel" : self.ows_steelShadeColor,
         };
+        OWSAssertDebug([self.ows_conversationColorMap.allKeys isEqualToArray:colorMap.allKeys]);
+    });
+
+    return colorMap;
+}
+
++ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMapTint
+{
+    static NSDictionary<NSString *, UIColor *> *colorMap;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorMap = @{
+            @"crimson" : self.ows_crimsonTintColor,
+            @"vermilion" : self.ows_vermilionTintColor,
+            @"burlap" : self.ows_burlapTintColor,
+            @"forest" : self.ows_forestTintColor,
+            @"wintergreen" : self.ows_wintergreenTintColor,
+            @"teal" : self.ows_tealTintColor,
+            @"blue" : self.ows_blueTintColor,
+            @"indigo" : self.ows_indigoTintColor,
+            @"violet" : self.ows_violetTintColor,
+            @"plum" : self.ows_plumTintColor,
+            @"taupe" : self.ows_taupeTintColor,
+            @"steel" : self.ows_steelTintColor,
+        };
+        OWSAssertDebug([self.ows_conversationColorMap.allKeys isEqualToArray:colorMap.allKeys]);
     });
 
     return colorMap;
@@ -297,22 +456,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *> *)ows_conversationColorNames
 {
-    OWSAssertDebug(
-        [self.ows_conversationColorMapLight.allKeys isEqualToArray:self.ows_conversationColorMapDark.allKeys]);
-
-    return self.ows_conversationColorMapLight.allKeys;
+    return self.ows_conversationColorMap.allKeys;
 }
 
-+ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName isShaded:(BOOL)isShaded
++ (nullable UIColor *)ows_conversationThemeColorForColorName:(NSString *)colorName
 {
     OWSAssertDebug(colorName.length > 0);
 
-    return (isShaded ? self.ows_conversationColorMapDark : self.ows_conversationColorMapLight)[colorName];
+    BOOL isShaded = Theme.isDarkThemeEnabled;
+    return (isShaded ? self.ows_conversationColorMapShade : self.ows_conversationColorMap)[colorName];
+}
+
++ (nullable UIColor *)ows_conversationTintColorForColorName:(NSString *)colorName
+{
+    OWSAssertDebug(colorName.length > 0);
+
+    return self.ows_conversationColorMapTint[colorName];
 }
 
 + (NSString *)ows_defaultConversationColorName
 {
     return @"teal";
+}
+
+// TODO: Remove
++ (UIColor *)ows_darkSkyBlueColor
+{
+    return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
 }
 
 @end
