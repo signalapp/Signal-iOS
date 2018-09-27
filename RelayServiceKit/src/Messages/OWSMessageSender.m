@@ -289,6 +289,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // make sure the body is JSON
+            if (!(message.body && [NSJSONSerialization JSONObjectWithData:[message.body dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil])) {
+                NSString *messageBlob = [FLCCSMJSONService blobFromMessage:message];
+                message.body = messageBlob;
+            }
+
             if (message.quotedMessage) {
                 quotedThumbnailAttachments =
                 [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
@@ -305,13 +311,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                             avatarAttachment);
                 }
             }
-            
-            // make sure the body is JSON
-            if (!(message.body && [NSJSONSerialization JSONObjectWithData:[message.body dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil])) {
-                NSString *messageBlob = [FLCCSMJSONService blobFromMessage:message];
-                message.body = messageBlob;
-            }
-            
             
             // All outgoing messages should be saved at the time they are enqueued.
             [message saveWithTransaction:transaction];
@@ -536,7 +535,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // * Recipient is no longer in the group.
             // * Recipient is blocked.
             //
-            // Elsewhere, we skip recipient if their Signal account has been deactivated.
+            // Elsewhere, we skip recipient if their account has been deactivated.
             NSMutableSet<NSString *> *obsoleteRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
             [obsoleteRecipientIds minusSet:sendingRecipientIds];
             if (obsoleteRecipientIds.count > 0) {
@@ -690,6 +689,52 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     });
     [sendCompletionPromise retainUntilComplete];
+}
+
+-(void)sendControlMessage:(OutgoingControlMessage *)message
+             toRecipients:(NSCountedSet<NSString *> *)recipientIds
+                  success:(void (^)(void))successHandler
+                  failure:(void (^)(NSError *error))failureHandler
+{
+    // If nothing to do, bail and call success
+    if (recipientIds.count == 0) {
+        DDLogDebug(@"No recipients for attempted control message send.");
+        successHandler();
+    } else {
+        dispatch_async([OWSDispatch sendingQueue], ^{
+            // Check to see if blob is already JSON
+            // Convert message body to JSON blob if necessary
+            if (!(message.body && [NSJSONSerialization JSONObjectWithData:[message.body dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil])) {
+                NSString *messageBlob = [FLCCSMJSONService blobFromMessage:message];
+                message.body = messageBlob;
+            }
+            
+            for (NSString *recipientId in recipientIds) {
+                if ([recipientId isEqualToString:[TSAccountManager localUID]]) {
+                    // TODO: sendSync
+                    [self sendSyncTranscriptForMessage:message];
+                    if (successHandler) {
+                        successHandler();
+                    }
+                } else {
+                    [self sendSpecialMessage:message
+                                 recipientId:recipientId
+                                    attempts:3
+                                     success:^{
+                                         DDLogDebug(@"Control successfully sent to: %@", recipientId);
+                                         if (successHandler) {
+                                             successHandler();
+                                         }
+                                     } failure:^(NSError * _Nonnull error) {
+                                         DDLogDebug(@"Control message send failed to %@\nError: %@", recipientId, error.localizedDescription);
+                                         if (failureHandler) {
+                                             failureHandler(error);
+                                         }
+                                     }];
+                }
+            }
+        });
+    }
 }
 
 - (void)unregisteredRecipient:(RelayRecipient *)recipient

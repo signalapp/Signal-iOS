@@ -1192,14 +1192,21 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                           handler:^(UIAlertAction * _Nonnull action) {
                                                               OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
                                                                                                                                    controlType:FLControlMessageThreadUpdateKey];
-                                                              [self.messageSender enqueueMessage:message
-                                                                                          success:^{
-                                                                                              [self deleteThread:thread];
-                                                                                          }
-                                                                                          failure:^(NSError * _Nonnull error) {
-                                                                                              DDLogDebug(@"Failed to delete thread.  Error: %@", error.localizedDescription);
-                                                                                              [self deleteThread:thread];
-                                                                                          }];
+                                                              [self.messageSender sendControlMessage:message
+                                                                                        toRecipients:[NSCountedSet setWithArray:thread.participantIds]
+                                                                                             success:^{
+                                                                                                 [self deleteThread:thread];
+                                                                                             }
+                                                                                             failure:^(NSError * _Nonnull error) {
+                                                                                                 DDLogDebug(@"Failed to delete thread.  Error: %@", error.localizedDescription);
+                                                                                                 [self deleteThread:thread];
+                                                                                             }];
+//                                                              [self.messageSender enqueueMessage:message
+//                                                                                          success:^{
+//                                                                                              [self deleteThread:thread];
+//                                                                                          }
+//                                                                                          failure:^(NSError * _Nonnull error) {
+//                                                                                          }];
                                                           }]];
         [validationAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"NO", nil)
                                                             style:UIAlertActionStyleCancel
@@ -1230,9 +1237,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
-    TSThread *thread = [self threadForIndexPath:indexPath];
+    __block TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         switch (self.homeViewMode) {
             case HomeViewMode_Inbox:
                 [thread archiveThreadWithTransaction:transaction];
@@ -1241,8 +1248,29 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                 [thread unarchiveThreadWithTransaction:transaction];
                 break;
         }
+    } completionBlock:^{
+        OutgoingControlMessage *controlMessage = nil;
+        switch (self.homeViewMode) {
+            case HomeViewMode_Inbox:
+                controlMessage = [[OutgoingControlMessage alloc] initWithThread:thread controlType:FLControlMessageThreadArchiveKey];
+                break;
+            case HomeViewMode_Archive:
+                controlMessage = [[OutgoingControlMessage alloc] initWithThread:thread controlType:FLControlMessageThreadRestoreKey];
+                break;
+        }
+        
+        if (controlMessage != nil) {
+            [self.messageSender sendControlMessage:controlMessage
+                                      toRecipients:[NSCountedSet setWithObject:[TSAccountManager localUID]]
+                                           success:^{
+                                               DDLogDebug(@"Achive toggle control message successfully sent.");
+                                           }
+                                           failure:^(NSError * _Nonnull error) {
+                                               DDLogDebug(@"Achive toggle control message send failed with error: %@", error.localizedDescription);
+                                           }];
+        }
+        [self checkIfEmptyView];
     }];
-    [self checkIfEmptyView];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

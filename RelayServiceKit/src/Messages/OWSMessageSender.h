@@ -16,6 +16,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
+@class OutgoingControlMessage;
 
 @protocol ContactsManagerProtocol;
 
@@ -79,6 +80,12 @@ NS_SWIFT_NAME(MessageSender)
                          inMessage:(TSOutgoingMessage *)outgoingMessage
                            success:(void (^)(void))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
+
+// Special sender for control messages only.
+-(void)sendControlMessage:(OutgoingControlMessage *)message
+             toRecipients:(NSCountedSet<NSString *> *)recipientIds
+                  success:(void (^)(void))successHandler
+                  failure:(void (^)(NSError *error))failureHandler;
 
 @end
 
