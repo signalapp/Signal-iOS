@@ -71,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithContactId:colorSeed name:nonSignalName colorName:(NSString *)colorName diameter:diameter];
 }
 
+#pragma mark - Dependencies
+
 + (OWSContactsManager *)contactsManager
 {
     return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;

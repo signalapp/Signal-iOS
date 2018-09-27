@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) AvatarImageView *avatarView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
-@property (nonatomic) NSData *groupId;
+@property (nonatomic, readonly) NSData *groupId;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commonInit
 {
-    self.groupId = [Randomness generateRandomBytes:16];
+    _groupId = [Randomness generateRandomBytes:16];
 
     _messageSender = SSKEnvironment.shared.messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];

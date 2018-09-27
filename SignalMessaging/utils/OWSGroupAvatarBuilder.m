@@ -33,14 +33,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable UIImage *)buildSavedImage
-{
-    return self.thread.groupModel.groupImage;
-}
+#pragma mark - Dependencies
 
 + (OWSContactsManager *)contactsManager
 {
     return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;
+}
+
+#pragma mark -
+
+- (nullable UIImage *)buildSavedImage
+{
+    return self.thread.groupModel.groupImage;
 }
 
 - (nullable UIImage *)buildDefaultImage
@@ -67,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable image =
         [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
     if (!image) {
+        OWSFailDebug(@"Could not create group avatar.");
         return nil;
     }
 
