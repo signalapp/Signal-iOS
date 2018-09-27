@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define THEME_ENABLED
-
 extern NSString *const ThemeDidChangeNotification;
 
 @interface Theme : NSObject
@@ -17,9 +15,7 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) BOOL isDarkThemeEnabled;
 
-#ifdef THEME_ENABLED
 + (void)setIsDarkThemeEnabled:(BOOL)value;
-#endif
 
 @property (class, readonly, nonatomic) UIColor *backgroundColor;
 @property (class, readonly, nonatomic) UIColor *primaryColor;

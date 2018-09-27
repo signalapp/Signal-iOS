@@ -195,7 +195,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contents addSection:censorshipSection];
 
-#ifdef THEME_ENABLED
     OWSTableSection *themeSection = [OWSTableSection new];
     themeSection.headerTitle = NSLocalizedString(@"THEME_SECTION", nil);
     [themeSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DARK_THEME",
@@ -204,7 +203,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                     target:weakSelf
                                                   selector:@selector(didToggleThemeSwitch:)]];
     [contents addSection:themeSection];
-#endif
 
     self.contents = contents;
 }
@@ -287,14 +285,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-#ifdef THEME_ENABLED
 - (void)didToggleThemeSwitch:(UISwitch *)sender
 {
     [Theme setIsDarkThemeEnabled:sender.isOn];
 
     [self updateTableContents];
 }
-#endif
 
 @end
 
