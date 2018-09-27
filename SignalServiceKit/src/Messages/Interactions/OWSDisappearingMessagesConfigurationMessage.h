@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesConfigurationMessage : TSOutgoingMessage
 
-// MJK TODO - remove senderTimestamp
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(nullable TSThread *)thread
                                      messageBody:(nullable NSString *)body

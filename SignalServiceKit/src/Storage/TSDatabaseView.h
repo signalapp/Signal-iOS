@@ -13,8 +13,6 @@ extern NSString *const TSSecondaryDevicesGroup;
 extern NSString *const TSThreadDatabaseViewExtensionName;
 
 extern NSString *const TSMessageDatabaseViewExtensionName;
-extern NSString *const TSMessageDatabaseViewExtensionName_Legacy;
-
 extern NSString *const TSUnreadDatabaseViewExtensionName;
 
 extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
@@ -44,8 +42,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 + (void)asyncRegisterThreadDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterThreadInteractionsDatabaseView:(OWSStorage *)storage;
-+ (void)asyncRegisterLegacyThreadInteractionsDatabaseView:(OWSStorage *)storage;
-
 + (void)asyncRegisterThreadOutgoingMessagesDatabaseView:(OWSStorage *)storage;
 
 // Instances of OWSReadTracking for wasRead is NO and shouldAffectUnreadCounts is YES.

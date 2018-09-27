@@ -13,7 +13,6 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"
@@ -111,15 +110,6 @@ void AssertIsOnDisappearingMessagesQueue()
     return queue;
 }
 
-#pragma mark - Dependencies
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
-#pragma mark -
-
 - (NSUInteger)deleteExpiredMessages
 {
     AssertIsOnDisappearingMessagesQueue();
@@ -203,24 +193,37 @@ void AssertIsOnDisappearingMessagesQueue()
                     }];
 }
 
+- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
+                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSThread *thread = [message threadWithTransaction:transaction];
+    NSString *remoteContactName = nil;
+    if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+        remoteContactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
+    }
 
-#pragma mark - Apply Remote Configuration
+    [self becomeConsistentWithDisappearingDuration:message.expiresInSeconds
+                                            thread:thread
+                             appearBeforeTimestamp:message.timestampForSorting
+                        createdByRemoteContactName:remoteContactName
+                            createdInExistingGroup:NO
+                                       transaction:transaction];
+}
 
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
-                      createdByRemoteRecipientId:(nullable NSString *)remoteRecipientId
+                           appearBeforeTimestamp:(uint64_t)timestampForSorting
+                      createdByRemoteContactName:(nullable NSString *)remoteContactName
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
+    OWSAssertDebug(timestampForSorting > 0);
     OWSAssertDebug(transaction);
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    NSString *_Nullable remoteContactName = nil;
-    if (remoteRecipientId) {
-        remoteContactName = [self.contactsManager displayNameForPhoneIdentifier:remoteRecipientId];
-    }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
@@ -243,9 +246,9 @@ void AssertIsOnDisappearingMessagesQueue()
 
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
 
-    // MJK TODO - should be safe to remove this senderTimestamp
+    // We want the info message to appear _before_ the message.
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:timestampForSorting - 1
                                                                           thread:thread
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:remoteContactName
@@ -255,8 +258,6 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
 }
-
-#pragma mark -
 
 - (void)startIfNecessary
 {
@@ -393,7 +394,7 @@ void AssertIsOnDisappearingMessagesQueue()
             OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
-            uint64_t readTimeBestGuess = message.receivedAtTimestamp;
+            uint64_t readTimeBestGuess = message.timestampForSorting;
             [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
         }
                                                  transaction:transaction];

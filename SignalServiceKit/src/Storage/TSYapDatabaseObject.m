@@ -218,19 +218,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark Reload
-
 - (void)reload
 {
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [self reloadWithTransaction:transaction];
-    }];
-}
-
-
-- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId];
     if (!latest) {
         OWSFailDebug(@"`latest` was unexpectedly nil");
         return;

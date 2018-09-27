@@ -16,7 +16,7 @@
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 
 @property (nonatomic, readonly) uint64_t expireStartedAt;
-@property (nonatomic, readonly) uint64_t sortId;
+@property (nonatomic, readonly) uint64_t timestampForSorting;
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 
 

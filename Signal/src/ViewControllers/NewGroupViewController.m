@@ -464,7 +464,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Add an error message to the new group indicating
         // that group creation didn't succeed.
-        // MJK TODO should be safe to remove senderTimestamp and just save immediately
         TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                         inThread:thread
                                                                failedMessageType:TSErrorMessageGroupCreationFailed];

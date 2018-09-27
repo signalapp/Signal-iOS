@@ -64,6 +64,7 @@
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
+#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentsProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -214,7 +215,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic) BOOL showLoadMoreHeader;
 @property (nonatomic) UILabel *loadMoreHeader;
-@property (nonatomic) uint64_t lastVisibleSortId;
+@property (nonatomic) uint64_t lastVisibleTimestamp;
 
 @property (nonatomic) BOOL isUserScrolling;
 
@@ -705,7 +706,7 @@ typedef enum : NSUInteger {
         [self scrollToDefaultPosition];
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleTimestamp];
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
@@ -1890,11 +1891,7 @@ typedef enum : NSUInteger {
                                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
                                    // but there will be some legacy ones in the wild, behind which await
                                    // as-of-yet-undecrypted messages
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-#pragma clang diagnostic pop
-
                                        [errorMessage acceptNewIdentityKey];
                                    }
                                }];
@@ -2679,7 +2676,7 @@ typedef enum : NSUInteger {
         ConversationViewItem *lastViewItem = [self.viewItems lastObject];
         OWSAssertDebug(lastViewItem);
 
-        if (lastViewItem.interaction.sortId > self.lastVisibleSortId) {
+        if (lastViewItem.interaction.timestampForSorting > self.lastVisibleTimestamp) {
             shouldShowScrollDownButton = YES;
         } else if (isScrolledUp) {
             shouldShowScrollDownButton = YES;
@@ -2778,6 +2775,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
 
+    [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
     self.inputToolbar.quotedReply = nil;
@@ -3329,7 +3327,7 @@ typedef enum : NSUInteger {
         // using the more extreme actions in the debug UI.
         OWSFailDebug(@"hasMalformedRowChange");
         [self resetMappings];
-        [self updateLastVisibleSortId];
+        [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];
         return;
     }
@@ -3339,7 +3337,7 @@ typedef enum : NSUInteger {
         // These errors are rare.
         OWSFailDebug(@"could not reload view items; hard resetting message mappings.");
         [self resetMappings];
-        [self updateLastVisibleSortId];
+        [self updateLastVisibleTimestamp];
         [self scrollToBottomAnimated:NO];
         return;
     }
@@ -3417,8 +3415,8 @@ typedef enum : NSUInteger {
         if (!finished) {
             OWSLogInfo(@"performBatchUpdates did not finish");
         }
-
-        [self updateLastVisibleSortId];
+        
+        [self updateLastVisibleTimestamp];
 
         if (scrollToBottom && shouldAnimateUpdates) {
             [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
@@ -3874,8 +3872,8 @@ typedef enum : NSUInteger {
 
     ConversationViewItem *_Nullable lastVisibleViewItem = [self.viewItems lastObject];
     if (lastVisibleViewItem) {
-        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
-        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
+        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
+        self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
     }
 
     self.scrollDownButton.hidden = YES;
@@ -3883,12 +3881,12 @@ typedef enum : NSUInteger {
     self.hasUnreadMessages = NO;
 }
 
-- (void)updateLastVisibleSortId
+- (void)updateLastVisibleTimestamp
 {
     ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
     if (lastVisibleViewItem) {
-        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
-        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
+        uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
+        self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
     }
 
     [self ensureScrollDownButton];
@@ -3899,6 +3897,15 @@ typedef enum : NSUInteger {
             [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
+}
+
+- (void)updateLastVisibleTimestamp:(uint64_t)timestamp
+{
+    OWSAssertDebug(timestamp > 0);
+
+    self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, timestamp);
+
+    [self ensureScrollDownButton];
 }
 
 - (void)markVisibleMessagesAsRead
@@ -3916,16 +3923,15 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleTimestamp];
 
-    uint64_t lastVisibleSortId = self.lastVisibleSortId;
+    uint64_t lastVisibleTimestamp = self.lastVisibleTimestamp;
 
-    if (lastVisibleSortId == 0) {
+    if (lastVisibleTimestamp == 0) {
         // No visible messages yet. New Thread.
         return;
     }
-
-    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
+    [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeTimestamp:lastVisibleTimestamp thread:self.thread];
 }
 
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
@@ -4322,7 +4328,7 @@ typedef enum : NSUInteger {
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleTimestamp];
     [self autoLoadMoreIfNecessary];
 }
 
@@ -4842,7 +4848,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleTimestamp];
     self.conversationStyle.viewWidth = self.collectionView.width;
 }
 
@@ -4926,7 +4932,7 @@ typedef enum : NSUInteger {
                 break;
         }
 
-        uint64_t viewItemTimestamp = viewItem.interaction.receivedAtTimestamp;
+        uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
         OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
@@ -4958,15 +4964,17 @@ typedef enum : NSUInteger {
             && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
         if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator) {
 
-            unreadIndicator = [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:viewItem.interaction.sortId
-                                                              hasMoreUnseenMessages:NO
-                                               missingUnseenSafetyNumberChangeCount:0
-                                                            unreadIndicatorPosition:0];
+            unreadIndicator =
+                [[OWSUnreadIndicator alloc] initUnreadIndicatorWithTimestamp:viewItem.interaction.timestamp
+                                                       hasMoreUnseenMessages:NO
+                                        missingUnseenSafetyNumberChangeCount:0
+                                                     unreadIndicatorPosition:0
+                                             firstUnseenInteractionTimestamp:viewItem.interaction.timestamp];
         }
 
         // Place the unread indicator onto the first appropriate view item,
         // if any.
-        if (unreadIndicator && viewItem.interaction.sortId >= unreadIndicator.firstUnseenSortId) {
+        if (unreadIndicator && viewItem.interaction.timestampForSorting >= unreadIndicator.timestamp) {
             viewItem.unreadIndicator = unreadIndicator;
             unreadIndicator = nil;
             hasPlacedUnreadIndicator = YES;
@@ -5116,8 +5124,7 @@ typedef enum : NSUInteger {
             }
         }
 
-        // Avoid animation churn by supressing footer-collapse on messages received recently.
-        if (viewItem.interaction.receivedAtTimestamp > collapseCutoffTimestamp) {
+        if (viewItem.interaction.timestampForSorting > collapseCutoffTimestamp) {
             shouldHideFooter = NO;
         }
 

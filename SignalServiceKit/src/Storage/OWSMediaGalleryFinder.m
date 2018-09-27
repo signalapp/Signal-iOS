@@ -137,7 +137,8 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
             return NSOrderedSame;
         }
         TSMessage *message2 = (TSMessage *)object2;
-        return [message1 compareForSorting:message2];
+        
+        return [@(message1.timestampForSorting) compare:@(message2.timestampForSorting)];
     }];
     
     YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction * _Nonnull transaction, NSString * _Nonnull collection, NSString * _Nonnull key, id  _Nonnull object) {
@@ -163,7 +164,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:TSMessage.collection]];
 
-    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"4" options:options];
+    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"3" options:options];
 }
 
 + (BOOL)attachmentIdShouldAppearInMediaGallery:(NSString *)attachmentId transaction:(YapDatabaseReadTransaction *)transaction

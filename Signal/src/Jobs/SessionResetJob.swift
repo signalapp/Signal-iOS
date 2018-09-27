@@ -30,7 +30,6 @@ public class SessionResetJob: NSObject {
             self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
 
             DispatchQueue.main.async {
-                // MJK TODO - should be safe to remove this senderTimestamp
                 let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
 
                 self.messageSender.enqueue(endSessionMessage, success: {
@@ -41,7 +40,6 @@ public class SessionResetJob: NSObject {
                         self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
                     }
                     Logger.info("successfully sent EndSessionMessage.")
-                    // MJK TODO - should be safe to remove this senderTimestamp
                     let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                                 in: self.thread,
                                                 messageType: TSInfoMessageType.typeSessionDidEnd)
