@@ -768,24 +768,25 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 -(nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSInteger rows = [self tableView:tableView numberOfRowsInSection:section];
-    
-    if (rows > 0) {
-        switch (section) {
-            case HomeViewControllerSectionReminders: {
-                return nil;
-            }
-            case HomeViewControllerSectionAnnouncements: {
-                return NSLocalizedString(@"ANNOUNCEMENTS_SECTION", nil);
-            }
-            case HomeViewControllerSectionPinned: {
-                return NSLocalizedString(@"PINNED_CONVERSATION_SECTION", nil);
-            }
-            case HomeViewControllerSectionConversations: {
-                return NSLocalizedString(@"RECENT_CONVERSATION_SECTION", nil);
-            }
-            case HomeViewControllerSectionArchiveButton: {
-                return nil;
+    if (self.homeViewMode == HomeViewMode_Inbox) {
+        NSInteger rows = [self tableView:tableView numberOfRowsInSection:section];
+        if (rows > 0) {
+            switch (section) {
+                case HomeViewControllerSectionReminders: {
+                    return nil;
+                }
+                case HomeViewControllerSectionAnnouncements: {
+                    return NSLocalizedString(@"ANNOUNCEMENTS_SECTION", nil);
+                }
+                case HomeViewControllerSectionPinned: {
+                    return NSLocalizedString(@"PINNED_CONVERSATION_SECTION", nil);
+                }
+                case HomeViewControllerSectionConversations: {
+                    return NSLocalizedString(@"RECENT_CONVERSATION_SECTION", nil);
+                }
+                case HomeViewControllerSectionArchiveButton: {
+                    return nil;
+                }
             }
         }
     }
@@ -965,6 +966,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (nullable NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (self.homeViewMode == HomeViewMode_Inbox) {
     HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
     switch (section) {
         case HomeViewControllerSectionReminders: {
@@ -1046,6 +1048,24 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             return @[];
         }
     }
+    } else if (indexPath.section == 1) {
+        UITableViewRowAction *unArchiveAction = [UITableViewRowAction
+                                                 rowActionWithStyle:UITableViewRowActionStyleNormal
+                                                 title:NSLocalizedString(@"UNARCHIVE_ACTION",
+                                                                         @"Pressing this button moves an archived thread from the archive back to "
+                                                                         @"the inbox")
+                                                 handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                                     [self archiveIndexPath:tappedIndexPath];
+                                                 }];
+        UITableViewRowAction *deleteAction =
+        [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
+                                           title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                         handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
+                                             [self tableViewCellTappedDelete:swipedIndexPath];
+                                         }];
+        return @[ deleteAction, unArchiveAction ];
+    }
+               return @[];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1391,11 +1411,19 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)updateMappings
 {
     OWSAssertIsOnMainThread();
-
-    self.threadMappings = [[YapDatabaseViewMappings alloc]
-        initWithGroups:@[ kReminderViewPseudoGroup, FLAnnouncementsGroup, FLPinnedGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
-                  view:TSThreadDatabaseViewExtensionName];
-    [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
+    
+    if (self.homeViewMode == HomeViewMode_Inbox) {
+        self.threadMappings = [[YapDatabaseViewMappings alloc]
+                               initWithGroups:@[ kReminderViewPseudoGroup, FLAnnouncementsGroup, FLPinnedGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
+                               view:TSThreadDatabaseViewExtensionName];
+        [self.threadMappings setIsReversed:YES forGroup:FLAnnouncementsGroup];
+        [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
+    } else {
+        self.threadMappings = [[YapDatabaseViewMappings alloc]
+                               initWithGroups:@[ kReminderViewPseudoGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
+                               view:TSThreadDatabaseViewExtensionName];
+        [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
+    }
 
     [self resetMappings];
 
