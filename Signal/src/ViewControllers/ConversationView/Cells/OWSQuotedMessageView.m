@@ -424,7 +424,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
     self.quoteContentSourceLabel.textColor = Theme.primaryColor;
     self.quoteContentSourceLabel.text = NSLocalizedString(@"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
-        @"Footer label that appears below quoted messages when the quoted content was note derived locally. When the "
+        @"Footer label that appears below quoted messages when the quoted content was not derived locally. When the "
         @"local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead "
         @"show the content specified by the sender.");
 
