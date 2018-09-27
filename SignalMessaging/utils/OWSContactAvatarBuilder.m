@@ -135,6 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable image =
         [OWSAvatarBuilder avatarImageWithInitials:initials backgroundColor:color diameter:self.diameter];
     if (!image) {
+        OWSFailDebug(@"Could not generate avatar.");
         return nil;
     }
 
