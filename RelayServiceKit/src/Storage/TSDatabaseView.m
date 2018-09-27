@@ -169,6 +169,12 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
             return nil;
         }
+        
+        // We dont' display control messages
+        if ([object isKindOfClass:[IncomingControlMessage class]] || [object isKindOfClass:[OutgoingControlMessage class]]) {
+            return nil;
+        }
+        
         TSInteraction *interaction = (TSInteraction *)object;
 
         return interaction.uniqueThreadId;
