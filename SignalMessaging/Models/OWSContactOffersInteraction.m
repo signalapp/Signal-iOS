@@ -6,6 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSContactOffersInteraction ()
+
+@property (nonatomic) BOOL hasBlockOffer;
+@property (nonatomic) BOOL hasAddToContactsOffer;
+@property (nonatomic) BOOL hasAddToProfileWhitelistOffer;
+
+@end
+
 @implementation OWSContactOffersInteraction
 
 - (instancetype)initWithCoder:(NSCoder *)coder
@@ -52,6 +60,18 @@ NS_ASSUME_NONNULL_BEGIN
     return OWSInteractionType_Offer;
 }
 
+- (void)updateHasBlockOffer:(BOOL)hasBlockOffer
+            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
+    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(OWSContactOffersInteraction *offers) {
+                                 offers.hasBlockOffer = hasBlockOffer;
+                                 offers.hasAddToContactsOffer = hasAddToContactsOffer;
+                                 offers.hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
+                             }];
+}
 @end
 
 NS_ASSUME_NONNULL_END

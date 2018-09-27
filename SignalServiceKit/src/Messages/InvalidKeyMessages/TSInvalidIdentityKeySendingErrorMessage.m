@@ -24,26 +24,12 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 
 @end
 
+// DEPRECATED - we no longer create new instances of this class (as of  mid-2017); However, existing instances may
+// exist, so we should keep this class around to honor their old behavior.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation TSInvalidIdentityKeySendingErrorMessage
-
-- (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message
-                               inThread:(TSThread *)thread
-                           forRecipient:(NSString *)recipientId
-                           preKeyBundle:(PreKeyBundle *)preKeyBundle
-{
-    // We want the error message to appear after the message.
-    self = [super initWithTimestamp:message.timestamp + 1
-                           inThread:thread
-                  failedMessageType:TSErrorMessageWrongTrustedIdentityKey
-                        recipientId:recipientId];
-
-    if (self) {
-        _messageId    = message.uniqueId;
-        _preKeyBundle = preKeyBundle;
-    }
-
-    return self;
-}
+#pragma clang diagnostic pop
 
 - (void)acceptNewIdentityKey
 {

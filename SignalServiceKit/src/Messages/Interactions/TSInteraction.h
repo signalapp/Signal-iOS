@@ -33,6 +33,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) uint64_t timestamp;
+@property (nonatomic, readonly) uint64_t sortId;
+@property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+- (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;
 
@@ -54,8 +57,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
                                                  filter:(BOOL (^_Nonnull)(TSInteraction *))filter
                                         withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (NSDate *)dateForSorting;
-- (uint64_t)timestampForSorting;
+- (NSDate *)dateForLegacySorting;
+- (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
 
 // "Dynamic" interactions are not messages or static events (like
@@ -65,6 +68,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 // These include block offers, "add to contact" offers,
 // unseen message indicators, etc.
 - (BOOL)isDynamicInteraction;
+
+- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+    NS_SWIFT_NAME(saveNextSortId(transaction:));
 
 @end
 

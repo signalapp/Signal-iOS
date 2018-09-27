@@ -17,6 +17,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+
 @interface OWSPrimaryStorage (Tests)
 
 @property (atomic) BOOL areAsyncRegistrationsComplete;
@@ -80,5 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

@@ -128,6 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    // MJK TODO - remove senderTimestamp
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
@@ -179,6 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    // MJK TODO - remove senderTimestamp
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
@@ -303,20 +305,31 @@ NS_ASSUME_NONNULL_BEGIN
             enumerateRowsInGroup:thread.uniqueId
                       usingBlock:^(
                           NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           if ([object isKindOfClass:[OWSUnknownContactBlockOfferMessage class]]) {
+#pragma clang diagnostic pop
                               // Delete this legacy interactions, which has been superseded by
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           } else if ([object isKindOfClass:[OWSAddToContactsOfferMessage class]]) {
+#pragma clang diagnostic pop
                               // Delete this legacy interactions, which has been superseded by
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           } else if ([object isKindOfClass:[OWSAddToProfileWhitelistOfferMessage class]]) {
+#pragma clang diagnostic pop
                               // Delete this legacy interactions, which has been superseded by
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
+#pragma clang diagnostic pop
                               // Remove obsolete unread indicator interactions;
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
@@ -350,14 +363,14 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
-        NSNumber *_Nullable firstUnseenInteractionTimestamp = nil;
+        NSNumber *_Nullable firstUnseenSortId = nil;
         if (lastUnreadIndicator) {
-            firstUnseenInteractionTimestamp = @(lastUnreadIndicator.firstUnseenInteractionTimestamp);
+            firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
         } else {
             TSInteraction *_Nullable firstUnseenInteraction =
                 [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
-                firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
+                firstUnseenSortId = @(firstUnseenInteraction.sortId);
             }
         }
 
@@ -468,59 +481,51 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
 
-        // We want the offers to be the first interactions in their
-        // conversation's timeline, so we back-date them to slightly before
-        // the first message - or at an aribtrary old timestamp if the
-        // conversation has no messages.
-        uint64_t contactOffersTimestamp = [NSDate ows_millisecondTimeStamp];
+        if (existingContactOffers && !shouldHaveContactOffers) {
+            OWSLogInfo(
+                @"Removing contact offers: %@ (%llu)", existingContactOffers.uniqueId, existingContactOffers.sortId);
+            [existingContactOffers removeWithTransaction:transaction];
+        } else if (shouldHaveContactOffers) {
+            if (existingContactOffers) {
+                // If the contact offers' properties have changed, update them
+                if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
+                    || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
+                    || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
+                    OWSLogInfo(@"Updating stale contact offers: %@ (%llu)",
+                        existingContactOffers.uniqueId,
+                        existingContactOffers.sortId);
 
-        // If the contact offers' properties have changed, discard the current
-        // one and create a new one.
-        if (existingContactOffers) {
-            if (existingContactOffers.hasBlockOffer != shouldHaveBlockOffer
-                || existingContactOffers.hasAddToContactsOffer != shouldHaveAddToContactsOffer
-                || existingContactOffers.hasAddToProfileWhitelistOffer != shouldHaveAddToProfileWhitelistOffer) {
-                OWSLogInfo(@"Removing stale contact offers: %@ (%llu)",
-                    existingContactOffers.uniqueId,
-                    existingContactOffers.timestampForSorting);
-                // Preserve the timestamp of the existing "contact offers" so that
-                // we replace it in the same position in the timeline.
-                contactOffersTimestamp = existingContactOffers.timestamp;
-                [existingContactOffers removeWithTransaction:transaction];
-                existingContactOffers = nil;
+                    [existingContactOffers updateHasBlockOffer:shouldHaveBlockOffer
+                                         hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                                 hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                                   transaction:transaction];
+                }
+            } else {
+                NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+
+                // TODO MJK - remove this timestamp
+                TSInteraction *offersMessage = [[OWSContactOffersInteraction alloc]
+                    initContactOffersWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                            thread:thread
+                                     hasBlockOffer:shouldHaveBlockOffer
+                             hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                     hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                       recipientId:recipientId];
+                [offersMessage saveWithTransaction:transaction];
+
+                OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
             }
         }
 
-        if (existingContactOffers && !shouldHaveContactOffers) {
-            OWSLogInfo(@"Removing contact offers: %@ (%llu)",
-                existingContactOffers.uniqueId,
-                existingContactOffers.timestampForSorting);
-            [existingContactOffers removeWithTransaction:transaction];
-        } else if (!existingContactOffers && shouldHaveContactOffers) {
-            NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
-
-            TSInteraction *offersMessage =
-                [[OWSContactOffersInteraction alloc] initContactOffersWithTimestamp:contactOffersTimestamp
-                                                                             thread:thread
-                                                                      hasBlockOffer:shouldHaveBlockOffer
-                                                              hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                                      hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                                        recipientId:recipientId];
-            [offersMessage saveWithTransaction:transaction];
-
-            OWSLogInfo(
-                @"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.timestampForSorting);
-        }
-
         [self ensureUnreadIndicator:result
-                                     thread:thread
-                                transaction:transaction
-                    shouldHaveContactOffers:shouldHaveContactOffers
-                               maxRangeSize:maxRangeSize
-                blockingSafetyNumberChanges:blockingSafetyNumberChanges
-             nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
-                hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
-            firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp];
+                                    thread:thread
+                               transaction:transaction
+                   shouldHaveContactOffers:shouldHaveContactOffers
+                              maxRangeSize:maxRangeSize
+               blockingSafetyNumberChanges:blockingSafetyNumberChanges
+            nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
+               hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
+                         firstUnseenSortId:firstUnseenSortId];
 
         // Determine the position of the focus message _after_ performing any mutations
         // around dynamic interactions.
@@ -534,14 +539,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
-                             thread:(TSThread *)thread
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction
-            shouldHaveContactOffers:(BOOL)shouldHaveContactOffers
-                       maxRangeSize:(int)maxRangeSize
-        blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
-     nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
-        hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-    firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
+                            thread:(TSThread *)thread
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction
+           shouldHaveContactOffers:(BOOL)shouldHaveContactOffers
+                      maxRangeSize:(int)maxRangeSize
+       blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
+    nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
+       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
+                 firstUnseenSortId:(nullable NSNumber *)firstUnseenSortId
 {
     OWSAssertDebug(dynamicInteractions);
     OWSAssertDebug(thread);
@@ -552,7 +557,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hideUnreadMessagesIndicator) {
         return;
     }
-    if (!firstUnseenInteractionTimestamp) {
+    if (!firstUnseenSortId) {
         // If there are no unseen interactions, don't show an unread indicator.
         return;
     }
@@ -588,7 +593,7 @@ NS_ASSUME_NONNULL_BEGIN
                           return;
                       }
 
-                      if (interaction.timestampForSorting < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                      if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
                           // By default we want the unread indicator to appear just before
                           // the first unread message.
                           *stop = YES;
@@ -620,13 +625,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasMoreUnseenMessages) {
         NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
         for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
-            BOOL isUnseen
-                = safetyNumberChange.timestampForSorting >= firstUnseenInteractionTimestamp.unsignedLongLongValue;
+            BOOL isUnseen = safetyNumberChange.sortId >= firstUnseenSortId.unsignedLongLongValue;
             if (!isUnseen) {
                 continue;
             }
-            BOOL isMissing
-                = safetyNumberChange.timestampForSorting < interactionAfterUnreadIndicator.timestampForSorting;
+
+            BOOL isMissing = safetyNumberChange.sortId < interactionAfterUnreadIndicator.sortId;
             if (!isMissing) {
                 continue;
             }
@@ -651,13 +655,12 @@ NS_ASSUME_NONNULL_BEGIN
         unreadIndicatorPosition++;
     }
 
-    dynamicInteractions.unreadIndicator = [[OWSUnreadIndicator alloc]
-            initUnreadIndicatorWithTimestamp:interactionAfterUnreadIndicator.timestampForSorting
-                       hasMoreUnseenMessages:hasMoreUnseenMessages
-        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
-                     unreadIndicatorPosition:unreadIndicatorPosition
-             firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp.unsignedLongLongValue];
-    OWSLogInfo(@"Creating Unread Indicator: %llu", dynamicInteractions.unreadIndicator.timestamp);
+    dynamicInteractions.unreadIndicator =
+        [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:firstUnseenSortId.unsignedLongLongValue
+                                        hasMoreUnseenMessages:hasMoreUnseenMessages
+                         missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
+                                      unreadIndicatorPosition:unreadIndicatorPosition];
+    OWSLogInfo(@"Creating Unread Indicator: %llu", dynamicInteractions.unreadIndicator.firstUnseenSortId);
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread

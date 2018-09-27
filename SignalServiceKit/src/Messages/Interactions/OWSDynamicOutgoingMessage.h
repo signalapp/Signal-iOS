@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
 
+/// This class is only used in debug tools
 @interface OWSDynamicOutgoingMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp

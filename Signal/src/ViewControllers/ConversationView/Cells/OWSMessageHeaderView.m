@@ -126,7 +126,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 {
     OWSAssertDebug(viewItem);
 
-    NSDate *date = viewItem.interaction.dateForSorting;
+    NSDate *date = viewItem.interaction.receivedAtDate;
     NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date].localizedUppercaseString;
 
     // Update cell to reflect changes in dynamic text.
