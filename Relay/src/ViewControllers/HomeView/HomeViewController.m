@@ -1449,8 +1449,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForAnyGroups:[NSSet setWithObjects:self.currentGrouping, FLPinnedGroup, FLAnnouncementsGroup, nil] inNotifications:notifications])
-//    if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
-//                                                                               inNotifications:notifications])
     {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
