@@ -395,7 +395,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         videoModeFlipCameraButton = createButton(image: #imageLiteral(resourceName: "video-switch-camera-unselected"),
                                                  action: #selector(didPressFlipCamera))
 
-        videoModeFlipCameraButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_CAMERA_DIRECTION", comment: "Accessibility label to toggle front vs. rear facing camera")
+        videoModeFlipCameraButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_CAMERA_DIRECTION", comment: "Accessibility label to toggle front- vs. rear-facing camera")
         videoModeFlipCameraButton.alpha = 0.9
 
         videoModeVideoButton = createButton(image: #imageLiteral(resourceName: "video-video-unselected"),
