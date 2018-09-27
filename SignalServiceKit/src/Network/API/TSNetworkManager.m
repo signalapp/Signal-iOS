@@ -117,6 +117,17 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                                                                              password:request.authPassword];
         }
 
+        // Honor the request's preferences about default cookie handling.
+        //
+        // Default is YES.
+        sessionManager.requestSerializer.HTTPShouldHandleCookies = request.HTTPShouldHandleCookies;
+
+        // Honor the request's headers.
+        for (NSString *headerField in request.allHTTPHeaderFields) {
+            NSString *headerValue = request.allHTTPHeaderFields[headerField];
+            [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+        }
+
         if ([request.HTTPMethod isEqualToString:@"GET"]) {
             [sessionManager GET:request.URL.absoluteString
                      parameters:request.parameters
@@ -178,6 +189,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [curlComponents addObject:@"--data-ascii"];
         [curlComponents addObject:[NSString stringWithFormat:@"'%@'", jsonBody]];
     }
+    // TODO: Add support for cookies.
     [curlComponents addObject:task.originalRequest.URL.absoluteString];
     NSString *curlCommand = [curlComponents componentsJoinedByString:@" "];
     OWSLogVerbose(@"curl for failed request: %@", curlCommand);
@@ -224,10 +236,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
               error.isRetryable = NO;
 
-              // TODO distinguish CDS requests. we don't want a bad CDS request to trigger "Signal deauth" logic.
-              // also, shouldn't this be under 403, not 400?
-              [TSAccountManager.sharedInstance setIsDeregistered:YES];
-
               failureBlock(task, error);
               break;
           }
@@ -236,6 +244,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                   networkError.debugDescription,
                   request);
               error.isRetryable = NO;
+              [self deregisterAfterAuthErrorIfNecessary:task statusCode:statusCode];
               failureBlock(task, error);
               break;
           }
@@ -243,6 +252,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               OWSLogError(
                   @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
               error.isRetryable = NO;
+              [self deregisterAfterAuthErrorIfNecessary:task statusCode:statusCode];
               failureBlock(task, error);
               break;
           }
@@ -298,6 +308,19 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           }
       }
     };
+}
+
++ (void)deregisterAfterAuthErrorIfNecessary:(NSURLSessionDataTask *)task statusCode:(NSInteger)statusCode
+{
+    OWSLogVerbose(@"Invalid auth: %@", task.originalRequest.allHTTPHeaderFields);
+
+    // Distinguish CDS requests.
+    // We don't want a bad CDS request to trigger "Signal deauth" logic.
+    if ([task.originalRequest.URL.absoluteString hasPrefix:textSecureServerURL]) {
+        [TSAccountManager.sharedInstance setIsDeregistered:YES];
+    } else {
+        OWSLogWarn(@"Ignoring %d for URL: %@", (int)statusCode, task.originalRequest.URL.absoluteString);
+    }
 }
 
 + (NSError *)errorWithHTTPCode:(NSInteger)code

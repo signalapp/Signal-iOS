@@ -165,12 +165,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self updateAvatarView];
     [self.avatarView autoPinTrailingToSuperviewMargin];
     [self.avatarView autoPinLeadingToTrailingEdgeOfView:avatarLabel offset:10.f];
-    const CGFloat kAvatarSizePoints = 50.f;
     const CGFloat kAvatarVMargin = 4.f;
     [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:kAvatarVMargin];
     [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:kAvatarVMargin];
-    [self.avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSizePoints];
-    [self.avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSizePoints];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
     [self.cameraImageView autoPinTrailingToEdgeOfView:self.avatarView];
     [self.cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView];
 
@@ -486,12 +485,15 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self updateAvatarView];
 }
 
+- (NSUInteger)avatarSize
+{
+    return 48;
+}
+
 - (void)updateAvatarView
 {
     self.avatarView.image = (self.avatar
-            ?: [[UIImage imageNamed:@"profile_avatar_default"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
-    self.avatarView.tintColor = (self.avatar ? nil : Theme.middleGrayColor);
+            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:self.avatarSize] buildDefaultImage]);
     self.cameraImageView.hidden = self.avatar != nil;
 }
 

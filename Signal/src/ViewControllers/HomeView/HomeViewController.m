@@ -157,7 +157,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 #pragma GCC diagnostic ignored "-Wunused-result"
     [ExperienceUpgradeFinder sharedManager];
 #pragma GCC diagnostic pop
+}
 
+- (void)observeNotifications
+{
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
@@ -194,6 +197,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(themeDidChange:)
                                                  name:ThemeDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(localProfileDidChange:)
+                                                 name:kNSNotificationName_LocalProfileDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -222,6 +229,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     [self updateReminderViews];
+}
+
+- (void)localProfileDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateBarButtonItems];
 }
 
 #pragma mark - Theme
@@ -332,8 +346,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
-    
-    [self updateReminderViews];
 }
 
 - (void)updateReminderViews
@@ -349,6 +361,16 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         || !self.deregisteredView.isHidden || !self.outageView.isHidden;
 }
 
+- (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
+{
+    if (_hasVisibleReminders == hasVisibleReminders) {
+        return;
+    }
+    _hasVisibleReminders = hasVisibleReminders;
+    // If the reminders show/hide, reload the table.
+    [self.tableView reloadData];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -361,6 +383,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateMappings];
     [self checkIfEmptyView];
     [self updateReminderViews];
+    [self observeNotifications];
 
     // because this uses the table data source, `tableViewSetup` must happen
     // after mappings have been set up in `showInboxGrouping`
@@ -411,6 +434,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
     searchResultsController.view.hidden = YES;
 
+    [self updateReminderViews];
     [self updateBarButtonItems];
 
     [self applyTheme];
@@ -472,10 +496,19 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     //  Settings button.
-    //
-    // TODO: Theme
-    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsButtonPressed:)];
+    const NSUInteger kAvatarSize = 28;
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *avatarImage = (localProfileAvatarImage
+            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
+    OWSAssertDebug(avatarImage);
+
+    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
+    avatarView.userInteractionEnabled = YES;
+    [avatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                             action:@selector(settingsButtonPressed:)]];
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
 
@@ -802,6 +835,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
     switch (section) {
         case HomeViewControllerSectionReminders: {
+            OWSAssert(self.reminderStackView);
+
             return self.reminderViewCell;
         }
         case HomeViewControllerSectionConversations: {

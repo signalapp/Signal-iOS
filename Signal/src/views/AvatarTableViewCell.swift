@@ -28,7 +28,7 @@ public class AvatarTableViewCell: UITableViewCell {
     @objc
     public override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         self.avatarView =  AvatarImageView()
-        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(kContactCellAvatarSize), height: CGFloat(kContactCellAvatarSize)))
+        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(kStandardAvatarSize), height: CGFloat(kStandardAvatarSize)))
 
         self._textLabel = UILabel()
         self._detailTextLabel = UILabel()

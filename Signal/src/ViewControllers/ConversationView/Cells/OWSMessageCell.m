@@ -262,18 +262,12 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    OWSContactsManager *contactsManager = self.delegate.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contactsManager should not be nil");
-        return NO;
-    }
-
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
-    OWSAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
-                                                                                  color:self.conversationStyle.primaryColor
-                                                                               diameter:self.avatarSize
-                                                                        contactsManager:contactsManager];
-    self.avatarView.image = [avatarBuilder build];
+    UIImage *_Nullable authorAvatarImage =
+        [[[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
+                                                 colorName:self.viewItem.authorConversationColorName
+                                                  diameter:self.avatarSize] build];
+    self.avatarView.image = authorAvatarImage;
     [self.contentView addSubview:self.avatarView];
 
     [[NSNotificationCenter defaultCenter] addObserver:self

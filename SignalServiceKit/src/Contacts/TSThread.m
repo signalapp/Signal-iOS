@@ -23,10 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSThread ()
 
 @property (nonatomic) NSDate *creationDate;
-@property (nonatomic, nullable) NSString *conversationColorName;
-
+@property (nonatomic) NSString *conversationColorName;
 @property (nonatomic) NSNumber *archivedAsOfMessageSortId;
-
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 

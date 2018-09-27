@@ -49,7 +49,7 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage {
+    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage? {
         if let avatarImage = avatarImage {
             return avatarImage
         }
@@ -65,8 +65,7 @@ public class ContactShareViewModel: NSObject {
 
         let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
                                                     colorSeed: colorSeed,
-                                                    diameter: UInt(diameter),
-                                                    contactsManager: contactsManager)
+                                                    diameter: UInt(diameter))
         // Note: we use buildDefaultImage() and not build() so that contact
         // share views always reflect the contents of the contact share.
         // build() might return an avatar from a corresponding system

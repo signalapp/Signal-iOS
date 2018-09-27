@@ -352,13 +352,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             if (self.hasBodyMediaWithThumbnail) {
                 [self.stackView addArrangedSubview:bodyMediaView];
 
-                OWSBubbleShapeView *strokeView = [OWSBubbleShapeView bubbleDrawView];
-                strokeView.strokeThickness = CGHairlineWidth();
-                strokeView.strokeColor = (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:1.f alpha:0.2f]
-                                                                   : [UIColor colorWithWhite:0.f alpha:0.2f]);
-                [bodyMediaView addSubview:strokeView];
-                [self.bubbleView addPartnerView:strokeView];
-                [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];
+                OWSBubbleShapeView *innerShadowView = [[OWSBubbleShapeView alloc]
+                    initInnerShadowWithColor:(Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor
+                                                                       : UIColor.ows_blackColor)
+                                      radius:0.5f
+                                     opacity:0.15f];
+                [bodyMediaView addSubview:innerShadowView];
+                [self.bubbleView addPartnerView:innerShadowView];
+                [self.viewConstraints addObjectsFromArray:[innerShadowView ows_autoPinToSuperviewEdges]];
             } else {
                 OWSAssertDebug(self.cellType == OWSMessageCellType_ContactShare);
 
@@ -496,8 +497,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     UIView *proxyView = [UIView new];
     [self.stackView addArrangedSubview:proxyView];
 
-    OWSBubbleShapeView *shadowView = [OWSBubbleShapeView bubbleShadowView];
-    OWSBubbleShapeView *clipView = [OWSBubbleShapeView bubbleClipView];
+    OWSBubbleShapeView *shadowView = [[OWSBubbleShapeView alloc] initShadow];
+    OWSBubbleShapeView *clipView = [[OWSBubbleShapeView alloc] initClip];
 
     [self addSubview:shadowView];
     [self addSubview:clipView];

@@ -91,6 +91,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 
++ (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
+                                      transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(recipientId.length > 0);
+
+    TSContactThread *_Nullable contactThread =
+        [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
+    if (contactThread) {
+        return contactThread.conversationColorName;
+    }
+    return [self stableConversationColorNameForString:recipientId];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

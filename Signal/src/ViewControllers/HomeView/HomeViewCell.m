@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HomeViewCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic) UIStackView *topRowView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
@@ -26,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
-@property (nonatomic) UIView *unreadBadgeContainer;
 
 @property (nonatomic, nullable) ThreadViewModel *thread;
 @property (nonatomic, nullable) OWSContactsManager *contactsManager;
@@ -91,14 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageStatusView setContentHuggingHorizontalHigh];
     [self.messageStatusView setCompressionResistanceHorizontalHigh];
 
-    self.topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
         self.dateTimeLabel,
-        self.messageStatusView,
     ]];
-    self.topRowView.axis = UILayoutConstraintAxisHorizontal;
-    self.topRowView.alignment = UIStackViewAlignmentLastBaseline;
-    self.topRowView.spacing = 6.f;
+    topRowView.axis = UILayoutConstraintAxisHorizontal;
+    topRowView.alignment = UIStackViewAlignmentLastBaseline;
+    topRowView.spacing = 6.f;
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
@@ -107,11 +104,29 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
-    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.topRowView,
+    UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.snippetLabel,
+        self.messageStatusView,
+    ]];
+    bottomRowView.axis = UILayoutConstraintAxisHorizontal;
+    bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
+    bottomRowView.spacing = 6.f;
+
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        topRowView,
+        bottomRowView,
     ]];
     vStackView.axis = UILayoutConstraintAxisVertical;
+
+    [self.contentView addSubview:vStackView];
+    [vStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
+    [vStackView autoVCenterInSuperview];
+    // Ensure that the cell's contents never overflow the cell bounds.
+    [vStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    [vStackView autoPinTrailingToSuperviewMargin];
+
+    vStackView.userInteractionEnabled = NO;
 
     self.unreadLabel = [UILabel new];
     self.unreadLabel.textColor = [UIColor ows_whiteColor];
@@ -127,29 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
-    self.unreadBadgeContainer = [UIView containerView];
-    [self.unreadBadgeContainer addSubview:self.unreadBadge];
-    [self.unreadBadge autoPinWidthToSuperview];
-    [self.unreadBadgeContainer setContentHuggingHigh];
-    [self.unreadBadgeContainer setCompressionResistanceHigh];
-
-    UIStackView *hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        vStackView,
-        self.unreadBadgeContainer,
-    ]];
-    hStackView.axis = UILayoutConstraintAxisHorizontal;
-    hStackView.spacing = 6.f;
-    [self.contentView addSubview:hStackView];
-    [hStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [hStackView autoVCenterInSuperview];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
-    [hStackView autoPinTrailingToSuperviewMargin];
-
+    [self.contentView addSubview:self.unreadBadge];
     [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
-
-    hStackView.userInteractionEnabled = NO;
 }
 
 - (void)dealloc
@@ -233,18 +227,20 @@ NS_ASSUME_NONNULL_BEGIN
     if (overrideSnippet) {
         // If we're using the home view cell to render search results,
         // don't show "unread badge" or "message status" indicator.
-        self.unreadBadgeContainer.hidden = YES;
+        self.unreadBadge.hidden = YES;
         self.messageStatusView.hidden = YES;
     } else if (unreadCount > 0) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
-        self.unreadBadgeContainer.hidden = NO;
+        self.unreadBadge.hidden = NO;
         self.messageStatusView.hidden = YES;
 
         self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
         self.unreadLabel.font = self.unreadFont;
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
+        self.unreadBadge.layer.borderColor = Theme.backgroundColor.CGColor;
+        self.unreadBadge.layer.borderWidth = 1.f;
 
         [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
                              forConstraints:^{
@@ -264,6 +260,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  toSize:unreadBadgeHeight
                                                                relation:NSLayoutRelationGreaterThanOrEqual],
                                      [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
+                                     [self.unreadBadge autoPinEdge:ALEdgeTrailing
+                                                            toEdge:ALEdgeTrailing
+                                                            ofView:self.avatarView
+                                                        withOffset:6.f],
                                  ]];
                              }];
     } else {
@@ -302,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         self.messageStatusView.tintColor = messageStatusViewTintColor;
         self.messageStatusView.hidden = statusIndicatorImage == nil;
-        self.unreadBadgeContainer.hidden = YES;
+        self.unreadBadge.hidden = YES;
         if (shouldAnimateStatusIcon) {
             CABasicAnimation *animation;
             animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
@@ -334,9 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord
-                                                         diameter:self.avatarSize
-                                                  contactsManager:contactsManager];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord diameter:self.avatarSize];
 }
 
 - (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
@@ -427,7 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return 48.f;
+    return kStandardAvatarSize;
 }
 
 - (NSUInteger)avatarHSpacing

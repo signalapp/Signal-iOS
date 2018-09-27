@@ -282,8 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(authUsername.length > 0);
     OWSAssertDebug(authPassword.length > 0);
 
-    NSString *path =
-        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/attestation/%@", enclaveId];
+    NSString *path = [NSString stringWithFormat:@"%@/v1/attestation/%@", contactDiscoveryURL, enclaveId];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
                                             method:@"PUT"
                                         parameters:@{
@@ -292,6 +291,10 @@ NS_ASSUME_NONNULL_BEGIN
                                         }];
     request.authUsername = authUsername;
     request.authPassword = authPassword;
+
+    // Don't bother with the default cookie store;
+    // these cookies are ephemeral.
+    [request setHTTPShouldHandleCookies:NO];
 
     return request;
 }
@@ -306,8 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        authPassword:(NSString *)authPassword
                                             cookies:(NSArray<NSHTTPCookie *> *)cookies
 {
-    NSString *path =
-        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/discovery/%@", enclaveId];
+    NSString *path = [NSString stringWithFormat:@"%@/v1/discovery/%@", contactDiscoveryURL, enclaveId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
                                             method:@"PUT"
@@ -322,11 +324,12 @@ NS_ASSUME_NONNULL_BEGIN
     request.authUsername = authUsername;
     request.authPassword = authPassword;
 
-    NSDictionary<NSString *, NSString *> *cookieHeaders = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-    for (NSString *cookieHeader in cookieHeaders) {
-        NSString *cookieValue = cookieHeaders[cookieHeader];
-        [request setValue:cookieValue forHTTPHeaderField:cookieHeader];
-    }
+    // Don't bother with the default cookie store;
+    // these cookies are ephemeral.
+    [request setHTTPShouldHandleCookies:NO];
+    // Set the cookie header.
+    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
+    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
 
     return request;
 }

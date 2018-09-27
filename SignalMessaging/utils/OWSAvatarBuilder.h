@@ -1,24 +1,34 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const NSUInteger kStandardAvatarSize;
+extern const NSUInteger kLargeAvatarSize;
+
 @class TSThread;
-@class OWSContactsManager;
 @class UIImage;
 
 @interface OWSAvatarBuilder : NSObject
 
-+ (UIImage *)buildImageForThread:(TSThread *)thread
-                        diameter:(NSUInteger)diameter
-                 contactsManager:(OWSContactsManager *)contactsManager NS_SWIFT_NAME(buildImage(thread:diameter:contactsManager:));
++ (nullable UIImage *)buildImageForThread:(TSThread *)thread
+                                 diameter:(NSUInteger)diameter NS_SWIFT_NAME(buildImage(thread:diameter:));
 
-+ (UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
++ (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
 
 - (nullable UIImage *)buildSavedImage;
-- (UIImage *)buildDefaultImage;
-- (UIImage *)build;
+- (nullable UIImage *)buildDefaultImage;
+- (nullable UIImage *)build;
+
++ (nullable UIImage *)avatarImageWithInitials:(NSString *)initials
+                              backgroundColor:(UIColor *)backgroundColor
+                                     diameter:(NSUInteger)diameter;
+
++ (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                                 iconSize:(CGSize)iconSize
+                          backgroundColor:(UIColor *)backgroundColor
+                                 diameter:(NSUInteger)diameter;
 
 @end
 

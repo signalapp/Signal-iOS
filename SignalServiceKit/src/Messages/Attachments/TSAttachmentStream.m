@@ -714,6 +714,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     CGSize originalSize = self.imageSize;
     if (originalSize.width < 1 || originalSize.height < 1) {
+        // Any time we return nil from this method we have to call the failure handler
+        // or else the caller waits for an async thumbnail
+        failure();
         return nil;
     }
     if (originalSize.width <= thumbnailDimensionPoints || originalSize.height <= thumbnailDimensionPoints) {
@@ -727,6 +730,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         UIImage *_Nullable image = [UIImage imageWithContentsOfFile:thumbnailPath];
         if (!image) {
             OWSFailDebug(@"couldn't load image.");
+            // Any time we return nil from this method we have to call the failure handler
+            // or else the caller waits for an async thumbnail
+            failure();
             return nil;
         }
         return [[OWSLoadedThumbnail alloc] initWithImage:image filePath:thumbnailPath];

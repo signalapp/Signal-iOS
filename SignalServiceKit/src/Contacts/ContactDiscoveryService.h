@@ -7,6 +7,15 @@ NS_ASSUME_NONNULL_BEGIN
 @class ECKeyPair;
 @class OWSAES256Key;
 
+@interface RemoteAttestationAuth : NSObject
+
+@property (nonatomic, readonly) NSString *username;
+@property (nonatomic, readonly) NSString *password;
+
+@end
+
+#pragma mark -
+
 @interface RemoteAttestationKeys : NSObject
 
 @property (nonatomic, readonly) ECKeyPair *keyPair;
@@ -18,22 +27,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @interface RemoteAttestation : NSObject
 
 @property (nonatomic, readonly) RemoteAttestationKeys *keys;
 @property (nonatomic, readonly) NSArray<NSHTTPCookie *> *cookies;
 @property (nonatomic, readonly) NSData *requestId;
 @property (nonatomic, readonly) NSString *enclaveId;
-@property (nonatomic, readonly) NSString *authUsername;
-@property (nonatomic, readonly) NSString *authToken;
+@property (nonatomic, readonly) RemoteAttestationAuth *auth;
 
 @end
+
+#pragma mark -
 
 @interface ContactDiscoveryService : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)sharedService;
++ (instancetype)shared;
 
 - (void)testService;
 - (void)performRemoteAttestationWithSuccess:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler

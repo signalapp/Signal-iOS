@@ -63,12 +63,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
-@property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
-@property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
 @property (nonatomic) CGSize mediaSize;
+@property (nonatomic, nullable) NSString *systemMessageText;
+@property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
+@property (nonatomic, nullable) NSString *authorConversationColorName;
 
 @end
 
@@ -95,6 +96,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
 
+    [self updateAuthorConversationColorNameWithTransaction:transaction];
+
     [self ensureViewState:transaction];
 
     return self;
@@ -116,9 +119,25 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.quotedReply = nil;
     self.systemMessageText = nil;
 
+    [self updateAuthorConversationColorNameWithTransaction:transaction];
+
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
+}
+
+- (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    if (self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        _authorConversationColorName = nil;
+        return;
+    }
+
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+    _authorConversationColorName =
+        [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
 }
 
 - (BOOL)hasBodyText

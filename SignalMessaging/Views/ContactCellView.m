@@ -15,7 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kContactCellAvatarSize = 48;
 const CGFloat kContactCellAvatarTextMargin = 12;
 
 @interface ContactCellView ()
@@ -53,8 +52,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.layoutMargins = UIEdgeInsetsZero;
 
     _avatarView = [AvatarImageView new];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactCellAvatarSize];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactCellAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionWidth toSize:kStandardAvatarSize];
+    [_avatarView autoSetDimension:ALDimensionHeight toSize:kStandardAvatarSize];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -164,8 +163,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                                    object:nil];
         [self updateProfileName];
     }
-    self.avatarView.image =
-        [OWSAvatarBuilder buildImageForThread:thread diameter:kContactCellAvatarSize contactsManager:contactsManager];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:kStandardAvatarSize];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -178,13 +176,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contactsManager should not be nil");
-        self.avatarView.image = nil;
-        return;
-    }
-
     NSString *recipientId = self.recipientId;
     if (recipientId.length == 0) {
         OWSFailDebug(@"recipientId should not be nil");
@@ -200,12 +191,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
             return [TSThread stableConversationColorNameForString:self.recipientId];
         }
     }();
-    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
-    
-    self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
-                                                                         color:color
-                                                                      diameter:kContactCellAvatarSize
-                                                               contactsManager:contactsManager] build];
+
+    self.avatarView.image =
+        [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId colorName:colorName diameter:kStandardAvatarSize]
+            build];
 }
 
 - (void)updateProfileName
