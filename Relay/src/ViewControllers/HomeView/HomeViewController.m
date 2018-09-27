@@ -52,6 +52,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     HomeViewControllerSectionReminders,
+    HomeViewControllerSectionAnnouncements,
+    HomeViewControllerSectionPinned,
     HomeViewControllerSectionConversations,
     HomeViewControllerSectionArchiveButton,
 };
@@ -268,7 +270,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [super loadView];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        FLContactsManager.shared.refreshCCSMRecipients;
+        [FLContactsManager.shared refreshCCSMRecipients];
     });
     
     // TODO: Remove this.
@@ -764,6 +766,32 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 #pragma mark - Table View Data Source
 
+-(nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSInteger rows = [self tableView:tableView numberOfRowsInSection:section];
+    
+    if (rows > 0) {
+        switch (section) {
+            case HomeViewControllerSectionReminders: {
+                return nil;
+            }
+            case HomeViewControllerSectionAnnouncements: {
+                return NSLocalizedString(@"ANNOUNCEMENTS_SECTION", nil);
+            }
+            case HomeViewControllerSectionPinned: {
+                return NSLocalizedString(@"PINNED_CONVERSATION_SECTION", nil);
+            }
+            case HomeViewControllerSectionConversations: {
+                return NSLocalizedString(@"RECENT_CONVERSATION_SECTION", nil);
+            }
+            case HomeViewControllerSectionArchiveButton: {
+                return nil;
+            }
+        }
+    }
+    return nil;
+}
+
 // Returns YES IFF this value changes.
 - (BOOL)updateHasArchivedThreadsRow
 {
@@ -788,9 +816,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         case HomeViewControllerSectionReminders: {
             return self.hasVisibleReminders ? 1 : 0;
         }
+        case HomeViewControllerSectionAnnouncements: {
+            return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+        }
+        case HomeViewControllerSectionPinned: {
+            return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+        }
         case HomeViewControllerSectionConversations: {
-            NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-            return result;
+            return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
         }
         case HomeViewControllerSectionArchiveButton: {
             return self.hasArchivedThreadsRow ? 1 : 0;
@@ -825,6 +858,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     switch (section) {
         case HomeViewControllerSectionReminders: {
             return self.reminderViewCell;
+        }
+        case HomeViewControllerSectionAnnouncements: {
+            return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
+        }
+        case HomeViewControllerSectionPinned: {
+            return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
         }
         case HomeViewControllerSectionConversations: {
             return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
@@ -931,37 +970,77 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         case HomeViewControllerSectionReminders: {
             return @[];
         }
+        case HomeViewControllerSectionAnnouncements: {
+            UITableViewRowAction *archiveAction = [UITableViewRowAction
+                             rowActionWithStyle:UITableViewRowActionStyleNormal
+                             title:NSLocalizedString(@"ARCHIVE_ACTION",
+                                                     @"Pressing this button moves a thread from the inbox to the archive")
+                             handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                 [self archiveIndexPath:tappedIndexPath];
+                                 [Environment.preferences setHasArchivedAMessage:YES];
+                             }];
+            return @[ archiveAction ];
+        }
+        case HomeViewControllerSectionPinned: {
+            UITableViewRowAction *unPinAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal
+                                                           title:NSLocalizedString(@"UNPIN_ACTION", nil)
+                                                         handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull tappedIndexPath) {
+                                                             [self togglePinningForThreadAtIndexPath:indexPath];
+                                                         }];
+            unPinAction.backgroundColor = [ForstaColors mediumGreen];
+            UITableViewRowAction *archiveAction = [UITableViewRowAction
+                                                   rowActionWithStyle:UITableViewRowActionStyleNormal
+                                                   title:NSLocalizedString(@"ARCHIVE_ACTION",
+                                                                           @"Pressing this button moves a thread from the inbox to the archive")
+                                                   handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                                       [self archiveIndexPath:tappedIndexPath];
+                                                       [Environment.preferences setHasArchivedAMessage:YES];
+                                                   }];
+            return @[ archiveAction, unPinAction];
+            
+        }
         case HomeViewControllerSectionConversations: {
-            UITableViewRowAction *deleteAction =
+            UITableViewRowAction *action1 = nil;
+            UITableViewRowAction *action2 = nil;
+            
+            if (self.homeViewMode == HomeViewMode_Inbox) {
+                UITableViewRowAction *pinAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal
+                                                                                     title:NSLocalizedString(@"PIN_ACTION", nil)
+                                                                                   handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull tappedIndexPath) {
+                                                                                       [self togglePinningForThreadAtIndexPath:indexPath];
+                                                                                   }];
+                pinAction.backgroundColor = [ForstaColors mediumGreen];
+                
+                UITableViewRowAction *archiveAction = [UITableViewRowAction
+                                                       rowActionWithStyle:UITableViewRowActionStyleNormal
+                                                       title:NSLocalizedString(@"ARCHIVE_ACTION",
+                                                                               @"Pressing this button moves a thread from the inbox to the archive")
+                                                       handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                                           [self archiveIndexPath:tappedIndexPath];
+                                                           [Environment.preferences setHasArchivedAMessage:YES];
+                                                       }];
+                action1 = archiveAction;
+                action2 = pinAction;
+            } else {
+                UITableViewRowAction *unArchiveAction = [UITableViewRowAction
+                                                         rowActionWithStyle:UITableViewRowActionStyleNormal
+                                                         title:NSLocalizedString(@"UNARCHIVE_ACTION",
+                                                                                 @"Pressing this button moves an archived thread from the archive back to "
+                                                                                 @"the inbox")
+                                                         handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                                             [self archiveIndexPath:tappedIndexPath];
+                                                         }];
+                UITableViewRowAction *deleteAction =
                 [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
                                                    title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
                                                  handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
                                                      [self tableViewCellTappedDelete:swipedIndexPath];
                                                  }];
-
-            UITableViewRowAction *archiveAction;
-            if (self.homeViewMode == HomeViewMode_Inbox) {
-                archiveAction = [UITableViewRowAction
-                    rowActionWithStyle:UITableViewRowActionStyleNormal
-                                 title:NSLocalizedString(@"ARCHIVE_ACTION",
-                                           @"Pressing this button moves a thread from the inbox to the archive")
-                               handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                                   [self archiveIndexPath:tappedIndexPath];
-                                   [Environment.preferences setHasArchivedAMessage:YES];
-                               }];
-
-            } else {
-                archiveAction = [UITableViewRowAction
-                    rowActionWithStyle:UITableViewRowActionStyleNormal
-                                 title:NSLocalizedString(@"UNARCHIVE_ACTION",
-                                           @"Pressing this button moves an archived thread from the archive back to "
-                                           @"the inbox")
-                               handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                                   [self archiveIndexPath:tappedIndexPath];
-                               }];
+                action1 = deleteAction;
+                action2 = unArchiveAction;
             }
-
-            return @[ deleteAction, archiveAction ];
+            
+            return @[ action1, action2 ];
         }
         case HomeViewControllerSectionArchiveButton: {
             return @[];
@@ -975,6 +1054,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     switch (section) {
         case HomeViewControllerSectionReminders: {
             return NO;
+        }
+        case HomeViewControllerSectionAnnouncements: {
+            return YES;
+        }
+        case HomeViewControllerSectionPinned: {
+            return YES;
         }
         case HomeViewControllerSectionConversations: {
             return YES;
@@ -1116,7 +1201,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section != HomeViewControllerSectionConversations) {
+    NSInteger section = indexPath.section;
+    
+    if (!(section == HomeViewControllerSectionAnnouncements ||
+         section == HomeViewControllerSectionPinned ||
+         section == HomeViewControllerSectionConversations)) {
         OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
         return;
     }
@@ -1144,6 +1233,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
     switch (section) {
         case HomeViewControllerSectionReminders: {
+            break;
+        }
+        case HomeViewControllerSectionAnnouncements: {
+            TSThread *thread = [self threadForIndexPath:indexPath];
+            [self presentThread:thread action:ConversationViewActionNone];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            break;
+        }
+        case HomeViewControllerSectionPinned: {
+            TSThread *thread = [self threadForIndexPath:indexPath];
+            [self presentThread:thread action:ConversationViewActionNone];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
             break;
         }
         case HomeViewControllerSectionConversations: {
@@ -1292,7 +1393,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     self.threadMappings = [[YapDatabaseViewMappings alloc]
-        initWithGroups:@[ kReminderViewPseudoGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
+        initWithGroups:@[ kReminderViewPseudoGroup, FLAnnouncementsGroup, FLPinnedGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
                   view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
 
@@ -1347,8 +1448,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
-    if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
-                                                                               inNotifications:notifications]) {
+    if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForAnyGroups:[NSSet setWithObjects:self.currentGrouping, FLPinnedGroup, FLAnnouncementsGroup, nil] inNotifications:notifications])
+    {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.threadMappings updateWithTransaction:transaction];
         }];
@@ -1456,7 +1557,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (NSUInteger)numberOfInboxThreads
 {
-    return [self numberOfThreadsInGroup:TSInboxGroup];
+    
+    return [self numberOfThreadsInGroup:FLAnnouncementsGroup] + [self numberOfThreadsInGroup:FLPinnedGroup] + [self numberOfThreadsInGroup:TSInboxGroup];
 }
 
 - (NSUInteger)numberOfArchivedThreads
@@ -1530,6 +1632,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:Theme.secondaryColor
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
+}
+
+-(void)togglePinningForThreadAtIndexPath:(NSIndexPath *)indexPath
+{
+    __block TSThread *thread = [self threadForIndexPath:indexPath];
+    
+    if (thread) {
+        if (thread.pinPosition) {
+            thread.pinPosition = nil;
+        } else {
+            thread.pinPosition = [NSNumber numberWithInteger:[self.tableView numberOfRowsInSection:HomeViewControllerSectionPinned] + 1];
+        }
+        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [thread saveWithTransaction:transaction];
+        }];
+    }
 }
 
 @end

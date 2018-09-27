@@ -18,8 +18,9 @@
 
 NSString *const TSInboxGroup = @"TSInboxGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
+NSString *const FLAnnouncementsGroup = @"FLAnnouncementsGroup";
+NSString *const FLPinnedGroup  = @"FLPinnedGroup";
 
-NSString *const FLPinnedGroup  = @"TSPinnedGroup";
 NSString *const FLActiveTagsGroup = @"FLActiveTagsGroup";
 NSString *const FLVisibleRecipientGroup = @"FLVisibleRecipientGroup";
 NSString *const FLHiddenContactsGroup = @"FLHiddenContactsGroup";
@@ -215,8 +216,16 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return ([self threadShouldBeInInbox:thread]) ? TSInboxGroup : TSArchiveGroup;
         } else if (thread.archivalDate) {
             return TSArchiveGroup;
+        } else if (([thread.type isEqualToString:@"announcement"])) {
+            return FLAnnouncementsGroup;
+        } else if ([thread.type isEqualToString:@"conversation"]) {
+            if (thread.pinPosition) {
+                return FLPinnedGroup;
+            } else {
+                return TSInboxGroup;
+            }
         } else {
-            return TSInboxGroup;
+            return nil;
         }
     }];
 

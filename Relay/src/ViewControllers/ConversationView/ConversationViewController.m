@@ -2024,11 +2024,11 @@ typedef enum : NSUInteger {
 
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
 {
-    if (![self.thread isKindOfClass:[TSThread class]]) {
-        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
-        return;
-    }
-    TSThread *contactThread = (TSThread *)self.thread;
+//    if (![self.thread isKindOfClass:[TSThread class]]) {
+//        OWSFail(@"%@ unexpected thread: %@ in %s", self.logTag, self.thread, __PRETTY_FUNCTION__);
+//        return;
+//    }
+//    TSThread *contactThread = (TSThread *)self.thread;
 
     NSString *displayName = [self.contactsManager displayNameForRecipientId:interaction.recipientId];
     NSString *title =
