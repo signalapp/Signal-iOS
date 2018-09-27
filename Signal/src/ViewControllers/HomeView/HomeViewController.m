@@ -497,17 +497,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     //  Settings button.
     const NSUInteger kAvatarSize = 28;
-    // TODO: Replace this icon.
     UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
     UIImage *avatarImage = (localProfileAvatarImage
-            ?: [[UIImage imageNamed:@"profile_avatar_default"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-    if (!localProfileAvatarImage) {
-        avatarView.tintColor = Theme.middleGrayColor;
-    }
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
