@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ในกลุ่ม %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ไม่สามารถเริ่มต้นใช้งานได้ กรุณาส่งบันทึกการดีบักให้กับเรา เพื่อที่เราจะได้ทำการแก้ไขข้อบกพร่องนี้ต่อไป";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "ข้อผิดพลาด";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "พบกับรุ่น %@ ได้แล้วที่ App Store";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "มี Signal รุ่นใหม่แล้ว";
+"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "อัพเดต";
@@ -98,7 +98,7 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "ไฟล์แนบ";
 
-/* One line label indicating the user can add no more text to the attachment caption. */
+/* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
 
 /* Format string for file extension label in call interstitial view */
@@ -114,7 +114,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "ไฟล์แนบ";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ไม่สำเร็จ แตะเพื่อลองใหม่";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "กำลังดาวน์โหลด…";
@@ -126,28 +126,28 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "เกิดข้อผิดพลาดในการส่งไฟล์แนบ";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดภาพที่แนบมาได้";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "ไม่สามารถประมวลผลวิดีโอ";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถวิเคราะห์ภาพที่แนบมาได้";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ไม่สามารถลบข้อมูล metadata จากรูปได้";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Could not resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "ไฟล์แนบใหญ่เกินไป";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "ไฟล์แนบมีเนื้อหาไม่ตรงที่กำหนด";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "ไฟล์แนบมีรูปแบบไฟล์ที่ไม่ถูกต้อง";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "ไฟล์แนบว่างเปล่า";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "เลือกเอกสารไม่สำเร็จ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ไฟล์ที่ไม่รองรับ";
@@ -300,7 +300,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal ต้องการเข้าถึงไมโครโฟนของคุณ เพื่อที่จะโทรและบันทึกข้อความเสียง คุณสามารถให้สิทธิการเข้าถึงได้ในแอป 'การตั้งค่า'";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "ต้องการการเข้าถึงไมโครโฟน";
@@ -309,7 +309,7 @@
 "CALL_LABEL" = "โทร";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "ไม่มีการตอบรับ";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -339,10 +339,10 @@
 "CALL_VIEW_MUTE_LABEL" = "ปิดเสียง";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "คุณสามารถรับสายได้โดยตรงจากหน้าจอที่ล็อกอยู่ของคุณ และสามารถเห็นชื่อและหมายเลขของคนที่โทรเข้า ถ้าคุณเปลี่ยนการตั้งค่าของคุณ\n\nดูรายละเอียดได้ในการตั้งค่าความเป็นส่วนตัว";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "คุณสามารถเห็นชื่อและหมายเลขโทรศัพท์ของสายเรียกเข้าถ้าคุณเปลี่ยนการตั้งค่าของคุณ\n\nดูรายละเอียดได้ในการตั้งค่าความเป็นส่วนตัว";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ไม่ใช่ตอนนี้";
@@ -350,7 +350,7 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "แสดงการตั้งค่าความเป็นส่วนตัว";
 
-/* Accessibility label to toggle front vs. rear facing camera */
+/* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
 
 /* Accessibility label to switch to audio only */
@@ -399,10 +399,10 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "เชิญ";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "เพื่อที่จะดูว่าผู้ติดต่อของคุณคนไหนที่ใช้ Signal กรุณาตั้งค่าระบบให้ Signal เข้าถึงรายชื่อผู้ติดต่อของคุณได้";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "สิ่งนี้จะล้างแอปพลิเคชันใหม่ โดยลบข้อความของคุณและถอนทะเบียนคุณจากเซิร์ฟเวอร์ แอปจะปิดหลังจากการลบข้อมูล";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีของคุณ";
@@ -591,16 +591,16 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "เพิ่มไปที่ผู้ติดต่อ";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "แบ่งปันโปรไฟล์ของคุณให้กับผู้ใช้คนนี้";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "ผู้ใช้รายนี้ไม่อยู่ในผู้ติดต่อของคุณ";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "กำลังโหลดข้อความเพิ่มเติม...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "แตะเพื่อดูเพิ่ม";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "บล็อกผู้ใช้นี้";
@@ -718,7 +718,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ตำแหน่งของการหลบเลี่ยงการปิดกั้นข้อมูล";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "คุณสามารถให้การเข้าถึงได้ในแอป 'การตั้งค่า'";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal จำเป็นต้องเข้าถึงผู้ติดต่อ เพื่อที่จะแก้ไขข้อมูลผู้ติดต่อ";
@@ -745,7 +745,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "อัพเดต";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "คุณได้เปลี่ยนแปลงกลุ่มนี้ คุณต้องการบันทึกการเปลี่ยนแปลงนี้หรือไม่";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "การเปลี่ยนแปลงที่ยังไม่ได้บันทึก";
@@ -763,10 +763,10 @@
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
 
 /* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "คุณสามารถนำการสนทนาในกล่องขาเข้าที่ไม่ได้คุยแล้ว เข้าเก็บในที่เก็บถาวรไว้ดูภายหลังได้";
+"EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations from your Inbox.";
 
 /* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "ล้างการสนทนาของคุณ";
+"EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversation List";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในผู้ติดต่อของคุณที่ใช้ Signal";
@@ -781,10 +781,10 @@
 "EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
 
 /* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "ไม่ ไม่มี ไม่มี ไม่มีอะไร";
+"EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "เวิ้งว้างว่างเปล่า";
+"EMPTY_INBOX_TITLE" = "Inbox Zero";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "ยืนยัน PIN ของคุณ";
@@ -832,16 +832,16 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ส่งข้อความไม่สำเร็จ";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ไม่สามารถส่ง เนื่องจากข้อมูลส่วนบุคคลที่หมดอายุ";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ส่งข้อความไปหาผู้ใช้ไม่สำเร็จ เนื่องจากคุณได้บล็อกเขา";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "ไม่สำเร็จ เนื่องจากไม่สามารถเขียนไฟล์แนบได้";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองเชื่อมต่อเครือข่าย WiFi อื่นหรือใช้งานข้อมูลโทรศัพท์มือถือ";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "การส่งข้อความไม่สำเร็จ เนื่องจากไม่มีชื่อผู้รับที่ถูกต้อง";
@@ -856,7 +856,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "อุปกรณ์ของคุณไม่ได้ลงทะเบียนสำหรับหมายเลขโทรศัพท์ของคุณอีกต่อไป คุณต้องลบและติดตั้ง Signal ใหม่";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "เกิดข้อผิดพลาดที่เซิร์ฟเวอร์ โปรดลองอีกครั้งในภายหลัง";
@@ -868,10 +868,10 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "ผู้ติดต่อนี้ไม่ได้เป็นผู้ใช้ Signal";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "ล้มเหลว: ขอผู้ส่งให้อัพเดต Signal และส่งใหม่อีกครั้ง";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ได้รับข้อความที่ซ้ำกัน";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "คีย์ของผู้รับไม่ถูกต้อง";
@@ -880,7 +880,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "ได้รับข้อความที่เข้ากันไม่ได้กับเวอร์ชันนี้";
+"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "ไม่มีเซสชันที่ใช้งานได้สำหรับผู้ติดต่อ";
@@ -901,10 +901,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "เกิดความล้มเหลวหลายครั้งเกินไปกับผู้ติดต่อนี้ โปรดลองใหม่ในอีกสักครู่";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "รหัสความปลอดภัยของคุณกับ %@ เพิ่งเปลี่ยน คุณควรตรวจยืนยันใหม่ก่อนส่งอีกครั้ง";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "ไม่สามารถตรวจยืนยันรหัสความปลอดภัย!";
@@ -922,10 +922,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีสื่อข้อมูลใดในการสนทนานี้";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังโหลดสื่อข้อมูลที่ใหม่กว่า...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "กำลังโหลดสื่อข้อมูลที่เก่ากว่า...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ไฟล์แนบ";
@@ -979,7 +979,7 @@
 "GROUP_MEMBERS_CALL" = "โทร";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "ล้างการตรวจยืนยันของทุกคน";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "นี่จะล้างการตรวจยืนยันของสมาชิกกลุ่มทั้งหมดที่รหัสความปลอดภัยของเขาเปลี่ยนไปจากการตรวจยืนยันครั้งล่าสุด";
@@ -1033,7 +1033,7 @@
 "IN_CALL_CONNECTING" = "กำลังเชื่อมต่อ…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "Reconnecting…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "กำลังเรียกสาย…";
@@ -1045,10 +1045,10 @@
 "IN_CALL_TERMINATED" = "วางสายแล้ว";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "เพื่อดูชื่อในผู้ติดต่อของคุณ อัพเดตการตั้งค่าระบบของคุณให้อนุญาตการเข้าถึงผู้ติดต่อ";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
 
 /* notification body */
 "INCOMING_CALL" = "สายโทรเข้า";
@@ -1069,7 +1069,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ไฟล์เสียงไม่ถูกต้อง";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "ในการจะเชิญผู้ติดต่อของคุณ คุณจำเป็นต้องอนุญาตให้ Signal เข้าถึงผู้ติดต่อของคุณในแอปการตั้งค่า";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "อนุญาตให้เข้าถึงผู้ติดต่อ";
@@ -1084,7 +1084,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "ชวนเพื่อน";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "ข้อความจะหายไปหลังจาก %@";
@@ -1099,13 +1099,13 @@
 "LEAVE_GROUP_ACTION" = "ออกจากกลุ่ม";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "รหัส QR นี้ไม่ถูกต้อง ตรวจสอบให้แน่ใจว่าคุณกำลังสแกนรหัส QR ที่แสดงผลบนอุปกรณ์ที่คุณต้องการเชื่อมโยง";
+"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์นี้จะสามารถดูกลุ่มและผู้ติดต่อของคุณ อ่านข้อความทั้งหมดของคุณ และส่งข้อความด้วยชื่อของคุณ";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "เชื่อมโยงอุปกรณ์นี้ใช่หรือไม่";
@@ -1114,7 +1114,7 @@
 "LINK_DEVICE_RESTART" = "ลองใหม่";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "สแกนรหัส QR ที่แสดงผลบนอุปกรณ์เพื่อเชื่อมโยง";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "สแกนรหัส QR";
@@ -1168,16 +1168,16 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "More Info";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+"MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
@@ -1258,7 +1258,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "กำลังส่ง...";
+"MESSAGE_STATUS_SENDING" = "Sending…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "ส่งแล้ว";
@@ -1270,7 +1270,7 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ไม่มีเครื่องหมายว่าตรวจยืนยันแล้วอีกต่อไป แตะเพื่อดูตัวเลือก";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "คุณได้บล็อกผู้ใช้นี้";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ไม่มีเครื่องหมายว่าตรวจยืนยันแล้วอีกต่อไป แตะเพื่อดูตัวเลือก ";
@@ -1313,17 +1313,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal จำเป็นต้องเข้าถึงกล้องของคุณสำหรับการโทรด้วยวิดีโอ คุณสามารถให้การอนุญาตดังกล่าวได้ในแอป 'การตั้งค่า' >> ความเป็นส่วนตัว >> กล้อง >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal จำเป็นต้องเข้าถึงกล้องของคุณ";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "คุณสามารถให้การอนุญาตได้ในแอป 'การตั้งค่า' ";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal ต้องการเข้าถึงคลังสื่อข้อมูลของคุณเพื่อดำเนินการ";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "สายที่ไม่ได้รับจาก %@";
@@ -1332,7 +1332,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "คุณจะไม่ได้รับการแจ้งเตือนสำหรับการสนทนาที่ปิดเสียง";
@@ -1341,7 +1341,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "ข้าม";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "โปรดตรวจสอบว่าคุณกำลังออนไลน์และลองอีกครั้ง";
+"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "การหลบเลี่ยงการปิดกั้นข้อมูล: เปิด";
@@ -1365,7 +1365,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ค้นหาโดยหมายเลขโทรศัพท์";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "เพิ่มโดยหมายเลขโทรศัพท์";
+"NEW_GROUP_ADD_NON_CONTACT" = "Add by Phone Number";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "ตั้งรูปภาพกลุ่ม";
@@ -1536,7 +1536,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "คู่สนทนาของคุณกำลังใช้ Signal เวอร์ชันเก่า เขาจำเป็นต้องอัพเดตก่อนที่คุณจะสามารถตรวจยืนยัน";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "รหัสที่สแกนดูไม่เหมือนกับรหัสความปลอดภัย คุณทั้งสองกำลังใช้ Signal เวอร์ชันล่าสุดอยู่หรือไม่";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "หากคุณต้องการตรวจยืนยันความปลอดภัยในการเข้ารหัสจากต้นทางถึงปลายทางระหว่างคุณกับ %@ ให้เปรียบเทียบตัวเลขด้านบนกับตัวเลขบนอุปกรณ์ของเขา\n\nหรืออีกทางหนึ่ง คุณสามารถสแกนรหัสบนโทรศัพท์ของเขา หรือขอให้เขาสแกนรหัสของคุณ";
@@ -1587,7 +1587,7 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "บันทึก";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "กำลังบันทึก...";
+"PROFILE_VIEW_SAVING" = "Saving…";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "โปรไฟล์";
@@ -1616,7 +1616,7 @@
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "ตอบกลับหาคุณเอง";
 
-/* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
@@ -1707,7 +1707,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "หมายเลขโทรศัพท์";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "มีใครบางคนตื่นเต้นที่จะส่งข้อความแรกของเขา คุณจำเป็นต้องลงทะเบียนก่อนที่จะกระทำสิ่งนี้ได้";
+"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "หมายเลขโทรศัพท์ของคุณ";
@@ -1851,7 +1851,7 @@
 "SEND_INVITE_FAILURE" = "ส่งคำเชิญไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "คุณได้ชวนเพื่อนของคุณให้มาใช้ Signal!";
+"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "เชิญผ่านเอสเอ็มเอส: %@";
@@ -1959,13 +1959,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "ส่งต่อสายทุกครั้ง";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "ส่งต่อสายทุกสายไปสู่เซิร์ฟเวอร์ของ Signal เพื่อหลีกเลี่ยงการเปิดเผยหมายเลขไอพีของคุณให้กับคนที่คุณติดต่อด้วย การเปิดใช้งานนี้จะลดคุณภาพการโทร";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "ล้างประวัติการสนทนา";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "ลิขสิทธิ์ Open Whisper Systems\n อนุญาตให้ใช้ภายใต้สัญญาอนุญาต GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ลบบัญชี";
@@ -1974,7 +1974,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจหรือว่าต้องการลบประวัติทั้งหมดของคุณ (ข้อความ ไฟล์แนบ ประวัติการโทร ...) การดำเนินการนี้ไม่สามารถย้อนคืนได้";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ลบทั้งหมด";
@@ -2100,7 +2100,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "รหัสความปลอดภัยระหว่างคุณกับ %@ เพิ่งมีการเปลี่ยนแปลง คุณอาจต้องการตรวจยืนยันอีกครั้งในแอปหลักก่อนที่จะส่งอีกครั้ง";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "กำลังโหลด...";
+"SHARE_EXTENSION_LOADING" = "Loading…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "เปิดแอป Signal เพื่อลงทะเบียน";
@@ -2217,7 +2217,7 @@
 "UNLINK_ACTION" = "เลิกเชื่อมโยง";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "เมื่อเลิกเชื่อมโยงอุปกรณ์นี้ อุปกรณ์จะไม่สามารถส่งหรือรับข้อความได้อีกต่อไป";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "เลิกเชื่อมโยง \"%@\" หรือไม่";
@@ -2241,7 +2241,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "คุณไม่สามารถนำสมาชิกออกจากกลุ่ม พวกเขาต้องออกจากกลุ่มเอง หรือคุณจะตั้งกลุ่มใหม่ที่ไม่มีพวกเขาอยู่ก็ได้";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "ไม่ได้รับอนุญาต";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "คุณสามารถรับสายจากหน้าจอที่ล็อกอยู่ได้ง่ายๆ ด้วยการผสานกับการโทรของ iOS และยังมีความเป็นส่วนตัวเพราะเราจะปิดชื่อคนที่โทรหาคุณไว้เป็นค่าเริ่มต้น";
@@ -2286,13 +2286,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "การโทรด้วยวิดีโออย่างปลอดภัย!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ต้องการ iOS 9 หรือใหม่กว่า โปรดอัพเกรด iOS ได้ใน การตั้งค่า >> ทั่วไป >> รายการอัพเดตซอฟต์แวร์ ";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "อัพเกรด iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "กำลังอัพเกรด Signal ...";
+"Upgrading Signal ..." = "Upgrading Signal…";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "ย้อนกลับ";

@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ grupis %@:%@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei saa käivituda. Palun saada silumisandmed meie meeskonnale, et saaksime proovida seda olukorda lahendada.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Tõrge";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versioon %@ on nüüd App Store'is saadaval.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Signali uus versioon on saadaval";
+"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Uuenda";
@@ -98,7 +98,7 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Manus";
 
-/* One line label indicating the user can add no more text to the attachment caption. */
+/* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Jõuti sõnumi piirini.";
 
 /* Format string for file extension label in call interstitial view */
@@ -114,7 +114,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Manus";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Ei õnnestunud. Uuesti proovimiseks klõpsa.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Allalaadimine...";
@@ -126,28 +126,28 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Tõrge manuse saatmisel";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Piltmanuse suuruse muutmine ei õnnestunud.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video töötlemine ei õnnestunud.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Piltmanuse lugemine ei õnnestunud.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Metaandmete eemaldamine pildist ei õnnestunud.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Pildi suuruse muutmine ei õnnestunud.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Manus on liiga suur.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Manusel on vigane sisu.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Manusel on vigane failiformaat.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Manus on tühi.";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Dokumendi valimine ei õnnestunud.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ei saa seda faili sellisena kasutada. Proovi see enne saatmist kokku pakkida.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fail pole toetatud";
@@ -237,7 +237,7 @@
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
 
 /* Section header for groups that have been blocked */
-"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
+"BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blokeeritud grupid";
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blocked Users";
@@ -300,7 +300,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Helista uuesti";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal vajab kõnede ja häälsõnumite tegemiseks ligipääsu sinu mikrofonile. Seda õigust on võimalik anda rakenduses Settings.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Ligipääs mikrofonile on vajalik";
@@ -309,7 +309,7 @@
 "CALL_LABEL" = "Helista";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Ei vasta.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -339,10 +339,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Vaigista";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Kui muudad oma sätteid, siis on sul võimalik kõnedele vastata otse lukustusekraanilt ja näha sissetuleva kõne telefoninumbrit ning nime.\n\nTäpsema info jaoks vaata privaatsussätteid.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Kui muudad oma sätteid, siis on sul võimalik näha sissetuleva kõne telefoninumbrit ja nime..\n\nTäpsema info jaoks vaata privaatsussätteid.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Mitte praegu";
@@ -350,7 +350,7 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Näita privaatsussätteid";
 
-/* Accessibility label to toggle front vs. rear facing camera */
+/* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Vaheta kaamera suunda";
 
 /* Accessibility label to switch to audio only */
@@ -399,10 +399,10 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Kutsu";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Anna süsteemi sätetes Signalile ligipääs enda kontaktidele, et näha, millised sinu kontaktidest on Signali kasutajad.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "See toiming lähtestab rakenduse, kustutades kõik sõnumid ja eemaldades su serverist. Pärast andmete kustutamist rakendus suletakse.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Kas sa tõesti soovid enda kontot kustutada?";
@@ -591,16 +591,16 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Lisa kontaktidesse";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Jaga enda profiili selle kasutajaga";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "See kasutaja ei ole sinu kontaktides.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Rohkem sõnumite laadimine...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Klõpsa rohkema nägemiseks";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokeeri see kasutaja";
@@ -718,7 +718,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Tsenseerimisest möödahiilimise asukoht";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Sul on võimalik anda ligipääsu rakenduses Settings.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kontakti info muutmiseks vajab Signal ligipääsu kontaktidele";
@@ -745,7 +745,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Uuenda";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Sa oled muutnud seda gruppi. Kas sa soovid neid muudatusi salvestada?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Salvestamata muudatused";
@@ -763,10 +763,10 @@
 "EMAIL_INVITE_SUBJECT" = "Lülitume Signalile";
 
 /* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "Mitteaktiivsed vestlused on võimalik postkastist arhiveerida hilisemaks kasutamiseks.";
+"EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations from your Inbox.";
 
 /* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "Korista vestlusi.";
+"EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversation List";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Ükski sinu kontaktidest ei kasuta Signalit.";
@@ -781,10 +781,10 @@
 "EMPTY_INBOX_NEW_USER_TITLE" = "Alusta esimest Signali-vestlust!";
 
 /* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "Mitte ühtegi. Zero. Zilch. Nada.";
+"EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Täiesti tühi.";
+"EMPTY_INBOX_TITLE" = "Inbox Zero";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Kinnita enda PIN.";
@@ -832,16 +832,16 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Sõnumi saatmine ei õnnestunud.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Pole võimalik saata aegunud privaatsusandmete tõttu.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kasutajale sõnumi saatmine ei õnnestunud, sest sa oled ta blokeerinud.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Ei õnnestunud manuse kirjutamise ebaõnnestumise tõttu.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signalil ei õnnestunud Internetti ühenduda. Palun proovi mõnda teist WiFi-võrku või kasuta mobiilset andmesidet.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
@@ -856,7 +856,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Vigane vastus teenuselt.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "See seade ei ole enam sinu telefoninumbri jaoks registreeritud. Sa pead Signali eemaldama ja uuesti paigaldama.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serveri tõrge. Palun proovi hiljem uuesti.";
@@ -868,10 +868,10 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ei ole Signali kasutaja.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Tõrge: Palu saatjal Signalit uuendada ja saada uuesti.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Saabus duplikaatsõnum.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Saaja võti ei ole kehtiv.";
@@ -880,7 +880,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Saabunud sõnum polnud sünkroonis.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Saabunud sõnum ei ole Signali selle versiooniga ühilduv.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Kontakti jaoks pole seanssi saadaval.";
@@ -901,10 +901,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Registreerimata kasutaja: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Liiga palju ebaõnnestumisi selle kontaktiga. Palun proovi mõne aja pärast uuesti.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sinu turvanumber kasutajaga %@ on hiljuti muutunud. Kas sa soovid enne uuesti saatmist kinnitada?";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Turvanumbri kinnitamine ei õnnestunud!";
@@ -922,10 +922,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Selles vestluses pole meediafaile.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Uuema meedia laadimine...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Vanema meedia laadimine...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Manus";
@@ -979,7 +979,7 @@
 "GROUP_MEMBERS_CALL" = "Helista";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Eemalda kinnitus kõigilt";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "See eemaldab kinnituse kõigilt grupi liikmetelt, kelle turvanumbrid on muutunud alates viimasest verifitseerimisest.";
@@ -1015,7 +1015,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arhiveeritud vestlused";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Blokeeritud";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Otsi";
@@ -1033,7 +1033,7 @@
 "IN_CALL_CONNECTING" = "Ühendumine...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Ühenduse taastamine...";
+"IN_CALL_RECONNECTING" = "Reconnecting…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Helistamine...";
@@ -1045,10 +1045,10 @@
 "IN_CALL_TERMINATED" = "Kõne on lõppenud.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Need vestlused on arhiveeritud. Nad ilmuvad sisendkausta, kui saabub uusi sõnumeid.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Kontaktide nimede nägemiseks luba seadme sätetes ligipääs kontaktidele.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
 
 /* notification body */
 "INCOMING_CALL" = "Sissetulev kõne";
@@ -1069,7 +1069,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Vigane audiofail.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Kontaktide kutsumiseks pead andma Settings rakenduses Signalile ligipääsu enda kontaktidele.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Ligipääs kontaktidele";
@@ -1084,7 +1084,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Kutsu sõpru";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Mitme kasutaja korraga kutsumine saadab grupisõnumi, mille saajad näevad üksteist.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Sõnumid kaovad pärast %@.";
@@ -1099,13 +1099,13 @@
 "LEAVE_GROUP_ACTION" = "Lahku grupist";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "See ei ole kehtiv QR-kood. Tee kindlaks, et skannid QR-koodi seadmelt, mida soovid ühendada.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Seadme ühendamine ei õnnestunud";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "See seade saab näha sinu gruppe ja kontakte, lugeda sinu sõnumeid ja saata sõnumeid sinu nimel.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Kas ühendada see seade?";
@@ -1114,7 +1114,7 @@
 "LINK_DEVICE_RESTART" = "Proovi uuesti";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Ühendamiseks skanni seadmel kuvatav QR-kood.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Skanni QR-kood";
@@ -1168,16 +1168,16 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Kopeeri sõnumi tekst";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Kustuta see sõnum";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "See kustutatakse ainult sellest seadmest";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Rohkem infot";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Vasta sellele sõnumile";
+"MESSAGE_ACTION_REPLY" = "Reply to This Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SAVE_MEDIA" = "Salvesta meedia";
@@ -1258,7 +1258,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Saatmine ei õnnestunud";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Saatmine...";
+"MESSAGE_STATUS_SENDING" = "Sending…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Saadetud";
@@ -1270,7 +1270,7 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enam kinnitatuks märgitud. Klõpsa valikuteks.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "Sa blokeerisid selle kasutaja";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enam kinnitatuks märgitud. Klõpsa valikuteks.";
@@ -1279,7 +1279,7 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Sa blokeerisid selle grupi";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
@@ -1313,17 +1313,17 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Videokõnede tegemiseks vajab Signal ligipääsu sinu kaamerale. Seda õigust on võimalik anda rakenduses Settings: Privacy >> Camera >> Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab ligipääsu sinu kaamerale.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Sul on võimalik anda see õigus rakenduses Settings.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal nõuab selle teostamiseks ligipääsu meedialoendile.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Vastamata kõne kasutajalt %@.";
@@ -1332,7 +1332,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Rohkem seadmeid pole võimalik ühendada.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Oled jõudnud maksimaalse seadmete arvuni, mida on võimalik enda kontoga ühendada. Palun eemalda mõni seade või proovi hiljem uuesti ühendada.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Sa ei saa vaigistatud vestluste kohta teavitusi.";
@@ -1341,7 +1341,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Jäta vahele";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Palun kontrolli, kas oled Internetis ja proovi siis uuesti.";
+"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Tsenseerimisest möödahiilimine: Sees";
@@ -1365,7 +1365,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Leia telefoninumbri järgi";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Lisa telefoninumbri järgi";
+"NEW_GROUP_ADD_NON_CONTACT" = "Add by Phone Number";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Määra grupi foto";
@@ -1536,7 +1536,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Sinu kaaslane kasutab Signali vana versiooni. Ta peab kinnitamiseks kõigepealt rakendust uuendama.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud QR-kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signali versiooni?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Kui soovid kinnitada otspunktkrüpteerimist kasutajaga %@, siis võrdle ülalolevaid numbreid numbritega nende seadmes.\n\nTeise võimalusena saad skannida koodi tema telefonist või paluda tal sinu koodi skannida..";
@@ -1587,7 +1587,7 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvesta";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Salvestamine...";
+"PROFILE_VIEW_SAVING" = "Saving…";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profiil";
@@ -1616,7 +1616,7 @@
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Vastus minule endale";
 
-/* Footer label that appears below quoted messages when the quoted content was note derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
+/* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Algset sõnumit ei leitud.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
@@ -1707,7 +1707,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefoninumber";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "Keegi on enne esimese sõnumi saatmist põnevil! Sa pead  registreeruma enne selle tegevuse teostamist.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "Sinu telefoninumber";
@@ -1851,7 +1851,7 @@
 "SEND_INVITE_FAILURE" = "Kutse saatmine ei õnnestunud, palun proovi hiljem uuesti.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Sa kutsusid oma sõbra Signalit kasutama!";
+"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Kutsu SMS abil: %@";
@@ -1959,13 +1959,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alati edastada kõned";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vahenda kõnesid Signali serveri kaudu, et hoiduda oma IP-aadressi paljastamisest enda kontaktile. Selle lubamine vähendab kõne kvaliteeti.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Tühjenda suhtluste ajalugu";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Autoriõigus Open Whisper Systems \n Litsentsitud GPLv3 litsentsiga";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Kustuta konto";
@@ -1974,7 +1974,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Kustuta kõik andmed";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Kas sa tõesti soovid kustutada kogu ajaloo (sõnumid, manused, kõnede ajalugu ...)? Seda tegevust ei saa tagasi võtta.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Kustuta kõik";
@@ -2100,7 +2100,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Sinu turvanumber kasutajaga %@ on hiljuti muutunud. Sa võiksid selle enne uuesti saatmist põhirakenduses üle kinnitada.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Laadimine...";
+"SHARE_EXTENSION_LOADING" = "Loading…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Registreerimiseks käivita Signal rakendus.";
@@ -2217,7 +2217,7 @@
 "UNLINK_ACTION" = "Eemalda ühendus";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Eemaldades selle seadme ühenduse ei saa sellega enam sõnumeid saata ega saada.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Kas eemaldada ühendus \"%@\"?";
@@ -2241,7 +2241,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Sa ei saa grupi liikmeid eemaldada. Nad kas lahkuvad ise või lood uue grupi ilma selle liikmeta.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Pole lubatud";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Kõnedele vastamine lukustusekraanilt on iOSi kõnede integratsiooniga lihtne. Vaikimisi anonümiseerime helistaja andmed, nii et see on ka privaatne.";
@@ -2286,13 +2286,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Tere, turvalised videokõned!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal nõuab iOS 9 või uuemat. Palun uuenda iOS, valides rakenduses Settings >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please use the Software Update feature in the iOS Settings app.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Signali uuendamine...";
+"Upgrading Signal ..." = "Upgrading Signal…";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Tagasi";
