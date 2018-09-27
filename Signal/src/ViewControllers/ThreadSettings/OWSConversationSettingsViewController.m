@@ -250,9 +250,7 @@ const CGFloat kIconViewLength = 24;
             [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
     }
 
-    NSString *colorName = self.thread.conversationColorName;
-    OWSConversationColor *currentConversationColor = [OWSConversationColor conversationColorOrDefaultForColorName:colorName];
-    self.colorPicker = [[OWSColorPicker alloc] initWithCurrentConversationColor:currentConversationColor];
+    self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
     self.colorPicker.delegate = self;
 
     [self updateTableContents];
