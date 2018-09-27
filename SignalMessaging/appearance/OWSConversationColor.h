@@ -8,16 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor : NSObject
 
+@property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) UIColor *primaryColor;
 @property (nonatomic, readonly) UIColor *shadeColor;
 @property (nonatomic, readonly) UIColor *tintColor;
 
 @property (nonatomic, readonly) UIColor *themeColor;
 
-+ (OWSConversationColor *)conversationColorWithPrimaryColor:(UIColor *)primaryColor
-                                                 shadeColor:(UIColor *)shadeColor
-                                                  tintColor:(UIColor *)tintColor;
-
++ (OWSConversationColor *)conversationColorWithName:(NSString *)name
+                                       primaryColor:(UIColor *)primaryColor
+                                         shadeColor:(UIColor *)shadeColor
+                                          tintColor:(UIColor *)tintColor;
 #pragma mark - Conversation Colors
 
 @property (class, readonly, nonatomic) UIColor *ows_crimsonColor;

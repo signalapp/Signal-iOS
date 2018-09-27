@@ -22,6 +22,7 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSUserProfile.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
@@ -41,7 +42,8 @@ const CGFloat kIconViewLength = 24;
 
 @interface OWSConversationSettingsViewController () <ContactEditingDelegate,
     ContactsViewHelperDelegate,
-    ColorPickerDelegate>
+    ColorPickerDelegate,
+    OWSSheetViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
@@ -57,6 +59,7 @@ const CGFloat kIconViewLength = 24;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
+@property (nonatomic) OWSColorPicker *colorPicker;
 
 @end
 
@@ -246,6 +249,11 @@ const CGFloat kIconViewLength = 24;
         self.disappearingMessagesConfiguration =
             [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
     }
+
+    NSString *colorName = self.thread.conversationColorName;
+    OWSConversationColor *currentConversationColor = [OWSConversationColor conversationColorOrDefaultForColorName:colorName];
+    self.colorPicker = [[OWSColorPicker alloc] initWithCurrentConversationColor:currentConversationColor];
+    self.colorPicker.delegate = self;
 
     [self updateTableContents];
 }
@@ -1299,18 +1307,22 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showColorPicker
 {
-    ColorPickerViewController *pickerController = [[ColorPickerViewController alloc] initWithThread:self.thread];
-    pickerController.delegate = self;
-    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:pickerController];
+    OWSSheetViewController *sheetViewController = self.colorPicker.sheetViewController;
+    sheetViewController.delegate = self;
 
-    [self presentViewController:modal animated:YES completion:nil];
+    [self presentViewController:sheetViewController
+                       animated:YES
+                     completion:^() {
+                         OWSLogInfo(@"presented sheet view");
+                     }];
 }
 
-- (void)colorPicker:(ColorPickerViewController *)colorPicker didPickColorName:(NSString *)colorName
+- (void)colorPicker:(OWSColorPicker *)colorPicker
+    didPickConversationColor:(OWSConversationColor *_Nonnull)conversationColor
 {
-    OWSLogDebug(@"picked color: %@", colorName);
+    OWSLogDebug(@"picked color: %@", conversationColor.name);
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.thread updateConversationColorName:colorName transaction:transaction];
+        [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
     }];
 
     [self.contactsManager.avatarCache removeAllImages];
@@ -1323,11 +1335,11 @@ const CGFloat kIconViewLength = 24;
         OWSAssertDebug(operation.isReady);
         [operation start];
     });
-
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)colorPickerDidCancel:(ColorPickerViewController *)colorPicker
+#pragma mark - OWSSheetViewController
+
+- (void)sheetViewControllerRequestedDismiss:(OWSSheetViewController *)sheetViewController
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }

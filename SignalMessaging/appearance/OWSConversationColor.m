@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor ()
 
+@property (nonatomic) NSString *name;
 @property (nonatomic) UIColor *primaryColor;
 @property (nonatomic) UIColor *shadeColor;
 @property (nonatomic) UIColor *tintColor;
@@ -20,20 +21,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSConversationColor
 
-+ (OWSConversationColor *)conversationColorWithPrimaryColor:(UIColor *)primaryColor
-                                                 shadeColor:(UIColor *)shadeColor
-                                                  tintColor:(UIColor *)tintColor
++ (OWSConversationColor *)conversationColorWithName:(NSString *)name
+                                       primaryColor:(UIColor *)primaryColor
+                                         shadeColor:(UIColor *)shadeColor
+                                          tintColor:(UIColor *)tintColor
 {
     OWSConversationColor *instance = [OWSConversationColor new];
+    instance.name = name;
     instance.primaryColor = primaryColor;
     instance.shadeColor = shadeColor;
     instance.tintColor = tintColor;
     return instance;
 }
 
+#pragma mark -
+
 - (UIColor *)themeColor
 {
     return Theme.isDarkThemeEnabled ? self.shadeColor : self.primaryColor;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isKindOfClass:[OWSConversationColor class]]) {
+        return NO;
+    }
+    
+    OWSConversationColor *otherColor = (OWSConversationColor *)other;
+    return [self.name isEqual:otherColor.name];
 }
 
 #pragma mark - Conversation Colors
@@ -350,8 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(primaryColor);
     OWSAssertDebug(shadeColor);
     OWSAssertDebug(tintColor);
-    return
-        [OWSConversationColor conversationColorWithPrimaryColor:primaryColor shadeColor:shadeColor tintColor:tintColor];
+    return [OWSConversationColor conversationColorWithName:conversationColorName primaryColor:primaryColor shadeColor:shadeColor tintColor:tintColor];
 }
 
 + (OWSConversationColor *)conversationColorOrDefaultForColorName:(NSString *)conversationColorName

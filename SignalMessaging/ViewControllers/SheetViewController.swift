@@ -19,6 +19,7 @@ public class SheetViewController: UIViewController {
     public let contentView: UIView = UIView()
 
     private let sheetView: SheetView = SheetView()
+    private let handleView: UIView = UIView()
 
     deinit {
         Logger.verbose("")
@@ -97,7 +98,6 @@ public class SheetViewController: UIViewController {
     fileprivate func animateDismiss(completion: @escaping (Bool) -> Void) {
         guard let sheetViewVerticalConstraint = self.sheetViewVerticalConstraint else {
             owsFailDebug("sheetVerticalConstraint was unexpectedly nil")
-            //                self.delegate?.sheetViewDidHide(self)
             return
         }
 
