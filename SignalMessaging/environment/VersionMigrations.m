@@ -69,8 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
                                                              style:UIAlertActionStyleDefault
                                                            handler:^(UIAlertAction *_Nonnull action) {
-                                                               [DDLog flushLog];
-                                                               exit(0);
+                                                               OWSFail(@"Obsolete install.");
                                                            }];
         [alertController addAction:quitAction];
 
