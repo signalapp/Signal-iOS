@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(diameter > 0);
 
-    NSString *colorName = [UIColor ows_defaultConversationColorName];
+    NSString *colorName = [OWSConversationColor defaultConversationColorName];
 
     return [self initWithSignalId:localNumber colorName:colorName diameter:diameter];
 }
@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
         initials = [[initials substringWithRange:stringRange] mutableCopy];
     }
 
-    UIColor *color = [UIColor ows_conversationColorOrDefaultForColorName:self.colorName].themeColor;
+    UIColor *color = [OWSConversationColor conversationColorOrDefaultForColorName:self.colorName].themeColor;
     OWSAssertDebug(color);
 
     UIImage *_Nullable image;

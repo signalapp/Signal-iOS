@@ -54,7 +54,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     required init(thread: TSThread) {
         self.thread = thread
         self.pickerView = UIPickerView()
-        self.colorNames = UIColor.ows_conversationColorNames
+        self.colorNames = OWSConversationColor.conversationColorNames
 
         super.init(nibName: nil, bundle: nil)
 
@@ -110,9 +110,9 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
             owsFailDebug("color was unexpectedly nil")
             return ColorView(color: .white)
         }
-        guard let colors = UIColor.ows_conversationColor(colorName: colorName) else {
+        guard let colors = OWSConversationColor.conversationColor(colorName: colorName) else {
             owsFailDebug("unknown color name")
-            return ColorView(color: UIColor.ows_defaultConversationColor().themeColor)
+            return ColorView(color: OWSConversationColor.default().themeColor)
         }
         return ColorView(color: colors.themeColor)
     }
@@ -123,7 +123,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         let index = pickerView.selectedRow(inComponent: 0)
         guard let colorName = colorNames[safe: index] else {
             owsFailDebug("index was unexpectedly nil")
-            return UIColor.ows_defaultConversationColorName()
+            return OWSConversationColor.defaultConversationColorName()
         }
         return colorName
     }

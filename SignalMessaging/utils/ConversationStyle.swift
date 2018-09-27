@@ -137,7 +137,7 @@ public class ConversationStyle: NSObject {
     private class func conversationColor(thread: TSThread) -> OWSConversationColor {
         let colorName = thread.conversationColorName
 
-        return UIColor.ows_conversationColorOrDefault(colorName: colorName)
+        return OWSConversationColor.conversationColorOrDefault(colorName: colorName)
     }
 
     @objc
