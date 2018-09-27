@@ -64,7 +64,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
                                    [self drawInitialsInAvatar:face
                                                     textColor:self.avatarForegroundColor
-                                                         font:self.avatarTextFont
+                                                         font:[self avatarTextFontForDiameter:diameter]
                                                      diameter:diameter];
                                }];
 }
@@ -74,9 +74,11 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     return (Theme.isDarkThemeEnabled ? UIColor.ows_gray05Color : UIColor.ows_whiteColor);
 }
 
-+ (UIFont *)avatarTextFont
++ (UIFont *)avatarTextFontForDiameter:(NSUInteger)diameter
 {
-    return [UIFont ows_mediumFontWithSize:20.f];
+    // Adapt the font size to reflect the diameter.
+    CGFloat fontSize = 20.f * diameter / kStandardAvatarSize;
+    return [UIFont ows_mediumFontWithSize:fontSize];
 }
 
 + (nullable UIImage *)avatarImageWithInitials:(NSString *)initials
@@ -86,7 +88,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     return [self avatarImageWithInitials:initials
                          backgroundColor:backgroundColor
                                textColor:self.avatarForegroundColor
-                                    font:self.avatarTextFont
+                                    font:[self avatarTextFontForDiameter:diameter]
                                 diameter:diameter];
 }
 
