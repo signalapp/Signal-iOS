@@ -129,16 +129,24 @@ NS_ASSUME_NONNULL_BEGIN
         initials = [[initials substringWithRange:stringRange] mutableCopy];
     }
 
-    if (initials.length == 0) {
-        // We don't have a name for this contact, so we can't make an "initials" image
-        [initials appendString:@"#"];
-    }
-
     UIColor *color = [UIColor ows_conversationColorOrDefaultForColorName:self.colorName].themeColor;
     OWSAssertDebug(color);
 
-    UIImage *_Nullable image =
-        [OWSAvatarBuilder avatarImageWithInitials:initials backgroundColor:color diameter:self.diameter];
+    UIImage *_Nullable image;
+    if (initials.length == 0) {
+        // We don't have a name for this contact, so we can't make an "initials" image.
+
+        UIImage *icon = [UIImage imageNamed:@"contact-avatar"];
+        // The contact-avatar asset is designed for the kStandardAvatarSize.
+        // Adjust its size to reflect the actual output diameter.
+        CGFloat scaling = self.diameter / (CGFloat)kStandardAvatarSize;
+        CGSize iconSize = CGSizeScale(icon.size, scaling);
+        image =
+            [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:color diameter:self.diameter];
+    } else {
+        image = [OWSAvatarBuilder avatarImageWithInitials:initials backgroundColor:color diameter:self.diameter];
+    }
+
     if (!image) {
         OWSFailDebug(@"Could not generate avatar.");
         return nil;
