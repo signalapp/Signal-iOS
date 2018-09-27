@@ -66,8 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-    UIColor *backgroundColor =
-        [UIColor ows_conversationColorForColorName:conversationColorName isShaded:Theme.isDarkThemeEnabled];
+    UIColor *backgroundColor = [UIColor ows_conversationColorForColorName:conversationColorName].themeColor;
     UIImage *_Nullable image =
         [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
     if (!image) {

@@ -82,8 +82,8 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let colorName = thread.conversationColorName,
-            let index = colorNames.index(of: colorName) {
+        let colorName = thread.conversationColorName
+        if let index = colorNames.index(of: colorName) {
             pickerView.selectRow(index, inComponent: 0, animated: false)
         }
     }
@@ -110,12 +110,11 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
             owsFailDebug("color was unexpectedly nil")
             return ColorView(color: .white)
         }
-        guard let color = UIColor.ows_conversationColor(colorName: colorName,
-                                                        isShaded: Theme.isDarkThemeEnabled) else {
+        guard let colors = UIColor.ows_conversationColor(colorName: colorName) else {
             owsFailDebug("unknown color name")
-            return ColorView(color: .white)
+            return ColorView(color: UIColor.ows_defaultConversationColor().themeColor)
         }
-        return ColorView(color: color)
+        return ColorView(color: colors.themeColor)
     }
 
     // MARK: Actions

@@ -3,6 +3,7 @@
 //
 
 #import "UIUtil.h"
+#import "Theme.h"
 #import "UIColor+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 

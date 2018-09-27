@@ -7,6 +7,7 @@
 #import "OWSGroupAvatarBuilder.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
+#import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
