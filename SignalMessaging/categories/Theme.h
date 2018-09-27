@@ -57,12 +57,4 @@ extern NSString *const ThemeDidChangeNotification;
 
 @end
 
-#pragma mark -
-
-@interface OWSConversationColors (Theme)
-
-@property (nonatomic, readonly) UIColor *themeColor;
-
-@end
-
 NS_ASSUME_NONNULL_END

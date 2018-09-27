@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-@interface OWSConversationColors ()
+@interface OWSConversationColor ()
 
 @property (nonatomic) UIColor *defaultColor;
 @property (nonatomic) UIColor *shadeColor;
@@ -20,17 +20,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSConversationColors
+@implementation OWSConversationColor
 
-+ (OWSConversationColors *)conversationColorsWithDefaultColor:(UIColor *)defaultColor
-                                                   shadeColor:(UIColor *)shadeColor
-                                                    tintColor:(UIColor *)tintColor
++ (OWSConversationColor *)conversationColorWithDefaultColor:(UIColor *)defaultColor
+                                                 shadeColor:(UIColor *)shadeColor
+                                                  tintColor:(UIColor *)tintColor
 {
-    OWSConversationColors *instance = [OWSConversationColors new];
+    OWSConversationColor *instance = [OWSConversationColor new];
     instance.defaultColor = defaultColor;
     instance.shadeColor = shadeColor;
     instance.tintColor = tintColor;
     return instance;
+}
+
+- (UIColor *)themeColor
+{
+    return Theme.isDarkThemeEnabled ? self.shadeColor : self.defaultColor;
 }
 
 @end
@@ -488,7 +493,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.ows_conversationColorMap.allKeys;
 }
 
-+ (nullable OWSConversationColors *)ows_conversationColorsForColorName:(NSString *)conversationColorName
++ (nullable OWSConversationColor *)ows_conversationColorForColorName:(NSString *)conversationColorName
 {
     UIColor *_Nullable defaultColor = self.ows_conversationColorMap[conversationColorName];
     UIColor *_Nullable shadeColor = self.ows_conversationColorMapShade[conversationColorName];
@@ -499,19 +504,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(defaultColor);
     OWSAssertDebug(shadeColor);
     OWSAssertDebug(tintColor);
-    return [OWSConversationColors conversationColorsWithDefaultColor:defaultColor
-                                                          shadeColor:shadeColor
-                                                           tintColor:tintColor];
+    return
+        [OWSConversationColor conversationColorWithDefaultColor:defaultColor shadeColor:shadeColor tintColor:tintColor];
 }
 
-+ (OWSConversationColors *)ows_conversationColorsOrDefaultForColorName:(NSString *)conversationColorName
++ (OWSConversationColor *)ows_conversationColorOrDefaultForColorName:(NSString *)conversationColorName
 {
-    OWSConversationColors *_Nullable conversationColors =
-        [self ows_conversationColorsForColorName:conversationColorName];
-    if (conversationColors) {
-        return conversationColors;
+    OWSConversationColor *_Nullable conversationColor = [self ows_conversationColorForColorName:conversationColorName];
+    if (conversationColor) {
+        return conversationColor;
     }
-    return [self ows_defaultConversationColors];
+    return [self ows_defaultConversationColor];
 }
 
 + (NSString *)ows_defaultConversationColorName
@@ -521,9 +524,9 @@ NS_ASSUME_NONNULL_BEGIN
     return conversationColorName;
 }
 
-+ (OWSConversationColors *)ows_defaultConversationColors
++ (OWSConversationColor *)ows_defaultConversationColor
 {
-    return [self ows_conversationColorsForColorName:self.ows_defaultConversationColorName];
+    return [self ows_conversationColorForColorName:self.ows_defaultConversationColorName];
 }
 
 // TODO: Remove

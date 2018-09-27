@@ -6,15 +6,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSConversationColors : NSObject
+@interface OWSConversationColor : NSObject
 
 @property (nonatomic, readonly) UIColor *defaultColor;
 @property (nonatomic, readonly) UIColor *shadeColor;
 @property (nonatomic, readonly) UIColor *tintColor;
 
-+ (OWSConversationColors *)conversationColorsWithDefaultColor:(UIColor *)defaultColor
-                                                   shadeColor:(UIColor *)shadeColor
-                                                    tintColor:(UIColor *)tintColor;
+@property (nonatomic, readonly) UIColor *themeColor;
+
++ (OWSConversationColor *)conversationColorWithDefaultColor:(UIColor *)defaultColor
+                                                 shadeColor:(UIColor *)shadeColor
+                                                  tintColor:(UIColor *)tintColor;
 
 @end
 
@@ -109,18 +111,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Conversation Colors
 
-+ (nullable OWSConversationColors *)ows_conversationColorsForColorName:(NSString *)colorName
-    NS_SWIFT_NAME(ows_conversationColors(colorName:));
++ (nullable OWSConversationColor *)ows_conversationColorForColorName:(NSString *)colorName
+    NS_SWIFT_NAME(ows_conversationColor(colorName:));
 
 // If the conversation color name is valid, return its colors.
 // Otherwise return the "default" conversation colors.
-+ (OWSConversationColors *)ows_conversationColorsOrDefaultForColorName:(NSString *)conversationColorName
-    NS_SWIFT_NAME(ows_conversationColorsOrDefault(colorName:));
++ (OWSConversationColor *)ows_conversationColorOrDefaultForColorName:(NSString *)conversationColorName
+    NS_SWIFT_NAME(ows_conversationColorOrDefault(colorName:));
 
 @property (class, readonly, nonatomic) NSArray<NSString *> *ows_conversationColorNames;
 
 + (NSString *)ows_defaultConversationColorName;
-+ (OWSConversationColors *)ows_defaultConversationColors;
++ (OWSConversationColor *)ows_defaultConversationColor;
 
 // TODO: Remove
 @property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;

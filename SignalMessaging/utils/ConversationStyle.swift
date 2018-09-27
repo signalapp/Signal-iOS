@@ -64,7 +64,7 @@ public class ConversationStyle: NSObject {
     public required init(thread: TSThread) {
 
         self.thread = thread
-        self.conversationColors = ConversationStyle.conversationColors(thread: thread)
+        self.conversationColor = ConversationStyle.conversationColor(thread: thread)
 
         super.init()
 
@@ -126,18 +126,18 @@ public class ConversationStyle: NSObject {
 
         lastTextLineAxis = CGFloat(round(baseFontOffset + messageTextFont.capHeight * 0.5))
 
-        self.conversationColors = ConversationStyle.conversationColors(thread: thread)
+        self.conversationColor = ConversationStyle.conversationColor(thread: thread)
     }
 
     // MARK: Colors
 
     @objc
-    public var conversationColors: OWSConversationColors
+    public var conversationColor: OWSConversationColor
 
-    private class func conversationColors(thread: TSThread) -> OWSConversationColors {
+    private class func conversationColor(thread: TSThread) -> OWSConversationColor {
         let colorName = thread.conversationColorName
 
-        return UIColor.ows_conversationColorsOrDefault(colorName: colorName)
+        return UIColor.ows_conversationColorOrDefault(colorName: colorName)
     }
 
     @objc
@@ -162,7 +162,7 @@ public class ConversationStyle: NSObject {
         if isIncoming {
             return ConversationStyle.defaultBubbleColorIncoming
         } else {
-            return conversationColors.defaultColor
+            return conversationColor.defaultColor
         }
     }
 
@@ -203,16 +203,16 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
-            return conversationColors.shadeColor
+            return conversationColor.shadeColor
         } else {
-            return conversationColors.tintColor
+            return conversationColor.tintColor
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return conversationColors.defaultColor
+            return conversationColor.defaultColor
         } else {
             return Theme.backgroundColor
         }
