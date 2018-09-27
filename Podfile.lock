@@ -204,10 +204,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: c058f3bdf4e11f378d3232b0031526c7611c20e0
+    :commit: 7b2af262204af6f5dcdc2986571c5a72400f7e04
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: ff5407362fda87b1acea1785de3d43df6ef3ff52
+    :commit: a4f46bd621bb2bcbf1a44b360e8ac4209e410ee9
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
@@ -229,7 +229,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: 3a8d57041c5b162425cc40773ea6276c0c838c9d
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
-  Curve25519Kit: d4741ff66e7d92b70316e72476ea1f91495ab51b
+  Curve25519Kit: 57ee34550081f405ded707384b3ea9bb3a4c8308
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 0445c3158e15137c845bee690a59755ac4360469
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
