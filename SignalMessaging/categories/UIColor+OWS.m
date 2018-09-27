@@ -519,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)ows_defaultConversationColorName
 {
-    NSString *conversationColorName = @"teal";
+    NSString *conversationColorName = @"steel";
     OWSAssert([self.ows_conversationColorNames containsObject:conversationColorName]);
     return conversationColorName;
 }

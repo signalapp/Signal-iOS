@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(diameter > 0);
 
-    NSString *colorName = [TSThread stableConversationColorNameForString:localNumber];
+    NSString *colorName = [UIColor ows_defaultConversationColorName];
 
     return [self initWithSignalId:localNumber colorName:colorName diameter:diameter];
 }
