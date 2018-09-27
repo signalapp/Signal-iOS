@@ -1967,10 +1967,11 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssertDebug(messageToQuote);
                 OWSLogVerbose(@"%@", label);
                 [DDLog flushLog];
-                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
-                                                                                     isGroupThread:thread.isGroupThread
-                                                                                       transaction:transaction
-                                                                                 conversationStyle:conversationStyle];
+                id<ConversationViewItem> viewItem =
+                    [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
+                                                                   isGroupThread:thread.isGroupThread
+                                                                     transaction:transaction
+                                                               conversationStyle:conversationStyle];
                 quotedMessage = [
                     [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
                     buildQuotedMessageForSending];
@@ -1986,10 +1987,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   transaction:transaction];
                 OWSAssertDebug(messageToQuote);
 
-                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
-                                                                                     isGroupThread:thread.isGroupThread
-                                                                                       transaction:transaction
-                                                                                 conversationStyle:conversationStyle];
+                id<ConversationViewItem> viewItem =
+                    [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
+                                                                   isGroupThread:thread.isGroupThread
+                                                                     transaction:transaction
+                                                               conversationStyle:conversationStyle];
                 quotedMessage = [
                     [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
                     buildQuotedMessageForSending];

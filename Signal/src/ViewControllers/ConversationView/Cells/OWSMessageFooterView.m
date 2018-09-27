@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem
+- (void)configureWithConversationViewItem:(id<ConversationViewItem>)viewItem
                         isOverlayingMedia:(BOOL)isOverlayingMedia
                         conversationStyle:(ConversationStyle *)conversationStyle
                                isIncoming:(BOOL)isIncoming
@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.statusIndicatorImageView.layer addAnimation:animation forKey:@"animation"];
 }
 
-- (BOOL)isFailedOutgoingMessage:(ConversationViewItem *)viewItem
+- (BOOL)isFailedOutgoingMessage:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
 
@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
     return messageStatus == MessageReceiptStatusFailed;
 }
 
-- (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
+- (void)configureLabelsWithConversationViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
 
@@ -217,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.timestampLabel.text = timestampLabelText.localizedUppercaseString;
 }
 
-- (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
+- (CGSize)measureWithConversationViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
 
@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeCeil(result);
 }
 
-- (nullable NSString *)messageStatusTextForConversationViewItem:(ConversationViewItem *)viewItem
+- (nullable NSString *)messageStatusTextForConversationViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
     if (viewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage) {

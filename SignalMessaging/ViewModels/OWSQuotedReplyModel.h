@@ -6,7 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ConversationViewItem;
+@protocol ConversationViewItem;
+
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
@@ -42,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  transaction:(YapDatabaseReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
-+ (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(ConversationViewItem *)conversationItem
++ (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
                                                            transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessageForSending;

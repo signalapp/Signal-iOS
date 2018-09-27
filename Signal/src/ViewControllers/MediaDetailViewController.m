@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIButton *shareButton;
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
-@property (nonatomic, nullable) ConversationViewItem *viewItem;
+@property (nonatomic, nullable) id<ConversationViewItem> viewItem;
 @property (nonatomic, nullable) UIImage *image;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
-                              viewItem:(ConversationViewItem *_Nullable)viewItem
+                              viewItem:(nullable id<ConversationViewItem>)viewItem
 {
     self = [super initWithNibName:nil bundle:nil];
     if (!self) {

@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                    thumbnailDownloadFailed:thumbnailDownloadFailed];
 }
 
-+ (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(ConversationViewItem *)conversationItem
++ (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
                                                            transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssertDebug(conversationItem);

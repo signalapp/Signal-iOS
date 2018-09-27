@@ -5,16 +5,17 @@
 extern const CGFloat OWSMessageHeaderViewDateHeaderVMargin;
 
 @class ConversationStyle;
-@class ConversationViewItem;
+
+@protocol ConversationViewItem;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageHeaderView : UIStackView
 
-- (void)loadForDisplayWithViewItem:(ConversationViewItem *)viewItem
+- (void)loadForDisplayWithViewItem:(id<ConversationViewItem>)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle;
 
-- (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
+- (CGSize)measureWithConversationViewItem:(id<ConversationViewItem>)viewItem
                         conversationStyle:(ConversationStyle *)conversationStyle;
 
 @end

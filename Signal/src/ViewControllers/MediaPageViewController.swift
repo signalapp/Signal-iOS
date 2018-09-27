@@ -479,10 +479,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             let message = galleryItem.message
             let thread = message.thread(with: transaction)
             let conversationStyle = ConversationStyle(thread: thread)
-            fetchedItem = ConversationViewItem(interaction: message,
-                                               isGroupThread: thread.isGroupThread(),
-                                               transaction: transaction,
-                                               conversationStyle: conversationStyle)
+            fetchedItem = ConversationInteractionViewItem(interaction: message,
+                                                          isGroupThread: thread.isGroupThread(),
+                                                          transaction: transaction,
+                                                          conversationStyle: conversationStyle)
         }
 
         guard let viewItem = fetchedItem else {

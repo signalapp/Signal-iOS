@@ -175,8 +175,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationViewLayout *layout;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
-@property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
-@property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
+@property (nonatomic) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic) NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache;
 
 @property (nonatomic, nullable) AVAudioRecorder *audioRecorder;
 @property (nonatomic, nullable) OWSAudioPlayer *audioAttachmentPlayer;
@@ -717,7 +717,7 @@ typedef enum : NSUInteger {
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
 {
     NSInteger row = 0;
-    for (ConversationViewItem *viewItem in self.viewItems) {
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
         if (viewItem.unreadIndicator) {
             return [NSIndexPath indexPathForRow:row inSection:0];
         }
@@ -1553,7 +1553,7 @@ typedef enum : NSUInteger {
     OWSLogInfo(@"didChangePreferredContentSize");
 
     // Evacuate cached cell sizes.
-    for (ConversationViewItem *viewItem in self.viewItems) {
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
         [viewItem clearCachedLayoutState];
     }
     [self resetContentAndLayout];
@@ -1933,12 +1933,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - MessageActionsDelegate
 
-- (void)messageActionsShowDetailsForItem:(ConversationViewItem *)conversationViewItem
+- (void)messageActionsShowDetailsForItem:(id<ConversationViewItem>)conversationViewItem
 {
     [self showDetailViewForViewItem:conversationViewItem];
 }
 
-- (void)messageActionsReplyToItem:(ConversationViewItem *)conversationViewItem
+- (void)messageActionsReplyToItem:(id<ConversationViewItem>)conversationViewItem
 {
     [self populateReplyForViewItem:conversationViewItem];
 }
@@ -2006,27 +2006,32 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions = [viewItem mediaActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions =
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions =
+        [ConversationViewItemActions textActionsWithConversationViewItem:viewItem delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions = [viewItem quotedMessageActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions =
+        [ConversationViewItemActions quotedMessageActionsWithConversationViewItem:viewItem delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell
+    didLongpressSystemMessageViewItem:(id<ConversationViewItem>)viewItem
 {
-    NSArray<MenuAction *> *messageActions = [viewItem infoMessageActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions =
+        [ConversationViewItemActions infoMessageActionsWithConversationViewItem:viewItem delegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
@@ -2141,7 +2146,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - OWSMessageBubbleViewDelegate
 
-- (void)didTapImageViewItem:(ConversationViewItem *)viewItem
+- (void)didTapImageViewItem:(id<ConversationViewItem>)viewItem
            attachmentStream:(TSAttachmentStream *)attachmentStream
                   imageView:(UIView *)imageView
 {
@@ -2172,7 +2177,7 @@ typedef enum : NSUInteger {
     [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
 
-- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
+- (void)didTapVideoViewItem:(id<ConversationViewItem>)viewItem
            attachmentStream:(TSAttachmentStream *)attachmentStream
                   imageView:(UIImageView *)imageView
 {
@@ -2201,7 +2206,7 @@ typedef enum : NSUInteger {
     [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
 
-- (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
@@ -2231,7 +2236,7 @@ typedef enum : NSUInteger {
     [self.audioAttachmentPlayer playWithPlaybackAudioCategory];
 }
 
-- (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem
+- (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationItem);
@@ -2241,7 +2246,7 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
-- (void)didTapContactShareViewItem:(ConversationViewItem *)conversationItem
+- (void)didTapContactShareViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationItem);
@@ -2276,7 +2281,7 @@ typedef enum : NSUInteger {
     [self.contactShareViewHelper showAddToContactsWithContactShare:contactShare fromViewController:self];
 }
 
-- (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
+- (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAssertIsOnMainThread();
@@ -2296,7 +2301,7 @@ typedef enum : NSUInteger {
     [self handleUnsentMessageTap:message];
 }
 
-- (void)didTapConversationItem:(ConversationViewItem *)viewItem
+- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem
                                  quotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
@@ -2334,7 +2339,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply
+- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
@@ -2469,7 +2474,7 @@ typedef enum : NSUInteger {
     return @(groupIndex);
 }
 
-- (void)showDetailViewForViewItem:(ConversationViewItem *)conversationItem
+- (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationItem);
@@ -2484,7 +2489,7 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
-- (void)populateReplyForViewItem:(ConversationViewItem *)conversationItem
+- (void)populateReplyForViewItem:(id<ConversationViewItem>)conversationItem
 {
     OWSLogDebug(@"user did tap reply");
 
@@ -2559,7 +2564,7 @@ typedef enum : NSUInteger {
 
     NSIndexPath *_Nullable indexPathOfUnreadIndicator = [self indexPathOfUnreadMessagesIndicator];
     if (indexPathOfUnreadIndicator) {
-        ConversationViewItem *oldIndicatorItem = [self viewItemForIndex:indexPathOfUnreadIndicator.row];
+        id<ConversationViewItem> oldIndicatorItem = [self viewItemForIndex:indexPathOfUnreadIndicator.row];
         OWSAssertDebug(oldIndicatorItem);
 
         // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
@@ -2673,7 +2678,7 @@ typedef enum : NSUInteger {
     BOOL isScrolledUp = scrollSpaceToBottom > pageHeight * 1.f;
 
     if (self.viewItems.count > 0) {
-        ConversationViewItem *lastViewItem = [self.viewItems lastObject];
+        id<ConversationViewItem> lastViewItem = [self.viewItems lastObject];
         OWSAssertDebug(lastViewItem);
 
         if (lastViewItem.interaction.timestampForSorting > self.lastVisibleTimestamp) {
@@ -3289,7 +3294,7 @@ typedef enum : NSUInteger {
             case YapDatabaseViewChangeUpdate: {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
                 if (collectionKey.key) {
-                    ConversationViewItem *_Nullable viewItem = self.viewItemCache[collectionKey.key];
+                    id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[collectionKey.key];
                     if (viewItem) {
                         [self reloadInteractionForViewItem:viewItem];
                     } else {
@@ -3373,7 +3378,8 @@ typedef enum : NSUInteger {
                         (unsigned long)rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
 
-                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
+                    id<ConversationViewItem> _Nullable viewItem =
+                        [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
@@ -3508,7 +3514,7 @@ typedef enum : NSUInteger {
                 isOnlyModifyingLastMessage = NO;
                 break;
             case YapDatabaseViewChangeInsert: {
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
+                id<ConversationViewItem> _Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                 if (([viewItem.interaction isKindOfClass:[TSIncomingMessage class]] ||
                         [viewItem.interaction isKindOfClass:[TSOutgoingMessage class]])
                     && rowChange.finalIndex >= oldViewItemCount) {
@@ -3524,7 +3530,7 @@ typedef enum : NSUInteger {
                 if (rowChange.changes == YapDatabaseViewChangedDependency) {
                     continue;
                 }
-                ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
+                id<ConversationViewItem> _Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                 if (([viewItem.interaction isKindOfClass:[TSIncomingMessage class]] ||
                         [viewItem.interaction isKindOfClass:[TSOutgoingMessage class]])
                     && rowChange.finalIndex >= oldViewItemCount) {
@@ -3855,7 +3861,7 @@ typedef enum : NSUInteger {
     return lastVisibleIndexPath;
 }
 
-- (nullable ConversationViewItem *)lastVisibleViewItem
+- (nullable id<ConversationViewItem>)lastVisibleViewItem
 {
     NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
     if (!lastVisibleIndexPath) {
@@ -3870,7 +3876,7 @@ typedef enum : NSUInteger {
 - (void)didScrollToBottom
 {
 
-    ConversationViewItem *_Nullable lastVisibleViewItem = [self.viewItems lastObject];
+    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self.viewItems lastObject];
     if (lastVisibleViewItem) {
         uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
@@ -3883,7 +3889,7 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleTimestamp
 {
-    ConversationViewItem *_Nullable lastVisibleViewItem = [self lastVisibleViewItem];
+    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self lastVisibleViewItem];
     if (lastVisibleViewItem) {
         uint64_t lastVisibleTimestamp = lastVisibleViewItem.interaction.timestampForSorting;
         self.lastVisibleTimestamp = MAX(self.lastVisibleTimestamp, lastVisibleTimestamp);
@@ -4640,7 +4646,7 @@ typedef enum : NSUInteger {
         // any new items inserted while we were not observing.  We therefore find the
         // first item at or after the "view horizon".  See the comments below which explain
         // the "view horizon".
-        ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
+        id<ConversationViewItem> _Nullable lastViewItem = self.viewItems.lastObject;
         BOOL hasAddedNewItems = (lastViewItem && previousLastTimestamp
             && lastViewItem.interaction.timestamp > previousLastTimestamp.unsignedLongLongValue);
 
@@ -4671,7 +4677,7 @@ typedef enum : NSUInteger {
         // We'll use this later to update the view to reflect any changes made while
         // we were not observing the database.  See extendRangeToIncludeUnobservedItems
         // and the logic above.
-        ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
+        id<ConversationViewItem> _Nullable lastViewItem = self.viewItems.lastObject;
         if (lastViewItem) {
             self.previousLastTimestamp = @(lastViewItem.interaction.timestamp);
         } else {
@@ -4717,7 +4723,7 @@ typedef enum : NSUInteger {
         NSUInteger mid = (left + right) / 2;
         OWSAssertDebug(left <= mid);
         OWSAssertDebug(mid < right);
-        ConversationViewItem *viewItem  = self.viewItems[mid];
+        id<ConversationViewItem> viewItem = self.viewItems[mid];
         if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
             right = mid;
         } else {
@@ -4726,7 +4732,7 @@ typedef enum : NSUInteger {
         }
     }
     OWSAssertDebug(left == right);
-    ConversationViewItem *viewItem  = self.viewItems[left];
+    id<ConversationViewItem> viewItem = self.viewItems[left];
     if (viewItem.interaction.timestamp >= viewHorizonTimestamp) {
         OWSLogInfo(@"firstIndexPathAtViewHorizonTimestamp: %zd / %zd", left, self.viewItems.count);
         return [NSIndexPath indexPathForRow:(NSInteger) left inSection:0];
@@ -4860,8 +4866,8 @@ typedef enum : NSUInteger {
 // Returns NO on error.
 - (BOOL)reloadViewItems
 {
-    NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
-    NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
+    NSMutableArray<id<ConversationViewItem>> *viewItems = [NSMutableArray new];
+    NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache = [NSMutableDictionary new];
 
     NSUInteger count = [self.messageMappings numberOfItemsInSection:0];
     BOOL isGroupThread = self.isGroupConversation;
@@ -4890,12 +4896,12 @@ typedef enum : NSUInteger {
                 continue;
             }
 
-            ConversationViewItem *_Nullable viewItem = self.viewItemCache[interaction.uniqueId];
+            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
             if (!viewItem) {
-                viewItem = [[ConversationViewItem alloc] initWithInteraction:interaction
-                                                               isGroupThread:isGroupThread
-                                                                 transaction:transaction
-                                                           conversationStyle:self.conversationStyle];
+                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
+                                                                          isGroupThread:isGroupThread
+                                                                            transaction:transaction
+                                                                      conversationStyle:self.conversationStyle];
             }
             [viewItems addObject:viewItem];
             OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
@@ -4916,7 +4922,7 @@ typedef enum : NSUInteger {
     uint64_t collapseCutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:self.collapseCutoffDate];
 
     BOOL hasPlacedUnreadIndicator = NO;
-    for (ConversationViewItem *viewItem in viewItems) {
+    for (id<ConversationViewItem> viewItem in viewItems) {
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
             case OWSInteractionType_Unknown:
@@ -4992,9 +4998,9 @@ typedef enum : NSUInteger {
     //
     // NOTE: This logic uses the break properties which are set in the previous pass.
     for (NSUInteger i = 0; i < viewItems.count; i++) {
-        ConversationViewItem *viewItem = viewItems[i];
-        ConversationViewItem *_Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
-        ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
+        id<ConversationViewItem> viewItem = viewItems[i];
+        id<ConversationViewItem> _Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
+        id<ConversationViewItem> _Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
         BOOL shouldShowSenderAvatar = NO;
         BOOL shouldHideFooter = NO;
         BOOL isFirstInCluster = YES;
@@ -5143,7 +5149,7 @@ typedef enum : NSUInteger {
 
 // Whenever an interaction is modified, we need to reload it from the DB
 // and update the corresponding view item.
-- (void)reloadInteractionForViewItem:(ConversationViewItem *)viewItem
+- (void)reloadInteractionForViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
@@ -5164,7 +5170,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (nullable ConversationViewItem *)viewItemForIndex:(NSInteger)index
+- (nullable id<ConversationViewItem>)viewItemForIndex:(NSInteger)index
 {
     if (index < 0 || index >= (NSInteger)self.viewItems.count) {
         OWSFailDebug(@"Invalid view item index: %lu", (unsigned long)index);
@@ -5183,7 +5189,7 @@ typedef enum : NSUInteger {
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:indexPath.row];
+    id<ConversationViewItem> _Nullable viewItem = [self viewItemForIndex:indexPath.row];
     ConversationViewCell *cell = [viewItem dequeueCellForCollectionView:self.collectionView indexPath:indexPath];
     if (!cell) {
         OWSFailDebug(@"Could not dequeue cell.");

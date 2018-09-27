@@ -7,14 +7,15 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
-@class ConversationViewItem;
 @class TSAttachmentStream;
+
+@protocol ConversationViewItem;
 
 @interface OWSAudioMessageView : UIStackView
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
                         isIncoming:(BOOL)isIncoming
-                          viewItem:(ConversationViewItem *)viewItem
+                          viewItem:(id<ConversationViewItem>)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle;
 
 - (void)createContents;
