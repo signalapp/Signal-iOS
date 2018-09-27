@@ -168,11 +168,13 @@ public class ConversationStyle: NSObject {
 
     @objc
     public static var bubbleTextColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_white : UIColor.ows_gray90
+        return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
     }
 
     @objc
-    public static var bubbleTextColorOutgoing = UIColor.ows_white
+    public static var bubbleTextColorOutgoing: UIColor {
+        return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+    }
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
@@ -197,7 +199,27 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
+        if Theme.isDarkThemeEnabled {
+            // Incoming, dark.
+            return UIColor.ows_gray25
+        } else {
+            // Incoming, light.
+            return UIColor.ows_gray60
+        }
+    }
+
+    @objc
+    public func footerTextColor(isIncoming: Bool) -> UIColor {
+        if !isIncoming {
+            // All Outgoing
+            return UIColor.ows_white.withAlphaComponent(0.8)
+        } else if Theme.isDarkThemeEnabled {
+            // Incoming, dark.
+            return UIColor.ows_gray25
+        } else {
+            // Incoming, light.
+            return UIColor.ows_gray60
+        }
     }
 
     @objc
