@@ -1487,7 +1487,6 @@
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		7D2CD666214C3C9C004E957A /* RelayDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelayDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D2CD667214C3C9C004E957A /* RelayDev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "RelayDev-Info.plist"; path = "/Users/markd/Forsta/Relay-iOS-App/RelayDev-Info.plist"; sourceTree = "<absolute>"; };
 		7D2CD668214C3DE4004E957A /* RelayDev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDev.entitlements; sourceTree = "<group>"; };
 		7D2CD681214C46BC004E957A /* RelayDevShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelayDevShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D2CD683214C491B004E957A /* RelayDevShareExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDevShareExtension.entitlements; sourceTree = "<group>"; };
@@ -1544,6 +1543,7 @@
 		7D8517E9211CB19B00F9EF53 /* EvpMessageDigest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpMessageDigest.h; sourceTree = "<group>"; };
 		7D8517EA211CB19C00F9EF53 /* EvpUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpUtil.h; sourceTree = "<group>"; };
 		7D8517EB211CB19C00F9EF53 /* EvpSymetricUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EvpSymetricUtil.h; sourceTree = "<group>"; };
+		7D95D84B215C5E99000E783D /* RelayDev-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RelayDev-Info.plist"; sourceTree = "<group>"; };
 		7DD5A72B211B7B1000965478 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
 		7DD5A72C211B7B1000965478 /* HttpRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpRequest.m; sourceTree = "<group>"; };
 		7DD5A72E211B7C7000965478 /* HttpRequestOrResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequestOrResponse.h; sourceTree = "<group>"; };
@@ -3000,7 +3000,7 @@
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				D221A099169C9E5E00537ABF /* main.m */,
 				D221A095169C9E5E00537ABF /* Relay-Info.plist */,
-				7D2CD667214C3C9C004E957A /* RelayDev-Info.plist */,
+				7D95D84B215C5E99000E783D /* RelayDev-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Relay-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -4663,7 +4663,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayShareExtension-Info.plist";
+				INFOPLIST_FILE = "RelayShareExtension/RelayShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -4739,7 +4739,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayShareExtension-Info.plist";
+				INFOPLIST_FILE = "RelayShareExtension/RelayShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -4777,12 +4777,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 231;
+				DYLIB_CURRENT_VERSION = 232;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4795,7 +4795,7 @@
 				GCC_PREFIX_HEADER = "RelayMessaging/RelayMessaging-Prefix.pch";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayMessaging/Info.plist";
+				INFOPLIST_FILE = RelayMessaging/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -4849,12 +4849,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 231;
+				DYLIB_CURRENT_VERSION = 232;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4872,7 +4872,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayMessaging/Info.plist";
+				INFOPLIST_FILE = RelayMessaging/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -4908,7 +4908,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/RelayDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4935,7 +4935,7 @@
 					"\"$(SRCROOT)/MMDrawerController\"",
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/RelayDev-Info.plist";
+				INFOPLIST_FILE = "Relay/RelayDev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -4975,7 +4975,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/RelayDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5002,7 +5002,7 @@
 					"\"$(SRCROOT)/MMDrawerController\"",
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/RelayDev-Info.plist";
+				INFOPLIST_FILE = "Relay/RelayDev-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -5067,7 +5067,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayDevShareExtension-Info.plist";
+				INFOPLIST_FILE = "RelayShareExtension/RelayDevShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -5145,7 +5145,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/RelayShareExtension/RelayDevShareExtension-Info.plist";
+				INFOPLIST_FILE = "RelayShareExtension/RelayDevShareExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -5191,7 +5191,7 @@
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5264,7 +5264,7 @@
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -5324,7 +5324,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/Relay.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5351,7 +5351,7 @@
 					"\"$(SRCROOT)/MMDrawerController\"",
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Relay/Relay-Info.plist";
+				INFOPLIST_FILE = "Relay/Relay-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -5389,7 +5389,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/Relay.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 231;
+				CURRENT_PROJECT_VERSION = 232;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5416,7 +5416,7 @@
 					"\"$(SRCROOT)/MMDrawerController\"",
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Relay/Relay-Info.plist";
+				INFOPLIST_FILE = "Relay/Relay-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
