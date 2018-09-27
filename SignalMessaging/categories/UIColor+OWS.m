@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor ()
 
-@property (nonatomic) UIColor *defaultColor;
+@property (nonatomic) UIColor *primaryColor;
 @property (nonatomic) UIColor *shadeColor;
 @property (nonatomic) UIColor *tintColor;
 
@@ -22,12 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSConversationColor
 
-+ (OWSConversationColor *)conversationColorWithDefaultColor:(UIColor *)defaultColor
++ (OWSConversationColor *)conversationColorWithPrimaryColor:(UIColor *)primaryColor
                                                  shadeColor:(UIColor *)shadeColor
                                                   tintColor:(UIColor *)tintColor
 {
     OWSConversationColor *instance = [OWSConversationColor new];
-    instance.defaultColor = defaultColor;
+    instance.primaryColor = primaryColor;
     instance.shadeColor = shadeColor;
     instance.tintColor = tintColor;
     return instance;
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)themeColor
 {
-    return Theme.isDarkThemeEnabled ? self.shadeColor : self.defaultColor;
+    return Theme.isDarkThemeEnabled ? self.shadeColor : self.primaryColor;
 }
 
 @end
@@ -495,17 +495,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable OWSConversationColor *)ows_conversationColorForColorName:(NSString *)conversationColorName
 {
-    UIColor *_Nullable defaultColor = self.ows_conversationColorMap[conversationColorName];
+    UIColor *_Nullable primaryColor = self.ows_conversationColorMap[conversationColorName];
     UIColor *_Nullable shadeColor = self.ows_conversationColorMapShade[conversationColorName];
     UIColor *_Nullable tintColor = self.ows_conversationColorMapTint[conversationColorName];
-    if (!defaultColor || !shadeColor || !tintColor) {
+    if (!primaryColor || !shadeColor || !tintColor) {
         return nil;
     }
-    OWSAssertDebug(defaultColor);
+    OWSAssertDebug(primaryColor);
     OWSAssertDebug(shadeColor);
     OWSAssertDebug(tintColor);
     return
-        [OWSConversationColor conversationColorWithDefaultColor:defaultColor shadeColor:shadeColor tintColor:tintColor];
+        [OWSConversationColor conversationColorWithPrimaryColor:primaryColor shadeColor:shadeColor tintColor:tintColor];
 }
 
 + (OWSConversationColor *)ows_conversationColorOrDefaultForColorName:(NSString *)conversationColorName

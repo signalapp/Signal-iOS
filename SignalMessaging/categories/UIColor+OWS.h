@@ -8,13 +8,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor : NSObject
 
-@property (nonatomic, readonly) UIColor *defaultColor;
+@property (nonatomic, readonly) UIColor *primaryColor;
 @property (nonatomic, readonly) UIColor *shadeColor;
 @property (nonatomic, readonly) UIColor *tintColor;
 
 @property (nonatomic, readonly) UIColor *themeColor;
 
-+ (OWSConversationColor *)conversationColorWithDefaultColor:(UIColor *)defaultColor
++ (OWSConversationColor *)conversationColorWithPrimaryColor:(UIColor *)primaryColor
                                                  shadeColor:(UIColor *)shadeColor
                                                   tintColor:(UIColor *)tintColor;
 

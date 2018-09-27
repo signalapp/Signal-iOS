@@ -289,7 +289,7 @@ const CGFloat kIconViewLength = 24;
                              itemWithCustomCellBlock:^{
                                  NSString *colorName = self.thread.conversationColorName;
                                  UIColor *currentColor =
-                                     [UIColor ows_conversationColorForColorName:colorName].themeColor;
+                                     [UIColor ows_conversationColorOrDefaultForColorName:colorName].themeColor;
                                  NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
                                      @"Label for table cell which leads to picking a new conversation color");
                                  return [weakSelf disclosureCellWithName:title iconColor:currentColor];

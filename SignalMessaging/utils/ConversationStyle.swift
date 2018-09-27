@@ -162,7 +162,7 @@ public class ConversationStyle: NSObject {
         if isIncoming {
             return ConversationStyle.defaultBubbleColorIncoming
         } else {
-            return conversationColor.defaultColor
+            return conversationColor.primaryColor
         }
     }
 
@@ -212,7 +212,7 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if isIncoming {
-            return conversationColor.defaultColor
+            return conversationColor.primaryColor
         } else {
             return Theme.backgroundColor
         }
