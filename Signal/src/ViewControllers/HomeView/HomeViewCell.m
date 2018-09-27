@@ -334,9 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord
-                                                         diameter:self.avatarSize
-                                                  contactsManager:contactsManager];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord diameter:self.avatarSize];
 }
 
 - (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread isBlocked:(BOOL)isBlocked
@@ -427,7 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return 48.f;
+    return kStandardAvatarSize;
 }
 
 - (NSUInteger)avatarHSpacing

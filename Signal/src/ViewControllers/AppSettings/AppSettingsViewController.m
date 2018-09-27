@@ -280,7 +280,6 @@
     cell.contentView.preservesSuperviewLayoutMargins = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-    const NSUInteger kAvatarSize = 68;
     // TODO: Replace this icon.
     UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
     UIImage *avatarImage = (localProfileAvatarImage
@@ -295,8 +294,8 @@
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     if (!localProfileAvatarImage) {
         UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];

@@ -117,7 +117,14 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
 
         for (TSGroupModel *blockedGroup in blockedGroups) {
-            UIImage *image = blockedGroup.groupImage ?: OWSGroupAvatarBuilder.defaultGroupImage;
+            UIImage *_Nullable image = blockedGroup.groupImage;
+            if (!image) {
+                NSString *conversationColorName =
+                    [TSGroupThread defaultConversationColorNameForGroupId:blockedGroup.groupId];
+                image = [OWSGroupAvatarBuilder defaultAvatarForGroupId:blockedGroup.groupId
+                                                 conversationColorName:conversationColorName
+                                                              diameter:kStandardAvatarSize];
+            }
             NSString *groupName
                 = blockedGroup.groupName.length > 0 ? blockedGroup.groupName : TSGroupThread.defaultGroupName;
 

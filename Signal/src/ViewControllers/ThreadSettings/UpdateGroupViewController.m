@@ -179,15 +179,14 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    const CGFloat kAvatarSize = 68.f;
     AvatarImageView *avatarView = [AvatarImageView new];
     _avatarView = avatarView;
 
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     _groupAvatar = self.thread.groupModel.groupImage;
     [self updateAvatarView];
 
@@ -397,7 +396,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    self.avatarView.image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar"]);
+    UIImage *_Nullable groupAvatar = self.groupAvatar;
+    if (!groupAvatar) {
+        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kLargeAvatarSize] build];
+    }
+    self.avatarView.image = groupAvatar;
 }
 
 #pragma mark - Event Handling

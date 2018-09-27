@@ -4,6 +4,7 @@
 
 #import "OWSTableViewController.h"
 #import "OWSNavigationController.h"
+#import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"

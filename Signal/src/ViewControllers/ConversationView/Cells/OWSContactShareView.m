@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)iconSize
 {
-    return 48.f;
+    return kStandardAvatarSize;
 }
 
 - (CGFloat)iconSize

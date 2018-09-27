@@ -1342,75 +1342,25 @@ NS_ASSUME_NONNULL_BEGIN
                          hasCaption:YES],
 
         [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
+                        actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingFailed]
+                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
+                        actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingFailed]
+                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
+                        actionLabel:@"Fake Outgoing 'Outgoing' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingFailed]
-                          textColor:[UIColor whiteColor]
-                         imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSent
-                         hasCaption:YES],
-
-        [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
-                          imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingSending]
-                          textColor:[UIColor whiteColor]
-                         imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateFailed
-                         hasCaption:YES],
-        [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
-                          imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingSending]
-                          textColor:[UIColor whiteColor]
-                         imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSending
-                         hasCaption:YES],
-        [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
-                          imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingSending]
-                          textColor:[UIColor whiteColor]
-                         imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSent
-                         hasCaption:YES],
-
-        [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
-                          imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingSent]
-                          textColor:[UIColor whiteColor]
-                         imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateFailed
-                         hasCaption:YES],
-        [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
-                          imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingSent]
-                          textColor:[UIColor whiteColor]
-                         imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSending
-                         hasCaption:YES],
-        [self fakeOutgoingPngAction:thread
-                        actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
-                          imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingSent]
+                    backgroundColor:[conversationStyle bubbleColorWithIsIncoming:NO]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
@@ -1578,7 +1528,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle primaryColor]
+                    backgroundColor:[conversationStyle conversationColor].primaryColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
@@ -1586,7 +1536,23 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingPngAction:thread
                         actionLabel:@"Fake Incoming 'Incoming' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle primaryColor]
+                    backgroundColor:[conversationStyle conversationColor].shadeColor
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+             isAttachmentDownloaded:YES
+                         hasCaption:YES],
+        [self fakeIncomingPngAction:thread
+                        actionLabel:@"Fake Incoming 'Incoming' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[conversationStyle conversationColor].primaryColor
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+             isAttachmentDownloaded:NO
+                         hasCaption:YES],
+        [self fakeIncomingPngAction:thread
+                        actionLabel:@"Fake Incoming 'Incoming' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[conversationStyle conversationColor].shadeColor
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO
