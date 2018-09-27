@@ -95,6 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Assign the latest persisted values from the database.
  */
 - (void)reload;
+- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  * Saves the object with the shared readWrite connection - does not block.

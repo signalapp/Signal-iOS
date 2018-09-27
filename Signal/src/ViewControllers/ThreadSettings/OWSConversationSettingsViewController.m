@@ -904,7 +904,9 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
+        // TODO - put these two saves in a single transaction
         [self.disappearingMessagesConfiguration save];
+        // MJK TODO - should be safe to remove this senderTimestamp
         OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
             [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                      initWithTimestamp:[NSDate ows_millisecondTimeStamp]

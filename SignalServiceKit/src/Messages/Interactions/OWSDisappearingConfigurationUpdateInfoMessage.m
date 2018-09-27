@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
             return [NSString stringWithFormat:infoFormat, self.createdByRemoteName];
         }
     } else {
-        // Changed by local request
+        // Changed by localNumber on this device or via synced transcript
         if (self.configurationIsEnabled && self.configurationDurationSeconds > 0) {
             NSString *infoFormat = NSLocalizedString(@"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                 @"Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context.");

@@ -49,7 +49,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/SelectRecipientViewController.h>
 #import <SignalMessaging/SharingThreadPickerViewController.h>
 #import <SignalMessaging/SignalKeyingStorage.h>
-#import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/ThreadViewHelper.h>

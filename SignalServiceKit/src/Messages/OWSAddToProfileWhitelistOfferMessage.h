@@ -1,14 +1,16 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInfoMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSAddToProfileWhitelistOfferMessage : TSInfoMessage
+// This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
+// TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
+__attribute__((deprecated)) @interface OWSAddToProfileWhitelistOfferMessage : TSInfoMessage
 
-+ (instancetype)addToProfileWhitelistOfferMessage:(uint64_t)timestamp thread:(TSThread *)thread;
++ (instancetype)addToProfileWhitelistOfferMessageWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread;
 
 @property (nonatomic, readonly) NSString *contactId;
 
