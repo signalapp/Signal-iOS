@@ -44,16 +44,27 @@ class OWS110SortIdMigration: OWSDatabaseMigration {
                 return
             }
 
+            let totalCount: UInt = legacySorting.numberOfItemsInAllGroups()
+            var completedCount: UInt = 0
             legacySorting.enumerateGroups { group, _ in
-                legacySorting.enumerateKeysAndObjects(inGroup: group) { (_, _, object, _, _) in
-                    guard let interaction = object as? TSInteraction else {
-                        owsFailDebug("unexpected object: \(type(of: object))")
-                        return
-                    }
+                autoreleasepool {
+                    legacySorting.enumerateKeysAndObjects(inGroup: group) { (_, _, object, _, _) in
+                        autoreleasepool {
+                            guard let interaction = object as? TSInteraction else {
+                                owsFailDebug("unexpected object: \(type(of: object))")
+                                return
+                            }
 
-                    interaction.saveNextSortId(transaction: transaction)
-                    // Legit usage of legacy sorting for migration to new sorting
-                    Logger.debug("thread: \(interaction.uniqueThreadId), timestampForLegacySorting:\(interaction.timestampForLegacySorting()), sortId: \(interaction.sortId)")
+                            interaction.saveNextSortId(transaction: transaction)
+
+                            completedCount += 1
+
+                            if completedCount % 100 == 0 {
+                                // Legit usage of legacy sorting for migration to new sorting
+                                Logger.info("thread: \(interaction.uniqueThreadId), timestampForLegacySorting:\(interaction.timestampForLegacySorting()), sortId: \(interaction.sortId) totalCount: \(totalCount), completedcount: \(completedCount)")
+                            }
+                        }
+                    }
                 }
             }
 
