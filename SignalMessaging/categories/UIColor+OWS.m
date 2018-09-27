@@ -488,6 +488,37 @@ NS_ASSUME_NONNULL_BEGIN
     return colorMap;
 }
 
++ (NSDictionary<NSString *, NSString *> *)ows_legacyConversationColorMap
+{
+    static NSDictionary<NSString *, NSString *> *colorMap;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorMap = @{
+            @"red" : @"crimson",
+            @"deep_orange" : @"crimson",
+            @"orange" : @"vermilion",
+            @"amber" : @"vermilion",
+            @"brown" : @"burlap",
+            @"yellow" : @"burlap",
+            @"pink" : @"plum",
+            @"purple" : @"violet",
+            @"deep_purple" : @"violet",
+            @"indigo" : @"indigo",
+            @"blue" : @"blue",
+            @"light_blue" : @"blue",
+            @"cyan" : @"teal",
+            @"teal" : @"teal",
+            @"green" : @"forest",
+            @"light_green" : @"wintergreen",
+            @"lime" : @"wintergreen",
+            @"blue_grey" : @"taupe",
+            @"grey" : @"steel",
+        };
+    });
+
+    return colorMap;
+}
+
 + (NSArray<NSString *> *)ows_conversationColorNames
 {
     return self.ows_conversationColorMap.allKeys;
@@ -495,6 +526,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable OWSConversationColor *)ows_conversationColorForColorName:(NSString *)conversationColorName
 {
+    NSString *_Nullable mappedColorName = self.ows_legacyConversationColorMap[conversationColorName.lowercaseString];
+    if (mappedColorName) {
+        conversationColorName = mappedColorName;
+    } else {
+        OWSAssertDebug(self.ows_conversationColorMap[conversationColorName] != nil);
+    }
+
     UIColor *_Nullable primaryColor = self.ows_conversationColorMap[conversationColorName];
     UIColor *_Nullable shadeColor = self.ows_conversationColorMapShade[conversationColorName];
     UIColor *_Nullable tintColor = self.ows_conversationColorMapTint[conversationColorName];
