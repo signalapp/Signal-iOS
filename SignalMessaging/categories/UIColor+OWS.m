@@ -3,7 +3,6 @@
 //
 
 #import "OWSMath.h"
-#import "Theme.h"
 #import "UIColor+OWS.h"
 #import <SignalServiceKit/Cryptography.h>
 
