@@ -4,138 +4,184 @@
 
 import Foundation
 
-let colorSwatchHeight: CGFloat = 40
+protocol ColorViewDelegate: class {
+    func colorViewWasTapped(_ colorView: ColorView)
+}
 
 class ColorView: UIView {
-    let color: UIColor
-    let swatchView: UIView
+    public weak var delegate: ColorViewDelegate?
+    public let conversationColor: OWSConversationColor
 
-    required init(color: UIColor) {
-        self.color = color
+    private let swatchView: UIView
+    private let selectedRing: UIView
+    public var isSelected: Bool = false {
+        didSet {
+            self.selectedRing.isHidden = !isSelected
+        }
+    }
+
+    required init(conversationColor: OWSConversationColor) {
+        self.conversationColor = conversationColor
         self.swatchView = UIView()
+        self.selectedRing = UIView()
 
         super.init(frame: .zero)
-
-        swatchView.backgroundColor = color
-
-        self.swatchView.layer.cornerRadius = colorSwatchHeight / 2
-
+        self.addSubview(selectedRing)
         self.addSubview(swatchView)
 
-        swatchView.autoVCenterInSuperview()
-        swatchView.autoSetDimension(.height, toSize: colorSwatchHeight)
-        swatchView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
-        swatchView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
-        swatchView.autoPinLeadingToSuperviewMargin()
-        swatchView.autoPinTrailingToSuperviewMargin()
+        let cellHeight: CGFloat = 64
+
+        selectedRing.autoSetDimensions(to: CGSize(width: cellHeight, height: cellHeight))
+        selectedRing.layer.cornerRadius = cellHeight / 2
+        selectedRing.layer.borderColor = Theme.secondaryColor.cgColor
+        selectedRing.layer.borderWidth = 2
+        selectedRing.autoPinEdgesToSuperviewEdges()
+        selectedRing.isHidden = true
+
+        swatchView.backgroundColor = conversationColor.primaryColor
+        let swatchSize: CGFloat = 48
+        self.swatchView.layer.cornerRadius = swatchSize / 2
+        swatchView.autoSetDimensions(to: CGSize(width: swatchSize, height: swatchSize))
+        swatchView.autoCenterInSuperview()
+
+        // gestures
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
+        self.addGestureRecognizer(tapGesture)
     }
 
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
+    }
+
+    // MARK: Actions
+
+    @objc
+    func didTap() {
+        delegate?.colorViewWasTapped(self)
     }
 }
 
 @objc
 protocol ColorPickerDelegate: class {
-    func colorPickerDidCancel(_ colorPicker: ColorPickerViewController)
-    func colorPicker(_ colorPicker: ColorPickerViewController, didPickColorName colorName: String)
+    func colorPicker(_ colorPicker: ColorPicker, didPickConversationColor conversationColor: OWSConversationColor)
 }
 
-@objc
-class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
-
-    private let pickerView: UIPickerView
-    private let thread: TSThread
-    private let colorNames: [String]
-
-    @objc public weak var delegate: ColorPickerDelegate?
+@objc(OWSColorPicker)
+class ColorPicker: NSObject, ColorPickerViewDelegate {
 
     @objc
-    required init(thread: TSThread) {
-        self.thread = thread
-        self.pickerView = UIPickerView()
-        self.colorNames = OWSConversationColor.conversationColorNames
+    public weak var delegate: ColorPickerDelegate?
 
-        super.init(nibName: nil, bundle: nil)
+    @objc
+    let sheetViewController: SheetViewController
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancel))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(didTapSave))
+    private let currentConversationColor: OWSConversationColor
 
-        pickerView.dataSource = self
-        pickerView.delegate = self
+    @objc
+    init(currentConversationColor: OWSConversationColor) {
+        self.currentConversationColor = currentConversationColor
+        sheetViewController = SheetViewController()
+
+        super.init()
+
+        let colorPickerView = ColorPickerView()
+        colorPickerView.delegate = self
+        colorPickerView.select(conversationColor: currentConversationColor)
+        sheetViewController.contentView.addSubview(colorPickerView)
+        colorPickerView.autoPinEdgesToSuperviewEdges()
+    }
+
+    // MARK: ColorPickerViewDelegate
+
+    func colorPickerView(_ colorPickerView: ColorPickerView, didPickConversationColor conversationColor: OWSConversationColor) {
+        self.delegate?.colorPicker(self, didPickConversationColor: conversationColor)
+    }
+}
+
+protocol ColorPickerViewDelegate: class {
+    func colorPickerView(_ colorPickerView: ColorPickerView, didPickConversationColor conversationColor: OWSConversationColor)
+}
+
+class ColorPickerView: UIView, ColorViewDelegate {
+
+    private let colorViews: [ColorView]
+    weak var delegate: ColorPickerViewDelegate?
+
+    override init(frame: CGRect) {
+        let allConversationColors = OWSConversationColor.conversationColorNames.map { OWSConversationColor.conversationColorOrDefault(colorName: $0) }
+
+        self.colorViews = allConversationColors.map { ColorView(conversationColor: $0) }
+
+        super.init(frame: frame)
+
+        colorViews.forEach { $0.delegate = self }
+
+        let headerView = self.buildHeaderView()
+        let paletteView = self.buildPaletteView(colorViews: colorViews)
+
+        let rowsStackView = UIStackView(arrangedSubviews: [headerView, paletteView])
+        rowsStackView.axis = .vertical
+        addSubview(rowsStackView)
+        rowsStackView.autoPinEdgesToSuperviewEdges()
     }
 
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
-    override func loadView() {
-        self.view = UIView()
-        view.backgroundColor = Theme.backgroundColor
-        view.addSubview(pickerView)
+    // MARK: ColorViewDelegate
 
-        pickerView.autoVCenterInSuperview()
-        pickerView.autoPinLeadingToSuperviewMargin()
-        pickerView.autoPinTrailingToSuperviewMargin()
+    func colorViewWasTapped(_ colorView: ColorView) {
+        self.select(conversationColor: colorView.conversationColor)
+        self.delegate?.colorPickerView(self, didPickConversationColor: colorView.conversationColor)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        let colorName = thread.conversationColorName
-        if let index = colorNames.index(of: colorName) {
-            pickerView.selectRow(index, inComponent: 0, animated: false)
+    fileprivate func select(conversationColor selectedConversationColor: OWSConversationColor) {
+        colorViews.forEach { colorView in
+            colorView.isSelected = colorView.conversationColor == selectedConversationColor
         }
     }
 
-    // MARK: UIPickerViewDataSource
+    // MARK: View Building
 
-    public func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
+    private func buildHeaderView() -> UIView {
+        let headerView = UIView()
+        headerView.layoutMargins = UIEdgeInsets(top: 15, left: 16, bottom: 15, right: 16)
+
+        let titleLabel = UILabel()
+        titleLabel.text = NSLocalizedString("COLOR_PICKER_SHEET_TITLE", comment: "Modal Sheet title when picking a conversation color.")
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        titleLabel.textColor = Theme.primaryColor
+
+        headerView.addSubview(titleLabel)
+        titleLabel.ows_autoPinToSuperviewMargins()
+
+        let bottomBorderView = UIView()
+        bottomBorderView.backgroundColor = Theme.hairlineColor
+        headerView.addSubview(bottomBorderView)
+        bottomBorderView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        bottomBorderView.autoSetDimension(.height, toSize: CGHairlineWidth())
+
+        return headerView
     }
 
-    public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return self.colorNames.count
-    }
+    private func buildPaletteView(colorViews: [ColorView]) -> UIView {
+        let paletteView = UIView()
+        paletteView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
 
-    // MARK: UIPickerViewDelegate
-
-    public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        let vMargin: CGFloat = 16
-        return colorSwatchHeight + vMargin * 2
-    }
-
-    public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        guard let colorName = colorNames[safe: row] else {
-            owsFailDebug("color was unexpectedly nil")
-            return ColorView(color: .white)
+        let kRowLength = 4
+        let rows: [UIView] = colorViews.chunked(by: kRowLength).map { colorViewsInRow in
+            let row = UIStackView(arrangedSubviews: colorViewsInRow)
+            row.distribution = UIStackViewDistribution.equalSpacing
+            return row
         }
-        guard let colors = OWSConversationColor.conversationColor(colorName: colorName) else {
-            owsFailDebug("unknown color name")
-            return ColorView(color: OWSConversationColor.default().themeColor)
-        }
-        return ColorView(color: colors.themeColor)
-    }
+        let rowsStackView = UIStackView(arrangedSubviews: rows)
+        rowsStackView.axis = .vertical
+        rowsStackView.spacing = ScaleFromIPhone5To7Plus(16, 50)
 
-    // MARK: Actions
-
-    var currentColorName: String {
-        let index = pickerView.selectedRow(inComponent: 0)
-        guard let colorName = colorNames[safe: index] else {
-            owsFailDebug("index was unexpectedly nil")
-            return OWSConversationColor.defaultConversationColorName()
-        }
-        return colorName
-    }
-
-    @objc
-    public func didTapSave() {
-        let colorName = self.currentColorName
-        self.delegate?.colorPicker(self, didPickColorName: colorName)
-    }
-
-    @objc
-    public func didTapCancel() {
-        self.delegate?.colorPickerDidCancel(self)
+        paletteView.addSubview(rowsStackView)
+        rowsStackView.ows_autoPinToSuperviewMargins()
+        return paletteView
     }
 }

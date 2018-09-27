@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor ()
 
+@property (nonatomic) NSString *name;
 @property (nonatomic) UIColor *primaryColor;
 @property (nonatomic) UIColor *shadeColor;
 @property (nonatomic) UIColor *tintColor;
@@ -20,23 +21,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSConversationColor
 
-+ (OWSConversationColor *)conversationColorWithPrimaryColor:(UIColor *)primaryColor
-                                                 shadeColor:(UIColor *)shadeColor
-                                                  tintColor:(UIColor *)tintColor
++ (OWSConversationColor *)conversationColorWithName:(NSString *)name
+                                       primaryColor:(UIColor *)primaryColor
+                                         shadeColor:(UIColor *)shadeColor
+                                          tintColor:(UIColor *)tintColor
 {
     OWSConversationColor *instance = [OWSConversationColor new];
+    instance.name = name;
     instance.primaryColor = primaryColor;
     instance.shadeColor = shadeColor;
     instance.tintColor = tintColor;
     return instance;
 }
 
+#pragma mark -
+
 - (UIColor *)themeColor
 {
     return Theme.isDarkThemeEnabled ? self.shadeColor : self.primaryColor;
 }
 
-#pragma mark - Conversation Colors
+- (BOOL)isEqual:(id)other
+{
+    if (![other isKindOfClass:[OWSConversationColor class]]) {
+        return NO;
+    }
+    
+    OWSConversationColor *otherColor = (OWSConversationColor *)other;
+    return [self.name isEqual:otherColor.name];
+}
+
+#pragma mark - Conversation Color (Primary)
 
 + (UIColor *)ows_crimsonColor
 {
@@ -222,75 +237,78 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRGBHex:0x5A5A63];
 }
 
-+ (NSDictionary<NSString *, UIColor *> *)conversationColorMap
++ (NSArray<OWSConversationColor *> *)allConversationColors
 {
-    static NSDictionary<NSString *, UIColor *> *colorMap;
+    static NSArray<OWSConversationColor *> *allConversationColors;
     static dispatch_once_t onceToken;
+
     dispatch_once(&onceToken, ^{
-        colorMap = @{
-            @"crimson" : self.ows_crimsonColor,
-            @"vermilion" : self.ows_vermilionColor,
-            @"burlap" : self.ows_burlapColor,
-            @"forest" : self.ows_forestColor,
-            @"wintergreen" : self.ows_wintergreenColor,
-            @"teal" : self.ows_tealColor,
-            @"blue" : self.ows_blueColor,
-            @"indigo" : self.ows_indigoColor,
-            @"violet" : self.ows_violetColor,
-            @"plum" : self.ows_plumColor,
-            @"taupe" : self.ows_taupeColor,
-            @"steel" : self.ows_steelColor,
-        };
+        // Order here affects the order in the conversation color picker.
+        allConversationColors = @[
+            [OWSConversationColor conversationColorWithName:@"crimson"
+                                               primaryColor:self.ows_crimsonColor
+                                                 shadeColor:self.ows_crimsonShadeColor
+                                                  tintColor:self.ows_crimsonTintColor],
+            [OWSConversationColor conversationColorWithName:@"vermilion"
+                                               primaryColor:self.ows_vermilionColor
+                                                 shadeColor:self.ows_vermilionShadeColor
+                                                  tintColor:self.ows_vermilionTintColor],
+            [OWSConversationColor conversationColorWithName:@"burlap"
+                                               primaryColor:self.ows_burlapColor
+                                                 shadeColor:self.ows_burlapShadeColor
+                                                  tintColor:self.ows_burlapTintColor],
+            [OWSConversationColor conversationColorWithName:@"forest"
+                                               primaryColor:self.ows_forestColor
+                                                 shadeColor:self.ows_forestShadeColor
+                                                  tintColor:self.ows_forestTintColor],
+            [OWSConversationColor conversationColorWithName:@"wintergreen"
+                                               primaryColor:self.ows_wintergreenColor
+                                                 shadeColor:self.ows_wintergreenShadeColor
+                                                  tintColor:self.ows_wintergreenTintColor],
+            [OWSConversationColor conversationColorWithName:@"teal"
+                                               primaryColor:self.ows_tealColor
+                                                 shadeColor:self.ows_tealShadeColor
+                                                  tintColor:self.ows_tealTintColor],
+            [OWSConversationColor conversationColorWithName:@"blue"
+                                               primaryColor:self.ows_blueColor
+                                                 shadeColor:self.ows_blueShadeColor
+                                                  tintColor:self.ows_blueTintColor],
+            [OWSConversationColor conversationColorWithName:@"indigo"
+                                               primaryColor:self.ows_indigoColor
+                                                 shadeColor:self.ows_indigoShadeColor
+                                                  tintColor:self.ows_indigoTintColor],
+            [OWSConversationColor conversationColorWithName:@"violet"
+                                               primaryColor:self.ows_violetColor
+                                                 shadeColor:self.ows_violetShadeColor
+                                                  tintColor:self.ows_violetTintColor],
+            [OWSConversationColor conversationColorWithName:@"plum"
+                                               primaryColor:self.ows_plumColor
+                                                 shadeColor:self.ows_plumShadeColor
+                                                  tintColor:self.ows_plumTintColor],
+            [OWSConversationColor conversationColorWithName:@"taupe"
+                                               primaryColor:self.ows_taupeColor
+                                                 shadeColor:self.ows_taupeShadeColor
+                                                  tintColor:self.ows_taupeTintColor],
+            [OWSConversationColor conversationColorWithName:@"steel"
+                                               primaryColor:self.ows_steelColor
+                                                 shadeColor:self.ows_steelShadeColor
+                                                  tintColor:self.ows_steelTintColor],
+        ];
     });
 
-    return colorMap;
+    return allConversationColors;
 }
 
-+ (NSDictionary<NSString *, UIColor *> *)conversationColorMapShade
++ (NSDictionary<NSString *, OWSConversationColor *> *)conversationColorMap
 {
-    static NSDictionary<NSString *, UIColor *> *colorMap;
+    static NSDictionary<NSString *, OWSConversationColor *> *colorMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        colorMap = @{
-            @"crimson" : self.ows_crimsonShadeColor,
-            @"vermilion" : self.ows_vermilionShadeColor,
-            @"burlap" : self.ows_burlapShadeColor,
-            @"forest" : self.ows_forestShadeColor,
-            @"wintergreen" : self.ows_wintergreenShadeColor,
-            @"teal" : self.ows_tealShadeColor,
-            @"blue" : self.ows_blueShadeColor,
-            @"indigo" : self.ows_indigoShadeColor,
-            @"violet" : self.ows_violetShadeColor,
-            @"plum" : self.ows_plumShadeColor,
-            @"taupe" : self.ows_taupeShadeColor,
-            @"steel" : self.ows_steelShadeColor,
-        };
-        OWSAssertDebug([self.conversationColorMap.allKeys isEqualToArray:colorMap.allKeys]);
-    });
-
-    return colorMap;
-}
-
-+ (NSDictionary<NSString *, UIColor *> *)conversationColorMapTint
-{
-    static NSDictionary<NSString *, UIColor *> *colorMap;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        colorMap = @{
-            @"crimson" : self.ows_crimsonTintColor,
-            @"vermilion" : self.ows_vermilionTintColor,
-            @"burlap" : self.ows_burlapTintColor,
-            @"forest" : self.ows_forestTintColor,
-            @"wintergreen" : self.ows_wintergreenTintColor,
-            @"teal" : self.ows_tealTintColor,
-            @"blue" : self.ows_blueTintColor,
-            @"indigo" : self.ows_indigoTintColor,
-            @"violet" : self.ows_violetTintColor,
-            @"plum" : self.ows_plumTintColor,
-            @"taupe" : self.ows_taupeTintColor,
-            @"steel" : self.ows_steelTintColor,
-        };
-        OWSAssertDebug([self.conversationColorMap.allKeys isEqualToArray:colorMap.allKeys]);
+        NSMutableDictionary<NSString *, OWSConversationColor *> *mutableColorMap = [NSMutableDictionary new];
+        for (OWSConversationColor *conversationColor in self.allConversationColors) {
+            mutableColorMap[conversationColor.name] = conversationColor;
+        }
+        colorMap = [mutableColorMap copy];
     });
 
     return colorMap;
@@ -329,7 +347,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *> *)conversationColorNames
 {
-    return self.conversationColorMap.allKeys;
+    NSMutableArray<NSString *> *names = [NSMutableArray new];
+    for (OWSConversationColor *conversationColor in self.allConversationColors) {
+        [names addObject:conversationColor.name];
+    }
+    return [names copy];
 }
 
 + (nullable OWSConversationColor *)conversationColorForColorName:(NSString *)conversationColorName
@@ -341,17 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(self.conversationColorMap[conversationColorName] != nil);
     }
 
-    UIColor *_Nullable primaryColor = self.conversationColorMap[conversationColorName];
-    UIColor *_Nullable shadeColor = self.conversationColorMapShade[conversationColorName];
-    UIColor *_Nullable tintColor = self.conversationColorMapTint[conversationColorName];
-    if (!primaryColor || !shadeColor || !tintColor) {
-        return nil;
-    }
-    OWSAssertDebug(primaryColor);
-    OWSAssertDebug(shadeColor);
-    OWSAssertDebug(tintColor);
-    return
-        [OWSConversationColor conversationColorWithPrimaryColor:primaryColor shadeColor:shadeColor tintColor:tintColor];
+    return self.conversationColorMap[conversationColorName];
 }
 
 + (OWSConversationColor *)conversationColorOrDefaultForColorName:(NSString *)conversationColorName
