@@ -22,7 +22,7 @@ import SignalServiceKit
 
         // Layout
 
-        avatarView.autoSetDimension(.width, toSize: CGFloat(kContactCellAvatarSize))
+        avatarView.autoSetDimension(.width, toSize: CGFloat(kStandardAvatarSize))
         avatarView.autoPinToSquareAspectRatio()
 
         let textRows = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
@@ -58,7 +58,7 @@ import SignalServiceKit
         }.joined(separator: ", ")
         self.subtitleLabel.text = groupMemberNames
 
-        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kContactCellAvatarSize, contactsManager: contactsManager)
+        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kStandardAvatarSize)
     }
 
 }

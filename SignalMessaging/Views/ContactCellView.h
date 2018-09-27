@@ -4,7 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const NSUInteger kContactCellAvatarSize;
 extern const CGFloat kContactCellAvatarTextMargin;
 
 @class OWSContactsManager;

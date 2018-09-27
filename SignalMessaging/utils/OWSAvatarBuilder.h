@@ -4,16 +4,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContactsManager;
+extern const NSUInteger kStandardAvatarSize;
+extern const NSUInteger kLargeAvatarSize;
+
 @class TSThread;
 @class UIImage;
 
 @interface OWSAvatarBuilder : NSObject
 
 + (nullable UIImage *)buildImageForThread:(TSThread *)thread
-                                 diameter:(NSUInteger)diameter
-                          contactsManager:(OWSContactsManager *)contactsManager
-    NS_SWIFT_NAME(buildImage(thread:diameter:contactsManager:));
+                                 diameter:(NSUInteger)diameter NS_SWIFT_NAME(buildImage(thread:diameter:));
 
 + (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter;
 
@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      diameter:(NSUInteger)diameter;
 
 + (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                                 iconSize:(CGSize)iconSize
                           backgroundColor:(UIColor *)backgroundColor
                                  diameter:(NSUInteger)diameter;
 

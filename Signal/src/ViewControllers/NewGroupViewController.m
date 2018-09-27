@@ -29,8 +29,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
-
 @interface NewGroupViewController () <UIImagePickerControllerDelegate,
     UITextFieldDelegate,
     ContactsViewHelperDelegate,
@@ -47,6 +45,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
+
+@property (nonatomic, readonly) NSData *groupId;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
@@ -86,6 +86,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)commonInit
 {
+    _groupId = [Randomness generateRandomBytes:16];
+
     _messageSender = SSKEnvironment.shared.messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _avatarViewHelper = [AvatarViewHelper new];
@@ -151,8 +153,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kNewGroupViewControllerAvatarWidth];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kNewGroupViewControllerAvatarWidth];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [OWSTextField new];
@@ -505,8 +507,10 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
-    NSData *groupId = [Randomness generateRandomBytes:16];
-    return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
+    return [[TSGroupModel alloc] initWithTitle:groupName
+                                     memberIds:recipientIds
+                                         image:self.groupAvatar
+                                       groupId:self.groupId];
 }
 
 #pragma mark - Group Avatar
@@ -529,7 +533,14 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)updateAvatarView
 {
-    self.avatarView.image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar"]);
+    UIImage *_Nullable groupAvatar = self.groupAvatar;
+    if (!groupAvatar) {
+        NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:self.groupId];
+        groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:self.groupId
+                                               conversationColorName:conversationColorName
+                                                            diameter:kLargeAvatarSize];
+    }
+    self.avatarView.image = groupAvatar;
 }
 
 #pragma mark - Event Handling

@@ -153,6 +153,6 @@ public class ConversationAvatarImageView: AvatarImageView {
     public func updateImage() {
         Logger.debug("updateImage")
 
-        self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter, contactsManager: contactsManager)
+        self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter)
     }
 }

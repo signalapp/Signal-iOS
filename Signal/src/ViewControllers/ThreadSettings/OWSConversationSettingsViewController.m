@@ -758,9 +758,7 @@ const CGFloat kIconViewLength = 24;
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    const NSUInteger kAvatarSize = 68;
-    UIImage *avatarImage =
-        [OWSAvatarBuilder buildImageForThread:self.thread diameter:kAvatarSize contactsManager:self.contactsManager];
+    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kLargeAvatarSize];
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
@@ -768,8 +766,8 @@ const CGFloat kIconViewLength = 24;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     UIView *threadNameView = [UIView containerView];
     [threadInfoView addSubview:threadNameView];
