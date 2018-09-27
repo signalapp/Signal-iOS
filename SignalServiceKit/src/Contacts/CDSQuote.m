@@ -48,6 +48,7 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 {
     ByteParser *_Nullable parser = [[ByteParser alloc] initWithData:quoteData littleEndian:YES];
 
+    // NOTE: This version is separate from and does _NOT_ match the signature body entity version.
     uint16_t version = parser.nextShort;
     if (version < 1 || version > 2) {
         OWSFailDebug(@"unexpected quote version: %d", (int)version);
