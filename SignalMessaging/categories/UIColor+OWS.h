@@ -31,12 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - ConversationColor
 
 + (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
-    NS_SWIFT_NAME(ows_conversationColor(colorName:));
-+ (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
-    NS_SWIFT_NAME(ows_conversationColorName(color:));
+                                               isShaded:(BOOL)isShaded
+    NS_SWIFT_NAME(ows_conversationColor(colorName:isShaded:));
 
 @property (class, readonly, nonatomic) NSArray<NSString *> *ows_conversationColorNames;
-@property (class, readonly, nonatomic) NSArray<UIColor *> *ows_conversationColors;
 
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
 
@@ -72,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_deepOrange900Color;
 @property (class, readonly, nonatomic) UIColor *ows_grey600Color;
 @property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;
+
++ (NSString *)ows_defaultConversationColorName;
 
 @end
 

@@ -3,20 +3,22 @@
 //
 
 #import "OWSAvatarBuilder.h"
-#import "JSQMessagesAvatarImageFactory.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSGroupAvatarBuilder.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
+#import "UIFont+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
+
 @implementation OWSAvatarBuilder
 
-+ (UIImage *)buildImageForThread:(TSThread *)thread
-                        diameter:(NSUInteger)diameter
-                 contactsManager:(OWSContactsManager *)contactsManager
++ (nullable UIImage *)buildImageForThread:(TSThread *)thread
+                                 diameter:(NSUInteger)diameter
+                          contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(contactsManager);
@@ -25,9 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         NSString *colorName = thread.conversationColorName;
-        UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
-                                                                    color:color
+                                                                colorName:colorName
                                                                  diameter:diameter
                                                           contactsManager:contactsManager];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -38,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [avatarBuilder build];
 }
 
-+ (UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter
++ (nullable UIImage *)buildRandomAvatarWithDiameter:(NSUInteger)diameter
 {
     NSArray<NSString *> *eyes = @[ @":", @"=", @"8", @"B" ];
     NSArray<NSString *> *mouths = @[ @"3", @")", @"(", @"|", @"\\", @"P", @"D", @"o" ];
@@ -50,34 +51,196 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *randomEyebrow = eyebrows[arc4random_uniform((uint32_t)eyebrows.count)];
     NSString *face = [NSString stringWithFormat:@"%@%@%@", randomEyebrow, randomEye, randomMouth];
 
-    CGFloat fontSize = (CGFloat)(diameter / 2.4);
+    UIColor *backgroundColor = [UIColor colorWithRGBHex:0xaca6633];
 
-    UIImage *srcImage =
-        [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:face
-                                                    backgroundColor:[UIColor colorWithRGBHex:0xaca6633]
-                                                          textColor:[UIColor whiteColor]
-                                                               font:[UIFont boldSystemFontOfSize:fontSize]
-                                                           diameter:diameter] avatarImage];
+    return [self avatarImageWithDiameter:diameter
+                         backgroundColor:backgroundColor
+                               drawBlock:^(CGContextRef context) {
+                                   CGContextTranslateCTM(context, diameter / 2, diameter / 2);
+                                   CGContextRotateCTM(context, (CGFloat)M_PI_2);
+                                   CGContextTranslateCTM(context, -diameter / 2, -diameter / 2);
 
-    UIGraphicsBeginImageContext(srcImage.size);
+                                   [self drawInitialsInAvatar:face
+                                                    textColor:self.avatarForegroundColor
+                                                         font:self.avatarTextFont
+                                                     diameter:diameter];
+                               }];
+}
 
-    CGContextRef context = UIGraphicsGetCurrentContext();
++ (UIColor *)avatarForegroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray05Color : UIColor.ows_whiteColor);
+}
 
-    CGFloat width = srcImage.size.width;
++ (UIFont *)avatarTextFont
+{
+    return [UIFont ows_mediumFontWithSize:20.f];
+}
 
-    // Rotate
-    CGContextTranslateCTM(context, width / 2, width / 2);
-    CGContextRotateCTM(context, (CGFloat)M_PI_2);
-    CGContextTranslateCTM(context, -width / 2, -width / 2);
++ (nullable UIImage *)avatarImageWithInitials:(NSString *)initials
+                              backgroundColor:(UIColor *)backgroundColor
+                                     diameter:(NSUInteger)diameter
+{
+    return [self avatarImageWithInitials:initials
+                         backgroundColor:backgroundColor
+                               textColor:self.avatarForegroundColor
+                                    font:self.avatarTextFont
+                                diameter:diameter];
+}
 
-    [srcImage drawAtPoint:CGPointMake(0, 0)];
++ (nullable UIImage *)avatarImageWithInitials:(NSString *)initials
+                              backgroundColor:(UIColor *)backgroundColor
+                                    textColor:(UIColor *)textColor
+                                         font:(UIFont *)font
+                                     diameter:(NSUInteger)diameter
+{
+    OWSAssertDebug(initials);
+    OWSAssertDebug(textColor);
+    OWSAssertDebug(font);
 
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    return [self avatarImageWithDiameter:diameter
+                         backgroundColor:backgroundColor
+                               drawBlock:^(CGContextRef context) {
+                                   [self drawInitialsInAvatar:initials textColor:textColor font:font diameter:diameter];
+                               }];
+}
+
++ (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                          backgroundColor:(UIColor *)backgroundColor
+                                 diameter:(NSUInteger)diameter
+{
+    return [self avatarImageWithIcon:icon
+                           iconColor:self.avatarForegroundColor
+                     backgroundColor:backgroundColor
+                            diameter:diameter];
+}
+
++ (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                                iconColor:(UIColor *)iconColor
+                          backgroundColor:(UIColor *)backgroundColor
+                                 diameter:(NSUInteger)diameter
+{
+    OWSAssertDebug(icon);
+    OWSAssertDebug(iconColor);
+
+    return [self avatarImageWithDiameter:diameter
+                         backgroundColor:backgroundColor
+                               drawBlock:^(CGContextRef context) {
+                                   [self drawIconInAvatar:icon iconColor:iconColor diameter:diameter];
+                               }];
+}
+
++ (nullable UIImage *)avatarImageWithDiameter:(NSUInteger)diameter
+                              backgroundColor:(UIColor *)backgroundColor
+                                    drawBlock:(OWSAvatarDrawBlock)drawBlock
+{
+    OWSAssertDebug(drawBlock);
+    OWSAssertDebug(backgroundColor);
+    OWSAssertDebug(diameter > 0);
+
+    CGRect frame = CGRectMake(0.0f, 0.0f, diameter, diameter);
+
+    UIGraphicsBeginImageContextWithOptions(frame.size, NO, [UIScreen mainScreen].scale);
+    CGContextRef _Nullable context = UIGraphicsGetCurrentContext();
+    if (!context) {
+        return nil;
+    }
+
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, frame);
+
+    // Gradient
+    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    CGFloat gradientLocations[] = { 0.0, 1.0 };
+    CGGradientRef _Nullable gradient = CGGradientCreateWithColors(colorspace,
+        (__bridge CFArrayRef) @[
+            (id)[UIColor colorWithWhite:0.f alpha:0.f].CGColor,
+            (id)[UIColor colorWithWhite:0.f alpha:0.15f].CGColor,
+        ],
+        gradientLocations);
+    if (!gradient) {
+        return nil;
+    }
+    CGPoint startPoint = CGPointMake(diameter * 0.5f, 0);
+    CGPoint endPoint = CGPointMake(diameter * 0.5f, diameter);
+    CGContextDrawLinearGradient(context,
+        gradient,
+        startPoint,
+        endPoint,
+        kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
+    CFRelease(gradient);
+
+    CGContextSaveGState(context);
+    drawBlock(context);
+    CGContextRestoreGState(context);
+
+    UIImage *_Nullable image = UIGraphicsGetImageFromCurrentImageContext();
+
     UIGraphicsEndImageContext();
+
     return image;
 }
 
-- (UIImage *)build
++ (void)drawInitialsInAvatar:(NSString *)initials
+                   textColor:(UIColor *)textColor
+                        font:(UIFont *)font
+                    diameter:(NSUInteger)diameter
+{
+    OWSAssertDebug(initials);
+    OWSAssertDebug(textColor);
+    OWSAssertDebug(font);
+    OWSAssertDebug(diameter > 0);
+
+    CGRect frame = CGRectMake(0.0f, 0.0f, diameter, diameter);
+
+    NSDictionary *textAttributes = @{
+        NSFontAttributeName : font,
+        NSForegroundColorAttributeName : textColor,
+    };
+    CGSize textSize =
+        [initials boundingRectWithSize:frame.size
+                               options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                            attributes:textAttributes
+                               context:nil]
+            .size;
+    // Ensure that the text fits within the avatar bounds, with a margin.
+    if (textSize.width > 0 && textSize.height > 0) {
+        CGFloat textDiameter = (CGFloat)sqrt(textSize.width * textSize.width + textSize.height * textSize.height);
+        // Leave a 10% margin.
+        CGFloat maxTextDiameter = diameter * 0.9f;
+        if (textDiameter > maxTextDiameter) {
+            font = [font fontWithSize:font.pointSize * maxTextDiameter / textDiameter];
+            textAttributes = @{
+                NSFontAttributeName : font,
+                NSForegroundColorAttributeName : textColor,
+            };
+            textSize =
+                [initials boundingRectWithSize:frame.size
+                                       options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                                    attributes:textAttributes
+                                       context:nil]
+                    .size;
+        }
+    } else {
+        OWSFailDebug(@"Text has invalid bounds.");
+    }
+
+    CGPoint drawPoint = CGPointMake((diameter - textSize.width) * 0.5f, (diameter - textSize.height) * 0.5f);
+
+    [initials drawAtPoint:drawPoint withAttributes:textAttributes];
+}
+
++ (void)drawIconInAvatar:(UIImage *)icon iconColor:(UIColor *)iconColor diameter:(NSUInteger)diameter
+{
+    OWSAssertDebug(icon);
+    OWSAssertDebug(iconColor);
+    OWSAssertDebug(diameter > 0);
+
+    CGPoint drawPoint = CGPointMake((diameter - icon.size.width) * 0.5f, (diameter - icon.size.height) * 0.5f);
+    [icon drawAtPoint:drawPoint];
+}
+
+- (nullable UIImage *)build
 {
     UIImage *_Nullable savedImage = [self buildSavedImage];
     if (savedImage) {
@@ -93,10 +256,10 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (UIImage *)buildDefaultImage
+- (nullable UIImage *)buildDefaultImage
 {
     OWSAbstractMethod();
-    return [UIImage new];
+    return nil;
 }
 
 @end

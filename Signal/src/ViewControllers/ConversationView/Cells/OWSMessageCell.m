@@ -269,11 +269,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
-    OWSAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
-                                                                                  color:self.conversationStyle.primaryColor
-                                                                               diameter:self.avatarSize
-                                                                        contactsManager:contactsManager];
-    self.avatarView.image = [avatarBuilder build];
+    UIImage *_Nullable authorAvatarImage =
+        [[[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
+                                                 colorName:self.viewItem.authorConversationColorName
+                                                  diameter:self.avatarSize
+                                           contactsManager:contactsManager] build];
+    self.avatarView.image = authorAvatarImage;
     [self.contentView addSubview:self.avatarView];
 
     [[NSNotificationCenter defaultCenter] addObserver:self

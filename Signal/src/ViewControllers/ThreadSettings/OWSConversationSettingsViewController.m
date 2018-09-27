@@ -285,11 +285,12 @@ const CGFloat kIconViewLength = 24;
                                  [weakSelf showMediaGallery];
                              }]];
 
-#ifdef CONVERSATION_COLORS_ENABLED
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  NSString *colorName = self.thread.conversationColorName;
-                                 UIColor *currentColor = [UIColor ows_conversationColorForColorName:colorName];
+                                 UIColor *currentColor =
+                                     [UIColor ows_conversationColorForColorName:colorName
+                                                                       isShaded:Theme.isDarkThemeEnabled];
                                  NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
                                      @"Label for table cell which leads to picking a new conversation color");
                                  return [weakSelf disclosureCellWithName:title iconColor:currentColor];
@@ -297,7 +298,6 @@ const CGFloat kIconViewLength = 24;
                              actionBlock:^{
                                  [weakSelf showColorPicker];
                              }]];
-#endif
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {

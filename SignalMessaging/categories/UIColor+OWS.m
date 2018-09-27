@@ -251,7 +251,29 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
 }
 
-+ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMap
++ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMapLight
+{
+    static NSDictionary<NSString *, UIColor *> *colorMap;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorMap = @{
+            @"red" : self.ows_red700Color,
+            @"pink" : self.ows_pink600Color,
+            @"purple" : self.ows_purple600Color,
+            @"indigo" : self.ows_indigo600Color,
+            @"blue" : self.ows_blue700Color,
+            @"cyan" : self.ows_cyan800Color,
+            @"teal" : self.ows_teal700Color,
+            @"green" : self.ows_green800Color,
+            @"deep_orange" : self.ows_deepOrange900Color,
+            @"grey" : self.ows_grey600Color
+        };
+    });
+
+    return colorMap;
+}
+
++ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMapDark
 {
     static NSDictionary<NSString *, UIColor *> *colorMap;
     static dispatch_once_t onceToken;
@@ -275,24 +297,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *> *)ows_conversationColorNames
 {
-    return self.ows_conversationColorMap.allKeys;
+    OWSAssertDebug(
+        [self.ows_conversationColorMapLight.allKeys isEqualToArray:self.ows_conversationColorMapDark.allKeys]);
+
+    return self.ows_conversationColorMapLight.allKeys;
 }
 
-+ (NSArray<UIColor *> *)ows_conversationColors
-{
-    return self.ows_conversationColorMap.allValues;
-}
-
-+ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
++ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName isShaded:(BOOL)isShaded
 {
     OWSAssertDebug(colorName.length > 0);
 
-    return [self.ows_conversationColorMap objectForKey:colorName];
+    return (isShaded ? self.ows_conversationColorMapDark : self.ows_conversationColorMapLight)[colorName];
 }
 
-+ (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
++ (NSString *)ows_defaultConversationColorName
 {
-    return [self.ows_conversationColorMap allKeysForObject:color].firstObject;
+    return @"teal";
 }
 
 @end

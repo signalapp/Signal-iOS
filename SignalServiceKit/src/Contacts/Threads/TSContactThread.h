@@ -27,6 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)threadIdFromContactId:(NSString *)contactId;
 #endif
 
+// This method can be used to get the conversation color for a given
+// recipient without using a read/write transaction to create a
+// contact thread.
++ (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
+                                      transaction:(YapDatabaseReadTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

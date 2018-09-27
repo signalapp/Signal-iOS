@@ -42,16 +42,6 @@
 		340FC8CD20518C77007AEB0F /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8CC20518C76007AEB0F /* OWSBackupJob.m */; };
 		340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
-		3421980F21061A0700C57195 /* UIColor+JSQMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 3421980521061A0600C57195 /* UIColor+JSQMessages.m */; };
-		3421981021061A0700C57195 /* JSQMessagesAvatarImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3421980621061A0600C57195 /* JSQMessagesAvatarImage.m */; };
-		3421981121061A0700C57195 /* JSQMessagesAvatarImageFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 3421980721061A0600C57195 /* JSQMessagesAvatarImageFactory.h */; };
-		3421981221061A0700C57195 /* JSQMVC-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 3421980821061A0600C57195 /* JSQMVC-LICENSE */; };
-		3421981321061A0700C57195 /* JSQMessagesAvatarImageFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3421980921061A0700C57195 /* JSQMessagesAvatarImageFactory.m */; };
-		3421981421061A0700C57195 /* JSQMessagesAvatarImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 3421980A21061A0700C57195 /* JSQMessagesAvatarImage.h */; };
-		3421981521061A0700C57195 /* UIColor+JSQMessages.h in Headers */ = {isa = PBXBuildFile; fileRef = 3421980B21061A0700C57195 /* UIColor+JSQMessages.h */; };
-		3421981621061A0700C57195 /* JSQMVC-README.md in Resources */ = {isa = PBXBuildFile; fileRef = 3421980C21061A0700C57195 /* JSQMVC-README.md */; };
-		3421981721061A0700C57195 /* JSQMVC-SIGNAL.md in Resources */ = {isa = PBXBuildFile; fileRef = 3421980D21061A0700C57195 /* JSQMVC-SIGNAL.md */; };
-		3421981821061A0700C57195 /* JSQMessageAvatarImageDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 3421980E21061A0700C57195 /* JSQMessageAvatarImageDataSource.h */; };
 		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
 		3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
@@ -662,16 +652,6 @@
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
-		3421980521061A0600C57195 /* UIColor+JSQMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+JSQMessages.m"; sourceTree = "<group>"; };
-		3421980621061A0600C57195 /* JSQMessagesAvatarImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesAvatarImage.m; sourceTree = "<group>"; };
-		3421980721061A0600C57195 /* JSQMessagesAvatarImageFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesAvatarImageFactory.h; sourceTree = "<group>"; };
-		3421980821061A0600C57195 /* JSQMVC-LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "JSQMVC-LICENSE"; sourceTree = "<group>"; };
-		3421980921061A0700C57195 /* JSQMessagesAvatarImageFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQMessagesAvatarImageFactory.m; sourceTree = "<group>"; };
-		3421980A21061A0700C57195 /* JSQMessagesAvatarImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessagesAvatarImage.h; sourceTree = "<group>"; };
-		3421980B21061A0700C57195 /* UIColor+JSQMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+JSQMessages.h"; sourceTree = "<group>"; };
-		3421980C21061A0700C57195 /* JSQMVC-README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "JSQMVC-README.md"; sourceTree = "<group>"; };
-		3421980D21061A0700C57195 /* JSQMVC-SIGNAL.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "JSQMVC-SIGNAL.md"; sourceTree = "<group>"; };
-		3421980E21061A0700C57195 /* JSQMessageAvatarImageDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessageAvatarImageDataSource.h; sourceTree = "<group>"; };
 		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
 		34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedMessageView.m; sourceTree = "<group>"; };
 		34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedMessageView.h; sourceTree = "<group>"; };
@@ -1470,26 +1450,8 @@
 		34219803210619D300C57195 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				3421980421061A0600C57195 /* JSQMessagesViewController */,
 			);
 			path = Libraries;
-			sourceTree = "<group>";
-		};
-		3421980421061A0600C57195 /* JSQMessagesViewController */ = {
-			isa = PBXGroup;
-			children = (
-				3421980521061A0600C57195 /* UIColor+JSQMessages.m */,
-				3421980621061A0600C57195 /* JSQMessagesAvatarImage.m */,
-				3421980721061A0600C57195 /* JSQMessagesAvatarImageFactory.h */,
-				3421980821061A0600C57195 /* JSQMVC-LICENSE */,
-				3421980921061A0700C57195 /* JSQMessagesAvatarImageFactory.m */,
-				3421980A21061A0700C57195 /* JSQMessagesAvatarImage.h */,
-				3421980B21061A0700C57195 /* UIColor+JSQMessages.h */,
-				3421980C21061A0700C57195 /* JSQMVC-README.md */,
-				3421980D21061A0700C57195 /* JSQMVC-SIGNAL.md */,
-				3421980E21061A0700C57195 /* JSQMessageAvatarImageDataSource.h */,
-			);
-			path = JSQMessagesViewController;
 			sourceTree = "<group>";
 		};
 		34330A581E7875FB00DF2FB9 /* Fonts */ = {
@@ -2527,7 +2489,6 @@
 				346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */,
 				34AC0A20211B39EA00997B47 /* ThreadViewHelper.h in Headers */,
 				34AC09DE211B39B100997B47 /* OWSNavigationController.h in Headers */,
-				3421981121061A0700C57195 /* JSQMessagesAvatarImageFactory.h in Headers */,
 				34C82E5120F8E1F300E9688D /* Theme.h in Headers */,
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
 				450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */,
@@ -2535,7 +2496,6 @@
 				34AC09EC211B39B100997B47 /* OWSTableViewController.h in Headers */,
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
-				3421981421061A0700C57195 /* JSQMessagesAvatarImage.h in Headers */,
 				34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */,
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				346129FC1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.h in Headers */,
@@ -2543,11 +2503,9 @@
 				451F8A491FD715CF005CB9DA /* OWSAvatarBuilder.h in Headers */,
 				346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */,
 				34B6D27420F664C900765BE2 /* OWSUnreadIndicator.h in Headers */,
-				3421981821061A0700C57195 /* JSQMessageAvatarImageDataSource.h in Headers */,
 				34AC09E4211B39B100997B47 /* ScreenLockViewController.h in Headers */,
 				34AC09F1211B39B100997B47 /* LockInteractionController.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
-				3421981521061A0700C57195 /* UIColor+JSQMessages.h in Headers */,
 				342950892124CB0A0000B063 /* OWSSearchBar.h in Headers */,
 				346129FA1FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
@@ -2837,9 +2795,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3421981621061A0700C57195 /* JSQMVC-README.md in Resources */,
-				3421981721061A0700C57195 /* JSQMVC-SIGNAL.md in Resources */,
-				3421981221061A0700C57195 /* JSQMVC-LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3181,7 +3136,6 @@
 				34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */,
 				346129F71FD5F31400532771 /* OWS105AttachmentFilePaths.m in Sources */,
 				45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */,
-				3421980F21061A0700C57195 /* UIColor+JSQMessages.m in Sources */,
 				4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
@@ -3190,7 +3144,6 @@
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
-				3421981321061A0700C57195 /* JSQMessagesAvatarImageFactory.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
 				342950882124CB0A0000B063 /* OWSSearchBar.m in Sources */,
 				342950822124C9750000B063 /* OWSTextField.m in Sources */,
@@ -3259,7 +3212,6 @@
 				34AC0A18211B39EA00997B47 /* TappableStackView.swift in Sources */,
 				34B6D27520F664C900765BE2 /* OWSUnreadIndicator.m in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
-				3421981021061A0700C57195 /* JSQMessagesAvatarImage.m in Sources */,
 				4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
 				34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */,

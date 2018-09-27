@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 - (instancetype)initWithSignalId:(NSString *)signalId
-                           color:(UIColor *)color
+                       colorName:(NSString *)colorName
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager;
 

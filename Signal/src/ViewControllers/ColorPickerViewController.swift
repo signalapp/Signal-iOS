@@ -46,7 +46,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
 
     private let pickerView: UIPickerView
     private let thread: TSThread
-    private let colors: [UIColor]
+    private let colorNames: [String]
 
     @objc public weak var delegate: ColorPickerDelegate?
 
@@ -54,7 +54,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     required init(thread: TSThread) {
         self.thread = thread
         self.pickerView = UIPickerView()
-        self.colors = UIColor.ows_conversationColors
+        self.colorNames = UIColor.ows_conversationColorNames
 
         super.init(nibName: nil, bundle: nil)
 
@@ -83,8 +83,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
         super.viewDidLoad()
 
         if let colorName = thread.conversationColorName,
-            let currentColor = UIColor.ows_conversationColor(colorName: colorName),
-            let index = colors.index(of: currentColor) {
+            let index = colorNames.index(of: colorName) {
             pickerView.selectRow(index, inComponent: 0, animated: false)
         }
     }
@@ -96,7 +95,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
 
     public func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return self.colors.count
+        return self.colorNames.count
     }
 
     // MARK: UIPickerViewDelegate
@@ -107,34 +106,32 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     }
 
     public func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        guard let color = colors[safe: row] else {
+        guard let colorName = colorNames[safe: row] else {
             owsFailDebug("color was unexpectedly nil")
             return ColorView(color: .white)
         }
-
+        guard let color = UIColor.ows_conversationColor(colorName: colorName,
+                                                        isShaded: Theme.isDarkThemeEnabled) else {
+            owsFailDebug("unknown color name")
+            return ColorView(color: .white)
+        }
         return ColorView(color: color)
     }
 
     // MARK: Actions
 
-    var currentColor: UIColor {
+    var currentColorName: String {
         let index = pickerView.selectedRow(inComponent: 0)
-        guard let color = self.colors[safe: index] else {
+        guard let colorName = colorNames[safe: index] else {
             owsFailDebug("index was unexpectedly nil")
-            return UIColor.white
+            return UIColor.ows_defaultConversationColorName()
         }
-
-        return color
+        return colorName
     }
 
     @objc
     public func didTapSave() {
-        guard let colorName = UIColor.ows_conversationColorName(color: self.currentColor) else {
-            owsFailDebug("colorName was unexpectedly nil")
-            self.delegate?.colorPickerDidCancel(self)
-            return
-        }
-
+        let colorName = self.currentColorName
         self.delegate?.colorPicker(self, didPickColorName: colorName)
     }
 
