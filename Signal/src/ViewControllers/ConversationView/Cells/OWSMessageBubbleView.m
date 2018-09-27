@@ -352,11 +352,11 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             if (self.hasBodyMediaWithThumbnail) {
                 [self.stackView addArrangedSubview:bodyMediaView];
 
-                OWSBubbleShapeView *innerShadowView = [OWSBubbleShapeView bubbleInnerShadowView];
-                innerShadowView.innerShadowColor
-                    = (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor);
-                innerShadowView.innerShadowRadius = 0.5f;
-                innerShadowView.innerShadowOpacity = 0.15f;
+                OWSBubbleShapeView *innerShadowView = [[OWSBubbleShapeView alloc]
+                    initInnerShadowWithColor:(Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor
+                                                                       : UIColor.ows_blackColor)
+                                      radius:0.5f
+                                     opacity:0.15f];
                 [bodyMediaView addSubview:innerShadowView];
                 [self.bubbleView addPartnerView:innerShadowView];
                 [self.viewConstraints addObjectsFromArray:[innerShadowView ows_autoPinToSuperviewEdges]];
@@ -497,8 +497,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     UIView *proxyView = [UIView new];
     [self.stackView addArrangedSubview:proxyView];
 
-    OWSBubbleShapeView *shadowView = [OWSBubbleShapeView bubbleShadowView];
-    OWSBubbleShapeView *clipView = [OWSBubbleShapeView bubbleClipView];
+    OWSBubbleShapeView *shadowView = [[OWSBubbleShapeView alloc] initShadow];
+    OWSBubbleShapeView *clipView = [[OWSBubbleShapeView alloc] initClip];
 
     [self addSubview:shadowView];
     [self addSubview:clipView];

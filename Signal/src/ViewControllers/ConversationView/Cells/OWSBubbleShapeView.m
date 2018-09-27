@@ -31,13 +31,8 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 @implementation OWSBubbleShapeView
 
-- (instancetype)init
+- (void)configure
 {
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
     self.mode = OWSBubbleShapeViewMode_Draw;
     self.opaque = NO;
     self.backgroundColor = [UIColor clearColor];
@@ -47,36 +42,67 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     [self.layer addSublayer:self.shapeLayer];
 
     self.maskLayer = [CAShapeLayer new];
+}
+
+
+- (instancetype)initDraw
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.mode = OWSBubbleShapeViewMode_Draw;
+
+    [self configure];
 
     return self;
 }
 
-+ (OWSBubbleShapeView *)bubbleDrawView
+- (instancetype)initShadow
 {
-    OWSBubbleShapeView *instance = [OWSBubbleShapeView new];
-    instance.mode = OWSBubbleShapeViewMode_Draw;
-    return instance;
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.mode = OWSBubbleShapeViewMode_Shadow;
+
+    [self configure];
+
+    return self;
 }
 
-+ (OWSBubbleShapeView *)bubbleShadowView
+- (instancetype)initClip
 {
-    OWSBubbleShapeView *instance = [OWSBubbleShapeView new];
-    instance.mode = OWSBubbleShapeViewMode_Shadow;
-    return instance;
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.mode = OWSBubbleShapeViewMode_Clip;
+
+    [self configure];
+
+    return self;
 }
 
-+ (OWSBubbleShapeView *)bubbleClipView
+- (instancetype)initInnerShadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(float)opacity
 {
-    OWSBubbleShapeView *instance = [OWSBubbleShapeView new];
-    instance.mode = OWSBubbleShapeViewMode_Clip;
-    return instance;
-}
+    self = [super init];
+    if (!self) {
+        return self;
+    }
 
-+ (OWSBubbleShapeView *)bubbleInnerShadowView
-{
-    OWSBubbleShapeView *instance = [OWSBubbleShapeView new];
-    instance.mode = OWSBubbleShapeViewMode_InnerShadow;
-    return instance;
+    self.mode = OWSBubbleShapeViewMode_InnerShadow;
+    _innerShadowColor = color;
+    _innerShadowRadius = radius;
+    _innerShadowOpacity = opacity;
+
+    [self configure];
+    [self updateLayers];
+
+    return self;
 }
 
 - (void)setFillColor:(nullable UIColor *)fillColor

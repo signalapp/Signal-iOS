@@ -30,10 +30,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (OWSBubbleShapeView *)bubbleDrawView;
-+ (OWSBubbleShapeView *)bubbleShadowView;
-+ (OWSBubbleShapeView *)bubbleClipView;
-+ (OWSBubbleShapeView *)bubbleInnerShadowView;
+- (instancetype)initDraw NS_DESIGNATED_INITIALIZER;
+- (instancetype)initShadow NS_DESIGNATED_INITIALIZER;
+;
+- (instancetype)initClip NS_DESIGNATED_INITIALIZER;
+;
+- (instancetype)initInnerShadowWithColor:(UIColor *)color
+                                  radius:(CGFloat)radius
+                                 opacity:(float)opacity NS_DESIGNATED_INITIALIZER;
+;
 
 @end
 
