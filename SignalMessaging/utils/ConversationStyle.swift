@@ -197,19 +197,10 @@ public class ConversationStyle: NSObject {
         }
     }
 
+    // Note that the exception for outgoing text only applies
+    // to secondary text within bubbles.
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        if Theme.isDarkThemeEnabled {
-            // Incoming, dark.
-            return UIColor.ows_gray25
-        } else {
-            // Incoming, light.
-            return UIColor.ows_gray60
-        }
-    }
-
-    @objc
-    public func footerTextColor(isIncoming: Bool) -> UIColor {
         if !isIncoming {
             // All Outgoing
             return UIColor.ows_white.withAlphaComponent(0.8)
