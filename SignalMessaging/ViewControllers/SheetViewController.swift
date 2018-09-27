@@ -32,7 +32,7 @@ public class SheetViewController: UIViewController {
         self.modalPresentationStyle = .overCurrentContext
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
