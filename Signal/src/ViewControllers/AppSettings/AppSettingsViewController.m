@@ -280,17 +280,12 @@
     cell.contentView.preservesSuperviewLayoutMargins = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-    // TODO: Replace this icon.
     UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
     UIImage *avatarImage = (localProfileAvatarImage
-            ?: [[UIImage imageNamed:@"profile_avatar_default"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kLargeAvatarSize] buildDefaultImage]);
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-    if (!localProfileAvatarImage) {
-        avatarView.tintColor = Theme.middleGrayColor;
-    }
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];

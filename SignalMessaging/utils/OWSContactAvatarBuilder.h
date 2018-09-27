@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Build an avatar for a Signal recipient
  */
-
 - (instancetype)initWithSignalId:(NSString *)signalId colorName:(NSString *)colorName diameter:(NSUInteger)diameter;
 
 /**
@@ -22,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter;
+
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter;
 
 @end
 

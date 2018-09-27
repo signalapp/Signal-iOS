@@ -66,9 +66,19 @@ NS_ASSUME_NONNULL_BEGIN
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
 {
-    
     NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
     return [self initWithContactId:colorSeed name:nonSignalName colorName:(NSString *)colorName diameter:diameter];
+}
+
+- (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
+{
+    NSString *localNumber = [TSAccountManager localNumber];
+    OWSAssertDebug(localNumber.length > 0);
+    OWSAssertDebug(diameter > 0);
+
+    NSString *colorName = [TSThread stableConversationColorNameForString:localNumber];
+
+    return [self initWithSignalId:localNumber colorName:colorName diameter:diameter];
 }
 
 #pragma mark - Dependencies
