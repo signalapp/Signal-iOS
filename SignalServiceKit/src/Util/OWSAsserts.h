@@ -153,17 +153,22 @@ NS_ASSUME_NONNULL_BEGIN
         OWSCFailWithoutLogging(_messageFormat, ##__VA_ARGS__);                                                         \
     } while (NO)
 
+void SwiftExit(NSString *message, const char *file, const char *function, int line);
 
 #define OWSFail(_messageFormat, ...)                                                                                   \
     do {                                                                                                               \
         OWSFailDebug(_messageFormat, ##__VA_ARGS__);                                                                   \
-        exit(0);                                                                                                       \
+                                                                                                                       \
+        NSString *_message = [NSString stringWithFormat:_messageFormat, ##__VA_ARGS__];                                \
+        SwiftExit(_message, __FILE__, __PRETTY_FUNCTION__, __LINE__);                                                  \
     } while (0)
 
 #define OWSCFail(_messageFormat, ...)                                                                                  \
     do {                                                                                                               \
         OWSCFailDebug(_messageFormat, ##__VA_ARGS__);                                                                  \
-        exit(0);                                                                                                       \
+                                                                                                                       \
+        NSString *_message = [NSString stringWithFormat:_messageFormat, ##__VA_ARGS__];                                \
+        SwiftExit(_message, __FILE__, __PRETTY_FUNCTION__, __LINE__);                                                  \
     } while (NO)
 
 // Avoids Clang analyzer warning:

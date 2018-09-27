@@ -240,8 +240,7 @@ static NSTimeInterval launchStartedAt;
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
         [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
 
-        [DDLog flushLog];
-        exit(0);
+        OWSFail(@"!isDatabasePasswordAccessible.");
     }
 }
 
@@ -339,9 +338,7 @@ static NSTimeInterval launchStartedAt;
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                      [Pastelog submitLogsWithCompletion:^{
-                                                         OWSLogInfo(@"exiting after sharing debug logs.");
-                                                         [DDLog flushLog];
-                                                         exit(0);
+                                                         OWSFail(@"exiting after sharing debug logs.");
                                                      }];
                                                  }]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
