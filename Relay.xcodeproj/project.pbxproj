@@ -754,6 +754,10 @@
 		7D7705C42114D8E700B40BB9 /* ValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */; };
 		7D7705C52114D8E700B40BB9 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C22114D8E600B40BB9 /* LoginViewController.swift */; };
 		7D7705C82114E5C300B40BB9 /* forsta_splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D7705C72114E5C300B40BB9 /* forsta_splash.png */; };
+		7D7DBD12215DB50200AE6C7F /* AnnouncementDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7DBD10215DB50200AE6C7F /* AnnouncementDetailViewController.m */; };
+		7D7DBD13215DB50200AE6C7F /* AnnouncementDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7DBD10215DB50200AE6C7F /* AnnouncementDetailViewController.m */; };
+		7D7DBD14215DB50200AE6C7F /* FLAnnouncementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7DBD11215DB50200AE6C7F /* FLAnnouncementViewController.m */; };
+		7D7DBD15215DB50200AE6C7F /* FLAnnouncementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7DBD11215DB50200AE6C7F /* FLAnnouncementViewController.m */; };
 		7D8517CF211CAC0E00F9EF53 /* CryptoTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517CD211CAC0D00F9EF53 /* CryptoTools.m */; };
 		7D8517D2211CACA300F9EF53 /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517D1211CACA200F9EF53 /* StringUtil.m */; };
 		7D8517D6211CAD3A00F9EF53 /* DataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517D5211CAD3A00F9EF53 /* DataUtil.m */; };
@@ -1521,6 +1525,10 @@
 		7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationViewController.swift; sourceTree = "<group>"; };
 		7D7705C22114D8E600B40BB9 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		7D7705C72114E5C300B40BB9 /* forsta_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forsta_splash.png; sourceTree = "<group>"; };
+		7D7DBD0E215DB50200AE6C7F /* AnnouncementDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnouncementDetailViewController.h; sourceTree = "<group>"; };
+		7D7DBD0F215DB50200AE6C7F /* FLAnnouncementViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnnouncementViewController.h; sourceTree = "<group>"; };
+		7D7DBD10215DB50200AE6C7F /* AnnouncementDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnouncementDetailViewController.m; sourceTree = "<group>"; };
+		7D7DBD11215DB50200AE6C7F /* FLAnnouncementViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FLAnnouncementViewController.m; sourceTree = "<group>"; };
 		7D8517CD211CAC0D00F9EF53 /* CryptoTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoTools.m; sourceTree = "<group>"; };
 		7D8517CE211CAC0D00F9EF53 /* CryptoTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoTools.h; sourceTree = "<group>"; };
 		7D8517D0211CACA200F9EF53 /* StringUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtil.h; sourceTree = "<group>"; };
@@ -2195,6 +2203,7 @@
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				7D7DBD0D215DB4E500AE6C7F /* Announcement View */,
 				7D705D98214824CD00488180 /* New Conversation */,
 				340FC87A204DAC8C007AEB0F /* AppSettings */,
 				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
@@ -2731,6 +2740,17 @@
 				7D705D992148252400488180 /* NewConversationViewController.swift */,
 			);
 			path = "New Conversation";
+			sourceTree = "<group>";
+		};
+		7D7DBD0D215DB4E500AE6C7F /* Announcement View */ = {
+			isa = PBXGroup;
+			children = (
+				7D7DBD0E215DB50200AE6C7F /* AnnouncementDetailViewController.h */,
+				7D7DBD10215DB50200AE6C7F /* AnnouncementDetailViewController.m */,
+				7D7DBD0F215DB50200AE6C7F /* FLAnnouncementViewController.h */,
+				7D7DBD11215DB50200AE6C7F /* FLAnnouncementViewController.m */,
+			);
+			path = "Announcement View";
 			sourceTree = "<group>";
 		};
 		7D8517E6211CB18400F9EF53 /* crypto */ = {
@@ -4199,6 +4219,7 @@
 				7D2CD588214C3C9C004E957A /* main.m in Sources */,
 				7D2CD589214C3C9C004E957A /* HttpResponse.m in Sources */,
 				7D2CD58A214C3C9C004E957A /* ExperienceUpgradesPageViewController.swift in Sources */,
+				7D7DBD13215DB50200AE6C7F /* AnnouncementDetailViewController.m in Sources */,
 				7D2CD58B214C3C9C004E957A /* RegistrationUtils.m in Sources */,
 				7D2CD58C214C3C9C004E957A /* AttachmentPointerView.swift in Sources */,
 				7D2CD58D214C3C9C004E957A /* DebugUICalling.swift in Sources */,
@@ -4234,6 +4255,7 @@
 				7D2CD5AB214C3C9C004E957A /* ColorPickerViewController.swift in Sources */,
 				7D2CD5AC214C3C9C004E957A /* OWSBackupIO.m in Sources */,
 				7D2CD5AD214C3C9C004E957A /* OWSDeviceProvisioningURLParser.m in Sources */,
+				7D7DBD15215DB50200AE6C7F /* FLAnnouncementViewController.m in Sources */,
 				7D2CD5AE214C3C9C004E957A /* ContactCell.swift in Sources */,
 				7D2CD5AF214C3C9C004E957A /* DomainFrontingCountryViewController.m in Sources */,
 				7D2CD5B0214C3C9C004E957A /* SlugCell.swift in Sources */,
@@ -4408,6 +4430,7 @@
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				7DD5A733211B7CA500965478 /* HttpResponse.m in Sources */,
 				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
+				7D7DBD12215DB50200AE6C7F /* AnnouncementDetailViewController.m in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				452EA09E1EA7ABE00078744B /* AttachmentPointerView.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
@@ -4443,6 +4466,7 @@
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
+				7D7DBD14215DB50200AE6C7F /* FLAnnouncementViewController.m in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				7D705DA22148258100488180 /* SlugCell.swift in Sources */,
