@@ -16,6 +16,7 @@
 #import "TextSecureKitEnv.h"
 #import "TSThread.h"
 #import "FLCCSMJSONService.h"
+#import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -89,16 +90,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *threadId = [jsonPayload objectForKey:@"threadId"];
-    if (threadId.length > 0) {
-        TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
-        // TODO: most this to TSThread
-        NSString *expression = [[jsonPayload objectForKey:@"distribution"] objectForKey:@"expression"];
-        thread.universalExpression = expression;
-        [thread saveWithTransaction:transaction];
-        [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
-                                                          object:thread
-                                                        userInfo:nil];
+    if (threadId.length == 0 || ![threadId isEqualToString:transcript.thread.uniqueId]) {
+        DDLogDebug(@"Received sync message contained no invalid thread data.");
+        return;
     }
+    
+//    TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
+    // TODO: move this to TSThread
+    
+    transcript.thread.universalExpression = [[jsonPayload objectForKey:@"distribution"] objectForKey:@"expression"];
+    transcript.thread.type = [jsonPayload objectForKey:@"threadType"];
+    [transcript.thread saveWithTransaction:transaction];
+    [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
+                                                          object:transcript.thread
+                                                        userInfo:nil];
     
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
@@ -106,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       transaction:transaction];
 
 
-    // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
+    // TODO: Build initializer that takes the jsonPayload as an argument
     TSOutgoingMessage *outgoingMessage =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
                                                            inThread:transcript.thread
@@ -117,6 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact];
+    outgoingMessage.uniqueId = [jsonPayload objectForKey:@"messageId"];
+    outgoingMessage.messageType = [jsonPayload objectForKey:@"messageType"];
+    outgoingMessage.forstaPayload = [jsonPayload copy];
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
