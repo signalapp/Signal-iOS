@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           NSUInteger index,
                                                           BOOL *stop) {
                                                           NSTimeInterval ageSeconds
-                                                              = fabs(interaction.receivedAtDate.timeIntervalSinceNow);
+                                                              = fabs(interaction.dateForSorting.timeIntervalSinceNow);
                                                           if (ageSeconds < maxAgeSeconds) {
                                                               *stop = YES;
                                                               return;

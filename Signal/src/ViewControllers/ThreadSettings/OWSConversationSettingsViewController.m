@@ -250,9 +250,7 @@ const CGFloat kIconViewLength = 24;
             [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
     }
 
-    NSString *colorName = self.thread.conversationColorName;
-    OWSConversationColor *currentConversationColor = [OWSConversationColor conversationColorOrDefaultForColorName:colorName];
-    self.colorPicker = [[OWSColorPicker alloc] initWithCurrentConversationColor:currentConversationColor];
+    self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
     self.colorPicker.delegate = self;
 
     [self updateTableContents];
@@ -909,9 +907,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        // TODO - put these two saves in a single transaction
         [self.disappearingMessagesConfiguration save];
-        // MJK TODO - should be safe to remove this senderTimestamp
         OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
             [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                      initWithTimestamp:[NSDate ows_millisecondTimeStamp]

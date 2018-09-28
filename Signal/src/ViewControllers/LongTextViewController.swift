@@ -37,7 +37,7 @@ public class LongTextViewController: OWSViewController {
         guard viewItem.hasBodyText else {
             return ""
         }
-        guard let displayableText = viewItem.displayableBodyText() else {
+        guard let displayableText = viewItem.displayableBodyText else {
             return ""
         }
         let messageBody = displayableText.fullText

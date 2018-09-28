@@ -6,7 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ConversationViewItem;
+@protocol ConversationViewItem;
+
 @class GalleryItemBox;
 @class MediaDetailViewController;
 
@@ -18,7 +19,7 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 @protocol MediaDetailViewControllerDelegate <NSObject>
 
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
-    requestDeleteConversationViewItem:(ConversationViewItem *)conversationViewItem;
+    requestDeleteConversationViewItem:(id<ConversationViewItem>)conversationViewItem;
 
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
                    isPlayingVideo:(BOOL)isPlayingVideo;
@@ -34,7 +35,7 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 
 // If viewItem is non-null, long press will show a menu controller.
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
-                              viewItem:(ConversationViewItem *_Nullable)viewItem;
+                              viewItem:(nullable id<ConversationViewItem>)viewItem;
 #pragma mark - Actions
 
 - (void)didPressShare:(id)sender;

@@ -528,7 +528,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [messages addObject:[TSErrorMessage nonblockingIdentityChangeInThread:groupThread recipientId:recipientId]];
     }
 
-    // MJK TODO - why not save immediately, why build up this array?
     for (TSMessage *message in messages) {
         [message saveWithTransaction:transaction];
     }
@@ -846,7 +845,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
     OWSAssertDebug(contactThread);
-    // MJK TODO - should be safe to remove senderTimestamp
     [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                               thread:contactThread
                                                                          recipientId:recipientId
@@ -855,7 +853,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     for (TSGroupThread *groupThread in
         [TSGroupThread groupThreadsWithRecipientId:recipientId transaction:transaction]) {
-        // MJK TODO - should be safe to remove senderTimestamp
         [messages
             addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                             thread:groupThread
@@ -864,7 +861,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                                      isLocalChange:isLocalChange]];
     }
 
-    // MJK TODO - why not save in-line, vs storing in an array and saving the array?
     for (TSMessage *message in messages) {
         [message saveWithTransaction:transaction];
     }

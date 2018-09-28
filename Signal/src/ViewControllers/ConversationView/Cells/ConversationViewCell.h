@@ -6,7 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
 @class ConversationViewCell;
-@class ConversationViewItem;
 @class OWSContactOffersInteraction;
 @class OWSContactsManager;
 @class TSAttachmentPointer;
@@ -19,13 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSOutgoingMessage;
 @class TSQuotedMessage;
 
+@protocol ConversationViewItem;
+
 @protocol ConversationViewCellDelegate <NSObject>
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem;
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem;
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell
-    didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem;
+    didLongpressSystemMessageViewItem:(id<ConversationViewItem>)viewItem;
 
 #pragma mark - System Cell
 
@@ -68,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable, weak) id<ConversationViewCellDelegate> delegate;
 
-@property (nonatomic, nullable) ConversationViewItem *viewItem;
+@property (nonatomic, nullable) id<ConversationViewItem> viewItem;
 
 // Cells are prefetched but expensive cells (e.g. media) should only load
 // when visible and unload when no longer visible.  Non-visible cells can

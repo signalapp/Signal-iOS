@@ -8,10 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSUnreadIndicator
 
-- (instancetype)initWithFirstUnseenSortId:(uint64_t)firstUnseenSortId
-                    hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
-     missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
-                  unreadIndicatorPosition:(NSInteger)unreadIndicatorPosition
+- (instancetype)initUnreadIndicatorWithTimestamp:(uint64_t)timestamp
+                           hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
+            missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
+                         unreadIndicatorPosition:(NSInteger)unreadIndicatorPosition
+                 firstUnseenInteractionTimestamp:(uint64_t)firstUnseenInteractionTimestamp
 {
     self = [super init];
 
@@ -19,10 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _firstUnseenSortId = firstUnseenSortId;
+    _timestamp = timestamp;
     _hasMoreUnseenMessages = hasMoreUnseenMessages;
     _missingUnseenSafetyNumberChangeCount = missingUnseenSafetyNumberChangeCount;
     _unreadIndicatorPosition = unreadIndicatorPosition;
+    _firstUnseenInteractionTimestamp = firstUnseenInteractionTimestamp;
 
     return self;
 }
@@ -38,8 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSUnreadIndicator *other = object;
-    return (self.firstUnseenSortId == other.firstUnseenSortId
-        && self.hasMoreUnseenMessages == other.hasMoreUnseenMessages
+    return (self.timestamp == other.timestamp && self.hasMoreUnseenMessages == other.hasMoreUnseenMessages
         && self.missingUnseenSafetyNumberChangeCount == other.missingUnseenSafetyNumberChangeCount
         && self.unreadIndicatorPosition == other.unreadIndicatorPosition);
 }

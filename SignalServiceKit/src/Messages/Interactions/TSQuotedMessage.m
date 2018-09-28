@@ -208,7 +208,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // Legit usage of senderTimestamp - this class references the message it is quoting by it's sender timestamp
     return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                              authorId:authorId
                                                  body:body
@@ -230,6 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<TSMessage *> *quotedMessages = (NSArray<TSMessage *> *)[TSInteraction
         interactionsWithTimestamp:timestamp
                            filter:^BOOL(TSInteraction *interaction) {
+
                                if (![threadId isEqual:interaction.uniqueThreadId]) {
                                    return NO;
                                }
@@ -243,6 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    // ignore other interaction types
                                    return NO;
                                }
+
                            }
                   withTransaction:transaction];
 

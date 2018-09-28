@@ -294,7 +294,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp)))
+                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
         }
 
         rows += addAttachmentMetadataRows()
@@ -326,7 +326,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         guard viewItem.hasBodyText else {
                 return nil
         }
-        guard let displayableText = viewItem.displayableBodyText() else {
+        guard let displayableText = viewItem.displayableBodyText else {
                 return nil
         }
         let messageBody = displayableText.fullText
@@ -663,7 +663,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         if let audioAttachmentPlayer = self.audioAttachmentPlayer {
             // Is this player associated with this media adapter?
-            if audioAttachmentPlayer.owner as? ConversationViewItem == viewItem {
+            if audioAttachmentPlayer.owner === viewItem {
                 // Tap to pause & unpause.
                 audioAttachmentPlayer.togglePlayState()
                 return

@@ -4,16 +4,7 @@
 
 import Foundation
 
-/// Benchmark async code by calling the passed in block parameter when the work
-/// is done.
-///
-///     BenchAsync(title: "my benchmark") { completeBenchmark in
-///         foo {
-///             completeBenchmark()
-///             fooCompletion()
-///         }
-///     }
-public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
+public func BenchAsync(title: String, block: (() -> Void) -> Void) {
     let startTime = CFAbsoluteTimeGetCurrent()
 
     block {

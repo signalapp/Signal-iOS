@@ -7,7 +7,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // This class is vestigial.
-__attribute__((deprecated))
 @interface TSUnreadIndicatorInteraction : TSInteraction
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

@@ -4,16 +4,17 @@
 
 #import "TSErrorMessage.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface TSErrorMessage ()
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
 
 @property (atomic, nullable) NSData *envelopeData;
 
-@end
+@property NSDictionary *pendingOutgoingMessage;
 
-NS_ASSUME_NONNULL_END
+#define TSPendingOutgoingMessageKey @"TSPendingOutgoingMessageKey"
+#define TSPendingOutgoingMessageRecipientKey @"TSPendingOutgoingMessageRecipientKey"
+
+@end

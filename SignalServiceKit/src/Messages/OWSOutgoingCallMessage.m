@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
 {
-    // MJK TODO - safe to remove senderTimestamp
+    // These records aren't saved, but their timestamp is used in the event
+    // of a failing message send to insert the error at the appropriate place.
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                           inThread:thread
                                        messageBody:nil

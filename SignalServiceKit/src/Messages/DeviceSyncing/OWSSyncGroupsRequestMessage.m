@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(nullable TSThread *)thread groupId:(NSData *)groupId
 {
-    // MJK TODO - remove senderTimestamp
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                           inThread:thread
                                        messageBody:nil

@@ -7,7 +7,6 @@
 #import "OWSPrimaryStorage+messageIDs.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,12 +29,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_Offer";
     }
 }
-
-@interface TSInteraction ()
-
-@property (nonatomic) uint64_t sortId;
-
-@end
 
 @implementation TSInteraction
 
@@ -64,6 +57,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     [TSDatabaseSecondaryIndexes
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+
                                  TSInteraction *interaction =
                                      [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
                                  if (!filter(interaction)) {
@@ -92,37 +86,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     _timestamp = timestamp;
     _uniqueThreadId = thread.uniqueId;
-    _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return nil;
-    }
-
-    // Previously the receivedAtTimestamp field lived on TSMessage, but we've moved it up
-    // to the TSInteraction superclass.
-    if (_receivedAtTimestamp == 0) {
-        // Upgrade from the older "TSMessage.receivedAtDate" and "TSMessage.receivedAt" properties if
-        // necessary.
-        NSDate *receivedAtDate = [coder decodeObjectForKey:@"receivedAtDate"];
-        if (!receivedAtDate) {
-            receivedAtDate = [coder decodeObjectForKey:@"receivedAt"];
-        }
-
-        if (receivedAtDate) {
-            _receivedAtTimestamp = [NSDate ows_millisecondsSince1970ForDate:receivedAtDate];
-        }
-
-        // For TSInteractions which are not TSMessage's, the timestamp *is* the receivedAtTimestamp
-        if (_receivedAtTimestamp == 0) {
-            _receivedAtTimestamp = _timestamp;
-        }
-    }
 
     return self;
 }
@@ -147,31 +110,26 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
-- (NSDate *)dateForLegacySorting
+- (NSDate *)dateForSorting
 {
-    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForLegacySorting];
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForSorting];
 }
 
-- (uint64_t)timestampForLegacySorting
+- (uint64_t)timestampForSorting
 {
     return self.timestamp;
-}
-
-- (NSDate *)receivedAtDate
-{
-    return [NSDate ows_dateWithMillisecondsSince1970:self.receivedAtTimestamp];
 }
 
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other
 {
     OWSAssertDebug(other);
 
-    uint64_t sortId1 = self.sortId;
-    uint64_t sortId2 = self.sortId;
+    uint64_t timestamp1 = self.timestampForSorting;
+    uint64_t timestamp2 = other.timestampForSorting;
 
-    if (sortId1 > sortId2) {
+    if (timestamp1 > timestamp2) {
         return NSOrderedDescending;
-    } else if (sortId1 < sortId2) {
+    } else if (timestamp1 < timestamp2) {
         return NSOrderedAscending;
     } else {
         return NSOrderedSame;
@@ -193,20 +151,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      (unsigned long)self.timestamp];
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // MJK can we remove this? We can't trust the legacy order of this id field. Any reason not to use UUID like for
-    // other objects?
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
     if (!self.uniqueId) {
         self.uniqueId = [OWSPrimaryStorage getAndIncrementMessageIdWithTransaction:transaction];
-    }
-    if (self.sortId == 0) {
-        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
     }
 
     [super saveWithTransaction:transaction];
 
-    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+    TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
 
     [fetchedThread updateWithLastMessage:self transaction:transaction];
 }
@@ -221,20 +173,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (BOOL)isDynamicInteraction
 {
     return NO;
-}
-
-#pragma mark - sorting migration
-
-- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    if (self.sortId != 0) {
-        // This could happen if something else in our startup process saved the interaction
-        // e.g. another migration ran.
-        // During the migration, since we're enumerating the interactions in the proper order,
-        // we want to ignore any previously assigned sortId
-        self.sortId = 0;
-    }
-    [self saveWithTransaction:transaction];
 }
 
 @end

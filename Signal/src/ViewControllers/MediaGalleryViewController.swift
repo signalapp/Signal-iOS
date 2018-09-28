@@ -54,7 +54,7 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     let month: Int
 
     init(message: TSMessage) {
-        let date = message.receivedAtDate()
+        let date = message.dateForSorting()
 
         self.year = Calendar.current.component(.year, from: date)
         self.month = Calendar.current.component(.month, from: date)
@@ -730,13 +730,13 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         Bench(title: "sorting gallery items") {
             galleryItems.sort { lhs, rhs -> Bool in
-                return lhs.message.sortId < rhs.message.sortId
+                return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
             }
             sectionDates.sort()
 
             for (date, galleryItems) in sections {
                 sortedSections[date] = galleryItems.sorted { lhs, rhs -> Bool in
-                    return lhs.message.sortId < rhs.message.sortId
+                    return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
                 }
             }
         }

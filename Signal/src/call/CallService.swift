@@ -372,7 +372,6 @@ private class SignalCallData: NSObject {
         let callData = SignalCallData(call: call)
         self.callData = callData
 
-        // MJK TODO remove this timestamp param
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
@@ -528,7 +527,6 @@ private class SignalCallData: NSObject {
                 callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
             }
         } else {
-            // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
                                      callType: RPRecentCallTypeIncomingMissed,
@@ -615,7 +613,6 @@ private class SignalCallData: NSObject {
                 self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
-            // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                     withCallNumber: thread.contactIdentifier(),
                                     callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
@@ -1038,7 +1035,6 @@ private class SignalCallData: NSObject {
 
         Logger.info("\(call.identifiersForLogs).")
 
-        // MJK TODO remove this timestamp param
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
@@ -1128,7 +1124,6 @@ private class SignalCallData: NSObject {
             owsFailDebug("Not expecting callrecord to already be set")
             callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
         } else {
-            // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
             callRecord.save()
             call.callRecord = callRecord

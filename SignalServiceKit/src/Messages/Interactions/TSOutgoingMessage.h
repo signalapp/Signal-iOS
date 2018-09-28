@@ -77,7 +77,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
-// MJK TODO - Can we remove the sender timestamp param?
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(nullable TSThread *)thread
                                      messageBody:(nullable NSString *)body

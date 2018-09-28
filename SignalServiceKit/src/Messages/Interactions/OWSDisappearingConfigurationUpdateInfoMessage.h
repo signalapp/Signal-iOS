@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * @param remoteName is nil when created by the local user
  */
-// MJK TODO - can we remove sendertimestamp here
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
                     configuration:(OWSDisappearingMessagesConfiguration *)configuration

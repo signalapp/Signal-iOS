@@ -879,7 +879,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    // MJK TODO - safe to remove senderTimestamp
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
@@ -928,7 +927,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
     NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
-    // MJK TODO - safe to remove senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *message =
         [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                           thread:thread
@@ -1146,6 +1144,8 @@ NS_ASSUME_NONNULL_BEGIN
                 TSGroupThread *newGroupThread =
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
 
+
+                uint64_t now = [NSDate ows_millisecondTimeStamp];
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                         memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
@@ -1155,18 +1155,21 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
 
-                [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                          thread:newGroupThread
-                                                                      createdByRemoteRecipientId:nil
-                                                                          createdInExistingGroup:NO
-                                                                                     transaction:transaction];
-
-                // MJK TODO - should be safe to remove senderTimestamp
-                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:now
                                                                              inThread:newGroupThread
                                                                           messageType:TSInfoMessageTypeGroupUpdate
                                                                         customMessage:updateGroupInfo];
                 [infoMessage saveWithTransaction:transaction];
+
+                if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
+                    [[OWSDisappearingMessagesJob sharedJob]
+                        becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                          thread:newGroupThread
+                                           appearBeforeTimestamp:now
+                                      createdByRemoteContactName:nil
+                                          createdInExistingGroup:YES
+                                                     transaction:transaction];
+                }
 
                 return nil;
             }
@@ -1182,7 +1185,6 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *nameString = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
-                // MJK TODO - should be safe to remove senderTimestamp
                 [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  inThread:oldGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
@@ -1203,12 +1205,6 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                          thread:oldGroupThread
-                                                                      createdByRemoteRecipientId:envelope.source
-                                                                          createdInExistingGroup:YES
-                                                                                     transaction:transaction];
-
                 TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                                  thread:oldGroupThread
                                                                                             transaction:transaction];
@@ -1218,7 +1214,6 @@ NS_ASSUME_NONNULL_BEGIN
                     groupId,
                     (unsigned long)timestamp);
 
-                // Legit usage of senderTimestamp when creating an incoming group message record
                 TSIncomingMessage *incomingMessage =
                     [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                                        inThread:oldGroupThread
@@ -1254,17 +1249,10 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                  thread:thread
-                                                              createdByRemoteRecipientId:envelope.source
-                                                                  createdInExistingGroup:NO
-                                                                             transaction:transaction];
-
         TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                          thread:thread
                                                                                     transaction:transaction];
 
-        // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                                inThread:thread
@@ -1373,6 +1361,10 @@ NS_ASSUME_NONNULL_BEGIN
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];
+
+    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                                        contactsManager:self.contactsManager
+                                                                            transaction:transaction];
 
     // Update thread preview in inbox
     [thread touchWithTransaction:transaction];

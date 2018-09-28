@@ -72,7 +72,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     [self addSubview:self.stackView];
 }
 
-- (void)loadForDisplayWithViewItem:(ConversationViewItem *)viewItem
+- (void)loadForDisplayWithViewItem:(id<ConversationViewItem>)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle
 {
     OWSAssertDebug(viewItem);
@@ -100,7 +100,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     ];
 }
 
-- (CGFloat)strokeThicknessWithViewItem:(ConversationViewItem *)viewItem
+- (CGFloat)strokeThicknessWithViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
 
@@ -111,7 +111,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     }
 }
 
-- (UIColor *)strokeColorWithViewItem:(ConversationViewItem *)viewItem
+- (UIColor *)strokeColorWithViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
 
@@ -122,11 +122,11 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     }
 }
 
-- (void)configureLabelsWithViewItem:(ConversationViewItem *)viewItem
+- (void)configureLabelsWithViewItem:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
 
-    NSDate *date = viewItem.interaction.receivedAtDate;
+    NSDate *date = viewItem.interaction.dateForSorting;
     NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date].localizedUppercaseString;
 
     // Update cell to reflect changes in dynamic text.
@@ -158,7 +158,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     }
 }
 
-- (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
+- (CGSize)measureWithConversationViewItem:(id<ConversationViewItem>)viewItem
                         conversationStyle:(ConversationStyle *)conversationStyle
 {
     OWSAssertDebug(viewItem);
