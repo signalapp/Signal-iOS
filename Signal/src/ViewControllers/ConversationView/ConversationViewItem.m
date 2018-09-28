@@ -46,7 +46,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark -
 
-@interface ConversationViewItem ()
+@interface ConversationInteractionViewItem ()
 
 @property (nonatomic, nullable) NSValue *cachedCellSize;
 
@@ -70,12 +70,25 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
 @property (nonatomic, nullable) NSString *authorConversationColorName;
+@property (nonatomic, nullable) ConversationStyle *conversationStyle;
 
 @end
 
 #pragma mark -
 
-@implementation ConversationViewItem
+@implementation ConversationInteractionViewItem
+
+@synthesize shouldShowDate = _shouldShowDate;
+@synthesize shouldShowSenderAvatar = _shouldShowSenderAvatar;
+@synthesize unreadIndicator = _unreadIndicator;
+@synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
+@synthesize interaction = _interaction;
+@synthesize isFirstInCluster = _isFirstInCluster;
+@synthesize isGroupThread = _isGroupThread;
+@synthesize isLastInCluster = _isLastInCluster;
+@synthesize lastAudioMessageView = _lastAudioMessageView;
+@synthesize senderName = _senderName;
+@synthesize shouldHideFooter = _shouldHideFooter;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
@@ -293,7 +306,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return measurementCell;
 }
 
-- (CGFloat)vSpacingWithPreviousLayoutItem:(ConversationViewItem *)previousLayoutItem
+- (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewItem>)previousLayoutItem
 {
     OWSAssertDebug(previousLayoutItem);
 

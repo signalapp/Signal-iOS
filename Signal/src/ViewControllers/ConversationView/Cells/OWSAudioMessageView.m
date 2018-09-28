@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic) BOOL isIncoming;
-@property (nonatomic, weak) ConversationViewItem *viewItem;
+@property (nonatomic, weak) id<ConversationViewItem> viewItem;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic, nullable) UIButton *audioPlayPauseButton;
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
                         isIncoming:(BOOL)isIncoming
-                          viewItem:(ConversationViewItem *)viewItem
+                          viewItem:(id<ConversationViewItem>)viewItem
                  conversationStyle:(ConversationStyle *)conversationStyle
 {
     self = [super init];
