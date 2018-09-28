@@ -179,6 +179,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return NO;
 }
 
+-(NSMutableDictionary *)forstaPayload
+{
+    if (_forstaPayload == nil) {
+        _forstaPayload = [NSMutableDictionary new];
+    }
+    return _forstaPayload;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

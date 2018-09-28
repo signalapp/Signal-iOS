@@ -49,7 +49,7 @@
     }
     
     if ([NSJSONSerialization isValidJSONObject:holdingArray]) {
-        message.forstaPayload = holdingArray.lastObject;
+        message.forstaPayload = [holdingArray.lastObject mutableCopy];
         NSData* jsonData = [NSJSONSerialization dataWithJSONObject:holdingArray
                                                            options:NSJSONWritingPrettyPrinted
                                                              error:nil];

@@ -44,7 +44,7 @@ import UIKit
         set { }
     }
 
-    @objc override public var attributedTextBody: NSAttributedString?
+    @objc override public var htmlTextBody: String?
     {
         get { return nil }
         set { }
@@ -52,6 +52,10 @@ import UIKit
     
     @objc override public func shouldBeSaved() -> Bool {
         return false
+    }
+
+    @objc override public func previewText(with transaction: YapDatabaseReadTransaction) -> String {
+        return ""
     }
 
 //    @objc override public func save() {

@@ -14,7 +14,9 @@
 //#import "TSDatabaseView.h"
 #import "AnnouncementDetailViewController.h"
 
+@import NSAttributedString_DDHTML;
 @import RelayServiceKit;
+@import RelayMessaging;
 
 @interface FLAnnouncementViewController ()
 
@@ -75,7 +77,11 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.thread) {
             self.announcementTitleLabel.text = self.thread.displayName;
-            self.announcementBodyLabel.attributedText = self.announcementMessage.attributedTextBody;
+            if (self.announcementMessage.htmlTextBody.length > 0) {
+                self.announcementBodyLabel.attributedText = [NSAttributedString attributedStringFromHTML:self.announcementMessage.htmlTextBody];
+            } else {
+                self.announcementBodyLabel.text = self.announcementMessage.plainTextBody;
+            }
             [self updateTheShadows];
         }
     });
@@ -120,12 +126,14 @@
 
 -(TSMessage *)announcementMessage
 {
+    if (_announcementMessage == nil) {
         __block TSInteraction *last;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction){
             last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.thread.uniqueId];
         }];
-        return (TSMessage *)last;
-
+        _announcementMessage = (TSMessage *)last;
+    }
+    return _announcementMessage;
 }
 
 -(UIButton *)infoButton

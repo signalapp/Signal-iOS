@@ -95,11 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-//    TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
-    // TODO: move this to TSThread
-    
     transcript.thread.universalExpression = [[jsonPayload objectForKey:@"distribution"] objectForKey:@"expression"];
-    transcript.thread.type = [jsonPayload objectForKey:@"threadType"];
+    [transcript.thread updateWithPayload:jsonPayload];
     [transcript.thread saveWithTransaction:transaction];
     [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
                                                           object:transcript.thread
@@ -124,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        contactShare:transcript.contact];
     outgoingMessage.uniqueId = [jsonPayload objectForKey:@"messageId"];
     outgoingMessage.messageType = [jsonPayload objectForKey:@"messageType"];
-    outgoingMessage.forstaPayload = [jsonPayload copy];
+    outgoingMessage.forstaPayload = [jsonPayload mutableCopy];
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {

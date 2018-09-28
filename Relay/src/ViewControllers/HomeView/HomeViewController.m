@@ -1330,6 +1330,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         if ([thread.type isEqualToString:FLThreadTypeAnnouncement]) {
             FLAnnouncementViewController *avc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"FLAnnouncementViewController"];;
             avc.thread = thread;
+            viewController = avc;
         }  else if ([thread.type isEqualToString:FLThreadTypeConversation]) {
             ConversationViewController *cvc = [ConversationViewController new];
             [cvc configureForThread:thread action:action focusMessageId:focusMessageId];

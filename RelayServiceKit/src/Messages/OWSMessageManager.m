@@ -1066,13 +1066,6 @@ NS_ASSUME_NONNULL_BEGIN
     // getOrCreate a thread and an incomingMessage
     TSThread *thread = [TSThread getOrCreateThreadWithId:threadId transaction:transaction];
     
-//    NSDictionary *distribution = [jsonPayload objectForKey:@"distribution"];
-//    NSString *expression = [distribution objectForKey:@"expression"];
-//    if (expression.length > 0) {
-//        thread.universalExpression = expression;
-//    }
-//    thread.participantIds = @[ envelope.source, TSAccountManager.localUID ];
-    
     [thread updateWithPayload:jsonPayload];
     [thread saveWithTransaction:transaction];
     
