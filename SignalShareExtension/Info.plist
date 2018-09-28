@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.30.2</string>
 	<key>CFBundleVersion</key>
-	<string>2.30.2.3</string>
+	<string>2.30.2.4</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
