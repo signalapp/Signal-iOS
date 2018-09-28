@@ -152,7 +152,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`)
+  - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `release/2.30.2`)
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
@@ -183,6 +183,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   AxolotlKit:
+    :branch: release/2.30.2
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
     :git: https://github.com/signalapp/Curve25519Kit
@@ -204,7 +205,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 7b2af262204af6f5dcdc2986571c5a72400f7e04
+    :commit: 446fbdaa5760cf1b1337441340d4d885beb27beb
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
     :commit: a4f46bd621bb2bcbf1a44b360e8ac4209e410ee9
@@ -246,6 +247,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 40c4fc7dfb6066c4fdb80bc08600096e172dd4d7
+PODFILE CHECKSUM: 99cf978c46911aa96f569649e7113245f4ed30b7
 
 COCOAPODS: 1.5.3
