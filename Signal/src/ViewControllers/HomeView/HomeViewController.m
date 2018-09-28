@@ -496,20 +496,31 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     //  Settings button.
-    const NSUInteger kAvatarSize = 28;
-    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
-    UIImage *avatarImage = (localProfileAvatarImage
-            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
-    OWSAssertDebug(avatarImage);
-
-    AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
-    avatarView.userInteractionEnabled = YES;
-    [avatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                             action:@selector(settingsButtonPressed:)]];
-    settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
+    UIBarButtonItem *settingsButton;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+        const NSUInteger kAvatarSize = 28;
+        UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+        UIImage *avatarImage = (localProfileAvatarImage
+                ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
+        OWSAssertDebug(avatarImage);
+        AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
+        [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+        [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+        avatarView.userInteractionEnabled = YES;
+        [avatarView
+            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                         action:@selector(settingsButtonPressed:)]];
+        settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
+        settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
+    } else {
+        // iOS 9 has a bug around layout of custom views in UIBarButtonItem,
+        // so we just use a simple icon.
+        UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+        settingsButton = [[UIBarButtonItem alloc] initWithImage:image
+                                                          style:UIBarButtonItemStylePlain
+                                                         target:self
+                                                         action:@selector(settingsButtonPressed:)];
+    }
     self.navigationItem.leftBarButtonItem = settingsButton;
 
     self.navigationItem.rightBarButtonItem =
