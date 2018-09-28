@@ -291,7 +291,7 @@ class ConversationSearcherTest: SignalBaseTest {
         XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
     }
 
-    func bodies(forMessageResults messageResults: [ConversationSearchResult]) -> [String] {
+    func bodies(forMessageResults messageResults: [ConversationSearchResult<MessageSortKey>]) -> [String] {
         var result = [String]()
 
         self.dbConnection.read { transaction in
