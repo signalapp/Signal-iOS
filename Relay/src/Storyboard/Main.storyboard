@@ -413,7 +413,7 @@
         <!--Announcement-->
         <scene sceneID="lxf-2p-zNk">
             <objects>
-                <viewController title="Announcement" id="f7s-T8-hek" customClass="FLAnnouncementViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FLAnnouncementViewController" title="Announcement" id="f7s-T8-hek" customClass="FLAnnouncementViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="pLw-LW-clA"/>
                         <viewControllerLayoutGuide type="bottom" id="XdK-zy-8NX"/>

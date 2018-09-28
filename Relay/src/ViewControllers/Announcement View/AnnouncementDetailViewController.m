@@ -7,18 +7,21 @@
 //
 
 #import "AnnouncementDetailViewController.h"
-#import "FLDirectoryCell.h"
-#import "TSIncomingMessage.h"
-#import "SignalRecipient.h"
-#import "TSThread.h"
+//#import "FLDirectoryCell.h"
+#import "Relay-Swift.h"
+//#import "TSIncomingMessage.h"
+//#import "RelayRecipient.h"
+//#import "TSThread.h"
+
+@import RelayServiceKit;
 
 #define kFromSectionIndex 0
 #define kToSectionIndex 1
 
 @interface AnnouncementDetailViewController ()
 
-@property (nonatomic, strong) SignalRecipient *sender;
-@property (nonatomic, strong) NSArray <SignalRecipient *> *recipients;
+@property (nonatomic, strong) RelayRecipient *sender;
+@property (nonatomic, strong) NSArray <RelayRecipient *> *recipients;
 
 @end
 
@@ -69,17 +72,17 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    FLDirectoryCell *cell = (FLDirectoryCell *)[tableView dequeueReusableCellWithIdentifier:@"aCell" forIndexPath:indexPath];
+    DirectoryCell *cell = (DirectoryCell *)[tableView dequeueReusableCellWithIdentifier:@"aCell" forIndexPath:indexPath];
     
     switch (indexPath.section) {
         case kFromSectionIndex:
         {
-            [cell configureCellWithContact:self.sender];
+            [cell configureCellWithRecipient:self.sender];
         }
             break;
         case kToSectionIndex:
         {
-            [cell configureCellWithContact:[self.recipients objectAtIndex:(NSUInteger)indexPath.row]];
+            [cell configureCellWithRecipient:[self.recipients objectAtIndex:(NSUInteger)indexPath.row]];
         }
             break;
         default:
@@ -152,25 +155,25 @@
 }
 */
 
--(SignalRecipient *)sender
+-(RelayRecipient *)sender
 {
     if (_sender == nil) {
         if ([self.message isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incMessage = (TSIncomingMessage *)self.message;
-            _sender = [Environment.getCurrent.contactsManager recipientWithUserId:incMessage.authorId];
+            _sender = [FLContactsManager.shared recipientWithId:incMessage.authorId];
         } else {
-            _sender = TSAccountManager.sharedInstance.myself;
+            _sender = TSAccountManager.sharedInstance.selfRecipient;
         }
     }
     return _sender;
 }
 
--(NSArray <SignalRecipient *> *)recipients
+-(NSArray <RelayRecipient *> *)recipients
 {
     if (_recipients == nil) {
         NSMutableArray *holdingTank = [NSMutableArray new];
-        for (NSString *uid in self.message.thread.participants) {
-            SignalRecipient *newRecipient = [Environment.getCurrent.contactsManager recipientWithUserId:uid];
+        for (NSString *uid in self.message.thread.participantIds) {
+            RelayRecipient *newRecipient = [FLContactsManager.shared recipientWithId:uid];
             if (newRecipient) {
                 [holdingTank addObject:newRecipient];
             }

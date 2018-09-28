@@ -7,7 +7,7 @@
 //
 import UIImageView_Extension
 
-class DirectoryCell: UITableViewCell {
+@objc class DirectoryCell: UITableViewCell {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var avatarImageView: UIImageView!
@@ -22,7 +22,7 @@ class DirectoryCell: UITableViewCell {
     }
     
     
-    func configureCell(recipient: RelayRecipient?) {
+    @objc public func configureCell(recipient: RelayRecipient?) {
         DispatchQueue.main.async(execute: {
             
             self.nameLabel.attributedText = self.attributedString(recipient: recipient)
@@ -44,7 +44,7 @@ class DirectoryCell: UITableViewCell {
         })
     }
     
-    func configureCell(aTag: FLTag?) {
+    @objc public func configureCell(aTag: FLTag?) {
         var description: String? = nil
         if (aTag?.uniqueId == TSAccountManager.sharedInstance().selfRecipient().flTag?.uniqueId) {
             description = NSLocalizedString("ME_STRING", comment: "")

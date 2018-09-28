@@ -9,10 +9,12 @@
 @import WebKit;
 
 #import "FLAnnouncementViewController.h"
-#import "TSThread.h"
-#import "TSIncomingMessage.h"
-#import "TSDatabaseView.h"
+//#import "TSThread.h"
+//#import "TSIncomingMessage.h"
+//#import "TSDatabaseView.h"
 #import "AnnouncementDetailViewController.h"
+
+@import RelayServiceKit;
 
 @interface FLAnnouncementViewController ()
 
@@ -57,7 +59,9 @@
     [self configureWithThread];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.thread markAllAsRead];
+        [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+            [self.thread markAllAsReadWithTransaction:transaction];
+        }];
     });
 }
 
@@ -136,7 +140,7 @@
 -(YapDatabaseConnection *)dbConnection
 {
     if (_dbConnection == nil) {
-        _dbConnection = [TSStorageManager.sharedManager.database newConnection];
+        _dbConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
     }
     return _dbConnection;
 }
