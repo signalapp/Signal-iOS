@@ -251,11 +251,12 @@ NS_ASSUME_NONNULL_BEGIN
                                  OWSAssertDebug(UIFont.ows_dynamicTypeBodyFont.pointSize != 17 || minMargin == 12);
 
                                  [self.viewConstraints addObjectsFromArray:@[
+                                     // badge sizing
                                      [self.unreadBadge autoMatchDimension:ALDimensionWidth
                                                               toDimension:ALDimensionWidth
                                                                    ofView:self.unreadLabel
-                                                               withOffset:minMargin],
-                                     // badge sizing
+                                                               withOffset:minMargin
+                                                                 relation:NSLayoutRelationGreaterThanOrEqual],
                                      [self.unreadBadge autoSetDimension:ALDimensionWidth
                                                                  toSize:unreadBadgeHeight
                                                                relation:NSLayoutRelationGreaterThanOrEqual],
