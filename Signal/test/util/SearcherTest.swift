@@ -51,8 +51,8 @@ class ConversationSearcherContactsManager: NSObject, ContactsManagerProtocol {
     }
 }
 
-let bobRecipientId = "+49030183000"
-let aliceRecipientId = "+12345678900"
+private let bobRecipientId = "+49030183000"
+private let aliceRecipientId = "+12345678900"
 
 class ConversationSearcherTest: SignalBaseTest {
 

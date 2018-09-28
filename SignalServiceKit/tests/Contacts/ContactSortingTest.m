@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
             Contact *b = resortedContacts[j];
             BOOL correct = ([a.firstName isEqualToString:b.firstName] && [a.lastName isEqualToString:b.lastName]);
             if (!correct) {
-                XCTAssert(@"Contacts failed to sort names by first, last");
+                XCTFail(@"Contacts failed to sort names by first, last");
                 break;
             }
         }
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
             Contact *b = resortedContacts[j];
             BOOL correct = ([a.firstName isEqualToString:b.firstName] && [a.lastName isEqualToString:b.lastName]);
             if (!correct) {
-                XCTAssert(@"Contacts failed to sort names by last, first");
+                XCTFail(@"Contacts failed to sort names by last, first");
                 break;
             }
         }

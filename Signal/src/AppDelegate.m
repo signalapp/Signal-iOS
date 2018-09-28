@@ -19,7 +19,6 @@
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
-#import <AxolotlKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>
@@ -1017,6 +1016,11 @@ static NSTimeInterval launchStartedAt;
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
+
+    if (CurrentAppContext().isRunningTests) {
+        OWSLogVerbose(@"Skipping post-launch logic in tests.");
+        return;
+    }
 
     if ([TSAccountManager isRegistered]) {
         OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);

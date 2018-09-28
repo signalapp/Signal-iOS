@@ -1402,12 +1402,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (TSWhisperMessageType)messageTypeForCipherMessage:(id<CipherMessage>)cipherMessage
 {
-    if ([cipherMessage isKindOfClass:[PreKeyWhisperMessage class]]) {
-        return TSPreKeyWhisperMessageType;
-    } else if ([cipherMessage isKindOfClass:[WhisperMessage class]]) {
-        return TSEncryptedWhisperMessageType;
+    switch (cipherMessage.cipherMessageType) {
+        case CipherMessageType_Whisper:
+            return TSEncryptedWhisperMessageType;
+        case CipherMessageType_Prekey:
+            return TSPreKeyWhisperMessageType;
+        default:
+            return TSUnknownMessageType;
     }
-    return TSUnknownMessageType;
 }
 
 - (void)saveGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
