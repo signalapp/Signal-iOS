@@ -37,7 +37,7 @@ public class AccountManager: NSObject {
 
     @objc func register(verificationCode: String,
                         pin: String?) -> AnyPromise {
-        return AnyPromise(register(verificationCode: verificationCode, pin: pin))
+        return AnyPromise(register(verificationCode: verificationCode, pin: pin) as Promise<Void>)
     }
 
     func register(verificationCode: String,
@@ -65,7 +65,7 @@ public class AccountManager: NSObject {
             default:
                 throw error
             }
-        }.then {
+        }.done {
             self.completeRegistration()
         }
 
@@ -76,11 +76,11 @@ public class AccountManager: NSObject {
 
     private func registerForTextSecure(verificationCode: String,
                                        pin: String?) -> Promise<Void> {
-        return Promise { fulfill, reject in
+        return Promise { resolver in
             self.textSecureAccountManager.verifyAccount(withCode: verificationCode,
                                                         pin: pin,
-                                                        success: fulfill,
-                                                        failure: reject)
+                                                        success: resolver.fulfill,
+                                                        failure: resolver.reject)
         }
     }
 
@@ -99,40 +99,40 @@ public class AccountManager: NSObject {
     // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
-        return Promise { fulfill, reject in
+        return Promise { resolver in
             self.textSecureAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                                        voipToken: voipToken,
-                                                                       success: fulfill,
-                                                                       failure: reject)
+                                                                       success: resolver.fulfill,
+                                                                       failure: resolver.reject)
         }
     }
 
     func registerForManualMessageFetching() -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForManualMessageFetching(success: fulfill, failure: reject)
+        return Promise { resolver in
+            self.textSecureAccountManager.registerForManualMessageFetching(success: resolver.fulfill, failure: resolver.reject)
         }
     }
 
     // MARK: Turn Server
 
     func getTurnServerInfo() -> Promise<TurnServerInfo> {
-        return Promise { fulfill, reject in
+        return Promise { resolver in
             self.networkManager.makeRequest(OWSRequestFactory.turnServerInfoRequest(),
                                             success: { (_: URLSessionDataTask, responseObject: Any?) in
                                                 guard responseObject != nil else {
-                                                    return reject(OWSErrorMakeUnableToProcessServerResponseError())
+                                                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                                                 }
 
                                                 if let responseDictionary = responseObject as? [String: AnyObject] {
                                                     if let turnServerInfo = TurnServerInfo(attributes: responseDictionary) {
-                                                        return fulfill(turnServerInfo)
+                                                        return resolver.fulfill(turnServerInfo)
                                                     }
                                                     Logger.error("unexpected server response:\(responseDictionary)")
                                                 }
-                                                return reject(OWSErrorMakeUnableToProcessServerResponseError())
+                                                return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
             },
                                             failure: { (_: URLSessionDataTask, error: Error) in
-                                                    return reject(error)
+                                                    return resolver.reject(error)
             })
         }
     }

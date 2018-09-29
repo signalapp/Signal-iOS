@@ -37,7 +37,7 @@ class AppUpdateNag: NSObject {
 
         firstly {
             self.versionService.fetchLatestVersion(lookupURL: lookupURL)
-        }.then { appStoreRecord -> Void in
+        }.done { appStoreRecord in
             guard appStoreRecord.version.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending else {
                 Logger.debug("remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
                 return
@@ -201,12 +201,12 @@ class AppStoreVersionService: NSObject {
     func fetchLatestVersion(lookupURL: URL) -> Promise<AppStoreRecord> {
         Logger.debug("lookupURL:\(lookupURL)")
 
-        let (promise, fulfill, reject) = Promise<AppStoreRecord>.pending()
+        let (promise, resolver) = Promise<AppStoreRecord>.pending()
 
         let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, error) in
             guard let data = data else {
                 Logger.warn("data was unexpectedly nil")
-                reject(OWSErrorMakeUnableToProcessServerResponseError())
+                resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                 return
             }
 
@@ -215,13 +215,13 @@ class AppStoreVersionService: NSObject {
                 let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
                 guard let appStoreRecord = resultSet.results.first else {
                     Logger.warn("record was unexpectedly nil")
-                    reject(OWSErrorMakeUnableToProcessServerResponseError())
+                    resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                     return
                 }
 
-                fulfill(appStoreRecord)
+                resolver.fulfill(appStoreRecord)
             } catch {
-                reject(error)
+                resolver.reject(error)
             }
         }
 

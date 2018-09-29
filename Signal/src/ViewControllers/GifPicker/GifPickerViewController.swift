@@ -361,7 +361,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.sharedInstance.cancelAllRequests()
-        cell.requestRenditionForSending().then { [weak self] (asset: GiphyAsset) -> Void in
+        cell.requestRenditionForSending().done { [weak self] (asset: GiphyAsset) in
             guard let strongSelf = self else {
                 Logger.info("ignoring send, since VC was dismissed before fetching finished.")
                 return

@@ -33,14 +33,14 @@ class SyncPushTokensJob: NSObject {
     func run() -> Promise<Void> {
         Logger.info("Starting.")
 
-        let runPromise: Promise<Void> = DispatchQueue.main.promise {
+        let runPromise: Promise<Void> = DispatchQueue.main.async(.promise) {
             // HACK: no-op dispatch to work around a bug in PromiseKit/Swift which won't compile
             // when dispatching complex Promise types. We should eventually be able to delete the 
             // following two lines, skipping this no-op dispatch.
             return
         }.then {
             return self.pushRegistrationManager.requestPushTokens()
-        }.then { (pushToken: String, voipToken: String) in
+        }.then { (pushToken: String, voipToken: String) -> Promise<Void> in
             Logger.info("finished: requesting push tokens")
             var shouldUploadTokens = false
 
@@ -59,17 +59,17 @@ class SyncPushTokensJob: NSObject {
 
             guard shouldUploadTokens else {
                 Logger.info("No reason to upload pushToken: \(pushToken), voipToken: \(voipToken)")
-                return Promise(value: ())
+                return Promise.value(())
             }
 
             Logger.warn("uploading tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
-            return self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken).then {
+            return self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken).then { _ -> Promise<Void> in
                 Logger.info("successfully updated push tokens on server")
                 return self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
             }
-        }.then {
+        }.done {
             Logger.info("completed successfully.")
-        }.catch { error in
+        }.recover { error in
             Logger.error("Failed with error: \(error).")
         }
 
@@ -111,6 +111,6 @@ class SyncPushTokensJob: NSObject {
             NotificationCenter.default.postNotificationNameAsync(SyncPushTokensJob.PushTokensDidChange, object: nil)
         }
 
-        return Promise(value: ())
+        return Promise.value(())
     }
 }

@@ -30,20 +30,19 @@ public class CreatePreKeysOperation: OWSOperation {
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
 
-        firstly {
+        firstly { () -> Promise<Void> in
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.storePreKeyRecords(preKeyRecords)
-
             return self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
-            }.then { () -> Void in
-                signedPreKeyRecord.markAsAcceptedByService()
-                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-                self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
-            }.then { () -> Void in
-                Logger.debug("done")
-                self.reportSuccess()
-            }.catch { error in
-                self.reportError(error)
-            }.retainUntilComplete()
+        }.done {
+            signedPreKeyRecord.markAsAcceptedByService()
+            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        }.done {
+            Logger.debug("done")
+            self.reportSuccess()
+        }.catch { error in
+            self.reportError(error)
+        }.retainUntilComplete()
     }
 }

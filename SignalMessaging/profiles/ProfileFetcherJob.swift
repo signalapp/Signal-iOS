@@ -72,7 +72,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func updateProfile(recipientId: String, remainingRetries: Int = 3) {
-        self.getProfile(recipientId: recipientId).then { profile in
+        self.getProfile(recipientId: recipientId).map { profile in
             self.updateProfile(signalServiceProfile: profile)
         }.catch { error in
             switch error {
@@ -111,38 +111,38 @@ public class ProfileFetcherJob: NSObject {
 
         let request = OWSRequestFactory.getProfileRequest(withRecipientId: recipientId)
 
-        let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
+        let (promise, resolver) = Promise<SignalServiceProfile>.pending()
 
         if TSSocketManager.canMakeRequests() {
             self.socketManager.make(request,
                 success: { (responseObject: Any?) -> Void in
                     do {
                         let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
-                        fulfill(profile)
+                        resolver.fulfill(profile)
                     } catch {
-                        reject(error)
+                        resolver.reject(error)
                     }
             },
                 failure: { (_: NSInteger, _:Data?, error: Error) in
-                    reject(error)
+                    resolver.reject(error)
             })
         } else {
             self.networkManager.makeRequest(request,
                 success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     do {
                         let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
-                        fulfill(profile)
+                        resolver.fulfill(profile)
                     } catch {
-                        reject(error)
+                        resolver.reject(error)
                     }
             },
                 failure: { (_: URLSessionDataTask?, error: Error?) in
 
                     if let error = error {
-                        reject(error)
+                        resolver.reject(error)
                     }
 
-                    reject(ProfileFetcherJobError.unknownNetworkError)
+                    resolver.reject(ProfileFetcherJobError.unknownNetworkError)
             })
         }
 

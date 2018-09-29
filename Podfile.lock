@@ -34,16 +34,14 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - PromiseKit (4.5.2):
-    - PromiseKit/Foundation (= 4.5.2)
-    - PromiseKit/QuartzCore (= 4.5.2)
-    - PromiseKit/UIKit (= 4.5.2)
-  - PromiseKit/CorePromise (4.5.2)
-  - PromiseKit/Foundation (4.5.2):
+  - PromiseKit (6.4.1):
+    - PromiseKit/CorePromise (= 6.4.1)
+    - PromiseKit/Foundation (= 6.4.1)
+    - PromiseKit/UIKit (= 6.4.1)
+  - PromiseKit/CorePromise (6.4.1)
+  - PromiseKit/Foundation (6.4.1):
     - PromiseKit/CorePromise
-  - PromiseKit/QuartzCore (4.5.2):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (4.5.2):
+  - PromiseKit/UIKit (6.4.1):
     - PromiseKit/CorePromise
   - PureLayout (3.0.2)
   - Reachability (3.2)
@@ -56,7 +54,7 @@ PODS:
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
     - Mantle
-    - PromiseKit (~> 4.0)
+    - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
     - SocketRocket
@@ -70,7 +68,7 @@ PODS:
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
     - Mantle
-    - PromiseKit (~> 4.0)
+    - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
     - SocketRocket
@@ -235,11 +233,11 @@ SPEC CHECKSUMS:
   HKDFKit: 0445c3158e15137c845bee690a59755ac4360469
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
+  PromiseKit: 4c76a6506638034e3d7bede97b2ff7743f7bd2dc
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalServiceKit: 89940928e278a1b43c40678e651eb547ab4b56d8
+  SignalServiceKit: dffa4a5f186fb6269c0f1e3f0b17c5dcbb98978b
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 51a800ebb77f95a8329b6ced1faaff394b47f509

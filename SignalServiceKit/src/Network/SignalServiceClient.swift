@@ -26,7 +26,7 @@ class SignalServiceRestClient: SignalServiceClient {
         Logger.debug("")
 
         let request = OWSRequestFactory.availablePreKeysCountRequest()
-        return networkManager.makePromise(request: request).then { (_, responseObject) -> Int in
+        return networkManager.makePromise(request: request).map { (_, responseObject) -> Int in
             Logger.debug("got response")
             guard let params = ParamParser(responseObject: responseObject) else {
                 throw self.unexpectedServerResponseError()

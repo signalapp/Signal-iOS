@@ -498,42 +498,42 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
         AssertIsOnMainThread()
         let proxyCopy = self.proxy
-        let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
+        let (promise, resolver) = Promise<HardenedRTCSessionDescription>.pending()
         let completion: ((RTCSessionDescription?, Error?) -> Void) = { (sdp, error) in
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             if let error = error {
-                reject(error)
+                resolver.reject(error)
                 return
             }
 
             guard let sessionDescription = sdp else {
                 Logger.error("No session description was obtained, even though there was no error reported.")
                 let error = OWSErrorMakeUnableToProcessServerResponseError()
-                reject(error)
+                resolver.reject(error)
                 return
             }
 
-            fulfill(HardenedRTCSessionDescription(rtcSessionDescription: sessionDescription))
+            resolver.fulfill(HardenedRTCSessionDescription(rtcSessionDescription: sessionDescription))
         }
 
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
 
@@ -549,26 +549,26 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func setLocalSessionDescriptionInternal(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         let proxyCopy = self.proxy
-        let (promise, fulfill, reject) = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
 
             Logger.verbose("setting local session description: \(sessionDescription)")
             peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler: { (error) in
                 if let error = error {
-                    reject(error)
+                    resolver.reject(error)
                 } else {
-                    fulfill(())
+                    resolver.fulfill(())
                 }
             })
         }
@@ -578,16 +578,16 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         AssertIsOnMainThread()
         let proxyCopy = self.proxy
-        let (promise, fulfill, reject) = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
 
@@ -595,10 +595,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription,
                                                completionHandler: { error in
                                                 if let error = error {
-                                                    reject(error)
+                                                    resolver.reject(error)
                                                     return
                                                 }
-                                                fulfill(())
+                                                resolver.fulfill(())
             })
         }
 
@@ -609,37 +609,37 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         AssertIsOnMainThread()
         let proxyCopy = self.proxy
         return setRemoteSessionDescription(remoteDescription)
-            .then(on: PeerConnectionClient.signalingQueue) {
+            .then(on: PeerConnectionClient.signalingQueue) { _ -> Promise<HardenedRTCSessionDescription> in
                 guard let strongSelf = proxyCopy.get() else {
                     return Promise(error: NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 }
-                    return strongSelf.negotiateAnswerSessionDescription(constraints: constraints)
-        }
+                return strongSelf.negotiateAnswerSessionDescription(constraints: constraints)
+            }
     }
 
     public func setRemoteSessionDescription(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
         AssertIsOnMainThread()
         let proxyCopy = self.proxy
-        let (promise, fulfill, reject) = Promise<Void>.pending()
+        let (promise, resolver) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             Logger.verbose("setting remote description: \(sessionDescription)")
             peerConnection.setRemoteDescription(sessionDescription,
                                                 completionHandler: { error in
                                                     if let error = error {
-                                                        reject(error)
+                                                        resolver.reject(error)
                                                         return
                                                     }
-                                                    fulfill(())
+                                                    resolver.fulfill(())
             })
         }
         return promise
@@ -648,50 +648,50 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private func negotiateAnswerSessionDescription(constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
         assertOnSignalingQueue()
         let proxyCopy = self.proxy
-        let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
+        let (promise, resolver) = Promise<HardenedRTCSessionDescription>.pending()
         let completion: ((RTCSessionDescription?, Error?) -> Void) = { (sdp, error) in
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             if let error = error {
-                reject(error)
+                resolver.reject(error)
                 return
             }
 
             guard let sessionDescription = sdp else {
                 Logger.error("unexpected empty session description, even though no error was reported.")
                 let error = OWSErrorMakeUnableToProcessServerResponseError()
-                reject(error)
+                resolver.reject(error)
                 return
             }
 
             let hardenedSessionDescription = HardenedRTCSessionDescription(rtcSessionDescription: sessionDescription)
 
             strongSelf.setLocalSessionDescriptionInternal(hardenedSessionDescription)
-                .then(on: PeerConnectionClient.signalingQueue) { _ in
-                    fulfill(hardenedSessionDescription)
+                .done(on: PeerConnectionClient.signalingQueue) {
+                    resolver.fulfill(hardenedSessionDescription)
                 }.catch { error in
-                    reject(error)
+                    resolver.reject(error)
             }
         }
 
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else {
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("Ignoring obsolete event in terminated client")
-                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
+                resolver.reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
 
