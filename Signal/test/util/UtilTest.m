@@ -35,7 +35,6 @@
 @implementation UtilTest
 
 -(void) testRemoveAllCharactersIn {
-    testThrows([@"" removeAllCharactersIn:nil]);
 
     test([[@"" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
     test([[@"1" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"1"]);
