@@ -88,7 +88,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
         return nil;
     }
     if (![self verifyDistinguishedNameOfCertificate:leafCertificateData]) {
-        OWSFailDebug(@"Leaf certificate has invalid name.");
+        OWSFailDebugUnlessRunningTests(@"Leaf certificate has invalid name.");
         *error = CDSSigningCertificateErrorMake(
             CDSSigningCertificateError_InvalidDistinguishedName, @"Could not extract leaf certificate data.");
         return nil;
@@ -231,7 +231,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
                              // necessary.
                              NSData *_Nullable derData = [NSData dataFromBase64String:derString];
                              if (derData.length < 1) {
-                                 OWSFailDebug(@"could not parse PEM match.");
+                                 OWSFailDebugUnlessRunningTests(@"could not parse PEM match.");
                                  return;
                              }
                              [certificateDatas addObject:derData];
@@ -292,7 +292,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
 
     BOOL isValid = status == errSecSuccess;
     if (!isValid) {
-        OWSFailDebug(@"signatures do not match.");
+        OWSFailDebugUnlessRunningTests(@"signatures do not match.");
         return NO;
     }
     return YES;
@@ -325,7 +325,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     };
 
     if (![properties isEqualToDictionary:expectedProperties]) {
-        OWSFailDebug(@"Unexpected certificate properties. %@ != %@", expectedProperties, properties);
+        OWSFailDebugUnlessRunningTests(@"Unexpected certificate properties. %@ != %@", expectedProperties, properties);
         return NO;
     }
     return YES;
