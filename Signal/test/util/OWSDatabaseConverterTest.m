@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDatabaseConverterTest.h"
+#import "SignalBaseTest.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -34,6 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface YapDatabaseCryptoUtils (OWSDatabaseConverterTest)
 
 + (NSData *)readFirstNBytesOfDatabaseFile:(NSString *)filePath byteCount:(NSUInteger)byteCount;
+
+@end
+
+#pragma mark -
+
+@interface OWSDatabaseConverterTest : SignalBaseTest
 
 @end
 
