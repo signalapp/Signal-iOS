@@ -67,7 +67,7 @@ public class AccountManager: NSObject {
                 // - simulators, none of which support receiving push notifications
                 // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
                 Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                return self.registerForManualMessageFetching()
+                return self.enableManualMessageFetching()
             default:
                 throw error
             }
@@ -113,7 +113,7 @@ public class AccountManager: NSObject {
         }
     }
 
-    func registerForManualMessageFetching() -> Promise<Void> {
+    func enableManualMessageFetching() -> Promise<Void> {
         TSAccountManager.sharedInstance().setIsManualMessageFetchEnabled(true)
 
         // Try to update the account attributes to reflect this change.

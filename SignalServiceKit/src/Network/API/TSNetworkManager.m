@@ -191,12 +191,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
       NSInteger statusCode = [task statusCode];
 
-      DDLogInfo(@"statusCode: %zd", statusCode);
-      DDLogInfo(@"statusCode: %@", task.originalRequest.URL);
-      DDLogInfo(@"allHTTPHeaderFields: %@", task.originalRequest.allHTTPHeaderFields);
-      DDLogInfo(@"HTTPBody: %@", task.originalRequest.HTTPBody);
-      DDLogInfo(@"parameters: %@", request.parameters);
-
 #ifdef DEBUG
       [TSNetworkManager logCurlForTask:task];
 #endif
