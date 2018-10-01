@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSYapDatabaseObject
 
-//@synthesize uniqueId = _uniqueId;
-
 - (instancetype)init
 {
     return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
