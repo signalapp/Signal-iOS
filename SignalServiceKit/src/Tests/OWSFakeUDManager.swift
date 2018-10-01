@@ -29,6 +29,20 @@ public class OWSFakeUDManager: NSObject, OWSUDManager {
     public func removeUDRecipientId(_ recipientId: String) {
         udRecipientSet.remove(recipientId)
     }
+
+    // MARK: - Server Certificate
+
+    // Tests can control the behavior of this mock by setting this property.
+    @objc public var nextSenderCertificate: Data?
+
+    @objc public func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
+                                                  failure:@escaping (Error) -> Void) {
+        guard let certificateData = nextSenderCertificate else {
+            failure(OWSUDError.assertionError(description: "No mock server certificate data"))
+            return
+        }
+        success(certificateData)
+    }
 }
 
 #endif

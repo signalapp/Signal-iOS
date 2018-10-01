@@ -5,9 +5,6 @@
 #import "Contact.h"
 #import "SSKBaseTestObjC.h"
 
-//#import "SignalServiceKit_Unit_Tests-Swift.h"
-//#import <SignalServiceKit_Unit_Tests/SignalServiceKit_Unit_Tests-Swift.h>
-
 @import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN

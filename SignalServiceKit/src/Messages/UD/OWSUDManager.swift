@@ -24,6 +24,11 @@ public enum OWSUDError: Error {
 
     // No-op if this recipient id is already marked as _NOT_ a "UD recipient".
     @objc func removeUDRecipientId(_ recipientId: String)
+
+    // We use completion handlers instead of a promise so that message sending
+    // logic can access the certificate data.
+    @objc func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
+                                            failure:@escaping (Error) -> Void)
 }
 
 // MARK: -
@@ -99,7 +104,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     #endif
 
     private func senderCertificate() -> Data? {
-        return nil
         guard let certificateData = dbConnection.object(forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection) as? Data else {
             return nil
         }
@@ -129,54 +133,29 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public func ensureSenderCertificate() -> Promise<Data> {
-        return Promise { fulfill, reject in
-            // If there is a valid cached sender certificate, use that.
-            if let certificateData = senderCertificate() {
-                fulfill(certificateData)
-                return
-            }
-            // Try to obtain a new sender certificate.
-            requestSenderCertificate()
-                .then(execute: { certificateData in
-                    fulfill(certificateData)
-                })
-                .catch(execute: { (error) in
-                    reject(error)
-                })
+        // If there is a valid cached sender certificate, use that.
+        if let certificateData = senderCertificate() {
+            return Promise(value: certificateData)
         }
+        // Try to obtain a new sender certificate.
+        return requestSenderCertificate()
     }
 
     private func requestSenderCertificate() -> Promise<Data> {
-        return Promise { fulfill, reject in
-            let request = OWSRequestFactory.udSenderCertificateRequest()
-            self.networkManager.makeRequest(
-                request,
-                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-                    do {
-                        let certificateData = try self.parseSenderCertificateResponse(responseObject: responseObject)
+        let request = OWSRequestFactory.udSenderCertificateRequest()
+        return self.networkManager.makePromise(request: request)
+            .then(execute: { (_, responseObject) -> Data in
+                let certificateData = try self.parseSenderCertificateResponse(responseObject: responseObject)
 
-                        guard self.isValidCertificate(certificateData: certificateData) else {
-                            reject (OWSUDError.assertionError(description: "Invalid sender certificate returned by server"))
-                            return
-                        }
+                guard self.isValidCertificate(certificateData: certificateData) else {
+                    throw OWSUDError.assertionError(description: "Invalid sender certificate returned by server")
+                }
 
-                        // Cache the current sender certificate.
-                        self.setSenderCertificate(certificateData)
+                // Cache the current sender certificate.
+                self.setSenderCertificate(certificateData)
 
-                        fulfill(certificateData)
-                    } catch {
-                        reject(error)
-                    }
-            },
-                failure: { (_: URLSessionDataTask?, error: Error?) in
-                    guard let error = error else {
-                        Logger.error("Missing error.")
-                        return
-                    }
-
-                    reject(error)
+                return certificateData
             })
-        }
     }
 
     private func parseSenderCertificateResponse(responseObject: Any?) throws -> Data {
@@ -190,9 +169,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private func isValidCertificate(certificateData: Data) -> Bool {
         do {
             let certificate = try SMKSenderCertificate.parse(data: certificateData)
-            let expirationDate = NSDate.ows_date(withMillisecondsSince1970: certificate.expirationTimestamp)
-            // TODO: What's the cutoff for rotating your sender cert?  A day or two before expiration?
-            return (expirationDate as NSDate).isAfterNow()
+            let expirationMs = certificate.expirationTimestamp
+            let nowMs = NSDate.ows_millisecondTimeStamp()
+            // Ensure that the certificate will not expire in the next hour.
+            // We want a threshold long enough to ensure that any outgoing message
+            // sends will complete before the expiration.
+            let isValid = nowMs + kHourInMs < expirationMs
+            return isValid
         } catch {
             OWSLogger.error("Certificate could not be parsed: \(error)")
             return false
