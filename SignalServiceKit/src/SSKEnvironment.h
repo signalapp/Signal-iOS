@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
 @protocol ProfileManagerProtocol;
+@protocol OWSUDManager;
 
 @interface SSKEnvironment : NSObject
 
@@ -28,7 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
-                        identityManager:(OWSIdentityManager *)identityManager NS_DESIGNATED_INITIALIZER;
+                        identityManager:(OWSIdentityManager *)identityManager
+                              udManager:(id<OWSUDManager>)udManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -50,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageManager *messageManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
+@property (nonatomic, readonly) id<OWSUDManager> udManager;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

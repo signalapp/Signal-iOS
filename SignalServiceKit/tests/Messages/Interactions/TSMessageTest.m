@@ -2,15 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKBaseTest.h"
+#import "TSMessage.h"
+#import "SSKBaseTestObjC.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import "TSMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSMessageTest : SSKBaseTest
+@interface TSMessageTest : SSKBaseTestObjC
 
 @property TSThread *thread;
 

@@ -3,11 +3,11 @@
 //
 
 #import "TSGroupThread.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSGroupThreadTest : SSKBaseTest
+@interface TSGroupThreadTest : SSKBaseTestObjC
 
 @end
 

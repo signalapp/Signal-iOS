@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
-@interface SSKBaseTest : XCTestCase
+@interface SSKBaseTestObjC : XCTestCase
 
 - (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block;
 

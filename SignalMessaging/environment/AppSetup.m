@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
+        id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -65,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    networkManager:networkManager
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
-                                                                  identityManager:identityManager]];
+                                                                  identityManager:identityManager
+                                                                        udManager:udManager]];
 
         appSpecificSingletonBlock();
 

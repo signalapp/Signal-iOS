@@ -13,7 +13,7 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSGroupThread.h"
 #import "TSNetworkManager.h"
 #import <SignalCoreKit/Cryptography.h>
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageManagerTest : SSKBaseTest
+@interface OWSMessageManagerTest : SSKBaseTestObjC
 
 @end
 

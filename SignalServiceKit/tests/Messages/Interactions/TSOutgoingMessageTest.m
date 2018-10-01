@@ -4,12 +4,12 @@
 
 #import "TSOutgoingMessage.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSOutgoingMessageTest : SSKBaseTest
+@interface TSOutgoingMessageTest : SSKBaseTestObjC
 
 @property (nonatomic) TSContactThread *thread;
 

@@ -346,6 +346,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:@{}];
 }
 
+#pragma mark - UD
+
++ (TSRequest *)udServerCertificateRequest
+{
+    NSString *path = @"/v1/certificate/delivery";
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -3,10 +3,10 @@
 //
 
 #import "OWSFingerprint.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import <Curve25519Kit/Curve25519.h>
 
-@interface OWSFingerprintTest : SSKBaseTest
+@interface OWSFingerprintTest : SSKBaseTestObjC
 
 @end
 

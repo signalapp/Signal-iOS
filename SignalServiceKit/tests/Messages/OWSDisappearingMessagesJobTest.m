@@ -2,12 +2,12 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
-#import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface OWSDisappearingMessagesJobTest : SSKBaseTest
+@interface OWSDisappearingMessagesJobTest : SSKBaseTestObjC
 
 @property TSThread *thread;
 
