@@ -291,21 +291,6 @@ const CGFloat kIconViewLength = 24;
                                  [weakSelf showMediaGallery];
                              }]];
 
-    [mainSection addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 NSString *colorName = self.thread.conversationColorName;
-                                 UIColor *currentColor =
-                                     [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
-                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
-                                     @"Label for table cell which leads to picking a new conversation color");
-                                 return [weakSelf cellWithName:title
-                                                      iconName:@"ic_color_palette"
-                                           disclosureIconColor:currentColor];
-                             }
-                             actionBlock:^{
-                                 [weakSelf showColorPicker];
-                             }]];
-
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -480,6 +465,20 @@ const CGFloat kIconViewLength = 24;
                                 customRowHeight:UITableViewAutomaticDimension
                                     actionBlock:nil]];
     }
+    [mainSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        NSString *colorName = self.thread.conversationColorName;
+                        UIColor *currentColor =
+                            [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
+                        NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
+                            @"Label for table cell which leads to picking a new conversation color");
+                        return
+                            [weakSelf cellWithName:title iconName:@"ic_color_palette" disclosureIconColor:currentColor];
+                    }
+                    actionBlock:^{
+                        [weakSelf showColorPicker];
+                    }]];
 
     [contents addSection:mainSection];
 
@@ -699,26 +698,23 @@ const CGFloat kIconViewLength = 24;
                          iconName:(NSString *)iconName
               disclosureIconColor:(UIColor *)disclosureIconColor
 {
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
     OWSColorPickerAccessoryView *accessoryView =
         [[OWSColorPickerAccessoryView alloc] initWithColor:disclosureIconColor];
+    [accessoryView sizeToFit];
+    cell.accessoryView = accessoryView;
 
-    UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:accessoryView];
-    //    cell.accessoryView = accessoryView;
     return cell;
 }
 
-- (UITableViewCell *)cellWithName:(NSString *)name
-                         iconName:(NSString *)iconName
-              customAccessoryView:(nullable UIView *)customAccessoryView
+- (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
 {
     OWSAssertDebug(iconName.length > 0);
     UIImageView *iconView = [self viewForIconWithName:iconName];
-    return [self cellWithName:name iconView:iconView customAccessoryView:customAccessoryView];
+    return [self cellWithName:name iconView:iconView];
 }
 
-- (UITableViewCell *)cellWithName:(NSString *)name
-                         iconView:(UIView *)iconView
-              customAccessoryView:(nullable UIView *)customAccessoryView
+- (UITableViewCell *)cellWithName:(NSString *)name iconView:(UIView *)iconView
 {
     OWSAssertDebug(name.length > 0);
 
@@ -733,11 +729,6 @@ const CGFloat kIconViewLength = 24;
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-    if (customAccessoryView) {
-        OWSAssertDebug(cell.accessoryView == nil);
-        [customAccessoryView sizeToFit];
-        cell.accessoryView = customAccessoryView;
-    }
     contentRow.spacing = self.iconSpacing;
 
     [cell.contentView addSubview:contentRow];
@@ -748,14 +739,14 @@ const CGFloat kIconViewLength = 24;
 
 - (UITableViewCell *)disclosureCellWithName:(NSString *)name iconName:(NSString *)iconName
 {
-    UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:nil];
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }
 
 - (UITableViewCell *)labelCellWithName:(NSString *)name iconName:(NSString *)iconName
 {
-    UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:nil];
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
     cell.accessoryType = UITableViewCellAccessoryNone;
     return cell;
 }
