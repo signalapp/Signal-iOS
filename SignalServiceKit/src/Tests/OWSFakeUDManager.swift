@@ -9,9 +9,11 @@ import Foundation
 @objc
 public class OWSFakeUDManager: NSObject, OWSUDManager {
 
-    private var udRecipientSet = Set<String>()
+    @objc public func setup() {}
 
-    // MARK: -
+    // MARK: - Recipient state
+
+    private var udRecipientSet = Set<String>()
 
     @objc
     public func isUDRecipientId(_ recipientId: String) -> Bool {
@@ -26,6 +28,20 @@ public class OWSFakeUDManager: NSObject, OWSUDManager {
     @objc
     public func removeUDRecipientId(_ recipientId: String) {
         udRecipientSet.remove(recipientId)
+    }
+
+    // MARK: - Server Certificate
+
+    // Tests can control the behavior of this mock by setting this property.
+    @objc public var nextServerCertificate: Data?
+
+    @objc public func ensureServerCertificateObjC(success:@escaping (Data) -> Void,
+                                                  failure:@escaping (Error) -> Void) {
+        guard let certificateData = nextServerCertificate else {
+            failure(OWSUDError.assertionError(description: "No mock server certificate data"))
+            return
+        }
+        success(certificateData)
     }
 }
 

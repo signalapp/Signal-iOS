@@ -11,6 +11,10 @@ public enum OWSUDError: Error {
 
 @objc public protocol OWSUDManager: class {
 
+    @objc func setup()
+
+    // MARK: - Recipient state
+
     @objc func isUDRecipientId(_ recipientId: String) -> Bool
 
     // No-op if this recipient id is already marked as a "UD recipient".
@@ -18,6 +22,9 @@ public enum OWSUDError: Error {
 
     // No-op if this recipient id is already marked as _NOT_ a "UD recipient".
     @objc func removeUDRecipientId(_ recipientId: String)
+
+    @objc func ensureServerCertificateObjC(success:@escaping (Data) -> Void,
+                                            failure:@escaping (Error) -> Void)
 }
 
 // MARK: -
@@ -38,6 +45,26 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         super.init()
 
         SwiftSingletons.register(self)
+    }
+
+    @objc public func setup() {
+        AppReadiness.runNowOrWhenAppIsReady {
+            guard TSAccountManager.isRegistered() else {
+                return
+            }
+            self.ensureServerCertificate().retainUntilComplete()
+        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(registrationStateDidChange),
+                                               name: .RegistrationStateDidChange,
+                                               object: nil)
+    }
+
+    @objc
+    func registrationStateDidChange() {
+        AssertIsOnMainThread()
+
+        ensureServerCertificate().retainUntilComplete()
     }
 
     // MARK: - Singletons
@@ -73,10 +100,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     #endif
 
     private func serverCertificate() -> Data? {
+        return nil
         guard let certificateData = dbConnection.object(forKey: kUDCurrentServerCertificateKey, inCollection: kUDCollection) as? Data else {
             return nil
         }
-        // TODO: Parse certificate and ensure that it is still valid.
+
+        // Parse certificate and ensure that it is still valid.
+        guard !isCertificateExpired(certificateData: certificateData) else {
+            Logger.warn("Current server certificate has expired.")
+            return nil
+        }
+
         return certificateData
     }
 
@@ -98,7 +132,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     public func ensureServerCertificate() -> Promise<Data> {
         return Promise { fulfill, reject in
-            // If there is an existing server certificate, use that.
+            // If there is a valid cached server certificate, use that.
             if let certificateData = serverCertificate() {
                 fulfill(certificateData)
                 return
@@ -123,9 +157,16 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                     do {
                         let certificateData = try self.parseServerCertificateResponse(responseObject: responseObject)
 
+                        guard !self.isCertificateExpired(certificateData: certificateData) else {
+                            reject (OWSUDError.assertionError(description: "Invalid server certificate returned by server"))
+                            return
+                        }
+
+                        // Cache the current server certificate.
+                        self.setServerCertificate(certificateData)
+
                         fulfill(certificateData)
                     } catch {
-
                         reject(error)
                     }
             },
@@ -146,5 +187,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         return try parser.requiredBase64EncodedData(key: "certificate")
+    }
+
+    private func isCertificateExpired(certificateData: Data) -> Bool {
+        guard let expirationData = OWSCertificateExpiration.expirationData(forCertificate: certificateData) else {
+            return true
+        }
+        // TODO:
+        return false
     }
 }
