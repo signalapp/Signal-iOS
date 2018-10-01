@@ -699,7 +699,6 @@ public func serializedData() throws -> Data {
         writer.newline()
         
         # Required-Field Initializer
-        # if True:
         if len(required_fields) > 0:
             # writer.add('// Initializer for required fields')
             writer.add('@objc fileprivate init(%s) {' % ', '.join(required_init_params))
@@ -713,32 +712,7 @@ public func serializedData() throws -> Data {
             writer.pop_indent()
             writer.add('}')
             writer.newline()
-        
-        # # All-Field Initializer
-        # if len(required_fields) < len(self.fields()):
-        #     init_params = []
-        #     for field in self.fields():
-        #         if field.is_required:
-        #             if field.rules == 'repeated':
-        #                 param_type = '[' + self.base_swift_type_for_field(field) + ']'
-        #             else:
-        #                 param_type = self.base_swift_type_for_field(field)
-        #         else:
-        #             param_type = field.type_swift
-        #         init_params.append('%s: %s' % ( field.name_swift, param_type) )
-        #     writer.add('// Initializer for required fields')
-        #     writer.add('@objc public init(%s) {' % ', '.join(init_params))
-        #     writer.push_indent()
-        #     writer.add('super.init()')
-        #     writer.newline()
-        #     for field in self.fields():
-        #         accessor_name = field.name_swift
-        #         accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
-        #         writer.add('%s(%s)' % ( accessor_name, field.name_swift, ) )
-        #     writer.pop_indent()
-        #     writer.add('}')
-        #     writer.newline()
-        
+                
         # Setters
         for field in self.fields():
             if field.rules == 'repeated':

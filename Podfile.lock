@@ -18,6 +18,7 @@ PODS:
     - CocoaLumberjack
     - Curve25519Kit (~> 2.1.0)
     - HKDFKit (~> 0.0.3)
+    - SignalCoreKit
     - SwiftProtobuf
   - CocoaLumberjack (3.4.2):
     - CocoaLumberjack/Default (= 3.4.2)
@@ -27,9 +28,17 @@ PODS:
     - CocoaLumberjack/Default
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
+    - SignalCoreKit
+  - Curve25519Kit/Tests (2.1.0):
+    - CocoaLumberjack
+    - SignalCoreKit
   - GRKOpenSSLFramework (1.0.2.12)
   - HKDFKit (0.0.4):
     - CocoaLumberjack
+    - SignalCoreKit
+  - HKDFKit/Tests (0.0.4):
+    - CocoaLumberjack
+    - SignalCoreKit
   - libPhoneNumber-iOS (0.9.13)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
@@ -54,6 +63,20 @@ PODS:
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack
     - GRKOpenSSLFramework
+  - SignalMetadataKit (1.0.0):
+    - AxolotlKit
+    - CocoaLumberjack
+    - Curve25519Kit
+    - HKDFKit
+    - SignalCoreKit
+    - SwiftProtobuf
+  - SignalMetadataKit/Tests (1.0.0):
+    - AxolotlKit
+    - CocoaLumberjack
+    - Curve25519Kit
+    - HKDFKit
+    - SignalCoreKit
+    - SwiftProtobuf
   - SignalServiceKit (0.9.0):
     - AFNetworking
     - AxolotlKit
@@ -66,6 +89,7 @@ PODS:
     - Reachability
     - SAMKeychain
     - SignalCoreKit
+    - SignalMetadataKit
     - SocketRocket
     - SwiftProtobuf
     - YapDatabase/SQLCipher
@@ -81,6 +105,7 @@ PODS:
     - Reachability
     - SAMKeychain
     - SignalCoreKit
+    - SignalMetadataKit
     - SocketRocket
     - SwiftProtobuf
     - YapDatabase/SQLCipher
@@ -160,15 +185,19 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
-  - AxolotlKit (from `https://github.com/signalapp/SignalProtocolKit.git`, branch `release/2.30.2`)
+  - AxolotlKit (from `../SignalProtocolKit`)
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit`)
+  - Curve25519Kit/Tests (from `https://github.com/signalapp/Curve25519Kit`)
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
+  - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
   - Mantle
   - PureLayout
   - Reachability
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit-Private.git`, branch `charlesmchen/sck3`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit-Private.git`, branch `charlesmchen/sck3`)
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit-Private`)
+  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit-Private`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
@@ -193,8 +222,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   AxolotlKit:
-    :branch: release/2.30.2
-    :git: https://github.com/signalapp/SignalProtocolKit.git
+    :path: "../SignalProtocolKit"
   Curve25519Kit:
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
@@ -202,8 +230,9 @@ EXTERNAL SOURCES:
   HKDFKit:
     :git: https://github.com/signalapp/HKDFKit.git
   SignalCoreKit:
-    :branch: charlesmchen/sck3
-    :git: https://github.com/signalapp/SignalCoreKit-Private.git
+    :git: https://github.com/signalapp/SignalCoreKit.git
+  SignalMetadataKit:
+    :git: https://github.com/signalapp/SignalMetadataKit-Private
   SignalServiceKit:
     :path: "."
   SocketRocket:
@@ -217,21 +246,21 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/YapDatabase.git
 
 CHECKOUT OPTIONS:
-  AxolotlKit:
-    :commit: 446fbdaa5760cf1b1337441340d4d885beb27beb
-    :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: a4f46bd621bb2bcbf1a44b360e8ac4209e410ee9
+    :commit: 9d0f5e68d52a70e10b2469900ca0e63093e6952a
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
-    :commit: f6e051a765e0bc819fee72f9b7d18acee33a8b37
+    :commit: 8b8326cd50bc488663a3d3743f1a92b90f4d85b4
     :git: https://github.com/signalapp/HKDFKit.git
   SignalCoreKit:
-    :commit: 78ef62a0ed97146794d22236ca668cb5c7107372
-    :git: https://github.com/signalapp/SignalCoreKit-Private.git
+    :commit: f301df260a49327d1c20a70f95cb3717ed21acc9
+    :git: https://github.com/signalapp/SignalCoreKit.git
+  SignalMetadataKit:
+    :commit: a71f0634aecfa48a68409a0d25751cdced499950
+    :git: https://github.com/signalapp/SignalMetadataKit-Private
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
     :git: https://github.com/signalapp/SocketRocket.git
@@ -244,11 +273,11 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
-  AxolotlKit: 3a8d57041c5b162425cc40773ea6276c0c838c9d
+  AxolotlKit: e3030c15406a2128e4bd8e1f32f1e7711619022a
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
-  Curve25519Kit: 57ee34550081f405ded707384b3ea9bb3a4c8308
+  Curve25519Kit: 2b2e55cfa2a72f1152d2733a3058d94cc87f37c3
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
-  HKDFKit: 0445c3158e15137c845bee690a59755ac4360469
+  HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
@@ -256,7 +285,8 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
-  SignalServiceKit: 5774a5aca3116653a1d94716bccfc9fc013abf2d
+  SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
+  SignalServiceKit: cc09be2499a4d6e08e2c3eec80e0aebeeb721f7e
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: 51a800ebb77f95a8329b6ced1faaff394b47f509
@@ -264,6 +294,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: c2fee616779937ffcb46434198feeefa34d9dcf7
+PODFILE CHECKSUM: 1ab920e75bea25009213e86621d80f8b707c64ef
 
 COCOAPODS: 1.5.3
