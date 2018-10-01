@@ -38,15 +38,6 @@
     test([[(@[@1,@2]) filter:^(NSNumber* x) { return x.intValue == 2; }] isEqualToArray:(@[@2])]);
 }
 
--(void) testKeyedBy {
-	test([[@[] keyedBy:^id(id value) { return @true; }] isEqual:@{}]);
-	test([[@[@1] keyedBy:^id(id value) { return @true; }] isEqual:@{@true : @1}]);
-	testThrows(([(@[@1, @2]) keyedBy:^id(id value) { return @true; }]));
-	test([[(@[@1, @2]) keyedBy:^id(id value) { return value; }] isEqual:(@{@1 : @1, @2 : @2})]);
-	testThrows([(@[@1, @1, @2, @3, @5]) keyedBy:^id(NSNumber* value) { return @(value.intValue/2); }]);
-	test([[(@[@3, @5, @7, @11, @13]) keyedBy:^id(NSNumber* value) { return @(value.intValue/2); }] isEqual:(@{@1 : @3, @2 : @5, @3 : @7, @5 : @11, @6 : @13})]);
-}
-
 -(void) testGroupBy {
 	test([[@[] groupBy:^id(id value) { return @true; }] isEqual:@{}]);
 	test([[@[@1] groupBy:^id(id value) { return @true; }] isEqual:@{@true : @[@1]}]);
