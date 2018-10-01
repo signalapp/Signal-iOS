@@ -220,7 +220,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reload
 {
-    TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId];
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self reloadWithTransaction:transaction];
+    }];
+}
+
+- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
     if (!latest) {
         OWSFailDebug(@"`latest` was unexpectedly nil");
         return;
