@@ -699,15 +699,8 @@ const CGFloat kIconViewLength = 24;
                          iconName:(NSString *)iconName
               disclosureIconColor:(UIColor *)disclosureIconColor
 {
-    UIView *accessoryView = [NeverClearView new];
-    OWSCircleView *swatchView = [OWSCircleView new];
-    [accessoryView addSubview:swatchView];
-    [swatchView autoPinEdgesToSuperviewEdges];
-
-    const CGFloat kSwatchWidth = 20;
-    [swatchView autoSetDimensionsToSize:CGSizeMake(kSwatchWidth, kSwatchWidth)];
-    swatchView.backgroundColor = disclosureIconColor;
-    [swatchView setCompressionResistanceHigh];
+    OWSColorPickerAccessoryView *accessoryView =
+        [[OWSColorPickerAccessoryView alloc] initWithColor:disclosureIconColor];
 
     UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:accessoryView];
     //    cell.accessoryView = accessoryView;
@@ -742,14 +735,8 @@ const CGFloat kIconViewLength = 24;
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
     if (customAccessoryView) {
         OWSAssertDebug(cell.accessoryView == nil);
-        UIView *accessoryView = [UIView containerView];
-        [accessoryView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
-        [accessoryView addSubview:customAccessoryView];
-
-        [customAccessoryView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:accessoryView withOffset:0];
-        [customAccessoryView autoAlignAxis:ALAxisVertical toSameAxisOfView:accessoryView withOffset:6];
-
-        [contentRow addArrangedSubview:accessoryView];
+        [customAccessoryView sizeToFit];
+        cell.accessoryView = customAccessoryView;
     }
     contentRow.spacing = self.iconSpacing;
 

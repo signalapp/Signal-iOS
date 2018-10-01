@@ -4,6 +4,34 @@
 
 import Foundation
 
+@objc
+class OWSColorPickerAccessoryView: NeverClearView {
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: kSwatchSize, height: kSwatchSize)
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        return self.intrinsicContentSize
+    }
+
+    let kSwatchSize: CGFloat = 24
+
+    @objc
+    required init(color: UIColor) {
+        super.init(frame: .zero)
+
+        let circleView = CircleView()
+        circleView.backgroundColor = color
+        addSubview(circleView)
+        circleView.autoSetDimensions(to: CGSize(width: kSwatchSize, height: kSwatchSize))
+        circleView.autoPinEdgesToSuperviewEdges()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 @objc (OWSCircleView)
 class CircleView: UIView {
     override var bounds: CGRect {
