@@ -298,7 +298,9 @@ const CGFloat kIconViewLength = 24;
                                      [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
                                  NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
                                      @"Label for table cell which leads to picking a new conversation color");
-                                 return [weakSelf disclosureCellWithName:title iconColor:currentColor];
+                                 return [weakSelf cellWithName:title
+                                                      iconName:@"ic_color_palette"
+                                           disclosureIconColor:currentColor];
                              }
                              actionBlock:^{
                                  [weakSelf showColorPicker];
@@ -693,32 +695,37 @@ const CGFloat kIconViewLength = 24;
     return 12.f;
 }
 
-- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconColor:(UIColor *)iconColor
+- (UITableViewCell *)cellWithName:(NSString *)name
+                         iconName:(NSString *)iconName
+              disclosureIconColor:(UIColor *)disclosureIconColor
 {
-    OWSAssertDebug(name.length > 0);
+    UIView *accessoryView = [NeverClearView new];
+    OWSCircleView *swatchView = [OWSCircleView new];
+    [accessoryView addSubview:swatchView];
+    [swatchView autoPinEdgesToSuperviewEdges];
 
-    UIView *iconView = [UIView containerView];
-    [iconView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
-
-    UIView *swatchView = [NeverClearView new];
     const CGFloat kSwatchWidth = 20;
     [swatchView autoSetDimensionsToSize:CGSizeMake(kSwatchWidth, kSwatchWidth)];
-    swatchView.layer.cornerRadius = kSwatchWidth / 2;
-    swatchView.backgroundColor = iconColor;
-    [iconView addSubview:swatchView];
-    [swatchView autoCenterInSuperview];
+    swatchView.backgroundColor = disclosureIconColor;
+    [swatchView setCompressionResistanceHigh];
 
-    return [self cellWithName:name iconView:iconView];
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:accessoryView];
+    //    cell.accessoryView = accessoryView;
+    return cell;
 }
 
-- (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
+- (UITableViewCell *)cellWithName:(NSString *)name
+                         iconName:(NSString *)iconName
+              customAccessoryView:(nullable UIView *)customAccessoryView
 {
     OWSAssertDebug(iconName.length > 0);
     UIImageView *iconView = [self viewForIconWithName:iconName];
-    return [self cellWithName:name iconView:iconView];
+    return [self cellWithName:name iconView:iconView customAccessoryView:customAccessoryView];
 }
 
-- (UITableViewCell *)cellWithName:(NSString *)name iconView:(UIView *)iconView
+- (UITableViewCell *)cellWithName:(NSString *)name
+                         iconView:(UIView *)iconView
+              customAccessoryView:(nullable UIView *)customAccessoryView
 {
     OWSAssertDebug(name.length > 0);
 
@@ -733,6 +740,17 @@ const CGFloat kIconViewLength = 24;
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+    if (customAccessoryView) {
+        OWSAssertDebug(cell.accessoryView == nil);
+        UIView *accessoryView = [UIView containerView];
+        [accessoryView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
+        [accessoryView addSubview:customAccessoryView];
+
+        [customAccessoryView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:accessoryView withOffset:0];
+        [customAccessoryView autoAlignAxis:ALAxisVertical toSameAxisOfView:accessoryView withOffset:6];
+
+        [contentRow addArrangedSubview:accessoryView];
+    }
     contentRow.spacing = self.iconSpacing;
 
     [cell.contentView addSubview:contentRow];
@@ -743,14 +761,14 @@ const CGFloat kIconViewLength = 24;
 
 - (UITableViewCell *)disclosureCellWithName:(NSString *)name iconName:(NSString *)iconName
 {
-    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:nil];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
 }
 
 - (UITableViewCell *)labelCellWithName:(NSString *)name iconName:(NSString *)iconName
 {
-    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName customAccessoryView:nil];
     cell.accessoryType = UITableViewCellAccessoryNone;
     return cell;
 }

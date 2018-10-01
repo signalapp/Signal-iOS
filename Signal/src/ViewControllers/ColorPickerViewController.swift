@@ -4,6 +4,15 @@
 
 import Foundation
 
+@objc (OWSCircleView)
+class CircleView: UIView {
+    override var bounds: CGRect {
+        didSet {
+            self.layer.cornerRadius = self.bounds.size.height / 2
+        }
+    }
+}
+
 protocol ColorViewDelegate: class {
     func colorViewWasTapped(_ colorView: ColorView)
 }
@@ -12,8 +21,8 @@ class ColorView: UIView {
     public weak var delegate: ColorViewDelegate?
     public let conversationColor: OWSConversationColor
 
-    private let swatchView: UIView
-    private let selectedRing: UIView
+    private let swatchView: CircleView
+    private let selectedRing: CircleView
     public var isSelected: Bool = false {
         didSet {
             self.selectedRing.isHidden = !isSelected
@@ -22,8 +31,8 @@ class ColorView: UIView {
 
     required init(conversationColor: OWSConversationColor) {
         self.conversationColor = conversationColor
-        self.swatchView = UIView()
-        self.selectedRing = UIView()
+        self.swatchView = CircleView()
+        self.selectedRing = CircleView()
 
         super.init(frame: .zero)
         self.addSubview(selectedRing)
@@ -32,7 +41,6 @@ class ColorView: UIView {
         let cellHeight: CGFloat = 64
 
         selectedRing.autoSetDimensions(to: CGSize(width: cellHeight, height: cellHeight))
-        selectedRing.layer.cornerRadius = cellHeight / 2
         selectedRing.layer.borderColor = Theme.secondaryColor.cgColor
         selectedRing.layer.borderWidth = 2
         selectedRing.autoPinEdgesToSuperviewEdges()
@@ -40,7 +48,6 @@ class ColorView: UIView {
 
         swatchView.backgroundColor = conversationColor.primaryColor
         let swatchSize: CGFloat = 48
-        self.swatchView.layer.cornerRadius = swatchSize / 2
         swatchView.autoSetDimensions(to: CGSize(width: swatchSize, height: swatchSize))
         swatchView.autoCenterInSuperview()
 
