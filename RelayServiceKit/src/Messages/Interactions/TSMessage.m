@@ -61,6 +61,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @implementation TSMessage
 
 @synthesize plainTextBody = _plainTextBody;
+@synthesize htmlTextBody = _htmlTextBody;
 @synthesize forstaPayload = _forstaPayload;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
@@ -280,6 +281,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         } else {
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
+    } else if ([self.messageType isEqualToString:@"control"]) {
+        return @"";
     } else {
         OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
         // TODO: We should do better here.
@@ -341,6 +344,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     if (_forstaPayload == nil) {
         _forstaPayload = [[FLCCSMJSONService payloadDictionaryFromMessageBody:self.body] mutableCopy];
+        if (_forstaPayload == nil) {
+            _forstaPayload = [NSMutableDictionary new];
+        }
     }
     return _forstaPayload;
 }
@@ -413,6 +419,97 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
     return returnString;
+}
+
+//-(NSAttributedString *)attributedTextBody
+//{
+//    if (self.forstaPayload) {
+//        NSString *htmlString = [self htmlBodyStringFromPayload];
+//
+//        if (htmlString.length > 0) {
+//            // hack to deal with appended <br> on strings from web client
+//            if (htmlString.length > 4) {
+//                NSString *tailString = [htmlString substringWithRange:NSMakeRange(htmlString.length-4, 4)];
+//                if ([tailString isEqualToString:[NSString stringWithFormat:@"<br>"]]) {
+//                    htmlString = [htmlString substringToIndex:htmlString.length-4];
+//                }
+//            }
+//            _attributedTextBody = [NSAttributedString attributedStringFromHTML:htmlString
+//                                                                    normalFont:[UIFont ows_regularFontWithSize:FLMessageViewFontSize]
+//                                                                      boldFont:[UIFont ows_boldFontWithSize:FLMessageViewFontSize]
+//                                                                    italicFont:[UIFont ows_italicFontWithSize:FLMessageViewFontSize]];
+//        }
+//    }
+//    // Couldn't parse the html string so fall back to plain
+//    if (_attributedTextBody.length == 0 && self.plainTextBody.length > 0) {
+//        _attributedTextBody = [NSAttributedString attributedStringFromHTML:self.plainTextBody
+//                                                                normalFont:[UIFont ows_regularFontWithSize:FLMessageViewFontSize]
+//                                                                  boldFont:[UIFont ows_boldFontWithSize:FLMessageViewFontSize]
+//                                                                italicFont:[UIFont ows_italicFontWithSize:FLMessageViewFontSize]];
+//    }
+//    // hack to deal with appended newline on attributedStrings
+//    if (_attributedTextBody.length > 0) {
+//        NSString *lastChar = [_attributedTextBody.string substringFromIndex:_attributedTextBody.string.length-1];
+//        if ([lastChar isEqualToString:[NSString stringWithFormat:@"\n"]]) {
+//            _attributedTextBody = [_attributedTextBody attributedSubstringFromRange:NSMakeRange(0, _attributedTextBody.string.length-1)];
+//        }
+//    }
+//    return _attributedTextBody;
+//}
+
+-(void)setHtmlTextBody:(nullable NSString *)value
+{
+    if (![_htmlTextBody isEqualToString:value]) {
+        _htmlTextBody = value;
+        
+        // Add the new value to the forstaPayload
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            if (self->_htmlTextBody.length > 0) {
+                NSMutableDictionary *dataDict = [[self.forstaPayload objectForKey:@"data"] mutableCopy];
+                if (!dataDict) {
+                    dataDict = [NSMutableDictionary new];
+                }
+                NSMutableArray *body = [[dataDict objectForKey:@"body"] mutableCopy];
+                if (!body) {
+                    body = [NSMutableArray new];
+                }
+                
+                NSDictionary *oldDict = nil;
+                if (body.count > 0) {
+                    for (NSDictionary *dict in body) {
+                        if ([(NSString *)[dict objectForKey:@"type"] isEqualToString:@"text/html"]) {
+                            oldDict = dict;
+                        }
+                    }
+                }
+                NSDictionary *newDict = @{ @"type" : @"text/html",
+                                           @"value" : value };
+                [body addObject:newDict];
+                
+                if (oldDict) {
+                    [body removeObject:oldDict];
+                }
+                
+                [dataDict setObject:body forKey:@"body"];
+                [self.forstaPayload setObject:dataDict forKey:@"data"];
+            } else {
+                // Empty value passed, remove the object from the payload
+                NSMutableDictionary *dataDict = [[self.forstaPayload objectForKey:@"data"] mutableCopy];
+                if (dataDict) {
+                    [dataDict removeObjectForKey:@"body"];
+                    [self.forstaPayload setObject:dataDict forKey:@"data"];
+                }
+            }
+        });
+    }
+}
+
+
+-(nullable NSString *)htmlTextBody {
+    if (_htmlTextBody == nil) {
+        _htmlTextBody = [self htmlBodyStringFromPayload];
+    }
+    return _htmlTextBody.filterStringForDisplay;
 }
 
 -(NSString *)htmlBodyStringFromPayload;

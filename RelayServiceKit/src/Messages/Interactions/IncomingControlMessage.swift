@@ -66,4 +66,8 @@ import UIKit
     @objc required public init(dictionary dictionaryValue: [AnyHashable : Any]!) throws {
         fatalError("init(dictionary:) has not been implemented")
     }
+    
+    @objc override public func previewText(with transaction: YapDatabaseReadTransaction) -> String {
+        return ""
+    }
 }

@@ -29,6 +29,7 @@
 #import <RelayServiceKit/TSAccountManager.h>
 #import <RelayServiceKit/TSOutgoingMessage.h>
 #import <RelayServiceKit/Threading.h>
+#import "FLAnnouncementViewController.h"
 
 @import YapDatabase;
 
@@ -1324,11 +1325,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        ConversationViewController *viewController = [ConversationViewController new];
-        [viewController configureForThread:thread action:action focusMessageId:focusMessageId];
+        
+        UIViewController *viewController = nil;
+        if ([thread.type isEqualToString:FLThreadTypeAnnouncement]) {
+            FLAnnouncementViewController *avc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"FLAnnouncementViewController"];;
+            avc.thread = thread;
+            viewController = avc;
+        }  else if ([thread.type isEqualToString:FLThreadTypeConversation]) {
+            ConversationViewController *cvc = [ConversationViewController new];
+            [cvc configureForThread:thread action:action focusMessageId:focusMessageId];
+            viewController = cvc;
+        } else {
+            DDLogDebug(@"Attempt to present unknown thread type: %@", thread.type);
+            return;
+        }
         self.lastThread = thread;
-
-        [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
+       [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
     });
 }
 

@@ -230,14 +230,17 @@ import RelayServiceKit
         
         // Check the db
         if recipient == nil {
-            self.readWriteConnection.readWrite { (transaction) in
+            self.readWriteConnection.read { (transaction) in
                 recipient = self.recipient(withId: userId, transaction: transaction)
+                if recipient != nil {
+                    self.recipientCache .setObject(recipient!, forKey: recipient?.uniqueId as! NSString);
+                }
             }
         }
         return recipient
     }
     
-    @objc public func recipient(withId userId: String, transaction: YapDatabaseReadWriteTransaction) -> RelayRecipient? {
+    @objc public func recipient(withId userId: String, transaction: YapDatabaseReadTransaction) -> RelayRecipient? {
 
         // Check the cache
         if let recipient:RelayRecipient = recipientCache.object(forKey: userId as NSString) {
@@ -272,7 +275,7 @@ import RelayServiceKit
             return nil
         }
 
-        let uidString = uuid.uuidString
+        let uidString = uuid.uuidString.lowercased()
         
         let recipient = RelayRecipient.getOrBuildUnsavedRecipient(forRecipientId: uidString, transaction: transaction)
         

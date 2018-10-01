@@ -10,7 +10,6 @@ public class ThreadViewModel: NSObject {
     @objc public let lastMessageDate: Date
     @objc public let threadRecord: TSThread
     @objc public let unreadCount: UInt
-//    @objc public let contactIdentifier: String?
     @objc public let title: String
     @objc public let isMuted: Bool
 
@@ -26,10 +25,6 @@ public class ThreadViewModel: NSObject {
         self.isMuted = thread.isMuted
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
-
-        // TODO: decide what to do with this property.  Probably don't need it.
-//        self.contactIdentifier = nil
-
         self.unreadCount = thread.unreadMessageCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
     }

@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // JSON body handlers
 @property (nullable, nonatomic, strong) NSString *plainTextBody;
-@property (nullable, nonatomic, strong) NSAttributedString *attributedTextBody;
+@property (nullable, nonatomic, strong) NSString *htmlTextBody;
 @property (nonatomic, strong) NSString *messageType;
 @property BOOL hasAnnotation;
 @property (nonatomic, readonly) BOOL isGiphy;
