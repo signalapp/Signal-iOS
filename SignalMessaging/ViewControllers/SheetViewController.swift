@@ -66,6 +66,10 @@ public class SheetViewController: UIViewController {
         // Gestures
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
         self.view.addGestureRecognizer(tapGesture)
+
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeDown))
+        swipeDownGesture.direction = .down
+        self.view.addGestureRecognizer(swipeDownGesture)
     }
 
     // MARK: Present / Dismiss animations
@@ -120,6 +124,12 @@ public class SheetViewController: UIViewController {
 
     @objc
     func didTapBackground() {
+        // inform delegate to
+        delegate?.sheetViewControllerRequestedDismiss(self)
+    }
+
+    @objc
+    func didSwipeDown() {
         // inform delegate to
         delegate?.sheetViewControllerRequestedDismiss(self)
     }
