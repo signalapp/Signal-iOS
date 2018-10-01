@@ -1511,7 +1511,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             // In Debug this pops up *every* time, which is helpful, but annoying.
             // In Production this will pop up at most 3 times per 365 days.
 #ifndef DEBUG
-            [SKStoreReviewController requestReview];
+            static dispatch_once_t onceToken;
+            // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
+            // repeatedly after first installation. Let's make sure it only happens at most once per launch.
+            dispatch_once(&onceToken, ^{
+                [SKStoreReviewController requestReview];
+            });
 #endif
         }
     } else {
