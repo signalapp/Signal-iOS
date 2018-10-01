@@ -55,7 +55,7 @@ public class SheetViewController: UIViewController {
         sheetView.setCompressionResistanceHigh()
         self.sheetViewVerticalConstraint = sheetView.autoPinEdge(.top, to: .bottom, of: self.view)
 
-        handleView.backgroundColor = Theme.backgroundColor
+        handleView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_white : UIColor.ows_gray05
         let kHandleViewHeight: CGFloat = 5
         handleView.autoSetDimensions(to: CGSize(width: 40, height: kHandleViewHeight))
         handleView.layer.cornerRadius = kHandleViewHeight / 2
