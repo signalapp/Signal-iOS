@@ -190,9 +190,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func isCertificateExpired(certificateData: Data) -> Bool {
-        guard let expirationData = OWSCertificateExpiration.expirationData(forCertificate: certificateData) else {
-            return true
-        }
         // TODO:
         return false
     }
