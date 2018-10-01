@@ -14,8 +14,6 @@ import SignalServiceKit
 public class AccountManager: NSObject {
 
     let textSecureAccountManager: TSAccountManager
-    let networkManager: TSNetworkManager
-    let preferences: OWSPreferences
 
     var pushManager: PushManager {
         // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
@@ -23,14 +21,22 @@ public class AccountManager: NSObject {
     }
 
     @objc
-    public required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences) {
-        self.networkManager = textSecureAccountManager.networkManager
+    public required init(textSecureAccountManager: TSAccountManager) {
         self.textSecureAccountManager = textSecureAccountManager
-        self.preferences = preferences
 
         super.init()
 
         SwiftSingletons.register(self)
+    }
+
+    // MARK: - Singletons
+
+    private var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    private var preferences: OWSPreferences {
+        return Environment.shared.preferences
     }
 
     // MARK: registration
@@ -108,9 +114,17 @@ public class AccountManager: NSObject {
     }
 
     func registerForManualMessageFetching() -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForManualMessageFetching(success: fulfill, failure: reject)
-        }
+        TSAccountManager.sharedInstance().setIsManualMessageFetchEnabled(true)
+
+        // Try to update the account attributes to reflect this change.
+        let request = OWSRequestFactory.updateAttributesRequest()
+        let promise: Promise<Void> = self.networkManager.makePromise(request: request)
+            .then(execute: { (_, _) in
+                Logger.info("updated server with account attributes to enableManualFetching")
+            }).catch(execute: { (error) in
+                Logger.error("failed to update server with account attributes with error: \(error)")
+            })
+        return promise
     }
 
     // MARK: Turn Server
@@ -136,5 +150,4 @@ public class AccountManager: NSObject {
             })
         }
     }
-
 }

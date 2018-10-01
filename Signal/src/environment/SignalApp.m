@@ -63,8 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.networkManager);
     OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
 
-    _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]
-                                                                   preferences:Environment.shared.preferences];
+    _accountManager = [[AccountManager alloc] initWithTextSecureAccountManager:[TSAccountManager sharedInstance]];
 
     _notificationsManager = [NotificationsManager new];
     SSKEnvironment.shared.notificationsManager = self.notificationsManager;

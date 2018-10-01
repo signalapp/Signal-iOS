@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark Upgrading to 2.1.3 - Adding VOIP flag on TS Server
+#pragma mark - Update Account Attributes
 
 + (void)blockingAttributesUpdate
 {
@@ -139,7 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         __block BOOL success;
 
-        TSRequest *request = [OWSRequestFactory updateAttributesRequestWithManualMessageFetching:NO];
+        TSRequest *request = [OWSRequestFactory updateAttributesRequest];
         [[TSNetworkManager sharedManager] makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 success = YES;

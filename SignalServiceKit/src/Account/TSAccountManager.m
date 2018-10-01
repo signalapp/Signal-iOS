@@ -11,7 +11,6 @@
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
-#import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <SignalCoreKit/NSData+OWS.h>
@@ -34,6 +33,7 @@ NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegist
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
 NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
 NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
+NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
 
 @interface TSAccountManager ()
 
@@ -327,21 +327,6 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     [self registerWithPhoneNumber:number success:successBlock failure:failureBlock smsVerification:NO];
 }
 
-- (void)registerForManualMessageFetchingWithSuccess:(void (^)(void))successBlock
-                                            failure:(void (^)(NSError *error))failureBlock
-{
-    TSRequest *request = [OWSRequestFactory updateAttributesRequestWithManualMessageFetching:YES];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *_Nonnull task, id _Nonnull responseObject) {
-            OWSLogInfo(@"updated server with account attributes to enableManualFetching");
-            successBlock();
-        }
-        failure:^(NSURLSessionDataTask *_Nonnull task, NSError *_Nonnull error) {
-            OWSLogInfo(@"failed to updat server with account attributes with error: %@", error);
-            failureBlock(error);
-        }];
-}
-
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock
@@ -355,11 +340,11 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     OWSAssertDebug(authToken);
     OWSAssertDebug(phoneNumber);
 
-    TSVerifyCodeRequest *request = [[TSVerifyCodeRequest alloc] initWithVerificationCode:verificationCode
-                                                                               forNumber:phoneNumber
-                                                                                     pin:pin
-                                                                            signalingKey:signalingKey
-                                                                                 authKey:authToken];
+    TSRequest *request = [OWSRequestFactory verifyCodeRequestWithVerificationCode:verificationCode
+                                                                        forNumber:phoneNumber
+                                                                              pin:pin
+                                                                     signalingKey:signalingKey
+                                                                          authKey:authToken];
 
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -602,6 +587,20 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     return nil !=
         [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
                            inCollection:TSAccountManager_UserAccountCollection];
+}
+
+- (BOOL)isManualMessageFetchEnabled
+{
+    return [self.dbConnection boolForKey:TSAccountManager_ManualMessageFetchKey
+                            inCollection:TSAccountManager_UserAccountCollection
+                            defaultValue:NO];
+}
+
+- (void)setIsManualMessageFetchEnabled:(BOOL)value
+{
+    [self.dbConnection setBool:value
+                        forKey:TSAccountManager_ManualMessageFetchKey
+                  inCollection:TSAccountManager_UserAccountCollection];
 }
 
 @end

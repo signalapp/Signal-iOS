@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS107LegacySounds alloc] initWithPrimaryStorage:primaryStorage],
         [[OWS108CallLoggingPreference alloc] initWithPrimaryStorage:primaryStorage],
         [[OWS109OutgoingMessageState alloc] initWithPrimaryStorage:primaryStorage]
+        [[OWS111UDAttributesMigration alloc] initWithPrimaryStorage:primaryStorage],
     ];
 }
 

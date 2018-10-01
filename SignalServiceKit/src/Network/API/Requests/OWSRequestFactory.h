@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId;
 
-+ (TSRequest *)updateAttributesRequestWithManualMessageFetching:(BOOL)enableManualMessageFetching;
++ (TSRequest *)updateAttributesRequest;
 
 + (TSRequest *)unregisterAccountRequest;
 
@@ -56,6 +56,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp;
+
++ (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
+                                           forNumber:(NSString *)phoneNumber
+                                                 pin:(nullable NSString *)pin
+                                        signalingKey:(NSString *)signalingKey
+                                             authKey:(NSString *)authKey;
 
 #pragma mark - Prekeys
 

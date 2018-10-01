@@ -5,13 +5,18 @@
 #import "OWSRequestFactory.h"
 #import "OWS2FAManager.h"
 #import "OWSDevice.h"
-#import "TSAttributes.h"
+#import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/SignedPreKeyRecord.h>
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -165,15 +170,20 @@ NS_ASSUME_NONNULL_BEGIN
                           }];
 }
 
-+ (TSRequest *)updateAttributesRequestWithManualMessageFetching:(BOOL)enableManualMessageFetching
++ (TSRequest *)updateAttributesRequest
 {
     NSString *path = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
+
+    NSString *signalingKey = TSAccountManager.signalingKey;
+    OWSAssertDebug(signalingKey.length > 0);
+    NSString *authKey = TSAccountManager.serverAuthToken;
+    OWSAssertDebug(authKey.length > 0);
     NSString *_Nullable pin = [OWS2FAManager.sharedManager pinCode];
-    return [TSRequest
-        requestWithUrl:[NSURL URLWithString:path]
-                method:@"PUT"
-            parameters:[TSAttributes attributesFromStorageWithManualMessageFetching:enableManualMessageFetching
-                                                                                pin:pin]];
+
+    NSDictionary<NSString *, id> *accountAttributes =
+        [self accountAttributesWithPin:pin signalingKey:signalingKey authKey:authKey];
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:accountAttributes];
 }
 
 + (TSRequest *)unregisterAccountRequest
@@ -203,6 +213,68 @@ NS_ASSUME_NONNULL_BEGIN
         case TSVerificationTransportVoice:
             return @"voice";
     }
+}
+
++ (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
+                                           forNumber:(NSString *)phoneNumber
+                                                 pin:(nullable NSString *)pin
+                                        signalingKey:(NSString *)signalingKey
+                                             authKey:(NSString *)authKey
+{
+    OWSAssertDebug(verificationCode.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(signalingKey.length > 0);
+    OWSAssertDebug(authKey.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode];
+
+    NSMutableDictionary<NSString *, id> *accountAttributes =
+        [[self accountAttributesWithPin:pin signalingKey:signalingKey authKey:authKey] mutableCopy];
+    [accountAttributes removeObjectForKey:@"AuthKey"];
+
+    TSRequest *request =
+        [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:accountAttributes];
+    // The "verify code" request handles auth differently.
+    request.authUsername = phoneNumber;
+    request.authPassword = authKey;
+    return request;
+}
+
++ (NSDictionary<NSString *, id> *)accountAttributesWithPin:(nullable NSString *)pin
+                                              signalingKey:(NSString *)signalingKey
+                                                   authKey:(NSString *)authKey
+{
+    OWSAssertDebug(signalingKey.length > 0);
+    OWSAssertDebug(authKey.length > 0);
+    uint32_t registrationId = [TSAccountManager getOrGenerateRegistrationId];
+
+    BOOL isManualMessageFetchEnabled = TSAccountManager.sharedInstance.isManualMessageFetchEnabled;
+
+    OWSAES256Key *profileKey = [SSKEnvironment.shared.profileManager localProfileKey];
+    NSError *error;
+    SMKUDAccessKey *_Nullable udAccessKey = [[SMKUDAccessKey alloc] initWithProfileKey:profileKey.keyData error:&error];
+    if (error || !udAccessKey) {
+        OWSLogError(@"Could not determine UD access key: %@.", error);
+    }
+    BOOL allowUnrestrictedUD = [SSKEnvironment.shared.udManager allowUnrestrictedAccess] && udAccessKey != nil;
+
+    NSMutableDictionary *accountAttributes = [@{
+        @"signalingKey" : signalingKey,
+        @"AuthKey" : authKey,
+        @"voice" : @(YES), // all Signal-iOS clients support voice
+        @"video" : @(YES), // all Signal-iOS clients support WebRTC-based voice and video calls.
+        @"fetchesMessages" : @(isManualMessageFetchEnabled), // devices that don't support push must tell the server
+                                                             // they fetch messages manually
+        @"registrationId" : [NSString stringWithFormat:@"%i", registrationId],
+    } mutableCopy];
+    if (pin.length > 0) {
+        accountAttributes[@"pin"] = pin;
+    }
+    if (udAccessKey.keyData.length > 0) {
+        accountAttributes[@"unidentifiedAccessKey"] = udAccessKey.keyData.base64EncodedString;
+        accountAttributes[@"unrestrictedUnidentifiedAccess"] = @(allowUnrestrictedUD);
+    }
+    return [accountAttributes copy];
 }
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId

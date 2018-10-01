@@ -43,6 +43,20 @@ public class OWSFakeUDManager: NSObject, OWSUDManager {
         }
         success(certificateData)
     }
+
+    // MARK: - Unrestricted Access
+
+    private var _allowUnrestrictedAccess = false
+
+    @objc
+    public func allowUnrestrictedAccess() -> Bool {
+        return _allowUnrestrictedAccess
+    }
+
+    @objc
+    public func setAllowUnrestrictedAccess(_ value: Bool) {
+        _allowUnrestrictedAccess = value
+    }
 }
 
 #endif
