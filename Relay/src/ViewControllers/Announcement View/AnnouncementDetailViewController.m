@@ -6,6 +6,8 @@
 //  Copyright © 2018 Forsta. All rights reserved.
 //
 
+// TODO:  Define a YapDatabaseView to handle the content in this view controller.
+
 #import "AnnouncementDetailViewController.h"
 //#import "FLDirectoryCell.h"
 #import "Relay-Swift.h"
