@@ -93,7 +93,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - UD
 
-+ (TSRequest *)udServerCertificateRequest;
++ (TSRequest *)udSenderCertificateRequest;
 
 @end
 

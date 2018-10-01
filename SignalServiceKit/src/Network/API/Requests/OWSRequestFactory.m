@@ -348,7 +348,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - UD
 
-+ (TSRequest *)udServerCertificateRequest
++ (TSRequest *)udSenderCertificateRequest
 {
     NSString *path = @"/v1/certificate/delivery";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
