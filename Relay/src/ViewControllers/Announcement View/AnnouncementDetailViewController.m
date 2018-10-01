@@ -22,6 +22,7 @@
 
 @property (nonatomic, strong) RelayRecipient *sender;
 @property (nonatomic, strong) NSArray <RelayRecipient *> *recipients;
+@property YapDatabaseConnection *uiConnection;
 
 @end
 
@@ -37,11 +38,56 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    self.uiConnection = [OWSPrimaryStorage.sharedManager dbReadConnection];
+    [self.uiConnection beginLongLivedReadTransaction];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(yapDatabaseModified:)
+                                                 name:YapDatabaseModifiedNotification
+                                               object:nil];
+}
+
+-(void)dealloc {
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Notifications
+-(void)yapDatabaseModified:(NSNotification *)notification {
+    NSArray *notifications = [self.uiConnection beginLongLivedReadTransaction];
+    
+    if ([notifications count] == 0) {
+        return; // already processed commit
+    }
+    BOOL needsRefresh = NO;
+    TSThread *thread = self.message.thread;
+    if ([self.uiConnection hasChangeForKey:self.message.thread.uniqueId
+                              inCollection:[TSThread collection]
+                           inNotifications:notifications] ||
+        [self.uiConnection hasChangeForKey:self.message.uniqueId
+                              inCollection:[TSMessage collection]
+                           inNotifications:notifications]) {
+            needsRefresh = YES;
+        }
+    
+    for (NSString *uid in self.message.thread.participantIds) {
+        if ([self.uiConnection hasChangeForKey:uid.uppercaseString
+                                  inCollection:[RelayRecipient collection]
+                               inNotifications: notifications]) {
+            needsRefresh = YES;
+        }
+    }
+    
+    if (needsRefresh) {
+        self.sender = nil;
+        self.recipients = nil;
+        [self.tableView reloadData];
+    }
 }
 
 #pragma mark - Table view data source
@@ -176,6 +222,10 @@
             RelayRecipient *newRecipient = [FLContactsManager.shared recipientWithId:uid];
             if (newRecipient) {
                 [holdingTank addObject:newRecipient];
+            } else {
+                [NSNotificationCenter.defaultCenter postNotificationName:FLRecipientsNeedRefreshNotification
+                                                                  object:nil
+                                                                userInfo:@{ @"userIds" : @[ uid ] }];
             }
         }
         _recipients = [NSArray arrayWithArray:holdingTank];

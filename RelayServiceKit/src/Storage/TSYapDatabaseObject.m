@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSYapDatabaseObject
 
+//@synthesize uniqueId = _uniqueId;
+
 - (instancetype)init
 {
     return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
@@ -232,6 +234,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self setValuesForKeysWithDictionary:latest.dictionaryValue];
+}
+
+-(void)setUniqueId:(NSString *)value {
+    if (![_uniqueId isEqualToString:value]) {
+        _uniqueId = value.lowercaseString;
+    }
 }
 
 @end

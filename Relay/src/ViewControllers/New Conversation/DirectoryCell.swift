@@ -23,6 +23,12 @@ import UIImageView_Extension
     
     
     @objc public func configureCell(recipient: RelayRecipient?) {
+        
+        guard recipient != nil else {
+            Logger.debug("Configuring cell for nil recipient!")
+            return
+        }
+        
         DispatchQueue.main.async(execute: {
             
             self.nameLabel.attributedText = self.attributedString(recipient: recipient)
@@ -86,6 +92,11 @@ import UIImageView_Extension
     }
     
     func attributedString(recipient: RelayRecipient?) -> NSAttributedString? {
+        
+        guard recipient != nil else {
+            return NSAttributedString.init(string: "Nil Recipient")
+        }
+        
         let fontSize: CGFloat = 17.0
         let firstNameFont = UIFont.ows_regularFont(withSize: fontSize)
         let lastNameFont = UIFont.ows_regularFont(withSize: fontSize)
