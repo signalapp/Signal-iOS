@@ -66,17 +66,21 @@ class ColorView: UIView {
         self.addSubview(selectedRing)
         self.addSubview(swatchView)
 
-        let cellHeight: CGFloat = 64
-
+        // Selected Ring
+        let cellHeight: CGFloat = ScaleFromIPhone5(60)
         selectedRing.autoSetDimensions(to: CGSize(width: cellHeight, height: cellHeight))
+
         selectedRing.layer.borderColor = Theme.secondaryColor.cgColor
         selectedRing.layer.borderWidth = 2
         selectedRing.autoPinEdgesToSuperviewEdges()
         selectedRing.isHidden = true
 
+        // Color Swatch
         swatchView.backgroundColor = conversationColor.primaryColor
-        let swatchSize: CGFloat = 48
+
+        let swatchSize: CGFloat = ScaleFromIPhone5(46)
         swatchView.autoSetDimensions(to: CGSize(width: swatchSize, height: swatchSize))
+
         swatchView.autoCenterInSuperview()
 
         // gestures
@@ -275,7 +279,8 @@ class ColorPickerView: UIView, ColorViewDelegate {
 
     private func buildPaletteView(colorViews: [ColorView]) -> UIView {
         let paletteView = UIView()
-        paletteView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 0, right: 16)
+        let paletteMargin = ScaleFromIPhone5(12)
+        paletteView.layoutMargins = UIEdgeInsets(top: paletteMargin, left: paletteMargin, bottom: 0, right: paletteMargin)
 
         let kRowLength = 4
         let rows: [UIView] = colorViews.chunked(by: kRowLength).map { colorViewsInRow in
@@ -285,7 +290,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         }
         let rowsStackView = UIStackView(arrangedSubviews: rows)
         rowsStackView.axis = .vertical
-        rowsStackView.spacing = ScaleFromIPhone5To7Plus(12, 50)
+        rowsStackView.spacing = ScaleFromIPhone5To7Plus(12, 30)
 
         paletteView.addSubview(rowsStackView)
         rowsStackView.ows_autoPinToSuperviewMargins()
