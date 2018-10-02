@@ -715,10 +715,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 + (nullable NSArray<NSString *> *)getTempFilePaths
 {
-    NSString *dir1 = NSTemporaryDirectory();
+    NSString *dir1 = OWSTemporaryDirectory();
     NSArray<NSString *> *_Nullable paths1 = [[self filePathsInDirectorySafe:dir1].allObjects mutableCopy];
 
-    NSString *dir2 = OWSFileSystem.accessibleAfterFirstAuthTempDirectoryPath;
+    NSString *dir2 = OWSTemporaryDirectoryAccessibleAfterFirstAuth();
     NSArray<NSString *> *_Nullable paths2 = [[self filePathsInDirectorySafe:dir2].allObjects mutableCopy];
 
     if (paths1 && paths2) {

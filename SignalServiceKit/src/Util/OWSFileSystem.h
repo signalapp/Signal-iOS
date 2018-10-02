@@ -4,6 +4,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Use instead of NSTemporaryDirectory()
+// prefer the more restrictice OWSTemporaryDirectory,
+// unless the temp data may need to be accessed while the device is locked.
+NSString *OWSTemporaryDirectory(void);
+NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void);
+
 @interface OWSFileSystem : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -18,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)appLibraryDirectoryPath;
 
 + (NSString *)appSharedDataDirectoryPath;
-
-+ (NSString *)accessibleAfterFirstAuthTempDirectoryPath;
 
 + (NSString *)cachesDirectoryPath;
 

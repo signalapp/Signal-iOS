@@ -79,7 +79,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     // TODO: Exports should use a new directory each time, but imports
     // might want to use a predictable directory so that repeated
     // import attempts can reuse downloads from previous attempts.
-    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *temporaryDirectory = OWSTemporaryDirectory();
     self.jobTempDirPath = [temporaryDirectory stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
 
     if (![OWSFileSystem ensureDirectoryExists:self.jobTempDirPath]) {

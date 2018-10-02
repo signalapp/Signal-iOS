@@ -2,5 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-// ObjC classes from which Swift classes inherit must be included in this framework header.
+// Anything used by Swift outside of the framework must be imported.
+#import "OWSFileSystem.h"
 #import "OWSOperation.h"
