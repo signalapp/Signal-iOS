@@ -395,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    self.avatarView.image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar"]);
+    self.avatarView.image = (self.groupAvatar ?: [UIImage imageNamed:@"empty-group-avatar-gray"]);
 }
 
 #pragma mark - Event Handling
