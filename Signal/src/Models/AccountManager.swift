@@ -13,17 +13,13 @@ import SignalServiceKit
 @objc
 public class AccountManager: NSObject {
 
-    let textSecureAccountManager: TSAccountManager
-
     var pushManager: PushManager {
         // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
         return PushManager.shared()
     }
 
     @objc
-    public required init(textSecureAccountManager: TSAccountManager) {
-        self.textSecureAccountManager = textSecureAccountManager
-
+    public required override init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -37,6 +33,10 @@ public class AccountManager: NSObject {
 
     private var preferences: OWSPreferences {
         return Environment.shared.preferences
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
     }
 
     // MARK: registration
@@ -83,7 +83,7 @@ public class AccountManager: NSObject {
     private func registerForTextSecure(verificationCode: String,
                                        pin: String?) -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.verifyAccount(withCode: verificationCode,
+            tsAccountManager.verifyAccount(withCode: verificationCode,
                                                         pin: pin,
                                                         success: fulfill,
                                                         failure: reject)
@@ -99,14 +99,14 @@ public class AccountManager: NSObject {
 
     private func completeRegistration() {
         Logger.info("")
-        self.textSecureAccountManager.didRegister()
+        tsAccountManager.didRegister()
     }
 
     // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForPushNotifications(pushToken: pushToken,
+            tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                                        voipToken: voipToken,
                                                                        success: fulfill,
                                                                        failure: reject)
@@ -114,7 +114,7 @@ public class AccountManager: NSObject {
     }
 
     func enableManualMessageFetching() -> Promise<Void> {
-        TSAccountManager.sharedInstance().setIsManualMessageFetchEnabled(true)
+        tsAccountManager.setIsManualMessageFetchEnabled(true)
 
         // Try to update the account attributes to reflect this change.
         let request = OWSRequestFactory.updateAttributesRequest()

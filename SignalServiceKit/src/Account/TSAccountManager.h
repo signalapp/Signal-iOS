@@ -72,8 +72,9 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  *  @return registrationID;
  */
 
-+ (uint32_t)getOrGenerateRegistrationId;
 + (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
+- (uint32_t)getOrGenerateRegistrationId;
+- (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
 

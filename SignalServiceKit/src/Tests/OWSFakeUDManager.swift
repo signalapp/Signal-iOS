@@ -46,16 +46,16 @@ public class OWSFakeUDManager: NSObject, OWSUDManager {
 
     // MARK: - Unrestricted Access
 
-    private var _allowUnrestrictedAccess = false
+    private var _shouldAllowUnrestrictedAccess = false
 
     @objc
-    public func allowUnrestrictedAccess() -> Bool {
-        return _allowUnrestrictedAccess
+    public func shouldAllowUnrestrictedAccess() -> Bool {
+        return _shouldAllowUnrestrictedAccess
     }
 
     @objc
-    public func setAllowUnrestrictedAccess(_ value: Bool) {
-        _allowUnrestrictedAccess = value
+    public func setShouldAllowUnrestrictedAccess(_ value: Bool) {
+        _shouldAllowUnrestrictedAccess = value
     }
 }
 

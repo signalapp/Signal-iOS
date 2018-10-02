@@ -22,6 +22,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSRequestFactory
 
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
++ (OWS2FAManager *)ows2FAManager
+{
+    return OWS2FAManager.sharedManager;
+}
+
++ (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
++ (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
+}
+
+#pragma mark -
+
 + (TSRequest *)enable2FARequestWithPin:(NSString *)pin
 {
     OWSAssertDebug(pin.length > 0);
@@ -174,11 +198,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *path = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
 
-    NSString *signalingKey = TSAccountManager.signalingKey;
+    NSString *signalingKey = self.tsAccountManager.signalingKey;
     OWSAssertDebug(signalingKey.length > 0);
-    NSString *authKey = TSAccountManager.serverAuthToken;
+    NSString *authKey = self.tsAccountManager.serverAuthToken;
     OWSAssertDebug(authKey.length > 0);
-    NSString *_Nullable pin = [OWS2FAManager.sharedManager pinCode];
+    NSString *_Nullable pin = [self.ows2FAManager pinCode];
 
     NSDictionary<NSString *, id> *accountAttributes =
         [self accountAttributesWithPin:pin signalingKey:signalingKey authKey:authKey];
@@ -246,17 +270,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(signalingKey.length > 0);
     OWSAssertDebug(authKey.length > 0);
-    uint32_t registrationId = [TSAccountManager getOrGenerateRegistrationId];
+    uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
 
-    BOOL isManualMessageFetchEnabled = TSAccountManager.sharedInstance.isManualMessageFetchEnabled;
+    BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
 
-    OWSAES256Key *profileKey = [SSKEnvironment.shared.profileManager localProfileKey];
+    OWSAES256Key *profileKey = [self.profileManager localProfileKey];
     NSError *error;
     SMKUDAccessKey *_Nullable udAccessKey = [[SMKUDAccessKey alloc] initWithProfileKey:profileKey.keyData error:&error];
-    if (error || !udAccessKey) {
-        OWSLogError(@"Could not determine UD access key: %@.", error);
+    if (error || udAccessKey.keyData.length < 1) {
+        // Crash app if UD cannot be enabled.
+        OWSFail(@"Could not determine UD access key: %@.", error);
     }
-    BOOL allowUnrestrictedUD = [SSKEnvironment.shared.udManager allowUnrestrictedAccess] && udAccessKey != nil;
+    BOOL allowUnrestrictedUD = [self.udManager shouldAllowUnrestrictedAccess] && udAccessKey != nil;
 
     NSMutableDictionary *accountAttributes = [@{
         @"signalingKey" : signalingKey,
@@ -266,14 +291,14 @@ NS_ASSUME_NONNULL_BEGIN
         @"fetchesMessages" : @(isManualMessageFetchEnabled), // devices that don't support push must tell the server
                                                              // they fetch messages manually
         @"registrationId" : [NSString stringWithFormat:@"%i", registrationId],
+        @"unidentifiedAccessKey" : udAccessKey.keyData.base64EncodedString,
+        @"unrestrictedUnidentifiedAccess" : @(allowUnrestrictedUD),
     } mutableCopy];
+
     if (pin.length > 0) {
         accountAttributes[@"pin"] = pin;
     }
-    if (udAccessKey.keyData.length > 0) {
-        accountAttributes[@"unidentifiedAccessKey"] = udAccessKey.keyData.base64EncodedString;
-        accountAttributes[@"unrestrictedUnidentifiedAccess"] = @(allowUnrestrictedUD);
-    }
+
     return [accountAttributes copy];
 }
 

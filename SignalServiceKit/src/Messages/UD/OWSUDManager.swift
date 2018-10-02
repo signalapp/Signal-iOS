@@ -35,9 +35,9 @@ public enum OWSUDError: Error {
 
     // MARK: - Unrestricted Access
 
-    @objc func allowUnrestrictedAccess() -> Bool
+    @objc func shouldAllowUnrestrictedAccess() -> Bool
 
-    @objc func setAllowUnrestrictedAccess(_ value: Bool)
+    @objc func setShouldAllowUnrestrictedAccess(_ value: Bool)
 }
 
 // MARK: -
@@ -179,12 +179,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Unrestricted Access
 
     @objc
-    public func allowUnrestrictedAccess() -> Bool {
+    public func shouldAllowUnrestrictedAccess() -> Bool {
         return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection, defaultValue: false)
     }
 
     @objc
-    public func setAllowUnrestrictedAccess(_ value: Bool) {
+    public func setShouldAllowUnrestrictedAccess(_ value: Bool) {
         dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection)
     }
 }

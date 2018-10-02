@@ -192,11 +192,6 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
     }
 }
 
-+ (uint32_t)getOrGenerateRegistrationId
-{
-    return [[self sharedInstance] getOrGenerateRegistrationId];
-}
-
 + (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self sharedInstance] getOrGenerateRegistrationId:transaction];
