@@ -686,6 +686,39 @@ public func serializedData() throws -> Data {
             writer.add('return %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
         writer.newline()
         
+        # asBuilder()        
+        writer.add('// asBuilder() constructs a builder that reflects the proto\'s contents.')
+        with writer.braced('@objc public func asBuilder() -> %s' % (
+                self.swift_builder_name,
+                )) as writer:
+            writer.add('let builder = %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
+
+            for field in self.fields():
+                if field.is_required:
+                    continue
+
+                accessor_name = field.name_swift
+                accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
+
+                can_be_optional = (not self.is_field_primitive(field)) and (not self.is_field_an_enum(field))
+                if field.rules == 'repeated':
+                    writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
+                elif can_be_optional:
+                    writer.add('if let _value = %s {' % field.name_swift )
+                    writer.push_indent()
+                    writer.add('builder.%s(_value)' % ( accessor_name, ))
+                    writer.pop_indent()
+                    writer.add('}')
+                else:
+                    writer.add('if %s {' % field.has_accessor_name() )
+                    writer.push_indent()
+                    writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
+                    writer.pop_indent()
+                    writer.add('}')
+
+            writer.add('return builder')
+        writer.newline()
+        
         writer.add('@objc public class %s: NSObject {' % self.swift_builder_name)
         writer.newline()
         

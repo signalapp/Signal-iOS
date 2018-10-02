@@ -10,7 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoEnvelope;
 @class YapDatabaseReadWriteTransaction;
 
-typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction);
+// Decryption result includes the envelope since the envelope
+// may be altered by the decryption process.
+typedef void (^DecryptSuccessBlock)(
+    NSData *envelopeData, NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction);
 typedef void (^DecryptFailureBlock)(void);
 
 @interface OWSMessageDecrypter : OWSMessageHandler
@@ -24,6 +27,7 @@ typedef void (^DecryptFailureBlock)(void);
 // Exactly one of successBlock & failureBlock will be called,
 // once.
 - (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
+           envelopeData:(NSData *)envelopeData
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(DecryptFailureBlock)failureBlock;
 

@@ -247,6 +247,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"message_manager_error_could_not_handle_prekey_bundle";
 }
 
++ (NSString *)messageManagerErrorCouldNotHandleUnidentifiedSenderMessage
+{
+    return @"message_manager_error_could_not_handle_unidentified_sender_message";
+}
+
 + (NSString *)messageManagerErrorCouldNotHandleSecureMessage
 {
     return @"message_manager_error_could_not_handle_secure_message";

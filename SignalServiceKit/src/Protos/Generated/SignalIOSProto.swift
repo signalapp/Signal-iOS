@@ -50,6 +50,12 @@ public enum SignalIOSProtoError: Error {
         return SignalIOSProtoBackupSnapshotBackupEntityBuilder(type: type, entityData: entityData)
     }
 
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+        let builder = SignalIOSProtoBackupSnapshotBackupEntityBuilder(type: type, entityData: entityData)
+        return builder
+    }
+
     @objc public class SignalIOSProtoBackupSnapshotBackupEntityBuilder: NSObject {
 
         private var proto = IOSProtos_BackupSnapshot.BackupEntity()
@@ -150,6 +156,13 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 
     @objc public class func builder() -> SignalIOSProtoBackupSnapshotBuilder {
         return SignalIOSProtoBackupSnapshotBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SignalIOSProtoBackupSnapshotBuilder {
+        let builder = SignalIOSProtoBackupSnapshotBuilder()
+        builder.setEntity(entity)
+        return builder
     }
 
     @objc public class SignalIOSProtoBackupSnapshotBuilder: NSObject {
