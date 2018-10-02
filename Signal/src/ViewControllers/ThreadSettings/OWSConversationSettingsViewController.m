@@ -291,19 +291,6 @@ const CGFloat kIconViewLength = 24;
                                  [weakSelf showMediaGallery];
                              }]];
 
-    [mainSection addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 NSString *colorName = self.thread.conversationColorName;
-                                 UIColor *currentColor =
-                                     [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
-                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
-                                     @"Label for table cell which leads to picking a new conversation color");
-                                 return [weakSelf disclosureCellWithName:title iconColor:currentColor];
-                             }
-                             actionBlock:^{
-                                 [weakSelf showColorPicker];
-                             }]];
-
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -478,6 +465,20 @@ const CGFloat kIconViewLength = 24;
                                 customRowHeight:UITableViewAutomaticDimension
                                     actionBlock:nil]];
     }
+    [mainSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        NSString *colorName = self.thread.conversationColorName;
+                        UIColor *currentColor =
+                            [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
+                        NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
+                            @"Label for table cell which leads to picking a new conversation color");
+                        return
+                            [weakSelf cellWithName:title iconName:@"ic_color_palette" disclosureIconColor:currentColor];
+                    }
+                    actionBlock:^{
+                        [weakSelf showColorPicker];
+                    }]];
 
     [contents addSection:mainSection];
 
@@ -693,22 +694,17 @@ const CGFloat kIconViewLength = 24;
     return 12.f;
 }
 
-- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconColor:(UIColor *)iconColor
+- (UITableViewCell *)cellWithName:(NSString *)name
+                         iconName:(NSString *)iconName
+              disclosureIconColor:(UIColor *)disclosureIconColor
 {
-    OWSAssertDebug(name.length > 0);
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
+    OWSColorPickerAccessoryView *accessoryView =
+        [[OWSColorPickerAccessoryView alloc] initWithColor:disclosureIconColor];
+    [accessoryView sizeToFit];
+    cell.accessoryView = accessoryView;
 
-    UIView *iconView = [UIView containerView];
-    [iconView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
-
-    UIView *swatchView = [NeverClearView new];
-    const CGFloat kSwatchWidth = 20;
-    [swatchView autoSetDimensionsToSize:CGSizeMake(kSwatchWidth, kSwatchWidth)];
-    swatchView.layer.cornerRadius = kSwatchWidth / 2;
-    swatchView.backgroundColor = iconColor;
-    [iconView addSubview:swatchView];
-    [swatchView autoCenterInSuperview];
-
-    return [self cellWithName:name iconView:iconView];
+    return cell;
 }
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
