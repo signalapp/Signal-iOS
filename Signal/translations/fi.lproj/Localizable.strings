@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ryhmässä %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send a debug log to support@signal.org so that we can troubleshoot this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei avaudu. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää tämä ongelma.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Virhe";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versio %@ on nyt saatavilla App Storesta.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Uusi versio Signalista on saatavilla";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Päivitä";
@@ -114,7 +114,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Liitetiedosto";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download failed. Tap to retry.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Lataaminen epäonnistui. Yritä uudelleen napauttamalla.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Ladataan...";
@@ -138,16 +138,16 @@
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Metatietojen poistaminen kuvasta ei onnistunut.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Kuvan kokoa ei voitu muuttaa.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Liitetiedosto on liian suuri.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Liitetiedoston sisältö on virheellinen.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Liitetiedoston muoto on virheellinen.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Liitetiedosto on tyhjä.";
@@ -309,7 +309,7 @@
 "CALL_LABEL" = "Soita";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Ei vastausta";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -385,6 +385,15 @@
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Signalilta on evätty käyttöoikeus iCloudiin varmuuskopioita varten.";
+
+/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+
+/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+
+/* Modal Sheet title when picking a conversation color. */
+"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Vertaa leikepöytään";
@@ -531,7 +540,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Yhteystiedot";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Väri";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Ryhmän tiedot";
@@ -591,16 +600,16 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Lisää yhteystietoihin";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Jaa profiilisi tämän käyttäjän kanssa";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Tämä käyttäjä ei ole yhteystiedoissasi";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Ladataan lisää viestejä...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Näytä lisää napauttamalla";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Estä tämä käyttäjä";
@@ -781,10 +790,10 @@
 "EMPTY_INBOX_NEW_USER_TITLE" = "Aloita ensimmäinen Signal-keskustelusi!";
 
 /* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
+"EMPTY_INBOX_TEXT" = "Postilaatikkosi on tyhjä. Hyvää päivänjatkoa!";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Inbox Zero";
+"EMPTY_INBOX_TITLE" = "Postilaatikko tyhjä";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Vahvista PIN-koodisi.";
@@ -871,7 +880,7 @@
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Vastaanotettiin viestin kaksoiskappale.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Vastaanottajan avain ei ole kelvollinen.";
@@ -922,10 +931,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Tässä keskustelussa ei ole vielä yhtään mediatiedostoa.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Ladataan uudempaa sisältöä...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Ladataan vanhempaa sisältöä...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Liitetiedosto";
@@ -1033,7 +1042,7 @@
 "IN_CALL_CONNECTING" = "Yhdistetään...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "Yhdistetään uudelleen...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Soi...";
@@ -1168,16 +1177,16 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Kopioi viestin teksti";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Poista tämä viesti";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Se poistetaan vain tältä laitteelta";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Lisätietoja";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "Vastaa tähän viestiin";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SAVE_MEDIA" = "Tallenna media";
@@ -1258,7 +1267,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Lähettäminen epäonnistui.";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending…";
+"MESSAGE_STATUS_SENDING" = "Lähetetään...";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Lähetetty";
@@ -1270,7 +1279,7 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enää merkitty varmennetuksi. Lisätietoja napauttamalla.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Olet estänyt tämän käyttäjän";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enää merkitty varmennetuksi. Lisätietoja napauttamalla.";
@@ -1341,7 +1350,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ohita";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "Tarkista että verkkoyhteytesi on päällä ja yritä uudelleen.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Sensuurin kiertäminen: päällä";
@@ -1365,7 +1374,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Etsi puhelinnumerolla";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Add by Phone Number";
+"NEW_GROUP_ADD_NON_CONTACT" = "Lisää puhelinnumerolla";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "Aseta ryhmän kuva";
@@ -1536,7 +1545,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Vastapuolella on käytössä vanha versio Signalista. Hänen tulee ensin päivittää, jotta voit varmentaa.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannattu koodi ei näytä olevan turvanumero. Onko teillä kummallakin viimeisin versio Signalista käytössä?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Jos haluat varmentaa sinun ja yhteystiedon %@ välisen salauksen tietoturvan, vertaa ylläolevia numeroita hänen laitteessaan näkyviin vastaaviin numeroihin.\n\nVaihtoehtoisesti voit skannata koodin hänen puhelimestaan, tai pyytää häntä skannaamaan sinun koodisi.";
@@ -1587,7 +1596,7 @@
 "PROFILE_VIEW_SAVE_BUTTON" = "Tallenna";
 
 /* Alert title that indicates the user's profile view is being saved. */
-"PROFILE_VIEW_SAVING" = "Saving…";
+"PROFILE_VIEW_SAVING" = "Tallennetaan...";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profiili";
@@ -1707,7 +1716,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Puhelinnumero";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Sinun täytyy rekisteröityä, ennen kuin voit lähettää viestin.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_TITLE_LABEL" = "Sinun puhelinnumerosi";
@@ -1851,7 +1860,7 @@
 "SEND_INVITE_FAILURE" = "Kutsun lähettäminen epäonnistui. Yritä myöhemmin uudelleen.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Olet kutsunut ystäväsi käyttämään Signalia!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Kutsu tekstiviestillä: %@";
@@ -1959,13 +1968,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Välitä aina puhelut";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Välitä kaikki puhelut Signal-palvelimen kautta välttääksesi IP-osoitteesi paljastumista yhteystiedollesi. Tämä toiminto heikentää puhelun laatua.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Tyhjennä keskusteluhistoria";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Tekijänoikeus Signal Messenger\nLisensoitu GPLv3 -lisenssillä";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Poista tili";
@@ -1974,7 +1983,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Tuhoa kaikki tiedot";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Haluatko varmasti tuhota koko historiasi (viestit, liitteet, puhelut, jne.)? Tätä toimintoa ei voi jälkikäteen kumota.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Poista kaikki";
@@ -2100,7 +2109,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Turvanumerosi yhteystiedon %@ kanssa on vaihtunut hiljattain. Saatat halua varmentaa sen ohjelmassa ennen uudelleenlähettämistä.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading…";
+"SHARE_EXTENSION_LOADING" = "Ladataan...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Avaa Signal ohjelma rekisteröityäksesi.";
@@ -2241,7 +2250,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Et voi poistaa ryhmän jäseniä. Heidän tulee joko poistua tai sitten voit luoda uuden ryhmän ilman näitä henkilöitä.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Ei tuettu";
 
 /* Description of CallKit to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Puheluihin vastaaminen lukitusruudultasi on helppoa iOS-puheluintegraation avulla. Muutamme soittajan tiedot nimettömiksi oletuksena, joten se on myös yksityistä.";
@@ -2292,7 +2301,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Päivitä iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "Upgrading Signal…";
+"Upgrading Signal ..." = "Päivitetään Signalia...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "Takaisin";

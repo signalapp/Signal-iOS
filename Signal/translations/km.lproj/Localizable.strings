@@ -386,6 +386,15 @@
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "ស៊ីហ្គណលមិនត្រូវបានអនុញ្ញាតឲ្យចូលប្រើប្រាស់គណនី iCloud សម្រាប់បម្រុងទុកទេ។";
 
+/* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+
+/* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+
+/* Modal Sheet title when picking a conversation color. */
+"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ប្រៀបធៀបជាមួយ ក្តាចុច";
 
@@ -531,7 +540,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "ព័ត៌មានលេខទំនាក់ទំនង";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "ពណ៌";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "ព័ត៌មានក្រុម";
