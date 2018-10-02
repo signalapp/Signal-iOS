@@ -278,7 +278,8 @@
 
     const NSUInteger kAvatarSize = 68;
     // TODO: Replace this icon.
-    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *localProfileAvatarImage = [self.contactsManager avatarImageRecipientId:[TSAccountManager localUID]];
+//    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
     UIImage *avatarImage = (localProfileAvatarImage
             ?: [[UIImage imageNamed:@"profile_avatar_default"]
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
@@ -308,7 +309,7 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    NSString *_Nullable localProfileName = [self.contactsManager displayNameForRecipientId:[TSAccountManager localUID]];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
         titleLabel.textColor = [Theme primaryColor];
@@ -329,8 +330,7 @@
     subtitleLabel.textColor = [Theme secondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
     subtitleLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
-                                                                                                       localUID]]];
+        initWithString:self.contactsManager.selfRecipient.flTag.orgSlug];
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
