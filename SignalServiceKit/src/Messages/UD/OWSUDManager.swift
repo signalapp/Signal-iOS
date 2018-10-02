@@ -9,6 +9,7 @@ import SignalCoreKit
 
 public enum OWSUDError: Error {
     case assertionError(description: String)
+    case invalidData(description: String)
 }
 
 @objc public protocol OWSUDManager: class {
@@ -69,12 +70,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         AssertIsOnMainThread()
 
         ensureSenderCertificate().retainUntilComplete()
-    }
-
-    // MARK: - Singletons
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
     }
 
     // MARK: - Recipient state
@@ -138,32 +133,22 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return Promise(value: certificateData)
         }
         // Try to obtain a new sender certificate.
-        return requestSenderCertificate()
+        return requestSenderCertificate().then { (certificateData) in
+            // Cache the current sender certificate.
+            self.setSenderCertificate(certificateData)
+
+            return Promise(value: certificateData)
+        }
     }
 
     private func requestSenderCertificate() -> Promise<Data> {
-        let request = OWSRequestFactory.udSenderCertificateRequest()
-        return self.networkManager.makePromise(request: request)
-            .then(execute: { (_, responseObject) -> Data in
-                let certificateData = try self.parseSenderCertificateResponse(responseObject: responseObject)
+        return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) in
+            guard self.isValidCertificate(certificateData: certificateData) else {
+                throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
+            }
 
-                guard self.isValidCertificate(certificateData: certificateData) else {
-                    throw OWSUDError.assertionError(description: "Invalid sender certificate returned by server")
-                }
-
-                // Cache the current sender certificate.
-                self.setSenderCertificate(certificateData)
-
-                return certificateData
-            })
-    }
-
-    private func parseSenderCertificateResponse(responseObject: Any?) throws -> Data {
-        guard let parser = ParamParser(responseObject: responseObject) else {
-            throw OWSUDError.assertionError(description: "Invalid sender certificate response")
+            return Promise(value: certificateData)
         }
-
-        return try parser.requiredBase64EncodedData(key: "certificate")
     }
 
     private func isValidCertificate(certificateData: Data) -> Bool {
