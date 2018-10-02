@@ -21,6 +21,7 @@
 #import "TSPreKeyManager.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -31,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) OWSIdentityManager *identityManager;
 
 @end
 
@@ -203,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
-        [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
+        [[self.primaryStorage newDatabaseConnection]
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
@@ -271,7 +270,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    OWSPrimaryStorage *primaryStorage = self.primaryStorage;
     NSString *recipientId = envelope.source;
     int deviceId = envelope.sourceDevice;
 
@@ -287,9 +285,9 @@ NS_ASSUME_NONNULL_BEGIN
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
-                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:primaryStorage
-                                                                        preKeyStore:primaryStorage
-                                                                  signedPreKeyStore:primaryStorage
+                SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.primaryStorage
+                                                                        preKeyStore:self.primaryStorage
+                                                                  signedPreKeyStore:self.primaryStorage
                                                                    identityKeyStore:self.identityManager
                                                                         recipientId:recipientId
                                                                            deviceId:deviceId];
@@ -322,11 +320,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Check whether we need to refresh our PreKeys every time we receive a Unidentified Sender Message.
     [TSPreKeyManager checkPreKeys];
 
-    OWSPrimaryStorage *primaryStorage = self.primaryStorage;
-    // TODO: Are source & sourceDevice going to eventually be obsolete?
-    NSString *recipientId = envelope.source;
-    int deviceId = envelope.sourceDevice;
-
     // NOTE: We don't need to bother with `legacyMessage` for UD messages.
     NSData *encryptedData = envelope.content;
     if (!encryptedData) {
@@ -342,8 +335,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     UInt64 serverTimestamp = envelope.serverTimestamp;
 
-    // TODO: This is temporary.
-    NSData *trustRootData = [Randomness generateRandomBytes:ECCKeyLength];
+    NSData *_Nullable trustRootData = [NSData dataFromBase64String:kUDTrustRoot];
+    OWSAssert(trustRootData);
     NSError *error;
     ECPublicKey *_Nullable trustRoot = [[ECPublicKey alloc] initWithKeyData:trustRootData error:&error];
     if (error || !trustRoot) {
@@ -358,9 +351,9 @@ NS_ASSUME_NONNULL_BEGIN
         @try {
             NSError *error;
             SMKSecretSessionCipher *_Nullable cipher =
-                [[SMKSecretSessionCipher alloc] initWithSessionStore:primaryStorage
-                                                         preKeyStore:primaryStorage
-                                                   signedPreKeyStore:primaryStorage
+                [[SMKSecretSessionCipher alloc] initWithSessionStore:self.primaryStorage
+                                                         preKeyStore:self.primaryStorage
+                                                   signedPreKeyStore:self.primaryStorage
                                                        identityStore:self.identityManager
                                                                error:&error];
             if (error || !cipher) {
