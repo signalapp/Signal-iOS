@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
+@property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, readonly, nullable) NSString *serverGuid;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -79,6 +82,12 @@ NS_ASSUME_NONNULL_BEGIN
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+#pragma mark - Update With... Methods
+
+- (void)updateWithServerTimestamp:(uint64_t)serverTimestamp transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)updateWithServerGuid:(NSString *)serverGuid transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

@@ -1302,6 +1302,13 @@ NS_ASSUME_NONNULL_BEGIN
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
 
+    if (envelope.hasServerGuid) {
+        [incomingMessage updateWithServerGuid:envelope.serverGuid transaction:transaction];
+    }
+    if (envelope.hasServerTimestamp) {
+        [incomingMessage updateWithServerTimestamp:envelope.serverTimestamp transaction:transaction];
+    }
+
     TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
         // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.

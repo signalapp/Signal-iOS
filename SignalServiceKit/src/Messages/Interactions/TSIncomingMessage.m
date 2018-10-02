@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
+@property (nonatomic, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, nullable) NSString *serverGuid;
+
 @end
 
 #pragma mark -
@@ -178,6 +181,29 @@ NS_ASSUME_NONNULL_BEGIN
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
+}
+
+
+#pragma mark - Update With... Methods
+
+- (void)updateWithServerTimestamp:(uint64_t)serverTimestamp transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(serverTimestamp > 0);
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSIncomingMessage *message) {
+                                 message.serverTimestamp = @(serverTimestamp);
+                             }];
+}
+
+- (void)updateWithServerGuid:(NSString *)serverGuid transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(serverGuid.length > 0);
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSIncomingMessage *message) {
+                                 message.serverGuid = serverGuid;
+                             }];
 }
 
 @end

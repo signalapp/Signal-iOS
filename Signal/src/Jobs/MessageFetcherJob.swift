@@ -151,6 +151,12 @@ public class MessageFetcherJob: NSObject {
             if let content = try params.optionalBase64EncodedData(key: "content") {
                 builder.setContent(content)
             }
+            if let serverTimestamp: UInt64 = try params.optional(key: "serverTimestamp") {
+                builder.setServerTimestamp(serverTimestamp)
+            }
+            if let serverGuid: String = try params.optional(key: "guid") {
+                builder.setServerGuid(serverGuid)
+            }
 
             return try builder.build()
         } catch {

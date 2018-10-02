@@ -22,6 +22,7 @@ public enum SSKProtoError: Error {
         case keyExchange = 2
         case prekeyBundle = 3
         case receipt = 5
+        case unidentifiedSender = 6
     }
 
     private class func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelopeType {
@@ -31,6 +32,7 @@ public enum SSKProtoError: Error {
         case .keyExchange: return .keyExchange
         case .prekeyBundle: return .prekeyBundle
         case .receipt: return .receipt
+        case .unidentifiedSender: return .unidentifiedSender
         }
     }
 
@@ -41,6 +43,7 @@ public enum SSKProtoError: Error {
         case .keyExchange: return .keyExchange
         case .prekeyBundle: return .prekeyBundle
         case .receipt: return .receipt
+        case .unidentifiedSender: return .unidentifiedSender
         }
     }
 
@@ -93,6 +96,14 @@ public enum SSKProtoError: Error {
             proto.content = valueParam
         }
 
+        @objc public func setServerGuid(_ valueParam: String) {
+            proto.serverGuid = valueParam
+        }
+
+        @objc public func setServerTimestamp(_ valueParam: UInt64) {
+            proto.serverTimestamp = valueParam
+        }
+
         @objc public func build() throws -> SSKProtoEnvelope {
             return try SSKProtoEnvelope.parseProto(proto)
         }
@@ -140,6 +151,23 @@ public enum SSKProtoError: Error {
     }
     @objc public var hasContent: Bool {
         return proto.hasContent
+    }
+
+    @objc public var serverGuid: String? {
+        guard proto.hasServerGuid else {
+            return nil
+        }
+        return proto.serverGuid
+    }
+    @objc public var hasServerGuid: Bool {
+        return proto.hasServerGuid
+    }
+
+    @objc public var serverTimestamp: UInt64 {
+        return proto.serverTimestamp
+    }
+    @objc public var hasServerTimestamp: Bool {
+        return proto.hasServerTimestamp
     }
 
     private init(proto: SignalServiceProtos_Envelope,
