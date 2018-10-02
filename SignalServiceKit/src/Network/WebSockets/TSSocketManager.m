@@ -147,7 +147,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 @interface TSSocketManager ()
 
 @property (nonatomic, readonly) OWSSignalService *signalService;
-@property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 
 // This class has a few "tiers" of state.
 //
@@ -218,7 +217,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssertIsOnMainThread();
 
     _signalService = [OWSSignalService sharedInstance];
-    _messageReceiver = [OWSMessageReceiver sharedInstance];
     _state = SocketManagerStateClosed;
     _socketMessageMap = [NSMutableDictionary new];
 
@@ -737,7 +735,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
                 } else {
-                    [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
+                    [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
                     success = YES;
                 }
             } @catch (NSException *exception) {

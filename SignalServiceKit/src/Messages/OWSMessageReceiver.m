@@ -221,14 +221,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @interface OWSMessageDecryptQueue : NSObject
 
-@property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
-@property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageDecryptJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
-- (instancetype)initWithMessageDecrypter:(OWSMessageDecrypter *)messageDecrypter
-                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                                  finder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
+                              finder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -237,9 +235,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @implementation OWSMessageDecryptQueue
 
-- (instancetype)initWithMessageDecrypter:(OWSMessageDecrypter *)messageDecrypter
-                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
-                                  finder:(OWSMessageDecryptJobFinder *)finder
+- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection finder:(OWSMessageDecryptJobFinder *)finder
 {
     OWSSingletonAssert();
 
@@ -248,8 +244,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
-    _messageDecrypter = messageDecrypter;
-    _batchMessageProcessor = batchMessageProcessor;
+    _dbConnection = dbConnection;
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -260,7 +255,23 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return self;
 }
 
-#pragma mark - instance methods
+#pragma mark - Singletons
+
+- (OWSMessageDecrypter *)messageDecrypter
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageDecrypter);
+
+    return SSKEnvironment.shared.messageDecrypter;
+}
+
+- (OWSBatchMessageProcessor *)batchMessageProcessor
+{
+    OWSAssertDebug(SSKEnvironment.shared.batchMessageProcessor);
+
+    return SSKEnvironment.shared.batchMessageProcessor;
+}
+
+#pragma mark - Instance methods
 
 - (dispatch_queue_t)serialQueue
 {
@@ -382,9 +393,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @implementation OWSMessageReceiver
 
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-                    messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
-               batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     OWSSingletonAssert();
 
@@ -393,39 +402,15 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
+    // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
+    YapDatabaseConnection *dbConnection = [primaryStorage newDatabaseConnection];
     OWSMessageDecryptJobFinder *finder = [[OWSMessageDecryptJobFinder alloc] initWithDBConnection:dbConnection];
     OWSMessageDecryptQueue *processingQueue =
-        [[OWSMessageDecryptQueue alloc] initWithMessageDecrypter:messageDecrypter
-                                           batchMessageProcessor:batchMessageProcessor
-                                                          finder:finder];
+        [[OWSMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
 
     _processingQueue = processingQueue;
 
     return self;
-}
-
-- (instancetype)initDefault
-{
-    // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-    OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter sharedManager];
-    OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor sharedInstance];
-
-    return [self initWithDBConnection:dbConnection
-                     messageDecrypter:messageDecrypter
-                batchMessageProcessor:batchMessageProcessor];
-}
-
-+ (instancetype)sharedInstance
-{
-    static OWSMessageReceiver *sharedInstance;
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[self alloc] initDefault];
-    });
-
-    return sharedInstance;
 }
 
 #pragma mark - class methods

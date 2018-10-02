@@ -1045,8 +1045,8 @@ static NSTimeInterval launchStartedAt;
     [Environment.shared.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
-    [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
-    [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
+    [SSKEnvironment.shared.messageReceiver handleAnyUnprocessedEnvelopesAsync];
+    [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection

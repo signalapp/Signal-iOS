@@ -10,9 +10,12 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
+#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalServiceKit/OWSMessageDecrypter.h>
 #import <SignalServiceKit/OWSMessageManager.h>
+#import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 
@@ -55,6 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
         id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageDecrypter *messageDecrypter = [[OWSMessageDecrypter alloc] initWithPrimaryStorage:primaryStorage];
+        OWSBatchMessageProcessor *batchMessageProcessor =
+            [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -67,7 +74,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
                                                                   identityManager:identityManager
-                                                                        udManager:udManager]];
+                                                                        udManager:udManager
+                                                                 messageDecrypter:messageDecrypter
+                                                            batchMessageProcessor:batchMessageProcessor
+                                                                  messageReceiver:messageReceiver]];
 
         appSpecificSingletonBlock();
 

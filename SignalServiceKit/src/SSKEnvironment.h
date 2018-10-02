@@ -5,9 +5,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactsUpdater;
+@class OWSBatchMessageProcessor;
 @class OWSBlockingManager;
 @class OWSIdentityManager;
+@class OWSMessageDecrypter;
 @class OWSMessageManager;
+@class OWSMessageReceiver;
 @class OWSMessageSender;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
@@ -30,7 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
-                              udManager:(id<OWSUDManager>)udManager NS_DESIGNATED_INITIALIZER;
+                              udManager:(id<OWSUDManager>)udManager 
+                       messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
+                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
+                        messageReceiver:(OWSMessageReceiver *)messageReceiver NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -53,6 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
 @property (nonatomic, readonly) id<OWSUDManager> udManager;
+@property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
+@property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
+@property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

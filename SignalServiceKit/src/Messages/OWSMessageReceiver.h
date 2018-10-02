@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class OWSStorage;
 
 // This class is used to write incoming (encrypted, unprocessed)
@@ -12,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 // are forwarded to OWSBatchMessageProcessor.
 @interface OWSMessageReceiver : NSObject
 
-+ (instancetype)sharedInstance;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;

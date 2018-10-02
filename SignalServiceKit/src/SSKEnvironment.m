@@ -22,6 +22,9 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSBlockingManager *blockingManager;
 @property (nonatomic) OWSIdentityManager *identityManager;
 @property (nonatomic) id<OWSUDManager> udManager;
+@property (nonatomic) OWSMessageDecrypter *messageDecrypter;
+@property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
+@property (nonatomic) OWSMessageReceiver *messageReceiver;
 
 @end
 
@@ -43,6 +46,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
                               udManager:(id<OWSUDManager>)udManager
+                       messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
+                  batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
+                        messageReceiver:(OWSMessageReceiver *)messageReceiver
 {
     self = [super init];
     if (!self) {
@@ -59,6 +65,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(identityManager);
     OWSAssertDebug(udManager);
+    OWSAssertDebug(messageDecrypter);
+    OWSAssertDebug(batchMessageProcessor);
+    OWSAssertDebug(messageReceiver);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -70,6 +79,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     _blockingManager = blockingManager;
     _identityManager = identityManager;
     _udManager = udManager;
+    _messageDecrypter = messageDecrypter;
+    _batchMessageProcessor = batchMessageProcessor;
+    _messageReceiver = messageReceiver;
 
     return self;
 }

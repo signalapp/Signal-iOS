@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class OWSStorage;
 @class SSKProtoEnvelope;
 @class YapDatabaseReadWriteTransaction;
@@ -13,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 // in the order in which they were received.
 @interface OWSBatchMessageProcessor : NSObject
 
-+ (instancetype)sharedInstance;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
