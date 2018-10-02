@@ -5,7 +5,6 @@
 #import "OWSIdentityManager.h"
 #import "AppContext.h"
 #import "AppReadiness.h"
-#import "NSDate+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSError.h"
@@ -26,6 +25,7 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

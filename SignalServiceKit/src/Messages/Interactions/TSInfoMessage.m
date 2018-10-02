@@ -4,8 +4,8 @@
 
 #import "TSInfoMessage.h"
 #import "ContactsManagerProtocol.h"
-#import "NSDate+OWS.h"
 #import "SSKEnvironment.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN

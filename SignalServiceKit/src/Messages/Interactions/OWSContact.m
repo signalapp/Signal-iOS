@@ -5,12 +5,12 @@
 #import "OWSContact.h"
 #import "Contact.h"
 #import "MimeTypeUtil.h"
-#import "NSString+SSK.h"
 #import "OWSContact+Private.h"
 #import "PhoneNumber.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
+#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -770,11 +770,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 {
     OWSAssertDebug(contact);
 
-    SSKProtoDataMessageContactBuilder *contactBuilder =
-        [SSKProtoDataMessageContactBuilder new];
+    SSKProtoDataMessageContactBuilder *contactBuilder = [SSKProtoDataMessageContact builder];
 
-    SSKProtoDataMessageContactNameBuilder *nameBuilder =
-        [SSKProtoDataMessageContactNameBuilder new];
+    SSKProtoDataMessageContactNameBuilder *nameBuilder = [SSKProtoDataMessageContactName builder];
 
     OWSContactName *contactName = contact.name;
     if (contactName.givenName.ows_stripped.length > 0) {
@@ -806,8 +804,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
-        SSKProtoDataMessageContactPhoneBuilder *phoneBuilder =
-            [SSKProtoDataMessageContactPhoneBuilder new];
+        SSKProtoDataMessageContactPhoneBuilder *phoneBuilder = [SSKProtoDataMessageContactPhone builder];
         phoneBuilder.value = phoneNumber.phoneNumber;
         if (phoneNumber.label.ows_stripped.length > 0) {
             phoneBuilder.label = phoneNumber.label.ows_stripped;
@@ -835,8 +832,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 
     for (OWSContactEmail *email in contact.emails) {
-        SSKProtoDataMessageContactEmailBuilder *emailBuilder =
-            [SSKProtoDataMessageContactEmailBuilder new];
+        SSKProtoDataMessageContactEmailBuilder *emailBuilder = [SSKProtoDataMessageContactEmail builder];
         emailBuilder.value = email.email;
         if (email.label.ows_stripped.length > 0) {
             emailBuilder.label = email.label.ows_stripped;
@@ -865,7 +861,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     for (OWSContactAddress *address in contact.addresses) {
         SSKProtoDataMessageContactPostalAddressBuilder *addressBuilder =
-            [SSKProtoDataMessageContactPostalAddressBuilder new];
+            [SSKProtoDataMessageContactPostalAddress builder];
         if (address.label.ows_stripped.length > 0) {
             addressBuilder.label = address.label.ows_stripped;
         }
@@ -904,7 +900,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         if (!attachmentProto) {
             OWSLogError(@"could not build protobuf: %@", error);
         } else {
-            SSKProtoDataMessageContactAvatarBuilder *avatarBuilder = [SSKProtoDataMessageContactAvatarBuilder new];
+            SSKProtoDataMessageContactAvatarBuilder *avatarBuilder = [SSKProtoDataMessageContactAvatar builder];
             avatarBuilder.avatar = attachmentProto;
             SSKProtoDataMessageContactAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
             if (error || !avatarProto) {

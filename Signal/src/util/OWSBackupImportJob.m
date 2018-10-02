@@ -7,7 +7,7 @@
 #import "OWSDatabaseMigration.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "Signal-Swift.h"
-#import <SignalServiceKit/NSData+OWS.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSAttachment.h>

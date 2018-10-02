@@ -34,8 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    SSKProtoSyncMessageConfigurationBuilder *configurationBuilder =
-        [SSKProtoSyncMessageConfigurationBuilder new];
+    SSKProtoSyncMessageConfigurationBuilder *configurationBuilder = [SSKProtoSyncMessageConfiguration builder];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
 
     NSError *error;
@@ -45,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessage builder];
     builder.configuration = configurationProto;
     return builder;
 }

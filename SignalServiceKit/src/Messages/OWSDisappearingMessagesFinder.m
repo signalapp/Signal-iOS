@@ -3,12 +3,12 @@
 //
 
 #import "OWSDisappearingMessagesFinder.h"
-#import "NSDate+OWS.h"
 #import "OWSPrimaryStorage.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>

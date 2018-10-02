@@ -3,13 +3,13 @@
 //
 
 #import "MockSSKEnvironment.h"
-#import "NSDate+OWS.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTest.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
 #import "TestAppContext.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

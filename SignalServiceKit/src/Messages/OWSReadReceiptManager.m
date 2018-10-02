@@ -4,7 +4,6 @@
 
 #import "OWSReadReceiptManager.h"
 #import "AppReadiness.h"
-#import "NSDate+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
@@ -18,8 +17,9 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
-#import "Threading.h"
 #import "YapDatabaseConnection+OWS.h"
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 

@@ -4,7 +4,6 @@
 
 #import "OWSAttachmentsProcessor.h"
 #import "AppContext.h"
-#import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
@@ -21,6 +20,7 @@
 #import "TSMessage.h"
 #import "TSNetworkManager.h"
 #import "TSThread.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 

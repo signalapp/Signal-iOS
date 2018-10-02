@@ -4,11 +4,11 @@
 
 #import "OWSOrphanDataCleaner.h"
 #import "DateUtil.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>

@@ -29,11 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSLog(@"%@ tearDown", self.logTag);
 
-    [SSKEnvironment.shared.primaryStorage closeStorageForTests];
-
-    ClearCurrentAppContextForTests();
-    [SSKEnvironment clearSharedForTests];
-
     [super tearDown];
 }
 

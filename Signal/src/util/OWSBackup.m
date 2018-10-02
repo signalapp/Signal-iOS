@@ -7,7 +7,7 @@
 #import "OWSBackupIO.h"
 #import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";

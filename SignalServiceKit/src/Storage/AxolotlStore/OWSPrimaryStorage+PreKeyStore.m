@@ -3,12 +3,12 @@
 //
 
 #import "OWSPrimaryStorage+PreKeyStore.h"
-#import "Cryptography.h"
 #import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "TSStorageKeys.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
+#import <SignalCoreKit/Cryptography.h>
 
 #define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define TSNextPrekeyIdKey @"TSStorageInternalSettingsNextPreKeyId"

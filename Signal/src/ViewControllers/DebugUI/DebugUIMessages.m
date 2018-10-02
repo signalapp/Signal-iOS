@@ -8,10 +8,10 @@
 #import "DebugUIMessagesAssetLoader.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -3379,11 +3379,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }
     }();
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [[SSKProtoEnvelopeBuilder alloc] initWithType:SSKProtoEnvelopeTypeCiphertext
-                                               source:source
-                                         sourceDevice:1
-                                            timestamp:timestamp];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext
+                                                                          source:source
+                                                                    sourceDevice:1
+                                                                       timestamp:timestamp];
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
     if (error || !envelope) {
@@ -3869,18 +3868,17 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
 
-    SSKProtoDataMessageBuilder *dataMessageBuilder = [SSKProtoDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *dataMessageBuilder = [SSKProtoDataMessage builder];
     [dataMessageBuilder setBody:text];
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         SSKProtoGroupContextBuilder *groupBuilder =
-            [[SSKProtoGroupContextBuilder alloc] initWithId:groupThread.groupModel.groupId
-                                                       type:SSKProtoGroupContextTypeDeliver];
+            [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId type:SSKProtoGroupContextTypeDeliver];
         [dataMessageBuilder setGroup:groupBuilder.buildIgnoringErrors];
     }
 
-    SSKProtoContentBuilder *payloadBuilder = [SSKProtoContentBuilder new];
+    SSKProtoContentBuilder *payloadBuilder = [SSKProtoContent builder];
     [payloadBuilder setDataMessage:dataMessageBuilder.buildIgnoringErrors];
     NSData *plaintextData = [payloadBuilder buildIgnoringErrors].serializedDataIgnoringErrors;
 
@@ -3899,10 +3897,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [[SSKProtoEnvelopeBuilder alloc] initWithType:envelopeType
-                                                                                      source:source
-                                                                                sourceDevice:sourceDevice
-                                                                                   timestamp:timestamp];
+    SSKProtoEnvelopeBuilder *envelopeBuilder =
+        [SSKProtoEnvelope builderWithType:envelopeType source:source sourceDevice:sourceDevice timestamp:timestamp];
     envelopeBuilder.content = content;
     NSError *error;
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];

@@ -3,7 +3,6 @@
 //
 
 #import "TSIncomingMessage.h"
-#import "NSDate+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -12,6 +11,7 @@
 #import "TSContactThread.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN

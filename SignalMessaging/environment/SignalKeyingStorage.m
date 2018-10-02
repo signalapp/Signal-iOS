@@ -3,7 +3,7 @@
 //
 
 #import "SignalKeyingStorage.h"
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 

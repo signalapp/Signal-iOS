@@ -16,6 +16,7 @@
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -24,7 +25,6 @@
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>

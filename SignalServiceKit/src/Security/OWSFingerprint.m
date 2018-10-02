@@ -3,10 +3,10 @@
 //
 
 #import "OWSFingerprint.h"
-#import "NSData+OWS.h"
 #import "OWSError.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <CommonCrypto/CommonDigest.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <UIKit/UIImage.h>
 
@@ -277,8 +277,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 - (nullable UIImage *)image
 {
     FingerprintProtoLogicalFingerprintBuilder *remoteFingerprintBuilder =
-        [FingerprintProtoLogicalFingerprintBuilder new];
-    remoteFingerprintBuilder.identityData = [self scannableData:self.theirFingerprintData];
+        [FingerprintProtoLogicalFingerprint builderWithIdentityData:[self scannableData:self.theirFingerprintData]];
     NSError *error;
     FingerprintProtoLogicalFingerprint *_Nullable remoteFingerprint =
         [remoteFingerprintBuilder buildAndReturnError:&error];
@@ -288,8 +287,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     }
 
     FingerprintProtoLogicalFingerprintBuilder *localFingerprintBuilder =
-        [FingerprintProtoLogicalFingerprintBuilder new];
-    localFingerprintBuilder.identityData = [self scannableData:self.myFingerprintData];
+        [FingerprintProtoLogicalFingerprint builderWithIdentityData:[self scannableData:self.myFingerprintData]];
     FingerprintProtoLogicalFingerprint *_Nullable localFingerprint =
         [localFingerprintBuilder buildAndReturnError:&error];
     if (!localFingerprint || error) {
@@ -298,9 +296,9 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     }
 
     FingerprintProtoLogicalFingerprintsBuilder *logicalFingerprintsBuilder =
-        [[FingerprintProtoLogicalFingerprintsBuilder alloc] initWithVersion:OWSFingerprintScannableFormatVersion
-                                                           localFingerprint:localFingerprint
-                                                          remoteFingerprint:remoteFingerprint];
+        [FingerprintProtoLogicalFingerprints builderWithVersion:OWSFingerprintScannableFormatVersion
+                                               localFingerprint:localFingerprint
+                                              remoteFingerprint:remoteFingerprint];
 
     // Build ByteMode QR (Latin-1 encodable data)
     NSData *_Nullable fingerprintData = [logicalFingerprintsBuilder buildSerializedDataAndReturnError:&error];

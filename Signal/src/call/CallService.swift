@@ -411,7 +411,7 @@ private class SignalCallData: NSObject {
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
                 do {
-                    let offerBuilder = SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder(id: call.signalingId,
+                    let offerBuilder = SSKProtoCallMessageOffer.builder(id: call.signalingId,
                                                                                                 sessionDescription: sessionDescription.sdp)
                     let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build())
                     return self.messageSender.sendPromise(message: callMessage)
@@ -547,7 +547,7 @@ private class SignalCallData: NSObject {
         Logger.info("for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
 
         do {
-            let busyBuilder = SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder(id: call.signalingId)
+            let busyBuilder = SSKProtoCallMessageBusy.builder(id: call.signalingId)
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: try busyBuilder.build())
             let sendPromise = messageSender.sendPromise(message: callMessage)
             sendPromise.retainUntilComplete()
@@ -717,7 +717,7 @@ private class SignalCallData: NSObject {
             Logger.info("session description for incoming call: \(newCall.identifiersForLogs), sdp: \(negotiatedSessionDescription.logSafeDescription).")
 
             do {
-                let answerBuilder = SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder(id: newCall.signalingId,
+                let answerBuilder = SSKProtoCallMessageAnswer.builder(id: newCall.signalingId,
                                                                                                sessionDescription: negotiatedSessionDescription.sdp)
                 let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: try answerBuilder.build())
 
@@ -861,7 +861,7 @@ private class SignalCallData: NSObject {
                  * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
                  * exchanged, the clients can connect.
                  */
-                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder(id: call.signalingId,
+                let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: call.signalingId,
                                                                                                         sdpMid: sdpMid,
                                                                                                         sdpMlineIndex: UInt32(iceCandidate.sdpMLineIndex),
                                                                                                         sdp: iceCandidate.sdp)
@@ -1041,8 +1041,8 @@ private class SignalCallData: NSObject {
 
         var messageData: Data
         do {
-            let connectedBuilder = WebRTCProtoConnected.WebRTCProtoConnectedBuilder(id: call.signalingId)
-            let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+            let connectedBuilder = WebRTCProtoConnected.builder(id: call.signalingId)
+            let dataBuilder = WebRTCProtoData.builder()
             dataBuilder.setConnected(try connectedBuilder.build())
             messageData = try dataBuilder.buildSerializedData()
         } catch {
@@ -1179,8 +1179,8 @@ private class SignalCallData: NSObject {
 
             var messageData: Data
             do {
-                let hangupBuilder = WebRTCProtoHangup.WebRTCProtoHangupBuilder(id: call.signalingId)
-                let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+                let hangupBuilder = WebRTCProtoHangup.builder(id: call.signalingId)
+                let dataBuilder = WebRTCProtoData.builder()
                 dataBuilder.setHangup(try hangupBuilder.build())
                 messageData = try dataBuilder.buildSerializedData()
             } catch {
@@ -1195,7 +1195,7 @@ private class SignalCallData: NSObject {
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
         do {
-            let hangupBuilder = SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder(id: call.signalingId)
+            let hangupBuilder = SSKProtoCallMessageHangup.builder(id: call.signalingId)
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
             let sendPromise = self.messageSender.sendPromise(message: callMessage).then {
                 Logger.debug("successfully sent hangup call message to \(call.thread.contactIdentifier())")
@@ -1680,9 +1680,9 @@ private class SignalCallData: NSObject {
 
         var messageData: Data
         do {
-            let videoStreamingStatusBuilder = WebRTCProtoVideoStreamingStatus.WebRTCProtoVideoStreamingStatusBuilder(id: call.signalingId)
+            let videoStreamingStatusBuilder = WebRTCProtoVideoStreamingStatus.builder(id: call.signalingId)
             videoStreamingStatusBuilder.setEnabled(shouldHaveLocalVideoTrack)
-            let dataBuilder = WebRTCProtoData.WebRTCProtoDataBuilder()
+            let dataBuilder = WebRTCProtoData.builder()
             dataBuilder.setVideoStreamingStatus(try videoStreamingStatusBuilder.build())
             messageData = try dataBuilder.buildSerializedData()
         } catch {

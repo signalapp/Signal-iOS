@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "MockSSKEnvironment.h"
+#import <SignalServiceKit/MockSSKEnvironment.h>
 #import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 

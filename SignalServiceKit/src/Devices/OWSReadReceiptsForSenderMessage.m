@@ -3,8 +3,8 @@
 //
 
 #import "OWSReadReceiptsForSenderMessage.h"
-#import "NSDate+OWS.h"
 #import "SignalRecipient.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     [contentBuilder setReceiptMessage:receiptMessage];
 
     NSError *error;
@@ -78,8 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
 {
-    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessageBuilder new];
-    [builder setType:SSKProtoReceiptMessageTypeRead];
+    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builderWithType:SSKProtoReceiptMessageTypeRead];
 
     OWSAssertDebug(self.messageTimestamps.count > 0);
     for (NSNumber *messageTimestamp in self.messageTimestamps) {

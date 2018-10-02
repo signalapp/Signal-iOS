@@ -5,14 +5,14 @@
 #import "ContactDiscoveryService.h"
 #import "CDSQuote.h"
 #import "CDSSigningCertificate.h"
-#import "Cryptography.h"
-#import "NSData+OWS.h"
-#import "NSDate+OWS.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <HKDFKit/HKDFKit.h>
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -3,13 +3,13 @@
 //
 
 #import "OWSSyncGroupsMessage.h"
-#import "NSDate+OWS.h"
 #import "OWSGroupsOutputStream.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -40,8 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoSyncMessageGroupsBuilder *groupsBuilder =
-        [SSKProtoSyncMessageGroupsBuilder new];
+    SSKProtoSyncMessageGroupsBuilder *groupsBuilder = [SSKProtoSyncMessageGroups builder];
     [groupsBuilder setBlob:attachmentProto];
 
     NSError *error;
@@ -51,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setGroups:groupsProto];
 
     return syncMessageBuilder;

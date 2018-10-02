@@ -4,11 +4,11 @@
 
 #import "TSErrorMessage.h"
 #import "ContactsManagerProtocol.h"
-#import "NSDate+OWS.h"
 #import "OWSMessageManager.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 

@@ -3,8 +3,8 @@
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "NSDate+OWS.h"
-#import "NSString+SSK.h"
+#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+SSK.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

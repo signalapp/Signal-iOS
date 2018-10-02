@@ -22,8 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *group = groupThread.groupModel;
     OWSAssertDebug(group);
 
-    SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetailsBuilder new];
-    [groupBuilder setId:group.groupId];
+    SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetails builderWithId:group.groupId];
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembers:group.groupMemberIds];
     [groupBuilder setColor:groupThread.conversationColorName];
@@ -34,8 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *avatarPng;
     if (group.groupImage) {
-        SSKProtoGroupDetailsAvatarBuilder *avatarBuilder =
-            [SSKProtoGroupDetailsAvatarBuilder new];
+        SSKProtoGroupDetailsAvatarBuilder *avatarBuilder = [SSKProtoGroupDetailsAvatar builder];
 
         [avatarBuilder setContentType:OWSMimeTypeImagePng];
         avatarPng = UIImagePNGRepresentation(group.groupImage);

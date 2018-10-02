@@ -405,11 +405,6 @@ class MessageContext(BaseContext):
         
         writer.push_context(self.proto_name, self.swift_name)
         
-        if self.args.add_log_tag:
-            writer.add('fileprivate static let logTag = "%s"' % self.swift_name)
-            writer.add('fileprivate let logTag = "%s"' % self.swift_name)
-            writer.newline()
-        
         for child in self.enums:
             child.generate(writer)
 
@@ -669,6 +664,27 @@ public func serializedData() throws -> Data {
         
         writer.add('// MARK: - %s' % self.swift_builder_name)
         writer.newline()
+
+        # Required Fields
+        required_fields = [field for field in self.fields() if field.is_required]
+        required_init_params = []
+        required_init_args = []
+        if len(required_fields) > 0:
+            for field in required_fields:
+                if field.rules == 'repeated':
+                    param_type = '[' + self.base_swift_type_for_field(field) + ']'
+                else:
+                    param_type = self.base_swift_type_for_field(field)
+                required_init_params.append('%s: %s' % ( field.name_swift, param_type) )
+                required_init_args.append('%s: %s' % ( field.name_swift, field.name_swift) )
+        
+        # Convenience accessor.
+        with writer.braced('@objc public class func builder(%s) -> %s' % ( 
+                ', '.join(required_init_params),
+                self.swift_builder_name,
+                )) as writer:
+            writer.add('return %s(%s)' % (self.swift_builder_name, ', '.join(required_init_args), ))
+        writer.newline()
         
         writer.add('@objc public class %s: NSObject {' % self.swift_builder_name)
         writer.newline()
@@ -679,21 +695,13 @@ public func serializedData() throws -> Data {
         writer.newline()
         
         # Initializer
-        writer.add('@objc public override init() {}')
+        writer.add('@objc fileprivate override init() {}')
         writer.newline()
         
         # Required-Field Initializer
-        required_fields = [field for field in self.fields() if field.is_required]
         if len(required_fields) > 0:
-            required_init_params = []
-            for field in required_fields:
-                if field.rules == 'repeated':
-                    param_type = '[' + self.base_swift_type_for_field(field) + ']'
-                else:
-                    param_type = self.base_swift_type_for_field(field)
-                required_init_params.append('%s: %s' % ( field.name_swift, param_type) )
-            writer.add('// Initializer for required fields')
-            writer.add('@objc public init(%s) {' % ', '.join(required_init_params))
+            # writer.add('// Initializer for required fields')
+            writer.add('@objc fileprivate init(%s) {' % ', '.join(required_init_params))
             writer.push_indent()
             writer.add('super.init()')
             writer.newline()
@@ -704,32 +712,7 @@ public func serializedData() throws -> Data {
             writer.pop_indent()
             writer.add('}')
             writer.newline()
-        
-        # # All-Field Initializer
-        # if len(required_fields) < len(self.fields()):
-        #     init_params = []
-        #     for field in self.fields():
-        #         if field.is_required:
-        #             if field.rules == 'repeated':
-        #                 param_type = '[' + self.base_swift_type_for_field(field) + ']'
-        #             else:
-        #                 param_type = self.base_swift_type_for_field(field)
-        #         else:
-        #             param_type = field.type_swift
-        #         init_params.append('%s: %s' % ( field.name_swift, param_type) )
-        #     writer.add('// Initializer for required fields')
-        #     writer.add('@objc public init(%s) {' % ', '.join(init_params))
-        #     writer.push_indent()
-        #     writer.add('super.init()')
-        #     writer.newline()
-        #     for field in self.fields():
-        #         accessor_name = field.name_swift
-        #         accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
-        #         writer.add('%s(%s)' % ( accessor_name, field.name_swift, ) )
-        #     writer.pop_indent()
-        #     writer.add('}')
-        #     writer.newline()
-        
+                
         # Setters
         for field in self.fields():
             if field.rules == 'repeated':

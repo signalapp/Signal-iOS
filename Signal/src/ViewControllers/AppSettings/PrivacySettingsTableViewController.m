@@ -6,10 +6,10 @@
 #import "BlockListViewController.h"
 #import "OWS2FASettingsViewController.h"
 #import "Signal-Swift.h"
+#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/ThreadUtil.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 

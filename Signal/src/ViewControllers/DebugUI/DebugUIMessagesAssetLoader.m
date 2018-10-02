@@ -5,7 +5,7 @@
 #import "DebugUIMessagesAssetLoader.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <AFNetworking/AFNetworking.h>
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSAttachment.h>

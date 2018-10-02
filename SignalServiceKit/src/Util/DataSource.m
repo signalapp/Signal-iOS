@@ -5,9 +5,9 @@
 #import "DataSource.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
-#import "NSString+SSK.h"
 #import "OWSFileSystem.h"
-#import "iOSVersions.h"
+#import <SignalCoreKit/NSString+SSK.h>
+#import <SignalCoreKit/iOSVersions.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

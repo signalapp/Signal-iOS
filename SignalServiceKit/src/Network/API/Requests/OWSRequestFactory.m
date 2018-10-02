@@ -3,7 +3,6 @@
 //
 
 #import "OWSRequestFactory.h"
-#import "NSData+OWS.h"
 #import "OWS2FAManager.h"
 #import "OWSDevice.h"
 #import "TSAttributes.h"
@@ -12,6 +11,7 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/SignedPreKeyRecord.h>
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

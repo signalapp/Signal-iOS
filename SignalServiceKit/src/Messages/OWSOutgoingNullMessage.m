@@ -3,10 +3,10 @@
 //
 
 #import "OWSOutgoingNullMessage.h"
-#import "Cryptography.h"
-#import "NSDate+OWS.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSContactThread.h"
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessageBuilder new];
+    SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 
     NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContent builder];
     contentBuilder.nullMessage = nullMessage;
 
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];

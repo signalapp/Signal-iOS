@@ -4,8 +4,8 @@
 
 #import "DebugLogger.h"
 #import "OWSScrubbingLogFormatter.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 
 #pragma mark Logging - Production logging wants us to write some logs to a file in case we need it for debugging.

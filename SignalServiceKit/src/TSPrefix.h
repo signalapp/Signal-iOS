@@ -11,6 +11,7 @@ static const NSUInteger ddLogLevel = DDLogLevelAll;
 #else
 static const NSUInteger ddLogLevel = DDLogLevelInfo;
 #endif
-#import "NSObject+OWS.h"
 #import "OWSAnalytics.h"
-#import "OWSAsserts.h"
+#import <SignalCoreKit/NSObject+OWS.h>
+#import <SignalCoreKit/OWSAsserts.h>
+#import "SSKAsserts.h"

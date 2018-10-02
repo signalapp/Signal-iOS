@@ -3,9 +3,9 @@
 //
 
 #import "SignalBaseTest.h"
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
-#import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/SignalAccount.h>

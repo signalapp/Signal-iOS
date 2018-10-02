@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "NSString+OWS.h"
 #import "NewNonContactConversationViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSSearchBar.h"
@@ -16,6 +15,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalCoreKit/NSString+SSK.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>

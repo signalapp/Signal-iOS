@@ -6,7 +6,6 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "ContactsManagerProtocol.h"
-#import "NSDate+OWS.h"
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
@@ -16,6 +15,7 @@
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"
+#import <SignalCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

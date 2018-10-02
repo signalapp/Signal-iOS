@@ -3,7 +3,6 @@
 //
 
 #import "OWSUploadOperation.h"
-#import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSError+MessageSending.h"
 #import "NSNotificationCenter+OWS.h"
@@ -14,6 +13,7 @@
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
+#import <SignalCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN

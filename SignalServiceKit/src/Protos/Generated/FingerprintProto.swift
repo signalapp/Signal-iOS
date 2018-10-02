@@ -16,14 +16,17 @@ public enum FingerprintProtoError: Error {
 
     // MARK: - FingerprintProtoLogicalFingerprintBuilder
 
+    @objc public class func builder(identityData: Data) -> FingerprintProtoLogicalFingerprintBuilder {
+        return FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
+    }
+
     @objc public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
 
         private var proto = FingerprintProtos_LogicalFingerprint()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(identityData: Data) {
+        @objc fileprivate init(identityData: Data) {
             super.init()
 
             setIdentityData(identityData)
@@ -100,14 +103,17 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
 
     // MARK: - FingerprintProtoLogicalFingerprintsBuilder
 
+    @objc public class func builder(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) -> FingerprintProtoLogicalFingerprintsBuilder {
+        return FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
+    }
+
     @objc public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
 
         private var proto = FingerprintProtos_LogicalFingerprints()
 
-        @objc public override init() {}
+        @objc fileprivate override init() {}
 
-        // Initializer for required fields
-        @objc public init(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) {
+        @objc fileprivate init(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) {
             super.init()
 
             setVersion(version)

@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSentBuilder new];
+    SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.message.timestamp];
     [sentBuilder setDestination:self.sentRecipientId];
 
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setSent:sentProto];
     return syncMessageBuilder;
 }

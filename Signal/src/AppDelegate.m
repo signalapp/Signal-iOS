@@ -21,6 +21,7 @@
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
+#import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -48,7 +49,6 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
-#import <SignalServiceKit/iOSVersions.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/sysctl.h>
 

@@ -7,8 +7,8 @@
 #import "NSData+Image.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
-#import "Threading.h"
 #import <AVFoundation/AVFoundation.h>
+#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -906,9 +906,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (nullable SSKProtoAttachmentPointer *)buildProto
 {
-    SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointerBuilder new];
-
-    builder.id = self.serverId;
+    SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builderWithId:self.serverId];
 
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;

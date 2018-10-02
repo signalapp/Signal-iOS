@@ -5,7 +5,7 @@
 #import "DebugContactsUtils.h"
 #import "Signal-Swift.h"
 #import <Contacts/Contacts.h>
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

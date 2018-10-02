@@ -6,7 +6,7 @@
 #import "OWSBackup.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import <Curve25519Kit/Randomness.h>
+#import <SignalCoreKit/Randomness.h>
 
 @import CloudKit;
 

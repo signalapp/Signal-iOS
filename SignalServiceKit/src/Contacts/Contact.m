@@ -3,13 +3,13 @@
 //
 
 #import "Contact.h"
-#import "Cryptography.h"
-#import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
+#import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSString+SSK.h>
 
 @import Contacts;
 

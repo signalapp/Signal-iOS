@@ -4,13 +4,13 @@
 
 #import "OWSAnalytics.h"
 #import "AppContext.h"
-#import "Cryptography.h"
 #import "OWSBackgroundTask.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
+#import <SignalCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

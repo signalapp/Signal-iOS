@@ -4,7 +4,6 @@
 
 #import "TSNetworkManager.h"
 #import "AppContext.h"
-#import "NSData+OWS.h"
 #import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
@@ -12,6 +11,7 @@
 #import "TSAccountManager.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NSString *const TSNetworkManagerDomain = @"org.whispersystems.signal.networkManager";
