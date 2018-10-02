@@ -312,7 +312,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     const long kMaxDownloadSize = 150 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
 
-    NSString *tempSubdirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSString *tempSubdirPath = [OWSFileSystem.accessibleAfterFirstAuthTempDirectoryPath
+        stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
     NSString *tempFilePath1 = [tempSubdirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
     NSString *tempFilePath2 = [tempSubdirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
     NSURL *tempFileURL1 = [NSURL fileURLWithPath:tempFilePath1];
