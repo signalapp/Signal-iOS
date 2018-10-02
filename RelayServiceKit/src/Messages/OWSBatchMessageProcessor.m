@@ -162,7 +162,12 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
 {
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageContentJob collection]];
+        //  Workaround for case-sensitivity issues...
+        for (NSString *uid in uniqueIds) {
+            [transaction removeObjectForKey:uid.uppercaseString inCollection:[OWSMessageContentJob collection]];
+            [transaction removeObjectForKey:uid.lowercaseString inCollection:[OWSMessageContentJob collection]];
+        }
+//        [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageContentJob collection]];
     }];
 }
 
