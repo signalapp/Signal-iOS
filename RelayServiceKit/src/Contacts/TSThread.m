@@ -84,9 +84,6 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 
 @implementation TSThread
 
-@synthesize universalExpression = _universalExpression;
-@synthesize participantIds = _participantIds;
-
 + (NSString *)collection {
     return @"TSThread";
 }
@@ -611,10 +608,12 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     NSString *threadTitle = [payload objectForKey:FLThreadTitleKey];
     self.title = ((threadTitle.length > 0) ? threadTitle : @"" );
     self.type = ((threadType.length > 0) ? threadType : nil );
-    self.universalExpression = threadExpression;
     
-    [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
-                                                      object:self];
+    if (![threadExpression isEqualToString:self.universalExpression]) {
+        self.universalExpression = threadExpression;
+        [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
+                                                          object:self];
+    }
 }
 
 -(void)validate
@@ -666,18 +665,18 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 //    }
 //}
 
--(void)setParticipantIds:(NSArray<NSString *> *)value
-{
-    if (![_participantIds isEqual:value]) {
-        _participantIds = value;
-        
-        if (_participantIds.count > 0) {
-        [NSNotificationCenter.defaultCenter postNotificationName:FLRecipientsNeedRefreshNotification
-                                                          object:nil
-                                                        userInfo:@{ @"userIds" : _participantIds }];
-        }
-    }
-}
+//-(void)setParticipantIds:(NSArray<NSString *> *)value
+//{
+//    if (![_participantIds isEqual:value]) {
+//        _participantIds = value;
+//
+//        if (_participantIds.count > 0) {
+//        [NSNotificationCenter.defaultCenter postNotificationName:FLRecipientsNeedRefreshNotification
+//                                                          object:nil
+//                                                        userInfo:@{ @"userIds" : _participantIds }];
+//        }
+//    }
+//}
 
 -(NSArray<NSString *>*)participantIds
 {
