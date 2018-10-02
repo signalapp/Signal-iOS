@@ -4,7 +4,8 @@
 
 import Foundation
 
-class OWS111UDAttributesMigration: OWSDatabaseMigration {
+@objc
+public class OWS111UDAttributesMigration: OWSDatabaseMigration {
 
     // MARK: - Singletons
 
