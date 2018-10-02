@@ -167,8 +167,16 @@ extension UIColor {
         return UIColor.color(hex: "#ffe5b2")
     }
     
+    class func FL_mediwmLightYellow() -> UIColor {
+        return UIColor.color(hex: "#e9bf6a")
+    }
+    
     class func FL_mediumYellow() -> UIColor {
         return UIColor.color(hex: "#ffbb37")
+    }
+    
+    class func FL_darkYellow() -> UIColor {
+        return UIColor.color(hex: "#634812")
     }
     
     class func FL_lightPink() -> UIColor {
