@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appSharedDataDirectoryPath;
 
++ (NSString *)accessibleAfterFirstAuthTempDirectoryPath;
+
 + (NSString *)cachesDirectoryPath;
 
 + (nullable NSError *)renameFilePathUsingRandomExtension:(NSString *)oldFilePath;

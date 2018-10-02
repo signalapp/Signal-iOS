@@ -214,8 +214,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // a single launch of the app.  Since our "date threshold"
     // for deletion is relative to the current launch time,
     // all temp files currently in use should be safe.
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSArray<NSString *> *_Nullable tempFilePaths = [self filePathsInDirectorySafe:temporaryDirectory].allObjects;
+    NSArray<NSString *> *_Nullable tempFilePaths = [self getTempFilePaths];
     if (!tempFilePaths || !self.isMainAppAndActive) {
         return nil;
     }
@@ -712,6 +711,21 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     OWSLogInfo(@"Deleted orphan attachment files: %zu", filesRemoved);
 
     return YES;
+}
+
++ (nullable NSArray<NSString *> *)getTempFilePaths
+{
+    NSString *dir1 = NSTemporaryDirectory();
+    NSArray<NSString *> *_Nullable paths1 = [[self filePathsInDirectorySafe:dir1].allObjects mutableCopy];
+
+    NSString *dir2 = OWSFileSystem.accessibleAfterFirstAuthTempDirectoryPath;
+    NSArray<NSString *> *_Nullable paths2 = [[self filePathsInDirectorySafe:dir2].allObjects mutableCopy];
+
+    if (paths1 && paths2) {
+        return [paths1 arrayByAddingObjectsFromArray:paths2];
+    } else {
+        return nil;
+    }
 }
 
 @end
