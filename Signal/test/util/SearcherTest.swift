@@ -51,8 +51,8 @@ class ConversationSearcherContactsManager: NSObject, ContactsManagerProtocol {
     }
 }
 
-let bobRecipientId = "+49030183000"
-let aliceRecipientId = "+12345678900"
+private let bobRecipientId = "+49030183000"
+private let aliceRecipientId = "+12345678900"
 
 class ConversationSearcherTest: SignalBaseTest {
 
@@ -291,7 +291,7 @@ class ConversationSearcherTest: SignalBaseTest {
         XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
     }
 
-    func bodies(forMessageResults messageResults: [ConversationSearchResult]) -> [String] {
+    func bodies(forMessageResults messageResults: [ConversationSearchResult<MessageSortKey>]) -> [String] {
         var result = [String]()
 
         self.dbConnection.read { transaction in

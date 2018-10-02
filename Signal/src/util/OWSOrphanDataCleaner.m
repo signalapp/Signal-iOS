@@ -487,6 +487,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         OWSFailDebug(@"can't audit orphan data in app extensions.");
         return;
     }
+    if (CurrentAppContext().isRunningTests) {
+        OWSLogVerbose(@"Ignoring audit orphan data in tests.");
+        return;
+    }
 
     // Orphan cleanup has two risks:
     //

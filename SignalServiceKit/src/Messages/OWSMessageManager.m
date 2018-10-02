@@ -955,7 +955,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSData *profileKey = dataMessage.profileKey;
     if (profileKey.length != kAES256_KeyByteLength) {
-        OWSFailDebug(@"received profile key of unexpected length:%lu from:%@",
+        OWSFailDebug(@"received profile key of unexpected length: %lu, from: %@",
             (unsigned long)profileKey.length,
             envelopeAddress(envelope));
         return;

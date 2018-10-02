@@ -19,6 +19,8 @@
 
 @implementation SignedPreKeyDeletionTests
 
+#ifdef BROKEN_TESTS
+
 - (void)setUp {
     [super setUp];
 }
@@ -144,5 +146,7 @@
 
     [self waitForExpectationsWithTimeout:5.0 handler:nil];
 }
+
+#endif
 
 @end

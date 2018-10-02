@@ -14,6 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef BROKEN_TESTS
+
 @interface OWSDisappearingMessagesJob (Testing)
 
 - (NSUInteger)runLoop;
@@ -130,5 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

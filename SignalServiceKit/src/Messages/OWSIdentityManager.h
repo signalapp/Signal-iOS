@@ -31,11 +31,6 @@ extern const NSUInteger kIdentityKeyLength;
 
 - (void)generateNewIdentityKey;
 
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId;
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
-                                   transaction:(YapDatabaseReadTransaction *)transaction;
-
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId

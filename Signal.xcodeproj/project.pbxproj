@@ -485,7 +485,6 @@
 		B660F6D41C29868000687D6E /* whisperFake.cer in Resources */ = {isa = PBXBuildFile; fileRef = B660F69F1C29868000687D6E /* whisperFake.cer */; };
 		B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */; };
 		B660F6E01C29868000687D6E /* UtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B660F6B41C29868000687D6E /* UtilTest.m */; };
-		B660F7561C29988E00687D6E /* PushManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B9ECFB198B31BA00C620D3 /* PushManager.m */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B69CD25119773E79005CE69A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69CD25019773E79005CE69A /* XCTest.framework */; };
@@ -3461,7 +3460,6 @@
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
 				45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */,
-				B660F7561C29988E00687D6E /* PushManager.m in Sources */,
 				34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */,
 				34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
