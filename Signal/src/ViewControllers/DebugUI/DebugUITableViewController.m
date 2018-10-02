@@ -105,7 +105,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableItem *documentsFileBrowserItem = [OWSTableItem
         disclosureItemWithText:@"📁 App Container"
                    actionBlock:^{
-                       NSURL *baseURL = [NSURL URLWithString:[OWSFileSystem appLibraryDirectoryPath]];
+                       NSString *libraryPath = [OWSFileSystem appLibraryDirectoryPath];
+                       NSString *containerPath = [libraryPath stringByDeletingLastPathComponent];
+                       NSURL *baseURL = [NSURL fileURLWithPath:containerPath];
                        DebugUIFileBrowser *fileBrowser = [[DebugUIFileBrowser alloc] initWithFileURL:baseURL];
                        [viewController.navigationController pushViewController:fileBrowser animated:YES];
                    }];
