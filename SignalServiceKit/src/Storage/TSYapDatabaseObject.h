@@ -94,6 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Assign the latest persisted values from the database.
  */
+- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)reload;
 
 /**
