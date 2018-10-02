@@ -393,7 +393,7 @@ class CDSBatchOperation: OWSOperation {
         let initializationVector = try params.requiredBase64EncodedData(key: "iv")
         let authTag = try params.requiredBase64EncodedData(key: "mac")
 
-        guard let plainText = Cryptography.decryptAESCGM(withInitializationVector: initializationVector,
+        guard let plainText = Cryptography.decryptAESGCM(withInitializationVector: initializationVector,
                                                          ciphertext: cipherText,
                                                          additionalAuthenticatedData: nil,
                                                          authTag: authTag,
