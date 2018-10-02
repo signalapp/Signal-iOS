@@ -390,7 +390,9 @@ private class MockIncomingMessage: TSIncomingMessage {
                    attachmentIds: [],
                    expiresInSeconds: 0,
                    quotedMessage: nil,
-                   contactShare: nil)
+                   contactShare: nil,
+                   serverTimestamp: nil,
+                   serverGuid: nil)
     }
 
     required init(coder: NSCoder) {

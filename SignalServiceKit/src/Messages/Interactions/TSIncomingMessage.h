@@ -54,7 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
+                                    contactShare:(nullable OWSContact *)contactShare
+                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
+                                      serverGuid:(nullable NSString *)serverGuid NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -82,12 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-#pragma mark - Update With... Methods
-
-- (void)updateWithServerTimestamp:(uint64_t)serverTimestamp transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (void)updateWithServerGuid:(NSString *)serverGuid transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

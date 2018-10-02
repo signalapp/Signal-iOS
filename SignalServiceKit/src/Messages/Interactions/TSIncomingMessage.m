@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
+                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
+                                      serverGuid:(nullable NSString *)serverGuid
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -65,6 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
     _authorId = authorId;
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
+    _serverTimestamp = serverTimestamp;
+    _serverGuid = serverGuid;
 
     return self;
 }
@@ -181,29 +185,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
-}
-
-
-#pragma mark - Update With... Methods
-
-- (void)updateWithServerTimestamp:(uint64_t)serverTimestamp transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(serverTimestamp > 0);
-
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSIncomingMessage *message) {
-                                 message.serverTimestamp = @(serverTimestamp);
-                             }];
-}
-
-- (void)updateWithServerGuid:(NSString *)serverGuid transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(serverGuid.length > 0);
-
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSIncomingMessage *message) {
-                                 message.serverGuid = serverGuid;
-                             }];
 }
 
 @end

@@ -1110,6 +1110,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
     OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
+    NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
+    NSString *_Nullable serverGuid = (envelope.hasServerGuid ? envelope.serverGuid : nil);
 
     if (dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -1223,7 +1225,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   attachmentIds:attachmentIds
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
-                                                                   contactShare:contact];
+                                                                   contactShare:contact
+                                                                serverTimestamp:serverTimestamp
+                                                                     serverGuid:serverGuid];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1262,7 +1266,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
-                                                           contactShare:contact];
+                                                           contactShare:contact
+                                                        serverTimestamp:serverTimestamp
+                                                             serverGuid:serverGuid];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
@@ -1300,13 +1306,6 @@ NS_ASSUME_NONNULL_BEGIN
     if ([envelope.source isEqualToString:TSAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
-    }
-
-    if (envelope.hasServerGuid) {
-        [incomingMessage updateWithServerGuid:envelope.serverGuid transaction:transaction];
-    }
-    if (envelope.hasServerTimestamp) {
-        [incomingMessage updateWithServerTimestamp:envelope.serverTimestamp transaction:transaction];
     }
 
     TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
