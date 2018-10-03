@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
+    return [self initWithUniqueId:[[NSUUID UUID] UUIDString].lowercaseString];
 }
 
 - (instancetype)initWithUniqueId:(NSString *_Nullable)aUniqueId

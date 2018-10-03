@@ -589,7 +589,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
     }];
     
     if (thread == nil) {
-        thread = [TSThread getOrCreateThreadWithId:[[NSUUID UUID] UUIDString] transaction:transaction];
+        thread = [TSThread getOrCreateThreadWithId:[[NSUUID UUID] UUIDString].lowercaseString transaction:transaction];
         thread.participantIds = [participantIDs copy];
 //        [thread saveWithTransaction:transaction];
     }
