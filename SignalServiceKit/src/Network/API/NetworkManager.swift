@@ -27,7 +27,7 @@ extension NetworkManagerError {
 }
 
 extension TSNetworkManager {
-    func makePromise(request: TSRequest) -> Promise<(task: URLSessionDataTask, responseObject: Any?)> {
+    public func makePromise(request: TSRequest) -> Promise<(task: URLSessionDataTask, responseObject: Any?)> {
         let (promise, fulfill, reject) = Promise<(task: URLSessionDataTask, responseObject: Any?)>.pending()
 
         self.makeRequest(request,

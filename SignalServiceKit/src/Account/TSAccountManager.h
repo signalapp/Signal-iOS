@@ -72,8 +72,9 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  *  @return registrationID;
  */
 
-+ (uint32_t)getOrGenerateRegistrationId;
 + (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
+- (uint32_t)getOrGenerateRegistrationId;
+- (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
 
@@ -90,9 +91,6 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
                           pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock
                       failure:(void (^)(NSError *error))failureBlock;
-
-- (void)registerForManualMessageFetchingWithSuccess:(void (^)(void))successBlock
-                                            failure:(void (^)(NSError *error))failureBlock;
 
 // Called once registration is complete - meaning the following have succeeded:
 // - obtained signal server credentials
@@ -136,6 +134,11 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 - (BOOL)resetForReregistration;
 - (NSString *)reregisterationPhoneNumber;
 - (BOOL)isReregistering;
+
+#pragma mark - Manual Message Fetch
+
+- (BOOL)isManualMessageFetchEnabled;
+- (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
 @end
 

@@ -13,24 +13,30 @@ import SignalServiceKit
 @objc
 public class AccountManager: NSObject {
 
-    let textSecureAccountManager: TSAccountManager
-    let networkManager: TSNetworkManager
-    let preferences: OWSPreferences
-
     var pushManager: PushManager {
         // dependency injection hack since PushManager has *alot* of dependencies, and would induce a cycle.
         return PushManager.shared()
     }
 
     @objc
-    public required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences) {
-        self.networkManager = textSecureAccountManager.networkManager
-        self.textSecureAccountManager = textSecureAccountManager
-        self.preferences = preferences
-
+    public required override init() {
         super.init()
 
         SwiftSingletons.register(self)
+    }
+
+    // MARK: - Singletons
+
+    private var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    private var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
     }
 
     // MARK: registration
@@ -61,7 +67,7 @@ public class AccountManager: NSObject {
                 // - simulators, none of which support receiving push notifications
                 // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
                 Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-                return self.registerForManualMessageFetching()
+                return self.enableManualMessageFetching()
             default:
                 throw error
             }
@@ -77,7 +83,7 @@ public class AccountManager: NSObject {
     private func registerForTextSecure(verificationCode: String,
                                        pin: String?) -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.verifyAccount(withCode: verificationCode,
+            tsAccountManager.verifyAccount(withCode: verificationCode,
                                                         pin: pin,
                                                         success: fulfill,
                                                         failure: reject)
@@ -93,24 +99,25 @@ public class AccountManager: NSObject {
 
     private func completeRegistration() {
         Logger.info("")
-        self.textSecureAccountManager.didRegister()
+        tsAccountManager.didRegister()
     }
 
     // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForPushNotifications(pushToken: pushToken,
-                                                                       voipToken: voipToken,
-                                                                       success: fulfill,
-                                                                       failure: reject)
+            tsAccountManager.registerForPushNotifications(pushToken: pushToken,
+                                                          voipToken: voipToken,
+                                                          success: fulfill,
+                                                          failure: reject)
         }
     }
 
-    func registerForManualMessageFetching() -> Promise<Void> {
-        return Promise { fulfill, reject in
-            self.textSecureAccountManager.registerForManualMessageFetching(success: fulfill, failure: reject)
-        }
+    func enableManualMessageFetching() -> Promise<Void> {
+        tsAccountManager.setIsManualMessageFetchEnabled(true)
+
+        // Try to update the account attributes to reflect this change.
+        return SignalServiceRestClient().updateAcountAttributes()
     }
 
     // MARK: Turn Server
@@ -136,5 +143,4 @@ public class AccountManager: NSObject {
             })
         }
     }
-
 }

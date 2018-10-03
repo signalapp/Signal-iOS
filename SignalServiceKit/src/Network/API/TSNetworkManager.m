@@ -9,7 +9,7 @@
 #import "OWSSignalService.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSVerifyCodeRequest.h"
+#import "TSRequest.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -103,56 +103,43 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     // session manager, so its safe to reconfigure it here.
     sessionManager.completionQueue = completionQueue;
 
-    if ([request isKindOfClass:[TSVerifyCodeRequest class]]) {
-        // We plant the Authorization parameter ourselves, no need to double add.
-        [sessionManager.requestSerializer
-            setAuthorizationHeaderFieldWithUsername:((TSVerifyCodeRequest *)request).numberToValidate
-                                           password:[request.parameters objectForKey:@"AuthKey"]];
-        NSMutableDictionary *parameters = [request.parameters mutableCopy];
-        [parameters removeObjectForKey:@"AuthKey"];
-        [sessionManager PUT:request.URL.absoluteString parameters:parameters success:success failure:failure];
+    if (request.shouldHaveAuthorizationHeaders) {
+        [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
+                                                                         password:request.authPassword];
+    }
+
+    // Honor the request's preferences about default cookie handling.
+    //
+    // Default is YES.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = request.HTTPShouldHandleCookies;
+
+    // Honor the request's headers.
+    for (NSString *headerField in request.allHTTPHeaderFields) {
+        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+
+    if ([request.HTTPMethod isEqualToString:@"GET"]) {
+        [sessionManager GET:request.URL.absoluteString
+                 parameters:request.parameters
+                   progress:nil
+                    success:success
+                    failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
+        [sessionManager POST:request.URL.absoluteString
+                  parameters:request.parameters
+                    progress:nil
+                     success:success
+                     failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
+        [sessionManager PUT:request.URL.absoluteString parameters:request.parameters success:success failure:failure];
+    } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
+        [sessionManager DELETE:request.URL.absoluteString
+                    parameters:request.parameters
+                       success:success
+                       failure:failure];
     } else {
-        if (request.shouldHaveAuthorizationHeaders) {
-            [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
-                                                                             password:request.authPassword];
-        }
-
-        // Honor the request's preferences about default cookie handling.
-        //
-        // Default is YES.
-        sessionManager.requestSerializer.HTTPShouldHandleCookies = request.HTTPShouldHandleCookies;
-
-        // Honor the request's headers.
-        for (NSString *headerField in request.allHTTPHeaderFields) {
-            NSString *headerValue = request.allHTTPHeaderFields[headerField];
-            [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
-        }
-
-        if ([request.HTTPMethod isEqualToString:@"GET"]) {
-            [sessionManager GET:request.URL.absoluteString
-                     parameters:request.parameters
-                       progress:nil
-                        success:success
-                        failure:failure];
-        } else if ([request.HTTPMethod isEqualToString:@"POST"]) {
-            [sessionManager POST:request.URL.absoluteString
-                      parameters:request.parameters
-                        progress:nil
-                         success:success
-                         failure:failure];
-        } else if ([request.HTTPMethod isEqualToString:@"PUT"]) {
-            [sessionManager PUT:request.URL.absoluteString
-                     parameters:request.parameters
-                        success:success
-                        failure:failure];
-        } else if ([request.HTTPMethod isEqualToString:@"DELETE"]) {
-            [sessionManager DELETE:request.URL.absoluteString
-                        parameters:request.parameters
-                           success:success
-                           failure:failure];
-        } else {
-            OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
-        }
+        OWSLogError(@"Trying to perform HTTP operation with unknown verb: %@", request.HTTPMethod);
     }
 }
 
@@ -205,7 +192,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
       NSInteger statusCode = [task statusCode];
 
 #ifdef DEBUG
-        [TSNetworkManager logCurlForTask:task];
+      [TSNetworkManager logCurlForTask:task];
 #endif
 
       [OutageDetection.sharedManager reportConnectionFailure];

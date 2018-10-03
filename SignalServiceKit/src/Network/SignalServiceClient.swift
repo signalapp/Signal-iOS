@@ -10,10 +10,12 @@ protocol SignalServiceClient {
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate() -> Promise<Data>
+    func updateAcountAttributes() -> Promise<Void>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
-class SignalServiceRestClient: SignalServiceClient {
+@objc
+public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     var networkManager: TSNetworkManager {
         return TSNetworkManager.shared()
@@ -69,5 +71,16 @@ class SignalServiceRestClient: SignalServiceClient {
         }
 
         return try parser.requiredBase64EncodedData(key: "certificate")
+    }
+
+    public func updateAcountAttributes() -> Promise<Void> {
+        let request = OWSRequestFactory.updateAttributesRequest()
+        let promise: Promise<Void> = networkManager.makePromise(request: request)
+            .then(execute: { (_, _) in
+                Logger.info("updated account attributes on server")
+            }).catch(execute: { (error) in
+                Logger.error("failed to update account attributes on server with error: \(error)")
+            })
+        return promise
     }
 }

@@ -26,10 +26,18 @@ public enum OWSUDError: Error {
     // No-op if this recipient id is already marked as _NOT_ a "UD recipient".
     @objc func removeUDRecipientId(_ recipientId: String)
 
+    // MARK: - Sender Certificate
+
     // We use completion handlers instead of a promise so that message sending
     // logic can access the certificate data.
     @objc func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
                                             failure:@escaping (Error) -> Void)
+
+    // MARK: - Unrestricted Access
+
+    @objc func shouldAllowUnrestrictedAccess() -> Bool
+
+    @objc func setShouldAllowUnrestrictedAccess(_ value: Bool)
 }
 
 // MARK: -
@@ -42,6 +50,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private let kUDRecipientModeCollection = "kUDRecipientModeCollection"
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
+    private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
 
     @objc
     public required init(primaryStorage: OWSPrimaryStorage) {
@@ -165,5 +174,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             OWSLogger.error("Certificate could not be parsed: \(error)")
             return false
         }
+    }
+
+    // MARK: - Unrestricted Access
+
+    @objc
+    public func shouldAllowUnrestrictedAccess() -> Bool {
+        return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection, defaultValue: false)
+    }
+
+    @objc
+    public func setShouldAllowUnrestrictedAccess(_ value: Bool) {
+        dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection)
     }
 }
