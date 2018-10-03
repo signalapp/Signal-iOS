@@ -367,7 +367,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             // the session state side effects of its decryption are also rolled back.
             //
             // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,
-            // since the envelope may be altered by the decryption process.
+            // since the envelope may be altered by the decryption process in the UD case.
             [self.batchMessageProcessor enqueueEnvelopeData:envelopeData
                                               plaintextData:plaintextData
                                                 transaction:transaction];
