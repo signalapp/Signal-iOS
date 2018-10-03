@@ -56,15 +56,15 @@ public class OWSFakeUDManager: NSObject, OWSUDManager {
     // MARK: - Server Certificate
 
     // Tests can control the behavior of this mock by setting this property.
-    @objc public var nextSenderCertificate: Data?
+    @objc public var nextSenderCertificate: SMKSenderCertificate?
 
-    @objc public func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
+    @objc public func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
                                                   failure:@escaping (Error) -> Void) {
-        guard let certificateData = nextSenderCertificate else {
-            failure(OWSUDError.assertionError(description: "No mock server certificate data"))
+        guard let certificate = nextSenderCertificate else {
+            failure(OWSUDError.assertionError(description: "No mock server certificate"))
             return
         }
-        success(certificateData)
+        success(certificate)
     }
 
     // MARK: - Unrestricted Access

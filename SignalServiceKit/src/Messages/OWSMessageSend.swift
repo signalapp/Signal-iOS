@@ -43,13 +43,19 @@ public class OWSMessageSend: NSObject {
     public let isLocalNumber: Bool
 
     @objc
+    public let senderCertificate: SMKSenderCertificate?
+
+    @objc
     public init(message: TSOutgoingMessage,
                 thread: TSThread?,
-        recipient: SignalRecipient, udManager: OWSUDManager,
-          localNumber: String) {
+                recipient: SignalRecipient,
+                senderCertificate: SMKSenderCertificate?,
+                udManager: OWSUDManager,
+                localNumber: String) {
         self.message = message
         self.thread = thread
         self.recipient = recipient
+        self.senderCertificate = senderCertificate
 
         var udAccessKey: SMKUDAccessKey?
         var isLocalNumber: Bool = false

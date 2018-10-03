@@ -6,11 +6,12 @@
 #define TextSecureKit_Constants_h
 
 typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
-    TSUnknownMessageType            = 0,
-    TSEncryptedWhisperMessageType   = 1,
+    TSUnknownMessageType = 0,
+    TSEncryptedWhisperMessageType = 1,
     TSIgnoreOnIOSWhisperMessageType = 2, // on droid this is the prekey bundle message irrelevant for us
-    TSPreKeyWhisperMessageType      = 3,
+    TSPreKeyWhisperMessageType = 3,
     TSUnencryptedWhisperMessageType = 4,
+    TSUnidentifiedSenderMessageType = 6,
 };
 
 #pragma mark Server Address

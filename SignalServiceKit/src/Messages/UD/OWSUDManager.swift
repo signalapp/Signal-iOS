@@ -34,7 +34,7 @@ public enum OWSUDError: Error {
 
     // We use completion handlers instead of a promise so that message sending
     // logic can access the certificate data.
-    @objc func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
+    @objc func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
                                             failure:@escaping (Error) -> Void)
 
     // MARK: - Unrestricted Access
@@ -139,17 +139,24 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
     #endif
 
-    private func senderCertificate() -> Data? {
+    private func senderCertificate() -> SMKSenderCertificate? {
         guard let certificateData = dbConnection.object(forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection) as? Data else {
             return nil
         }
 
-        guard isValidCertificate(certificateData: certificateData) else {
-            Logger.warn("Current sender certificate is not valid.")
+        do {
+            let certificate = try SMKSenderCertificate.parse(data: certificateData)
+
+            guard isValidCertificate(certificate: certificate) else {
+                Logger.warn("Current sender certificate is not valid.")
+                return nil
+            }
+
+            return certificate
+        } catch {
+            OWSLogger.error("Certificate could not be parsed: \(error)")
             return nil
         }
-
-        return certificateData
     }
 
     private func setSenderCertificate(_ certificateData: Data) {
@@ -157,55 +164,52 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
-                                        failure:@escaping (Error) -> Void) {
+    public func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
+                                            failure:@escaping (Error) -> Void) {
         ensureSenderCertificate()
-            .then(execute: { certificateData in
-                success(certificateData)
+            .then(execute: { certificate in
+                success(certificate)
             })
             .catch(execute: { (error) in
                 failure(error)
             }).retainUntilComplete()
     }
 
-    public func ensureSenderCertificate() -> Promise<Data> {
+    public func ensureSenderCertificate() -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
-        if let certificateData = senderCertificate() {
-            return Promise(value: certificateData)
+        if let certificate = senderCertificate() {
+            return Promise(value: certificate)
         }
         // Try to obtain a new sender certificate.
-        return requestSenderCertificate().then { (certificateData) in
+        return requestSenderCertificate().then { (certificateData, certificate) in
+
             // Cache the current sender certificate.
             self.setSenderCertificate(certificateData)
 
-            return Promise(value: certificateData)
+            return Promise(value: certificate)
         }
     }
 
-    private func requestSenderCertificate() -> Promise<Data> {
-        return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) in
-            guard self.isValidCertificate(certificateData: certificateData) else {
+    private func requestSenderCertificate() -> Promise<(Data, SMKSenderCertificate)> {
+        return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) -> Promise<(Data, SMKSenderCertificate)> in
+            let certificate = try SMKSenderCertificate.parse(data: certificateData)
+
+            guard self.isValidCertificate(certificate: certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
-            return Promise(value: certificateData)
+            return Promise(value: (certificateData, certificate) )
         }
     }
 
-    private func isValidCertificate(certificateData: Data) -> Bool {
-        do {
-            let certificate = try SMKSenderCertificate.parse(data: certificateData)
-            let expirationMs = certificate.expirationTimestamp
-            let nowMs = NSDate.ows_millisecondTimeStamp()
-            // Ensure that the certificate will not expire in the next hour.
-            // We want a threshold long enough to ensure that any outgoing message
-            // sends will complete before the expiration.
-            let isValid = nowMs + kHourInMs < expirationMs
-            return isValid
-        } catch {
-            OWSLogger.error("Certificate could not be parsed: \(error)")
-            return false
-        }
+    private func isValidCertificate(certificate: SMKSenderCertificate) -> Bool {
+        let expirationMs = certificate.expirationTimestamp
+        let nowMs = NSDate.ows_millisecondTimeStamp()
+        // Ensure that the certificate will not expire in the next hour.
+        // We want a threshold long enough to ensure that any outgoing message
+        // sends will complete before the expiration.
+        let isValid = nowMs + kHourInMs < expirationMs
+        return isValid
     }
 
     // MARK: - Unrestricted Access
