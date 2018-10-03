@@ -3,13 +3,13 @@
 //
 
 #import "Contact.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 
 @import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactSortingTest : SSKBaseTest
+@interface ContactSortingTest : SSKBaseTestObjC
 
 @end
 

@@ -10,7 +10,7 @@
 #import "OWSFakeNetworkManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageSenderTest : SSKBaseTest
+@interface OWSMessageSenderTest : SSKBaseTestObjC
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) TSOutgoingMessage *expiringMessage;

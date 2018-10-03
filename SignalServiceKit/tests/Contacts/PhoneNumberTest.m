@@ -3,9 +3,9 @@
 //
 
 #import "PhoneNumber.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 
-@interface PhoneNumberTest : SSKBaseTest
+@interface PhoneNumberTest : SSKBaseTestObjC
 
 @end
 

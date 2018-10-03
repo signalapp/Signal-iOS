@@ -3,11 +3,11 @@
 //
 
 #import "TSAttributes.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
 #import <XCTest/XCTest.h>
 
-@interface TSAttributesTest : SSKBaseTest
+@interface TSAttributesTest : SSKBaseTestObjC
 
 @end
 

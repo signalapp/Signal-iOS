@@ -5,7 +5,7 @@
 #import "MockSSKEnvironment.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
 #import "TestAppContext.h"
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSDisappearingMessageFinderTest : SSKBaseTest
+@interface OWSDisappearingMessageFinderTest : SSKBaseTestObjC
 
 @property (nonatomic, nullable) OWSDisappearingMessagesFinder *finder;
 @property (nonatomic, nullable) TSThread *thread;

@@ -3,12 +3,12 @@
 //
 
 #import "OWSAnalytics.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSAnalyticsTests : SSKBaseTest
+@interface OWSAnalyticsTests : SSKBaseTestObjC
 
 @end
 

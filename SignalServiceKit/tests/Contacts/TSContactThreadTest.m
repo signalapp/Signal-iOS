@@ -5,11 +5,11 @@
 #import "TSContactThread.h"
 #import "MockSSKEnvironment.h"
 #import "OWSIdentityManager.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSContactThreadTest : SSKBaseTest
+@interface TSContactThreadTest : SSKBaseTestObjC
 
 @property (nonatomic) TSContactThread *contactThread;
 

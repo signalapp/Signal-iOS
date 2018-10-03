@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TestAppContext.h"
@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
-@implementation SSKBaseTest
+@implementation SSKBaseTestObjC
 
 - (void)setUp
 {

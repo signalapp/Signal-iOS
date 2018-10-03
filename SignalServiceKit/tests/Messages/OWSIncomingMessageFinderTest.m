@@ -5,7 +5,7 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface OWSIncomingMessageFinderTest : SSKBaseTest
+@interface OWSIncomingMessageFinderTest : SSKBaseTestObjC
 
 @property (nonatomic) NSString *sourceId;
 @property (nonatomic) TSThread *thread;

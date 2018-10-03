@@ -5,7 +5,7 @@
 #import "SignalRecipient.h"
 #import "MockSSKEnvironment.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
 #import "TestAppContext.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -16,7 +16,7 @@
 
 @end
 
-@interface SignalRecipientTest : SSKBaseTest
+@interface SignalRecipientTest : SSKBaseTestObjC
 
 @property (nonatomic) NSString *localNumber;
 

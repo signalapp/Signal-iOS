@@ -48,8 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setProfileKeyData:(NSData *)profileKey forRecipientId:(NSString *)recipientId
 {
-    OWSAES256Key *key = [OWSAES256Key keyWithData:profileKey];
-    NSAssert(key, @"Unable to build key. Invalid key data?");
+    OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];
+    OWSAssert(key);
     self.profileKeys[recipientId] = key;
 }
 

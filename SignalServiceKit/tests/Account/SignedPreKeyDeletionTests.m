@@ -3,7 +3,7 @@
 //
 
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSPreKeyManager.h"
 #import <AxolotlKit/SignedPrekeyRecord.h>
 
@@ -13,7 +13,7 @@
 
 @end
 
-@interface SignedPreKeyDeletionTests : SSKBaseTest
+@interface SignedPreKeyDeletionTests : SSKBaseTestObjC
 
 @end
 

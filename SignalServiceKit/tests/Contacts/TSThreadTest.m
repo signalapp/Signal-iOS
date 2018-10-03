@@ -4,7 +4,7 @@
 
 #import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
@@ -12,7 +12,7 @@
 #import "TestAppContext.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface TSThreadTest : SSKBaseTest
+@interface TSThreadTest : SSKBaseTestObjC
 
 @end
 

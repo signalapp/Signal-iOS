@@ -21,6 +21,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSMessageManager *messageManager;
 @property (nonatomic) OWSBlockingManager *blockingManager;
 @property (nonatomic) OWSIdentityManager *identityManager;
+@property (nonatomic) id<OWSUDManager> udManager;
 
 @end
 
@@ -41,6 +42,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
+                              udManager:(id<OWSUDManager>)udManager
 {
     self = [super init];
     if (!self) {
@@ -56,6 +58,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageManager);
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(identityManager);
+    OWSAssertDebug(udManager);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -66,6 +69,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageManager = messageManager;
     _blockingManager = blockingManager;
     _identityManager = identityManager;
+    _udManager = udManager;
 
     return self;
 }

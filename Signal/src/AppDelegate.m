@@ -44,6 +44,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
@@ -1087,6 +1088,8 @@ static NSTimeInterval launchStartedAt;
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];
 #endif
+
+    [SSKEnvironment.shared.udManager setup];
 }
 
 - (void)registrationStateDidChange

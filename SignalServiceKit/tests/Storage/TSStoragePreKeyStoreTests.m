@@ -3,9 +3,9 @@
 //
 
 #import "OWSPrimaryStorage+PreKeyStore.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 
-@interface TSStoragePreKeyStoreTests : SSKBaseTest
+@interface TSStoragePreKeyStoreTests : SSKBaseTestObjC
 
 @end
 

@@ -3,11 +3,11 @@
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSDisappearingMessagesConfigurationTest : SSKBaseTest
+@interface OWSDisappearingMessagesConfigurationTest : SSKBaseTestObjC
 
 @end
 

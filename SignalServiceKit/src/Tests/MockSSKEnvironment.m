@@ -14,6 +14,7 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSPrimaryStorage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
+    id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -56,7 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                            networkManager:networkManager
                            messageManager:messageManager
                           blockingManager:blockingManager
-                          identityManager:identityManager];
+                          identityManager:identityManager
+                                udManager:udManager];
     if (!self) {
         return nil;
     }

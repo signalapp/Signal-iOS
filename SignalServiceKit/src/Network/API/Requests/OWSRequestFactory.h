@@ -40,15 +40,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId;
 
-+ (TSRequest *)availablePreKeysCountRequest;
-
 + (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes;
 
-+ (TSRequest *)currentSignedPreKeyRequest;
-
 + (TSRequest *)profileAvatarUploadFormRequest;
-
-+ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId;
 
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId;
 
@@ -63,11 +57,21 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp;
 
+#pragma mark - Prekeys
+
++ (TSRequest *)availablePreKeysCountRequest;
+
++ (TSRequest *)currentSignedPreKeyRequest;
+
++ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId;
+
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
 
 + (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
                                          identityKey:(NSData *)identityKeyPublic
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey;
+
+#pragma mark - CDS
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
                               enclaveId:(NSString *)enclaveId
@@ -86,6 +90,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)remoteAttestationAuthRequest;
 + (TSRequest *)cdsFeedbackRequestWithResult:(NSString *)result NS_SWIFT_NAME(cdsFeedbackRequest(result:));
+
+#pragma mark - UD
+
++ (TSRequest *)udSenderCertificateRequest;
 
 @end
 

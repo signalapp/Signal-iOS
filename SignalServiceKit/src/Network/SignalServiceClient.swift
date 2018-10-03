@@ -9,6 +9,7 @@ protocol SignalServiceClient {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
+    func requestUDSenderCertificate() -> Promise<Data>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -50,5 +51,23 @@ class SignalServiceRestClient: SignalServiceClient {
 
         let request = OWSRequestFactory.registerSignedPrekeyRequest(with: signedPreKey)
         return networkManager.makePromise(request: request).asVoid()
+    }
+
+    public func requestUDSenderCertificate() -> Promise<Data> {
+        let request = OWSRequestFactory.udSenderCertificateRequest()
+        return self.networkManager.makePromise(request: request)
+            .then(execute: { (_, responseObject) -> Data in
+                let certificateData = try self.parseUDSenderCertificateResponse(responseObject: responseObject)
+
+                return certificateData
+            })
+    }
+
+    private func parseUDSenderCertificateResponse(responseObject: Any?) throws -> Data {
+        guard let parser = ParamParser(responseObject: responseObject) else {
+            throw OWSUDError.invalidData(description: "Invalid sender certificate response")
+        }
+
+        return try parser.requiredBase64EncodedData(key: "certificate")
     }
 }

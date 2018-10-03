@@ -3,7 +3,7 @@
 //
 
 #import "OWSPrimaryStorage.h"
-#import "SSKBaseTest.h"
+#import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
@@ -13,7 +13,7 @@
 #import "YapDatabaseConnection+OWS.h"
 #import <SignalCoreKit/Cryptography.h>
 
-@interface TSMessageStorageTests : SSKBaseTest
+@interface TSMessageStorageTests : SSKBaseTestObjC
 
 @property TSContactThread *thread;
 
