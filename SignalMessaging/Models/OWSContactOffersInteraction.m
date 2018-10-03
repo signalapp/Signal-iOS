@@ -6,6 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSContactOffersInteraction ()
+
+@property (nonatomic) BOOL hasBlockOffer;
+@property (nonatomic) BOOL hasAddToContactsOffer;
+@property (nonatomic) BOOL hasAddToProfileWhitelistOffer;
+
+@end
+
 @implementation OWSContactOffersInteraction
 
 - (instancetype)initWithCoder:(NSCoder *)coder

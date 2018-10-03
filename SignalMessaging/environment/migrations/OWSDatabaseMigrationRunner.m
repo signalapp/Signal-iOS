@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS107LegacySounds alloc] init],
         [[OWS108CallLoggingPreference alloc] init],
         [[OWS109OutgoingMessageState alloc] init],
+        [OWS110SortIdMigration new],
         [[OWS111UDAttributesMigration alloc] init],
         [[OWS112TypingIndicatorsMigration alloc] init],
         [[OWS113MultiAttachmentMediaMessages alloc] init],

@@ -25,12 +25,14 @@ public class ThreadViewModel: NSObject {
     @objc
     public init(thread: TSThread, transaction: YapDatabaseReadTransaction) {
         self.threadRecord = thread
-        self.lastMessageDate = thread.lastMessageDate()
+
         self.isGroupThread = thread.isGroupThread()
         self.name = thread.name()
         self.isMuted = thread.isMuted
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
-        self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
+        let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
+        self.lastMessageForInbox = lastInteraction
+        self.lastMessageDate = lastInteraction?.receivedAtDate() ?? thread.creationDate
 
         if let contactThread = thread as? TSContactThread {
             self.contactIdentifier = contactThread.contactIdentifier()

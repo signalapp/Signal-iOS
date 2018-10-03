@@ -938,6 +938,7 @@ const CGFloat kIconViewLength = 24;
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
         [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
+            // MJK TODO - should be safe to remove this senderTimestamp
             OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
                 [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                          initWithTimestamp:[NSDate ows_millisecondTimeStamp]

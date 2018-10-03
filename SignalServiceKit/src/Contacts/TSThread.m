@@ -15,6 +15,7 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,10 +38,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @interface TSThread ()
 
 @property (nonatomic) NSDate *creationDate;
-@property (nonatomic, copy, nullable) NSDate *archivalDate;
 @property (nonatomic) NSString *conversationColorName;
-@property (nonatomic, nullable) NSDate *lastMessageDate;
-
+@property (nonatomic) NSNumber *archivedAsOfMessageSortId;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
@@ -59,8 +58,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     self = [super initWithUniqueId:uniqueId];
 
     if (self) {
-        _archivalDate    = nil;
-        _lastMessageDate = nil;
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
 
@@ -121,6 +118,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
         _conversationColorName = mappedColorName;
     }
+
+    // MJK TODO - keep these legacy properties around for a while, just in case...
+    NSDate *_Nullable lastMessageDate = [coder decodeObjectOfClass:NSDate.class forKey:@"lastMessageDate"];
+    NSDate *_Nullable archivalDate = [coder decodeObjectOfClass:NSDate.class forKey:@"archivalDate"];
+    _isArchivedByLegacyTimestampForSorting =
+        [self.class legacyIsArchivedWithLastMessageDate:lastMessageDate archivalDate:archivalDate];
 
     return self;
 }
@@ -250,6 +253,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return [interactions copy];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
 {
     NSMutableArray *errorMessages = [NSMutableArray new];
@@ -268,6 +273,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
     return [errorMessages copy];
 }
+#pragma clang diagnostic pop
 
 - (NSUInteger)numberOfInteractions
 {
@@ -343,14 +349,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return last;
 }
 
-- (NSDate *)lastMessageDate {
-    if (_lastMessageDate) {
-        return _lastMessageDate;
-    } else {
-        return _creationDate;
-    }
-}
-
 - (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
@@ -398,10 +396,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
     self.shouldThreadBeVisible = YES;
 
+    // MJK FIXME - reconcile this
     NSDate *lastMessageDate = [lastMessage dateForSorting];
     if (!_lastMessageDate || [lastMessageDate timeIntervalSinceDate:self.lastMessageDate] > 0) {
         _lastMessageDate = lastMessageDate;
-
         [self saveWithTransaction:transaction];
     }
 }
@@ -426,30 +424,54 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
 }
 
-#pragma mark Archival
+#pragma mark - Archival
 
-- (nullable NSDate *)archivalDate
+- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
 {
-    return _archivalDate;
+    if (!self.archivedAsOfMessageSortId) {
+        return NO;
+    }
+
+    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
+    uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
+    return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
 }
 
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [self archiveThreadWithTransaction:transaction referenceDate:[NSDate date]];
++ (BOOL)legacyIsArchivedWithLastMessageDate:(nullable NSDate *)lastMessageDate
+                               archivalDate:(nullable NSDate *)archivalDate
+{
+    if (!archivalDate) {
+        return NO;
+    }
+
+    if (!lastMessageDate) {
+        return YES;
+    }
+
+    return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction referenceDate:(NSDate *)date {
+- (void)archiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 uint64_t latestId = [SSKIncrementingIdFinder previousIdWithKey:TSInteraction.collection
+                                                                                    transaction:transaction];
+                                 thread.archivedAsOfMessageSortId = @(latestId);
+                             }];
+
     [self markAllAsReadWithTransaction:transaction];
-    _archivalDate = date;
-
-    [self saveWithTransaction:transaction];
 }
 
-- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    _archivalDate = nil;
-    [self saveWithTransaction:transaction];
+- (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSThread *thread) {
+                                 thread.archivedAsOfMessageSortId = nil;
+                             }];
 }
 
-#pragma mark Drafts
+#pragma mark - Drafts
 
 - (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction {
     TSThread *thread = [TSThread fetchObjectWithUniqueID:self.uniqueId transaction:transaction];

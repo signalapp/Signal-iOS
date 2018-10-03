@@ -257,6 +257,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         [attachmentIds addObject:attachmentId];
     }
 
+    // MJK TODO remove SenderTimestamp?
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                               inThread:thread
                                                            messageBody:body
@@ -273,6 +274,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 {
+    // MJK TODO remove SenderTimestamp?
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                               inThread:thread
                                                            messageBody:nil

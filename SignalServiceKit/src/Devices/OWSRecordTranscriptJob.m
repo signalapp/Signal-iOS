@@ -88,6 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
         [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
+
+        // MJK TODO - we don't use this timestamp, safe to remove
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:transcript.thread
                                       messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
@@ -145,12 +147,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:outgoingMessage.expiresInSeconds
+                                                                              thread:transcript.thread
+                                                          createdByRemoteRecipientId:nil
+                                                              createdInExistingGroup:NO
+                                                                         transaction:transaction];
+
     if (transcript.isExpirationTimerUpdate) {
-        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:outgoingMessage
-                                                                            contactsManager:self.contactsManager
-                                                                                transaction:transaction];
-
-
         // early return to avoid saving an empty incoming message.
         OWSAssertDebug(transcript.body.length == 0);
         OWSAssertDebug(outgoingMessage.attachmentIds.count == 0);
@@ -167,9 +170,6 @@ NS_ASSUME_NONNULL_BEGIN
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
                                                        nonUdRecipientIds:transcript.nonUdRecipientIds
                                                              transaction:transaction];
-    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:outgoingMessage
-                                                                        contactsManager:self.contactsManager
-                                                                            transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
                                                              transaction:transaction];
