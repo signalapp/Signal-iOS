@@ -268,6 +268,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     return sharedMyManager;
 }
 
+#pragma mark - Dependencies
+
+- (OWSMessageReceiver *)messageReceiver
+{
+    return SSKEnvironment.shared.messageReceiver;
+}
+
 #pragma mark - Manage Socket
 
 - (void)ensureWebsocketIsOpen
@@ -735,7 +742,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                 if (!decryptedPayload) {
                     OWSLogWarn(@"Failed to decrypt incoming payload or bad HMAC");
                 } else {
-                    [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
+                    [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
                     success = YES;
                 }
             } @catch (NSException *exception) {
