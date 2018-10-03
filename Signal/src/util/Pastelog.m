@@ -392,7 +392,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
     NSString *dateString = [dateFormatter stringFromDate:[NSDate new]];
     NSString *logsName = [[dateString stringByAppendingString:@" "] stringByAppendingString:NSUUID.UUID.UUIDString];
-    NSString *tempDirectory = NSTemporaryDirectory();
+    NSString *tempDirectory = OWSTemporaryDirectory();
     NSString *zipFilePath =
         [tempDirectory stringByAppendingPathComponent:[logsName stringByAppendingPathExtension:@"zip"]];
     NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:logsName];

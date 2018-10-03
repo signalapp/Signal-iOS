@@ -40,6 +40,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSPrimaryStorage *primaryStorage = [[OWSPrimaryStorage alloc] initStorage];
         [OWSPrimaryStorage protectFiles];
 
+        // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
+        // If you receive a media message while the device is locked, the download will fail if the temporary directory
+        // is NSFileProtectionComplete
+        BOOL success = [OWSFileSystem protectFileOrFolderAtPath:NSTemporaryDirectory()
+                                             fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+        OWSAssert(success);
+
         OWSPreferences *preferences = [OWSPreferences new];
 
         TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];

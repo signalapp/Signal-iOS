@@ -780,7 +780,7 @@ extension URLSessionTask {
         // We write assets to the temporary directory so that iOS can clean them up.
         // We try to eagerly clean up these assets when they are no longer in use.
 
-        let tempDirPath = NSTemporaryDirectory()
+        let tempDirPath = OWSTemporaryDirectory()
         let dirPath = (tempDirPath as NSString).appendingPathComponent("GIFs")
         do {
             let fileManager = FileManager.default

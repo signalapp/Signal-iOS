@@ -943,7 +943,7 @@ public class SignalAttachment: NSObject {
     }
 
     private class var videoTempPath: URL {
-        let videoDir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("video")
+        let videoDir = URL(fileURLWithPath: OWSTemporaryDirectory()).appendingPathComponent("video")
         OWSFileSystem.ensureDirectoryExists(videoDir.path)
         return videoDir
     }
