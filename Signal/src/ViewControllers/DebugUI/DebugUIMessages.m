@@ -3,6 +3,7 @@
 //
 
 #import "DebugUIMessages.h"
+#import "DebugContactsUtils.h"
 #import "DebugUIContacts.h"
 #import "DebugUIMessagesAction.h"
 #import "DebugUIMessagesAssetLoader.h"
@@ -3640,7 +3641,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
 + (void)createFakeThreads:(NSUInteger)threadCount withFakeMessages:(NSUInteger)messageCount
 {
-    [DebugUIContacts
+    [DebugContactsUtils
         createRandomContacts:threadCount
               contactHandler:^(CNContact *_Nonnull contact, NSUInteger idx, BOOL *_Nonnull stop) {
                   NSString *phoneNumberText = contact.phoneNumbers.firstObject.value.stringValue;
