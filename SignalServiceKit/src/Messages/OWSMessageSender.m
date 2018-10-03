@@ -706,6 +706,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (nullable NSArray<NSDictionary *> *)deviceMessagesForMessageSendSafe:(OWSMessageSend *)messageSend
+                                                              isUDSend:(BOOL)isUDSend
                                                                  error:(NSError **)errorHandle
 {
     OWSAssertDebug(messageSend);
@@ -716,7 +717,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
-        deviceMessages = [self deviceMessagesForMessageSendUnsafe:messageSend];
+        deviceMessages = [self deviceMessagesForMessageSendUnsafe:messageSend isUDSend:isUDSend];
     } @catch (NSException *exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
@@ -848,12 +849,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [error setIsRetryable:YES];
         return failureHandler(error);
     }
+
     // Consume an attempt.
     messageSend.remainingAttempts = messageSend.remainingAttempts - 1;
 
+    BOOL isUDSend = messageSend.canUseUD && messageSend.udAccessKey != nil;
+
     NSError *deviceMessagesError;
     NSArray<NSDictionary *> *_Nullable deviceMessages =
-        [self deviceMessagesForMessageSendSafe:messageSend error:&deviceMessagesError];
+        [self deviceMessagesForMessageSendSafe:messageSend isUDSend:isUDSend error:&deviceMessagesError];
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
         return failureHandler(deviceMessagesError);
@@ -930,7 +934,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                      messages:deviceMessages
                                                                     timeStamp:message.timestamp];
 
-    BOOL isUDSend = messageSend.canUseUD && messageSend.udAccessKey != nil;
     if (isUDSend) {
         DDLogVerbose(@"UD send.");
         request.shouldHaveAuthorizationHeaders = YES;
@@ -1242,12 +1245,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 // NOTE: This method uses exceptions for control flow.
-- (NSArray<NSDictionary *> *)deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
+- (NSArray<NSDictionary *> *)deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend isUDSend:(BOOL)isUDSend
 {
     OWSAssertDebug(messageSend.message);
     OWSAssertDebug(messageSend.recipient);
 
-    TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
 
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
@@ -1266,12 +1268,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
-                        messageDict = [self encryptedMessageWithPlaintext:plainText
-                                                                recipient:messageSend.recipient
-                                                                 deviceId:deviceNumber
-                                                            keyingStorage:self.primaryStorage
-                                                                 isSilent:message.isSilent
-                                                              transaction:transaction];
+                        messageDict = [self encryptedMessageForMessageSend:messageSend
+                                                                  deviceId:deviceNumber
+                                                                 plainText:plainText
+                                                                  isUDSend:isUDSend
+                                                               transaction:transaction];
                     } @catch (NSException *exception) {
                         encryptionException = exception;
                     }
@@ -1301,23 +1302,24 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-- (NSDictionary *)encryptedMessageWithPlaintext:(NSData *)plainText
-                                      recipient:(SignalRecipient *)recipient
-                                       deviceId:(NSNumber *)deviceNumber
-                                  keyingStorage:(OWSPrimaryStorage *)storage
-                                       isSilent:(BOOL)isSilent
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (NSDictionary *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                        deviceId:(NSNumber *)deviceNumber
+                                       plainText:(NSData *)plainText
+                                        isUDSend:(BOOL)isUDSend
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssertDebug(plainText);
-    OWSAssertDebug(recipient);
+    OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceNumber);
-    OWSAssertDebug(storage);
+    OWSAssertDebug(plainText);
     OWSAssertDebug(transaction);
 
-    NSString *identifier = recipient.recipientId;
-    OWSAssertDebug(identifier.length > 0);
+    OWSPrimaryStorage *storage = self.primaryStorage;
+    TSOutgoingMessage *message = messageSend.message;
+    SignalRecipient *recipient = messageSend.recipient;
+    NSString *recipientId = recipient.recipientId;
+    OWSAssertDebug(recipientId.length > 0);
 
-    if (![storage containsSession:identifier deviceId:[deviceNumber intValue] protocolContext:transaction]) {
+    if (![storage containsSession:recipientId deviceId:[deviceNumber intValue] protocolContext:transaction]) {
         __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         __block PreKeyBundle *_Nullable bundle;
         __block NSException *_Nullable exception;
@@ -1326,7 +1328,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // are called _off_ the main thread.  Otherwise we'll deadlock if the main
         // thread is blocked on opening a transaction.
         TSRequest *request =
-            [OWSRequestFactory recipientPrekeyRequestWithRecipient:identifier deviceId:[deviceNumber stringValue]];
+            [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId deviceId:[deviceNumber stringValue]];
+
         [self.networkManager makeRequest:request
             completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
             success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -1367,14 +1370,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                        preKeyStore:storage
                                                                  signedPreKeyStore:storage
                                                                   identityKeyStore:[OWSIdentityManager sharedManager]
-                                                                       recipientId:identifier
+                                                                       recipientId:recipientId
                                                                           deviceId:[deviceNumber intValue]];
             @try {
                 [builder processPrekeyBundle:bundle protocolContext:transaction];
             } @catch (NSException *exception) {
                 if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                     OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
-                        (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : identifier }),
+                        (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientId }),
                         @"");
                 }
                 @throw exception;
@@ -1386,7 +1389,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                             preKeyStore:storage
                                                       signedPreKeyStore:storage
                                                        identityKeyStore:[OWSIdentityManager sharedManager]
-                                                            recipientId:identifier
+                                                            recipientId:recipientId
                                                                deviceId:[deviceNumber intValue]];
 
     id<CipherMessage> encryptedMessage =
@@ -1396,9 +1399,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSData *serializedMessage = encryptedMessage.serialized;
     TSWhisperMessageType messageType = [self messageTypeForCipherMessage:encryptedMessage];
 
+    BOOL isSilent = message.isSilent;
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
-                                          recipientId:identifier
+                                          recipientId:recipientId
                                                device:[deviceNumber intValue]
                                               content:serializedMessage
                                              isSilent:isSilent
