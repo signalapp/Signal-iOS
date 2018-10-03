@@ -547,7 +547,7 @@ typedef enum : NSUInteger {
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
         @"Indicates that the app is loading more messages in this conversation.");
-    self.loadMoreHeader.textColor = [UIColor ows_materialBlueColor];
+    self.loadMoreHeader.textColor = [UIColor FL_mediumBlue2];
     self.loadMoreHeader.textAlignment = NSTextAlignmentCenter;
     self.loadMoreHeader.font = [UIFont ows_mediumFontWithSize:16.f];
     [self.collectionView addSubview:self.loadMoreHeader];
@@ -819,7 +819,7 @@ typedef enum : NSUInteger {
         }
 
         [self createBannerWithTitle:message
-                        bannerColor:[UIColor ows_destructiveRedColor]
+                        bannerColor:[UIColor FL_darkRed]
                         tapSelector:@selector(noLongerVerifiedBannerViewWasTapped:)];
         return;
     }
@@ -844,7 +844,7 @@ typedef enum : NSUInteger {
 
     if (blockStateMessage) {
         [self createBannerWithTitle:blockStateMessage
-                        bannerColor:[UIColor ows_destructiveRedColor]
+                        bannerColor:[UIColor FL_darkRed]
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
@@ -853,7 +853,7 @@ typedef enum : NSUInteger {
         [self createBannerWithTitle:
                   NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
                       @"Text for banner in group conversation view that offers to share your profile with this group.")
-                        bannerColor:[UIColor ows_reminderDarkYellowColor]
+                        bannerColor:[UIColor FL_mediumLightYellow]
                         tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
         return;
     }

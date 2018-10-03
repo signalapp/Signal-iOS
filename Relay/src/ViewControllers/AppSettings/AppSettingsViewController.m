@@ -16,11 +16,9 @@
 #import "PushManager.h"
 #import "RegistrationUtils.h"
 #import "Relay-Swift.h"
-#import <RelayMessaging/Environment.h>
-//#import <RelayMessaging/OWSContactsManager.h>
-#import <RelayMessaging/UIUtil.h>
-#import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSSocketManager.h>
+
+@import RelayServiceKit;
+@import RelayMessaging;
 
 @interface AppSettingsViewController ()
 
@@ -147,20 +145,20 @@
                                  if (TSAccountManager.sharedInstance.isDeregistered) {
                                      accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
                                          @"Error indicating that this device is no longer registered.");
-                                     accessoryLabel.textColor = [UIColor ows_redColor];
+                                     accessoryLabel.textColor = [UIColor FL_mediumRed];
                                  } else {
                                      switch ([TSSocketManager sharedManager].state) {
                                          case SocketManagerStateClosed:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                                             accessoryLabel.textColor = [UIColor ows_redColor];
+                                             accessoryLabel.textColor = [UIColor FL_mediumRed];
                                              break;
                                          case SocketManagerStateConnecting:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                                             accessoryLabel.textColor = [UIColor ows_yellowColor];
+                                             accessoryLabel.textColor = [UIColor FL_mediumYellow];
                                              break;
                                          case SocketManagerStateOpen:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                                             accessoryLabel.textColor = [UIColor ows_greenColor];
+                                             accessoryLabel.textColor = [UIColor FL_darkGreen];
                                              break;
                                      }
                                  }
@@ -226,15 +224,15 @@
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
                                                                   @"Label for re-registration button.")
                                                      selector:@selector(reregisterUser)
-                                                        color:[UIColor ows_materialBlueColor]]];
+                                                        color:[UIColor FL_mediumBlue2]]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
                                                      selector:@selector(deleteUnregisterUserData)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+                                                        color:[UIColor FL_darkRed]]];
     } else {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
                                                      selector:@selector(unregisterUser)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+                                                        color:[UIColor FL_darkRed]]];
     }
 
     [contents addSection:section];
@@ -278,29 +276,31 @@
 
     const NSUInteger kAvatarSize = 68;
     // TODO: Replace this icon.
-    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
-    UIImage *avatarImage = (localProfileAvatarImage
-            ?: [[UIImage imageNamed:@"profile_avatar_default"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+    UIImage *avatarImage = [self.contactsManager avatarImageRecipientId:[TSAccountManager localUID]];
+    if (!avatarImage) {
+        avatarImage = [[[OWSContactAvatarBuilder alloc] initWithNonSignalName:TSAccountManager.selfRecipient.fullName
+                                                                    colorSeed:TSAccountManager.localUID
+                                                                     diameter:kContactCellAvatarSize
+                                                              contactsManager:FLContactsManager.shared] build];
+    }
     OWSAssert(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-    if (!localProfileAvatarImage) {
-        avatarView.tintColor = [UIColor colorWithRGBHex:0x888888];
-    }
+
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
-    if (!localProfileAvatarImage) {
-        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-        [cell.contentView addSubview:cameraImageView];
-        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
-        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
-    }
+    // TODO: Perhaps allow users to take their own avatar image in the future
+//    if (!localProfileAvatarImage) {
+//        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+//        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+//        [cell.contentView addSubview:cameraImageView];
+//        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+//        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+//    }
 
     UIView *nameView = [UIView containerView];
     [cell.contentView addSubview:nameView];
@@ -308,7 +308,7 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    NSString *_Nullable localProfileName = [self.contactsManager displayNameForRecipientId:[TSAccountManager localUID]];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
         titleLabel.textColor = [Theme primaryColor];
@@ -316,7 +316,7 @@
     } else {
         titleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
-        titleLabel.textColor = [UIColor ows_materialBlueColor];
+        titleLabel.textColor = [UIColor FL_mediumBlue2];
         titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
     }
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -329,8 +329,7 @@
     subtitleLabel.textColor = [Theme secondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
     subtitleLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
-                                                                                                       localUID]]];
+        initWithString:self.contactsManager.selfRecipient.flTag.orgSlug];
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
@@ -341,7 +340,7 @@
     OWSAssert(disclosureImage);
     UIImageView *disclosureButton =
         [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
+    disclosureButton.tintColor = [UIColor colorWithHex:@"#cccccc"];
     [cell.contentView addSubview:disclosureButton];
     [disclosureButton autoVCenterInSuperview];
     [disclosureButton autoPinTrailingToSuperviewMargin];

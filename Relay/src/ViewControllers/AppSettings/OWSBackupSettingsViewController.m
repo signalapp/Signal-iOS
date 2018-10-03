@@ -9,7 +9,6 @@
 #import <RelayMessaging/AttachmentSharing.h>
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayServiceKit/MIMETypeUtil.h>

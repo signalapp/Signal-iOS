@@ -133,30 +133,32 @@ public class ConversationStyle: NSObject {
     // MARK: Colors
 
     private class func primaryColor(thread: TSThread) -> UIColor {
-        guard let colorName = thread.conversationColorName else {
-            return self.defaultBubbleColorIncoming
-        }
-
-        guard let color = UIColor.ows_conversationColor(colorName: colorName) else {
-            return self.defaultBubbleColorIncoming
-        }
-
-        return color
+        // TODO:  Retool conversationColorName usage for our environment
+//        guard let colorName = thread.conversationColorName else {
+//            return self.defaultBubbleColorIncoming
+//        }
+//
+//        guard let color = UIColor.ows_conversationColor(colorName: colorName) else {
+//            return self.defaultBubbleColorIncoming
+//        }
+//
+//        return color
+        return self.defaultBubbleColorIncoming
     }
 
-    private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
+    private static let defaultBubbleColorIncoming = UIColor.FL_lightGray()
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingFailed = UIColor.FL_mediumBlue2()
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
+    public let bubbleColorOutgoingSending = UIColor.FL_mediumLightBlue2()
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingSent = UIColor.FL_mediumBlue2()
 
     @objc
-    public let dateBreakTextColor = UIColor.ows_light60
+    public let dateBreakTextColor = UIColor.init(white: 0.40, alpha: 1.0)
 
     @objc
     public var primaryColor: UIColor
@@ -190,8 +192,8 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public static var bubbleTextColorIncoming = UIColor.ows_light90
-    public static var bubbleTextColorOutgoing = UIColor.ows_white
+    public static var bubbleTextColorIncoming = UIColor.init(white: 0.10, alpha: 1.0)
+    public static var bubbleTextColorOutgoing = UIColor.white
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
@@ -240,17 +242,17 @@ public class ConversationStyle: NSObject {
     @objc
     public func quotingSelfHighlightColor() -> UIColor {
         // TODO:
-        return UIColor.init(rgbHex: 0xB5B5B5)
+        return UIColor.color(hex: "#B5B5B5")
     }
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        return UIColor.ows_light90
+        return UIColor.init(white: 0.10, alpha: 1.0)
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        return UIColor.ows_light90
+        return UIColor.init(white: 0.10, alpha: 1.0)
     }
 
     @objc

@@ -120,7 +120,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         _countryCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _countryCodeButton.titleLabel.font = [UIFont ows_mediumFontWithSize:18.f];
         _countryCodeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-        [_countryCodeButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+        [_countryCodeButton setTitleColor:[UIColor FL_mediumBlue2] forState:UIControlStateNormal];
         [_countryCodeButton addTarget:self
                                action:@selector(showCountryCodeView:)
                      forControlEvents:UIControlEventTouchUpInside];
@@ -161,7 +161,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         _phoneNumberTextField = [UITextField new];
         _phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:18.f];
         _phoneNumberTextField.textAlignment = _phoneNumberTextField.textAlignmentUnnatural;
-        _phoneNumberTextField.textColor = [UIColor ows_materialBlueColor];
+        _phoneNumberTextField.textColor = [UIColor FL_mediumBlue2];
         _phoneNumberTextField.placeholder = NSLocalizedString(
             @"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT", @"Placeholder text for the phone number textfield");
         _phoneNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
@@ -181,7 +181,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         OWSFlatButton *button = [OWSFlatButton buttonWithTitle:[self.delegate phoneNumberButtonText]
                                                           font:[OWSFlatButton fontForHeight:kButtonHeight]
                                                     titleColor:[UIColor whiteColor]
-                                               backgroundColor:[UIColor ows_materialBlueColor]
+                                               backgroundColor:[UIColor FL_mediumBlue2]
                                                         target:self
                                                       selector:@selector(phoneNumberButtonPressed)];
         _phoneNumberButton = button;
@@ -393,7 +393,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     BOOL isEnabled = [self hasValidPhoneNumber];
     self.phoneNumberButton.enabled = isEnabled;
     [self.phoneNumberButton
-        setBackgroundColorsWithUpColor:(isEnabled ? [UIColor ows_signalBrandBlueColor] : [Theme secondaryColor])];
+        setBackgroundColorsWithUpColor:(isEnabled ? [UIColor FL_mediumBlue1] : [Theme secondaryColor])];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate

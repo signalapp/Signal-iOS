@@ -40,7 +40,7 @@ class SAEFailedViewController: UIViewController {
                                                                 action: #selector(cancelPressed))
         self.navigationItem.title = "Relay"
 
-        self.view.backgroundColor = UIColor.ows_signalBrandBlue
+        self.view.backgroundColor = UIColor.black
 
         let logoImageView = UIImageView(image: #imageLiteral(resourceName: "forsta_splash"))
 

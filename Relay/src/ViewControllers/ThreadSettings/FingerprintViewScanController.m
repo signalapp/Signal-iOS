@@ -5,7 +5,6 @@
 #import "FingerprintViewScanController.h"
 #import "OWSQRCodeScanningViewController.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+Permissions.h"
@@ -68,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createViews
 {
-    UIColor *darkGrey = [UIColor colorWithRGBHex:0x404040];
+    UIColor *darkGrey = [UIColor colorWithWhite:0.25f alpha:1.0f];
 
     self.view.backgroundColor = [UIColor blackColor];
 

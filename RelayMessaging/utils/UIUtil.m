@@ -3,7 +3,7 @@
 //
 
 #import "UIUtil.h"
-#import "UIColor+OWS.h"
+#import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayServiceKit/AppContext.h>
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
@@ -34,10 +34,10 @@
     UIBarButtonItem.appearance.tintColor = Theme.navbarIconColor;
 
     //    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor
-    //    ows_materialBlueColor]];
+    //    FL_mediumBlue2]];
 
-    [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
-    [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
+    [[UISwitch appearance] setOnTintColor:[UIColor FL_mediumBlue2]];
+    [[UIToolbar appearance] setTintColor:[UIColor FL_mediumBlue2]];
     
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
     UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : Theme.navbarTitleColor };

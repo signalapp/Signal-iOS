@@ -15,7 +15,6 @@
 #import "OWSMessageTextView.h"
 #import "OWSQuotedMessageView.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import <RelayMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -351,8 +350,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 OWSBubbleShapeView *strokeView = [OWSBubbleShapeView bubbleDrawView];
                 strokeView.strokeThickness = CGHairlineWidth();
-                strokeView.strokeColor = (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:1.f alpha:0.2f]
-                                                                   : [UIColor colorWithWhite:0.f alpha:0.2f]);
+                strokeView.strokeColor = Theme.primaryColor;
                 [bodyMediaView addSubview:strokeView];
                 [self.bubbleView addPartnerView:strokeView];
                 [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];

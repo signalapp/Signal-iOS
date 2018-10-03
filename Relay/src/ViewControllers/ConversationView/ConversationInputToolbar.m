@@ -7,7 +7,6 @@
 #import "Environment.h"
 #import "OWSMath.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
@@ -125,7 +124,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.sendButton
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
         forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+    [self.sendButton setTitleColor:UIColor.FL_mediumBlue2 forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
     self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
@@ -388,7 +387,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.voiceMemoContentView ows_autoPinToSuperviewEdges];
 
     self.recordingLabel = [UILabel new];
-    self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];
+    self.recordingLabel.textColor = [UIColor FL_darkRed];
     self.recordingLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [self.voiceMemoContentView addSubview:self.recordingLabel];
     [self updateVoiceMemo];
@@ -397,7 +396,7 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSAssert(icon);
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    imageView.tintColor = [UIColor ows_destructiveRedColor];
+    imageView.tintColor = [UIColor FL_darkRed];
     [self.voiceMemoContentView addSubview:imageView];
 
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
@@ -409,7 +408,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : [UIColor FL_darkRed],
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -417,7 +416,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : [UIColor FL_darkRed],
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -426,14 +425,14 @@ const CGFloat kMaxTextViewHeight = 98;
                                                       @"Indicates how to cancel a voice message.")
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_mediumFontWithSize:cancelFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : [UIColor FL_darkRed],
                                        }]];
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:@"  "
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : [UIColor FL_darkRed],
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     [cancelString
@@ -441,7 +440,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                    initWithString:arrowHead
                                        attributes:@{
                                            NSFontAttributeName : [UIFont ows_fontAwesomeFont:cancelArrowFontSize],
-                                           NSForegroundColorAttributeName : [UIColor ows_destructiveRedColor],
+                                           NSForegroundColorAttributeName : [UIColor FL_darkRed],
                                            NSBaselineOffsetAttributeName : @(-1.f),
                                        }]];
     UILabel *cancelLabel = [UILabel new];
@@ -450,7 +449,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     const CGFloat kRedCircleSize = 100.f;
     UIView *redCircleView = [UIView new];
-    redCircleView.backgroundColor = [UIColor ows_destructiveRedColor];
+    redCircleView.backgroundColor = [UIColor FL_darkRed];
     redCircleView.layer.cornerRadius = kRedCircleSize * 0.5f;
     [redCircleView autoSetDimension:ALDimensionWidth toSize:kRedCircleSize];
     [redCircleView autoSetDimension:ALDimensionHeight toSize:kRedCircleSize];

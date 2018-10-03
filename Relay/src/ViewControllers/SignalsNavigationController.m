@@ -38,7 +38,7 @@ static double const STALLED_PROGRESS = 0.9;
     CGRect bar                          = self.navigationBar.frame;
     _socketStatusView.frame             = CGRectMake(0, bar.size.height - 1.0f, self.view.frame.size.width, 1.0f);
     _socketStatusView.progress          = 0.0f;
-    _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
+    _socketStatusView.progressTintColor = [UIColor FL_lightBlue1];
 
     if (![_socketStatusView superview]) {
         [self.navigationBar addSubview:_socketStatusView];

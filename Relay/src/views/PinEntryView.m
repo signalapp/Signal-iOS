@@ -4,7 +4,6 @@
 
 #import "PinEntryView.h"
 #import "Relay-Swift.h"
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayMessaging/ViewControllerUtils.h>
@@ -78,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createForgotLink
 {
     UILabel *label = [UILabel new];
-    label.textColor = [UIColor ows_materialBlueColor];
+    label.textColor = [UIColor FL_mediumBlue2];
     NSString *text = NSLocalizedString(
         @"REGISTER_2FA_FORGOT_PIN", @"Label for 'I forgot my PIN' link in the 2FA registration view.");
     label.attributedText = [[NSAttributedString alloc]
         initWithString:text
             attributes:@{
-                NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                NSForegroundColorAttributeName : [UIColor FL_mediumBlue2],
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
             }];
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
@@ -101,14 +100,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createSubmitButton
 {
     const CGFloat kSubmitButtonHeight = 47.f;
-    // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+    // NOTE: We use FL_mediumBlue1 instead of FL_mediumBlue2
     //       throughout the onboarding flow to be consistent with the headers.
     OWSFlatButton *submitButton =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"REGISTER_2FA_SUBMIT_BUTTON",
                                            @"Label for 'submit' button in the 2FA registration view.")
                                   font:[OWSFlatButton fontForHeight:kSubmitButtonHeight]
                             titleColor:[UIColor whiteColor]
-                       backgroundColor:[UIColor ows_signalBrandBlueColor]
+                       backgroundColor:[UIColor FL_mediumBlue1]
                                 target:self
                               selector:@selector(submitButtonWasPressed)];
     self.submitButton = submitButton;

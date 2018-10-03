@@ -12,7 +12,6 @@
 //#import "OWSContactsManager.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>

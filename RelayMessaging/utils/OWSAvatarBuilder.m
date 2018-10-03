@@ -6,7 +6,6 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSGroupAvatarBuilder.h"
 #import "TSThread.h"
-#import "UIColor+OWS.h"
 #import "JSQMessagesAvatarImageFactory.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
 
@@ -56,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *srcImage =
         [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:face
-                                                    backgroundColor:[UIColor colorWithRGBHex:0xaca6633]
+                                                    backgroundColor:[UIColor colorWithHex:@":0xaca6633"]
                                                           textColor:[UIColor whiteColor]
                                                                font:[UIFont boldSystemFontOfSize:fontSize]
                                                            diameter:diameter] avatarImage];

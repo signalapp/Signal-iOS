@@ -1303,7 +1303,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Outgoing White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:[UIColor ows_signalBrandBlueColor]
+                          textColor:[UIColor FL_mediumBlue1]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
@@ -1311,7 +1311,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Outgoing White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:[UIColor ows_signalBrandBlueColor]
+                          textColor:[UIColor FL_mediumBlue1]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
@@ -1319,7 +1319,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Outgoing White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:[UIColor ows_signalBrandBlueColor]
+                          textColor:[UIColor FL_mediumBlue1]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
                          hasCaption:YES],
@@ -1546,7 +1546,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Incoming White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:[UIColor ows_signalBrandBlueColor]
+                          textColor:[UIColor FL_mediumBlue1]
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
                          hasCaption:YES],
@@ -1554,7 +1554,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Incoming White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:[UIColor ows_signalBrandBlueColor]
+                          textColor:[UIColor FL_mediumBlue1]
                          imageLabel:@"W"
              isAttachmentDownloaded:NO
                          hasCaption:YES],

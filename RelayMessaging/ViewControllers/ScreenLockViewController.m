@@ -3,7 +3,6 @@
 //
 
 #import "ScreenLockViewController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
@@ -72,7 +71,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
                                            @"Label for button on lock screen that lets users unlock Signal.")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:[UIColor ows_materialBlueColor]
+                            titleColor:[UIColor FL_mediumBlue2]
                        backgroundColor:[UIColor whiteColor]
                                 target:self
                               selector:@selector(showUnlockUI)];

@@ -10,7 +10,6 @@
 #import "ViewControllerUtils.h"
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/OWSFormat.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayServiceKit/MimeTypeUtil.h>
 #import <RelayServiceKit/TSAttachmentStream.h>
 
@@ -116,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *fileTypeLabel = [UILabel new];
     fileTypeLabel.text = fileExtension.localizedUppercaseString;
-    fileTypeLabel.textColor = [UIColor ows_light90Color];
+    fileTypeLabel.textColor = [UIColor colorWithWhite:0.10f alpha:1.0f];
     fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fileTypeLabel.font = [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
     fileTypeLabel.adjustsFontSizeToFitWidth = YES;

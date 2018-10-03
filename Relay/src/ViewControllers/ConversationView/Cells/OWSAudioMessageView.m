@@ -5,10 +5,8 @@
 #import "OWSAudioMessageView.h"
 #import "ConversationViewItem.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "ViewControllerUtils.h"
 #import <RelayMessaging/OWSFormat.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -101,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateDisabled];
-    _audioPlayPauseButton.imageView.tintColor = [UIColor ows_signalBlueColor];
+    _audioPlayPauseButton.imageView.tintColor = [UIColor FL_mediumBlue2];
     _audioPlayPauseButton.backgroundColor = [UIColor colorWithWhite:1.f alpha:0.92f];
     _audioPlayPauseButton.layer.cornerRadius = self.iconSize * 0.5f;
 }

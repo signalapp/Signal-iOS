@@ -9,7 +9,6 @@
 #import "OWSNavigationController.h"
 #import "Relay-Swift.h"
 #import "SignalsNavigationController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/NSString+OWS.h>
@@ -89,7 +88,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)createViews
 {
-    self.view.backgroundColor = [UIColor colorWithRGBHex:0xefeff4];
+    self.view.backgroundColor = [UIColor colorWithHex:@"#efeff4"];
 
     UIView *contentView = [UIView containerView];
     contentView.backgroundColor = [UIColor whiteColor];
@@ -125,7 +124,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     }
     _nameTextField = nameTextField;
     nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
-    nameTextField.textColor = [UIColor ows_materialBlueColor];
+    nameTextField.textColor = [UIColor FL_mediumBlue2];
     nameTextField.placeholder = NSLocalizedString(
         @"PROFILE_VIEW_NAME_DEFAULT_TEXT", @"Default text for the profile name field of the profile view.");
     nameTextField.delegate = self;
@@ -183,7 +182,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [rows addObject:infoRow];
 
     UILabel *infoLabel = [UILabel new];
-    infoLabel.textColor = [UIColor ows_darkGrayColor];
+    infoLabel.textColor = [UIColor FL_darkGray];
     infoLabel.font = [UIFont ows_regularFontWithSize:11.f];
     infoLabel.textAlignment = NSTextAlignmentCenter;
     NSMutableAttributedString *text = [NSMutableAttributedString new];
@@ -198,7 +197,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                          attributes:@{
                                              NSUnderlineStyleAttributeName :
                                                  @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
-                                             NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                                             NSForegroundColorAttributeName : [UIColor FL_mediumBlue2],
                                          }]];
     infoLabel.attributedText = text;
     infoLabel.numberOfLines = 0;
@@ -216,14 +215,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         [rows addObject:buttonRow];
 
         const CGFloat kButtonHeight = 47.f;
-        // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+        // NOTE: We use FL_mediumBlue1 instead of FL_mediumBlue2
         //       throughout the onboarding flow to be consistent with the headers.
         OWSFlatButton *saveButton =
             [OWSFlatButton buttonWithTitle:NSLocalizedString(@"PROFILE_VIEW_SAVE_BUTTON",
                                                @"Button to save the profile view in the profile view.")
                                       font:[OWSFlatButton fontForHeight:kButtonHeight]
                                 titleColor:[UIColor whiteColor]
-                           backgroundColor:[UIColor ows_signalBrandBlueColor]
+                           backgroundColor:[UIColor FL_mediumBlue1]
                                     target:self
                                   selector:@selector(saveButtonPressed)];
         self.saveButton = saveButton;
@@ -352,12 +351,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     // The save button is only used in "registration" and "upgrade or nag" modes.
     if (self.hasUnsavedChanges) {
         self.saveButton.enabled = YES;
-        [self.saveButton setBackgroundColorsWithUpColor:[UIColor ows_signalBrandBlueColor]];
+        [self.saveButton setBackgroundColorsWithUpColor:[UIColor FL_mediumBlue1]];
     } else {
         self.saveButton.enabled = NO;
         [self.saveButton
-            setBackgroundColorsWithUpColor:[[UIColor ows_signalBrandBlueColor] blendWithColor:[UIColor whiteColor]
-                                                                                        alpha:0.5f]];
+            setBackgroundColorsWithUpColor:[UIColor colorWithRed:128.0f/255.0f green:206.0f/255.0f blue:255.0f/255.0f alpha:0.5f]];
     }
 }
 
@@ -491,7 +489,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     self.avatarView.image = (self.avatar
             ?: [[UIImage imageNamed:@"profile_avatar_default"]
                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
-    self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithRGBHex:0x888888]);
+    self.avatarView.tintColor = (self.avatar ? nil : [UIColor colorWithHex:@"#888888"]);
     self.cameraImageView.hidden = self.avatar != nil;
 }
 

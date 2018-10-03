@@ -3,9 +3,10 @@
 //
 
 #import "ConversationScrollButton.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+
+@import RelayMessaging;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -83,13 +84,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     const CGFloat circleSize = self.class.circleSize;
     self.circleView.backgroundColor
-        = (self.hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor colorWithWhite:0.95f alpha:1.f]);
+        = (self.hasUnreadMessages ? [UIColor FL_mediumBlue2] : [UIColor colorWithWhite:0.95f alpha:1.f]);
     self.iconLabel.attributedText = [[NSAttributedString alloc]
         initWithString:self.iconText
             attributes:@{
                 NSFontAttributeName : [UIFont ows_fontAwesomeFont:circleSize * 0.8f],
                 NSForegroundColorAttributeName :
-                    (self.hasUnreadMessages ? [UIColor whiteColor] : [UIColor ows_materialBlueColor]),
+                    (self.hasUnreadMessages ? [UIColor whiteColor] : [UIColor FL_mediumBlue2]),
                 NSBaselineOffsetAttributeName : @(-0.5f),
             }];
 }

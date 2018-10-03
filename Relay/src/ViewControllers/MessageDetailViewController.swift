@@ -486,7 +486,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
-            subtitleLabel.textColor = UIColor.ows_darkGray
+            subtitleLabel.textColor = UIColor.FL_darkGray()
             row.addSubview(subtitleLabel)
             subtitleLabel.autoPinTrailingToSuperviewMargin()
             subtitleLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)

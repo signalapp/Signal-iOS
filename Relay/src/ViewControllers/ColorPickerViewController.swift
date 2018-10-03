@@ -54,7 +54,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     required init(thread: TSThread) {
         self.thread = thread
         self.pickerView = UIPickerView()
-        self.colors = UIColor.ows_conversationColors
+        self.colors = UIColor.FL_popColors()
 
         super.init(nibName: nil, bundle: nil)
 
@@ -82,11 +82,12 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let colorName = thread.conversationColorName,
-            let currentColor = UIColor.ows_conversationColor(colorName: colorName),
-            let index = colors.index(of: currentColor) {
-            pickerView.selectRow(index, inComponent: 0, animated: false)
-        }
+        // TODO: Implement conversation colors in Forsta environment
+//        if let colorName = thread.conversationColorName,
+//            let currentColor = UIColor.ows_conversationColor(colorName: colorName),
+//            let index = colors.index(of: currentColor) {
+//            pickerView.selectRow(index, inComponent: 0, animated: false)
+//        }
     }
 
     // MARK: UIPickerViewDataSource
@@ -129,13 +130,14 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
 
     @objc
     public func didTapSave() {
-        guard let colorName = UIColor.ows_conversationColorName(color: self.currentColor) else {
-            owsFail("\(self.logTag) in \(#function) colorName was unexpectedly nil")
+        // TODO: Implement conversation colors in Forsta environment
+//        guard let colorName = UIColor.ows_conversationColorName(color: self.currentColor) else {
+//            owsFail("\(self.logTag) in \(#function) colorName was unexpectedly nil")
             self.delegate?.colorPickerDidCancel(self)
-            return
-        }
+//            return
+//        }
 
-        self.delegate?.colorPicker(self, didPickColorName: colorName)
+//        self.delegate?.colorPicker(self, didPickColorName: colorName)
     }
 
     @objc

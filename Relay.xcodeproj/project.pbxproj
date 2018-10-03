@@ -73,8 +73,6 @@
 		34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */; };
 		34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */; };
 		34480B5B1FD0A7E300BC14EF /* RelayMessaging-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 34480B5A1FD0A7E300BC14EF /* RelayMessaging-Prefix.pch */; };
-		34480B611FD0A98800BC14EF /* UIColor+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B5D1FD0A98800BC14EF /* UIColor+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B5E1FD0A98800BC14EF /* UIColor+OWS.m */; };
 		34480B631FD0A98800BC14EF /* UIView+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B5F1FD0A98800BC14EF /* UIView+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B601FD0A98800BC14EF /* UIView+OWS.m */; };
 		34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B651FD0AA9400BC14EF /* UIFont+OWS.m */; };
@@ -1085,8 +1083,6 @@
 		34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScrubbingLogFormatter.h; sourceTree = "<group>"; };
 		34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScrubbingLogFormatter.m; sourceTree = "<group>"; };
 		34480B5A1FD0A7E300BC14EF /* RelayMessaging-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RelayMessaging-Prefix.pch"; sourceTree = "<group>"; };
-		34480B5D1FD0A98800BC14EF /* UIColor+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+OWS.h"; sourceTree = "<group>"; };
-		34480B5E1FD0A98800BC14EF /* UIColor+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+OWS.m"; sourceTree = "<group>"; };
 		34480B5F1FD0A98800BC14EF /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		34480B601FD0A98800BC14EF /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
 		34480B651FD0AA9400BC14EF /* UIFont+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIFont+OWS.m"; sourceTree = "<group>"; };
@@ -2030,8 +2026,6 @@
 				34C82E4F20F8E1F000E9688D /* Theme.h */,
 				34C82E5020F8E1F100E9688D /* Theme.m */,
 				7D705D962147533B00488180 /* UIColor+Forsta.swift */,
-				34480B5D1FD0A98800BC14EF /* UIColor+OWS.h */,
-				34480B5E1FD0A98800BC14EF /* UIColor+OWS.m */,
 				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
 				34480B661FD0AA9400BC14EF /* UIFont+OWS.h */,
 				34480B651FD0AA9400BC14EF /* UIFont+OWS.m */,
@@ -3086,7 +3080,6 @@
 				34D2015120DC160E00A6FD3A /* ContactCellView.h in Headers */,
 				346129FA1FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
-				34480B611FD0A98800BC14EF /* UIColor+OWS.h in Headers */,
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
 				450C801020AD1AE400F3A091 /* OWSWindowManager.h in Headers */,
 				7D6564FA2113BD8B00365A19 /* ViewControllerUtils.h in Headers */,
@@ -4047,7 +4040,6 @@
 				7D6564F42113BD8B00365A19 /* SelectThreadViewController.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
 				3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */,
-				34480B621FD0A98800BC14EF /* UIColor+OWS.m in Sources */,
 				4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */,
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
@@ -4807,12 +4799,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 234;
+				DYLIB_CURRENT_VERSION = 235;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4879,12 +4871,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 234;
+				DYLIB_CURRENT_VERSION = 235;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -4938,7 +4930,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/RelayDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5005,7 +4997,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/RelayDev.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5221,7 +5213,7 @@
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5294,7 +5286,7 @@
 				CLANG_WARN__ARC_BRIDGE_CAST_NONARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -5354,7 +5346,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/Relay.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5419,7 +5411,7 @@
 				CODE_SIGN_ENTITLEMENTS = Relay/Relay.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 234;
+				CURRENT_PROJECT_VERSION = 235;
 				DEVELOPMENT_TEAM = THHR8L4QV3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

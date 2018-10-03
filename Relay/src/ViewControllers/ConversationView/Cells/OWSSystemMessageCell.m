@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "OWSMessageHeaderView.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
@@ -101,7 +100,7 @@ typedef void (^SystemMessageActionBlock)(void);
     contentStackView.alignment = UIStackViewAlignmentCenter;
 
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
+    [self.button setTitleColor:[UIColor FL_mediumBlue2] forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];

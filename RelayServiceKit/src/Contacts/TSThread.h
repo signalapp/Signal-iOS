@@ -48,9 +48,8 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
  */
 @property (nullable) UIImage *image;
 
-@property (readonly, nullable) NSString *conversationColorName;
-- (void)updateConversationColorName:(NSString *)colorName transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
-+ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed;
+//@property (readonly, nullable) NSString *conversationColorName;
+//- (void)updateConversationColorName:(NSString *)colorName transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  * @returns recipientId for each recipient in the thread

@@ -10,7 +10,6 @@
 #import "OWSUserProfile.h"
 #import "ViewControllerUtils.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayServiceKit/ContactsUpdater.h>
 #import <RelayServiceKit/NSNotificationCenter+OWS.h>

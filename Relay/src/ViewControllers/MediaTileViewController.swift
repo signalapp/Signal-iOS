@@ -105,7 +105,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         footerBar.setItems(footerItems, animated: false)
 
         self.view.addSubview(self.footerBar)
-        footerBar.barTintColor = UIColor.ows_signalBrandBlue
+        footerBar.barTintColor = UIColor.FL_mediumBlue2()
         footerBar.autoPinWidthToSuperview()
         footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
         self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)

@@ -7,7 +7,6 @@
 #import "NSString+OWS.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
@@ -113,7 +112,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     UIView *borderView = [UIView new];
     [header addSubview:borderView];
 
-    borderView.backgroundColor = [UIColor colorWithRGBHex:0xbbbbbb];
+    borderView.backgroundColor = [UIColor colorWithHex:@"#0xbbbbbb"];
     [borderView autoSetDimension:ALDimensionHeight toSize:0.5];
     [borderView autoPinWidthToSuperview];
     [borderView autoPinEdgeToSuperviewEdge:ALEdgeBottom];

@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     static UIImage *defaultGroupImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        defaultGroupImage = [UIImage imageNamed:@"empty-group-avatar"];
+        defaultGroupImage = [UIImage imageNamed:@"empty-group-avatar-gray"];
     });
     return defaultGroupImage;
 }

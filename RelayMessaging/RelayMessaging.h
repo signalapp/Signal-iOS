@@ -43,7 +43,6 @@ FOUNDATION_EXPORT const unsigned char RelayMessagingVersionString[];
 #import <RelayMessaging/Theme.h>
 #import <RelayMessaging/ThreadUtil.h>
 #import <RelayMessaging/ThreadViewHelper.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>

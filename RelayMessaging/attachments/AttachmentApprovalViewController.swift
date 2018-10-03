@@ -547,7 +547,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
         sendButton.tintColor = UIColor.white
-        sendButton.backgroundColor = UIColor.ows_systemPrimaryButton
+        sendButton.backgroundColor = UIColor.systemPrimaryButtonColor()
         sendButton.layer.cornerRadius = 4
 
         // Send Button Shadow - without this the send button bottom doesn't feel aligned with the toolbar.

@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "Relay-Swift.h"
 #import <RelayMessaging/OWSContactOffersInteraction.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 
@@ -125,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
              self.addToProfileWhitelistButton,
              self.blockButton,
          ]) {
-        [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
+        [button setTitleColor:[UIColor FL_mediumBlue2] forState:UIControlStateNormal];
         [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
     }
 

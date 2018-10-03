@@ -38,6 +38,9 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIColor *cellSelectedColor;
 
+#pragma mark - Conversations
++ (UIColor *)conversationColorForString:(NSString *)colorSeed;
+
 #pragma mark -
 
 + (UIBarStyle)barStyle;

@@ -1178,7 +1178,7 @@ const CGFloat kIconViewLength = 24;
 {
     DDLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.thread updateConversationColorName:colorName transaction:transaction];
+//        [self.thread updateConversationColorName:colorName transaction:transaction];
     }];
 
     [self.contactsManager flushAvatarCache];
