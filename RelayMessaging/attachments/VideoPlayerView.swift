@@ -120,8 +120,8 @@ public class PlayerProgressBar: UIView {
 
         // We use a smaller thumb for the progress slider.
         slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumb"), for: .normal)
-        slider.maximumTrackTintColor = UIColor.ows_black
-        slider.minimumTrackTintColor = UIColor.ows_black
+        slider.maximumTrackTintColor = UIColor.black
+        slider.minimumTrackTintColor = UIColor.black
 
         slider.addTarget(self, action: #selector(handleSliderTouchDown), for: .touchDown)
         slider.addTarget(self, action: #selector(handleSliderTouchUp), for: .touchUpInside)

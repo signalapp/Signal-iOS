@@ -39,7 +39,7 @@ public class ReturnToCallViewController: UIViewController {
         self.view = UIView()
 
         // This is the color of the iOS "return to call" banner.
-        view.backgroundColor = UIColor(rgbHex: 0x4cd964)
+        view.backgroundColor = UIColor.color(hex: "#4cd964")
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
         view.addGestureRecognizer(tapGesture)
 

@@ -4,12 +4,10 @@
 
 #import "OWSContactShareButtonsView.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -129,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ unexpected button state.", self.logTag);
     }
     label.font = OWSContactShareButtonsView.buttonFont;
-    label.textColor = UIColor.ows_materialBlueColor;
+    label.textColor = UIColor.FL_mediumBlue2;
     label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:label];
     [label ows_autoPinToSuperviewEdges];

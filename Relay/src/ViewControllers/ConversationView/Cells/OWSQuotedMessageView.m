@@ -9,7 +9,6 @@
 #import "Relay-Swift.h"
 //#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayServiceKit/TSAttachmentStream.h>
 #import <RelayServiceKit/TSMessage.h>

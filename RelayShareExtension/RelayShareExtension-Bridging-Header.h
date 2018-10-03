@@ -15,7 +15,6 @@
 #import <RelayMessaging/OWSMath.h>
 #import <RelayMessaging/OWSPreferences.h>
 #import <RelayMessaging/Release.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayMessaging/VersionMigrations.h>

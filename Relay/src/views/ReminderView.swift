@@ -64,12 +64,12 @@ class ReminderView: UIView {
     func setupSubviews() {
         switch (mode) {
         case .nag:
-            self.backgroundColor = UIColor.ows_reminderYellow
+            self.backgroundColor = UIColor.FL_lightYellow()
         case .explanation:
             // TODO: Theme, review with design.
             self.backgroundColor = (Theme.isDarkThemeEnabled()
-                    ? UIColor(rgbHex: 0x202020)
-                : UIColor(rgbHex: 0xf5f5f5))
+                ? UIColor.color(hex: "#202020")
+                : UIColor.color(hex: "#f5f5f5"))
         }
         self.clipsToBounds = true
 

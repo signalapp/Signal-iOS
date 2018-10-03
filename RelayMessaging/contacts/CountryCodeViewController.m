@@ -4,10 +4,10 @@
 
 #import "CountryCodeViewController.h"
 #import "PhoneNumberUtil.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/NSString+OWS.h>
+#import <RelayMessaging/RelayMessaging-Swift.h>
 
 @interface CountryCodeViewController () <OWSTableViewControllerDelegate, UISearchBarDelegate>
 
@@ -83,7 +83,7 @@
                                  UILabel *countryCodeLabel = [UILabel new];
                                  countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
                                  countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
-                                 countryCodeLabel.textColor = [UIColor ows_darkGrayColor];
+                                 countryCodeLabel.textColor = [UIColor FL_darkGray];
                                  [countryCodeLabel sizeToFit];
                                  cell.accessoryView = countryCodeLabel;
 

@@ -2,10 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
 #import <RelayServiceKit/AppContext.h>
+#import "Theme.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

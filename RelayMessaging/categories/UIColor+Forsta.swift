@@ -10,11 +10,21 @@ import UIKit
 @objc
 extension UIColor {
     
-    class func FL_randomPopColor() -> UIColor {
+    public class func systemPrimaryButtonColor() -> UIColor? {
+        var sharedColor: UIColor?
+        var onceToken: Int = 0
+        if (onceToken == 0) {
+            sharedColor = UIView().tintColor
+        }
+        onceToken = 1
+        return sharedColor
+    }
+    
+    public class func FL_randomPopColor() -> UIColor {
         return self.FL_popColors()[ Int(arc4random_uniform(UInt32(self.FL_popColors().count )))]
     }
     
-    class func FL_popColors() -> Array<UIColor> {
+    public class func FL_popColors() -> Array<UIColor> {
         return [ UIColor.FL_darkGreen(),
                  UIColor.FL_mediumDarkGreen(),
                  UIColor.FL_mediumGreen(),
@@ -34,10 +44,15 @@ extension UIColor {
                  UIColor.FL_mediumDarkBlue2(),
                  UIColor.FL_mediumBlue2(),
                  UIColor.FL_mediumLightBlue2(),
-                 UIColor.FL_lightBlue2() ]
+                 UIColor.FL_lightBlue2(),
+                 UIColor.FL_lightYellow(),
+                 UIColor.FL_mediumLightYellow(),
+                 UIColor.FL_mediumYellow(),
+                 UIColor.FL_darkYellow(),
+        ]
     }
     
-    class func FL_incomingBubbleColors() -> Dictionary<String, UIColor> {
+    public class func FL_incomingBubbleColors() -> Dictionary<String, UIColor> {
         return [ "Gray": UIColor.FL_lightGray(),
                 "Orange": UIColor.FL_lightRed(),
                 "Lime": UIColor.FL_lightGreen(),
@@ -48,7 +63,7 @@ extension UIColor {
                 "Gold": UIColor.FL_lightYellow() ]
     }
     
-    class func FL_outgoingBubbleColors() -> Dictionary<String, UIColor> {
+    public class func FL_outgoingBubbleColors() -> Dictionary<String, UIColor> {
         return [ "Black": UIColor.black,
                 "Brick": UIColor.FL_darkRed(),
                 "Green": UIColor.FL_darkGreen(),
@@ -59,138 +74,138 @@ extension UIColor {
                 "Gold": UIColor.FL_mediumYellow() ]
     }
     
-    class func FL_lightGray() -> UIColor {
+    public class func FL_lightGray() -> UIColor {
         return UIColor.color(hex: "#CACACA")
     }
     
-    class func FL_mediumGray() -> UIColor {
+    public class func FL_mediumGray() -> UIColor {
         return UIColor.color(hex: "#9F9F9F")
     }
     
-    class func FL_darkGray() -> UIColor {
+    public class func FL_darkGray() -> UIColor {
         return UIColor.color(hex: "#616161")
     }
     
-    class func FL_darkestGray() -> UIColor {
+    public class func FL_darkestGray() -> UIColor {
         return UIColor.color(hex: "#4B4B4B")
     }
     
-    class func FL_darkGreen() -> UIColor {
+    public class func FL_darkGreen() -> UIColor {
         return UIColor.color(hex: "#919904")
     }
     
-    class func FL_mediumDarkGreen() -> UIColor {
+    public class func FL_mediumDarkGreen() -> UIColor {
         return UIColor.color(hex: "#90B718")
     }
     
-    class func FL_mediumGreen() -> UIColor {
+    public class func FL_mediumGreen() -> UIColor {
         return UIColor.color(hex: "#AFD23F")
     }
     
-    class func FL_mediumLightGreen() -> UIColor {
+    public class func FL_mediumLightGreen() -> UIColor {
         return UIColor.color(hex: "#BED868")
     }
     
-    class func FL_lightGreen() -> UIColor {
+    public class func FL_lightGreen() -> UIColor {
         return UIColor.color(hex: "#DEEF95")
     }
     
-    class func FL_darkRed() -> UIColor {
+    public class func FL_darkRed() -> UIColor {
         return UIColor.color(hex: "#9A4422")
     }
     
-    class func FL_mediumDarkRed() -> UIColor {
+    public class func FL_mediumDarkRed() -> UIColor {
         return UIColor.color(hex: "#BE5D28")
     }
     
-    class func FL_mediumRed() -> UIColor {
+    public class func FL_mediumRed() -> UIColor {
         return UIColor.color(hex: "#F46D20")
     }
     
-    class func FL_mediumLightRed() -> UIColor {
+    public class func FL_mediumLightRed() -> UIColor {
         return UIColor.color(hex: "#F69348")
     }
     
-    class func FL_lightRed() -> UIColor {
+    public class func FL_lightRed() -> UIColor {
         return UIColor.color(hex: "#FDC79E")
     }
     
-    class func FL_darkBlue1() -> UIColor {
+    public class func FL_darkBlue1() -> UIColor {
         return UIColor.color(hex: "#0A76AF")
     }
     
-    class func FL_mediumDarkBlue1() -> UIColor {
+    public class func FL_mediumDarkBlue1() -> UIColor {
         return UIColor.color(hex: "#6ABDE9")
     }
     
-    class func FL_mediumBlue1() -> UIColor {
+    public class func FL_mediumBlue1() -> UIColor {
         return UIColor.color(hex: "#80CEFF")
     }
     
-    class func FL_mediumLightBlue1() -> UIColor {
+    public class func FL_mediumLightBlue1() -> UIColor {
         return UIColor.color(hex: "#C5E0EF")
     }
     
-    class func FL_lightBlue1() -> UIColor {
+    public class func FL_lightBlue1() -> UIColor {
         return UIColor.color(hex: "#D7E6F5")
     }
     
-    class func FL_darkBlue2() -> UIColor {
+    public class func FL_darkBlue2() -> UIColor {
         return UIColor.color(hex: "#124B63")
     }
     
-    class func FL_mediumDarkBlue2() -> UIColor {
+    public class func FL_mediumDarkBlue2() -> UIColor {
         return UIColor.color(hex: "#0A76AF")
     }
     
-    class func FL_mediumBlue2() -> UIColor {
+    public class func FL_mediumBlue2() -> UIColor {
         return UIColor.color(hex: "#2BACE2")
     }
     
-    class func FL_mediumLightBlue2() -> UIColor {
+    public class func FL_mediumLightBlue2() -> UIColor {
         return UIColor.color(hex: "#6ABDE9")
     }
     
-    class func FL_lightBlue2() -> UIColor {
+    public class func FL_lightBlue2() -> UIColor {
         return UIColor.color(hex: "#9CCCE0")
     }
     
-    class func FL_lightPurple() -> UIColor {
+    public class func FL_lightPurple() -> UIColor {
         return UIColor.color(hex: "#ccc3e5")
     }
     
-    class func FL_mediumPurple() -> UIColor {
+    public class func FL_mediumPurple() -> UIColor {
         return UIColor.color(hex: "#5e37c4")
     }
     
-    class func FL_lightYellow() -> UIColor {
+    public class func FL_lightYellow() -> UIColor {
         return UIColor.color(hex: "#ffe5b2")
     }
     
-    class func FL_mediwmLightYellow() -> UIColor {
+    public class func FL_mediumLightYellow() -> UIColor {
         return UIColor.color(hex: "#e9bf6a")
     }
     
-    class func FL_mediumYellow() -> UIColor {
+    public class func FL_mediumYellow() -> UIColor {
         return UIColor.color(hex: "#ffbb37")
     }
     
-    class func FL_darkYellow() -> UIColor {
+    public class func FL_darkYellow() -> UIColor {
         return UIColor.color(hex: "#634812")
     }
     
-    class func FL_lightPink() -> UIColor {
+    public class func FL_lightPink() -> UIColor {
         return UIColor.color(hex: "#e2c0d4")
     }
     
-    class func FL_mediumPink() -> UIColor {
+    public class func FL_mediumPink() -> UIColor {
         return UIColor.color(hex: "#e32d94")
     }
 
     
     // Source: https://cocoacasts.com/from-hex-to-uicolor-and-back-in-swift/
     // MARK: - Initialization
-    class func color(hex: String) -> UIColor {
+    public class func color(hex: String) -> UIColor {
         var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
         

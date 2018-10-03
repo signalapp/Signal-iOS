@@ -67,7 +67,6 @@
         return; // already processed commit
     }
     BOOL needsRefresh = NO;
-    TSThread *thread = self.message.thread;
     if ([self.uiConnection hasChangeForKey:self.message.thread.uniqueId
                               inCollection:[TSThread collection]
                            inNotifications:notifications] ||

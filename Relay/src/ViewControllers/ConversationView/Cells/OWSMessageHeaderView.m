@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "Relay-Swift.h"
 #import <RelayMessaging/OWSUnreadIndicator.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 
@@ -116,9 +115,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssert(viewItem);
 
     if (viewItem.unreadIndicator) {
-        return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+        return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.48f alpha:1.0f] : [UIColor colorWithWhite:0.40f alpha:1.0f]);
     } else {
-        return (Theme.isDarkThemeEnabled ? UIColor.ows_dark30Color : UIColor.ows_light45Color);
+        return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.70f alpha:1.0f] : [UIColor colorWithWhite:0.55f alpha:1.0f]);
     }
 }
 

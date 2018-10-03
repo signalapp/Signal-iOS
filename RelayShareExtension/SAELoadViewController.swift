@@ -61,7 +61,7 @@ class SAELoadViewController: UIViewController {
                                                                 action: #selector(cancelPressed))
         self.navigationItem.title = "Signal"
 
-        self.view.backgroundColor = UIColor.ows_signalBrandBlue
+        self.view.backgroundColor = UIColor.black
 
         let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle:.whiteLarge)
         self.activityIndicator = activityIndicator

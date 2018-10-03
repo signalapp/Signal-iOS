@@ -3,7 +3,6 @@
 //
 
 #import "SAEScreenLockViewController.h"
-#import "UIColor+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayServiceKit/AppContext.h>
 
@@ -41,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor ows_materialBlueColor];
+    self.view.backgroundColor = [UIColor FL_mediumBlue2];
 
     self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
 

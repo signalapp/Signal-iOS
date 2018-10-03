@@ -113,14 +113,14 @@ NS_ASSUME_NONNULL_BEGIN
     vStackView.axis = UILayoutConstraintAxisVertical;
 
     self.unreadLabel = [UILabel new];
-    self.unreadLabel.textColor = [UIColor ows_whiteColor];
+    self.unreadLabel.textColor = [UIColor whiteColor];
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
     [self.unreadLabel setContentHuggingHigh];
     [self.unreadLabel setCompressionResistanceHigh];
 
     self.unreadBadge = [NeverClearView new];
-    self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    self.unreadBadge.backgroundColor = [UIColor FL_mediumBlue2];
     [self.unreadBadge addSubview:self.unreadLabel];
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadBadge setContentHuggingHigh];
@@ -271,7 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIImage *_Nullable statusIndicatorImage = nil;
         // TODO: Theme, Review with design.
         UIColor *messageStatusViewTintColor
-            = (Theme.isDarkThemeEnabled ? [UIColor ows_dark30Color] : [UIColor ows_light35Color]);
+            = (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.70f alpha:1.0f] : [UIColor colorWithWhite:0.65f alpha:1.0f]);
         BOOL shouldAnimateStatusIcon = NO;
         if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
@@ -296,7 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
                     break;
                 case MessageReceiptStatusFailed:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_failed"];
-                    messageStatusViewTintColor = [UIColor ows_destructiveRedColor];
+                    messageStatusViewTintColor = [UIColor FL_darkRed];
                     break;
             }
         }

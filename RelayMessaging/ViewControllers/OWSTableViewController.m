@@ -4,9 +4,9 @@
 
 #import "OWSTableViewController.h"
 #import "OWSNavigationController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import "Theme.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

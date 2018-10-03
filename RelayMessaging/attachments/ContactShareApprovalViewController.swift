@@ -423,7 +423,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         let editNameLabel = UILabel()
         editNameLabel.text = NSLocalizedString("CONTACT_EDIT_NAME_BUTTON", comment: "Label for the 'edit name' button in the contact share approval view.")
         editNameLabel.font = UIFont.ows_dynamicTypeBody
-        editNameLabel.textColor = UIColor.ows_materialBlue
+        editNameLabel.textColor = UIColor.FL_mediumBlue1()
         stackView.addArrangedSubview(editNameLabel)
         editNameLabel.setContentHuggingHigh()
         editNameLabel.setCompressionResistanceHigh()

@@ -195,15 +195,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    NSString *colorName = ^{
-        if (self.thread) {
-            return self.thread.conversationColorName;
-        } else {
-            OWSAssert(self.recipientId);
-            return [TSThread stableConversationColorNameForString:self.recipientId];
-        }
-    }();
-    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
+    UIColor *color = [Theme conversationColorForString:self.recipientId];
     
     self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
                                                                          color:color

@@ -906,7 +906,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssert(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    disclosureImageView.tintColor = [UIColor colorWithRGBHex:0xd1d1d6];
+    disclosureImageView.tintColor = [UIColor colorWithHex:@"#d1d1d6"];
     [disclosureImageView setContentHuggingHigh];
     [disclosureImageView setCompressionResistanceHigh];
 

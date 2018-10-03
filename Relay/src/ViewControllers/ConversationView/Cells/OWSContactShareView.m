@@ -5,12 +5,10 @@
 #import "OWSContactShareView.h"
 #import "OWSContactAvatarBuilder.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN

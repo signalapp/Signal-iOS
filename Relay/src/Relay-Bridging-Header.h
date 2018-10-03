@@ -61,7 +61,6 @@
 #import <RelayMessaging/OWSViewController.h>
 #import <RelayMessaging/Release.h>
 #import <RelayMessaging/ThreadUtil.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>

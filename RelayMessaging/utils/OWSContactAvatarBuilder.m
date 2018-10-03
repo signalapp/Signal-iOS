@@ -5,7 +5,6 @@
 #import "OWSContactAvatarBuilder.h"
 //#import "OWSContactsManager.h"
 #import "TSThread.h"
-//#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import "JSQMessagesAvatarImageFactory.h"
@@ -62,9 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
                              diameter:(NSUInteger)diameter
                       contactsManager:(FLContactsManager *)contactsManager
 {
-    
-    NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
-    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
+    UIColor *color = [Theme conversationColorForString:colorSeed];
     OWSAssert(color);
     return [self initWithContactId:colorSeed
                               name:nonSignalName

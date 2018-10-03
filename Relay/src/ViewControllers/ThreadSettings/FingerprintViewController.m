@@ -6,7 +6,6 @@
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
 #import "Relay-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/Environment.h>
@@ -180,7 +179,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)createViews
 {
-    UIColor *darkGrey = [UIColor colorWithRGBHex:0x404040];
+    UIColor *darkGrey = [UIColor colorWithWhite:0.25f alpha:1.0f];
 
     self.view.backgroundColor = [UIColor whiteColor];
 
@@ -194,7 +193,7 @@ typedef void (^CustomLayoutBlock)(void);
     [verifyUnverifyButton autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     UIView *verifyUnverifyPillbox = [UIView new];
-    verifyUnverifyPillbox.backgroundColor = [UIColor ows_materialBlueColor];
+    verifyUnverifyPillbox.backgroundColor = [UIColor FL_mediumBlue2];
     verifyUnverifyPillbox.layer.cornerRadius = 3.f;
     verifyUnverifyPillbox.clipsToBounds = YES;
     [verifyUnverifyButton addSubview:verifyUnverifyPillbox];
@@ -228,7 +227,7 @@ typedef void (^CustomLayoutBlock)(void);
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
             }];
     learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
-    learnMoreLabel.textColor = [UIColor ows_materialBlueColor];
+    learnMoreLabel.textColor = [UIColor FL_mediumBlue2];
     learnMoreLabel.textAlignment = NSTextAlignmentCenter;
     [learnMoreButton addSubview:learnMoreLabel];
     [learnMoreLabel autoPinWidthToSuperviewWithMargin:16.f];

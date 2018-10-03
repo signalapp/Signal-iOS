@@ -6,7 +6,6 @@
 #import "ConversationViewController.h"
 #import "NSDate+OWS.h"
 #import "OWSMath.h"
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <QuartzCore/QuartzCore.h>
 #import <RelayServiceKit/NSTimer+OWS.h>

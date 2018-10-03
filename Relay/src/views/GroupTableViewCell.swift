@@ -19,7 +19,7 @@ import RelayServiceKit
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
         subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
-        subtitleLabel.textColor = UIColor.ows_darkGray
+        subtitleLabel.textColor = UIColor.FL_darkGray()
 
         // Layout
 

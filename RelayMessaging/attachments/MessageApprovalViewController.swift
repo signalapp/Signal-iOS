@@ -128,7 +128,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         let toLabel = UILabel()
         toLabel.text = NSLocalizedString("MESSAGE_APPROVAL_RECIPIENT_LABEL",
                                          comment: "Label for the recipient name in the 'message approval' dialog.")
-        toLabel.textColor = UIColor.ows_darkGray
+        toLabel.textColor = UIColor.FL_darkGray()
         toLabel.font = font
         recipientRow.addSubview(toLabel)
 
@@ -167,7 +167,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         //        if let profileName = self.profileName(contactThread: contactThread) {
         //            // If there's a profile name worth showing, add it as a second line below the name.
 //            let profileNameLabel = UILabel()
-//            profileNameLabel.textColor = UIColor.ows_darkGray
+//            profileNameLabel.textColor = UIColor.FL_darkGray()
 //            profileNameLabel.font = font
 //            profileNameLabel.text = profileName
 //            profileNameLabel.lineBreakMode = .byTruncatingTail

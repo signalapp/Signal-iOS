@@ -197,7 +197,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     private func heroBackgroundColor() -> UIColor {
-        return UIColor(rgbHex: 0xefeff4)
+        return UIColor.color(hex: "#efeff4")
     }
 
     private func createTopView() -> UIView {
@@ -407,7 +407,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = UIColor.ows_materialBlue
+        label.textColor = UIColor.FL_mediumBlue1()
         label.lineBreakMode = .byTruncatingTail
         row.addSubview(label)
         label.autoPinTopToSuperviewMargin()
@@ -468,7 +468,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let label = UILabel()
         label.text = text
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = UIColor.ows_materialBlue
+        label.textColor = UIColor.FL_mediumBlue1()
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         button.addSubview(label)

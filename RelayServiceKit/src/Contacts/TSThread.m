@@ -98,7 +98,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
         
-        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+//        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
     }
     
     return self;
@@ -111,9 +111,9 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
         return self;
     }
     
-    if (_conversationColorName.length == 0) {
-        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
-    }
+//    if (_conversationColorName.length == 0) {
+//        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+//    }
     
     return self;
 }
@@ -487,54 +487,55 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_
 }
 
 #pragma mark - Conversation Color
-
-+ (NSString *)randomConversationColorName
-{
-    NSUInteger count = self.conversationColorNames.count;
-    NSUInteger index = arc4random_uniform((uint32_t)count);
-    return [self.conversationColorNames objectAtIndex:index];
-}
-
-+ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed
-{
-    NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
-    
-    unsigned long long hash = 0;
-    NSUInteger hashingLength = sizeof(hash);
-    NSData *_Nullable hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
-    if (hashData) {
-        [hashData getBytes:&hash length:hashingLength];
-    } else {
-        OWSProdLogAndFail(@"%@ could not compute hash for color seed.", self.logTag);
-    }
-    
-    NSUInteger index = (hash % [self.conversationColorNames count]);
-    return [self.conversationColorNames objectAtIndex:index];
-}
-
-+ (NSArray<NSString *> *)conversationColorNames
-{
-    return @[
-             @"red",
-             @"pink",
-             @"purple",
-             @"indigo",
-             @"blue",
-             @"cyan",
-             @"teal",
-             @"green",
-             @"deep_orange",
-             @"grey"
-             ];
-}
-
-- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSThread *thread) {
-                                 thread.conversationColorName = colorName;
-                             }];
-}
+// Moved to Theme.h
+// TODO:  Implement per-conversation colors in our environment
+//+ (NSString *)randomConversationColorName
+//{
+//    NSUInteger count = self.conversationColorNames.count;
+//    NSUInteger index = arc4random_uniform((uint32_t)count);
+//    return [self.conversationColorNames objectAtIndex:index];
+//}
+//
+//+ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed
+//{
+//    NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
+//
+//    unsigned long long hash = 0;
+//    NSUInteger hashingLength = sizeof(hash);
+//    NSData *_Nullable hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
+//    if (hashData) {
+//        [hashData getBytes:&hash length:hashingLength];
+//    } else {
+//        OWSProdLogAndFail(@"%@ could not compute hash for color seed.", self.logTag);
+//    }
+//
+//    NSUInteger index = (hash % [self.conversationColorNames count]);
+//    return [self.conversationColorNames objectAtIndex:index];
+//}
+//
+//+ (NSArray<NSString *> *)conversationColorNames
+//{
+//    return @[
+//             @"red",
+//             @"pink",
+//             @"purple",
+//             @"indigo",
+//             @"blue",
+//             @"cyan",
+//             @"teal",
+//             @"green",
+//             @"deep_orange",
+//             @"grey"
+//             ];
+//}
+//
+//- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction
+//{
+//    [self applyChangeToSelfAndLatestCopy:transaction
+//                             changeBlock:^(TSThread *thread) {
+//                                 thread.conversationColorName = colorName;
+//                             }];
+//}
 
 -(void)removeMembers:(nonnull NSSet *)leavingMemberIds
          transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction

@@ -9,7 +9,6 @@
 #import <RelayMessaging/NSString+OWS.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/RelayMessaging.h>
-#import <RelayMessaging/UIColor+OWS.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIView+OWS.h>
 #import <RelayServiceKit/OWS2FAManager.h>
