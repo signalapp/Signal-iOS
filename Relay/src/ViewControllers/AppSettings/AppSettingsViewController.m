@@ -16,11 +16,9 @@
 #import "PushManager.h"
 #import "RegistrationUtils.h"
 #import "Relay-Swift.h"
-#import <RelayMessaging/Environment.h>
-//#import <RelayMessaging/OWSContactsManager.h>
-#import <RelayMessaging/UIUtil.h>
-#import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSSocketManager.h>
+
+@import RelayServiceKit;
+@import RelayMessaging;
 
 @interface AppSettingsViewController ()
 
@@ -278,30 +276,31 @@
 
     const NSUInteger kAvatarSize = 68;
     // TODO: Replace this icon.
-    UIImage *localProfileAvatarImage = [self.contactsManager avatarImageRecipientId:[TSAccountManager localUID]];
-//    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
-    UIImage *avatarImage = (localProfileAvatarImage
-            ?: [[UIImage imageNamed:@"profile_avatar_default"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+    UIImage *avatarImage = [self.contactsManager avatarImageRecipientId:[TSAccountManager localUID]];
+    if (!avatarImage) {
+        avatarImage = [[[OWSContactAvatarBuilder alloc] initWithNonSignalName:TSAccountManager.selfRecipient.fullName
+                                                                    colorSeed:TSAccountManager.localUID
+                                                                     diameter:kContactCellAvatarSize
+                                                              contactsManager:FLContactsManager.shared] build];
+    }
     OWSAssert(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
-    if (!localProfileAvatarImage) {
-        avatarView.tintColor = [UIColor colorWithHex:@"#888888"];
-    }
+
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
-    if (!localProfileAvatarImage) {
-        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
-        [cell.contentView addSubview:cameraImageView];
-        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
-        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
-    }
+    // TODO: Perhaps allow users to take their own avatar image in the future
+//    if (!localProfileAvatarImage) {
+//        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+//        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+//        [cell.contentView addSubview:cameraImageView];
+//        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+//        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+//    }
 
     UIView *nameView = [UIView containerView];
     [cell.contentView addSubview:nameView];
