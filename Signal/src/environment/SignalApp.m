@@ -87,9 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OutboundCallInitiator alloc] initWithContactsManager:Environment.shared.contactsManager
                                                contactsUpdater:SSKEnvironment.shared.contactsUpdater];
 
-    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithMessageReceiver:[OWSMessageReceiver sharedInstance]
-                                                                networkManager:SSKEnvironment.shared.networkManager
-                                                                 signalService:[OWSSignalService sharedInstance]];
+    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithSignalService:[OWSSignalService sharedInstance]];
 }
 
 - (OWSWebRTCCallMessageHandler *)callMessageHandler

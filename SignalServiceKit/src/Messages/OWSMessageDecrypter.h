@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class SSKProtoEnvelope;
 @class YapDatabaseReadWriteTransaction;
 
@@ -15,7 +16,7 @@ typedef void (^DecryptFailureBlock)(void);
 @interface OWSMessageDecrypter : OWSMessageHandler
 
 - (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)sharedManager;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 // decryptEnvelope: can be called from any thread.
 // successBlock & failureBlock will be called an arbitrary thread.

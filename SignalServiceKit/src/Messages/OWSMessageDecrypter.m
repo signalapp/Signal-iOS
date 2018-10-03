@@ -21,6 +21,7 @@
 #import "TSPreKeyManager.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -38,28 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessageDecrypter
 
-+ (instancetype)sharedManager
-{
-    static OWSMessageDecrypter *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
-
-- (instancetype)initDefault
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-    OWSBlockingManager *blockingManager = [OWSBlockingManager sharedManager];
-
-    return [self initWithPrimaryStorage:primaryStorage identityManager:identityManager blockingManager:blockingManager];
-}
-
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       identityManager:(OWSIdentityManager *)identityManager
-                       blockingManager:(OWSBlockingManager *)blockingManager
 {
     self = [super init];
 
@@ -68,8 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _primaryStorage = primaryStorage;
-    _identityManager = identityManager;
-    _blockingManager = blockingManager;
 
     _dbConnection = primaryStorage.newDatabaseConnection;
 
@@ -78,13 +56,29 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+#pragma mark - Singletons
+
+- (OWSBlockingManager *)blockingManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.blockingManager);
+
+    return SSKEnvironment.shared.blockingManager;
+}
+
+- (OWSIdentityManager *)identityManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.identityManager);
+
+    return SSKEnvironment.shared.identityManager;
+}
+
 #pragma mark - Blocking
 
 - (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
 {
     OWSAssertDebug(envelope);
 
-    return [_blockingManager.blockedPhoneNumbers containsObject:envelope.source];
+    return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.source];
 }
 
 #pragma mark - Decryption

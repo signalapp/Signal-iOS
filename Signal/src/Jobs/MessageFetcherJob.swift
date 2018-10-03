@@ -12,19 +12,27 @@ public class MessageFetcherJob: NSObject {
     private var timer: Timer?
 
     // MARK: injected dependencies
-    private let networkManager: TSNetworkManager
-    private let messageReceiver: OWSMessageReceiver
     private let signalService: OWSSignalService
 
-    @objc public init(messageReceiver: OWSMessageReceiver, networkManager: TSNetworkManager, signalService: OWSSignalService) {
-        self.messageReceiver = messageReceiver
-        self.networkManager = networkManager
+    @objc public init(signalService: OWSSignalService) {
         self.signalService = signalService
 
         super.init()
 
         SwiftSingletons.register(self)
     }
+
+    // MARK: Singletons
+
+    private var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    private var messageReceiver: OWSMessageReceiver {
+        return SSKEnvironment.shared.messageReceiver
+    }
+
+    // MARK: 
 
     @discardableResult
     public func run() -> Promise<Void> {

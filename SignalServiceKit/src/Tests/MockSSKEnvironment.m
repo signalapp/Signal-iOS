@@ -3,6 +3,7 @@
 //
 
 #import "MockSSKEnvironment.h"
+#import "OWSBatchMessageProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
@@ -12,7 +13,9 @@
 #import "OWSFakeNotificationsManager.h"
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
+#import "OWSMessageDecrypter.h"
 #import "OWSMessageManager.h"
+#import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -49,6 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
     id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
+    OWSMessageDecrypter *messageDecrypter = [[OWSMessageDecrypter alloc] initWithPrimaryStorage:primaryStorage];
+    OWSBatchMessageProcessor *batchMessageProcessor =
+        [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
+    OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -59,7 +66,10 @@ NS_ASSUME_NONNULL_BEGIN
                            messageManager:messageManager
                           blockingManager:blockingManager
                           identityManager:identityManager
-                                udManager:udManager];
+                                udManager:udManager
+                         messageDecrypter:messageDecrypter
+                    batchMessageProcessor:batchMessageProcessor
+                          messageReceiver:messageReceiver];
     if (!self) {
         return nil;
     }

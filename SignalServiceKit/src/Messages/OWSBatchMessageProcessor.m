@@ -231,15 +231,13 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @interface OWSMessageContentQueue : NSObject
 
-@property (nonatomic, readonly) OWSMessageManager *messagesManager;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 @property (atomic) BOOL isAppInBackground;
 
-- (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
-                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                                 finder:(OWSMessageContentJobFinder *)finder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
+                              finder:(OWSMessageContentJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -248,9 +246,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @implementation OWSMessageContentQueue
 
-- (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
-                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                                 finder:(OWSMessageContentJobFinder *)finder
+- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection finder:(OWSMessageContentJobFinder *)finder
 {
     OWSSingletonAssert();
 
@@ -259,8 +255,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return self;
     }
 
-    _messagesManager = messagesManager;
-    _dbConnection = [primaryStorage newDatabaseConnection];
+    _dbConnection = dbConnection;
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -284,6 +279,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Singletons
+
+- (OWSMessageManager *)messageManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageManager);
+
+    return SSKEnvironment.shared.messageManager;
 }
 
 #pragma mark - Notifications
@@ -399,9 +403,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 if (!envelope) {
                     reportFailure(transaction);
                 } else {
-                    [self.messagesManager processEnvelope:envelope
-                                            plaintextData:job.plaintextData
-                                              transaction:transaction];
+                    [self.messageManager processEnvelope:envelope
+                                           plaintextData:job.plaintextData
+                                             transaction:transaction];
                 }
             } @catch (NSException *exception) {
                 OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
@@ -437,9 +441,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 @implementation OWSBatchMessageProcessor
 
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-                     messagesManager:(OWSMessageManager *)messagesManager
-                      primaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     OWSSingletonAssert();
 
@@ -448,36 +450,15 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
         return self;
     }
 
+    // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
+    YapDatabaseConnection *dbConnection = [primaryStorage newDatabaseConnection];
     OWSMessageContentJobFinder *finder = [[OWSMessageContentJobFinder alloc] initWithDBConnection:dbConnection];
-    OWSMessageContentQueue *processingQueue = [[OWSMessageContentQueue alloc] initWithMessagesManager:messagesManager
-                                                                                       primaryStorage:primaryStorage
-                                                                                               finder:finder];
+    OWSMessageContentQueue *processingQueue =
+        [[OWSMessageContentQueue alloc] initWithDBConnection:dbConnection finder:finder];
 
     _processingQueue = processingQueue;
 
     return self;
-}
-
-- (instancetype)initDefault
-{
-    // For concurrency coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-    OWSMessageManager *messagesManager = [OWSMessageManager sharedManager];
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-
-    return [self initWithDBConnection:dbConnection messagesManager:messagesManager primaryStorage:primaryStorage];
-}
-
-+ (instancetype)sharedInstance
-{
-    static OWSBatchMessageProcessor *sharedInstance;
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[self alloc] initDefault];
-    });
-
-    return sharedInstance;
 }
 
 #pragma mark - class methods
