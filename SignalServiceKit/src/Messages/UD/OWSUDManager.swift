@@ -26,6 +26,10 @@ public enum OWSUDError: Error {
     // No-op if this recipient id is already marked as _NOT_ a "UD recipient".
     @objc func removeUDRecipientId(_ recipientId: String)
 
+    // Returns the UD access key for a given recipient if they are
+    // a UD recipient and we have a valid profile key for them.
+    @objc func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey?
+
     // MARK: - Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
@@ -81,6 +85,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         ensureSenderCertificate().retainUntilComplete()
     }
 
+    // MARK: - Dependencies
+
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+
     // MARK: - Recipient state
 
     @objc
@@ -96,6 +106,28 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func removeUDRecipientId(_ recipientId: String) {
         dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
+    }
+
+    // Returns the UD access key for a given recipient if they are
+    // a UD recipient and we have a valid profile key for them.
+    @objc
+    public func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey? {
+        guard isUDRecipientId(recipientId) else {
+            return nil
+        }
+        guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
+            // Mark as "not a UD recipient".
+            removeUDRecipientId(recipientId)
+            return nil
+        }
+        do {
+            let udAccessKey = try SMKUDAccessKey(profileKey: profileKey)
+            return udAccessKey
+        } catch {
+            Logger.error("Could not determine udAccessKey: \(error)")
+            removeUDRecipientId(recipientId)
+            return nil
+        }
     }
 
     // MARK: - Sender Certificate

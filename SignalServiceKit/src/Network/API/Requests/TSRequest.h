@@ -8,7 +8,7 @@
 @property (atomic, nullable) NSString *authUsername;
 @property (atomic, nullable) NSString *authPassword;
 
-@property (nonatomic, readonly) NSDictionary *parameters;
+@property (nonatomic, readonly) NSDictionary<NSString *, id> *parameters;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -25,5 +25,7 @@
 + (instancetype)requestWithUrl:(NSURL *)url
                         method:(NSString *)method
                     parameters:(nullable NSDictionary<NSString *, id> *)parameters;
+
+- (void)setParameterWithValue:(id)value forKey:(NSString *)key;
 
 @end

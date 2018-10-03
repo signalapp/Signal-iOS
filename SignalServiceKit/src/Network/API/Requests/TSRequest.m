@@ -110,4 +110,15 @@
     }
 }
 
+- (void)setParameterWithValue:(id)value forKey:(NSString *)key
+{
+    OWSAssertDebug(value);
+    OWSAssertDebug(key.length > 0);
+
+    NSMutableDictionary<NSString *, id> *parameters
+        = (self.parameters ? [self.parameters mutableCopy] : [NSMutableDictionary new]);
+    parameters[key] = value;
+    _parameters = [parameters copy];
+}
+
 @end
