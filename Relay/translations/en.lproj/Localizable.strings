@@ -1974,7 +1974,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Forsta, Inc,\n Open Whisper Systems, \n Licensed under the GPLv3";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
