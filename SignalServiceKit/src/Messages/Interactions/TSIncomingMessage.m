@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
+@property (nonatomic, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, nullable) NSString *serverGuid;
+
 @end
 
 #pragma mark -
@@ -45,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
+                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
+                                      serverGuid:(nullable NSString *)serverGuid
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -62,6 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
     _authorId = authorId;
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
+    _serverTimestamp = serverTimestamp;
+    _serverGuid = serverGuid;
 
     return self;
 }

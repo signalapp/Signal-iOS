@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
+@property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, readonly, nullable) NSString *serverGuid;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -51,7 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
+                                    contactShare:(nullable OWSContact *)contactShare
+                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
+                                      serverGuid:(nullable NSString *)serverGuid NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
