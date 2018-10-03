@@ -107,9 +107,9 @@ public class AccountManager: NSObject {
     func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
         return Promise { fulfill, reject in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
-                                                                       voipToken: voipToken,
-                                                                       success: fulfill,
-                                                                       failure: reject)
+                                                          voipToken: voipToken,
+                                                          success: fulfill,
+                                                          failure: reject)
         }
     }
 
@@ -117,14 +117,7 @@ public class AccountManager: NSObject {
         tsAccountManager.setIsManualMessageFetchEnabled(true)
 
         // Try to update the account attributes to reflect this change.
-        let request = OWSRequestFactory.updateAttributesRequest()
-        let promise: Promise<Void> = self.networkManager.makePromise(request: request)
-            .then(execute: { (_, _) in
-                Logger.info("updated server with account attributes to enableManualFetching")
-            }).catch(execute: { (error) in
-                Logger.error("failed to update server with account attributes with error: \(error)")
-            })
-        return promise
+        return SignalServiceRestClient().updateAcountAttributes()
     }
 
     // MARK: Turn Server

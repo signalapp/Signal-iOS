@@ -263,7 +263,7 @@ CHECKOUT OPTIONS:
     :commit: 358ec16833d9b8b6e1410d83fa47c819c533fe91
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 0434fc7ade6e0eb27540291357a3382476dece52
+    :commit: 954cbfa767e130626d2e87cc029769a1977c8edd
     :git: https://github.com/signalapp/SignalMetadataKit-Private
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 public class OWS111UDAttributesMigration: OWSDatabaseMigration {
@@ -32,8 +33,7 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
     }
 
     private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
-        let request = OWSRequestFactory.updateAttributesRequest()
-        self.networkManager.makePromise(request: request).then(execute: { (_, _) in
+        return SignalServiceRestClient().updateAcountAttributes().then(execute: { _ in
             self.dbReadWriteConnection().readWrite { transaction in
                 self.save(with: transaction)
             }
