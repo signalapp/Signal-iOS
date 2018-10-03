@@ -751,7 +751,7 @@
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Tap on the compose button.";
 
 /* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "Start your first Signal conversation!";
+"EMPTY_ARCHIVE_FIRST_TITLE" = "Start your first Relay conversation!";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations for later from your Inbox.";
@@ -2376,3 +2376,20 @@
 "RESET_PASSWORD_MESSAGE" = "This will cause a password-reset link to be sent to you.";
 "RESET_PASSWORD" = "Reset Password";
 "DELETE_THREAD_VALIDATION_MESSAGE" = "Please Confirm: Delete Thread?";
+"ME_STRING" = "Me";
+"YOU_STRING" = "You";
+"THREAD_SECTION_CONTACTS" = "Contacts";
+"THREAD_SECTION_TAGS" = "Tags";
+"THREAD_SECTION_HIDDEN" = "Hidden";
+"THREAD_SECTION_MONITORS" = "Monitors";
+"SEARCH_HELP_STRING" = "No results found.  Enter a name and organization to search outside of your organization.\n\n\tFormat:  \"user.name:organization\"";
+
+/* Thread section headings */
+"PINNED_CONVERSATION_SECTION" = "Pinned";
+"RECENT_CONVERSATION_SECTION" = "Conversations";
+"ANNOUNCEMENTS_SECTION" = "Announcements";
+
+/* Announcements strings */
+"ANNOUNCEMENT_DETAIL_TITLE" = "Details";
+"ANNOUNCEMENT_FROM_SECTION" = "Announcement From:";
+"ANNOUNCEMENT_TO_SECTION" = "Recipients:";
