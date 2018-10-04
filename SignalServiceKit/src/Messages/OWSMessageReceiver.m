@@ -357,13 +357,18 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     [self.messageDecrypter decryptEnvelope:envelope
-        successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
+        envelopeData:job.envelopeData
+        successBlock:^(
+            NSData *envelopeData, NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
             OWSAssertDebug(transaction);
 
             // We persist the decrypted envelope data in the same transaction within which
             // it was decrypted to prevent data loss.  If the new job isn't persisted,
             // the session state side effects of its decryption are also rolled back.
-            [self.batchMessageProcessor enqueueEnvelopeData:job.envelopeData
+            //
+            // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,
+            // since the envelope may be altered by the decryption process in the UD case.
+            [self.batchMessageProcessor enqueueEnvelopeData:envelopeData
                                               plaintextData:plaintextData
                                                 transaction:transaction];
 

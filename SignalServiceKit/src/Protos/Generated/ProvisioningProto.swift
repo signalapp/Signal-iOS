@@ -20,6 +20,12 @@ public enum ProvisioningProtoError: Error {
         return ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
     }
 
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> ProvisioningProtoProvisionEnvelopeBuilder {
+        let builder = ProvisioningProtoProvisionEnvelopeBuilder(publicKey: publicKey, body: body)
+        return builder
+    }
+
     @objc public class ProvisioningProtoProvisionEnvelopeBuilder: NSObject {
 
         private var proto = ProvisioningProtos_ProvisionEnvelope()
@@ -120,6 +126,12 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
     @objc public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) -> ProvisioningProtoProvisionMessageBuilder {
         return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, number: number, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
+        let builder = ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, number: number, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+        return builder
     }
 
     @objc public class ProvisioningProtoProvisionMessageBuilder: NSObject {

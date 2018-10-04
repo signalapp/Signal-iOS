@@ -20,6 +20,12 @@ public enum FingerprintProtoError: Error {
         return FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
     }
 
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> FingerprintProtoLogicalFingerprintBuilder {
+        let builder = FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
+        return builder
+    }
+
     @objc public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
 
         private var proto = FingerprintProtos_LogicalFingerprint()
@@ -105,6 +111,12 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
 
     @objc public class func builder(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) -> FingerprintProtoLogicalFingerprintsBuilder {
         return FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> FingerprintProtoLogicalFingerprintsBuilder {
+        let builder = FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
+        return builder
     }
 
     @objc public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {

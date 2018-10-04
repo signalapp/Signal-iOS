@@ -196,8 +196,8 @@ DEPENDENCIES:
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit-Private`)
-  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit-Private`)
+  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
+  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
@@ -233,7 +233,7 @@ EXTERNAL SOURCES:
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :git: https://github.com/signalapp/SignalMetadataKit-Private
+    :git: https://github.com/signalapp/SignalMetadataKit
   SignalServiceKit:
     :path: "."
   SocketRocket:
@@ -264,7 +264,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 954cbfa767e130626d2e87cc029769a1977c8edd
-    :git: https://github.com/signalapp/SignalMetadataKit-Private
+    :git: https://github.com/signalapp/SignalMetadataKit
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
     :git: https://github.com/signalapp/SocketRocket.git
@@ -298,6 +298,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 386d2282c3ff69d0674474511e9c4538daca73da
+PODFILE CHECKSUM: 820287bc7925d7c20e02a02923976c60b1f5386b
 
 COCOAPODS: 1.5.3

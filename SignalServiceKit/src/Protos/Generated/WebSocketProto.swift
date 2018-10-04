@@ -20,6 +20,16 @@ public enum WebSocketProtoError: Error {
         return WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
     }
 
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> WebSocketProtoWebSocketRequestMessageBuilder {
+        let builder = WebSocketProtoWebSocketRequestMessageBuilder(verb: verb, path: path, requestID: requestID)
+        if let _value = body {
+            builder.setBody(_value)
+        }
+        builder.setHeaders(headers)
+        return builder
+    }
+
     @objc public class WebSocketProtoWebSocketRequestMessageBuilder: NSObject {
 
         private var proto = WebSocketProtos_WebSocketRequestMessage()
@@ -163,6 +173,19 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
 
     @objc public class func builder(requestID: UInt64, status: UInt32) -> WebSocketProtoWebSocketResponseMessageBuilder {
         return WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> WebSocketProtoWebSocketResponseMessageBuilder {
+        let builder = WebSocketProtoWebSocketResponseMessageBuilder(requestID: requestID, status: status)
+        if let _value = message {
+            builder.setMessage(_value)
+        }
+        builder.setHeaders(headers)
+        if let _value = body {
+            builder.setBody(_value)
+        }
+        return builder
     }
 
     @objc public class WebSocketProtoWebSocketResponseMessageBuilder: NSObject {
@@ -333,6 +356,18 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         return WebSocketProtoWebSocketMessageBuilder(type: type)
     }
 
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> WebSocketProtoWebSocketMessageBuilder {
+        let builder = WebSocketProtoWebSocketMessageBuilder(type: type)
+        if let _value = request {
+            builder.setRequest(_value)
+        }
+        if let _value = response {
+            builder.setResponse(_value)
+        }
+        return builder
+    }
+
     @objc public class WebSocketProtoWebSocketMessageBuilder: NSObject {
 
         private var proto = WebSocketProtos_WebSocketMessage()
@@ -400,12 +435,12 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         }
         let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
 
-        var request: WebSocketProtoWebSocketRequestMessage?
+        var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
         }
 
-        var response: WebSocketProtoWebSocketResponseMessage?
+        var response: WebSocketProtoWebSocketResponseMessage? = nil
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage.parseProto(proto.response)
         }

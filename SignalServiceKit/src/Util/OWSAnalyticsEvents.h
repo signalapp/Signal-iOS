@@ -112,6 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)messageManagerErrorCouldNotHandlePrekeyBundle;
 
++ (NSString *)messageManagerErrorCouldNotHandleUnidentifiedSenderMessage;
+
 + (NSString *)messageManagerErrorCouldNotHandleSecureMessage;
 
 + (NSString *)messageManagerErrorEnvelopeNoActionablePayload;
