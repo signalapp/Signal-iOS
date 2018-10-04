@@ -39,9 +39,13 @@ public enum OWSUDError: Error {
 
     // MARK: - Unrestricted Access
 
-    @objc func shouldAllowUnrestrictedAccess() -> Bool
+    @objc func shouldAllowUnrestrictedAccessLocal() -> Bool
 
-    @objc func setShouldAllowUnrestrictedAccess(_ value: Bool)
+    @objc func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
+
+    @objc func shouldAllowUnrestrictedAccess(recipientId: String) -> Bool
+
+    @objc func setShouldAllowUnrestrictedAccess(recipientId: String, shouldAllowUnrestrictedAccess: Bool)
 }
 
 // MARK: -
@@ -51,10 +55,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private let dbConnection: YapDatabaseConnection
 
-    private let kUDRecipientModeCollection = "kUDRecipientModeCollection"
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
+    private let kUDRecipientModeCollection = "kUDRecipientModeCollection"
+    private let kUDUnrestrictedAccessCollection = "kUDUnrestrictedAccessCollection"
 
     @objc
     public required init(primaryStorage: OWSPrimaryStorage) {
@@ -215,12 +220,22 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Unrestricted Access
 
     @objc
-    public func shouldAllowUnrestrictedAccess() -> Bool {
-        return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection, defaultValue: false)
+    public func shouldAllowUnrestrictedAccessLocal() -> Bool {
+        return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection, defaultValue: false)
     }
 
     @objc
-    public func setShouldAllowUnrestrictedAccess(_ value: Bool) {
-        dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection)
+    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
+        dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection)
+    }
+
+    @objc
+    public func shouldAllowUnrestrictedAccess(recipientId: String) -> Bool {
+        return dbConnection.bool(forKey: recipientId, inCollection: kUDUnrestrictedAccessCollection, defaultValue: false)
+    }
+
+    @objc
+    public func setShouldAllowUnrestrictedAccess(recipientId: String, shouldAllowUnrestrictedAccess: Bool) {
+        dbConnection.setBool(shouldAllowUnrestrictedAccess, forKey: recipientId, inCollection: kUDUnrestrictedAccessCollection)
     }
 }

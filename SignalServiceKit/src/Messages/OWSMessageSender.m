@@ -524,6 +524,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [recipientIds addObjectsFromArray:message.sendingRecipientIds];
             // Only send to members in the latest known group member list.
             [recipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+
+            if ([recipientIds containsObject:TSAccountManager.localNumber]) {
+                OWSFailDebug(@"Message send recipients should not include self.");
+            }
         } else if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
             [recipientIds addObject:[TSAccountManager localNumber]];
         } else if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -545,6 +549,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             [recipientIds addObject:recipientContactId];
+
+            if ([recipientIds containsObject:TSAccountManager.localNumber]) {
+                OWSFailDebug(@"Message send recipients should not include self.");
+            }
         } else {
             // Neither a group nor contact thread? This should never happen.
             OWSFailDebug(@"Unknown message type: %@", [message class]);
@@ -552,14 +560,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
             [error setIsRetryable:NO];
             failureHandler(error);
+            return;
         }
 
         [recipientIds minusSet:[NSSet setWithArray:self.blockingManager.blockedPhoneNumbers]];
-
-        if ([recipientIds containsObject:TSAccountManager.localNumber]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
-        [recipientIds removeObject:TSAccountManager.localNumber];
 
         // Mark skipped recipients as such.  We skip because:
         //

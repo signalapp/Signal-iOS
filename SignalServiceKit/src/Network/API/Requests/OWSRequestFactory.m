@@ -281,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Crash app if UD cannot be enabled.
         OWSFail(@"Could not determine UD access key: %@.", error);
     }
-    BOOL allowUnrestrictedUD = [self.udManager shouldAllowUnrestrictedAccess] && udAccessKey != nil;
+    BOOL allowUnrestrictedUD = [self.udManager shouldAllowUnrestrictedAccessLocal] && udAccessKey != nil;
 
     NSMutableDictionary *accountAttributes = [@{
         @"signalingKey" : signalingKey,

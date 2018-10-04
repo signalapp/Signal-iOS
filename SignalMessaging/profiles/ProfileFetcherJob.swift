@@ -9,10 +9,6 @@ import SignalServiceKit
 @objc
 public class ProfileFetcherJob: NSObject {
 
-    let networkManager: TSNetworkManager
-    let socketManager: TSSocketManager
-    let primaryStorage: OWSPrimaryStorage
-
     // This property is only accessed on the main queue.
     static var fetchDateMap = [String: Date]()
 
@@ -21,21 +17,38 @@ public class ProfileFetcherJob: NSObject {
     var backgroundTask: OWSBackgroundTask?
 
     @objc
-    public class func run(thread: TSThread, networkManager: TSNetworkManager) {
-        ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.recipientIdentifiers)
+    public class func run(thread: TSThread) {
+        ProfileFetcherJob().run(recipientIds: thread.recipientIdentifiers)
     }
 
     @objc
-    public class func run(recipientId: String, networkManager: TSNetworkManager, ignoreThrottling: Bool) {
-        ProfileFetcherJob(networkManager: networkManager, ignoreThrottling: ignoreThrottling).run(recipientIds: [recipientId])
+    public class func run(recipientId: String, ignoreThrottling: Bool) {
+        ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(recipientIds: [recipientId])
     }
 
-    public init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
-        self.networkManager = networkManager
-        self.socketManager = TSSocketManager.shared()
-        self.primaryStorage = OWSPrimaryStorage.shared()
+    public init(ignoreThrottling: Bool = false) {
         self.ignoreThrottling = ignoreThrottling
     }
+
+    // MARK: - Dependencies
+
+    private var networkManager: TSNetworkManager {
+        return SSKEnvironment.shared.networkManager
+    }
+
+    private var socketManager: TSSocketManager {
+        return TSSocketManager.shared()
+    }
+
+    private var primaryStorage: OWSPrimaryStorage {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
+    private var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
+    }
+
+    // MARK: -
 
     public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
@@ -117,7 +130,7 @@ public class ProfileFetcherJob: NSObject {
             self.socketManager.make(request,
                 success: { (responseObject: Any?) -> Void in
                     do {
-                        let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
+                        let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
                         fulfill(profile)
                     } catch {
                         reject(error)
@@ -130,7 +143,7 @@ public class ProfileFetcherJob: NSObject {
             self.networkManager.makeRequest(request,
                 success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     do {
-                        let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
+                        let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
                         fulfill(profile)
                     } catch {
                         reject(error)
@@ -155,6 +168,13 @@ public class ProfileFetcherJob: NSObject {
         OWSProfileManager.shared().updateProfile(forRecipientId: signalServiceProfile.recipientId,
                                                  profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                                  avatarUrlPath: signalServiceProfile.avatarUrlPath)
+
+        udManager.setShouldAllowUnrestrictedAccess(recipientId: signalServiceProfile.recipientId, shouldAllowUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+        if signalServiceProfile.unidentifiedAccessKey != nil {
+            udManager.addUDRecipientId(signalServiceProfile.recipientId)
+        } else {
+            udManager.removeUDRecipientId(signalServiceProfile.recipientId)
+        }
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
@@ -182,37 +202,33 @@ public class SignalServiceProfile: NSObject {
     public let identityKey: Data
     public let profileNameEncrypted: Data?
     public let avatarUrlPath: String?
+    public let unidentifiedAccessKey: Data?
+    public let hasUnrestrictedUnidentifiedAccess: Bool
 
-    init(recipientId: String, rawResponse: Any?) throws {
+    init(recipientId: String, responseObject: Any?) throws {
         self.recipientId = recipientId
 
-        guard let responseDict = rawResponse as? [String: Any?] else {
-            throw ValidationError.invalid(description: "unexpected type: \(String(describing: rawResponse))")
+        guard let params = ParamParser(responseObject: responseObject) else {
+            throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
         }
 
-        guard let identityKeyString = responseDict["identityKey"] as? String else {
-            throw ValidationError.invalidIdentityKey(description: "missing identity key: \(String(describing: rawResponse))")
-        }
-        guard let identityKeyWithType = Data(base64Encoded: identityKeyString) else {
-            throw ValidationError.invalidIdentityKey(description: "unable to parse identity key: \(identityKeyString)")
-        }
+        let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
         let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
-            throw ValidationError.invalidIdentityKey(description: "malformed key \(identityKeyString) with decoded length: \(identityKeyWithType.count)")
+            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }
-
-        if let profileNameString = responseDict["name"] as? String {
-            guard let data = Data(base64Encoded: profileNameString) else {
-                throw ValidationError.invalidProfileName(description: "unable to parse profile name: \(profileNameString)")
-            }
-            self.profileNameEncrypted = data
-        } else {
-            self.profileNameEncrypted = nil
-        }
-
-        self.avatarUrlPath = responseDict["avatar"] as? String
-
         // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
         self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data
+
+        self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
+
+        let avatarUrlPath: String? = try params.optional(key: "avatar")
+        self.avatarUrlPath = avatarUrlPath
+
+        // TODO: Should this key be "unidentifiedAccessKey" or "unidentifiedAccess"?
+        // The docs don't agree with the response from staging.
+        self.unidentifiedAccessKey = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
+
+        self.hasUnrestrictedUnidentifiedAccess = try params.optionalBool(key: "unrestrictedUnidentifiedAccess", defaultValue: false)
     }
 }
