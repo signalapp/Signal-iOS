@@ -28,7 +28,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSError *EnsureDecryptError(nullable NSError *error, NSString *fallbackErrorDescription)
+NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDescription)
 {
     if (error) {
         return error;
