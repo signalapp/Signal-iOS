@@ -19,7 +19,9 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 //#define CONVERSATION_COLORS_ENABLED
 
-#define kLegalTermsUrlString @"https://signal.org/legal/"
+#define kSupportUrlString @"https://support.forsta.io/"
+
+#define kLegalTermsUrlString @"https://forsta.io/terms/"
 #define SHOW_LEGAL_TERMS_LINK
 
 #ifdef DEBUG
