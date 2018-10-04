@@ -48,12 +48,20 @@ public class OWSMessageSend: NSObject {
     public let senderCertificate: SMKSenderCertificate?
 
     @objc
+    public let success: () -> Void
+
+    @objc
+    public let failure: (Error) -> Void
+
+    @objc
     public init(message: TSOutgoingMessage,
                 thread: TSThread?,
                 recipient: SignalRecipient,
                 senderCertificate: SMKSenderCertificate?,
                 udManager: OWSUDManager,
-                localNumber: String) {
+                localNumber: String,
+                success: @escaping () -> Void,
+                failure: @escaping (Error) -> Void) {
         self.message = message
         self.thread = thread
         self.recipient = recipient
@@ -70,6 +78,9 @@ public class OWSMessageSend: NSObject {
         self.udAccessKey = udAccessKey
         self.localNumber = localNumber
         self.isLocalNumber = isLocalNumber
+
+        self.success = success
+        self.failure = failure
     }
 
     @objc
