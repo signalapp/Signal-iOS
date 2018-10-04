@@ -146,8 +146,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // TSSocketManager's properties should only be accessed from the main thread.
 @interface TSSocketManager ()
 
-@property (nonatomic, readonly) OWSSignalService *signalService;
-
 // This class has a few "tiers" of state.
 //
 // The first tier is the actual websocket and the timers used
@@ -216,7 +214,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     OWSAssertIsOnMainThread();
 
-    _signalService = [OWSSignalService sharedInstance];
     _state = SocketManagerStateClosed;
     _socketMessageMap = [NSMutableDictionary new];
 
@@ -229,6 +226,15 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (OWSSignalService *)signalService
+{
+    return [OWSSignalService sharedInstance];
+}
+
+#pragma mark -
 
 // We want to observe these notifications lazily to avoid accessing
 // the data store in [application: didFinishLaunchingWithOptions:].
@@ -259,13 +265,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                                                object:nil];
 }
 
-+ (instancetype)sharedManager {
-    static TSSocketManager *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [self new];
-    });
-    return sharedMyManager;
++ (instancetype)shared
+{
+    OWSAssert(SSKEnvironment.shared.socketManager);
+
+    return SSKEnvironment.shared.socketManager;
 }
 
 #pragma mark - Dependencies
@@ -460,7 +464,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     if (!CurrentAppContext().isMainApp) {
         return NO;
     }
-    return TSSocketManager.sharedManager.canMakeRequests;
+    return TSSocketManager.shared.canMakeRequests;
 }
 
 - (void)makeRequest:(TSRequest *)request success:(TSSocketMessageSuccess)success failure:(TSSocketMessageFailure)failure
@@ -975,14 +979,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 + (void)requestSocketOpen
 {
     DispatchMainThreadSafe(^{
-        [[self sharedManager] observeNotificationsIfNecessary];
+        [[self shared] observeNotificationsIfNecessary];
 
         // If the app is active and the user is registered, this will
         // simply open the websocket.
         //
         // If the app is inactive, it will open the websocket for a
         // period of time.
-        [[self sharedManager] requestSocketAliveForAtLeastSeconds:kBackgroundOpenSocketDurationSeconds];
+        [[self shared] requestSocketAliveForAtLeastSeconds:kBackgroundOpenSocketDurationSeconds];
     });
 }
 

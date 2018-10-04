@@ -18,6 +18,7 @@
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -62,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSBatchMessageProcessor *batchMessageProcessor =
             [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
         OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
+        TSSocketManager *socketManager = [[TSSocketManager alloc] init];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -77,7 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
                                                             batchMessageProcessor:batchMessageProcessor
-                                                                  messageReceiver:messageReceiver]];
+                                                                  messageReceiver:messageReceiver
+                                                                    socketManager:socketManager]];
 
         appSpecificSingletonBlock();
 

@@ -86,7 +86,7 @@ static double const STALLED_PROGRESS = 0.9;
         return;
     }
 
-    switch ([TSSocketManager sharedManager].state) {
+    switch (TSSocketManager.shared.state) {
         case SocketManagerStateClosed:
             if (_socketStatusView == nil) {
                 [self initializeSocketStatusBar];

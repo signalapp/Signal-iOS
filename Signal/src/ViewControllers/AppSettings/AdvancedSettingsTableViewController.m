@@ -133,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED",
                 @"Table footer for the 'censorship circumvention' section shown when censorship circumvention has been "
                 @"auto-enabled based on local phone number.");
-    } else if ([TSSocketManager sharedManager].state == SocketManagerStateOpen) {
+    } else if (TSSocketManager.shared.state == SocketManagerStateOpen) {
         censorshipSection.footerTitle
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
                 @"Table footer for the 'censorship circumvention' section shown when the app is connected to the "
@@ -162,9 +162,8 @@ NS_ASSUME_NONNULL_BEGIN
     //      internet connection.
     BOOL isManualCensorshipCircumventionOnEnabled
         = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
-            || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber &&
-                   [TSSocketManager sharedManager].state != SocketManagerStateOpen
-                   && weakSelf.reachability.isReachable));
+            || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber
+                   && TSSocketManager.shared.state != SocketManagerStateOpen && weakSelf.reachability.isReachable));
     BOOL isCensorshipCircumventionOn = NO;
     if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
         isCensorshipCircumventionOn = YES;

@@ -148,7 +148,7 @@
                                          @"Error indicating that this device is no longer registered.");
                                      accessoryLabel.textColor = [UIColor ows_redColor];
                                  } else {
-                                     switch ([TSSocketManager sharedManager].state) {
+                                     switch (TSSocketManager.shared.state) {
                                          case SocketManagerStateClosed:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
                                              accessoryLabel.textColor = [UIColor ows_redColor];

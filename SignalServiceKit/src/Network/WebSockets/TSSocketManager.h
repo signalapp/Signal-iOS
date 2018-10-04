@@ -26,9 +26,9 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable r
 
 @property (nonatomic, readonly) SocketManagerState state;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // If the app is in the foreground, we'll try to open the socket unless it's already
 // open or connecting.
