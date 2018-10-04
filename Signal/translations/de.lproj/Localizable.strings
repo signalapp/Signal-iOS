@@ -117,7 +117,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Herunterladen gescheitert. Für erneuten Versuch antippen.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Wird heruntergeladen …";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Wird heruntergeladen …";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "In Wartereihe";
@@ -742,7 +742,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Gruppe bearbeiten";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Hinzufügen …";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Hinzufügen …";
 
 /* a title for the members section of the 'new/update group' view. */
 "EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Mitglieder";
@@ -1039,16 +1039,16 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Verbinden …";
+"IN_CALL_CONNECTING" = "Verbinden …";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Verbindung wird wiederhergestellt …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Klingeln …";
+"IN_CALL_RINGING" = "Klingeln …";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Angenommen. Absichern …";
+"IN_CALL_SECURING" = "Angenommen. Absichern …";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Anruf beendet.";
@@ -1273,7 +1273,7 @@
 "MESSAGE_STATUS_SENT" = "Gesendet";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Wird hochgeladen …";
+"MESSAGE_STATUS_UPLOADING" = "Wird hochgeladen …";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ist nicht mehr als verifiziert markiert. Für Optionen antippen.";
@@ -2127,7 +2127,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Anhang kann nicht versendet werden";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Wird hochgeladen …";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Wird hochgeladen …";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Anhang kann nicht vorbereitet werden";

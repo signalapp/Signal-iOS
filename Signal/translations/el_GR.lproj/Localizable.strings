@@ -120,7 +120,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Λήψη...";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Σε σειρά προτεραιότητας";
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "Σε αναμονή";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Σφάλμα αποστολής συννημένου";
@@ -186,7 +186,7 @@
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Μη έγκυρη απόκριση υπηρεσίας";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Δεν ήταν δυνατή η μεταφόρτωση των δεδομένων του  αντιγράφου ασφαλείας .";
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Δεν ήταν δυνατή η μεταφόρτωση των δεδομένων του  αντιγράφου ασφαλείας.";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Εκκαθάριση Αντιγράφου Ασφαλείας";
@@ -309,7 +309,7 @@
 "CALL_LABEL" = "Κλήση";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Δεν απαντάει.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Δεν απαντάει";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Το Signal %@";
@@ -387,13 +387,13 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Δεν επετράπη στο Signal η πρόσβαση στο λογαριασμό σας iCloud για αντίγραφα ασφαλείας.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Επιλέξτε το χρώμα των εξερχόμενων μηνυμάτων σε αυτήν τη συνομιλία.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Μόνο εσείς θα βλέπετε το χρώμα που θα επιλέξετε.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+"COLOR_PICKER_SHEET_TITLE" = "Χρώμα Συνομιλίας";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Σύγκριση με Πρόχειρο";
@@ -411,7 +411,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Μπορείτε να ενεργοποιήσετε την πρόσβαση στις επαφές στην εφαρμογή Ρυθμίσεις του iOS για να δείτε ποιοι από τις επαφές σας είναι χρήστες του Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Αυτό θα επαναφέρει την εφαρμογή στην αρχική κατάσταση, διαγράφοντας τα μηνύματα και το λογαριασμό σας από τον server. Η εφαρμογή θα κλείσει μετά την ολοκλήρωση αυτής της διαδικασίας.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Αυτό θα επαναφέρει την εφαρμογή στην αρχική κατάσταση, διαγράφοντας τα μηνύματα και το λογαριασμό σας από τον διακομιστή. Η εφαρμογή θα κλείσει μετά την ολοκλήρωση αυτής της διαδικασίας.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Είστε σίγουρος/η ότι θέλετε να διαγράψετε το λογαριασμό σας;";
@@ -540,7 +540,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Πληροφορίες Επαφής";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Χρώμα Συνομιλίας";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Πληροφορίες Ομάδας";
@@ -633,10 +633,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Βελτιστοποίηση βάσης δεδομένων";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Ώρες Πρίν";
+"DATE_HOURS_AGO_FORMAT" = "%@ Ώρ. Πρίν";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Λεπτά Πρίν";
+"DATE_MINUTES_AGO_FORMAT" = "%@ Λεπ. Πρίν";
 
 /* The present; the current time. */
 "DATE_NOW" = "Τώρα";
@@ -772,7 +772,7 @@
 "EMAIL_INVITE_SUBJECT" = "Ας χρησιμοποιήσουμε το Signal";
 
 /* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "Μπορείτε να αρχειοθετήσετε τις μη ενεργές συνομιλίες από τα εισερχόμενα σας.";
+"EMPTY_ARCHIVE_TEXT" = "Μπορείτε να αρχειοθετήσετε τις ανενεργές συνομιλίες από τα εισερχόμενα σας.";
 
 /* Header text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TITLE" = "Εκκαθάριση λίστας συνομιλιών";
@@ -817,13 +817,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Τα PIN δεν ταιριάζουν.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Πληκτρολογήστε ένα PIN κλειδώματος εγγραφής. Θα σας ζητηθεί να εισάγετε αυτό το ΡΙΝ την επόμενη φορά που θα καταχωρήσετε τον αριθμό του τηλεφώνου σας στο Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Πληκτρολογήστε ένα PIN κλειδώματος εγγραφής. Θα σας ζητηθεί να εισάγετε αυτό το ΡΙΝ την επόμενη φορά που θα καταχωρήσετε αυτον τον αριθμό τηλεφώνου στο Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Για αυξημένη ασφάλεια, ενεργοποιήστε το PIN κλείδωματος εγγραφής που θα απαιτείται για να επανεγγράψετε αυτόν τον αριθμό τηλεφώνου στο Signal.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο. Θα χρειαστεί να εισάγετε το PIN σας κατά την επανεγγραφή τού αριθμού τηλεφώνου σας με το Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο. Θα χρειαστεί να εισάγετε το PIN σας κατά την επανεγγραφή τού αριθμού τηλεφώνου σας στο Signal.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Κλείδωμα εγγραφής";
@@ -928,13 +928,13 @@
 "FINISH_GROUP_CREATION_LABEL" = "Ολοκλήρωση δημιουργίας ομάδας";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Δεν έχετε μέσα σε αυτή τη συνομιλία.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Δεν έχετε πολυμέσα σε αυτή τη συνομιλία.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Φόρτωση Νεώτερων Μέσων...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Φόρτωση Νεώτερων Πολυμέσων...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Φόρτωση Παλαιότερων Μέσων...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Φόρτωση Παλαιότερων Πολυμέσων...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Συνημμένο";
@@ -949,7 +949,7 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Αδυναμία επιλογής GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Παρακαλώ εισάγετε την αναζήτησή σας.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Παρακαλώ εισάγετε την αναζήτηση σας.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Αναζήτηση GIF";
@@ -961,7 +961,7 @@
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Δεν υπάρχουν αποτελέσματα.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Παρακαλώ εισάγετε την αναζήτησή σας.";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Εισάγετε την αναζήτηση σας";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Η εικόνα προφίλ άλλαξε.";
@@ -1147,7 +1147,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Μήνυμα";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Όλα τα Μέσα";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Όλα τα Πολυμέσα";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Κάμερα";
@@ -1171,7 +1171,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Αυτόν τον Μήνα";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Αντιγραφή Μέσων ";
+"MESSAGE_ACTION_COPY_MEDIA" = "Αντιγραφή Πολυμέσων ";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Αντιγραφή Κειμένου Μηνύματος";
@@ -1189,7 +1189,7 @@
 "MESSAGE_ACTION_REPLY" = "Απάντηση σε αυτό το Μήνυμα";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Αποθήκευση Μέσων";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Αποθήκευση Πολυμέσων";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Μήνυμα";
@@ -1318,7 +1318,7 @@
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Αναπάντητη κλήση από τον/την %@ επειδή ο αριθμός ασφαλείας του χρήστη άλλαξε.";
 
 /* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Αναπάντητη κλήση επειδή ο αριθμός ασφαλείας του καλούντα άλλαξε.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Αναπάντητη κλήση επειδή ο αριθμός ασφαλείας του καλούντος άλλαξε.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1344,7 +1344,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Έχετε φτάσει το μέγιστο αριθμό συσκευών που μπορείτε να συνδέσετε στο λογαριασμό σας. Καταργήστε μια συσκευή και δοκιμάστε ξανά.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Δεν θα λαμβάνετε ειδοποιήσεις για συνομιλίες με σίγαση.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Δεν θα λαμβάνετε ειδοποιήσεις για συνομιλίες σε σίγαση.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Παράλειψη";
@@ -1437,7 +1437,7 @@
 "NOTIFICATIONS_SENDER_ONLY" = "Μόνο Όνομα";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Εμφάνιση";
+"NOTIFICATIONS_SHOW" = "Προβολή";
 
 /* No comment provided by engineer. */
 "OK" = "ΟΚ";
@@ -1506,7 +1506,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Φαξ Εργασίας";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή πολυμέσων";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή Πολυμέσων";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Δεν έχεις σημειώσει τον/την %@ ως επιβεβαιωμένο/η.";
@@ -1584,7 +1584,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Εικόνα Προφίλ";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Το Προφίλ σας στο Signal θα είναι ορατό στις επαφές σας, όταν ξεκινάτε νέες συνομιλίες και όταν το μοιράζεστε με άλλους χρήστες και ομάδες.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Το προφίλ σας στο Signal θα είναι ορατό στις επαφές σας, όταν ξεκινάτε νέες συνομιλίες και όταν το μοιράζεστε με άλλους χρήστες και ομάδες.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Πατήστε εδώ για να μάθετε περισσότερα.";
@@ -1749,7 +1749,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Απόρριψη";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείτε να καταχωρήσετε έχει ήδη καταχωρηθεί σε κάποιον άλλον server. παρακαλώ απεγγραφείτε από εκει και δοκιμάστε ξανά. ";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείτε να καταχωρήσετε έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή. παρακαλώ απεγγραφείτε από εκει και δοκιμάστε ξανά. ";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο για τον αριθμό τηλεφώνου σας. Για να σας βοηθήσουμε να απομνημονεύσετε το PIN κλειδώματος εγγραφής, το Signal θα σας ζητάει περιοδικά να το επιβεβαιώσετε.";
@@ -1761,13 +1761,13 @@
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Το κλείδωμα εγγραφής βοηθά στην προστασία του αριθμού τηλεφώνου σας από μη εξουσιοδοτημένες προσπάθειες εγγραφής. Αυτή η λειτουργία μπορεί να απενεργοποιηθεί ανά πάσα στιγμή μεσα απο τις ρυθμίσεις απορρήτου του Signal.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Εισαγάγετε το PIN κλειδώματος εγγραφής";
+"REMINDER_2FA_NAV_TITLE" = "Εισάγετε το PIN κλειδώματος εγγραφής";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Μπορείτε να ορίσετε ενα νέο ΡΙΝ μέσα απο τις ρυθμίσεις απορρήτου.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Αυτό το ΡΙΝ δεν είναι σωστό.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Αυτό δεν είναι το σωστό ΡΙΝ.";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Επανεγγραφή για λήψη ειδοποιήσεων";
@@ -2235,7 +2235,7 @@
 "UNLINKING_FAILED_ALERT_TITLE" = "Το Signal δεν μπόρεσε να αποσυνδέσει τη συσκευή σας.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Ανώνυμη συσκευή";
+"UNNAMED_DEVICE" = "Ανώνυμη Συσκευή";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Αποτυχία απεγγραφής από το Signal.";
@@ -2295,7 +2295,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Καλωσορίσατε, Ασφαλείς βιντεοκλησεις!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Το Signal απαιτεί το iOS 9 ή μια νεότερη έκδοση. Χρησιμοποιήστε την επιλογή \"Ενημέρωση λογισμικού\" στην εφαρμογή \"Ρυθμίσεις\" του iOS.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Το Signal χρειάζεται το iOS 9 ή μια νεότερη έκδοση. Χρησιμοποιήστε την επιλογή \"Ενημέρωση λογισμικού\" στην εφαρμογή \"Ρυθμίσεις\" του iOS.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Ενημέρωση Λογισμικού iOS";
