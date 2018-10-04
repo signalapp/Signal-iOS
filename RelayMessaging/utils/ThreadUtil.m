@@ -704,8 +704,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self removeAllObjectsInCollection:[TSAttachment collection]
                                          class:[TSAttachment class]
                                    transaction:transaction];
-            [self removeAllObjectsInCollection:[SignalRecipient collection]
-                                         class:[SignalRecipient class]
+            [self removeAllObjectsInCollection:[RelayRecipient collection]
+                                         class:[RelayRecipient class]
                                    transaction:transaction];
         }];
     [TSAttachmentStream deleteAttachments];

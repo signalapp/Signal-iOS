@@ -318,7 +318,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                             canCancel:YES
                       backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                           [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
-                              success:^(NSArray<SignalRecipient *> *recipients) {
+                              success:^(NSArray<RelayRecipient *> *recipients) {
                                   OWSAssertIsOnMainThread();
                                   if (modalActivityIndicator.wasCancelled) {
                                       return;

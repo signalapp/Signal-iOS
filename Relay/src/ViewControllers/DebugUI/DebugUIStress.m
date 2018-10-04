@@ -8,12 +8,8 @@
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <RelayMessaging/Environment.h>
-#import <RelayServiceKit/Cryptography.h>
-#import <RelayServiceKit/NSDate+OWS.h>
-#import <RelayServiceKit/OWSDynamicOutgoingMessage.h>
-#import <RelayServiceKit/OWSPrimaryStorage.h>
-#import <RelayServiceKit/SecurityUtils.h>
-#import <RelayServiceKit/TSThread.h>
+
+@import RelayServiceKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
                                      actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
+                                         [DebugUIStress sendStressMessage:thread block:^(RelayRecipient *recipient) {
                                              return [NSData new];
                                          }];
                                      }]];
@@ -41,21 +37,21 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
-                                                         block:^(SignalRecipient *recipient) {
+                                                         block:^(RelayRecipient *recipient) {
                                                              NSUInteger contentLength = arc4random_uniform(32);
                                                              return [Cryptography generateRandomBytes:contentLength];
                                                          }];
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send no payload message"
                                      actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
+                                         [DebugUIStress sendStressMessage:thread block:^(RelayRecipient *recipient) {
                                              OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
                                              return [[contentBuilder build] data];
                                          }];
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty null message"
                                      actionBlock:^{
-                                         [DebugUIStress sendStressMessage:thread block:^(SignalRecipient *recipient) {
+                                         [DebugUIStress sendStressMessage:thread block:^(RelayRecipient *recipient) {
                                              OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
                                              OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
                                              contentBuilder.nullMessage = [nullMessageBuilder build];
@@ -67,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder =
@@ -84,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -98,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -114,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
-                                                         block:^(SignalRecipient *recipient) {
+                                                         block:^(RelayRecipient *recipient) {
                                                              OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                                  [OWSSignalServiceProtosContentBuilder new];
                                                              OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -131,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
                            actionBlock:^{
                                [DebugUIStress
                                    sendStressMessage:thread
-                                               block:^(SignalRecipient *recipient) {
+                                               block:^(RelayRecipient *recipient) {
                                                    OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                        [OWSSignalServiceProtosContentBuilder new];
                                                    OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -152,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIStress
                                              sendStressMessage:thread
-                                                         block:^(SignalRecipient *recipient) {
+                                                         block:^(RelayRecipient *recipient) {
                                                              OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                                  [OWSSignalServiceProtosContentBuilder new];
                                                              OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -171,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIStress
                                                  sendStressMessage:thread
                                                          timestamp:timestamp
-                                                             block:^(SignalRecipient *recipient) {
+                                                             block:^(RelayRecipient *recipient) {
                                                                  OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                                      [OWSSignalServiceProtosContentBuilder new];
                                                                  OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -193,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
                                [DebugUIStress
                                    sendStressMessage:thread
                                            timestamp:timestamp
-                                               block:^(SignalRecipient *recipient) {
+                                               block:^(RelayRecipient *recipient) {
                                                    OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                        [OWSSignalServiceProtosContentBuilder new];
                                                    OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -213,7 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
                                [DebugUIStress
                                    sendStressMessage:thread
                                            timestamp:timestamp
-                                               block:^(SignalRecipient *recipient) {
+                                               block:^(RelayRecipient *recipient) {
                                                    OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                        [OWSSignalServiceProtosContentBuilder new];
                                                    OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -233,7 +229,7 @@ NS_ASSUME_NONNULL_BEGIN
                                [DebugUIStress
                                    sendStressMessage:thread
                                            timestamp:timestamp
-                                               block:^(SignalRecipient *recipient) {
+                                               block:^(RelayRecipient *recipient) {
                                                    OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                        [OWSSignalServiceProtosContentBuilder new];
                                                    OWSSignalServiceProtosDataMessageBuilder *dataBuilder =
@@ -261,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          for (int i = 0; i < 3; i++) {
                                              [DebugUIStress sendStressMessage:thread
                                                                     timestamp:timestamp
-                                                                        block:^(SignalRecipient *recipient) {
+                                                                        block:^(RelayRecipient *recipient) {
                                                                             return data;
                                                                         }];
                                          }
@@ -271,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -293,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -315,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -338,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -365,7 +361,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =
@@ -392,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   actionBlock:^{
                                       [DebugUIStress
                                           sendStressMessage:thread
-                                                      block:^(SignalRecipient *recipient) {
+                                                      block:^(RelayRecipient *recipient) {
                                                           OWSSignalServiceProtosContentBuilder *contentBuilder =
                                                               [OWSSignalServiceProtosContentBuilder new];
                                                           OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder =

@@ -8,23 +8,9 @@
 #import "OWSNavigationController.h"
 #import "Relay-Swift.h"
 #import "ViewControllerUtils.h"
-#import <RelayMessaging/BlockListUIUtils.h>
-#import <RelayMessaging/ContactTableViewCell.h>
-#import <RelayMessaging/ContactsViewHelper.h>
-#import <RelayMessaging/Environment.h>
-#import <RelayMessaging/NSString+OWS.h>
-//#import <RelayMessaging/OWSContactsManager.h>
-#import <RelayMessaging/OWSTableViewController.h>
-#import <RelayServiceKit/SignalKeyingStorage.h>
-#import <RelayMessaging/UIUtil.h>
-#import <RelayMessaging/UIView+OWS.h>
-#import <RelayMessaging/UIViewController+OWS.h>
-#import <RelayServiceKit/NSDate+OWS.h>
-#import <RelayServiceKit/OWSMessageSender.h>
-#import <RelayServiceKit/SecurityUtils.h>
-#import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSThread.h>
-#import <RelayServiceKit/TSOutgoingMessage.h>
+
+@import RelayServiceKit;
+@import RelayMessaging;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
+@property (nonatomic) BOOL avatarHasChanged;
 
 @end
 
@@ -366,7 +353,33 @@ NS_ASSUME_NONNULL_BEGIN
     
     self.thread.title = [self.groupNameTextField.text ows_stripped];
     self.thread.participantIds = self.memberRecipientIds.allObjects;
-    self.thread.image = self.groupAvatar;
+    
+    // Send control message for changes
+    OutgoingControlMessage *controlMessage = [[OutgoingControlMessage alloc] initWithThread:self.thread
+                                                                                controlType:FLControlMessageThreadUpdateKey];
+    
+    
+    if (self.avatarHasChanged) {
+        self.thread.image = self.groupAvatar;
+        
+        NSData *data = UIImagePNGRepresentation(self.groupAvatar);
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        [self.messageSender enqueueTemporaryAttachment:dataSource
+                                           contentType:OWSMimeTypeImagePng
+                                             inMessage:controlMessage success:^{
+                                                 DDLogDebug(@"Successfully sent thread update with avatar.");
+                                                 
+                                             } failure:^(NSError * _Nonnull error) {
+                                                 DDLogError(@"Error sending thread update with avatar: %@", error.localizedDescription);
+                                             }];
+        
+    } else {
+        [self.messageSender enqueueMessage:controlMessage success:^{
+            DDLogDebug(@"Successfully sent thread update.");
+        } failure:^(NSError * _Nonnull error) {
+            DDLogError(@"Error sending thread update control message: %@", error.localizedDescription);
+        }];
+    }
     [self.thread save];
     
     // TODO:  THis delegate call may not be necessary since the YapDatabase update notification may trip the update.
@@ -389,7 +402,8 @@ NS_ASSUME_NONNULL_BEGIN
     _groupAvatar = groupAvatar;
 
     self.hasUnsavedChanges = YES;
-
+    self.avatarHasChanged = YES;
+    
     [self updateAvatarView];
 }
 

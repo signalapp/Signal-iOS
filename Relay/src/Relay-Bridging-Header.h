@@ -109,7 +109,6 @@
 //#import <RelayServiceKit/OWSSyncContactsMessage.h>
 #import <RelayServiceKit/PhoneNumber.h>
 #import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/SignalRecipient.h>
 #import <RelayServiceKit/TSAccountManager.h>
 #import <RelayServiceKit/TSAttachment.h>
 #import <RelayServiceKit/TSAttachmentPointer.h>

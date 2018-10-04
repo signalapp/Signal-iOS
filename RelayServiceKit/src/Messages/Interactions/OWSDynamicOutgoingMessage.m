@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (NSData *)buildPlainTextData:(RelayRecipient *)recipient
 {
     NSData *plainTextData = self.block(recipient);
     OWSAssert(plainTextData);

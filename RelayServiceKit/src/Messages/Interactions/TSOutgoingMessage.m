@@ -11,7 +11,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
-#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSThread.h"
