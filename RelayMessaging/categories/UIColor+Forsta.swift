@@ -131,43 +131,43 @@ extension UIColor {
     }
     
     public class func FL_darkBlue1() -> UIColor {
-        return UIColor.color(hex: "#0A76AF")
+        return UIColor.color(hex: "#124b63")
     }
     
     public class func FL_mediumDarkBlue1() -> UIColor {
-        return UIColor.color(hex: "#6ABDE9")
+        return UIColor.color(hex: "#0a76af")
     }
     
     public class func FL_mediumBlue1() -> UIColor {
-        return UIColor.color(hex: "#80CEFF")
+        return UIColor.color(hex: "#2bace2")
     }
     
     public class func FL_mediumLightBlue1() -> UIColor {
-        return UIColor.color(hex: "#C5E0EF")
+        return UIColor.color(hex: "#6abde9")
     }
     
     public class func FL_lightBlue1() -> UIColor {
-        return UIColor.color(hex: "#D7E6F5")
+        return UIColor.color(hex: "#9ccce0")
     }
     
     public class func FL_darkBlue2() -> UIColor {
-        return UIColor.color(hex: "#124B63")
+        return UIColor.color(hex: "#0a76af")
     }
     
     public class func FL_mediumDarkBlue2() -> UIColor {
-        return UIColor.color(hex: "#0A76AF")
+        return UIColor.color(hex: "#6abde9")
     }
     
     public class func FL_mediumBlue2() -> UIColor {
-        return UIColor.color(hex: "#2BACE2")
+        return UIColor.color(hex: "#80ceff")
     }
     
     public class func FL_mediumLightBlue2() -> UIColor {
-        return UIColor.color(hex: "#6ABDE9")
+        return UIColor.color(hex: "#c5e0ef")
     }
     
     public class func FL_lightBlue2() -> UIColor {
-        return UIColor.color(hex: "#9CCCE0")
+        return UIColor.color(hex: "#d7e6f5")
     }
     
     public class func FL_lightPurple() -> UIColor {
