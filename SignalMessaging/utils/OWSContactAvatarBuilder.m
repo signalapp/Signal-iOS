@@ -76,9 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(diameter > 0);
 
-    NSString *colorName = [OWSConversationColor defaultConversationColorName];
-
-    return [self initWithSignalId:localNumber colorName:colorName diameter:diameter];
+    return [self initWithSignalId:localNumber colorName:kTSThread_DefaultConversationColorName diameter:diameter];
 }
 
 #pragma mark - Dependencies

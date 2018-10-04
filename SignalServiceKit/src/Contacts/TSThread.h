@@ -10,10 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
+extern NSString *const kTSThread_DefaultConversationColorName;
+
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
-
 @interface TSThread : TSYapDatabaseObject
 
 // YES IFF this thread has ever had a message.
@@ -37,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction;
 + (NSString *)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
+@property (class, nonatomic, readonly) NSArray<NSString *> *conversationColorNames;
 
 /**
  * @returns

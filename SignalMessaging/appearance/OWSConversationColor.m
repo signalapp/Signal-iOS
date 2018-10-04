@@ -5,6 +5,7 @@
 #import "OWSConversationColor.h"
 #import "Theme.h"
 #import "UIColor+OWS.h"
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -314,56 +315,29 @@ NS_ASSUME_NONNULL_BEGIN
     return colorMap;
 }
 
-+ (NSDictionary<NSString *, NSString *> *)ows_legacyConversationColorMap
-{
-    static NSDictionary<NSString *, NSString *> *colorMap;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        colorMap = @{
-            @"red" : @"crimson",
-            @"deep_orange" : @"crimson",
-            @"orange" : @"vermilion",
-            @"amber" : @"vermilion",
-            @"brown" : @"burlap",
-            @"yellow" : @"burlap",
-            @"pink" : @"plum",
-            @"purple" : @"violet",
-            @"deep_purple" : @"violet",
-            @"indigo" : @"indigo",
-            @"blue" : @"blue",
-            @"light_blue" : @"blue",
-            @"cyan" : @"teal",
-            @"teal" : @"teal",
-            @"green" : @"forest",
-            @"light_green" : @"wintergreen",
-            @"lime" : @"wintergreen",
-            @"blue_grey" : @"taupe",
-            @"grey" : @"steel",
-        };
-    });
-
-    return colorMap;
-}
-
 + (NSArray<NSString *> *)conversationColorNames
 {
     NSMutableArray<NSString *> *names = [NSMutableArray new];
     for (OWSConversationColor *conversationColor in self.allConversationColors) {
         [names addObject:conversationColor.name];
     }
+#ifdef DEBUG
+    NSSet<NSString *> *colorNameSet = [NSSet setWithArray:names];
+    // These constants are duplicated in two places. So this canary exists to make sure they stay in sync.
+    NSSet<NSString *> *threadColorNameSet = [NSSet setWithArray:TSThread.conversationColorNames];
+    OWSAssertDebug([colorNameSet isEqual:threadColorNameSet]);
+#endif
     return [names copy];
 }
 
 + (nullable OWSConversationColor *)conversationColorForColorName:(NSString *)conversationColorName
 {
-    NSString *_Nullable mappedColorName = self.ows_legacyConversationColorMap[conversationColorName.lowercaseString];
-    if (mappedColorName) {
-        conversationColorName = mappedColorName;
-    } else {
-        OWSAssertDebug(self.conversationColorMap[conversationColorName] != nil);
-    }
+    OWSConversationColor *_Nullable result = self.conversationColorMap[conversationColorName];
 
-    return self.conversationColorMap[conversationColorName];
+    // Any mapping to colorNames should be done in TSThread before this method is called.
+    OWSAssertDebug(result != nil);
+
+    return result;
 }
 
 + (OWSConversationColor *)conversationColorOrDefaultForColorName:(NSString *)conversationColorName
@@ -375,16 +349,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [self defaultConversationColor];
 }
 
-+ (NSString *)defaultConversationColorName
-{
-    NSString *conversationColorName = @"steel";
-    OWSAssert([self.conversationColorNames containsObject:conversationColorName]);
-    return conversationColorName;
-}
-
 + (OWSConversationColor *)defaultConversationColor
 {
-    return [self conversationColorForColorName:self.defaultConversationColorName];
+    return [self conversationColorForColorName:kTSThread_DefaultConversationColorName];
 }
 
 @end

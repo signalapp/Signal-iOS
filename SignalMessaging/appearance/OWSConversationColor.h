@@ -76,9 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, readonly, nonatomic) NSArray<NSString *> *conversationColorNames;
 
-+ (NSString *)defaultConversationColorName;
-+ (OWSConversationColor *)defaultConversationColor;
-
 @end
 
 NS_ASSUME_NONNULL_END

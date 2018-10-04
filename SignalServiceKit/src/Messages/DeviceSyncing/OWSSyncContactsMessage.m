@@ -108,6 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
             conversationColorName = [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientId];
         }
 
+        OWSAssertDebug([TSThread.conversationColorNames containsObject:conversationColorName]);
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
