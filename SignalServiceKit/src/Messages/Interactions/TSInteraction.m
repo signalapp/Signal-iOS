@@ -186,7 +186,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     OWSAssertDebug(other);
 
     uint64_t sortId1 = self.sortId;
-    uint64_t sortId2 = self.sortId;
+    uint64_t sortId2 = other.sortId;
 
     if (sortId1 > sortId2) {
         return NSOrderedDescending;
