@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
 {
-    NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
+    NSString *colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
     return [self initWithContactId:colorSeed name:nonSignalName colorName:(NSString *)colorName diameter:diameter];
 }
 
