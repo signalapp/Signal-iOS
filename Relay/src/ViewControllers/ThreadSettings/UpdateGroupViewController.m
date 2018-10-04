@@ -365,7 +365,7 @@ OWSNavigationView>
     if (self.avatarHasChanged) {
         self.thread.image = self.groupAvatar;
         
-        NSData *data = UIImagePNGRepresentation(self.groupAvatar);
+        NSData *data = UIImagePNGRepresentation(self.thread.image);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         [self.messageSender enqueueTemporaryAttachment:dataSource
                                            contentType:OWSMimeTypeImagePng

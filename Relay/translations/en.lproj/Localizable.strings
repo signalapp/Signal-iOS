@@ -2393,3 +2393,7 @@
 "ANNOUNCEMENT_DETAIL_TITLE" = "Details";
 "ANNOUNCEMENT_FROM_SECTION" = "Announcement From:";
 "ANNOUNCEMENT_TO_SECTION" = "Recipients:";
+
+
+"THREAD_TITLE_UPDATE_MESSAGE" = "%@ changed the title.";
+"THREAD_IMAGE_CHANGED_MESSAGE" = "%@ changed the avatar.";

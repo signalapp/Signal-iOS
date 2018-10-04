@@ -210,9 +210,14 @@ class ControlMessageManager : NSObject
                                                                 if uid == TSAccountManager.localUID() {
                                                                     customMessage = NSLocalizedString("GROUP_YOU_JOINED", comment: "")
                                                                 } else {
-                                                                    let recipient = RelayRecipient.registeredRecipient(forRecipientId: uid, transaction: transaction)
+                                                                    
+                                                                    let contactsManager: ContactsManagerProtocol = TextSecureKitEnv.shared().contactsManager
+                                                                    let nameString = contactsManager.displayName(forRecipientId: uid)
+                                                                    
+//                                                                    let recipient = RelayRecipient.registeredRecipient(forRecipientId: uid, transaction: transaction)
                                                                     let format = NSLocalizedString("GROUP_MEMBER_JOINED", comment: "") as NSString
-                                                                    customMessage = NSString.init(format: format as NSString, (recipient?.fullName())!) as String
+                                                                    
+                                                                    customMessage = NSString.init(format: format as NSString, nameString!) as String
                                                                 }
                                                                 let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
                                                                                                      in: thread,
