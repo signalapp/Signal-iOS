@@ -577,6 +577,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                          }];
                     }
                 }
+                successHandler();
             }
                     failure:failureHandler];
         }
