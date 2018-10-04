@@ -512,9 +512,15 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     if (jsonData) {
         // TODO: Do we need body & headers for requests with no parameters?
         [requestBuilder setBody:jsonData];
-        [requestBuilder setHeaders:@[
-            @"content-type:application/json",
-        ]];
+        [requestBuilder addHeaders:@"content-type:application/json"];
+    }
+
+    for (NSString *headerField in request.allHTTPHeaderFields) {
+        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+
+        OWSAssertDebug([headerField isKindOfClass:[NSString class]]);
+        OWSAssertDebug([headerValue isKindOfClass:[NSString class]]);
+        [requestBuilder addHeaders:[NSString stringWithFormat:@"%@:%@", headerField, headerValue]];
     }
 
     NSError *error;
@@ -883,9 +889,16 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
 - (NSString *)webSocketAuthenticationString
 {
-    return [NSString stringWithFormat:@"?login=%@&password=%@",
-                     [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                     [TSAccountManager serverAuthToken]];
+    switch (self.webSocketType) {
+        case OWSWebSocketTypeUD:
+            // UD socket is unauthenticated.
+            return @"?";
+        case OWSWebSocketTypeDefault:
+            return
+                [NSString stringWithFormat:@"?login=%@&password=%@",
+                          [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
+                          [TSAccountManager serverAuthToken]];
+    }
 }
 
 #pragma mark - Socket LifeCycle

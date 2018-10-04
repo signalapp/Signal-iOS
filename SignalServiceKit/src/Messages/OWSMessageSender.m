@@ -1004,10 +1004,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [request useUDAuth:messageSend.udAccessKey];
     }
 
-    // TODO: UD sends over websocket.
     OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
-    BOOL canMakeWebsocketRequests = [TSSocketManager.shared canMakeRequestsOfType:webSocketType];
-    if (!messageSend.hasWebsocketSendFailed && canMakeWebsocketRequests && !messageSend..isUDSend) {
+    BOOL canMakeWebsocketRequests = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] &&
+                                     !messageSend.hasWebsocketSendFailed);
+    if (canMakeWebsocketRequests) {
         [TSSocketManager.shared makeRequest:request
             webSocketType:webSocketType
             success:^(id _Nullable responseObject) {
