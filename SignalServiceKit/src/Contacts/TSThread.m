@@ -49,13 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
 
-        NSString *_Nullable contactId = self.contactIdentifier;
-        if (contactId.length > 0) {
-            // To be consistent with colors synced to desktop
-            _conversationColorName = [self.class stableConversationColorNameForString:contactId];
-        } else {
-            _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
-        }
+        _conversationColorName = [self.class randomColorNameForNewConversation];
     }
 
     return self;
@@ -72,9 +66,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *_Nullable contactId = self.contactIdentifier;
         if (contactId.length > 0) {
             // To be consistent with colors synced to desktop
-            _conversationColorName = [self.class stableConversationColorNameForString:contactId];
+            _conversationColorName = [self.class stableLegacyConversationColorNameForString:contactId];
         } else {
-            _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+            _conversationColorName = [self.class stableLegacyConversationColorNameForString:self.uniqueId];
         }
     }
     
@@ -441,14 +435,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Conversation Color
 
-+ (NSString *)randomConversationColorName
++ (NSString *)randomColorNameForNewConversation
 {
-    NSUInteger count = self.conversationColorNames.count;
+    NSUInteger count = self.colorNamesForNewConversation.count;
     NSUInteger index = arc4random_uniform((uint32_t)count);
-    return [self.conversationColorNames objectAtIndex:index];
+    return [self.colorNamesForNewConversation objectAtIndex:index];
 }
 
-+ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed
++ (NSArray<NSString *> *)colorNamesForNewConversation
+{
+    // all conversation colors except "steel"
+    return @[
+        @"crimson",
+        @"vermilion",
+        @"burlap",
+        @"forest",
+        @"wintergreen",
+        @"teal",
+        @"blue",
+        @"indigo",
+        @"violet",
+        @"plum",
+        @"taupe"
+    ];
+}
+
+// After introducing new conversation colors, we want to try to maintain as close
+// as possible to the old color for an existing thread.
++ (NSString *)stableLegacyConversationColorNameForString:(NSString *)colorSeed
 {
     NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -461,11 +475,11 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"could not compute hash for color seed.");
     }
 
-    NSUInteger index = (hash % [self.conversationColorNames count]);
-    return [self.conversationColorNames objectAtIndex:index];
+    NSUInteger index = (hash % [self.legacyConversationColorNames count]);
+    return [self.legacyConversationColorNames objectAtIndex:index];
 }
 
-+ (NSArray<NSString *> *)conversationColorNames
++ (NSArray<NSString *> *)legacyConversationColorNames
 {
     return @[
              @"red",
