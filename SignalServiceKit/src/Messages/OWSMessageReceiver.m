@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [SSKProtoEnvelope parseData:self.envelopeData error:&error];
     if (error || envelope == nil) {
-        OWSFailDebug(@"failed to parase envelope with error: %@", error);
+        OWSFailDebug(@"failed to parse envelope with error: %@", error);
         return nil;
     }
 
@@ -358,8 +358,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     [self.messageDecrypter decryptEnvelope:envelope
         envelopeData:job.envelopeData
-        successBlock:^(
-            NSData *envelopeData, NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
+        successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
             OWSAssertDebug(transaction);
 
             // We persist the decrypted envelope data in the same transaction within which
@@ -368,8 +367,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             //
             // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,
             // since the envelope may be altered by the decryption process in the UD case.
-            [self.batchMessageProcessor enqueueEnvelopeData:envelopeData
-                                              plaintextData:plaintextData
+            [self.batchMessageProcessor enqueueEnvelopeData:result.envelopeData
+                                              plaintextData:result.plaintextData
                                                 transaction:transaction];
 
             dispatch_async(self.serialQueue, ^{

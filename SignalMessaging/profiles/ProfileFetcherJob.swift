@@ -169,12 +169,10 @@ public class ProfileFetcherJob: NSObject {
                                                  profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                                  avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
+        let isUDRecipientId = signalServiceProfile.unidentifiedAccessKey != nil
+        udManager.setIsUDRecipientId(signalServiceProfile.recipientId, isUDRecipientId: isUDRecipientId)
+
         udManager.setShouldAllowUnrestrictedAccess(recipientId: signalServiceProfile.recipientId, shouldAllowUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
-        if signalServiceProfile.unidentifiedAccessKey != nil {
-            udManager.addUDRecipientId(signalServiceProfile.recipientId)
-        } else {
-            udManager.removeUDRecipientId(signalServiceProfile.recipientId)
-        }
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {

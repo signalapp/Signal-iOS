@@ -151,7 +151,9 @@ public class MessageFetcherJob: NSObject {
                 throw ParamParser.ParseError.invalidFormat("sourceDevice")
             }
 
-            let builder = SSKProtoEnvelope.builder(type: type, source: source, sourceDevice: sourceDevice, timestamp: timestamp)
+            let builder = SSKProtoEnvelope.builder(type: type, timestamp: timestamp)
+            builder.setSource(source)
+            builder.setSourceDevice(sourceDevice)
 
             if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
                 builder.setLegacyMessage(legacyMessage)
@@ -198,8 +200,16 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
-        let source = envelope.source
-        let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
+        let request: TSRequest
+        if let source = envelope.source {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
+        } else if let serverGuid = envelope.serverGuid, envelope.hasServerTimestamp {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid, serverTimestamp: envelope.serverTimestamp)
+        } else {
+            owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
+            return
+        }
+
         self.networkManager.makeRequest(request,
                                         success: { (_: URLSessionDataTask?, _: Any?) -> Void in
                                             Logger.debug("acknowledged delivery for message at timestamp: \(envelope.timestamp)")

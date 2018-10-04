@@ -10,10 +10,20 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoEnvelope;
 @class YapDatabaseReadWriteTransaction;
 
+@interface OWSMessageDecryptResult : NSObject
+
+@property (nonatomic, readonly) NSData *envelopeData;
+@property (nonatomic, readonly, nullable) NSData *plaintextData;
+@property (nonatomic, readonly) NSString *source;
+@property (nonatomic, readonly) UInt32 sourceDevice;
+
+@end
+
+#pragma mark -
+
 // Decryption result includes the envelope since the envelope
 // may be altered by the decryption process.
-typedef void (^DecryptSuccessBlock)(
-    NSData *envelopeData, NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction);
+typedef void (^DecryptSuccessBlock)(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction);
 typedef void (^DecryptFailureBlock)(void);
 
 @interface OWSMessageDecrypter : OWSMessageHandler

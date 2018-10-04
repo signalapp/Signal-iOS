@@ -26,9 +26,7 @@ message Envelope {
 
   // @required
   optional Type   type            = 1;
-  // @required
   optional string source          = 2;
-  // @required
   optional uint32 sourceDevice    = 7;
   optional string relay           = 3;
   // @required

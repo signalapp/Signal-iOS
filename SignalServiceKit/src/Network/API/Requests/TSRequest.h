@@ -26,6 +26,4 @@
                         method:(NSString *)method
                     parameters:(nullable NSDictionary<NSString *, id> *)parameters;
 
-- (void)setParameterWithValue:(id)value forKey:(NSString *)key;
-
 @end

@@ -219,6 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
     switch (envelope.type) {
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
+        case SSKProtoEnvelopeTypeUnidentifiedSender:
             if (!plaintextData) {
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;

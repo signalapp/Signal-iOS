@@ -20,11 +20,7 @@ public enum OWSUDError: Error {
 
     @objc func isUDRecipientId(_ recipientId: String) -> Bool
 
-    // No-op if this recipient id is already marked as a "UD recipient".
-    @objc func addUDRecipientId(_ recipientId: String)
-
-    // No-op if this recipient id is already marked as _NOT_ a "UD recipient".
-    @objc func removeUDRecipientId(_ recipientId: String)
+    @objc func setIsUDRecipientId(_ recipientId: String, isUDRecipientId: Bool)
 
     // Returns the UD access key for a given recipient if they are
     // a UD recipient and we have a valid profile key for them.
@@ -104,13 +100,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func addUDRecipientId(_ recipientId: String) {
-        dbConnection.setBool(true, forKey: recipientId, inCollection: kUDRecipientModeCollection)
-    }
-
-    @objc
-    public func removeUDRecipientId(_ recipientId: String) {
-        dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
+    public func setIsUDRecipientId(_ recipientId: String, isUDRecipientId: Bool) {
+        if isUDRecipientId {
+            dbConnection.setBool(true, forKey: recipientId, inCollection: kUDRecipientModeCollection)
+        } else {
+            dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
+        }
     }
 
     // Returns the UD access key for a given recipient if they are
@@ -122,7 +117,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
-            removeUDRecipientId(recipientId)
+            setIsUDRecipientId(recipientId, isUDRecipientId: false)
             return nil
         }
         do {
@@ -130,7 +125,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return udAccessKey
         } catch {
             Logger.error("Could not determine udAccessKey: \(error)")
-            removeUDRecipientId(recipientId)
+            setIsUDRecipientId(recipientId, isUDRecipientId: false)
             return nil
         }
     }

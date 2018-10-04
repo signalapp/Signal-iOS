@@ -882,6 +882,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     messageSend.remainingAttempts = messageSend.remainingAttempts - 1;
 
     BOOL isUDSend = (messageSend.canUseUD && messageSend.udAccessKey != nil && messageSend.senderCertificate != nil);
+    OWSLogVerbose(@"isUDSend: %d, canUseUD: %d, udAccessKey: %d, senderCertificate: %d",
+        isUDSend,
+        messageSend.canUseUD,
+        messageSend.udAccessKey != nil,
+        messageSend.senderCertificate != nil);
 
     NSError *deviceMessagesError;
     NSArray<NSDictionary *> *_Nullable deviceMessages =
@@ -1000,9 +1005,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     //
                     // TODO: Do we want to discriminate based on exact error?
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
-                    [self.udManager removeUDRecipientId:recipient.uniqueId];
+                    [self.udManager setIsUDRecipientId:recipient.uniqueId isUDRecipientId:NO];
                     messageSend.canUseUD = NO;
-                    [self sendMessageToRecipient:messageSend success:successHandler failure:failureHandler];
+                    dispatch_async([OWSDispatch sendingQueue], ^{
+                        [self sendMessageToRecipient:messageSend success:successHandler failure:failureHandler];
+                    });
                     return;
                 }
 

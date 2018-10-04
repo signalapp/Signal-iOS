@@ -15,7 +15,7 @@
     // Suppress normal auth headers.
     self.shouldHaveAuthorizationHeaders = NO;
     // Add UD auth header.
-    [self setValue:[udAccessKey.keyData base64EncodedString] forKey:@"Unidentified-Access-Key"];
+    [self setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
 }
 
 @end
