@@ -124,7 +124,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.sendButton
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
         forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:UIColor.FL_mediumBlue2 forState:UIControlStateNormal];
+    [self.sendButton setTitleColor:UIColor.FL_mediumDarkBlue1 forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
     self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);

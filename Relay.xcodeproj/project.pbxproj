@@ -530,7 +530,6 @@
 		7D2CD5A5214C3C9C004E957A /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		7D2CD5A6214C3C9C004E957A /* ValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */; };
 		7D2CD5A7214C3C9C004E957A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
-		7D2CD5A8214C3C9C004E957A /* ForstaColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7121042118E1D400C56034 /* ForstaColors.m */; };
 		7D2CD5A9214C3C9C004E957A /* DebugUINotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457C87B72032645C008D52D6 /* DebugUINotifications.swift */; };
 		7D2CD5AA214C3C9C004E957A /* Crc32.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517DF211CAE1100F9EF53 /* Crc32.m */; };
 		7D2CD5AB214C3C9C004E957A /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
@@ -747,7 +746,6 @@
 		7D705DA7214827EF00488180 /* DirectoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705DA6214827EF00488180 /* DirectoryCell.swift */; };
 		7D705DA8214827EF00488180 /* DirectoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705DA6214827EF00488180 /* DirectoryCell.swift */; };
 		7D7121022118D7E900C56034 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D7121012118D7E800C56034 /* Login.storyboard */; };
-		7D7121052118E1D400C56034 /* ForstaColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D7121042118E1D400C56034 /* ForstaColors.m */; };
 		7D7705C02114CD4B00B40BB9 /* WebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4509E7991DD653700025A59F /* WebRTC.framework */; };
 		7D7705C42114D8E700B40BB9 /* ValidationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */; };
 		7D7705C52114D8E700B40BB9 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7705C22114D8E600B40BB9 /* LoginViewController.swift */; };
@@ -1516,8 +1514,6 @@
 		7D705DA12148258100488180 /* SlugViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlugViewLayout.swift; sourceTree = "<group>"; };
 		7D705DA6214827EF00488180 /* DirectoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryCell.swift; sourceTree = "<group>"; };
 		7D7121012118D7E800C56034 /* Login.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
-		7D7121032118E1D400C56034 /* ForstaColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForstaColors.h; sourceTree = "<group>"; };
-		7D7121042118E1D400C56034 /* ForstaColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForstaColors.m; sourceTree = "<group>"; };
 		7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationViewController.swift; sourceTree = "<group>"; };
 		7D7705C22114D8E600B40BB9 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		7D7705C72114E5C300B40BB9 /* forsta_splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forsta_splash.png; sourceTree = "<group>"; };
@@ -2517,8 +2513,6 @@
 		457F3AC01D14A0F700C51351 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				7D7121032118E1D400C56034 /* ForstaColors.h */,
-				7D7121042118E1D400C56034 /* ForstaColors.m */,
 				451166BF1FD86B98000739BA /* AccountManager.swift */,
 				45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */,
 				458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */,
@@ -4247,7 +4241,6 @@
 				7D2CD5A5214C3C9C004E957A /* ContactShareViewHelper.swift in Sources */,
 				7D2CD5A6214C3C9C004E957A /* ValidationViewController.swift in Sources */,
 				7D2CD5A7214C3C9C004E957A /* InviteFlow.swift in Sources */,
-				7D2CD5A8214C3C9C004E957A /* ForstaColors.m in Sources */,
 				7D2CD5A9214C3C9C004E957A /* DebugUINotifications.swift in Sources */,
 				7D2CD5AA214C3C9C004E957A /* Crc32.m in Sources */,
 				7D2CD5AB214C3C9C004E957A /* ColorPickerViewController.swift in Sources */,
@@ -4458,7 +4451,6 @@
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				7D7705C42114D8E700B40BB9 /* ValidationViewController.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
-				7D7121052118E1D400C56034 /* ForstaColors.m in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				7D8517E2211CAE1200F9EF53 /* Crc32.m in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
