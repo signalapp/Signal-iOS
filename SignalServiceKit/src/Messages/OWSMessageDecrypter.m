@@ -28,6 +28,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSError *EnsureDecryptError(nullable NSError *error, NSString *fallbackErrorDescription)
+{
+    if (error) {
+        return error;
+    }
+    return OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, fallbackErrorDescription);
+}
+
 @interface OWSMessageDecrypter ()
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
@@ -350,7 +358,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        identityStore:self.identityManager
                                                                error:&error];
             if (error || !cipher) {
-                OWSFailDebug(@"%@", @"Could not create secret session cipher: %@", error);
+                OWSFailDebug(@"Could not create secret session cipher: %@", error);
+                error = EnsureDecryptError(error, @"Could not create secret session cipher");
                 return failureBlock(error);
             }
 
@@ -361,7 +370,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                protocolContext:transaction
                                                          error:&error];
             if (error || !decryptResult) {
-                OWSFailDebug(@"%@", @"Could not decrypt UD message: %@", error);
+                OWSFailDebug(@"Could not decrypt UD message: %@", error);
+                error = EnsureDecryptError(error, @"Could not decrypt UD message");
                 return failureBlock(error);
             }
 
@@ -386,10 +396,8 @@ NS_ASSUME_NONNULL_BEGIN
             [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
             NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
             if (error || !newEnvelopeData) {
-                NSString *errorDescription =
-                    [NSString stringWithFormat:@"Could not update UD envelope data: %@", error];
-                OWSFailDebug(@"%@", errorDescription);
-                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                OWSFailDebug(@"Could not update UD envelope data: %@", error);
+                error = EnsureDecryptError(error, @"Could not update UD envelope data");
                 return failureBlock(error);
             }
 
