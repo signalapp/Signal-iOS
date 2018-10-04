@@ -476,10 +476,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      success:(void (^)(void))success
                      failure:(RetryableFailureHandler)failure
 {
-    if (message.thread && message.thread.isGroupThread) {
-        [self saveInfoMessageForGroupMessage:message inThread:message.thread];
-    }
-
     [self.udManager
         ensureSenderCertificateObjCWithSuccess:^(SMKSenderCertificate *senderCertificate) {
             dispatch_async([OWSDispatch sendingQueue], ^{
@@ -646,6 +642,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         successHandler();
         return;
+    }
+
+    if (thread.isGroupThread) {
+        [self saveInfoMessageForGroupMessage:message inThread:thread];
     }
 
     NSError *error;
@@ -1538,7 +1538,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)saveInfoMessageForGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
 {
-    if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
+    OWSAssertDebug(message);
+    OWSAssertDebug(thread);
+
+    if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
+        // TODO: Why is this necessary?
+        [message save];
+    } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
         [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeGroupQuit
