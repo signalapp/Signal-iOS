@@ -40,7 +40,7 @@ public class MessageFetcherJob: NSObject {
 
         guard signalService.isCensorshipCircumventionActive else {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
-            TSSocketManager.requestSocketOpen()
+            TSSocketManager.shared.requestSocketOpen()
             return Promise(value: ())
         }
 

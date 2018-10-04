@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(socketStateDidChange)
-                                                 name:kNSNotification_SocketManagerStateDidChange
+                                                 name:kNSNotification_OWSWebSocketStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged)
@@ -128,12 +128,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *censorshipSection = [OWSTableSection new];
     censorshipSection.headerTitle = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER",
         @"Table header for the 'censorship circumvention' section.");
+    BOOL isAnySocketOpen = TSSocketManager.shared.highestSocketState == OWSWebSocketStateOpen;
     if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
         censorshipSection.footerTitle
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED",
                 @"Table footer for the 'censorship circumvention' section shown when censorship circumvention has been "
                 @"auto-enabled based on local phone number.");
-    } else if (TSSocketManager.shared.state == SocketManagerStateOpen) {
+    } else if (isAnySocketOpen) {
         censorshipSection.footerTitle
             = NSLocalizedString(@"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
                 @"Table footer for the 'censorship circumvention' section shown when the app is connected to the "
@@ -162,8 +163,8 @@ NS_ASSUME_NONNULL_BEGIN
     //      internet connection.
     BOOL isManualCensorshipCircumventionOnEnabled
         = (OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated
-            || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber
-                   && TSSocketManager.shared.state != SocketManagerStateOpen && weakSelf.reachability.isReachable));
+            || (!OWSSignalService.sharedInstance.hasCensoredPhoneNumber && !isAnySocketOpen
+                   && weakSelf.reachability.isReachable));
     BOOL isCensorshipCircumventionOn = NO;
     if (OWSSignalService.sharedInstance.hasCensoredPhoneNumber) {
         isCensorshipCircumventionOn = YES;
