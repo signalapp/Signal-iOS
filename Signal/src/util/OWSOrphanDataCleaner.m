@@ -692,8 +692,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         NSError *error;
         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
         if (!attributes || error) {
-            OWSLogDebug(@"Could not get attributes of file at: %@", filePath);
-            OWSFailDebug(@"Could not get attributes of file");
+            // This is fine; the file may have been deleted since we found it.
+            OWSLogWarn(@"Could not get attributes of file at: %@", filePath);
             continue;
         }
         // Don't delete files which were created in the last N minutes.
