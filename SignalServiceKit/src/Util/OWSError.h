@@ -59,7 +59,7 @@ extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);
 extern NSError *OWSErrorMakeAssertionError(NSString *description);
 extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
-extern NSError *OWSErrorMakeMessageSendFailedToBlockListError(void);
+extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
 extern NSError *OWSErrorMakeWriteAttachmentDataError(void);
 
 NS_ASSUME_NONNULL_END

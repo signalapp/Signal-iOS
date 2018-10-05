@@ -63,7 +63,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     if (error) {
         return error;
     }
-    return OWSErrorWithCodeDescription(fallbackCode, fallbackErrorDescription);
+    OWSFailDebug(@"Using fallback error.") return OWSErrorWithCodeDescription(fallbackCode, fallbackErrorDescription);
 }
 
 #pragma mark -
@@ -534,7 +534,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug(recipientContactId.length > 0);
         if ([self.blockingManager isRecipientIdBlocked:recipientContactId]) {
             OWSLogInfo(@"skipping 1:1 send to blocked contact: %@", recipientContactId);
-            NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
+            NSError *error = OWSErrorMakeMessageSendFailedDueToBlockListError();
             [error setIsRetryable:NO];
             *errorHandle = error;
             return nil;
