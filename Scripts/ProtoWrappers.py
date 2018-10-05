@@ -633,6 +633,13 @@ public func serializedData() throws -> Data {
             writer.pop_indent()
             writer.add('}')
             writer.newline()
+
+        writer.add('@objc public override var description: String {')
+        writer.push_indent()
+        writer.add('return "\(proto)"')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
             
         writer.pop_context()
 
