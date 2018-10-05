@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          author:[TSAccountManager localUID]
                                                                                         payload:jsonPayload
                                                                                     attachments:transcript.attachmentPointerProtos];
-        [ControlMessageManager processIncomingControlMessageWithMessage:controlMessage];
+        [ControlMessageManager processIncomingControlMessageWithMessage:controlMessage transaction:transaction];
         return;
         
     } else if ([[jsonPayload objectForKey:@"messageType"] isEqualToString:@"content"]) {

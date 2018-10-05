@@ -11,41 +11,41 @@ import Foundation
 @objc
 class ControlMessageManager : NSObject
 {
-    @objc static func processIncomingControlMessage(message: IncomingControlMessage)
+    @objc static func processIncomingControlMessage(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         switch message.controlMessageType {
         case FLControlMessageSyncRequestKey:
-            self.handleMessageSyncRequest(message: message)
+            self.handleMessageSyncRequest(message: message, transaction: transaction)
         case FLControlMessageProvisionRequestKey:
-            self.handleProvisionRequest(message: message)
+            self.handleProvisionRequest(message: message, transaction: transaction)
         case FLControlMessageThreadUpdateKey:
-            self.handleThreadUpdate(message: message)
+            self.handleThreadUpdate(message: message, transaction: transaction)
         case FLControlMessageThreadClearKey:
-            self.handleThreadClear(message: message)
+            self.handleThreadClear(message: message, transaction: transaction)
         case FLControlMessageThreadCloseKey:
-            self.handleThreadClose(message: message)
+            self.handleThreadClose(message: message, transaction: transaction)
         case FLControlMessageThreadArchiveKey:
-            self.handleThreadArchive(message: message)
+            self.handleThreadArchive(message: message, transaction: transaction)
         case FLControlMessageThreadRestoreKey:
-            self.handleThreadRestore(message: message)
+            self.handleThreadRestore(message: message, transaction: transaction)
         case FLControlMessageThreadDeleteKey:
-            self.handleThreadDelete(message: message)
+            self.handleThreadDelete(message: message, transaction: transaction)
         case FLControlMessageThreadSnoozeKey:
-            self.handleThreadSnooze(message: message)
+            self.handleThreadSnooze(message: message, transaction: transaction)
         case FLControlMessageCallOfferKey:
-            self.handleCallOffer(message: message)
+            self.handleCallOffer(message: message, transaction: transaction)
         case FLControlMessageCallAcceptOfferKey:
-            self.handleCallAcceptOffer(message: message)
+            self.handleCallAcceptOffer(message: message, transaction: transaction)
         case FLControlMessageCallLeaveKey:
-            self.handleCallLeave(message: message)
+            self.handleCallLeave(message: message, transaction: transaction)
         case FLControlMessageCallICECandidatesKey:
-            self.handleCallICECandidates(message: message)
+            self.handleCallICECandidates(message: message, transaction: transaction)
         default:
             Logger.info("Unhandled control message of type: \(message.controlMessageType)")
         }
     }
     
-    static private func handleCallICECandidates(message: IncomingControlMessage)
+    static private func handleCallICECandidates(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         Logger.info("Received callICECandidates message: \(message.forstaPayload)")
         
@@ -66,7 +66,7 @@ class ControlMessageManager : NSObject
         }
     }
     
-    static private func handleCallOffer(message: IncomingControlMessage)
+    static private func handleCallOffer(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         guard #available(iOS 10.0, *) else {
             Logger.info("\(self.tag): Ignoring callOffer controler message due to iOS version.")
@@ -106,13 +106,13 @@ class ControlMessageManager : NSObject
         //        Environment.shared().callService.handleReceivedOffer(offer: callOffer)
     }
     
-    static private func handleCallAcceptOffer(message: IncomingControlMessage)
+    static private func handleCallAcceptOffer(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
     }
     
     
-    static private func handleCallLeave(message: IncomingControlMessage)
+    static private func handleCallLeave(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         //        Logger.info("Received callLeave message: \(message.forstaPayload)")
         // FIXME: Message processing stops while call is pending.
@@ -135,7 +135,7 @@ class ControlMessageManager : NSObject
         
     }
     
-    static private func handleThreadUpdate(message: IncomingControlMessage)
+    static private func handleThreadUpdate(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         if let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary {
             if let threadUpdates = dataBlob.object(forKey: "threadUpdates") as? NSDictionary {
@@ -143,108 +143,107 @@ class ControlMessageManager : NSObject
                 let thread = message.thread
                 let senderId = (message.forstaPayload.object(forKey: "sender") as! NSDictionary).object(forKey: "userId") as! String
                 
-                var sender: RelayRecipient?
-                OWSPrimaryStorage.shared().dbReadConnection.asyncRead { (transaction) in
-                    sender = RelayRecipient.registeredRecipient(forRecipientId: senderId, transaction: transaction)
-                }
+                let sender = RelayRecipient.registeredRecipient(forRecipientId: senderId, transaction: transaction)
                 
                 // Handle thread name change
                 if let threadTitle = threadUpdates.object(forKey: FLThreadTitleKey) as? String {
-                    OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite { (transaction) in
+                    if thread.title != threadTitle {
+                        thread.title = threadTitle
                         
-                        if thread.title != threadTitle {
-                            thread.title = threadTitle
+                        var customMessage: String? = nil
+                        var infoMessage: TSInfoMessage? = nil
+                        
+                        if sender != nil {
+                            let format = NSLocalizedString("THREAD_TITLE_UPDATE_MESSAGE", comment: "") as NSString
+                            customMessage = NSString.init(format: format as NSString, (sender?.fullName)!()) as String
                             
-                            var customMessage: String? = nil
-                            var infoMessage: TSInfoMessage? = nil
+                            infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
+                                                             in: thread,
+                                                             infoMessageType: TSInfoMessageType.typeConversationUpdate,
+                                                             customMessage: customMessage!)
                             
-                            if sender != nil {
-                                let format = NSLocalizedString("THREAD_TITLE_UPDATE_MESSAGE", comment: "") as NSString
-                                customMessage = NSString.init(format: format as NSString, (sender?.fullName)!()) as String
-                                
-                                infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
-                                                                 in: thread,
-                                                                 infoMessageType: TSInfoMessageType.typeConversationUpdate,
-                                                                 customMessage: customMessage!)
-                                
-                            } else {
-                                infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
-                                                                 in: thread,
-                                                                 infoMessageType: TSInfoMessageType.typeConversationUpdate)
-                            }
-                            
-                            infoMessage?.save(with: transaction)
-                            thread.save(with: transaction)
+                        } else {
+                            infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
+                                                             in: thread,
+                                                             infoMessageType: TSInfoMessageType.typeConversationUpdate)
                         }
+                        
+                        infoMessage?.save(with: transaction)
+                        thread.save(with: transaction)
                     }
                 }
                 
                 // Handle change to participants
                 if let expression = threadUpdates.object(forKey: FLExpressionKey) as? String {
                     if thread.universalExpression != expression {
-                        CCSMCommManager.asyncTagLookup(with: expression,
-                                                       success: { (lookupResults) in
-                                                        OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite({ (transaction) in
-                                                            let newParticipants = NSCountedSet.init(array: lookupResults["userids"] as! [String])
-                                                            
-                                                            //  Handle participants leaving
-                                                            let leaving = NSCountedSet.init(array: thread.participantIds)
-                                                            leaving.minus(newParticipants as! Set<AnyHashable>)
-                                                            
-                                                            for uid in leaving as! Set<String> {
-                                                                var customMessage: String? = nil
-                                                                
-                                                                
-                                                                if uid == TSAccountManager.localUID() {
-                                                                    customMessage = NSLocalizedString("GROUP_YOU_LEFT", comment: "")
-                                                                } else {
-                                                                    let recipient = RelayRecipient.registeredRecipient(forRecipientId: uid, transaction: transaction)
-                                                                    let format = NSLocalizedString("GROUP_MEMBER_LEFT", comment: "") as NSString
-                                                                    customMessage = NSString.init(format: format as NSString, (recipient?.fullName())!) as String
-                                                                }
-                                                                let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
-                                                                                                     in: thread,
-                                                                                                     infoMessageType: TSInfoMessageType.typeConversationUpdate,
-                                                                                                     customMessage: customMessage!)
-                                                                infoMessage.save(with: transaction)
-                                                            }
-                                                            
-                                                            //  Handle participants leaving
-                                                            let joining = newParticipants.copy() as! NSCountedSet
-                                                            joining.minus(NSCountedSet.init(array: thread.participantIds) as! Set<AnyHashable>)
-                                                            for uid in joining as! Set<String> {
-                                                                var customMessage: String? = nil
-                                                                
-                                                                if uid == TSAccountManager.localUID() {
-                                                                    customMessage = NSLocalizedString("GROUP_YOU_JOINED", comment: "")
-                                                                } else {
-                                                                    
-                                                                    let contactsManager: ContactsManagerProtocol = TextSecureKitEnv.shared().contactsManager
-                                                                    let nameString = contactsManager.displayName(forRecipientId: uid)
-                                                                    
+                        
+                        thread.universalExpression = expression
+                        
+                        NotificationCenter.default.post(name: NSNotification.Name.TSThreadExpressionChanged,
+                                                        object: thread,
+                                                        userInfo: nil)
+                        
+//                        CCSMCommManager.asyncTagLookup(with: expression,
+//                                                       success: { (lookupResults) in
+//                                                        OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite({ (transaction) in
+//                                                            let newParticipants = NSCountedSet.init(array: lookupResults["userids"] as! [String])
+//
+//                                                            //  Handle participants leaving
+//                                                            let leaving = NSCountedSet.init(array: thread.participantIds)
+//                                                            leaving.minus(newParticipants as! Set<AnyHashable>)
+//
+//                                                            for uid in leaving as! Set<String> {
+//                                                                var customMessage: String? = nil
+//
+//
+//                                                                if uid == TSAccountManager.localUID() {
+//                                                                    customMessage = NSLocalizedString("GROUP_YOU_LEFT", comment: "")
+//                                                                } else {
 //                                                                    let recipient = RelayRecipient.registeredRecipient(forRecipientId: uid, transaction: transaction)
-                                                                    let format = NSLocalizedString("GROUP_MEMBER_JOINED", comment: "") as NSString
-                                                                    
-                                                                    customMessage = NSString.init(format: format as NSString, nameString!) as String
-                                                                }
-                                                                let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
-                                                                                                     in: thread,
-                                                                                                     infoMessageType: TSInfoMessageType.typeConversationUpdate,
-                                                                                                     customMessage: customMessage!)
-                                                                infoMessage.save(with: transaction)
-                                                            }
-                                                            
-                                                            thread.participantIds = lookupResults["userids"] as! [String]
-                                                            thread.prettyExpression = lookupResults["pretty"] as? String
-                                                            thread.universalExpression = lookupResults["universal"] as? String
-                                                            thread.save(with: transaction)
-                                                        })
-                                                        
-                                                        
-                        },
-                                                       failure: { (error) in
-                                                        Logger.error("\(self.tag): TagMath lookup failed on thread participationupdate. Error: \(error.localizedDescription)")
-                        })
+//                                                                    let format = NSLocalizedString("GROUP_MEMBER_LEFT", comment: "") as NSString
+//                                                                    customMessage = NSString.init(format: format as NSString, (recipient?.fullName())!) as String
+//                                                                }
+//                                                                let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
+//                                                                                                     in: thread,
+//                                                                                                     infoMessageType: TSInfoMessageType.typeConversationUpdate,
+//                                                                                                     customMessage: customMessage!)
+//                                                                infoMessage.save(with: transaction)
+//                                                            }
+//
+//                                                            //  Handle participants leaving
+//                                                            let joining = newParticipants.copy() as! NSCountedSet
+//                                                            joining.minus(NSCountedSet.init(array: thread.participantIds) as! Set<AnyHashable>)
+//                                                            for uid in joining as! Set<String> {
+//                                                                var customMessage: String? = nil
+//
+//                                                                if uid == TSAccountManager.localUID() {
+//                                                                    customMessage = NSLocalizedString("GROUP_YOU_JOINED", comment: "")
+//                                                                } else {
+//
+//                                                                    let contactsManager: ContactsManagerProtocol = TextSecureKitEnv.shared().contactsManager
+//                                                                    let nameString = contactsManager.displayName(forRecipientId: uid)
+//
+////                                                                    let recipient = RelayRecipient.registeredRecipient(forRecipientId: uid, transaction: transaction)
+//                                                                    let format = NSLocalizedString("GROUP_MEMBER_JOINED", comment: "") as NSString
+//
+//                                                                    customMessage = NSString.init(format: format as NSString, nameString!) as String
+//                                                                }
+//                                                                let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
+//                                                                                                     in: thread,
+//                                                                                                     infoMessageType: TSInfoMessageType.typeConversationUpdate,
+//                                                                                                     customMessage: customMessage!)
+//                                                                infoMessage.save(with: transaction)
+//                                                            }
+//
+//                                                            thread.participantIds = lookupResults["userids"] as! [String]
+//                                                            thread.prettyExpression = lookupResults["pretty"] as? String
+//                                                            thread.universalExpression = lookupResults["universal"] as? String
+//                                                            thread.save(with: transaction)
+//                                                        })
+//                        },
+//                                                       failure: { (error) in
+//                                                        Logger.error("\(self.tag): TagMath lookup failed on thread participationupdate. Error: \(error.localizedDescription)")
+//                        })
                     }
                 }
                 
@@ -256,54 +255,55 @@ class ControlMessageManager : NSObject
                             properties.append(["name" : pointer.fileName ])
                         }
                         
-                        OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite({ (transaction) in
                             let attachmentsProcessor = OWSAttachmentsProcessor.init(attachmentProtos: message.attachmentPointers!,
                                                                                     networkManager: TSNetworkManager.shared(),
                                                                                     transaction: transaction)
                             
                             if attachmentsProcessor.hasSupportedAttachments {
                                 attachmentsProcessor.fetchAttachments(for: nil,
-                                                                      primaryStorage: OWSPrimaryStorage.shared(),
+                                                                      transaction: transaction,
                                                                       success: { (attachmentStream) in
-                                                                        thread.image = attachmentStream.image()
-                                                                        thread.save(with: transaction)
-                                                                        attachmentStream.remove(with: transaction)
-                                                                        let formatString = NSLocalizedString("THREAD_IMAGE_CHANGED_MESSAGE", comment: "")
-                                                                        var messageString: String? = nil
-                                                                        if sender?.uniqueId == TSAccountManager.localUID() {
-                                                                            messageString = String.localizedStringWithFormat(formatString, NSLocalizedString("YOU_STRING", comment: ""))
-                                                                        } else {
-                                                                            let nameString: String = ((sender != nil) ? (sender?.fullName())! as String : NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: ""))
-                                                                            messageString = String.localizedStringWithFormat(formatString, nameString)
-                                                                        }
-                                                                        let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
-                                                                                                             in: thread,
-                                                                                                             infoMessageType: TSInfoMessageType.typeConversationUpdate,
-                                                                                                             customMessage: messageString!)
-                                                                        infoMessage.save(with: transaction)
+                                                                        OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite({ (transaction) in
+                                                                            thread.image = attachmentStream.image()
+                                                                            thread.save(with: transaction)
+                                                                            attachmentStream.remove(with: transaction)
+                                                                            let formatString = NSLocalizedString("THREAD_IMAGE_CHANGED_MESSAGE", comment: "")
+                                                                            var messageString: String? = nil
+                                                                            if sender?.uniqueId == TSAccountManager.localUID() {
+                                                                                messageString = String.localizedStringWithFormat(formatString, NSLocalizedString("YOU_STRING", comment: ""))
+                                                                            } else {
+                                                                                let nameString: String = ((sender != nil) ? (sender?.fullName())! as String : NSLocalizedString("UNKNOWN_CONTACT_NAME", comment: ""))
+                                                                                messageString = String.localizedStringWithFormat(formatString, nameString)
+                                                                            }
+                                                                            let infoMessage = TSInfoMessage.init(timestamp: message.timestamp,
+                                                                                                                 in: thread,
+                                                                                                                 infoMessageType: TSInfoMessageType.typeConversationUpdate,
+                                                                                                                 customMessage: messageString!)
+                                                                            infoMessage.save(with: transaction)
+                                                                        })
                                 }) { (error) in
                                     Logger.error("\(self.tag): Failed to fetch attachments for avatar with error: \(error.localizedDescription)")
                                 }
                             }
-                        })
+                        
                     }
                 }
             }
         }
     }
     
-    static private func handleThreadClear(message: IncomingControlMessage)
+    static private func handleThreadClear(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
     }
     
-    static private func handleThreadClose(message: IncomingControlMessage)
+    static private func handleThreadClose(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         // Treat these as archive messages
-        self.handleThreadArchive(message: message)
+        self.handleThreadArchive(message: message, transaction: transaction)
     }
     
-    static private func handleThreadArchive(message: IncomingControlMessage)
+    static private func handleThreadArchive(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite { transaction in
             let threadId = message.forstaPayload.object(forKey: FLThreadIDKey) as! String
@@ -314,7 +314,7 @@ class ControlMessageManager : NSObject
         }
     }
     
-    static private func handleThreadRestore(message: IncomingControlMessage)
+    static private func handleThreadRestore(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite { transaction in
             let threadId = message.forstaPayload.object(forKey: FLThreadIDKey) as! String
@@ -325,17 +325,17 @@ class ControlMessageManager : NSObject
         }
     }
     
-    static private func handleThreadDelete(message: IncomingControlMessage)
+    static private func handleThreadDelete(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
     }
     
-    static private func handleThreadSnooze(message: IncomingControlMessage)
+    static private func handleThreadSnooze(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
     }
     
-    static private func handleProvisionRequest(message: IncomingControlMessage)
+    static private func handleProvisionRequest(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         if let senderId: String = (message.forstaPayload.object(forKey: "sender") as! NSDictionary).object(forKey: "userId") as? String,
             let dataBlob: Dictionary<String, Any?> = message.forstaPayload.object(forKey: "data") as? Dictionary<String, Any?> {
@@ -358,7 +358,7 @@ class ControlMessageManager : NSObject
         }
     }
     
-    static private func handleMessageSyncRequest(message: IncomingControlMessage)
+    static private func handleMessageSyncRequest(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
         Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
     }

@@ -863,7 +863,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                              author:envelope.source
                                                                                             payload:jsonPayload
                                                                                         attachments:dataMessage.attachments];
-            [ControlMessageManager processIncomingControlMessageWithMessage:controlMessage];
+            [ControlMessageManager processIncomingControlMessageWithMessage:controlMessage transaction:transaction];
         }
         return nil;
         
