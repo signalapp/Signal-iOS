@@ -3380,9 +3380,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     }();
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext
-                                                                          source:source
-                                                                    sourceDevice:1
                                                                        timestamp:timestamp];
+    [envelopeBuilder setSource:source];
+    [envelopeBuilder setSourceDevice:1];
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
     if (error || !envelope) {
@@ -3901,8 +3901,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithType:envelopeType source:source sourceDevice:sourceDevice timestamp:timestamp];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithType:envelopeType timestamp:timestamp];
+    [envelopeBuilder setSource:source];
+    [envelopeBuilder setSourceDevice:sourceDevice];
     envelopeBuilder.content = content;
     NSError *error;
     NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];

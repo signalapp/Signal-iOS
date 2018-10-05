@@ -72,6 +72,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
++ (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid
+                                               serverTimestamp:(UInt64)serverTimestamp
+{
+    OWSAssertDebug(serverGuid.length > 0);
+    OWSAssertDebug(serverTimestamp > 0);
+
+    NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", serverGuid, serverTimestamp];
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
+}
+
 + (TSRequest *)deleteDeviceRequestWithDevice:(OWSDevice *)device
 {
     OWSAssertDebug(device);
@@ -281,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Crash app if UD cannot be enabled.
         OWSFail(@"Could not determine UD access key: %@.", error);
     }
-    BOOL allowUnrestrictedUD = [self.udManager shouldAllowUnrestrictedAccess] && udAccessKey != nil;
+    BOOL allowUnrestrictedUD = [self.udManager shouldAllowUnrestrictedAccessLocal] && udAccessKey != nil;
 
     NSMutableDictionary *accountAttributes = [@{
         @"signalingKey" : signalingKey,

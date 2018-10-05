@@ -88,9 +88,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
             let (promise, fulfill, reject) = Promise<Void>.pending()
 
-            let networkManager = SSKEnvironment.shared.networkManager
-
-            ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
+            ProfileFetcherJob().getProfile(recipientId: localRecipientId).then { _ -> Void in
                 Logger.info("verified recipient profile is in good shape: \(localRecipientId)")
 
                 fulfill(())

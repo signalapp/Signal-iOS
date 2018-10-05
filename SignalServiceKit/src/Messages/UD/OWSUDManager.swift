@@ -16,28 +16,34 @@ public enum OWSUDError: Error {
 
     @objc func setup()
 
+    @objc func trustRoot() -> ECPublicKey
+
     // MARK: - Recipient state
 
-    @objc func isUDRecipientId(_ recipientId: String) -> Bool
+    @objc func supportsUnidentifiedDelivery(recipientId: String) -> Bool
 
-    // No-op if this recipient id is already marked as a "UD recipient".
-    @objc func addUDRecipientId(_ recipientId: String)
+    @objc func setSupportsUnidentifiedDelivery(_ value: Bool, recipientId: String)
 
-    // No-op if this recipient id is already marked as _NOT_ a "UD recipient".
-    @objc func removeUDRecipientId(_ recipientId: String)
+    // Returns the UD access key for a given recipient if they are
+    // a UD recipient and we have a valid profile key for them.
+    @objc func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey?
 
     // MARK: - Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
     // logic can access the certificate data.
-    @objc func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
+    @objc func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
                                             failure:@escaping (Error) -> Void)
 
     // MARK: - Unrestricted Access
 
-    @objc func shouldAllowUnrestrictedAccess() -> Bool
+    @objc func shouldAllowUnrestrictedAccessLocal() -> Bool
 
-    @objc func setShouldAllowUnrestrictedAccess(_ value: Bool)
+    @objc func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
+
+    @objc func shouldAllowUnrestrictedAccess(recipientId: String) -> Bool
+
+    @objc func setShouldAllowUnrestrictedAccess(recipientId: String, shouldAllowUnrestrictedAccess: Bool)
 }
 
 // MARK: -
@@ -47,10 +53,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private let dbConnection: YapDatabaseConnection
 
-    private let kUDRecipientModeCollection = "kUDRecipientModeCollection"
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
+    private let kUDRecipientModeCollection = "kUDRecipientModeCollection"
+    private let kUDUnrestrictedAccessCollection = "kUDUnrestrictedAccessCollection"
 
     @objc
     public required init(primaryStorage: OWSPrimaryStorage) {
@@ -81,21 +88,46 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         ensureSenderCertificate().retainUntilComplete()
     }
 
+    // MARK: - Dependencies
+
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+
     // MARK: - Recipient state
 
     @objc
-    public func isUDRecipientId(_ recipientId: String) -> Bool {
+    public func supportsUnidentifiedDelivery(recipientId: String) -> Bool {
         return dbConnection.bool(forKey: recipientId, inCollection: kUDRecipientModeCollection, defaultValue: false)
     }
 
     @objc
-    public func addUDRecipientId(_ recipientId: String) {
-        dbConnection.setBool(true, forKey: recipientId, inCollection: kUDRecipientModeCollection)
+    public func setSupportsUnidentifiedDelivery(_ value: Bool, recipientId: String) {
+        if value {
+            dbConnection.setBool(true, forKey: recipientId, inCollection: kUDRecipientModeCollection)
+        } else {
+            dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
+        }
     }
 
+    // Returns the UD access key for a given recipient if they are
+    // a UD recipient and we have a valid profile key for them.
     @objc
-    public func removeUDRecipientId(_ recipientId: String) {
-        dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
+    public func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey? {
+        guard supportsUnidentifiedDelivery(recipientId: recipientId) else {
+            return nil
+        }
+        guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
+            // Mark as "not a UD recipient".
+            return nil
+        }
+        do {
+            let udAccessKey = try SMKUDAccessKey(profileKey: profileKey)
+            return udAccessKey
+        } catch {
+            Logger.error("Could not determine udAccessKey: \(error)")
+            return nil
+        }
     }
 
     // MARK: - Sender Certificate
@@ -107,17 +139,24 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
     #endif
 
-    private func senderCertificate() -> Data? {
+    private func senderCertificate() -> SMKSenderCertificate? {
         guard let certificateData = dbConnection.object(forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection) as? Data else {
             return nil
         }
 
-        guard isValidCertificate(certificateData: certificateData) else {
-            Logger.warn("Current sender certificate is not valid.")
+        do {
+            let certificate = try SMKSenderCertificate.parse(data: certificateData)
+
+            guard isValidCertificate(certificate) else {
+                Logger.warn("Current sender certificate is not valid.")
+                return nil
+            }
+
+            return certificate
+        } catch {
+            owsFailDebug("Certificate could not be parsed: \(error)")
             return nil
         }
-
-        return certificateData
     }
 
     private func setSenderCertificate(_ certificateData: Data) {
@@ -125,66 +164,97 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func ensureSenderCertificateObjC(success:@escaping (Data) -> Void,
-                                        failure:@escaping (Error) -> Void) {
+    public func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
+                                            failure:@escaping (Error) -> Void) {
         ensureSenderCertificate()
-            .then(execute: { certificateData in
-                success(certificateData)
+            .then(execute: { certificate in
+                success(certificate)
             })
             .catch(execute: { (error) in
                 failure(error)
             }).retainUntilComplete()
     }
 
-    public func ensureSenderCertificate() -> Promise<Data> {
+    public func ensureSenderCertificate() -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
-        if let certificateData = senderCertificate() {
-            return Promise(value: certificateData)
+        if let certificate = senderCertificate() {
+            return Promise(value: certificate)
         }
         // Try to obtain a new sender certificate.
-        return requestSenderCertificate().then { (certificateData) in
+        return requestSenderCertificate().then { (certificateData, certificate) in
+
             // Cache the current sender certificate.
             self.setSenderCertificate(certificateData)
 
-            return Promise(value: certificateData)
+            return Promise(value: certificate)
         }
     }
 
-    private func requestSenderCertificate() -> Promise<Data> {
-        return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) in
-            guard self.isValidCertificate(certificateData: certificateData) else {
+    private func requestSenderCertificate() -> Promise<(Data, SMKSenderCertificate)> {
+        return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) -> Promise<(Data, SMKSenderCertificate)> in
+            let certificate = try SMKSenderCertificate.parse(data: certificateData)
+
+            guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
-            return Promise(value: certificateData)
+            return Promise(value: (certificateData, certificate) )
         }
     }
 
-    private func isValidCertificate(certificateData: Data) -> Bool {
+    private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
+
+        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
+
+        // Ensure that the certificate will not expire in the next hour.
+        // We want a threshold long enough to ensure that any outgoing message
+        // sends will complete before the expiration.
+        let nowMs = NSDate.ows_millisecondTimeStamp()
+        let anHourFromNowMs = nowMs + kHourInMs
+
         do {
-            let certificate = try SMKSenderCertificate.parse(data: certificateData)
-            let expirationMs = certificate.expirationTimestamp
-            let nowMs = NSDate.ows_millisecondTimeStamp()
-            // Ensure that the certificate will not expire in the next hour.
-            // We want a threshold long enough to ensure that any outgoing message
-            // sends will complete before the expiration.
-            let isValid = nowMs + kHourInMs < expirationMs
-            return isValid
+            try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
+            return true
         } catch {
-            OWSLogger.error("Certificate could not be parsed: \(error)")
+            OWSLogger.error("Invalid certificate")
             return false
+        }
+    }
+
+    @objc
+    public func trustRoot() -> ECPublicKey {
+        guard let trustRootData = NSData(fromBase64String: kUDTrustRoot) else {
+            // This exits.
+            owsFail("Invalid trust root data.")
+        }
+
+        do {
+            return try ECPublicKey(serializedKeyData: trustRootData as Data)
+        } catch {
+            // This exits.
+            owsFail("Invalid trust root.")
         }
     }
 
     // MARK: - Unrestricted Access
 
     @objc
-    public func shouldAllowUnrestrictedAccess() -> Bool {
-        return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection, defaultValue: false)
+    public func shouldAllowUnrestrictedAccessLocal() -> Bool {
+        return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection, defaultValue: false)
     }
 
     @objc
-    public func setShouldAllowUnrestrictedAccess(_ value: Bool) {
-        dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDRecipientModeCollection)
+    public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
+        dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection)
+    }
+
+    @objc
+    public func shouldAllowUnrestrictedAccess(recipientId: String) -> Bool {
+        return dbConnection.bool(forKey: recipientId, inCollection: kUDUnrestrictedAccessCollection, defaultValue: false)
+    }
+
+    @objc
+    public func setShouldAllowUnrestrictedAccess(recipientId: String, shouldAllowUnrestrictedAccess: Bool) {
+        dbConnection.setBool(shouldAllowUnrestrictedAccess, forKey: recipientId, inCollection: kUDUnrestrictedAccessCollection)
     }
 }

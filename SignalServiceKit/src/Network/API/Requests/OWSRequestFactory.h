@@ -22,6 +22,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp;
 
++ (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid
+                                               serverTimestamp:(UInt64)serverTimestamp;
+
 + (TSRequest *)deleteDeviceRequestWithDevice:(OWSDevice *)device;
 
 + (TSRequest *)deviceProvisioningCodeRequest;

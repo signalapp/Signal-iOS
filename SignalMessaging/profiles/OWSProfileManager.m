@@ -495,7 +495,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     if (!localNumber) {
         return;
     }
-    [ProfileFetcherJob runWithRecipientId:localNumber networkManager:self.networkManager ignoreThrottling:YES];
+    [ProfileFetcherJob runWithRecipientId:localNumber ignoreThrottling:YES];
 }
 
 #pragma mark - Profile Whitelist
@@ -716,7 +716,6 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                               completion:^{
                                   dispatch_async(dispatch_get_main_queue(), ^(void) {
                                       [ProfileFetcherJob runWithRecipientId:recipientId
-                                                             networkManager:self.networkManager
                                                            ignoreThrottling:YES];
                                   });
                               }];

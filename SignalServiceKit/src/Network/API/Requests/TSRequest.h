@@ -2,13 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+@class SMKUDAccessKey;
+
 @interface TSRequest : NSMutableURLRequest
 
 @property (nonatomic) BOOL shouldHaveAuthorizationHeaders;
 @property (atomic, nullable) NSString *authUsername;
 @property (atomic, nullable) NSString *authPassword;
 
-@property (nonatomic, readonly) NSDictionary *parameters;
+@property (nonatomic, readonly) NSDictionary<NSString *, id> *parameters;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -25,5 +27,9 @@
 + (instancetype)requestWithUrl:(NSURL *)url
                         method:(NSString *)method
                     parameters:(nullable NSDictionary<NSString *, id> *)parameters;
+
+#pragma mark - UD
+
+- (void)useUDAuth:(SMKUDAccessKey *)udAccessKey;
 
 @end
