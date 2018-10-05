@@ -20,8 +20,9 @@
 #define FLControlMessageProvisionRequestKey @"provisionRequest"
 #define FLControlMessageSyncRequestKey @"syncRequest"
 #define FLControlMessageCallOfferKey @"callOffer"
+#define FLControlMessageCallAcceptOfferKey @"callAcceptOffer"
+#define FLControlMessageCallICECandidatesKey @"callICECandidates"
 #define FLControlMessageCallLeaveKey @"callLeave"
-#define FLControlMessageCallICECandidates @"callICECandidates"
 
 // Thread keys
 #define FLThreadTitleKey @"threadTitle"
