@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *signalId;
 @property (nonatomic, readonly) NSString *contactName;
-@property (nonatomic, readonly) NSString *colorName;
+@property (nonatomic, readonly) ConversationColorName colorName;
 @property (nonatomic, readonly) NSUInteger diameter;
 
 @end
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactId:(NSString *)contactId
                              name:(NSString *)name
-                        colorName:(NSString *)colorName
+                        colorName:(ConversationColorName)colorName
                          diameter:(NSUInteger)diameter
 {
     self = [super init];
@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithSignalId:(NSString *)signalId
-                       colorName:(NSString *)colorName
+                       colorName:(ConversationColorName)colorName
                         diameter:(NSUInteger)diameter
 {
     // Name for avatar initials.
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
 {
-    NSString *colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
+    ConversationColorName colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
     return [self initWithContactId:colorSeed name:nonSignalName colorName:(NSString *)colorName diameter:diameter];
 }
 
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(diameter > 0);
 
-    return [self initWithSignalId:localNumber colorName:kTSThread_DefaultConversationColorName diameter:diameter];
+    return [self initWithSignalId:localNumber colorName:kConversationColorName_Default diameter:diameter];
 }
 
 #pragma mark - Dependencies

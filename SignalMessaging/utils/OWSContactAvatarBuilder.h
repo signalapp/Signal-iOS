@@ -3,6 +3,7 @@
 //
 
 #import "OWSAvatarBuilder.h"
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Build an avatar for a Signal recipient
  */
-- (instancetype)initWithSignalId:(NSString *)signalId colorName:(NSString *)colorName diameter:(NSUInteger)diameter;
+- (instancetype)initWithSignalId:(NSString *)signalId
+                       colorName:(ConversationColorName)colorName
+                        diameter:(NSUInteger)diameter;
 
 /**
  * Build an avatar for a non-Signal recipient

@@ -19,7 +19,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kTSThread_DefaultConversationColorName = @"steel";
+ConversationColorName const ConversationColorNameCrimson = @"red";
+ConversationColorName const ConversationColorNameVermilion = @"orange";
+ConversationColorName const ConversationColorNameBurlap = @"brown";
+ConversationColorName const ConversationColorNameForest = @"green";
+ConversationColorName const ConversationColorNameWintergreen = @"light_green";
+ConversationColorName const ConversationColorNameTeal = @"teal";
+ConversationColorName const ConversationColorNameBlue = @"blue";
+ConversationColorName const ConversationColorNameIndigo = @"indigo";
+ConversationColorName const ConversationColorNameViolet = @"purple";
+ConversationColorName const ConversationColorNamePlum = @"pink";
+ConversationColorName const ConversationColorNameTaupe = @"blue_grey";
+ConversationColorName const ConversationColorNameSteel = @"grey";
+
+ConversationColorName const kConversationColorName_Default = ConversationColorNameSteel;
 
 @interface TSThread ()
 
@@ -78,19 +91,26 @@ NSString *const kTSThread_DefaultConversationColorName = @"steel";
         }
 
         // To be consistent with colors synced to desktop
-        NSString *colorName = [self.class stableColorNameForLegacyConversationWithString:colorSeed];
+        ConversationColorName colorName = [self.class stableColorNameForLegacyConversationWithString:colorSeed];
         OWSAssertDebug(colorName);
 
         _conversationColorName = colorName;
     } else if (![[[self class] conversationColorNames] containsObject:_conversationColorName]) {
         // If we'd persisted a non-mapped color name
-        NSString *_Nullable mappedColorName = self.class.legacyConversationColorMap[_conversationColorName];
-        if (mappedColorName) {
-            _conversationColorName = mappedColorName;
-        } else {
-            OWSFailDebug(@"failure: unexpected unmappable conversationColorName: %@", _conversationColorName);
-            _conversationColorName = kTSThread_DefaultConversationColorName;
+        ConversationColorName _Nullable mappedColorName = self.class.legacyConversationColorMap[_conversationColorName];
+
+        if (!mappedColorName) {
+            // We previously used the wrong values for the new colors, it's possible we persited them.
+            // map them to the proper value
+            mappedColorName = self.class.legacyFixupConversationColorMap[_conversationColorName];
         }
+
+        if (!mappedColorName) {
+            OWSFailDebug(@"failure: unexpected unmappable conversationColorName: %@", _conversationColorName);
+            mappedColorName = kConversationColorName_Default;
+        }
+
+        _conversationColorName = mappedColorName;
     }
 
     return self;
@@ -456,30 +476,37 @@ NSString *const kTSThread_DefaultConversationColorName = @"steel";
 
 #pragma mark - Conversation Color
 
-+ (NSArray<NSString *> *)colorNamesForNewConversation
+- (ConversationColorName)conversationColorName
+{
+    OWSAssertDebug([self.class.conversationColorNames containsObject:_conversationColorName]);
+    return _conversationColorName;
+}
+
++ (NSArray<ConversationColorName> *)colorNamesForNewConversation
 {
     // all conversation colors except "steel"
     return @[
-        @"crimson",
-        @"vermilion",
-        @"burlap",
-        @"forest",
-        @"wintergreen",
-        @"teal",
-        @"blue",
-        @"indigo",
-        @"violet",
-        @"plum",
-        @"taupe"
+        ConversationColorNameCrimson,
+        ConversationColorNameVermilion,
+        ConversationColorNameBurlap,
+        ConversationColorNameForest,
+        ConversationColorNameWintergreen,
+        ConversationColorNameTeal,
+        ConversationColorNameBlue,
+        ConversationColorNameIndigo,
+        ConversationColorNameViolet,
+        ConversationColorNamePlum,
+        ConversationColorNameTaupe,
     ];
 }
 
-+ (NSArray<NSString *> *)conversationColorNames
++ (NSArray<ConversationColorName> *)conversationColorNames
 {
-    return [self.colorNamesForNewConversation arrayByAddingObject:kTSThread_DefaultConversationColorName];
+    return [self.colorNamesForNewConversation arrayByAddingObject:kConversationColorName_Default];
 }
 
-+ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed colorNames:(NSArray<NSString *> *)colorNames
++ (ConversationColorName)stableConversationColorNameForString:(NSString *)colorSeed
+                                                   colorNames:(NSArray<ConversationColorName> *)colorNames
 {
     NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -496,22 +523,22 @@ NSString *const kTSThread_DefaultConversationColorName = @"steel";
     return [colorNames objectAtIndex:index];
 }
 
-+ (NSString *)stableColorNameForNewConversationWithString:(NSString *)colorSeed
++ (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed
 {
     return [self stableConversationColorNameForString:colorSeed colorNames:self.colorNamesForNewConversation];
 }
 
 // After introducing new conversation colors, we want to try to maintain as close as possible to the old color for an
 // existing thread.
-+ (NSString *)stableColorNameForLegacyConversationWithString:(NSString *)colorSeed
++ (ConversationColorName)stableColorNameForLegacyConversationWithString:(NSString *)colorSeed
 {
     NSString *legacyColorName =
         [self stableConversationColorNameForString:colorSeed colorNames:self.legacyConversationColorNames];
-    NSString *mappedColorName = self.class.legacyConversationColorMap[legacyColorName];
+    ConversationColorName _Nullable mappedColorName = self.class.legacyConversationColorMap[legacyColorName];
 
     if (!mappedColorName) {
         OWSFailDebug(@"failure: unexpected unmappable legacyColorName: %@", legacyColorName);
-        return kTSThread_DefaultConversationColorName;
+        return kConversationColorName_Default;
     }
 
     return mappedColorName;
@@ -533,38 +560,64 @@ NSString *const kTSThread_DefaultConversationColorName = @"steel";
     ];
 }
 
-+ (NSDictionary<NSString *, NSString *> *)legacyConversationColorMap
++ (NSDictionary<NSString *, ConversationColorName> *)legacyConversationColorMap
 {
-    static NSDictionary<NSString *, NSString *> *colorMap;
+    static NSDictionary<NSString *, ConversationColorName> *colorMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         colorMap = @{
-            @"red" : @"crimson",
-            @"deep_orange" : @"crimson",
-            @"orange" : @"vermilion",
-            @"amber" : @"vermilion",
-            @"brown" : @"burlap",
-            @"yellow" : @"burlap",
-            @"pink" : @"plum",
-            @"purple" : @"violet",
-            @"deep_purple" : @"violet",
-            @"indigo" : @"indigo",
-            @"blue" : @"blue",
-            @"light_blue" : @"blue",
-            @"cyan" : @"teal",
-            @"teal" : @"teal",
-            @"green" : @"forest",
-            @"light_green" : @"wintergreen",
-            @"lime" : @"wintergreen",
-            @"blue_grey" : @"taupe",
-            @"grey" : @"steel",
+            @"red" : ConversationColorNameCrimson,
+            @"deep_orange" : ConversationColorNameCrimson,
+            @"orange" : ConversationColorNameVermilion,
+            @"amber" : ConversationColorNameVermilion,
+            @"brown" : ConversationColorNameBurlap,
+            @"yellow" : ConversationColorNameBurlap,
+            @"pink" : ConversationColorNamePlum,
+            @"purple" : ConversationColorNameViolet,
+            @"deep_purple" : ConversationColorNameViolet,
+            @"indigo" : ConversationColorNameIndigo,
+            @"blue" : ConversationColorNameBlue,
+            @"light_blue" : ConversationColorNameBlue,
+            @"cyan" : ConversationColorNameTeal,
+            @"teal" : ConversationColorNameTeal,
+            @"green" : ConversationColorNameForest,
+            @"light_green" : ConversationColorNameWintergreen,
+            @"lime" : ConversationColorNameWintergreen,
+            @"blue_grey" : ConversationColorNameTaupe,
+            @"grey" : ConversationColorNameSteel,
         };
     });
 
     return colorMap;
 }
 
-- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction
+// we temporarily used the wrong value for the new color names.
++ (NSDictionary<NSString *, ConversationColorName> *)legacyFixupConversationColorMap
+{
+    static NSDictionary<NSString *, ConversationColorName> *colorMap;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorMap = @{
+            @"crimson" : ConversationColorNameCrimson,
+            @"vermilion" : ConversationColorNameVermilion,
+            @"burlap" : ConversationColorNameBurlap,
+            @"forest" : ConversationColorNameForest,
+            @"wintergreen" : ConversationColorNameWintergreen,
+            @"teal" : ConversationColorNameTeal,
+            @"blue" : ConversationColorNameBlue,
+            @"indigo" : ConversationColorNameIndigo,
+            @"violet" : ConversationColorNameViolet,
+            @"plum" : ConversationColorNamePlum,
+            @"taupe" : ConversationColorNameTaupe,
+            @"steel" : ConversationColorNameSteel,
+        };
+    });
+
+    return colorMap;
+}
+
+- (void)updateConversationColorName:(ConversationColorName)colorName
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSThread *thread) {
