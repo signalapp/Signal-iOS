@@ -130,6 +130,10 @@ public enum SignalIOSProtoError: Error {
                                                               entityData: entityData)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -221,6 +225,10 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
         let result = SignalIOSProtoBackupSnapshot(proto: proto,
                                                   entity: entity)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 

@@ -85,6 +85,10 @@ public enum FingerprintProtoError: Error {
                                                         identityData: identityData)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -207,6 +211,10 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
                                                          localFingerprint: localFingerprint,
                                                          remoteFingerprint: remoteFingerprint)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 

@@ -100,6 +100,10 @@ public enum ProvisioningProtoError: Error {
                                                         body: body)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -282,6 +286,10 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
                                                        profileKey: profileKey,
                                                        readReceipts: readReceipts)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 

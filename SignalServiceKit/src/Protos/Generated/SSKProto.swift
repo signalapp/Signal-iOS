@@ -246,6 +246,10 @@ public enum SSKProtoError: Error {
                                       timestamp: timestamp)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -404,6 +408,10 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
                                      receiptMessage: receiptMessage)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -512,6 +520,10 @@ extension SSKProtoContent.SSKProtoContentBuilder {
                                               sessionDescription: sessionDescription)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -619,6 +631,10 @@ extension SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder {
                                                id: id,
                                                sessionDescription: sessionDescription)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -758,6 +774,10 @@ extension SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder {
                                                   sdp: sdp)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -851,6 +871,10 @@ extension SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder {
                                              id: id)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -943,6 +967,10 @@ extension SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder {
         let result = SSKProtoCallMessageHangup(proto: proto,
                                                id: id)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -1121,6 +1149,10 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
                                          busy: busy)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -1277,6 +1309,10 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
                                                               thumbnail: thumbnail)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -1420,6 +1456,10 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
                                               author: author,
                                               attachments: attachments)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -1596,6 +1636,10 @@ extension SSKProtoDataMessageQuote.SSKProtoDataMessageQuoteBuilder {
         let result = SSKProtoDataMessageContactName(proto: proto)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -1744,6 +1788,10 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         let result = SSKProtoDataMessageContactPhone(proto: proto)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -1891,6 +1939,10 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
 
         let result = SSKProtoDataMessageContactEmail(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -2139,6 +2191,10 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         let result = SSKProtoDataMessageContactPostalAddress(proto: proto)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -2242,6 +2298,10 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
         let result = SSKProtoDataMessageContactAvatar(proto: proto,
                                                       avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -2423,6 +2483,10 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
                                                 address: address,
                                                 avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -2669,6 +2733,10 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
                                          contact: contact)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -2758,6 +2826,10 @@ extension SSKProtoDataMessage.SSKProtoDataMessageBuilder {
 
         let result = SSKProtoNullMessage(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -2887,6 +2959,10 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
         let result = SSKProtoReceiptMessage(proto: proto,
                                             type: type)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -3053,6 +3129,10 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
                                       destination: destination)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -3188,6 +3268,10 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
                                              message: message)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -3295,6 +3379,10 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
                                                  blob: blob)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -3384,6 +3472,10 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
         let result = SSKProtoSyncMessageGroups(proto: proto,
                                                blob: blob)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -3487,6 +3579,10 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
 
         let result = SSKProtoSyncMessageBlocked(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -3611,6 +3707,10 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
                                                 type: type)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -3719,6 +3819,10 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
                                              timestamp: timestamp)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -3805,6 +3909,10 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 
         let result = SSKProtoSyncMessageConfiguration(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -4033,6 +4141,10 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
                                          verified: verified,
                                          configuration: configuration)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -4286,6 +4398,10 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
                                                id: id)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -4473,6 +4589,10 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
                                           avatar: avatar)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -4576,6 +4696,10 @@ extension SSKProtoGroupContext.SSKProtoGroupContextBuilder {
 
         let result = SSKProtoContactDetailsAvatar(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -4783,6 +4907,10 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
                                             verified: verified)
         return result
     }
+
+    @objc public override var description: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -4886,6 +5014,10 @@ extension SSKProtoContactDetails.SSKProtoContactDetailsBuilder {
 
         let result = SSKProtoGroupDetailsAvatar(proto: proto)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
@@ -5087,6 +5219,10 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
                                           id: id,
                                           avatar: avatar)
         return result
+    }
+
+    @objc public override var description: String {
+        return "\(proto)"
     }
 }
 
