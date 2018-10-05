@@ -892,7 +892,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     switch (self.webSocketType) {
         case OWSWebSocketTypeUD:
             // UD socket is unauthenticated.
-            return @"?";
+            return @"";
         case OWSWebSocketTypeDefault:
             return
                 [NSString stringWithFormat:@"?login=%@&password=%@",

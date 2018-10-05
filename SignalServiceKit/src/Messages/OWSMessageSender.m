@@ -63,7 +63,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     if (error) {
         return error;
     }
-    OWSFailDebug(@"Using fallback error.") return OWSErrorWithCodeDescription(fallbackCode, fallbackErrorDescription);
+    OWSCFailDebug(@"Using fallback error.");
+    return OWSErrorWithCodeDescription(fallbackCode, fallbackErrorDescription);
 }
 
 #pragma mark -
@@ -1004,7 +1005,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [request useUDAuth:messageSend.udAccessKey];
     }
 
-    OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
+    OWSWebSocketType webSocketType = (messageSend.isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
     BOOL canMakeWebsocketRequests = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] &&
                                      !messageSend.hasWebsocketSendFailed);
     if (canMakeWebsocketRequests) {
