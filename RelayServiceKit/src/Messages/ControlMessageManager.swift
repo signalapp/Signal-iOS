@@ -34,9 +34,11 @@ class ControlMessageManager : NSObject
             self.handleThreadSnooze(message: message)
         case FLControlMessageCallOfferKey:
             self.handleCallOffer(message: message)
+        case FLControlMessageCallAcceptOfferKey:
+            self.handleCallAcceptOffer(message: message)
         case FLControlMessageCallLeaveKey:
             self.handleCallLeave(message: message)
-        case FLControlMessageCallICECandidates:
+        case FLControlMessageCallICECandidatesKey:
             self.handleCallICECandidates(message: message)
         default:
             Logger.info("Unhandled control message of type: \(message.controlMessageType)")
@@ -103,6 +105,12 @@ class ControlMessageManager : NSObject
         //
         //        Environment.shared().callService.handleReceivedOffer(offer: callOffer)
     }
+    
+    static private func handleCallAcceptOffer(message: IncomingControlMessage)
+    {
+        Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
+    }
+    
     
     static private func handleCallLeave(message: IncomingControlMessage)
     {
