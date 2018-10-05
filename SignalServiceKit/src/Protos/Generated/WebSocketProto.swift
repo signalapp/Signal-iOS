@@ -147,6 +147,10 @@ public enum WebSocketProtoError: Error {
                                                            requestID: requestID)
         return result
     }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -304,6 +308,10 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
                                                             status: status)
         return result
     }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
 }
 
 #if DEBUG
@@ -454,6 +462,10 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
                                                     request: request,
                                                     response: response)
         return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
     }
 }
 
