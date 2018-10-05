@@ -25,6 +25,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSMessageDecrypter *messageDecrypter;
 @property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic) OWSMessageReceiver *messageReceiver;
+@property (nonatomic) TSSocketManager *socketManager;
 
 @end
 
@@ -49,6 +50,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
+                          socketManager:(TSSocketManager *)socketManager
 {
     self = [super init];
     if (!self) {
@@ -68,6 +70,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageDecrypter);
     OWSAssertDebug(batchMessageProcessor);
     OWSAssertDebug(messageReceiver);
+    OWSAssertDebug(socketManager);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -82,6 +85,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageDecrypter = messageDecrypter;
     _batchMessageProcessor = batchMessageProcessor;
     _messageReceiver = messageReceiver;
+    _socketManager = socketManager;
 
     return self;
 }

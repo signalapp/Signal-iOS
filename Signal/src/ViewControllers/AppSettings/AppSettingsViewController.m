@@ -148,16 +148,16 @@
                                          @"Error indicating that this device is no longer registered.");
                                      accessoryLabel.textColor = [UIColor ows_redColor];
                                  } else {
-                                     switch ([TSSocketManager sharedManager].state) {
-                                         case SocketManagerStateClosed:
+                                     switch (TSSocketManager.shared.highestSocketState) {
+                                         case OWSWebSocketStateClosed:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
                                              accessoryLabel.textColor = [UIColor ows_redColor];
                                              break;
-                                         case SocketManagerStateConnecting:
+                                         case OWSWebSocketStateConnecting:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
                                              accessoryLabel.textColor = [UIColor ows_yellowColor];
                                              break;
-                                         case SocketManagerStateOpen:
+                                         case OWSWebSocketStateOpen:
                                              accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
                                              accessoryLabel.textColor = [UIColor ows_greenColor];
                                              break;
@@ -473,7 +473,7 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(socketStateDidChange)
-                                                 name:kNSNotification_SocketManagerStateDidChange
+                                                 name:kNSNotification_OWSWebSocketStateDidChange
                                                object:nil];
 }
 

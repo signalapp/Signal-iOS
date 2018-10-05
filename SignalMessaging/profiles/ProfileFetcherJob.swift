@@ -37,7 +37,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private var socketManager: TSSocketManager {
-        return TSSocketManager.shared()
+        return TSSocketManager.shared
     }
 
     private var primaryStorage: OWSPrimaryStorage {
@@ -46,6 +46,14 @@ public class ProfileFetcherJob: NSObject {
 
     private var udManager: OWSUDManager {
         return SSKEnvironment.shared.udManager
+    }
+
+    private var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
+    private var identityManager: OWSIdentityManager {
+        return SSKEnvironment.shared.identityManager
     }
 
     // MARK: -
@@ -126,8 +134,10 @@ public class ProfileFetcherJob: NSObject {
 
         let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
 
-        if TSSocketManager.canMakeRequests() {
+        // TODO: Use UD socket for some profile gets.
+        if socketManager.canMakeRequests(of: .default) {
             self.socketManager.make(request,
+                                    webSocketType: .default,
                 success: { (responseObject: Any?) -> Void in
                     do {
                         let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
@@ -165,7 +175,7 @@ public class ProfileFetcherJob: NSObject {
     private func updateProfile(signalServiceProfile: SignalServiceProfile) {
         verifyIdentityUpToDateAsync(recipientId: signalServiceProfile.recipientId, latestIdentityKey: signalServiceProfile.identityKey)
 
-        OWSProfileManager.shared().updateProfile(forRecipientId: signalServiceProfile.recipientId,
+        profileManager.updateProfile(forRecipientId: signalServiceProfile.recipientId,
                                                  profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                                  avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
@@ -179,7 +189,7 @@ public class ProfileFetcherJob: NSObject {
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if OWSIdentityManager.shared().saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
                 Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
                 self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
             } else {

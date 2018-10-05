@@ -172,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // The service implementation of the socket connection caches the linked device state,
                 // so all sync message sends will fail on the socket until it is cycled.
-                [TSSocketManager.sharedManager cycleSocket];
+                [TSSocketManager.shared cycleSocket];
             });
         }
         failure:^(NSError *error) {

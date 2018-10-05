@@ -54,8 +54,8 @@ static double const STALLED_PROGRESS = 0.9;
 
 - (void)initializeObserver {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketManagerStateDidChange)
-                                                 name:kNSNotification_SocketManagerStateDidChange
+                                             selector:@selector(OWSWebSocketStateDidChange)
+                                                 name:kNSNotification_OWSWebSocketStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(isCensorshipCircumventionActiveDidChange:)
@@ -70,7 +70,8 @@ static double const STALLED_PROGRESS = 0.9;
     [self updateSocketStatusView];
 }
 
-- (void)socketManagerStateDidChange {
+- (void)OWSWebSocketStateDidChange
+{
     OWSAssertIsOnMainThread();
 
     [self updateSocketStatusView];
@@ -86,8 +87,8 @@ static double const STALLED_PROGRESS = 0.9;
         return;
     }
 
-    switch ([TSSocketManager sharedManager].state) {
-        case SocketManagerStateClosed:
+    switch (TSSocketManager.shared.highestSocketState) {
+        case OWSWebSocketStateClosed:
             if (_socketStatusView == nil) {
                 [self initializeSocketStatusBar];
                 [_updateStatusTimer invalidate];
@@ -101,10 +102,10 @@ static double const STALLED_PROGRESS = 0.9;
                 [_updateStatusTimer invalidate];
             }
             break;
-        case SocketManagerStateConnecting:
+        case OWSWebSocketStateConnecting:
             // Do nothing.
             break;
-        case SocketManagerStateOpen:
+        case OWSWebSocketStateOpen:
             [_updateStatusTimer invalidate];
             [_socketStatusView removeFromSuperview];
             _socketStatusView = nil;
