@@ -29,7 +29,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        NSString *colorName = thread.conversationColorName;
+        ConversationColorName colorName = thread.conversationColorName;
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
                                                                 colorName:colorName
                                                                  diameter:diameter];

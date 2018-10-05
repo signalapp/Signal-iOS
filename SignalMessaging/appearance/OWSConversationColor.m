@@ -5,12 +5,13 @@
 #import "OWSConversationColor.h"
 #import "Theme.h"
 #import "UIColor+OWS.h"
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor ()
 
-@property (nonatomic) NSString *name;
+@property (nonatomic) ConversationColorName name;
 @property (nonatomic) UIColor *primaryColor;
 @property (nonatomic) UIColor *shadeColor;
 @property (nonatomic) UIColor *tintColor;
@@ -21,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSConversationColor
 
-+ (OWSConversationColor *)conversationColorWithName:(NSString *)name
++ (OWSConversationColor *)conversationColorWithName:(ConversationColorName)name
                                        primaryColor:(UIColor *)primaryColor
                                          shadeColor:(UIColor *)shadeColor
                                           tintColor:(UIColor *)tintColor
@@ -245,51 +246,51 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         // Order here affects the order in the conversation color picker.
         allConversationColors = @[
-            [OWSConversationColor conversationColorWithName:@"crimson"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameCrimson
                                                primaryColor:self.ows_crimsonColor
                                                  shadeColor:self.ows_crimsonShadeColor
                                                   tintColor:self.ows_crimsonTintColor],
-            [OWSConversationColor conversationColorWithName:@"vermilion"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameVermilion
                                                primaryColor:self.ows_vermilionColor
                                                  shadeColor:self.ows_vermilionShadeColor
                                                   tintColor:self.ows_vermilionTintColor],
-            [OWSConversationColor conversationColorWithName:@"burlap"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameBurlap
                                                primaryColor:self.ows_burlapColor
                                                  shadeColor:self.ows_burlapShadeColor
                                                   tintColor:self.ows_burlapTintColor],
-            [OWSConversationColor conversationColorWithName:@"forest"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameForest
                                                primaryColor:self.ows_forestColor
                                                  shadeColor:self.ows_forestShadeColor
                                                   tintColor:self.ows_forestTintColor],
-            [OWSConversationColor conversationColorWithName:@"wintergreen"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameWintergreen
                                                primaryColor:self.ows_wintergreenColor
                                                  shadeColor:self.ows_wintergreenShadeColor
                                                   tintColor:self.ows_wintergreenTintColor],
-            [OWSConversationColor conversationColorWithName:@"teal"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameTeal
                                                primaryColor:self.ows_tealColor
                                                  shadeColor:self.ows_tealShadeColor
                                                   tintColor:self.ows_tealTintColor],
-            [OWSConversationColor conversationColorWithName:@"blue"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameBlue
                                                primaryColor:self.ows_blueColor
                                                  shadeColor:self.ows_blueShadeColor
                                                   tintColor:self.ows_blueTintColor],
-            [OWSConversationColor conversationColorWithName:@"indigo"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameIndigo
                                                primaryColor:self.ows_indigoColor
                                                  shadeColor:self.ows_indigoShadeColor
                                                   tintColor:self.ows_indigoTintColor],
-            [OWSConversationColor conversationColorWithName:@"violet"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameViolet
                                                primaryColor:self.ows_violetColor
                                                  shadeColor:self.ows_violetShadeColor
                                                   tintColor:self.ows_violetTintColor],
-            [OWSConversationColor conversationColorWithName:@"plum"
+            [OWSConversationColor conversationColorWithName:ConversationColorNamePlum
                                                primaryColor:self.ows_plumColor
                                                  shadeColor:self.ows_plumShadeColor
                                                   tintColor:self.ows_plumTintColor],
-            [OWSConversationColor conversationColorWithName:@"taupe"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameTaupe
                                                primaryColor:self.ows_taupeColor
                                                  shadeColor:self.ows_taupeShadeColor
                                                   tintColor:self.ows_taupeTintColor],
-            [OWSConversationColor conversationColorWithName:@"steel"
+            [OWSConversationColor conversationColorWithName:ConversationColorNameSteel
                                                primaryColor:self.ows_steelColor
                                                  shadeColor:self.ows_steelShadeColor
                                                   tintColor:self.ows_steelTintColor],
@@ -299,12 +300,12 @@ NS_ASSUME_NONNULL_BEGIN
     return allConversationColors;
 }
 
-+ (NSDictionary<NSString *, OWSConversationColor *> *)conversationColorMap
++ (NSDictionary<ConversationColorName, OWSConversationColor *> *)conversationColorMap
 {
-    static NSDictionary<NSString *, OWSConversationColor *> *colorMap;
+    static NSDictionary<ConversationColorName, OWSConversationColor *> *colorMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSMutableDictionary<NSString *, OWSConversationColor *> *mutableColorMap = [NSMutableDictionary new];
+        NSMutableDictionary<ConversationColorName, OWSConversationColor *> *mutableColorMap = [NSMutableDictionary new];
         for (OWSConversationColor *conversationColor in self.allConversationColors) {
             mutableColorMap[conversationColor.name] = conversationColor;
         }
@@ -314,59 +315,32 @@ NS_ASSUME_NONNULL_BEGIN
     return colorMap;
 }
 
-+ (NSDictionary<NSString *, NSString *> *)ows_legacyConversationColorMap
++ (NSArray<ConversationColorName> *)conversationColorNames
 {
-    static NSDictionary<NSString *, NSString *> *colorMap;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        colorMap = @{
-            @"red" : @"crimson",
-            @"deep_orange" : @"crimson",
-            @"orange" : @"vermilion",
-            @"amber" : @"vermilion",
-            @"brown" : @"burlap",
-            @"yellow" : @"burlap",
-            @"pink" : @"plum",
-            @"purple" : @"violet",
-            @"deep_purple" : @"violet",
-            @"indigo" : @"indigo",
-            @"blue" : @"blue",
-            @"light_blue" : @"blue",
-            @"cyan" : @"teal",
-            @"teal" : @"teal",
-            @"green" : @"forest",
-            @"light_green" : @"wintergreen",
-            @"lime" : @"wintergreen",
-            @"blue_grey" : @"taupe",
-            @"grey" : @"steel",
-        };
-    });
-
-    return colorMap;
-}
-
-+ (NSArray<NSString *> *)conversationColorNames
-{
-    NSMutableArray<NSString *> *names = [NSMutableArray new];
+    NSMutableArray<ConversationColorName> *names = [NSMutableArray new];
     for (OWSConversationColor *conversationColor in self.allConversationColors) {
         [names addObject:conversationColor.name];
     }
+#ifdef DEBUG
+    NSSet<ConversationColorName> *colorNameSet = [NSSet setWithArray:names];
+    // These constants are duplicated in two places. So this canary exists to make sure they stay in sync.
+    NSSet<ConversationColorName> *threadColorNameSet = [NSSet setWithArray:TSThread.conversationColorNames];
+    OWSAssertDebug([colorNameSet isEqual:threadColorNameSet]);
+#endif
     return [names copy];
 }
 
-+ (nullable OWSConversationColor *)conversationColorForColorName:(NSString *)conversationColorName
++ (nullable OWSConversationColor *)conversationColorForColorName:(ConversationColorName)conversationColorName
 {
-    NSString *_Nullable mappedColorName = self.ows_legacyConversationColorMap[conversationColorName.lowercaseString];
-    if (mappedColorName) {
-        conversationColorName = mappedColorName;
-    } else {
-        OWSAssertDebug(self.conversationColorMap[conversationColorName] != nil);
-    }
+    OWSConversationColor *_Nullable result = self.conversationColorMap[conversationColorName];
 
-    return self.conversationColorMap[conversationColorName];
+    // Any mapping to colorNames should be done in TSThread before this method is called.
+    OWSAssertDebug(result != nil);
+
+    return result;
 }
 
-+ (OWSConversationColor *)conversationColorOrDefaultForColorName:(NSString *)conversationColorName
++ (OWSConversationColor *)conversationColorOrDefaultForColorName:(ConversationColorName)conversationColorName
 {
     OWSConversationColor *_Nullable conversationColor = [self conversationColorForColorName:conversationColorName];
     if (conversationColor) {
@@ -375,16 +349,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [self defaultConversationColor];
 }
 
-+ (NSString *)defaultConversationColorName
-{
-    NSString *conversationColorName = @"steel";
-    OWSAssert([self.conversationColorNames containsObject:conversationColorName]);
-    return conversationColorName;
-}
-
 + (OWSConversationColor *)defaultConversationColor
 {
-    return [self conversationColorForColorName:self.defaultConversationColorName];
+    return [self conversationColorForColorName:kConversationColorName_Default];
 }
 
 @end

@@ -468,7 +468,7 @@ const CGFloat kIconViewLength = 24;
     [mainSection
         addItem:[OWSTableItem
                     itemWithCustomCellBlock:^{
-                        NSString *colorName = self.thread.conversationColorName;
+                        ConversationColorName colorName = self.thread.conversationColorName;
                         UIColor *currentColor =
                             [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
                         NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",

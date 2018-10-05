@@ -10,10 +10,25 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
+typedef NSString *ConversationColorName NS_STRING_ENUM;
+extern ConversationColorName const ConversationColorNameCrimson;
+extern ConversationColorName const ConversationColorNameVermilion;
+extern ConversationColorName const ConversationColorNameBurlap;
+extern ConversationColorName const ConversationColorNameForest;
+extern ConversationColorName const ConversationColorNameWintergreen;
+extern ConversationColorName const ConversationColorNameTeal;
+extern ConversationColorName const ConversationColorNameBlue;
+extern ConversationColorName const ConversationColorNameIndigo;
+extern ConversationColorName const ConversationColorNameViolet;
+extern ConversationColorName const ConversationColorNamePlum;
+extern ConversationColorName const ConversationColorNameTaupe;
+extern ConversationColorName const ConversationColorNameSteel;
+
+extern ConversationColorName const kConversationColorName_Default;
+
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
-
 @interface TSThread : TSYapDatabaseObject
 
 // YES IFF this thread has ever had a message.
@@ -33,10 +48,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSString *)name;
 
-@property (nonatomic, readonly) NSString *conversationColorName;
+@property (nonatomic, readonly) ConversationColorName conversationColorName;
 
-- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (NSString *)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
+- (void)updateConversationColorName:(ConversationColorName)colorName
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
+@property (class, nonatomic, readonly) NSArray<ConversationColorName> *conversationColorNames;
 
 /**
  * @returns

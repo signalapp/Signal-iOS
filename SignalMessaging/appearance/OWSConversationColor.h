@@ -2,20 +2,21 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/TSThread.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSConversationColor : NSObject
 
-@property (nonatomic, readonly) NSString *name;
+@property (nonatomic, readonly) ConversationColorName name;
 @property (nonatomic, readonly) UIColor *primaryColor;
 @property (nonatomic, readonly) UIColor *shadeColor;
 @property (nonatomic, readonly) UIColor *tintColor;
 
 @property (nonatomic, readonly) UIColor *themeColor;
 
-+ (OWSConversationColor *)conversationColorWithName:(NSString *)name
++ (OWSConversationColor *)conversationColorWithName:(ConversationColorName)name
                                        primaryColor:(UIColor *)primaryColor
                                          shadeColor:(UIColor *)shadeColor
                                           tintColor:(UIColor *)tintColor;
@@ -66,18 +67,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Conversation Colors
 
-+ (nullable OWSConversationColor *)conversationColorForColorName:(NSString *)colorName
++ (nullable OWSConversationColor *)conversationColorForColorName:(ConversationColorName)colorName
     NS_SWIFT_NAME(conversationColor(colorName:));
 
 // If the conversation color name is valid, return its colors.
 // Otherwise return the "default" conversation colors.
-+ (OWSConversationColor *)conversationColorOrDefaultForColorName:(NSString *)conversationColorName
++ (OWSConversationColor *)conversationColorOrDefaultForColorName:(ConversationColorName)conversationColorName
     NS_SWIFT_NAME(conversationColorOrDefault(colorName:));
 
-@property (class, readonly, nonatomic) NSArray<NSString *> *conversationColorNames;
-
-+ (NSString *)defaultConversationColorName;
-+ (OWSConversationColor *)defaultConversationColor;
+@property (class, readonly, nonatomic) NSArray<ConversationColorName> *conversationColorNames;
 
 @end
 

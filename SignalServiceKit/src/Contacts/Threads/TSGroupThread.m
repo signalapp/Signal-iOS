@@ -242,7 +242,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                                       userInfo:userInfo];
 }
 
-+ (NSString *)defaultConversationColorNameForGroupId:(NSData *)groupId
++ (ConversationColorName)defaultConversationColorNameForGroupId:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
 

@@ -44,7 +44,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 - (void)fireAvatarChangedNotification;
 
-+ (NSString *)defaultConversationColorNameForGroupId:(NSData *)groupId;
++ (ConversationColorName)defaultConversationColorNameForGroupId:(NSData *)groupId;
 
 @end
 
