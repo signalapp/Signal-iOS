@@ -3727,8 +3727,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                serverTimestamp:nil
-                                                                     serverGuid:nil];
+                                                                serverTimestamp:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3768,8 +3767,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                serverTimestamp:nil
-                                                                     serverGuid:nil];
+                                                                serverTimestamp:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -4231,8 +4229,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                serverTimestamp:nil
-                                                                     serverGuid:nil];
+                                                                serverTimestamp:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
@@ -4273,8 +4270,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         expiresInSeconds:60
                            quotedMessage:nil
                             contactShare:nil
-                         serverTimestamp:nil
-                              serverGuid:nil];
+                         serverTimestamp:nil];
     // private setter to avoid starting expire machinery.
     message.read = YES;
     [message save];
@@ -4596,8 +4592,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    expiresInSeconds:0
                                                       quotedMessage:quotedMessage
                                                        contactShare:nil
-                                                    serverTimestamp:nil
-                                                         serverGuid:nil];
+                                                    serverTimestamp:nil];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }
