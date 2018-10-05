@@ -827,14 +827,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 //        [builder setGroup:groupBuilder.build];
 //    }
     
-//    // Message Attachments
-//    if (!attachmentWasGroupAvatar) {
-//        NSMutableArray *attachments = [NSMutableArray new];
-//        for (NSString *attachmentId in self.attachmentIds) {
-//            [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
-//        }
-//        [builder setAttachmentsArray:attachments];
-//    }
+    // Message Attachments
+    NSMutableArray *attachments = [NSMutableArray new];
+    for (NSString *attachmentId in self.attachmentIds) {
+        [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
+    }
+    [builder setAttachmentsArray:attachments];
 
     // Quoted Reply
     OWSSignalServiceProtosDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;

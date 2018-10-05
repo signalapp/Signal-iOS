@@ -284,7 +284,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if ([self.messageType isEqualToString:@"control"]) {
         return @"";
     } else {
-        OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
+        DDLogDebug(@"%@ message has neither body nor attachment.", self.logTag);
         // TODO: We should do better here.
         return @"";
     }
