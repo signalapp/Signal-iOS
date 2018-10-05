@@ -15,7 +15,6 @@ update_dependencies:
 	bundle exec pod update
 
 dependencies: update_dependencies
-	git submodule update --init
 	bundle exec pod install
 
 build: dependencies
