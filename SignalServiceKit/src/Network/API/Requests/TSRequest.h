@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+@class SMKUDAccessKey;
+
 @interface TSRequest : NSMutableURLRequest
 
 @property (nonatomic) BOOL shouldHaveAuthorizationHeaders;
@@ -25,5 +27,9 @@
 + (instancetype)requestWithUrl:(NSURL *)url
                         method:(NSString *)method
                     parameters:(nullable NSDictionary<NSString *, id> *)parameters;
+
+#pragma mark - UD
+
+- (void)useUDAuth:(SMKUDAccessKey *)udAccessKey;
 
 @end

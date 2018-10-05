@@ -39,7 +39,6 @@
 #import "TSOutgoingMessage.h"
 #import "TSPreKeyManager.h"
 #import "TSQuotedMessage.h"
-#import "TSRequest+UD.h"
 #import "TSRequest.h"
 #import "TSSocketManager.h"
 #import "TSThread.h"
@@ -232,7 +231,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return self;
 }
 
-#pragma mark -Dependencies
+#pragma mark - Dependencies
 
 - (id<ContactsManagerProtocol>)contactsManager
 {
@@ -467,6 +466,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      success:(void (^)(void))success
                      failure:(RetryableFailureHandler)failure
 {
+    if (message.thread && message.thread.isGroupThread) {
+        [self saveInfoMessageForGroupMessage:message inThread:message.thread];
+    }
+
     [self.udManager
         ensureSenderCertificateObjCWithSuccess:^(SMKSenderCertificate *senderCertificate) {
             [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
@@ -881,10 +884,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Consume an attempt.
     messageSend.remainingAttempts = messageSend.remainingAttempts - 1;
 
-    BOOL isUDSend = (messageSend.canUseUD && messageSend.udAccessKey != nil && messageSend.senderCertificate != nil);
-    OWSLogVerbose(@"isUDSend: %d, canUseUD: %d, udAccessKey: %d, senderCertificate: %d",
+    BOOL isUDSend
+        = (!messageSend.hasUDAuthFailed && messageSend.udAccessKey != nil && messageSend.senderCertificate != nil);
+    OWSLogVerbose(@"isUDSend: %d, hasUDAuthFailed: %d, udAccessKey: %d, senderCertificate: %d",
         isUDSend,
-        messageSend.canUseUD,
+        messageSend.hasUDAuthFailed,
         messageSend.udAccessKey != nil,
         messageSend.senderCertificate != nil);
 
@@ -973,7 +977,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     // TODO: UD sends over websocket.
-    if (messageSend.useWebsocketIfAvailable && TSSocketManager.canMakeRequests && !isUDSend) {
+    if (!messageSend.hasWebsocketSendFailed && TSSocketManager.canMakeRequests && !isUDSend) {
         [TSSocketManager.sharedManager makeRequest:request
             success:^(id _Nullable responseObject) {
                 [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages success:successHandler];
@@ -985,7 +989,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket
                     // failure. Instead we fall back to REST, which will decrement retries. e.g. after linking a new
                     // device, sync messages will fail until the websocket re-opens.
-                    messageSend.useWebsocketIfAvailable = NO;
+                    messageSend.hasWebsocketSendFailed = YES;
                     [self sendMessageToRecipient:messageSend success:successHandler failure:failureHandler];
                 });
             }];
@@ -999,14 +1003,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 NSInteger statusCode = response.statusCode;
                 NSData *_Nullable responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
 
-                if (isUDSend && statusCode > 0) {
+                if (isUDSend && (statusCode == 401 || statusCode == 403)) {
                     // If a UD send fails due to service response (as opposed to network
                     // failure), mark recipient as _not_ in UD mode, then retry.
                     //
                     // TODO: Do we want to discriminate based on exact error?
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
-                    [self.udManager setIsUDRecipientId:recipient.uniqueId isUDRecipientId:NO];
-                    messageSend.canUseUD = NO;
+                    [self.udManager setSupportsUnidentifiedDelivery:NO recipientId:recipient.uniqueId];
+                    messageSend.hasUDAuthFailed = YES;
                     dispatch_async([OWSDispatch sendingQueue], ^{
                         [self sendMessageToRecipient:messageSend success:successHandler failure:failureHandler];
                     });
@@ -1479,6 +1483,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                   error:&error];
         messageType = TSUnidentifiedSenderMessageType;
     } else {
+        // This may throw an exception.
         id<CipherMessage> encryptedMessage =
             [cipher encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
         serializedMessage = encryptedMessage.serialized;
@@ -1517,24 +1522,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-// TODO: Huh?
-//- (void)saveGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
-//{
-//    if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
-//        // TODO: Why is this necessary?
-//        [message save];
-//    } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
-//        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-//                                         inThread:thread
-//                                      messageType:TSInfoMessageTypeGroupQuit
-//                                    customMessage:message.customMessage] save];
-//    } else {
-//        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-//                                         inThread:thread
-//                                      messageType:TSInfoMessageTypeGroupUpdate
-//                                    customMessage:message.customMessage] save];
-//    }
-//}
+- (void)saveInfoMessageForGroupMessage:(TSOutgoingMessage *)message inThread:(TSThread *)thread
+{
+    if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeGroupQuit
+                                    customMessage:message.customMessage] save];
+    } else {
+        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeGroupUpdate
+                                    customMessage:message.customMessage] save];
+    }
+}
 
 // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
 - (void)handleStaleDevicesWithResponseJson:(NSDictionary *)responseJson

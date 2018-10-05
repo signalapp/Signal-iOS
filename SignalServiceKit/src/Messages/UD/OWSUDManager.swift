@@ -16,11 +16,13 @@ public enum OWSUDError: Error {
 
     @objc func setup()
 
+    @objc func trustRoot() -> ECPublicKey
+
     // MARK: - Recipient state
 
-    @objc func isUDRecipientId(_ recipientId: String) -> Bool
+    @objc func supportsUnidentifiedDelivery(recipientId: String) -> Bool
 
-    @objc func setIsUDRecipientId(_ recipientId: String, isUDRecipientId: Bool)
+    @objc func setSupportsUnidentifiedDelivery(_ value: Bool, recipientId: String)
 
     // Returns the UD access key for a given recipient if they are
     // a UD recipient and we have a valid profile key for them.
@@ -95,13 +97,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Recipient state
 
     @objc
-    public func isUDRecipientId(_ recipientId: String) -> Bool {
+    public func supportsUnidentifiedDelivery(recipientId: String) -> Bool {
         return dbConnection.bool(forKey: recipientId, inCollection: kUDRecipientModeCollection, defaultValue: false)
     }
 
     @objc
-    public func setIsUDRecipientId(_ recipientId: String, isUDRecipientId: Bool) {
-        if isUDRecipientId {
+    public func setSupportsUnidentifiedDelivery(_ value: Bool, recipientId: String) {
+        if value {
             dbConnection.setBool(true, forKey: recipientId, inCollection: kUDRecipientModeCollection)
         } else {
             dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
@@ -112,12 +114,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // a UD recipient and we have a valid profile key for them.
     @objc
     public func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey? {
-        guard isUDRecipientId(recipientId) else {
+        guard supportsUnidentifiedDelivery(recipientId: recipientId) else {
             return nil
         }
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
-            setIsUDRecipientId(recipientId, isUDRecipientId: false)
             return nil
         }
         do {
@@ -125,7 +126,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return udAccessKey
         } catch {
             Logger.error("Could not determine udAccessKey: \(error)")
-            setIsUDRecipientId(recipientId, isUDRecipientId: false)
             return nil
         }
     }
@@ -147,14 +147,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         do {
             let certificate = try SMKSenderCertificate.parse(data: certificateData)
 
-            guard isValidCertificate(certificate: certificate) else {
+            guard isValidCertificate(certificate) else {
                 Logger.warn("Current sender certificate is not valid.")
                 return nil
             }
 
             return certificate
         } catch {
-            OWSLogger.error("Certificate could not be parsed: \(error)")
+            owsFailDebug("Certificate could not be parsed: \(error)")
             return nil
         }
     }
@@ -194,7 +194,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) -> Promise<(Data, SMKSenderCertificate)> in
             let certificate = try SMKSenderCertificate.parse(data: certificateData)
 
-            guard self.isValidCertificate(certificate: certificate) else {
+            guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
@@ -202,14 +202,34 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    private func isValidCertificate(certificate: SMKSenderCertificate) -> Bool {
-        let expirationMs = certificate.expirationTimestamp
-        let nowMs = NSDate.ows_millisecondTimeStamp()
+    private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
+
+        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
+
         // Ensure that the certificate will not expire in the next hour.
         // We want a threshold long enough to ensure that any outgoing message
         // sends will complete before the expiration.
-        let isValid = nowMs + kHourInMs < expirationMs
-        return isValid
+        let nowMs = NSDate.ows_millisecondTimeStamp()
+        let anHourFromNowMs = nowMs + kHourInMs
+
+        do {
+            try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
+            return true
+        } catch {
+            OWSLogger.error("Invalid certificate")
+            return false
+        }
+    }
+
+    @objc
+    public func trustRoot() -> ECPublicKey {
+        let trustRootData: Data = NSData(fromBase64String: kUDTrustRoot) as Data
+        do {
+            return try ECPublicKey(serializedKeyData: trustRootData)
+        } catch {
+            // This exits.
+            owsFail("Invalid trust root.")
+        }
     }
 
     // MARK: - Unrestricted Access

@@ -139,13 +139,4 @@ public class ParamParser {
 
         return data
     }
-
-    // MARK: Bool
-
-    public func optionalBool(key: Key, defaultValue: Bool) throws -> Bool {
-        guard let optionalValue: Bool = try optional(key: key) else {
-            return defaultValue
-        }
-        return optionalValue
-    }
 }

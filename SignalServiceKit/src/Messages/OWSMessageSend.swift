@@ -29,12 +29,11 @@ public class OWSMessageSend: NSObject {
     // We "fail over" to REST sends after _any_ error sending
     // via the web socket.
     @objc
-    public var useWebsocketIfAvailable = true
+    public var hasWebsocketSendFailed = false
 
-    // We "fail over" to non-UD sends after certain errors sending
-    // via UD.
+    // We "fail over" to non-UD sends after auth errors sending via UD.
     @objc
-    public var canUseUD = true
+    public var hasUDAuthFailed = false
 
     @objc
     public let udAccessKey: SMKUDAccessKey?

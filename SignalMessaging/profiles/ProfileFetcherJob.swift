@@ -169,8 +169,10 @@ public class ProfileFetcherJob: NSObject {
                                                  profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                                  avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
-        let isUDRecipientId = signalServiceProfile.unidentifiedAccessKey != nil
-        udManager.setIsUDRecipientId(signalServiceProfile.recipientId, isUDRecipientId: isUDRecipientId)
+        // TODO: We may want to only call setSupportsUnidentifiedDelivery if
+        // supportsUnidentifiedDelivery is true.
+        let supportsUnidentifiedDelivery = signalServiceProfile.unidentifiedAccessKey != nil
+        udManager.setSupportsUnidentifiedDelivery(supportsUnidentifiedDelivery, recipientId: signalServiceProfile.recipientId)
 
         udManager.setShouldAllowUnrestrictedAccess(recipientId: signalServiceProfile.recipientId, shouldAllowUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
     }
@@ -227,6 +229,6 @@ public class SignalServiceProfile: NSObject {
         // The docs don't agree with the response from staging.
         self.unidentifiedAccessKey = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
 
-        self.hasUnrestrictedUnidentifiedAccess = try params.optionalBool(key: "unrestrictedUnidentifiedAccess", defaultValue: false)
+        self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
     }
 }

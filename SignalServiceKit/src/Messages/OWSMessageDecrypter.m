@@ -102,7 +102,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return self;
 }
 
-#pragma mark - Singletons
+#pragma mark - Dependencies
 
 - (OWSBlockingManager *)blockingManager
 {
@@ -116,6 +116,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(SSKEnvironment.shared.identityManager);
 
     return SSKEnvironment.shared.identityManager;
+}
+
+- (id<OWSUDManager>)udManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.udManager);
+
+    return SSKEnvironment.shared.udManager;
 }
 
 #pragma mark - Blocking
@@ -405,7 +412,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     UInt64 serverTimestamp = envelope.serverTimestamp;
 
     id<SMKCertificateValidator> certificateValidator =
-        [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.trustRoot];
+        [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         @try {
@@ -477,20 +484,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             });
         }
     }];
-}
-
-- (ECPublicKey *)trustRoot
-{
-    NSData *_Nullable trustRootData = [NSData dataFromBase64String:kUDTrustRoot];
-    OWSAssert(trustRootData);
-    OWSAssert(trustRootData.length == ECCKeyLength + 1);
-    NSError *error;
-    ECPublicKey *_Nullable trustRoot = [[ECPublicKey alloc] initWithSerializedKeyData:trustRootData error:&error];
-    if (error || !trustRoot) {
-        // This exits.
-        OWSFail(@"Invalid UD trust root.");
-    }
-    return trustRoot;
 }
 
 - (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope

@@ -5,6 +5,8 @@
 #import "TSRequest.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
+#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 
 @implementation TSRequest
 
@@ -108,6 +110,18 @@
     @synchronized(self) {
         return (_authPassword ?: [TSAccountManager serverAuthToken]);
     }
+}
+
+#pragma mark - UD
+
+- (void)useUDAuth:(SMKUDAccessKey *)udAccessKey
+{
+    OWSAssertDebug(udAccessKey);
+
+    // Suppress normal auth headers.
+    self.shouldHaveAuthorizationHeaders = NO;
+    // Add UD auth header.
+    [self setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
 }
 
 @end
