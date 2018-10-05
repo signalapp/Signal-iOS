@@ -26,7 +26,3 @@ test:
 
 clean:
 	$(XCODE_BUILD) clean | xcpretty
-
-# Migrating across swift versions requires me to run this sometimes
-clean_carthage_cache:
-	rm -fr ~/Library/Caches/org.carthage.CarthageKit/
