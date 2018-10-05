@@ -180,6 +180,13 @@ public class ProfileFetcherJob: NSObject {
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
+        // Recipients should be in "UD delivery mode" IFF:
+        //
+        // * Their profile includes a unidentifiedAccessVerifier.
+        // * The unidentifiedAccessVerifier matches the "expected" value derived
+        //   from their profile key (if any).
+        //
+        // Recipients should be in "normal delivery mode" otherwise.
         var supportsUnidentifiedDelivery = false
         if let unidentifiedAccessVerifier = signalServiceProfile.unidentifiedAccessVerifier,
             let udAccessKey = udManager.udAccessKeyForRecipient(recipientId) {
