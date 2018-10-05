@@ -15,13 +15,6 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 @class TSAttachmentStream;
 
-// Manager to handle thead update notifications in background
-@interface TSThreadManager : NSObject
-
-+ (instancetype)sharedManager;
-
-@end
-
 @interface TSThread : TSYapDatabaseObject
 
 // YES IFF this thread has ever had a message.
@@ -202,11 +195,6 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
  *  Update avatar/image wiht attachment stream
  */
 -(void)updateImageWithAttachmentStream:(NSString *)attachmentStream;
-
-/**
- *  Validate and update a thread
- */
--(void)validate;
 
 -(void)updateWithPayload:(nonnull NSDictionary *)payload;
 

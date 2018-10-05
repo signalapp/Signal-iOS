@@ -30,44 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSThreadAvatarChangedNotification = @"TSThreadAvatarChangedNotification";
 NSString *const TSThreadExpressionChangedNotification = @"TSThreadExpressionChangedNotification";
-NSString *const TSThread_NotificationKey_UniqueId = @"TSpThread_NotificationKey_UniqueId";
-
-@interface TSThreadManager()
-
-@end
-
-@implementation TSThreadManager
-
-+ (instancetype)sharedManager
-{
-    static TSThreadManager *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [[self alloc] initDefault];
-    });
-    return instance;
-}
-
-- (instancetype)initDefault
-{
-    if (self = [super init]) {
-        [NSNotificationCenter.defaultCenter addObserver:self
-                                               selector:@selector(threadExpressionUpdated:)
-                                                   name:TSThreadExpressionChangedNotification
-                                                 object:nil];
-    }
-    return self;
-}
-
--(void)threadExpressionUpdated:(NSNotification *)notification {
-    DDLogDebug(@"notification: %@", notification);
-    if ([notification.object isKindOfClass:[TSThread class]]) {
-        TSThread *thread = (TSThread *)notification.object;
-        [thread validate];
-    }
-}
-
-@end
+NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_UniqueId";
 
 @interface TSThread ()
 

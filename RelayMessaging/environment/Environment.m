@@ -5,14 +5,10 @@
 #import "Environment.h"
 #import "DebugLogger.h"
 #import "SignalKeyingStorage.h"
-#import <RelayServiceKit/AppContext.h>
-#import <RelayServiceKit/ContactsUpdater.h>
-#import <RelayServiceKit/OWSMessageReceiver.h>
-#import <RelayServiceKit/OWSSignalService.h>
-#import <RelayServiceKit/TSThread.h>
-#import <RelayServiceKit/Threading.h>
 
 #import <RelayMessaging/RelayMessaging-Swift.h>
+
+@import RelayServiceKit;
 
 static Environment *sharedEnvironment = nil;
 
@@ -24,7 +20,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSMessageSender *messageSender;
 @property (nonatomic) OWSPreferences *preferences;
 
-@property (nonatomic) TSThreadManager *threadManager;
+@property (nonatomic) ThreadManager *threadManager;
 
 @end
 
@@ -70,7 +66,7 @@ static Environment *sharedEnvironment = nil;
     _contactsUpdater = contactsUpdater;
     _networkManager = networkManager;
     _messageSender = messageSender;
-    _threadManager = TSThreadManager.sharedManager;
+    _threadManager = ThreadManager.sharedManager;
 
     OWSSingletonAssert();
 
