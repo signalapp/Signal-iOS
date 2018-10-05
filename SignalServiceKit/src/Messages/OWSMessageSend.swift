@@ -71,4 +71,9 @@ public class OWSMessageSend: NSObject {
         self.localNumber = localNumber
         self.isLocalNumber = isLocalNumber
     }
+
+    @objc
+    public var isUDSend: Bool {
+        return (!hasUDAuthFailed && udAccessKey != nil && senderCertificate != nil)
+    }
 }

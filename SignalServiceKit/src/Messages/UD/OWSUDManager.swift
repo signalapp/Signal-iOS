@@ -223,9 +223,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func trustRoot() -> ECPublicKey {
-        let trustRootData: Data = NSData(fromBase64String: kUDTrustRoot) as Data
+        guard let trustRootData = NSData(fromBase64String: kUDTrustRoot) else {
+            // This exits.
+            owsFail("Invalid trust root data.")
+        }
+
         do {
-            return try ECPublicKey(serializedKeyData: trustRootData)
+            return try ECPublicKey(serializedKeyData: trustRootData as Data)
         } catch {
             // This exits.
             owsFail("Invalid trust root.")
