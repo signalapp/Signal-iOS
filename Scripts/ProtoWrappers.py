@@ -623,18 +623,7 @@ public func serializedData() throws -> Data {
         writer.newline()
 
         # description
-        if self.args.add_description:
-            writer.add('@objc public override var description: String {')
-            writer.push_indent()
-            writer.add('var fields = [String]()')
-            for field in self.fields():
-                writer.add('fields.append("%s: \(proto.%s)")' % ( field.name_swift, field.name_swift, ) )
-            writer.add('return "[" + fields.joined(separator: ", ") + "]"')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-
-        writer.add('@objc public override var description: String {')
+        writer.add('@objc public override var debugDescription: String {')
         writer.push_indent()
         writer.add('return "\(proto)"')
         writer.pop_indent()

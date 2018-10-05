@@ -148,7 +148,7 @@ public enum WebSocketProtoError: Error {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -309,7 +309,7 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -443,12 +443,12 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         }
         let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
 
-        var request: WebSocketProtoWebSocketRequestMessage?
+        var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
         }
 
-        var response: WebSocketProtoWebSocketResponseMessage?
+        var response: WebSocketProtoWebSocketResponseMessage? = nil
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage.parseProto(proto.response)
         }
@@ -464,7 +464,7 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }

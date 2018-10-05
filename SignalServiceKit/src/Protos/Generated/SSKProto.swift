@@ -247,7 +247,7 @@ public enum SSKProtoError: Error {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -371,27 +371,27 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Content) throws -> SSKProtoContent {
-        var dataMessage: SSKProtoDataMessage?
+        var dataMessage: SSKProtoDataMessage? = nil
         if proto.hasDataMessage {
             dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
         }
 
-        var syncMessage: SSKProtoSyncMessage?
+        var syncMessage: SSKProtoSyncMessage? = nil
         if proto.hasSyncMessage {
             syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
         }
 
-        var callMessage: SSKProtoCallMessage?
+        var callMessage: SSKProtoCallMessage? = nil
         if proto.hasCallMessage {
             callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
         }
 
-        var nullMessage: SSKProtoNullMessage?
+        var nullMessage: SSKProtoNullMessage? = nil
         if proto.hasNullMessage {
             nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
         }
 
-        var receiptMessage: SSKProtoReceiptMessage?
+        var receiptMessage: SSKProtoReceiptMessage? = nil
         if proto.hasReceiptMessage {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
@@ -409,7 +409,7 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -521,7 +521,7 @@ extension SSKProtoContent.SSKProtoContentBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -633,7 +633,7 @@ extension SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -775,7 +775,7 @@ extension SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -872,7 +872,7 @@ extension SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -969,7 +969,7 @@ extension SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1114,12 +1114,12 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_CallMessage) throws -> SSKProtoCallMessage {
-        var offer: SSKProtoCallMessageOffer?
+        var offer: SSKProtoCallMessageOffer? = nil
         if proto.hasOffer {
             offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
         }
 
-        var answer: SSKProtoCallMessageAnswer?
+        var answer: SSKProtoCallMessageAnswer? = nil
         if proto.hasAnswer {
             answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
         }
@@ -1127,12 +1127,12 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup?
+        var hangup: SSKProtoCallMessageHangup? = nil
         if proto.hasHangup {
             hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
-        var busy: SSKProtoCallMessageBusy?
+        var busy: SSKProtoCallMessageBusy? = nil
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
         }
@@ -1150,7 +1150,7 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1296,7 +1296,7 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        var thumbnail: SSKProtoAttachmentPointer?
+        var thumbnail: SSKProtoAttachmentPointer? = nil
         if proto.hasThumbnail {
             thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
         }
@@ -1310,7 +1310,7 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1458,7 +1458,7 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1637,7 +1637,7 @@ extension SSKProtoDataMessageQuote.SSKProtoDataMessageQuoteBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1789,7 +1789,7 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -1941,7 +1941,7 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -2192,7 +2192,7 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -2286,7 +2286,7 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws -> SSKProtoDataMessageContactAvatar {
-        var avatar: SSKProtoAttachmentPointer?
+        var avatar: SSKProtoAttachmentPointer? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -2300,7 +2300,7 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -2453,7 +2453,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Contact) throws -> SSKProtoDataMessageContact {
-        var name: SSKProtoDataMessageContactName?
+        var name: SSKProtoDataMessageContactName? = nil
         if proto.hasName {
             name = try SSKProtoDataMessageContactName.parseProto(proto.name)
         }
@@ -2467,7 +2467,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
         var address: [SSKProtoDataMessageContactPostalAddress] = []
         address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress.parseProto($0) }
 
-        var avatar: SSKProtoDataMessageContactAvatar?
+        var avatar: SSKProtoDataMessageContactAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
         }
@@ -2485,7 +2485,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -2709,12 +2709,12 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         var attachments: [SSKProtoAttachmentPointer] = []
         attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
-        var group: SSKProtoGroupContext?
+        var group: SSKProtoGroupContext? = nil
         if proto.hasGroup {
             group = try SSKProtoGroupContext.parseProto(proto.group)
         }
 
-        var quote: SSKProtoDataMessageQuote?
+        var quote: SSKProtoDataMessageQuote? = nil
         if proto.hasQuote {
             quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
         }
@@ -2734,7 +2734,7 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -2828,7 +2828,7 @@ extension SSKProtoDataMessage.SSKProtoDataMessageBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -2961,7 +2961,7 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3130,7 +3130,7 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3255,7 +3255,7 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Sent) throws -> SSKProtoSyncMessageSent {
-        var message: SSKProtoDataMessage?
+        var message: SSKProtoDataMessage? = nil
         if proto.hasMessage {
             message = try SSKProtoDataMessage.parseProto(proto.message)
         }
@@ -3269,7 +3269,7 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3380,7 +3380,7 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3460,7 +3460,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Groups) throws -> SSKProtoSyncMessageGroups {
-        var blob: SSKProtoAttachmentPointer?
+        var blob: SSKProtoAttachmentPointer? = nil
         if proto.hasBlob {
             blob = try SSKProtoAttachmentPointer.parseProto(proto.blob)
         }
@@ -3474,7 +3474,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3581,7 +3581,7 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3708,7 +3708,7 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3820,7 +3820,7 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -3911,7 +3911,7 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -4089,22 +4089,22 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage) throws -> SSKProtoSyncMessage {
-        var sent: SSKProtoSyncMessageSent?
+        var sent: SSKProtoSyncMessageSent? = nil
         if proto.hasSent {
             sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
         }
 
-        var contacts: SSKProtoSyncMessageContacts?
+        var contacts: SSKProtoSyncMessageContacts? = nil
         if proto.hasContacts {
             contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
         }
 
-        var groups: SSKProtoSyncMessageGroups?
+        var groups: SSKProtoSyncMessageGroups? = nil
         if proto.hasGroups {
             groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
         }
 
-        var request: SSKProtoSyncMessageRequest?
+        var request: SSKProtoSyncMessageRequest? = nil
         if proto.hasRequest {
             request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
         }
@@ -4112,17 +4112,17 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         var read: [SSKProtoSyncMessageRead] = []
         read = try proto.read.map { try SSKProtoSyncMessageRead.parseProto($0) }
 
-        var blocked: SSKProtoSyncMessageBlocked?
+        var blocked: SSKProtoSyncMessageBlocked? = nil
         if proto.hasBlocked {
             blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
         }
 
-        var verified: SSKProtoVerified?
+        var verified: SSKProtoVerified? = nil
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
 
-        var configuration: SSKProtoSyncMessageConfiguration?
+        var configuration: SSKProtoSyncMessageConfiguration? = nil
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
@@ -4143,7 +4143,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -4399,7 +4399,7 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -4574,7 +4574,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         }
         let type = SSKProtoGroupContextTypeWrap(proto.type)
 
-        var avatar: SSKProtoAttachmentPointer?
+        var avatar: SSKProtoAttachmentPointer? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
@@ -4590,7 +4590,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -4698,7 +4698,7 @@ extension SSKProtoGroupContext.SSKProtoGroupContextBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -4887,12 +4887,12 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         }
         let number = proto.number
 
-        var avatar: SSKProtoContactDetailsAvatar?
+        var avatar: SSKProtoContactDetailsAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
         }
 
-        var verified: SSKProtoVerified?
+        var verified: SSKProtoVerified? = nil
         if proto.hasVerified {
             verified = try SSKProtoVerified.parseProto(proto.verified)
         }
@@ -4908,7 +4908,7 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -5016,7 +5016,7 @@ extension SSKProtoContactDetails.SSKProtoContactDetailsBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -5206,7 +5206,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         }
         let id = proto.id
 
-        var avatar: SSKProtoGroupDetailsAvatar?
+        var avatar: SSKProtoGroupDetailsAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
@@ -5221,7 +5221,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }

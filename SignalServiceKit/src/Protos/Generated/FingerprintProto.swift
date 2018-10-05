@@ -86,7 +86,7 @@ public enum FingerprintProtoError: Error {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -213,7 +213,7 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }

@@ -131,7 +131,7 @@ public enum SignalIOSProtoError: Error {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -227,7 +227,7 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }

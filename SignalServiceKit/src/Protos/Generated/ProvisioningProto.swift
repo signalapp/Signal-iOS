@@ -101,7 +101,7 @@ public enum ProvisioningProtoError: Error {
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -288,7 +288,7 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
         return result
     }
 
-    @objc public override var description: String {
+    @objc public override var debugDescription: String {
         return "\(proto)"
     }
 }
