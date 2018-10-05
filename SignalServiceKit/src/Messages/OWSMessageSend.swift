@@ -5,6 +5,10 @@
 import Foundation
 import SignalMetadataKit
 
+// Corresponds to a single effort to send a message to a given recipient,
+// which may span multiple attempts.  Note that group messages may be sent
+// to multiple recipients and therefore require multiple instances of
+// OWSMessageSend.
 @objc
 public class OWSMessageSend: NSObject {
     @objc
@@ -17,7 +21,6 @@ public class OWSMessageSend: NSObject {
     @objc
     public let recipient: SignalRecipient
 
-    // TODO: Should this be per-recipient or per-message?
     private static let kMaxRetriesPerRecipient: Int = 3
 
     @objc

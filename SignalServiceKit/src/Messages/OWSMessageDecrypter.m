@@ -4,6 +4,7 @@
 
 #import "OWSMessageDecrypter.h"
 #import "NSData+messagePadding.h"
+#import "NSString+SSK.h"
 #import "NotificationsProtocol.h"
 #import "OWSAnalytics.h"
 #import "OWSBlockingManager.h"
@@ -151,6 +152,12 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
     DecryptSuccessBlock successBlock = ^(
         OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
+        // Ensure all blocked messages are discarded.
+        if ([self isEnvelopeSenderBlocked:envelope]) {
+            OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
+            return failureBlock();
+        }
+
         // Having received a valid (decryptable) message from this user,
         // make note of the fact that they have a valid Signal account.
         [SignalRecipient markRecipientAsRegistered:result.source deviceId:result.sourceDevice transaction:transaction];
@@ -161,13 +168,20 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     @try {
         OWSLogInfo(@"decrypting envelope: %@", [self descriptionForEnvelope:envelope]);
 
-        // We block UD messages later, after they are decrypted.
         if (envelope.type != SSKProtoEnvelopeTypeUnidentifiedSender) {
-            OWSAssertDebug(envelope.source.length > 0);
+            if (!envelope.hasSource || envelope.source.length < 1 || !envelope.source.isValidE164) {
+                OWSFailDebug(@"incoming envelope has invalid source");
+                return failureBlock();
+            }
+            if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
+                OWSFailDebug(@"incoming envelope has invalid source device");
+                return failureBlock();
+            }
+
+            // We block UD messages later, after they are decrypted.
             if ([self isEnvelopeSenderBlocked:envelope]) {
                 OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
-                failureBlock();
-                return;
+                return failureBlock();
             }
         }
 
@@ -421,17 +435,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             }
 
             NSString *source = decryptResult.senderRecipientId;
-            if (source.length < 1) {
+            if (source.length < 1 || !source.isValidE164) {
                 NSString *errorDescription = @"Invalid UD sender.";
                 OWSFailDebug(@"%@", errorDescription);
                 NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
-                return failureBlock(error);
-            }
-
-            if ([self.blockingManager.blockedPhoneNumbers containsObject:source]) {
-                OWSLogInfo(@"ignoring blocked UD envelope: %@", envelope.source);
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeFailedToDecryptUDMessage, @"ignoring blocked UD envelope");
                 return failureBlock(error);
             }
 
@@ -478,7 +485,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssert(trustRootData);
     OWSAssert(trustRootData.length == ECCKeyLength + 1);
     NSError *error;
-    ECPublicKey *_Nullable trustRoot = [[ECPublicKey alloc] initWithKeyData:[trustRootData removeKeyType] error:&error];
+    ECPublicKey *_Nullable trustRoot = [[ECPublicKey alloc] initWithSerializedKeyData:trustRootData error:&error];
     if (error || !trustRoot) {
         // This exits.
         OWSFail(@"Invalid UD trust root.");

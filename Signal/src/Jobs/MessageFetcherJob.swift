@@ -201,10 +201,10 @@ public class MessageFetcherJob: NSObject {
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
         let request: TSRequest
-        if let source = envelope.source {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
-        } else if let serverGuid = envelope.serverGuid, envelope.hasServerTimestamp {
+        if let serverGuid = envelope.serverGuid, envelope.hasServerTimestamp {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid, serverTimestamp: envelope.serverTimestamp)
+        } else if let source = envelope.source {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
         } else {
             owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
             return
