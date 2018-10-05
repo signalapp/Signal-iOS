@@ -13,11 +13,9 @@ ci: dependencies test
 
 update_dependencies:
 	bundle exec pod update
-	carthage update --platform iOS
 
 dependencies: update_dependencies
 	git submodule update --init
-	carthage build --platform iOS
 	bundle exec pod install
 
 build: dependencies
@@ -28,7 +26,6 @@ test:
 	cd SignalServiceKit && make test
 
 clean:
-	rm -fr Carthage/Build
 	$(XCODE_BUILD) clean | xcpretty
 
 # Migrating across swift versions requires me to run this sometimes

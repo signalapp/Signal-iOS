@@ -1,3 +1,0 @@
-[submodule "Carthage"]
-	path = Carthage
-	url = https://github.com/signalapp/Signal-Carthage.git
