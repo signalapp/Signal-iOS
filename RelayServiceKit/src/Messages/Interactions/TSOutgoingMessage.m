@@ -11,7 +11,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
-#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSThread.h"
@@ -353,7 +352,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             TSAttachment *_Nullable attachment =
                 [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
             if (!attachment) {
-                OWSCFail(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
+                DDLogDebug(@"%@ couldn't load interaction's attachment for deletion.", TSOutgoingMessage.logTag);
                 continue;
             }
             [attachment removeWithTransaction:transaction];
@@ -828,14 +827,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 //        [builder setGroup:groupBuilder.build];
 //    }
     
-//    // Message Attachments
-//    if (!attachmentWasGroupAvatar) {
-//        NSMutableArray *attachments = [NSMutableArray new];
-//        for (NSString *attachmentId in self.attachmentIds) {
-//            [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
-//        }
-//        [builder setAttachmentsArray:attachments];
-//    }
+    // Message Attachments
+    NSMutableArray *attachments = [NSMutableArray new];
+    for (NSString *attachmentId in self.attachmentIds) {
+        [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
+    }
+    [builder setAttachmentsArray:attachments];
 
     // Quoted Reply
     OWSSignalServiceProtosDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;

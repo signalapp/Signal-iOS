@@ -673,9 +673,9 @@
 }
 
 //#pragma mark - User/recipient Lookup methods
-//+(SignalRecipient *)recipientFromCCSMWithID:(NSString *)userId
+//+(RelayRecipient *)recipientFromCCSMWithID:(NSString *)userId
 //{
-//    __block SignalRecipient *recipient = nil;
+//    __block RelayRecipient *recipient = nil;
 //
 //    [TSStorageManager.sharedManager.writeDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
 //        recipient = [self recipientFromCCSMWithID:userId transaction:transaction];
@@ -684,10 +684,10 @@
 //    return recipient;
 //}
 //
-//+(SignalRecipient *)recipientFromCCSMWithID:(NSString *)userId transaction:(YapDatabaseReadWriteTransaction *)transaction
+//+(RelayRecipient *)recipientFromCCSMWithID:(NSString *)userId transaction:(YapDatabaseReadWriteTransaction *)transaction
 //{
 //    NSAssert(![NSThread isMainThread], @"Must NOT access recipientFromCCSMWithID on main thread!");
-//    __block SignalRecipient *recipient = nil;
+//    __block RelayRecipient *recipient = nil;
 //
 //    if (userId) {
 //        __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
@@ -698,7 +698,7 @@
 //                   if (((NSNumber *)[payload objectForKey:@"count"]).integerValue > 0) {
 //                       NSArray *tmpArray = [payload objectForKey:@"results"];
 //                       NSDictionary *results = [tmpArray lastObject];
-//                       recipient = [SignalRecipient getOrCreateRecipientWithUserDictionary:results transaction:transaction];
+//                       recipient = [RelayRecipient getOrCreateRecipientWithUserDictionary:results transaction:transaction];
 //                       dispatch_semaphore_signal(sema);
 //                   }
 //               }

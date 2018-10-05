@@ -990,7 +990,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                          handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull tappedIndexPath) {
                                                              [self togglePinningForThreadAtIndexPath:indexPath];
                                                          }];
-            unPinAction.backgroundColor = [ForstaColors mediumGreen];
+            unPinAction.backgroundColor = UIColor.FL_mediumGreen;
             UITableViewRowAction *archiveAction = [UITableViewRowAction
                                                    rowActionWithStyle:UITableViewRowActionStyleNormal
                                                    title:NSLocalizedString(@"ARCHIVE_ACTION",
@@ -1012,7 +1012,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                                                    handler:^(UITableViewRowAction * _Nonnull action, NSIndexPath * _Nonnull tappedIndexPath) {
                                                                                        [self togglePinningForThreadAtIndexPath:indexPath];
                                                                                    }];
-                pinAction.backgroundColor = [ForstaColors mediumGreen];
+                pinAction.backgroundColor = UIColor.FL_mediumGreen;
                 
                 UITableViewRowAction *archiveAction = [UITableViewRowAction
                                                        rowActionWithStyle:UITableViewRowActionStyleNormal

@@ -396,7 +396,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Are you sure you want to sign out and reset this app?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this group.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "You will no longer be able to send or receive messages in this conversation.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Do you really want to leave?";
@@ -709,13 +709,13 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Group";
+"EDIT_GROUP_ACTION" = "Edit Conversation";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contacts";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Edit Group";
+"EDIT_GROUP_DEFAULT_TITLE" = "Edit Conversation";
 
 /* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Add…";
@@ -955,7 +955,7 @@
 "GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Group Management";
+"GROUP_MANAGEMENT_SECTION" = "Conversation Management";
 
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = " %@ joined the group. ";
@@ -988,10 +988,10 @@
 "GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Contact Info";
 
 /* No comment provided by engineer. */
-"GROUP_REMOVING" = "Leaving group %@";
+"GROUP_REMOVING" = "Leaving conversation %@";
 
 /* Title of alert indicating that group deletion failed. */
-"GROUP_REMOVING_FAILED" = "Failed to leave group";
+"GROUP_REMOVING_FAILED" = "Failed to leave conversation";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "Title is now '%@'. ";
@@ -1087,7 +1087,7 @@
 "LEAVE_BUTTON_TITLE" = "Leave";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Leave Group";
+"LEAVE_GROUP_ACTION" = "Leave Conversation";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid, make sure you are scanning the QR code displayed on the device you want to link.";
@@ -1120,7 +1120,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Linking Device Failed";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Conversation Members";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
@@ -2393,3 +2393,7 @@
 "ANNOUNCEMENT_DETAIL_TITLE" = "Details";
 "ANNOUNCEMENT_FROM_SECTION" = "Announcement From:";
 "ANNOUNCEMENT_TO_SECTION" = "Recipients:";
+
+
+"THREAD_TITLE_UPDATE_MESSAGE" = "%@ changed the title.";
+"THREAD_IMAGE_CHANGED_MESSAGE" = "%@ changed the avatar.";

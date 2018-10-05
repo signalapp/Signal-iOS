@@ -132,19 +132,6 @@ const CGFloat kIconViewLength = 24;
     return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
 }
 
-- (NSString *)threadName
-{
-    NSString *threadName = self.thread.title;
-//    if (self.thread.contactIdentifier &&
-//        [threadName isEqualToString:self.thread.contactIdentifier]) {
-//        threadName =
-//            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
-//    } else if (threadName.length == 0 && [self isGroupThread]) {
-//        threadName = [MessageStrings newGroupDefaultTitle];
-//    }
-    return threadName;
-}
-
 - (BOOL)isGroupThread
 {
     return !self.thread.isOneOnOne;
@@ -156,13 +143,7 @@ const CGFloat kIconViewLength = 24;
     self.thread = thread;
     self.uiDatabaseConnection = uiDatabaseConnection;
 
-    if ([self.thread isKindOfClass:[TSThread class]]) {
-        self.title = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", @"Navbar title when viewing settings for a 1-on-1 thread");
-    } else {
-        self.title = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_GROUP_INFO_TITLE", @"Navbar title when viewing settings for a group thread");
-    }
+        self.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"Navbar title when viewing conversation settings");
 
     [self updateEditButton];
 }
@@ -412,9 +393,8 @@ const CGFloat kIconViewLength = 24;
 
     [contents addSection:mainSection];
 
-    // Group settings section.
+    // Conversation settings section.
 
-    if (self.isGroupThread) {
         NSArray *groupItems = @[
             [OWSTableItem itemWithCustomCellBlock:^{
                 return [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION",
@@ -445,7 +425,6 @@ const CGFloat kIconViewLength = 24;
         [contents addSection:[OWSTableSection sectionWithTitle:NSLocalizedString(@"GROUP_MANAGEMENT_SECTION",
                                                                    @"Conversation settings table section title")
                                                          items:groupItems]];
-    }
 
     // Mute thread section.
 
@@ -659,7 +638,7 @@ const CGFloat kIconViewLength = 24;
     [threadNameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *threadTitleLabel = [UILabel new];
-    threadTitleLabel.text = self.threadName;
+    threadTitleLabel.text = self.thread.displayName;
     threadTitleLabel.textColor = [Theme primaryColor];
     threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -669,46 +648,46 @@ const CGFloat kIconViewLength = 24;
 
     __block UIView *lastTitleView = threadTitleLabel;
 
-    if (![self isGroupThread]) {
-        const CGFloat kSubtitlePointSize = 12.f;
-        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
-            UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.textColor = [Theme secondaryColor];
-            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-            subtitleLabel.attributedText = subtitle;
-            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [threadNameView addSubview:subtitleLabel];
-            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-            [subtitleLabel autoPinLeadingToSuperviewMargin];
-            lastTitleView = subtitleLabel;
-        };
-        
-        NSString *recipientId = self.thread.otherParticipantId;
-        
-        NSString *subTitleString = [self.contactsManager recipientWithId:recipientId].flTag.displaySlug;
-        
-        if (subTitleString) {
-            addSubtitle([[NSAttributedString alloc] initWithString:subTitleString]);
-        }
-    
-
-        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-            == OWSVerificationStateVerified;
-        if (isVerified) {
-            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
-            // "checkmark"
-            [subtitle appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
-                                                     attributes:@{
-                                                         NSFontAttributeName :
-                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
-                                                     }]];
-            [subtitle appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                                                    @"Badge indicating that the user is verified.")]];
-            addSubtitle(subtitle);
-        }
-    }
+//    if (![self isGroupThread]) {
+//        const CGFloat kSubtitlePointSize = 12.f;
+//        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+//            UILabel *subtitleLabel = [UILabel new];
+//            subtitleLabel.textColor = [Theme secondaryColor];
+//            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+//            subtitleLabel.attributedText = subtitle;
+//            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+//            [threadNameView addSubview:subtitleLabel];
+//            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+//            [subtitleLabel autoPinLeadingToSuperviewMargin];
+//            lastTitleView = subtitleLabel;
+//        };
+//
+//        NSString *recipientId = self.thread.otherParticipantId;
+//
+//        NSString *subTitleString = [self.contactsManager recipientWithId:recipientId].flTag.displaySlug;
+//
+//        if (subTitleString) {
+//            addSubtitle([[NSAttributedString alloc] initWithString:subTitleString]);
+//        }
+//
+//
+//        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+//            == OWSVerificationStateVerified;
+//        if (isVerified) {
+//            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
+//            // "checkmark"
+//            [subtitle appendAttributedString:[[NSAttributedString alloc]
+//                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
+//                                                     attributes:@{
+//                                                         NSFontAttributeName :
+//                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+//                                                     }]];
+//            [subtitle appendAttributedString:[[NSAttributedString alloc]
+//                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+//                                                                    @"Badge indicating that the user is verified.")]];
+//            addSubtitle(subtitle);
+//        }
+//    }
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 

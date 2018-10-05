@@ -22,7 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _uniqueId = aUniqueId;
+    if (aUniqueId) {
+        _uniqueId = aUniqueId.lowercaseString;
+    }
 
     return self;
 }

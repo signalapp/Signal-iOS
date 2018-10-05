@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSSignalServiceProtosDataMessageBuilder;
 @class SignalRecipient;
 
-typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
+typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(RelayRecipient *);
 
 @interface OWSDynamicOutgoingMessage : TSOutgoingMessage
 

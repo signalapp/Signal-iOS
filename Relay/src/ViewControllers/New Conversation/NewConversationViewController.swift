@@ -54,12 +54,12 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         super.viewDidLoad()
         
         self.slugViewHeightConstraint?.constant = kMinInputHeight
-        self.goButton?.tintColor = ForstaColors.mediumLightGreen()
+        self.goButton?.tintColor = UIColor.FL_mediumLightGreen()
         
         self.searchBar?.placeholder = NSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", comment: "")
         self.searchInfoLabel?.text = NSLocalizedString("SEARCH_HELP_STRING", comment:"Informational string for tag lookups.")
         
-        self.view.backgroundColor = ForstaColors.white
+        self.view.backgroundColor = UIColor.white
         
         // Slug view setup
         if let layout = self.slugCollectionView?.collectionViewLayout as? SlugViewLayout {

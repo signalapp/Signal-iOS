@@ -149,13 +149,13 @@ public class ConversationStyle: NSObject {
     private static let defaultBubbleColorIncoming = UIColor.FL_lightGray()
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor.FL_mediumBlue2()
+    public let bubbleColorOutgoingFailed = UIColor.FL_mediumLightBlue1()
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor.FL_mediumLightBlue2()
+    public let bubbleColorOutgoingSending = UIColor.FL_mediumDarkBlue1()
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.FL_mediumBlue2()
+    public let bubbleColorOutgoingSent = UIColor.FL_darkBlue1()
 
     @objc
     public let dateBreakTextColor = UIColor.init(white: 0.40, alpha: 1.0)

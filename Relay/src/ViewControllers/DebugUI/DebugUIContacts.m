@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            actionBlock:^{
                                                                [DebugUIContacts clearSignalAccountCache];
                                                            }],
-                                           [OWSTableItem itemWithTitle:@"Clear SignalRecipient Cache"
+                                           [OWSTableItem itemWithTitle:@"Clear RelayRecipient Cache"
                                                            actionBlock:^{
                                                                [DebugUIContacts clearSignalRecipientCache];
                                                            }],
@@ -1305,8 +1305,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearSignalRecipientCache
 {
-    DDLogWarn(@"%@ Deleting all signal recipients.", self.logTag);
-    [SignalRecipient removeAllObjectsInCollection];
+    DDLogWarn(@"%@ Deleting all relay recipients.", self.logTag);
+    [RelayRecipient removeAllObjectsInCollection];
 }
 
 + (void)deleteAllContacts

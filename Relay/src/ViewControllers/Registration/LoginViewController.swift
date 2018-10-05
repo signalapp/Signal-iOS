@@ -22,8 +22,8 @@ class LoginViewController: UITableViewController {
 
         // Navigation bar setup
         let navBar = self.navigationController?.navigationBar
-        navBar?.barTintColor = ForstaColors.white
-        navBar?.tintColor = ForstaColors.black
+        navBar?.barTintColor = UIColor.white
+        navBar?.tintColor = UIColor.black
         navBar?.shadowImage = UIImage()
         navBar?.isTranslucent = false
         
