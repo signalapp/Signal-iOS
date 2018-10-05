@@ -70,7 +70,9 @@ public class OWSMessageSend: NSObject {
         var udAccessKey: SMKUDAccessKey?
         var isLocalNumber: Bool = false
         if let recipientId = recipient.uniqueId {
-            udAccessKey = udManager.udAccessKeyForRecipient(recipientId)
+            udAccessKey = (udManager.supportsUnidentifiedDelivery(recipientId: recipientId)
+                ? udManager.udAccessKeyForRecipient(recipientId)
+                : nil)
             isLocalNumber = localNumber == recipientId
         } else {
             owsFailDebug("SignalRecipient missing recipientId")
