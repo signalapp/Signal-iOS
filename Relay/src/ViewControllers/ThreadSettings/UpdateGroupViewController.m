@@ -216,91 +216,91 @@ OWSNavigationView>
 
 - (void)updateTableContents
 {
-    OWSAssert(self.thread);
+//    OWSAssert(self.thread);
     
-    OWSTableContents *contents = [OWSTableContents new];
+//    OWSTableContents *contents = [OWSTableContents new];
     
-    __weak UpdateGroupViewController *weakSelf = self;
-    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
+//    __weak UpdateGroupViewController *weakSelf = self;
+//    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
     
     // Group Members
-    
-    OWSTableSection *section = [OWSTableSection new];
-    section.headerTitle = NSLocalizedString(
-                                            @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
-    
-    [section addItem:[OWSTableItem
-                      disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
-                                                               @"Label for the cell that lets you add a new member to a group.")
-                      customRowHeight:UITableViewAutomaticDimension
-                      actionBlock:^{
-                          AddToGroupViewController *viewController = [AddToGroupViewController new];
-                          viewController.addToGroupDelegate = weakSelf;
-                          [weakSelf.navigationController pushViewController:viewController animated:YES];
-                      }]];
-    
-    NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[contactsViewHelper localUID]];
-    for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
-        [section
-         addItem:[OWSTableItem
-                  itemWithCustomCellBlock:^{
-                      UpdateGroupViewController *strongSelf = weakSelf;
-                      OWSCAssert(strongSelf);
-                      
-                      ContactTableViewCell *cell = [ContactTableViewCell new];
-                      BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
-                      BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                      if (isPreviousMember) {
-                          if (isBlocked) {
-                              cell.accessoryMessage = NSLocalizedString(
-                                                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                          } else {
-                              cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                          }
-                      } else {
-                          // In the "members" section, we label "new" members as such when editing an existing
-                          // group.
-                          //
-                          // The only way a "new" member could be blocked is if we blocked them on a linked device
-                          // while in this dialog.  We don't need to worry about that edge case.
-                          cell.accessoryMessage = NSLocalizedString(@"EDIT_GROUP_NEW_MEMBER_LABEL",
-                                                                    @"An indicator that a user is a new member of the group.");
-                      }
-                      
-                      [cell configureWithRecipientId:recipientId
-                                     contactsManager:contactsViewHelper.contactsManager];
-                      return cell;
-                  }
-                  customRowHeight:UITableViewAutomaticDimension
-                  actionBlock:^{
-                      SignalAccount *_Nullable signalAccount =
-                      [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
-                      BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
-                      BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                      if (isPreviousMember) {
-                          if (isBlocked) {
-                              if (signalAccount) {
-                                  [weakSelf showUnblockAlertForSignalAccount:signalAccount];
-                              } else {
-                                  [weakSelf showUnblockAlertForRecipientId:recipientId];
-                              }
-                          } else {
-                              [OWSAlerts
-                               showAlertWithTitle:
-                               NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
-                                                 @"Title for alert indicating that group members can't be removed.")
-                               message:NSLocalizedString(
-                                                         @"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
-                                                         @"Title for alert indicating that group members can't "
-                                                         @"be removed.")];
-                          }
-                      } else {
-                          [weakSelf removeRecipientId:recipientId];
-                      }
-                  }]];
-    }
-    [contents addSection:section];
+//
+//    OWSTableSection *section = [OWSTableSection new];
+//    section.headerTitle = NSLocalizedString(
+//                                            @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
+//
+//    [section addItem:[OWSTableItem
+//                      disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
+//                                                               @"Label for the cell that lets you add a new member to a group.")
+//                      customRowHeight:UITableViewAutomaticDimension
+//                      actionBlock:^{
+//                          AddToGroupViewController *viewController = [AddToGroupViewController new];
+//                          viewController.addToGroupDelegate = weakSelf;
+//                          [weakSelf.navigationController pushViewController:viewController animated:YES];
+//                      }]];
+//
+//    NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
+//    [memberRecipientIds removeObject:[contactsViewHelper localUID]];
+//    for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
+//        [section
+//         addItem:[OWSTableItem
+//                  itemWithCustomCellBlock:^{
+//                      UpdateGroupViewController *strongSelf = weakSelf;
+//                      OWSCAssert(strongSelf);
+//
+//                      ContactTableViewCell *cell = [ContactTableViewCell new];
+//                      BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
+//                      BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+//                      if (isPreviousMember) {
+//                          if (isBlocked) {
+//                              cell.accessoryMessage = NSLocalizedString(
+//                                                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+//                          } else {
+//                              cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//                          }
+//                      } else {
+//                          // In the "members" section, we label "new" members as such when editing an existing
+//                          // group.
+//                          //
+//                          // The only way a "new" member could be blocked is if we blocked them on a linked device
+//                          // while in this dialog.  We don't need to worry about that edge case.
+//                          cell.accessoryMessage = NSLocalizedString(@"EDIT_GROUP_NEW_MEMBER_LABEL",
+//                                                                    @"An indicator that a user is a new member of the group.");
+//                      }
+//
+//                      [cell configureWithRecipientId:recipientId
+//                                     contactsManager:contactsViewHelper.contactsManager];
+//                      return cell;
+//                  }
+//                  customRowHeight:UITableViewAutomaticDimension
+//                  actionBlock:^{
+//                      SignalAccount *_Nullable signalAccount =
+//                      [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
+//                      BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
+//                      BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+//                      if (isPreviousMember) {
+//                          if (isBlocked) {
+//                              if (signalAccount) {
+//                                  [weakSelf showUnblockAlertForSignalAccount:signalAccount];
+//                              } else {
+//                                  [weakSelf showUnblockAlertForRecipientId:recipientId];
+//                              }
+//                          } else {
+//                              [OWSAlerts
+//                               showAlertWithTitle:
+//                               NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
+//                                                 @"Title for alert indicating that group members can't be removed.")
+//                               message:NSLocalizedString(
+//                                                         @"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
+//                                                         @"Title for alert indicating that group members can't "
+//                                                         @"be removed.")];
+//                          }
+//                      } else {
+//                          [weakSelf removeRecipientId:recipientId];
+//                      }
+//                  }]];
+//    }
+//    [contents addSection:section];
     
     self.tableViewController.contents = contents;
 }
