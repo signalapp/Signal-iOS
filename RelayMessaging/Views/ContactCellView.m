@@ -28,7 +28,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 @property (nonatomic) FLContactsManager *contactsManager;
 @property (nonatomic, nullable) TSThread *thread;
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic, nullable) NSString *recipientId;
+@property (nonatomic, nullable) NSString *tagId;
 
 @end
 
@@ -219,7 +220,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].fullName;
+    self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].flTag.orgSlug;
     
     [self.profileNameLabel setNeedsLayout];
 }
