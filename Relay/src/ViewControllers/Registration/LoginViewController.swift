@@ -31,7 +31,7 @@ class LoginViewController: UITableViewController {
         self.usernameTextField.placeholder = NSLocalizedString("ENTER_USERNAME_LABEL", comment: "")
         self.organizationTextField.placeholder = NSLocalizedString("Enter Organization (Optional)", comment: "")
         self.loginButton.titleLabel?.text = NSLocalizedString("SUBMIT", comment: "")
-        self.loginButton.titleLabel?.text = NSLocalizedString("CREATE_ACCOUNT_BUTTON", comment: "")
+        self.createAccountButton.titleLabel?.text = NSLocalizedString("CREATE_ACCOUNT_BUTTON", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,8 +39,8 @@ class LoginViewController: UITableViewController {
         
 //        self.navigationController?.navigationBar.isHidden = true
         
-        self.createAccountButton.isEnabled = false
-        self.createAccountButton.alpha = 0.5
+//        self.createAccountButton.isEnabled = false
+//        self.createAccountButton.alpha = 0.5
     }
     
     override func viewDidAppear(_ animated: Bool) {
