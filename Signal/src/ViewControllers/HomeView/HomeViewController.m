@@ -1207,13 +1207,16 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
-    // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
         ConversationViewController *conversationVC = [ConversationViewController new];
         [conversationVC configureForThread:thread action:action focusMessageId:focusMessageId];
         self.lastThread = thread;
 
-        [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
+        if (self.homeViewMode == HomeViewMode_Archive) {
+            [self.navigationController pushViewController:conversationVC animated:isAnimated];
+        } else {
+            [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
+        }
     });
 }
 
