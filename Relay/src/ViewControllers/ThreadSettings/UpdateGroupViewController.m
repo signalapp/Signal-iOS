@@ -302,7 +302,7 @@ OWSNavigationView>
 //    }
 //    [contents addSection:section];
     
-    self.tableViewController.contents = contents;
+//    self.tableViewController.contents = contents;
 }
 
 - (void)showUnblockAlertForSignalAccount:(SignalAccount *)signalAccount
