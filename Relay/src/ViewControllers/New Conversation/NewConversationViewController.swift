@@ -386,9 +386,10 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
                                                     
                                                     let matches = regex.matches(in: pretty, options: [], range: NSRange(location: 0, length: pretty.count))
                                                     for match in matches {
-                                                        let swiftRange = Range(match.range, in :pretty)
-                                                        let newSlug = pretty.substring(with: swiftRange!)
-                                                        self.addSlug(slug: newSlug)
+                                                        if let swiftRange = Range(match.range, in :pretty) {
+                                                            let newSlug = pretty[swiftRange.lowerBound..<swiftRange.upperBound]
+                                                            self.addSlug(slug: String(newSlug))
+                                                        }
                                                     }
                                                 } catch {
                                                     // Bad regex?

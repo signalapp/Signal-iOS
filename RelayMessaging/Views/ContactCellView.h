@@ -16,6 +16,8 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(FLContactsManager *)contactsManager;
 
+- (void)configureWithTagId:(NSString *)tagId contactsManager:(FLContactsManager *)contactsManager;
+
 - (void)configureWithThread:(TSThread *)thread contactsManager:(FLContactsManager *)contactsManager;
 
 - (void)prepareForReuse;

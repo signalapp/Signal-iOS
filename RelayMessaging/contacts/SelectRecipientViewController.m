@@ -9,18 +9,13 @@
 #import <RelayMessaging/ContactTableViewCell.h>
 #import <RelayMessaging/ContactsViewHelper.h>
 #import <RelayMessaging/Environment.h>
-//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSTableViewController.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayMessaging/UIFont+OWS.h>
 #import <RelayMessaging/UIUtil.h>
 #import <RelayMessaging/UIView+OWS.h>
-#import <RelayServiceKit/AppContext.h>
-#import <RelayServiceKit/ContactsUpdater.h>
-#import <RelayServiceKit/OWSBlockingManager.h>
-#import <RelayServiceKit/PhoneNumberUtil.h>
-#import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSAccountManager.h>
+
+@import RelayServiceKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,12 +23,9 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 #pragma mark -
 
-@interface SelectRecipientViewController () <CountryCodeViewControllerDelegate,
-    ContactsViewHelperDelegate,
+@interface SelectRecipientViewController () <ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
     UITextFieldDelegate>
-
-@property (nonatomic) UIButton *countryCodeButton;
 
 @property (nonatomic) UITextField *phoneNumberTextField;
 
@@ -112,21 +104,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     countryCodeLabel.text
         = NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field");
     return countryCodeLabel;
-}
-
-- (UIButton *)countryCodeButton
-{
-    if (!_countryCodeButton) {
-        _countryCodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _countryCodeButton.titleLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-        _countryCodeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-        [_countryCodeButton setTitleColor:[UIColor FL_mediumBlue2] forState:UIControlStateNormal];
-        [_countryCodeButton addTarget:self
-                               action:@selector(showCountryCodeView:)
-                     forControlEvents:UIControlEventTouchUpInside];
-    }
-
-    return _countryCodeButton;
 }
 
 - (UILabel *)phoneNumberLabel
@@ -211,46 +188,47 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)populateDefaultCountryNameAndCode
 {
-    PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localUID]];
-    OWSAssert(localNumber);
-
-    NSString *countryCode;
-    NSNumber *callingCode;
-    if (localNumber) {
-        callingCode = [localNumber getCountryCode];
-        OWSAssert(callingCode);
-        if (callingCode) {
-            NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
-            countryCode = [[PhoneNumberUtil sharedThreadLocal] probableCountryCodeForCallingCode:prefix];
-        }
-    }
-
-    if (!countryCode || !callingCode) {
-        countryCode = [PhoneNumber defaultCountryCode];
-        callingCode = [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
-    }
-
-    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-
-    [self updateCountryWithName:countryName
-                    callingCode:[NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode]
-                    countryCode:countryCode];
+    // Not meaningful in Forsta environment
+//    PhoneNumber *localNumber = [PhoneNumber phoneNumberFromE164:[TSAccountManager localUID]];
+//    OWSAssert(localNumber);
+//
+//    NSString *countryCode;
+//    NSNumber *callingCode;
+//    if (localNumber) {
+//        callingCode = [localNumber getCountryCode];
+//        OWSAssert(callingCode);
+//        if (callingCode) {
+//            NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
+//            countryCode = [[PhoneNumberUtil sharedThreadLocal] probableCountryCodeForCallingCode:prefix];
+//        }
+//    }
+//
+//    if (!countryCode || !callingCode) {
+//        countryCode = [PhoneNumber defaultCountryCode];
+//        callingCode = [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
+//    }
+//
+//    NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+//
+//    [self updateCountryWithName:countryName
+//                    callingCode:[NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode]
+//                    countryCode:countryCode];
 }
 
 - (void)updateCountryWithName:(NSString *)countryName
                   callingCode:(NSString *)callingCode
                   countryCode:(NSString *)countryCode
 {
-    _callingCode = callingCode;
-
-    NSString *titleFormat = (CurrentAppContext().isRTL ? @"(%2$@) %1$@" : @"%1$@ (%2$@)");
-    NSString *title = [NSString stringWithFormat:titleFormat, callingCode, countryCode.localizedUppercaseString];
-    [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
-    [self.countryCodeButton layoutSubviews];
-
-    self.examplePhoneNumberLabel.text =
-        [ViewControllerUtils examplePhoneNumberForCountryCode:countryCode callingCode:callingCode];
-    [self.examplePhoneNumberLabel.superview layoutSubviews];
+//    _callingCode = callingCode;
+//
+//    NSString *titleFormat = (CurrentAppContext().isRTL ? @"(%2$@) %1$@" : @"%1$@ (%2$@)");
+//    NSString *title = [NSString stringWithFormat:titleFormat, callingCode, countryCode.localizedUppercaseString];
+//    [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
+//    [self.countryCodeButton layoutSubviews];
+//
+//    self.examplePhoneNumberLabel.text =
+//        [ViewControllerUtils examplePhoneNumberForCountryCode:countryCode callingCode:callingCode];
+//    [self.examplePhoneNumberLabel.superview layoutSubviews];
 }
 
 - (void)setCallingCode:(NSString *)callingCode
@@ -264,16 +242,16 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 
 - (void)showCountryCodeView:(nullable id)sender
 {
-    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
-    countryCodeController.countryCodeDelegate = self;
-    countryCodeController.isPresentedInNavigationController = self.isPresentedInNavigationController;
-    if (self.isPresentedInNavigationController) {
-        [self.navigationController pushViewController:countryCodeController animated:YES];
-    } else {
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
-        [self presentViewController:navigationController animated:YES completion:nil];
-    }
+//    CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
+//    countryCodeController.countryCodeDelegate = self;
+//    countryCodeController.isPresentedInNavigationController = self.isPresentedInNavigationController;
+//    if (self.isPresentedInNavigationController) {
+//        [self.navigationController pushViewController:countryCodeController animated:YES];
+//    } else {
+//        OWSNavigationController *navigationController =
+//            [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
+//        [self presentViewController:navigationController animated:YES completion:nil];
+//    }
 }
 
 - (void)phoneNumberButtonPressed
@@ -448,77 +426,77 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     __weak SelectRecipientViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    OWSTableSection *phoneNumberSection = [OWSTableSection new];
-    phoneNumberSection.headerTitle = [self.delegate phoneNumberSectionTitle];
-    const CGFloat kCountryRowHeight = 50;
-    const CGFloat kPhoneNumberRowHeight = 50;
-    const CGFloat examplePhoneNumberRowHeight = self.examplePhoneNumberFont.lineHeight + 3.f;
-    const CGFloat kButtonRowHeight = 60;
-    [phoneNumberSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        SelectRecipientViewController *strongSelf = weakSelf;
-        OWSCAssert(strongSelf);
-
-        UITableViewCell *cell = [OWSTableItem newCell];
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-
-        // Country Row
-        UIView *countryRow =
-            [strongSelf createRowWithHeight:kCountryRowHeight previousRow:nil superview:cell.contentView];
-        [countryRow addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:strongSelf
-                                                                                 action:@selector(countryRowTouched:)]];
-
-        UILabel *countryCodeLabel = strongSelf.countryCodeLabel;
-        [countryRow addSubview:countryCodeLabel];
-        [countryCodeLabel autoPinLeadingToSuperviewMargin];
-        [countryCodeLabel autoVCenterInSuperview];
-
-        [countryRow addSubview:strongSelf.countryCodeButton];
-        [strongSelf.countryCodeButton autoPinTrailingToSuperviewMargin];
-        [strongSelf.countryCodeButton autoVCenterInSuperview];
-
-        // Phone Number Row
-        UIView *phoneNumberRow =
-            [strongSelf createRowWithHeight:kPhoneNumberRowHeight previousRow:countryRow superview:cell.contentView];
-        [phoneNumberRow
-            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:strongSelf
-                                                                         action:@selector(phoneNumberRowTouched:)]];
-
-        UILabel *phoneNumberLabel = strongSelf.phoneNumberLabel;
-        [phoneNumberRow addSubview:phoneNumberLabel];
-        [phoneNumberLabel autoPinLeadingToSuperviewMargin];
-        [phoneNumberLabel autoVCenterInSuperview];
-
-        [phoneNumberRow addSubview:strongSelf.phoneNumberTextField];
-        [strongSelf.phoneNumberTextField autoPinLeadingToTrailingEdgeOfView:phoneNumberLabel offset:10.f];
-        [strongSelf.phoneNumberTextField autoPinTrailingToSuperviewMargin];
-        [strongSelf.phoneNumberTextField autoVCenterInSuperview];
-
-        // Example row.
-        UIView *examplePhoneNumberRow = [strongSelf createRowWithHeight:examplePhoneNumberRowHeight
-                                                            previousRow:phoneNumberRow
-                                                              superview:cell.contentView];
-        [examplePhoneNumberRow addSubview:strongSelf.examplePhoneNumberLabel];
-        [strongSelf.examplePhoneNumberLabel autoVCenterInSuperview];
-        [strongSelf.examplePhoneNumberLabel autoPinTrailingToSuperviewMargin];
-
-        // Phone Number Button Row
-        UIView *buttonRow = [strongSelf createRowWithHeight:kButtonRowHeight
-                                                previousRow:examplePhoneNumberRow
-                                                  superview:cell.contentView];
-        [buttonRow addSubview:strongSelf.phoneNumberButton];
-        [strongSelf.phoneNumberButton autoVCenterInSuperview];
-        [strongSelf.phoneNumberButton autoPinTrailingToSuperviewMargin];
-
-        [buttonRow autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return cell;
-    }
-                                                      customRowHeight:kCountryRowHeight + kPhoneNumberRowHeight
-                                                      + examplePhoneNumberRowHeight + kButtonRowHeight
-                                                          actionBlock:nil]];
-    [contents addSection:phoneNumberSection];
+//    OWSTableSection *phoneNumberSection = [OWSTableSection new];
+//    phoneNumberSection.headerTitle = [self.delegate phoneNumberSectionTitle];
+//    const CGFloat kCountryRowHeight = 50;
+//    const CGFloat kPhoneNumberRowHeight = 50;
+//    const CGFloat examplePhoneNumberRowHeight = self.examplePhoneNumberFont.lineHeight + 3.f;
+//    const CGFloat kButtonRowHeight = 60;
+//    [phoneNumberSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+//        SelectRecipientViewController *strongSelf = weakSelf;
+//        OWSCAssert(strongSelf);
+//
+//        UITableViewCell *cell = [OWSTableItem newCell];
+//        cell.preservesSuperviewLayoutMargins = YES;
+//        cell.contentView.preservesSuperviewLayoutMargins = YES;
+//
+//        // Country Row
+//        UIView *countryRow =
+//            [strongSelf createRowWithHeight:kCountryRowHeight previousRow:nil superview:cell.contentView];
+//        [countryRow addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:strongSelf
+//                                                                                 action:@selector(countryRowTouched:)]];
+//
+//        UILabel *countryCodeLabel = strongSelf.countryCodeLabel;
+//        [countryRow addSubview:countryCodeLabel];
+//        [countryCodeLabel autoPinLeadingToSuperviewMargin];
+//        [countryCodeLabel autoVCenterInSuperview];
+//
+//        [countryRow addSubview:strongSelf.countryCodeButton];
+//        [strongSelf.countryCodeButton autoPinTrailingToSuperviewMargin];
+//        [strongSelf.countryCodeButton autoVCenterInSuperview];
+//
+//        // Phone Number Row
+//        UIView *phoneNumberRow =
+//            [strongSelf createRowWithHeight:kPhoneNumberRowHeight previousRow:countryRow superview:cell.contentView];
+//        [phoneNumberRow
+//            addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:strongSelf
+//                                                                         action:@selector(phoneNumberRowTouched:)]];
+//
+//        UILabel *phoneNumberLabel = strongSelf.phoneNumberLabel;
+//        [phoneNumberRow addSubview:phoneNumberLabel];
+//        [phoneNumberLabel autoPinLeadingToSuperviewMargin];
+//        [phoneNumberLabel autoVCenterInSuperview];
+//
+//        [phoneNumberRow addSubview:strongSelf.phoneNumberTextField];
+//        [strongSelf.phoneNumberTextField autoPinLeadingToTrailingEdgeOfView:phoneNumberLabel offset:10.f];
+//        [strongSelf.phoneNumberTextField autoPinTrailingToSuperviewMargin];
+//        [strongSelf.phoneNumberTextField autoVCenterInSuperview];
+//
+//        // Example row.
+//        UIView *examplePhoneNumberRow = [strongSelf createRowWithHeight:examplePhoneNumberRowHeight
+//                                                            previousRow:phoneNumberRow
+//                                                              superview:cell.contentView];
+//        [examplePhoneNumberRow addSubview:strongSelf.examplePhoneNumberLabel];
+//        [strongSelf.examplePhoneNumberLabel autoVCenterInSuperview];
+//        [strongSelf.examplePhoneNumberLabel autoPinTrailingToSuperviewMargin];
+//
+//        // Phone Number Button Row
+//        UIView *buttonRow = [strongSelf createRowWithHeight:kButtonRowHeight
+//                                                previousRow:examplePhoneNumberRow
+//                                                  superview:cell.contentView];
+//        [buttonRow addSubview:strongSelf.phoneNumberButton];
+//        [strongSelf.phoneNumberButton autoVCenterInSuperview];
+//        [strongSelf.phoneNumberButton autoPinTrailingToSuperviewMargin];
+//
+//        [buttonRow autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+//
+//        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//        return cell;
+//    }
+//                                                      customRowHeight:kCountryRowHeight + kPhoneNumberRowHeight
+//                                                      + examplePhoneNumberRowHeight + kButtonRowHeight
+//                                                          actionBlock:nil]];
+//    [contents addSection:phoneNumberSection];
 
     if (![self.delegate shouldHideContacts]) {
         OWSTableSection *contactsSection = [OWSTableSection new];

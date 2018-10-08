@@ -6,16 +6,9 @@
 #import "Relay-Swift.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
-#import <RelayMessaging/BlockListUIUtils.h>
-#import <RelayMessaging/ContactTableViewCell.h>
-#import <RelayMessaging/ContactsViewHelper.h>
-#import <RelayMessaging/Environment.h>
-//#import <RelayMessaging/OWSContactsManager.h>
-#import <RelayMessaging/UIUtil.h>
-#import <RelayServiceKit/OWSBlockingManager.h>
-#import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSThread.h>
 
+@import RelayMessaging;
+@import RelayServiceKit;
 @import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -142,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[helper localUID]];
+//    [memberRecipientIds removeObject:[helper localUID]];
     [self addMembers:memberRecipientIds.allObjects toSection:membersSection useVerifyAction:NO];
     [contents addSection:membersSection];
 

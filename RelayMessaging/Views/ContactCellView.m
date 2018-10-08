@@ -28,7 +28,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 @property (nonatomic) FLContactsManager *contactsManager;
 @property (nonatomic, nullable) TSThread *thread;
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic, nullable) NSString *recipientId;
+@property (nonatomic, nullable) NSString *tagId;
 
 @end
 
@@ -101,6 +102,36 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
+- (void)configureWithTagId:(NSString *)tagId contactsManager:(FLContactsManager *)contactsManager
+{
+    OWSAssert(tagId.length > 0);
+    OWSAssert(contactsManager);
+    
+    // Update fonts to reflect changes to dynamic type.
+    [self configureFontsAndColors];
+    
+    self.tagId = tagId;
+    self.contactsManager = contactsManager;
+    
+    self.nameLabel.attributedText =
+    [contactsManager formattedDisplayNameForTagId:tagId font:self.nameLabel.font];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [self updateProfileName];
+    [self updateAvatar];
+    
+    if (self.accessoryMessage) {
+        self.accessoryLabel.text = self.accessoryMessage;
+        [self setAccessoryView:self.accessoryLabel];
+    }
+    
+    // Force layout, since imageView isn't being initally rendered on App Store optimized build.
+    [self layoutSubviews];
+}
+
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(FLContactsManager *)contactsManager
 {
     OWSAssert(recipientId.length > 0);
@@ -112,13 +143,18 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.recipientId = recipientId;
     self.contactsManager = contactsManager;
 
-    self.nameLabel.attributedText =
+    if ([recipientId isEqualToString:[TSAccountManager localUID]]) {
+        self.nameLabel.attributedText = [[NSAttributedString alloc] initWithString:NSLocalizedString(@"ME_STRING", @"")
+                                                                        attributes:@{ NSFontAttributeName : self.nameLabel.font }];
+    } else {
+        self.nameLabel.attributedText =
         [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
-                                               object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(otherUsersProfileDidChange:)
+                                                     name:kNSNotificationName_OtherUsersProfileDidChange
+                                                   object:nil];
+    }
     [self updateProfileName];
     [self updateAvatar];
 
@@ -219,7 +255,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].fullName;
+    self.profileNameLabel.text = [contactsManager recipientWithId:recipientId].flTag.orgSlug;
     
     [self.profileNameLabel setNeedsLayout];
 }

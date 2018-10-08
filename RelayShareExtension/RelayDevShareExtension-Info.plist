@@ -33,20 +33,6 @@
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
-			<key>signal.org</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-			<key>whispersystems.org</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
 		</dict>
 	</dict>
 	<key>NSExtension</key>
@@ -60,8 +46,8 @@
                 SUBQUERY (
                 $extensionItem.attachments,
                 $attachment,
-                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
-                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.data&quot;
+                || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO &quot;public.url&quot;
                 ).@count &gt;= 1
                 ).@count == 1
             </string>
