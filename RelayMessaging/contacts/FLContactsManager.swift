@@ -223,6 +223,41 @@ import RelayServiceKit
         
     }
     
+    @objc public func tag(withId uuid: String) -> FLTag? {
+        
+        // Check the cache
+        var atag:FLTag? = tagCache.object(forKey: uuid as NSString)
+        
+        // Check the db
+        if atag == nil {
+            self.readWriteConnection.read { (transaction) in
+                atag = self.tag(withId: uuid, transaction: transaction)
+                if atag != nil {
+                    self.tagCache.setObject(atag!, forKey: atag?.uniqueId as! NSString);
+                }
+            }
+        }
+        return atag
+    }
+    
+    @objc public func tag(withId uuid: String, transaction: YapDatabaseReadTransaction) -> FLTag? {
+        
+        // Check the cache
+        if let atag:FLTag = tagCache.object(forKey: uuid as NSString) {
+            return atag
+        } else if let atag: FLTag = FLTag.fetch(uniqueId: uuid, transaction: transaction) {
+            tagCache.setObject(atag, forKey: uuid as NSString)
+            return atag
+        } else {
+            // TODO: Build notification path for tag updates
+//            NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+//                                            object: self, userInfo: ["userIds" : [userId]])
+        }
+        return nil
+    }
+
+
+    
     @objc public func recipient(withId userId: String) -> RelayRecipient? {
         
         // Check the cache
@@ -456,6 +491,21 @@ import RelayServiceKit
     @objc public func isSystemContactsAuthorized() -> Bool {
         return false
     }
+    
+    @objc public func formattedDisplayName(forTagId tagId: String, font: UIFont) -> NSAttributedString? {
+        
+        if let aTag = self.tag(withId:tagId) {
+            let rawName = aTag.displaySlug
+            
+            let normalFontAttributes = [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: Theme.primaryColor]
+            
+            let attrName = NSAttributedString(string: rawName, attributes: normalFontAttributes as [NSAttributedStringKey : Any])
+            
+            return attrName
+        }
+        return nil
+    }
+
     
     @objc public func formattedFullName(forRecipientId recipientId: String, font: UIFont) -> NSAttributedString? {
         
