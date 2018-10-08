@@ -129,6 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        contactShare:nil];
     
     message.messageType = FLMessageTypeContentKey;
+    message.plainTextBody = attachment.captionText;
 
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType
