@@ -138,6 +138,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.source];
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
 #pragma mark - Decryption
 
 - (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
@@ -161,6 +166,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         });
     };
 
+    NSString *localRecipientId = self.tsAccountManager.localNumber;
+    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
     DecryptSuccessBlock successBlock = ^(
         OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
@@ -169,11 +176,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock();
         }
 
-        if ([result.source isEqualToString:TSAccountManager.sharedInstance.localNumber]
-            && result.sourceDevice == OWSDevicePrimaryDeviceId) {
-            OWSAssertDebug(result.isUDMessage);
-
-            OWSLogInfo(@"Ignoring self-sent sync message.");
+        if ([result.source isEqualToString:localRecipientId] && result.sourceDevice == localDeviceId) {
+            // Self-sent messages should be discarded during the decryption process.
+            OWSFailDebug(@"Unexpected self-sent sync message.");
             return failureBlock();
         }
 
@@ -427,6 +432,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     id<SMKCertificateValidator> certificateValidator =
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
 
+    NSString *localRecipientId = self.tsAccountManager.localNumber;
+    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         @try {
             NSError *error;
@@ -446,9 +454,16 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 [cipher decryptMessageWithCertificateValidator:certificateValidator
                                                 cipherTextData:encryptedData
                                                      timestamp:serverTimestamp
+                                              localRecipientId:localRecipientId
+                                                 localDeviceId:localDeviceId
                                                protocolContext:transaction
                                                          error:&error];
             if (error || !decryptResult) {
+                if ([error.domain isEqualToString:@"SignalMetadataKit.SMKSelfSentMessageError"]) {
+                    // Self-sent messages can be safely discarded.
+                    return failureBlock(error);
+                }
+
                 OWSFailDebug(@"Could not decrypt UD message: %@", error);
                 error = EnsureDecryptError(error, @"Could not decrypt UD message");
                 return failureBlock(error);
@@ -531,7 +546,12 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
-            errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
+            if (envelope.source.length > 0) {
+                errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
+            } else {
+                // TODO: Find another way to surface undecryptable UD messages to the user.
+                return;
+            }
         }
 
         OWSAssertDebug(errorMessage);

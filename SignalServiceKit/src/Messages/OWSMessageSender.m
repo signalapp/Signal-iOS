@@ -1331,7 +1331,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(deviceIds);
 
     if (messageSend.isUDSend && messageSend.isLocalNumber) {
-        const NSUInteger kLocalDeviceId = 1;
         OWSAssertDebug(![deviceIds containsObject:@(OWSDevicePrimaryDeviceId)]);
 
         [deviceIds addObject:@(OWSDevicePrimaryDeviceId)];
