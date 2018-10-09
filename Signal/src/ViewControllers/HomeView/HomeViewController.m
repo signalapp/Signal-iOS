@@ -497,7 +497,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     //  Settings button.
     UIBarButtonItem *settingsButton;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
         const NSUInteger kAvatarSize = 28;
         UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
         UIImage *avatarImage = (localProfileAvatarImage
