@@ -180,29 +180,34 @@ public class ProfileFetcherJob: NSObject {
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
-        // Recipients should be in "UD delivery mode" IFF:
-        //
-        // * Their profile includes a unidentifiedAccessVerifier.
-        // * The unidentifiedAccessVerifier matches the "expected" value derived
-        //   from their profile key (if any).
-        //
-        // Recipients should be in "normal delivery mode" otherwise.
-        var supportsUnidentifiedDelivery = false
-        if let unidentifiedAccessVerifier = signalServiceProfile.unidentifiedAccessVerifier,
-            let udAccessKey = udManager.udAccessKeyForRecipient(recipientId) {
-            let dataToVerify = Data(count: 32)
-            if let expectedVerfier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) {
-                supportsUnidentifiedDelivery = expectedVerfier == unidentifiedAccessVerifier
-            } else {
-                owsFailDebug("could not verify UD")
-            }
+        updateUnidentifiedAccess(recipientId: recipientId, verifier: signalServiceProfile.unidentifiedAccessVerifier, hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+    }
+
+    private func updateUnidentifiedAccess(recipientId: String, verifier: Data?, hasUnrestrictedAccess: Bool) {
+        if hasUnrestrictedAccess {
+            udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: recipientId)
+            return
         }
 
-        // TODO: We may want to only call setSupportsUnidentifiedDelivery if
-        // supportsUnidentifiedDelivery is true.
-        udManager.setSupportsUnidentifiedDelivery(supportsUnidentifiedDelivery, recipientId: recipientId)
+        guard let verifier = verifier, let udAccessKey = udManager.udAccessKeyForRecipient(recipientId) else {
+            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            return
+        }
 
-        udManager.setShouldAllowUnrestrictedAccess(recipientId: recipientId, shouldAllowUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+        let dataToVerify = Data(count: 32)
+        guard let expectedVerfier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
+            owsFailDebug("could not compute verification")
+            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            return
+        }
+
+        guard expectedVerfier == verifier else {
+            Logger.verbose("verifier mismatch, new profile key?")
+            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            return
+        }
+
+        udManager.setUnidentifiedAccessMode(.enabled, recipientId: recipientId)
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {

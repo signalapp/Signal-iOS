@@ -1041,7 +1041,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     //
                     // TODO: Do we want to discriminate based on exact error?
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
-                    [self.udManager setSupportsUnidentifiedDelivery:NO recipientId:recipient.uniqueId];
+                    [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
+                                                  recipientId:recipient.uniqueId];
                     messageSend.hasUDAuthFailed = YES;
                     dispatch_async([OWSDispatch sendingQueue], ^{
                         [self sendMessageToRecipient:messageSend];

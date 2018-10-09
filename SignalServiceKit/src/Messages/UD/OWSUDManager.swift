@@ -12,38 +12,47 @@ public enum OWSUDError: Error {
     case invalidData(description: String)
 }
 
+@objc
+public enum UnidentifiedAccessMode: Int {
+    case unknown
+    case enabled
+    case disabled
+    case unrestricted
+}
+
 @objc public protocol OWSUDManager: class {
 
     @objc func setup()
 
     @objc func trustRoot() -> ECPublicKey
 
-    // MARK: - Recipient state
+    // MARK: - Recipient State
 
-    @objc func supportsUnidentifiedDelivery(recipientId: String) -> Bool
+    @objc
+    func unidentifiedAccessMode(recipientId: String) -> UnidentifiedAccessMode
 
-    @objc func setSupportsUnidentifiedDelivery(_ value: Bool, recipientId: String)
+    @objc
+    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
 
     // Returns the UD access key for a given recipient if they are
     // a UD recipient and we have a valid profile key for them.
     @objc func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey?
 
-    // MARK: - Sender Certificate
+    @objc
+    func generateAccessKeyForUnrestrictedRecipient() -> SMKUDAccessKey
+    // MARK: - Local State
+
+    // MARK: Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
-    // logic can access the certificate data.
+    // logic can access the strongly typed certificate data.
     @objc func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
                                             failure:@escaping (Error) -> Void)
 
-    // MARK: - Unrestricted Access
+    // MARK: Unrestricted Access
 
     @objc func shouldAllowUnrestrictedAccessLocal() -> Bool
-
     @objc func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
-
-    @objc func shouldAllowUnrestrictedAccess(recipientId: String) -> Bool
-
-    @objc func setShouldAllowUnrestrictedAccess(recipientId: String, shouldAllowUnrestrictedAccess: Bool)
 }
 
 // MARK: -
@@ -53,11 +62,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private let dbConnection: YapDatabaseConnection
 
+    // MARK: Local Configuration State
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
-    private let kUDRecipientModeCollection = "kUDRecipientModeCollection"
-    private let kUDUnrestrictedAccessCollection = "kUDUnrestrictedAccessCollection"
+
+    // MARK: Recipient State
+    private let kUnidentifiedAccessCollection = "kUnidentifiedAccessCollection"
 
     @objc
     public required init(primaryStorage: OWSPrimaryStorage) {
@@ -101,20 +112,24 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Recipient state
 
     @objc
-    public func supportsUnidentifiedDelivery(recipientId: String) -> Bool {
+    public func unidentifiedAccessMode(recipientId: String) -> UnidentifiedAccessMode {
         if tsAccountManager.localNumber() == recipientId {
-            return true
+            if shouldAllowUnrestrictedAccessLocal() {
+                return .unrestricted
+            } else {
+                return .enabled
+            }
         }
-        return dbConnection.bool(forKey: recipientId, inCollection: kUDRecipientModeCollection, defaultValue: false)
+
+        guard let existingValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? UnidentifiedAccessMode else {
+            return .unknown
+        }
+        return existingValue
     }
 
     @objc
-    public func setSupportsUnidentifiedDelivery(_ value: Bool, recipientId: String) {
-        if value {
-            dbConnection.setBool(true, forKey: recipientId, inCollection: kUDRecipientModeCollection)
-        } else {
-            dbConnection.removeObject(forKey: recipientId, inCollection: kUDRecipientModeCollection)
-        }
+    public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String) {
+        dbConnection.setObject(mode, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
     }
 
     // Returns the UD access key for a given recipient
@@ -132,6 +147,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             Logger.error("Could not determine udAccessKey: \(error)")
             return nil
         }
+    }
+
+    @objc
+    public func generateAccessKeyForUnrestrictedRecipient() -> SMKUDAccessKey {
+        return SMKUDAccessKey(randomKeyData: ())
     }
 
     // MARK: - Sender Certificate
@@ -250,15 +270,5 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
         dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection)
-    }
-
-    @objc
-    public func shouldAllowUnrestrictedAccess(recipientId: String) -> Bool {
-        return dbConnection.bool(forKey: recipientId, inCollection: kUDUnrestrictedAccessCollection, defaultValue: false)
-    }
-
-    @objc
-    public func setShouldAllowUnrestrictedAccess(recipientId: String, shouldAllowUnrestrictedAccess: Bool) {
-        dbConnection.setBool(shouldAllowUnrestrictedAccess, forKey: recipientId, inCollection: kUDUnrestrictedAccessCollection)
     }
 }
