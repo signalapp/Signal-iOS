@@ -38,11 +38,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+//#define SHOW_COLOR_PICKER
+
 const CGFloat kIconViewLength = 24;
 
 @interface OWSConversationSettingsViewController () <ContactEditingDelegate,
     ContactsViewHelperDelegate,
+#ifdef SHOW_COLOR_PICKER
     ColorPickerDelegate,
+#endif
     OWSSheetViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
@@ -59,7 +63,9 @@ const CGFloat kIconViewLength = 24;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
+#ifdef SHOW_COLOR_PICKER
 @property (nonatomic) OWSColorPicker *colorPicker;
+#endif
 
 @end
 
@@ -250,8 +256,10 @@ const CGFloat kIconViewLength = 24;
             [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
     }
 
+#ifdef SHOW_COLOR_PICKER
     self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
     self.colorPicker.delegate = self;
+#endif
 
     [self updateTableContents];
 }
@@ -465,6 +473,7 @@ const CGFloat kIconViewLength = 24;
                                 customRowHeight:UITableViewAutomaticDimension
                                     actionBlock:nil]];
     }
+#ifdef SHOW_COLOR_PICKER
     [mainSection
         addItem:[OWSTableItem
                     itemWithCustomCellBlock:^{
@@ -479,6 +488,7 @@ const CGFloat kIconViewLength = 24;
                     actionBlock:^{
                         [weakSelf showColorPicker];
                     }]];
+#endif
 
     [contents addSection:mainSection];
 
@@ -1297,6 +1307,8 @@ const CGFloat kIconViewLength = 24;
 
 #pragma mark - ColorPickerDelegate
 
+#ifdef SHOW_COLOR_PICKER
+
 - (void)showColorPicker
 {
     OWSSheetViewController *sheetViewController = self.colorPicker.sheetViewController;
@@ -1328,6 +1340,8 @@ const CGFloat kIconViewLength = 24;
         [operation start];
     });
 }
+
+#endif
 
 #pragma mark - OWSSheetViewController
 
