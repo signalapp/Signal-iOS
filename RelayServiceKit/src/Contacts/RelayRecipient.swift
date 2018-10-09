@@ -103,14 +103,11 @@ import YapDatabase
                     recipient.flTag?.orgSlug = recipient.orgSlug!
                 }
 //                Environment.shared.contactsManager.saveTag(recipient?.flTag, withTransaction: transaction)
-                recipient.save(with: transaction)
-
+                return recipient
             } else {
                 Logger.debug("Missing tagDictionary for Recipient: \(String(describing: recipient.uniqueId))")
+                return nil
             }
-//            Environment.shared.contactsManager.save(recipient, withTransaction: transaction)
-            recipient.save(with: transaction)
-            return recipient
         } else {
             Logger.debug("\(self.logTag()): \(#function) received invalid dictionary: \(userDict)")
             return nil
