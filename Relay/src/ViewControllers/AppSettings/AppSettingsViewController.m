@@ -123,7 +123,7 @@
     }
                          customRowHeight:100.f
                          actionBlock:^{
-                             [weakSelf showProfile];
+//                             [weakSelf showProfile];
                          }]];
 
     if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
@@ -336,17 +336,17 @@
     [subtitleLabel autoPinLeadingToSuperviewMargin];
     [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
-    OWSAssert(disclosureImage);
-    UIImageView *disclosureButton =
-        [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-    disclosureButton.tintColor = [UIColor colorWithHex:@"#cccccc"];
-    [cell.contentView addSubview:disclosureButton];
-    [disclosureButton autoVCenterInSuperview];
-    [disclosureButton autoPinTrailingToSuperviewMargin];
-    [disclosureButton autoPinLeadingToTrailingEdgeOfView:nameView offset:16.f];
-    [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
-                                                      forAxis:UILayoutConstraintAxisHorizontal];
+//    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+//    OWSAssert(disclosureImage);
+//    UIImageView *disclosureButton =
+//        [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+//    disclosureButton.tintColor = [UIColor colorWithHex:@"#cccccc"];
+//    [cell.contentView addSubview:disclosureButton];
+//    [disclosureButton autoVCenterInSuperview];
+//    [disclosureButton autoPinTrailingToSuperviewMargin];
+//    [disclosureButton autoPinLeadingToTrailingEdgeOfView:nameView offset:16.f];
+//    [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
+//                                                      forAxis:UILayoutConstraintAxisHorizontal];
 
     return cell;
 }
