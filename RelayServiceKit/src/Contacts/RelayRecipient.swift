@@ -10,6 +10,10 @@ import YapDatabase
 
 @objc public class RelayRecipient: TSYapDatabaseObject {
     
+    // Gravatar URL format
+    fileprivate static let kGravatarURLFormat = "https://www.gravatar.com/avatar/%@?d=404"
+
+    
     // Forsta additions - departure from Contact usage
     @objc public var firstName: String?
     @objc public var lastName: String?
@@ -17,14 +21,37 @@ import YapDatabase
     @objc public var email: String?
     @objc public var notes: String?
     @objc public var flTag: FLTag?
-    @objc public var avatar: UIImage?
+    @objc public var avatarImage: UIImage?
     @objc public var orgSlug: String?
     @objc public var orgID: String?
     @objc public var gravatarHash: String?
-    @objc public var gravatarImage: UIImage?
     @objc public var hiddenDate: Date?
     @objc public var isMonitor = false
     @objc public var isActive = false
+    
+    fileprivate var gravatarImageBacker: UIImage?
+    @objc public var gravatarImage: UIImage?  {
+        get {
+            guard gravatarHash != nil else { return nil }
+            
+            guard gravatarImageBacker == nil else { return gravatarImageBacker }
+            
+            let gravatarURLString = String(format: RelayRecipient.kGravatarURLFormat, gravatarHash!)
+            if let aURL = URL.init(string: gravatarURLString) {
+                guard let gravarData = try? Data(contentsOf: aURL) else {
+                    Logger.error("Unable to parse Gravatar image with has: \(String(describing: gravatarHash))")
+                    return nil
+                }
+                
+                if let newImage = UIImage(data: gravarData) {
+                    gravatarImageBacker = newImage
+                    return gravatarImageBacker
+                }
+            }
+            return nil
+        }
+    }
+
     
     fileprivate var _devices = NSOrderedSet()
     @objc public var devices: NSOrderedSet {
