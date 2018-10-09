@@ -19,7 +19,7 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
     // increment a similar constant for each migration.
     @objc
     class func migrationId() -> String {
-        return "111"
+        return "111.1"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
