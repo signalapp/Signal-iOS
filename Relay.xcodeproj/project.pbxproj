@@ -420,6 +420,8 @@
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76EB063A18170B33006006FC /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB04EB18170B33006006FC /* FunctionalUtil.m */; };
+		7D1A107D216C043700A45F19 /* NewAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1A107C216C043700A45F19 /* NewAccountViewController.swift */; };
+		7D1A107E216C043700A45F19 /* NewAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1A107C216C043700A45F19 /* NewAccountViewController.swift */; };
 		7D2CD53A214C3C9C004E957A /* Conversions.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D8517E3211CB08400F9EF53 /* Conversions.m */; };
 		7D2CD53B214C3C9C004E957A /* ConversationConfigurationSyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */; };
 		7D2CD53C214C3C9C004E957A /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */; };
@@ -1484,6 +1486,7 @@
 		76EB04EB18170B33006006FC /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
+		7D1A107C216C043700A45F19 /* NewAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewAccountViewController.swift; sourceTree = "<group>"; };
 		7D2CD666214C3C9C004E957A /* RelayDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelayDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D2CD668214C3DE4004E957A /* RelayDev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDev.entitlements; sourceTree = "<group>"; };
 		7D2CD681214C46BC004E957A /* RelayDevShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelayDevShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1826,6 +1829,7 @@
 		340FC875204DAC8C007AEB0F /* Registration */ = {
 			isa = PBXGroup;
 			children = (
+				7D1A107C216C043700A45F19 /* NewAccountViewController.swift */,
 				7D7705C22114D8E600B40BB9 /* LoginViewController.swift */,
 				7D7705C12114D8E600B40BB9 /* ValidationViewController.swift */,
 			);
@@ -4151,6 +4155,7 @@
 				7D2CD566214C3C9C004E957A /* NeverClearView.swift in Sources */,
 				7D2CD567214C3C9C004E957A /* NewConversationViewController.swift in Sources */,
 				7D2CD568214C3C9C004E957A /* CompareSafetyNumbersActivity.swift in Sources */,
+				7D1A107E216C043700A45F19 /* NewAccountViewController.swift in Sources */,
 				7D2CD569214C3C9C004E957A /* EvpMessageDigest.m in Sources */,
 				7D2CD56A214C3C9C004E957A /* OWSWebRTCDataProtos.pb.m in Sources */,
 				7D2CD56B214C3C9C004E957A /* AccountManager.swift in Sources */,
@@ -4361,6 +4366,7 @@
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				7D705D9A2148252400488180 /* NewConversationViewController.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
+				7D1A107D216C043700A45F19 /* NewAccountViewController.swift in Sources */,
 				7D8517EC211CB19C00F9EF53 /* EvpMessageDigest.m in Sources */,
 				458DE9D91DEE7B360071BB03 /* OWSWebRTCDataProtos.pb.m in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,

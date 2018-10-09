@@ -404,13 +404,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             NSString *webSocketConnect =
             [tssAPI stringByAppendingString:[self webSocketAuthenticationString]];
             SRWebSocket *socket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:webSocketConnect]];
-//            NSString *webSocketConnect = [textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
-//            NSURL *webSocketConnectURL   = [NSURL URLWithString:webSocketConnect];
-//            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
-//
-//            SRWebSocket *socket = [[SRWebSocket alloc] initWithURLRequest:request
-//                                                           securityPolicy:[OWSWebsocketSecurityPolicy sharedPolicy]];
-            
             socket.delegate = self;
             
             [self setWebsocket:socket];

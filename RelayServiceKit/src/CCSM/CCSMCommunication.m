@@ -397,7 +397,8 @@
         [CCSMStorage.sharedInstance setSessionToken:[payload objectForKey:@"token"]];
         
         [CCSMStorage.sharedInstance setUserInfo:userDict];
-        [RelayRecipient getOrCreateRecipientWithUserDictionary:userDict];
+        RelayRecipient *recipient = [RelayRecipient getOrCreateRecipientWithUserDictionary:userDict];
+        [recipient save];
         
         NSDictionary *orgDict = [userDict objectForKey:@"org"];
         [CCSMStorage.sharedInstance setOrgInfo:orgDict];
