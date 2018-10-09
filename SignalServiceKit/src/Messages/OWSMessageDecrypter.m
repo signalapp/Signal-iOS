@@ -8,6 +8,7 @@
 #import "NotificationsProtocol.h"
 #import "OWSAnalytics.h"
 #import "OWSBlockingManager.h"
+#import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
@@ -46,6 +47,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 @property (nonatomic, nullable) NSData *plaintextData;
 @property (nonatomic) NSString *source;
 @property (nonatomic) UInt32 sourceDevice;
+@property (nonatomic) BOOL isUDMessage;
 
 @end
 
@@ -57,6 +59,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                       plaintextData:(nullable NSData *)plaintextData
                                              source:(NSString *)source
                                        sourceDevice:(UInt32)sourceDevice
+                                        isUDMessage:(BOOL)isUDMessage
 {
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(source.length > 0);
@@ -67,6 +70,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     result.plaintextData = plaintextData;
     result.source = source;
     result.sourceDevice = sourceDevice;
+    result.isUDMessage = isUDMessage;
     return result;
 }
 
@@ -161,7 +165,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
-            OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
+            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.source);
+            return failureBlock();
+        }
+
+        if ([result.source isEqualToString:TSAccountManager.sharedInstance.localNumber]
+            && result.sourceDevice == OWSDevicePrimaryDeviceId) {
+            OWSAssertDebug(result.isUDMessage);
+
+            OWSLogInfo(@"Ignoring self-sent sync message.");
             return failureBlock();
         }
 
@@ -237,7 +249,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                         [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                           plaintextData:nil
                                                                  source:envelope.source
-                                                           sourceDevice:envelope.sourceDevice];
+                                                           sourceDevice:envelope.sourceDevice
+                                                            isUDMessage:NO];
                     successBlock(result, transaction);
                 }];
                 // Return to avoid double-acknowledging.
@@ -361,11 +374,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 // plaintextData may be nil for some envelope types.
                 NSData *_Nullable plaintextData =
                     [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
-                OWSMessageDecryptResult *result =
-                    [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
-                                                      plaintextData:plaintextData
-                                                             source:envelope.source
-                                                       sourceDevice:envelope.sourceDevice];
+                OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
+                                                                                    plaintextData:plaintextData
+                                                                                           source:envelope.source
+                                                                                     sourceDevice:envelope.sourceDevice
+                                                                                      isUDMessage:NO];
                 successBlock(result, transaction);
             } @catch (NSException *exception) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -471,7 +484,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                                 plaintextData:plaintextData
                                                                                        source:source
-                                                                                 sourceDevice:(uint32_t)sourceDeviceId];
+                                                                                 sourceDevice:(uint32_t)sourceDeviceId
+                                                                                  isUDMessage:YES];
             successBlock(result, transaction);
         } @catch (NSException *exception) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

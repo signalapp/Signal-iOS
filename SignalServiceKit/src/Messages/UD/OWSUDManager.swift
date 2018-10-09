@@ -94,10 +94,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         return SSKEnvironment.shared.profileManager
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: - Recipient state
 
     @objc
     public func supportsUnidentifiedDelivery(recipientId: String) -> Bool {
+        if tsAccountManager.localNumber() == recipientId {
+            return true
+        }
         return dbConnection.bool(forKey: recipientId, inCollection: kUDRecipientModeCollection, defaultValue: false)
     }
 

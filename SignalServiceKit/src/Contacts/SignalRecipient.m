@@ -3,6 +3,7 @@
 //
 
 #import "SignalRecipient.h"
+#import "OWSDevice.h"
 #import "TSAccountManager.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -52,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // OWSMessageSender will correct this if it is wrong the next time
         // we send a message to this recipient.
-        _devices = [NSOrderedSet orderedSetWithObject:@(1)];
+        _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
     }
 
     return self;
@@ -69,7 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
         _devices = [NSOrderedSet new];
     }
 
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [self.devices containsObject:@(1)]) {
+    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] &&
+        [self.devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
         OWSFailDebug(@"self as recipient device");
     }
 
@@ -89,8 +91,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addDevices:(NSSet *)devices
 {
     OWSAssertDebug(devices.count > 0);
-    
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [devices containsObject:@(1)]) {
+
+    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] &&
+        [devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
         OWSFailDebug(@"adding self as recipient device");
         return;
     }

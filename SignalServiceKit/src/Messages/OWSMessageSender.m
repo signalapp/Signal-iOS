@@ -1324,7 +1324,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSLogDebug(
         @"built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
 
-    for (NSNumber *deviceNumber in messageSend.recipient.devices) {
+    OWSLogDebug(@"recipient.devices: %@", recipient.devices);
+    [DDLog flushLog];
+
+    NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
+    OWSAssertDebug(deviceIds);
+
+    if (messageSend.isUDSend && messageSend.isLocalNumber) {
+        const NSUInteger kLocalDeviceId = 1;
+        OWSAssertDebug(![deviceIds containsObject:@(OWSDevicePrimaryDeviceId)]);
+
+        [deviceIds addObject:@(OWSDevicePrimaryDeviceId)];
+    }
+
+    for (NSNumber *deviceId in deviceIds) {
         @try {
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
@@ -1332,7 +1345,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
                         messageDict = [self encryptedMessageForMessageSend:messageSend
-                                                                  deviceId:deviceNumber
+                                                                  deviceId:deviceId
                                                                  plainText:plainText
                                                                transaction:transaction];
                     } @catch (NSException *exception) {
@@ -1353,7 +1366,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceNumber] transaction:transaction];
+                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceId] transaction:transaction];
                 }];
             } else {
                 @throw exception;
