@@ -61,23 +61,26 @@ import RelayServiceKit
     }
     
     public func avatarImageRecipientId(_ recipientId: String) -> UIImage? {
-        // TODO: implement gravatars here
-        var image: UIImage? = nil
+
         var cacheKey: NSString? = nil
         
-        // if using gravatars
-        // cacheKey = "gravatar:\(uid)"
-        // else
-        cacheKey = "avatar:\(recipientId)" as NSString
-        image = self.avatarCache.object(forKey: cacheKey!)
-        
-        if image == nil {
-            image = self.recipient(withId: recipientId)?.avatar
-            if image != nil {
-                self.avatarCache.setObject(image!, forKey: cacheKey!)
-            }
+        if Environment.preferences().useGravatars() {
+            cacheKey = "gravatar:\(recipientId)" as NSString
+        } else {
+            cacheKey = "avatar:\(recipientId)" as NSString
         }
-        return image
+
+        if let image = self.avatarCache.object(forKey: cacheKey!) {
+            return image;
+        } else {
+            var image: UIImage?
+            if Environment.preferences().useGravatars() {
+                image = self.recipient(withId: recipientId)?.gravatarImage
+            } else {
+                image = self.recipient(withId: recipientId)?.avatarImage
+            }
+            return image
+        }
     }
     
     
@@ -94,9 +97,6 @@ import RelayServiceKit
     private let avatarCache: NSCache<NSString, UIImage>
     private let recipientCache: NSCache<NSString, RelayRecipient>
     private let tagCache: NSCache<NSString, FLTag>
-
-    // TODO: require for gravatar implementation
-//    private var prefs: PropertyListPreferences?
     
     @objc public func flushAvatarCache() {
         avatarCache.removeAllObjects()
@@ -383,7 +383,7 @@ import RelayServiceKit
     
     @objc public func setAvatarImage(image: UIImage, recipientId: String) {
         if let recipient = self.recipient(withId: recipientId) {
-            recipient.avatar = image
+            recipient.avatarImage = image
             self.avatarCache.setObject(image, forKey: recipientId as NSString)
         }
     }

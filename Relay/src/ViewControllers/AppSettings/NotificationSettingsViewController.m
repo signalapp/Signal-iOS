@@ -36,7 +36,7 @@
     __weak NotificationSettingsViewController *weakSelf = self;
 
     OWSPreferences *prefs = [Environment preferences];
-
+    
     // Sounds section.
 
     OWSTableSection *soundsSection = [OWSTableSection new];
@@ -75,6 +75,23 @@
     backgroundSection.footerTitle
         = NSLocalizedString(@"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION", @"table section footer");
     [contents addSection:backgroundSection];
+    
+    // Gravatar section.
+
+    OWSTableSection *gravatarSection = [OWSTableSection new];
+    gravatarSection.headerTitle
+    = NSLocalizedString(@"APPEARANCE_GRAVATAR_SECTION", @"Header Label for the sounds section of settings views.");
+
+    NSString *gravatarCellString = NSLocalizedString(@"APPEARANCE_USE_GRAVATARS",
+                                                       @"Table cell switch label. Toggles gravatar usage.");
+    [gravatarSection addItem:[OWSTableItem switchItemWithText:gravatarCellString
+                                                       isOn:[prefs useGravatars]
+                                                     target:weakSelf
+                                                   selector:@selector(didToggleUseGravatarSwitch:)]];
+    [contents addSection:gravatarSection];
+
+    
+    ///////
 
     self.contents = contents;
 }
@@ -84,6 +101,11 @@
 - (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender
 {
     [Environment.preferences setSoundInForeground:sender.on];
+}
+
+- (void)didToggleUseGravatarSwitch:(UISwitch *)sender
+{
+    [Environment.preferences setUseGravatars:sender.on];
 }
 
 @end

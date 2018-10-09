@@ -31,6 +31,7 @@ NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHas
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
+NSString *const PropertyListPreferencesKeyUseGravatars = @"UseGravatars";
 
 @implementation OWSPreferences
 
@@ -203,6 +204,20 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 {
     return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagDate];
 }
+
+-(BOOL)useGravatars
+{
+    NSNumber *preference = [self tryGetValueForKey:PropertyListPreferencesKeyUseGravatars];
+    // Default to NO.
+    return preference ? [preference boolValue] : NO;
+
+}
+
+-(void)setUseGravatars:(BOOL)value
+{
+    [self setValueForKey:PropertyListPreferencesKeyUseGravatars toValue:@(value)];
+}
+
 
 #pragma mark - Calling
 

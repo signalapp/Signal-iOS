@@ -2019,7 +2019,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
 
 /* No comment provided by engineer. */
-"SETTINGS_NOTIFICATIONS" = "Notifications";
+"SETTINGS_NOTIFICATIONS" = "Interface";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
@@ -2398,3 +2398,6 @@
 "THREAD_TITLE_UPDATE_MESSAGE" = "%@ changed the title.";
 "THREAD_IMAGE_CHANGED_MESSAGE" = "%@ changed the avatar.";
 "REGISTER_CREATION_FAILURE" = "Account creation error";
+
+"APPEARANCE_GRAVATAR_SECTION" = "Avatars";
+"APPEARANCE_USE_GRAVATARS" = "Use Gravatars";
