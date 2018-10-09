@@ -2397,3 +2397,4 @@
 
 "THREAD_TITLE_UPDATE_MESSAGE" = "%@ changed the title.";
 "THREAD_IMAGE_CHANGED_MESSAGE" = "%@ changed the avatar.";
+"REGISTER_CREATION_FAILURE" = "Account creation error";

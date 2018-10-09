@@ -80,6 +80,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
         
         // Make the recaptcha call...
         self.recaptcha.validate(on: self.view,
+                                resetOnError: true,
                                 completion: { (result: ReCaptchaResult) in
                                     
                                     var token: String?
@@ -135,12 +136,15 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
                                                                                             title = NSLocalizedString("Invalid password", comment: "")
                                                                                             let messages = (dictionary.object(forKey: keys.last!) as? Array<String>)!
                                                                                             message = messages.last!
+                                                                                        } else if keys.last == "detail" {
+                                                                                            title = NSLocalizedString("REGISTER_CREATION_FAILURE", comment: "")
+                                                                                            message = dictionary[keys.last!] as! String
+                                                                                            
                                                                                         } else {
                                                                                             Logger.debug((error?.localizedDescription)!)
                                                                                             message = String(format: "%@\n\n%@", NSLocalizedString("REGISTER_CREATION_FAILURE", comment: ""), (error?.localizedDescription)!)
                                                                                         }
                                                                                         self.presentAlertWithMessage(title: title, message: message)
-                                                                                        self.recaptcha.reset()
                                                                                     }
                                     })
         })
