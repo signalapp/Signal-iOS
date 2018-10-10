@@ -1014,6 +1014,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 dispatch_async([OWSDispatch sendingQueue], ^{
                     OWSLogDebug(@"Web socket send failed; failing over to REST.");
 
+                    if (isUDSend && (statusCode == 401 || statusCode == 403)) {
+                        // If a UD send fails due to service response (as opposed to network
+                        // failure), mark recipient as _not_ in UD mode, then retry.
+                        OWSLogDebug(@"UD send failed; failing over to non-UD send.");
+                        [self.udManager setSupportsUnidentifiedDelivery:NO recipientId:recipient.uniqueId];
+                        messageSend.hasUDAuthFailed = YES;
+                        dispatch_async([OWSDispatch sendingQueue], ^{
+                            [self sendMessageToRecipient:messageSend];
+                        });
+                        return;
+                    }
+
                     // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket
                     // failure. Instead we fall back to REST, which will decrement retries. e.g. after linking a new
                     // device, sync messages will fail until the websocket re-opens.
@@ -1034,8 +1046,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 if (messageSend.isUDSend && (statusCode == 401 || statusCode == 403)) {
                     // If a UD send fails due to service response (as opposed to network
                     // failure), mark recipient as _not_ in UD mode, then retry.
-                    //
-                    // TODO: Do we want to discriminate based on exact error?
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
                     [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
                                                   recipientId:recipient.uniqueId];
