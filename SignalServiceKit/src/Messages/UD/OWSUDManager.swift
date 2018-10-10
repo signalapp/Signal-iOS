@@ -29,17 +29,15 @@ public enum UnidentifiedAccessMode: Int {
     // MARK: - Recipient State
 
     @objc
-    func unidentifiedAccessMode(recipientId: String) -> UnidentifiedAccessMode
+    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
 
     @objc
-    func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
+    func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair?
 
     // Returns the UD access key for a given recipient if they are
     // a UD recipient and we have a valid profile key for them.
-    @objc func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey?
+    @objc func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey?
 
-    @objc
-    func generateAccessKeyForUnrestrictedRecipient() -> SMKUDAccessKey
     // MARK: - Local State
 
     // MARK: Sender Certificate
@@ -112,7 +110,38 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Recipient state
 
     @objc
-    public func unidentifiedAccessMode(recipientId: String) -> UnidentifiedAccessMode {
+    public func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair? {
+        guard let theirAccessKey = self.udAccessKeyForRecipient(recipientId) else {
+            return nil
+        }
+
+        guard let ourSenderCertificate = self.senderCertificate() else {
+            return nil
+        }
+
+        guard let ourAccessKey: SMKUDAccessKey = {
+            if self.shouldAllowUnrestrictedAccessLocal() {
+                return SMKUDAccessKey(randomKeyData: ())
+            } else {
+                guard let localNumber = self.tsAccountManager.localNumber() else {
+                    owsFailDebug("localNumber was unexpectedly nil")
+                    return nil
+                }
+
+                return self.udAccessKeyForRecipient(localNumber)
+            }
+        }() else {
+            return nil
+        }
+
+        let targetUnidentifiedAccess = SSKUnidentifiedAccess(accessKey: theirAccessKey, senderCertificate: ourSenderCertificate)
+        let selfUnidentifiedAccess = SSKUnidentifiedAccess(accessKey: ourAccessKey, senderCertificate: ourSenderCertificate)
+        return SSKUnidentifiedAccessPair(targetUnidentifiedAccess: targetUnidentifiedAccess,
+                                         selfUnidentifiedAccess: selfUnidentifiedAccess)
+    }
+
+    @objc
+    private func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
         if tsAccountManager.localNumber() == recipientId {
             if shouldAllowUnrestrictedAccessLocal() {
                 return .unrestricted
@@ -135,7 +164,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     @objc
-    public func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey? {
+    public func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil
@@ -147,11 +176,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             Logger.error("Could not determine udAccessKey: \(error)")
             return nil
         }
-    }
-
-    @objc
-    public func generateAccessKeyForUnrestrictedRecipient() -> SMKUDAccessKey {
-        return SMKUDAccessKey(randomKeyData: ())
     }
 
     // MARK: - Sender Certificate

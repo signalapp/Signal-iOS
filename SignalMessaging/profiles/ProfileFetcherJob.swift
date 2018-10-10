@@ -134,13 +134,14 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        // TODO: Use UD socket for some profile gets.
-        if socketManager.canMakeRequests(of: .default) {
-            let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
+        let unidentifiedAccess: SSKUnidentifiedAccess? = self.getUnidentifiedAccess(forRecipientId: recipientId)
+        let socketType: OWSWebSocketType = unidentifiedAccess == nil ? .default : .UD
+        if socketManager.canMakeRequests(of: socketType) {
+            let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
             let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
 
             self.socketManager.make(request,
-                                    webSocketType: .default,
+                                    webSocketType: socketType,
                 success: { (responseObject: Any?) -> Void in
                     do {
                         let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
@@ -154,8 +155,7 @@ public class ProfileFetcherJob: NSObject {
             })
             return promise
         } else {
-            // TODO unidentified AUTH
-            return self.signalServiceClient.retrieveProfile(recipientId: recipientId, unidentifiedAccess: nil)
+            return self.signalServiceClient.retrieveProfile(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
         }
     }
 
@@ -206,5 +206,9 @@ public class ProfileFetcherJob: NSObject {
                 // no change in identity.
             }
         }
+    }
+
+    private func getUnidentifiedAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccess? {
+        return self.udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
     }
 }

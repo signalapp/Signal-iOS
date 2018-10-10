@@ -8,20 +8,6 @@ import SignalMetadataKit
 
 public typealias RecipientIdentifier = String
 
-@objc
-public class SSKUnidentifiedAccess: NSObject {
-    @objc
-    let accessKey: SMKUDAccessKey
-
-    @objc
-    let senderCertificate: SMKSenderCertificate
-
-    init(accessKey: SMKUDAccessKey, senderCertificate: SMKSenderCertificate) {
-        self.accessKey = accessKey
-        self.senderCertificate = senderCertificate
-    }
-}
-
 public protocol SignalServiceClient {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>

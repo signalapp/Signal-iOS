@@ -62,34 +62,16 @@ public class OWSMessageSend: NSObject {
         self.message = message
         self.thread = thread
         self.recipient = recipient
+        self.localNumber = localNumber
 
-        let senderCertificate = senderCertificate
-
-        let udAccessKey: SMKUDAccessKey?
-        var isLocalNumber: Bool
         if let recipientId = recipient.uniqueId {
-            switch udManager.unidentifiedAccessMode(recipientId: recipientId) {
-            case .enabled:
-                udAccessKey = udManager.udAccessKeyForRecipient(recipientId)
-            case .unrestricted:
-                udAccessKey = udManager.generateAccessKeyForUnrestrictedRecipient()
-            case .disabled, .unknown:
-                udAccessKey = nil
-            }
-            isLocalNumber = localNumber == recipientId
+            self.unidentifiedAccess = udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
+            self.isLocalNumber = localNumber == recipientId
         } else {
-            isLocalNumber = false
-            udAccessKey = nil
             owsFailDebug("SignalRecipient missing recipientId")
-        }
-        if let udAccessKey = udAccessKey, let senderCertificate = senderCertificate {
-            self.unidentifiedAccess = SSKUnidentifiedAccess(accessKey: udAccessKey, senderCertificate: senderCertificate)
-        } else {
+            self.isLocalNumber = false
             self.unidentifiedAccess = nil
         }
-
-        self.localNumber = localNumber
-        self.isLocalNumber = isLocalNumber
 
         self.success = success
         self.failure = failure
