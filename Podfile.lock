@@ -260,7 +260,7 @@ CHECKOUT OPTIONS:
     :commit: 8b8326cd50bc488663a3d3743f1a92b90f4d85b4
     :git: https://github.com/signalapp/HKDFKit.git
   SignalCoreKit:
-    :commit: e5b6aa3c078d7c2fbc154e5dd806b8e55211697d
+    :commit: ff0b95770520133b83a4bd7b26bc2c90b51abc4d
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: b0e664410dd3d709355bfdb9d464ae02644aeb74

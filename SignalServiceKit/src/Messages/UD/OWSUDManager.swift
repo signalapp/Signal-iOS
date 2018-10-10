@@ -110,13 +110,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    // Returns the UD access key for a given recipient if they are
-    // a UD recipient and we have a valid profile key for them.
+    // Returns the UD access key for a given recipient
+    // if we have a valid profile key for them.
     @objc
     public func udAccessKeyForRecipient(_ recipientId: String) -> SMKUDAccessKey? {
-        guard supportsUnidentifiedDelivery(recipientId: recipientId) else {
-            return nil
-        }
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil

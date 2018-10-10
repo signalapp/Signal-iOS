@@ -173,18 +173,36 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func updateProfile(signalServiceProfile: SignalServiceProfile) {
-        verifyIdentityUpToDateAsync(recipientId: signalServiceProfile.recipientId, latestIdentityKey: signalServiceProfile.identityKey)
+        let recipientId = signalServiceProfile.recipientId
+        verifyIdentityUpToDateAsync(recipientId: recipientId, latestIdentityKey: signalServiceProfile.identityKey)
 
-        profileManager.updateProfile(forRecipientId: signalServiceProfile.recipientId,
-                                                 profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
-                                                 avatarUrlPath: signalServiceProfile.avatarUrlPath)
+        profileManager.updateProfile(forRecipientId: recipientId,
+                                     profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
+                                     avatarUrlPath: signalServiceProfile.avatarUrlPath)
+
+        // Recipients should be in "UD delivery mode" IFF:
+        //
+        // * Their profile includes a unidentifiedAccessVerifier.
+        // * The unidentifiedAccessVerifier matches the "expected" value derived
+        //   from their profile key (if any).
+        //
+        // Recipients should be in "normal delivery mode" otherwise.
+        var supportsUnidentifiedDelivery = false
+        if let unidentifiedAccessVerifier = signalServiceProfile.unidentifiedAccessVerifier,
+            let udAccessKey = udManager.udAccessKeyForRecipient(recipientId) {
+            let dataToVerify = Data(count: 32)
+            if let expectedVerfier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) {
+                supportsUnidentifiedDelivery = expectedVerfier == unidentifiedAccessVerifier
+            } else {
+                owsFailDebug("could not verify UD")
+            }
+        }
 
         // TODO: We may want to only call setSupportsUnidentifiedDelivery if
         // supportsUnidentifiedDelivery is true.
-        let supportsUnidentifiedDelivery = signalServiceProfile.unidentifiedAccessKey != nil
-        udManager.setSupportsUnidentifiedDelivery(supportsUnidentifiedDelivery, recipientId: signalServiceProfile.recipientId)
+        udManager.setSupportsUnidentifiedDelivery(supportsUnidentifiedDelivery, recipientId: recipientId)
 
-        udManager.setShouldAllowUnrestrictedAccess(recipientId: signalServiceProfile.recipientId, shouldAllowUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+        udManager.setShouldAllowUnrestrictedAccess(recipientId: recipientId, shouldAllowUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
     }
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
@@ -212,7 +230,7 @@ public class SignalServiceProfile: NSObject {
     public let identityKey: Data
     public let profileNameEncrypted: Data?
     public let avatarUrlPath: String?
-    public let unidentifiedAccessKey: Data?
+    public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
 
     init(recipientId: String, responseObject: Any?) throws {
@@ -235,9 +253,7 @@ public class SignalServiceProfile: NSObject {
         let avatarUrlPath: String? = try params.optional(key: "avatar")
         self.avatarUrlPath = avatarUrlPath
 
-        // TODO: Should this key be "unidentifiedAccessKey" or "unidentifiedAccess"?
-        // The docs don't agree with the response from staging.
-        self.unidentifiedAccessKey = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
+        self.unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
     }
