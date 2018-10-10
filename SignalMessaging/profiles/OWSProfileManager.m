@@ -530,6 +530,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (nullable NSData *)groupIdForGroupKey:(NSString *)groupKey {
     NSMutableData *groupId = [NSMutableData new];
 
+    if (groupKey.length % 2 != 0) {
+        OWSFailDebug(@"Group key has unexpected length: %@ (%lu)", groupKey, (unsigned long)groupKey.length);
+        return nil;
+    }
     for (NSUInteger i = 0; i + 2 <= groupKey.length; i += 2) {
         NSString *_Nullable byteString = [groupKey substringWithRange:NSMakeRange(i, 2)];
         if (!byteString) {
