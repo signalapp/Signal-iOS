@@ -13,7 +13,7 @@ extern NSString *const ThemeDidChangeNotification;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property (class, readonly, nonatomic) BOOL isDarkThemeEnabled;
+@property (class, readonly, atomic) BOOL isDarkThemeEnabled;
 
 + (void)setIsDarkThemeEnabled:(BOOL)value;
 
