@@ -5,6 +5,7 @@
 #import "OWSProfileManager.h"
 #import "Environment.h"
 #import "OWSUserProfile.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -90,7 +91,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSSingletonAssert();
 
     [AppReadiness runNowOrWhenAppIsReady:^{
-        [self rotateLocalProfileKeyIfNecessarySync];
+        [self rotateLocalProfileKeyIfNecessary];
     }];
 
     return self;
@@ -561,115 +562,166 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return [groupId copy];
 }
 
-- (void)rotateLocalProfileKeyIfNecessarySync {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self rotateLocalProfileKeyIfNecessarySync];
-    });
+- (void)rotateLocalProfileKeyIfNecessary {
+    [self
+        rotateLocalProfileKeyIfNecessaryWithSuccess:^{
+        }
+                                            failure:^ {
+                                            }];
 }
 
-- (void)rotateLocalProfileKeyIfNecessaryAsync {
+- (void)rotateLocalProfileKeyIfNecessaryWithSuccess:(dispatch_block_t)success failure:(dispatch_block_t)failure {
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    NSMutableSet<NSString *> *whitelistedRecipientIds = [NSMutableSet new];
-    NSMutableSet<NSData *> *whitelistedGroupIds = [NSMutableSet new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [whitelistedRecipientIds
-            addObjectsFromArray:[transaction allKeysInCollection:kOWSProfileManager_UserWhitelistCollection]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableSet<NSString *> *whitelistedRecipientIds = [NSMutableSet new];
+        NSMutableSet<NSData *> *whitelistedGroupIds = [NSMutableSet new];
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [whitelistedRecipientIds
+                addObjectsFromArray:[transaction allKeysInCollection:kOWSProfileManager_UserWhitelistCollection]];
 
-        NSArray<NSString *> *whitelistedGroupKeys =
-            [transaction allKeysInCollection:kOWSProfileManager_GroupWhitelistCollection];
-        for (NSString *groupKey in whitelistedGroupKeys) {
-            NSData *_Nullable groupId = [self groupIdForGroupKey:groupKey];
-            if (!groupId) {
-                continue;
+            NSArray<NSString *> *whitelistedGroupKeys =
+                [transaction allKeysInCollection:kOWSProfileManager_GroupWhitelistCollection];
+            for (NSString *groupKey in whitelistedGroupKeys) {
+                NSData *_Nullable groupId = [self groupIdForGroupKey:groupKey];
+                if (!groupId) {
+                    OWSFailDebug(@"Couldn't parse group key: %@.", groupKey);
+                    continue;
+                }
+
+                [whitelistedGroupIds addObject:groupId];
+
+                TSGroupThread *_Nullable thread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
+                if (!thread) {
+                    OWSLogInfo(@"Could not find whitelisted thread: %@", groupId.hexadecimalString);
+                    continue;
+                }
+
+                [whitelistedRecipientIds addObjectsFromArray:thread.recipientIdentifiers];
             }
+        }];
 
-            [whitelistedGroupIds addObject:groupId];
-
-            TSGroupThread *_Nullable thread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
-            if (!thread) {
-                OWSLogInfo(@"Could not find whitelisted thread: %@", groupId.hexadecimalString);
-                continue;
-            }
-
-            [whitelistedRecipientIds addObjectsFromArray:thread.recipientIdentifiers];
+        NSString *_Nullable localNumber = [TSAccountManager localNumber];
+        if (localNumber) {
+            [whitelistedRecipientIds removeObject:localNumber];
+        } else {
+            OWSFailDebug(@"Missing localNumber");
         }
-    }];
 
-    [whitelistedRecipientIds removeObject:[TSAccountManager localNumber]];
+        NSSet<NSString *> *blockedRecipientIds = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
+        NSSet<NSData *> *blockedGroupIds = [NSSet setWithArray:self.blockingManager.blockedGroupIds];
 
-    NSSet<NSString *> *blockedRecipientIds = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
-    NSSet<NSData *> *blockedGroupIds = [NSSet setWithArray:self.blockingManager.blockedGroupIds];
+        // Find the users and groups which are both a) blocked b) may have our current profile key.
+        NSMutableSet<NSString *> *intersectingRecipientIds = [blockedRecipientIds mutableCopy];
+        [intersectingRecipientIds intersectSet:whitelistedRecipientIds];
+        NSMutableSet<NSData *> *intersectingGroupIds = [blockedGroupIds mutableCopy];
+        [intersectingGroupIds intersectSet:whitelistedGroupIds];
 
-    // Find the users and groups which are both a) blocked b) may have our current profile key.
-    NSMutableSet<NSString *> *intersectingRecipientIds = [blockedRecipientIds mutableCopy];
-    [intersectingRecipientIds intersectSet:whitelistedRecipientIds];
-    NSMutableSet<NSData *> *intersectingGroupIds = [blockedGroupIds mutableCopy];
-    [intersectingGroupIds intersectSet:whitelistedGroupIds];
+        BOOL isProfileKeySharedWithBlocked = (intersectingRecipientIds.count > 0 || intersectingGroupIds.count > 0);
+        if (!isProfileKeySharedWithBlocked) {
+            // No need to rotate the profile key.
+            return;
+        }
 
-    BOOL isProfileKeySharedWithBlocked = (intersectingRecipientIds.count > 0 || intersectingGroupIds.count > 0);
-    if (!isProfileKeySharedWithBlocked) {
-        // No need to rotate the profile key.
-        return;
-    }
+        // Rotate the profile key
 
-    // Rotate the profile key
+        // Make copies of the current local profile state.
+        OWSUserProfile *localUserProfile = self.localUserProfile;
+        NSString *_Nullable oldProfileName = localUserProfile.profileName;
+        NSString *_Nullable oldAvatarFileName = localUserProfile.avatarFileName;
+        NSData *_Nullable oldAvatarData = [self profileAvatarDataForRecipientId:self.tsAccountManager.localNumber];
 
-    // Make copies of the current local profile state.
-    OWSUserProfile *localUserProfile = self.localUserProfile;
-    NSString *_Nullable oldProfileName = localUserProfile.profileName;
-    NSString *_Nullable oldAvatarFileName = localUserProfile.avatarFileName;
-    NSData *_Nullable oldAvatarData = [self profileAvatarDataForRecipientId:self.tsAccountManager.localNumber];
+        // Rotate the stored profile key.
+        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
+                                           dbConnection:self.dbConnection
+                                             completion:^{
+                                                 // The value doesn't matter, we just need any non-NSError value.
+                                                 resolve(@(1));
+                                             }];
+        }];
 
-    // Rotate the stored profile key.
-    //
-    // This will always succeed.
-    [self.localUserProfile
-        updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                dbConnection:self.dbConnection
-                  completion:^{
-                      // Remove blocked users and groups from profile whitelist.
-                      //
-                      // This will always succeed.
-                      [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                          [transaction removeObjectsForKeys:intersectingRecipientIds.allObjects
-                                               inCollection:kOWSProfileManager_UserWhitelistCollection];
-                          for (NSData *groupId in intersectingGroupIds) {
-                              NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-                              [transaction removeObjectForKey:groupIdKey
-                                                 inCollection:kOWSProfileManager_GroupWhitelistCollection];
-                          }
-                      }];
+        // Try to re-upload our profile name, if any.
+        //
+        // This may fail.
+        promise = promise.then(^(id value) {
+            if (oldProfileName.length < 1) {
+                return [AnyPromise promiseWithValue:@(1)];
+            }
+            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+                [self updateServiceWithProfileName:oldProfileName
+                    success:^{
+                        OWSLogInfo(@"Update to profile name succeeded.");
 
-                      // Try to re-upload our profile name and avatar, if any.
-                      //
-                      // This may fail.
-                      if (oldProfileName.length > 0) {
-                          [self updateServiceWithProfileName:oldProfileName
-                              success:^{
-                                  OWSLogInfo(@"Update to profile name after profile key rotation succeeded.");
-                              }
-                              failure:^{
-                                  OWSLogInfo(@"Update to profile name after profile key rotation failed.");
-                              }];
-                      }
+                        // The value doesn't matter, we just need any non-NSError value.
+                        resolve(@(1));
+                    }
+                    failure:^{
+                        NSError *error = OWSErrorWithCodeDescription(
+                            OWSErrorCodeProfileUpdateFailed, @"Update to profile name failed.");
+                        resolve(error);
+                    }];
+            }];
+        });
 
-                      if (oldAvatarData.length > 0 && oldAvatarFileName.length > 0) {
-                          [self uploadAvatarToService:oldAvatarData
-                              success:^(NSString *_Nullable avatarUrlPath) {
-                                  OWSLogInfo(@"Update to profile avatar after profile key rotation succeeded.");
-                                  // We need to update the local profile with the avatar state since
-                                  // it is cleared during the "avatar update" process.
-                                  [self.localUserProfile updateWithAvatarUrlPath:avatarUrlPath
-                                                                  avatarFileName:oldAvatarFileName
-                                                                    dbConnection:self.dbConnection
-                                                                      completion:nil];
-                              }
-                              failure:^{
-                                  OWSLogInfo(@"Update to profile avatar after profile key rotation failed.");
-                              }];
-                      }
-                  }];
+        // Try to re-upload our profile avatar, if any.
+        //
+        // This may fail.
+        promise = promise.then(^(id value) {
+            if (oldAvatarData.length < 1 || oldAvatarFileName.length < 1) {
+                return [AnyPromise promiseWithValue:@(1)];
+            }
+            return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+                [self uploadAvatarToService:oldAvatarData
+                    success:^(NSString *_Nullable avatarUrlPath) {
+                        OWSLogInfo(@"Update to profile avatar after profile key rotation succeeded.");
+                        // We need to update the local profile with the avatar state since
+                        // it is cleared during the "avatar update" process.
+                        [self.localUserProfile updateWithAvatarUrlPath:avatarUrlPath
+                                                        avatarFileName:oldAvatarFileName
+                                                          dbConnection:self.dbConnection
+                                                            completion:^{
+                                                                // The value doesn't matter, we just need any
+                                                                // non-NSError value.
+                                                                resolve(@(1));
+                                                            }];
+                    }
+                    failure:^{
+                        OWSLogInfo(@"Update to profile avatar after profile key rotation failed.");
+                        NSError *error = OWSErrorWithCodeDescription(
+                            OWSErrorCodeProfileUpdateFailed, @"Update to profile avatar failed.");
+                        resolve(error);
+                    }];
+            }];
+        });
+
+        // Try to re-upload our profile avatar, if any.
+        //
+        // This may fail.
+        promise = promise.then(^(id value) {
+            // Remove blocked users and groups from profile whitelist.
+            //
+            // This will always succeed.
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [transaction removeObjectsForKeys:intersectingRecipientIds.allObjects
+                                     inCollection:kOWSProfileManager_UserWhitelistCollection];
+                for (NSData *groupId in intersectingGroupIds) {
+                    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
+                    [transaction removeObjectForKey:groupIdKey
+                                       inCollection:kOWSProfileManager_GroupWhitelistCollection];
+                }
+            }];
+            return @(1);
+        });
+
+        promise = promise.then(^(id value) {
+            success();
+        });
+        promise = promise.catch(^(id error) {
+            failure();
+        });
+        [promise retainUntilComplete];
+    });
 }
 
 #pragma mark - Profile Whitelist
@@ -1353,7 +1405,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppIsReady:^{
-        [self rotateLocalProfileKeyIfNecessarySync];
+        [self rotateLocalProfileKeyIfNecessary];
     }];
 }
 
