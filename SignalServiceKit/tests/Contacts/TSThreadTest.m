@@ -48,7 +48,8 @@
                                                       attachmentIds:@[]
                                                    expiresInSeconds:0
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                    serverTimestamp:nil];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage =
@@ -100,7 +101,8 @@
                                                       attachmentIds:@[ incomingAttachment.uniqueId ]
                                                    expiresInSeconds:0
                                                       quotedMessage:nil
-                                                       contactShare:nil];
+                                                       contactShare:nil
+                                                    serverTimestamp:nil];
     [incomingMessage save];
 
     TSAttachmentStream *outgoingAttachment =

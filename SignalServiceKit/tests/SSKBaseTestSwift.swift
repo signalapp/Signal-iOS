@@ -21,11 +21,6 @@ public class SSKBaseTestSwift: XCTestCase {
     @objc
     public override func tearDown() {
         super.tearDown()
-
-        SSKEnvironment.shared.primaryStorage.closeForTests()
-
-        ClearCurrentAppContextForTests()
-        SSKEnvironment.clearSharedForTests()
     }
 
     @objc

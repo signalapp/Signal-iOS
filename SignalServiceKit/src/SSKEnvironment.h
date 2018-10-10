@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageReceiver;
 @class OWSMessageSender;
 @class OWSPrimaryStorage;
+@class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
 @class YapDatabaseConnection;
@@ -38,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
-                          socketManager:(TSSocketManager *)socketManager NS_DESIGNATED_INITIALIZER;
+                          socketManager:(TSSocketManager *)socketManager
+                          tsAccountManager:(TSAccountManager *)tsAccountManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -65,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 @property (nonatomic, readonly) TSSocketManager *socketManager;
+@property (nonatomic, readonly) TSAccountManager *tsAccountManager;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

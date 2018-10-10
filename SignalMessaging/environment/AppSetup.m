@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
         OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
+        TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -80,7 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  messageDecrypter:messageDecrypter
                                                             batchMessageProcessor:batchMessageProcessor
                                                                   messageReceiver:messageReceiver
-                                                                    socketManager:socketManager]];
+                                                                    socketManager:socketManager
+                                                                    tsAccountManager:tsAccountManager]];
 
         appSpecificSingletonBlock();
 

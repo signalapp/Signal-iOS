@@ -60,6 +60,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private let dbConnection: YapDatabaseConnection
 
+    var certificateValidator: SMKCertificateValidator?
+
     // MARK: Local Configuration State
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
@@ -73,6 +75,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         self.dbConnection = primaryStorage.newDatabaseConnection()
 
         super.init()
+
+        self.certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
 
         SwiftSingletons.register(self)
     }
@@ -111,6 +115,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair? {
+        let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
+        guard theirAccessMode == .enabled || theirAccessMode == .unrestricted else {
+            return nil
+        }
+
         guard let theirAccessKey = self.udAccessKeyForRecipient(recipientId) else {
             return nil
         }
@@ -141,7 +150,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    private func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
+    func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
         if tsAccountManager.localNumber() == recipientId {
             if shouldAllowUnrestrictedAccessLocal() {
                 return .unrestricted
@@ -168,6 +177,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // if we have a valid profile key for them.
     @objc
     public func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+        let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
+        if theirAccessMode == .unrestricted {
+            return SMKUDAccessKey(randomKeyData: ())
+        }
+
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil
@@ -210,7 +224,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    private func setSenderCertificate(_ certificateData: Data) {
+    func setSenderCertificate(_ certificateData: Data) {
         dbConnection.setObject(certificateData, forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection)
     }
 
@@ -254,8 +268,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
-
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
+        guard let certificateValidator = self.certificateValidator else {
+            owsFail("Missing certificateValidator.")
+            return false
+        }
 
         // Ensure that the certificate will not expire in the next hour.
         // We want a threshold long enough to ensure that any outgoing message
