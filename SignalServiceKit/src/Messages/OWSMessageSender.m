@@ -1001,7 +1001,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                      messages:deviceMessages
                                                                     timeStamp:message.timestamp
                                                            unidentifiedAccess:messageSend.unidentifiedAccess];
-
     OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
     BOOL canMakeWebsocketRequests = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] &&
                                      !messageSend.hasWebsocketSendFailed);
@@ -1009,7 +1008,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [TSSocketManager.shared makeRequest:request
             webSocketType:webSocketType
             success:^(id _Nullable responseObject) {
-                [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages];
+                [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:isUDSend];
             }
             failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
@@ -1038,7 +1037,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else {
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
-                [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages];
+                [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:isUDSend];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -1069,7 +1068,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
                deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
-{
+                  wasSentByUD:(BOOL)wasSentByUD {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceMessages);
 
@@ -1091,7 +1090,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     dispatch_async([OWSDispatch sendingQueue], ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [messageSend.message updateWithSentRecipient:messageSend.recipient.uniqueId transaction:transaction];
+            [messageSend.message updateWithSentRecipient:messageSend.recipient.uniqueId
+                                             wasSentByUD:wasSentByUD
+                                             transaction:transaction];
 
             // If we've just delivered a message to a user, we know they
             // have a valid Signal account.

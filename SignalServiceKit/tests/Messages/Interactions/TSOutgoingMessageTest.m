@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil];
     [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message updateWithSentRecipient:self.contactId transaction:transaction];
+        [message updateWithSentRecipient:self.contactId wasSentByUD:NO transaction:transaction];
         XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
 }

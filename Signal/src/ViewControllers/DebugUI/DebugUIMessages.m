@@ -4249,7 +4249,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                    contactShare:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:recipientId transaction:transaction];
+                [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
                 [message updateWithDeliveredRecipient:recipientId deliveryTimestamp:timestamp transaction:transaction];
                 [message updateWithReadRecipientId:recipientId
                                      readTimestamp:timestamp.unsignedLongLongValue
