@@ -4,13 +4,17 @@
 
 import Foundation
 import PromiseKit
+import SignalMetadataKit
 
-protocol SignalServiceClient {
+public typealias RecipientIdentifier = String
+
+public protocol SignalServiceClient {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate() -> Promise<Data>
     func updateAcountAttributes() -> Promise<Void>
+    func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -25,7 +29,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return OWSErrorMakeUnableToProcessServerResponseError()
     }
 
-    func getAvailablePreKeys() -> Promise<Int> {
+    public func getAvailablePreKeys() -> Promise<Int> {
         Logger.debug("")
 
         let request = OWSRequestFactory.availablePreKeysCountRequest()
@@ -41,7 +45,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
+    public func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
         Logger.debug("")
 
         let request = OWSRequestFactory.registerPrekeysRequest(withPrekeyArray: preKeyRecords, identityKey: identityKey, signedPreKey: signedPreKeyRecord)
@@ -82,5 +86,12 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
                 Logger.error("failed to update account attributes on server with error: \(error)")
             })
         return promise
+    }
+
+    public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
+        let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
+        return networkManager.makePromise(request: request).then { (task: URLSessionDataTask, responseObject: Any?) in
+            return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
+        }
     }
 }

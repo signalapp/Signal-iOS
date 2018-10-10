@@ -36,16 +36,13 @@ public class OWSMessageSend: NSObject {
     public var hasUDAuthFailed = false
 
     @objc
-    public let udAccessKey: SMKUDAccessKey?
+    public let unidentifiedAccess: SSKUnidentifiedAccess?
 
     @objc
     public let localNumber: String
 
     @objc
     public let isLocalNumber: Bool
-
-    @objc
-    public let senderCertificate: SMKSenderCertificate?
 
     @objc
     public let success: () -> Void
@@ -65,21 +62,16 @@ public class OWSMessageSend: NSObject {
         self.message = message
         self.thread = thread
         self.recipient = recipient
-        self.senderCertificate = senderCertificate
+        self.localNumber = localNumber
 
-        var udAccessKey: SMKUDAccessKey?
-        var isLocalNumber: Bool = false
         if let recipientId = recipient.uniqueId {
-            udAccessKey = (udManager.supportsUnidentifiedDelivery(recipientId: recipientId)
-                ? udManager.udAccessKeyForRecipient(recipientId)
-                : nil)
-            isLocalNumber = localNumber == recipientId
+            self.unidentifiedAccess = udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
+            self.isLocalNumber = localNumber == recipientId
         } else {
             owsFailDebug("SignalRecipient missing recipientId")
+            self.isLocalNumber = false
+            self.unidentifiedAccess = nil
         }
-        self.udAccessKey = udAccessKey
-        self.localNumber = localNumber
-        self.isLocalNumber = isLocalNumber
 
         self.success = success
         self.failure = failure
@@ -87,6 +79,6 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var isUDSend: Bool {
-        return (!hasUDAuthFailed && udAccessKey != nil && senderCertificate != nil)
+        return (!hasUDAuthFailed && self.unidentifiedAccess != nil)
     }
 }

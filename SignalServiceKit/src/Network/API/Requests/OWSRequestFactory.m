@@ -124,11 +124,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
+                             unidentifiedAccess:(nullable SSKUnidentifiedAccess *)unidentifiedAccess
 {
     OWSAssertDebug(recipientId.length > 0);
 
     NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    if (unidentifiedAccess != nil) {
+        [self useUDAuthWithRequest:request accessKey:unidentifiedAccess.accessKey];
+    }
+    return request;
 }
 
 + (TSRequest *)turnServerInfoRequest
@@ -181,13 +186,20 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber deviceId:(NSString *)deviceId
++ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber
+                                          deviceId:(NSString *)deviceId
+                                unidentifiedAccess:(nullable SSKUnidentifiedAccess *)unidentifiedAccess;
 {
     OWSAssertDebug(recipientNumber.length > 0);
     OWSAssertDebug(deviceId.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, recipientNumber, deviceId];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    if (unidentifiedAccess != nil) {
+        [self useUDAuthWithRequest:request accessKey:unidentifiedAccess.accessKey];
+    }
+    return request;
 }
 
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId
@@ -316,6 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp
+                              unidentifiedAccess:(nullable SSKUnidentifiedAccess *)unidentifiedAccess
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientId.length > 0);
@@ -327,7 +340,11 @@ NS_ASSUME_NONNULL_BEGIN
         @"timestamp" : @(timeStamp),
     };
 
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
+    if (unidentifiedAccess != nil) {
+        [self useUDAuthWithRequest:request accessKey:unidentifiedAccess.accessKey];
+    }
+    return request;
 }
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey
@@ -460,6 +477,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *path = @"/v1/certificate/delivery";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (void)useUDAuthWithRequest:(TSRequest *)request accessKey:(SMKUDAccessKey *)udAccessKey
+{
+    OWSAssertDebug(request);
+    OWSAssertDebug(udAccessKey);
+
+    // Suppress normal auth headers.
+    request.shouldHaveAuthorizationHeaders = NO;
+
+    // Add UD auth header.
+    [request setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
 }
 
 @end
