@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
     [dataOutputStream open];
     OWSContactsOutputStream *contactsOutputStream =
-    [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
+        [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     for (SignalAccount *signalAccount in signalAccounts) {
         OWSRecipientIdentity *_Nullable recipientIdentity =

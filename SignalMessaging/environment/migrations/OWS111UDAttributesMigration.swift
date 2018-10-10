@@ -19,6 +19,8 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
     // increment a similar constant for each migration.
     @objc
     class func migrationId() -> String {
+        // NOTE: Changes were made to the service after this migration was initially
+        // merged, so we need to re-migrate any developer devices.  
         return "111.1"
     }
 

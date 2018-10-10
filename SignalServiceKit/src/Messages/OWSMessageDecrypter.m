@@ -459,7 +459,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                protocolContext:transaction
                                                          error:&error];
             if (error || !decryptResult) {
-                if ([error.domain isEqualToString:@"SignalMetadataKit.SMKSelfSentMessageError"]) {
+                if ([error.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
+                    && error.code == SMKSecretSessionCipherErrorSelfSentMessage) {
                     // Self-sent messages can be safely discarded.
                     return failureBlock(error);
                 }
