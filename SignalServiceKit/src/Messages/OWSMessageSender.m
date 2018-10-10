@@ -996,12 +996,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
+    const BOOL isUDSend = messageSend.isUDSend;
     TSRequest *request = [OWSRequestFactory submitMessageRequestWithRecipient:recipient.uniqueId
                                                                      messages:deviceMessages
                                                                     timeStamp:message.timestamp
                                                            unidentifiedAccess:messageSend.unidentifiedAccess];
 
-    OWSWebSocketType webSocketType = (messageSend.isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
+    OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
     BOOL canMakeWebsocketRequests = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] &&
                                      !messageSend.hasWebsocketSendFailed);
     if (canMakeWebsocketRequests) {
@@ -1018,7 +1019,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         // If a UD send fails due to service response (as opposed to network
                         // failure), mark recipient as _not_ in UD mode, then retry.
                         OWSLogDebug(@"UD send failed; failing over to non-UD send.");
-                        [self.udManager setSupportsUnidentifiedDelivery:NO recipientId:recipient.uniqueId];
+                        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
+                                                      recipientId:recipient.uniqueId];
                         messageSend.hasUDAuthFailed = YES;
                         dispatch_async([OWSDispatch sendingQueue], ^{
                             [self sendMessageToRecipient:messageSend];
@@ -1043,7 +1045,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 NSInteger statusCode = response.statusCode;
                 NSData *_Nullable responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
 
-                if (messageSend.isUDSend && (statusCode == 401 || statusCode == 403)) {
+                if (isUDSend && (statusCode == 401 || statusCode == 403)) {
                     // If a UD send fails due to service response (as opposed to network
                     // failure), mark recipient as _not_ in UD mode, then retry.
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
