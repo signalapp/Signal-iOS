@@ -60,6 +60,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 @property (atomic) OWSOutgoingMessageRecipientState state;
 @property (atomic, nullable) NSNumber *deliveryTimestamp;
 @property (atomic, nullable) NSNumber *readTimestamp;
+@property (atomic) BOOL wasSentByUD;
 
 @end
 
@@ -637,8 +638,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }];
 }
 
-- (void)updateWithSentRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
+- (void)updateWithSentRecipient:(NSString *)recipientId
+                    wasSentByUD:(BOOL)wasSentByUD
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
@@ -651,6 +653,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                                 recipientState.wasSentByUD = wasSentByUD;
                              }];
 }
 

@@ -62,6 +62,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // This property should only be set if state == .sent.
 @property (atomic, nullable, readonly) NSNumber *readTimestamp;
 
+@property (atomic, readonly) BOOL wasSentByUD;
+
 @end
 
 #pragma mark -
@@ -167,7 +169,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 #pragma mark - Update With... Methods
 
 // This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithSentRecipient:(NSString *)recipientId
+                    wasSentByUD:(BOOL)wasSentByUD
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a skipped send to one recipient.
 - (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;

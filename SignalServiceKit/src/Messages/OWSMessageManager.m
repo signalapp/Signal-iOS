@@ -1115,6 +1115,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *groupId = dataMessage.group ? dataMessage.group.id : nil;
     OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
+    BOOL wasReceivedByUD = envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender;
 
     if (dataMessage.group.type == SSKProtoGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -1229,7 +1230,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
                                                                    contactShare:contact
-                                                                serverTimestamp:serverTimestamp];
+                                                                serverTimestamp:serverTimestamp
+                                                                wasReceivedByUD:wasReceivedByUD];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1269,7 +1271,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
                                                            contactShare:contact
-                                                        serverTimestamp:serverTimestamp];
+                                                        serverTimestamp:serverTimestamp
+                                                        wasReceivedByUD:wasReceivedByUD];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread

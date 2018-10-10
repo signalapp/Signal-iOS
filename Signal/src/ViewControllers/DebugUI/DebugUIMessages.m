@@ -3727,7 +3727,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                serverTimestamp:nil];
+                                                                serverTimestamp:nil
+                                                                wasReceivedByUD:NO];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3767,7 +3768,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                serverTimestamp:nil];
+                                                                serverTimestamp:nil
+                                                                wasReceivedByUD:NO];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -4229,7 +4231,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
                                                                    contactShare:nil
-                                                                serverTimestamp:nil];
+                                                                serverTimestamp:nil
+                                                                wasReceivedByUD:NO];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
@@ -4246,7 +4249,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                    contactShare:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:recipientId transaction:transaction];
+                [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
                 [message updateWithDeliveredRecipient:recipientId deliveryTimestamp:timestamp transaction:transaction];
                 [message updateWithReadRecipientId:recipientId
                                      readTimestamp:timestamp.unsignedLongLongValue
@@ -4270,7 +4273,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         expiresInSeconds:60
                            quotedMessage:nil
                             contactShare:nil
-                         serverTimestamp:nil];
+                         serverTimestamp:nil
+                         wasReceivedByUD:NO];
     // private setter to avoid starting expire machinery.
     message.read = YES;
     [message save];
@@ -4592,7 +4596,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    expiresInSeconds:0
                                                       quotedMessage:quotedMessage
                                                        contactShare:nil
-                                                    serverTimestamp:nil];
+                                                    serverTimestamp:nil
+                                                    wasReceivedByUD:NO];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }
