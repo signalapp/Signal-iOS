@@ -13,30 +13,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ProtoUtils
 
+#pragma mark - Dependencies
+
++ (id<ProfileManagerProtocol>)profileManager {
+    return SSKEnvironment.shared.profileManager;
+}
+
++ (OWSAES256Key *)localProfileKey
+{
+    return self.profileManager.localProfileKey;
+}
+
+#pragma mark -
+
 + (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
     OWSAssertDebug(thread);
-
-    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
 
     // For 1:1 threads, we want to include the profile key IFF the
     // contact is in the whitelist.
     //
     // For Group threads, we want to include the profile key IFF the
     // recipient OR the group is in the whitelist.
-    if (recipientId.length > 0 && [profileManager isUserInProfileWhitelist:recipientId]) {
+    if (recipientId.length > 0 && [self.profileManager isUserInProfileWhitelist:recipientId]) {
         return YES;
-    } else if ([profileManager isThreadInProfileWhitelist:thread]) {
+    } else if ([self.profileManager isThreadInProfileWhitelist:thread]) {
         return YES;
     }
 
     return NO;
-}
-
-+ (OWSAES256Key *)localProfileKey
-{
-    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    return profileManager.localProfileKey;
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
@@ -52,10 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (recipientId.length > 0) {
             // Once we've shared our profile key with a user (perhaps due to being
             // a member of a whitelisted group), make sure they're whitelisted.
-            id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
             // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
             dispatch_async(dispatch_get_main_queue(), ^{
-                [profileManager addUserToProfileWhitelist:recipientId];
+                [self.profileManager addUserToProfileWhitelist:recipientId];
             });
         }
     }
@@ -81,10 +85,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
-        id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
         // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
         dispatch_async(dispatch_get_main_queue(), ^{
-            [profileManager addUserToProfileWhitelist:recipientId];
+            [self.profileManager addUserToProfileWhitelist:recipientId];
         });
     }
 }

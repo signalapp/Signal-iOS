@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSData *plaintextData;
 @property (nonatomic, readonly) NSString *source;
 @property (nonatomic, readonly) UInt32 sourceDevice;
+@property (nonatomic, readonly) BOOL isUDMessage;
 
 @end
 

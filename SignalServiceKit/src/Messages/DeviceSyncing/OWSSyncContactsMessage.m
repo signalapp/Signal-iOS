@@ -10,11 +10,14 @@
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "SignalAccount.h"
+#import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+@import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -49,6 +52,18 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
+#pragma mark - Dependencies
+
+- (id<ContactsManagerProtocol>)contactsManager {
+    return SSKEnvironment.shared.contactsManager;
+}
+
+- (TSAccountManager *)tsAccountManager {
+    return TSAccountManager.sharedInstance;
+}
+
+#pragma mark -
+
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
@@ -79,7 +94,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
+    NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
+    
+    NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
+    OWSAssertDebug(localNumber);
+    if (localNumber) {
+        BOOL hasLocalNumber = NO;
+        for (SignalAccount *signalAccount in signalAccounts) {
+            hasLocalNumber |= [signalAccount.recipientId isEqualToString:localNumber];
+        }
+        if (!hasLocalNumber) {
+            SignalAccount *signalAccount = [[SignalAccount alloc] initWithRecipientId:localNumber];
+            // OWSContactsOutputStream requires all signalAccount to have a contact.
+            signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
+            [signalAccounts addObject:signalAccount];
+        }
+    }
 
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
@@ -89,11 +119,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContactsOutputStream *contactsOutputStream =
         [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
-    for (SignalAccount *signalAccount in self.signalAccounts) {
+    for (SignalAccount *signalAccount in signalAccounts) {
         OWSRecipientIdentity *_Nullable recipientIdentity =
             [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
-
 
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
         NSString *conversationColorName;
@@ -109,11 +138,11 @@ NS_ASSUME_NONNULL_BEGIN
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
-                                 contactsManager:contactsManager
+                                 contactsManager:self.contactsManager
                            conversationColorName:conversationColorName
                disappearingMessagesConfiguration:disappearingMessagesConfiguration];
     }
-
+    
     [dataOutputStream close];
 
     if (contactsOutputStream.hasError) {

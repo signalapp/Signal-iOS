@@ -111,6 +111,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                object:nil];
 }
 
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager {
+    return TSAccountManager.sharedInstance;
+}
+
 - (AFHTTPSessionManager *)avatarHTTPManager
 {
     return [OWSSignalService sharedInstance].CDNSessionManager;
@@ -491,7 +497,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
+    NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
     if (!localNumber) {
         return;
     }
@@ -676,7 +682,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)logUserProfiles
 {
     [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        OWSLogError(@"logUserProfiles: %zd", [transaction numberOfKeysInCollection:OWSUserProfile.collection]);
+        OWSLogError(@"logUserProfiles: %ld", (unsigned long) [transaction numberOfKeysInCollection:OWSUserProfile.collection]);
         [transaction
             enumerateKeysAndObjectsInCollection:OWSUserProfile.collection
                                      usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
@@ -730,9 +736,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId
 {
     OWSAssertDebug(recipientId.length > 0);
-
-    OWSUserProfile *userProfile =
-        [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+    
+    // For "local reads", use the local user profile.
+    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
+                                   ? self.localUserProfile
+                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
     OWSAssertDebug(userProfile);
 
     return userProfile.profileKey;
@@ -742,8 +750,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssertDebug(recipientId.length > 0);
 
-    OWSUserProfile *userProfile =
-        [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+    // For "local reads", use the local user profile.
+    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
+                                   ? self.localUserProfile
+                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
 
     return userProfile.profileName;
 }
@@ -752,8 +762,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssertDebug(recipientId.length > 0);
 
-    OWSUserProfile *userProfile =
-        [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+    // For "local reads", use the local user profile.
+    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
+                                   ? self.localUserProfile
+                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
@@ -770,8 +782,10 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssertDebug(recipientId.length > 0);
 
-    OWSUserProfile *userProfile =
-        [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+    // For "local reads", use the local user profile.
+    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
+                                   ? self.localUserProfile
+                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileDataWithFilename:userProfile.avatarFileName];
@@ -862,7 +876,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
                 // If we're updating the profile that corresponds to our local number,
                 // update the local profile as well.
-                NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
+                NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
                 if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
                     OWSUserProfile *localUserProfile = self.localUserProfile;
                     OWSAssertDebug(localUserProfile);
@@ -919,7 +933,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
-        NSString *_Nullable localNumber = [TSAccountManager sharedInstance].localNumber;
+        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
         if (localNumber && [localNumber isEqualToString:recipientId]) {
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssertDebug(localUserProfile);

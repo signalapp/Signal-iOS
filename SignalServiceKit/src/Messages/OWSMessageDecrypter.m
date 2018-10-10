@@ -8,6 +8,7 @@
 #import "NotificationsProtocol.h"
 #import "OWSAnalytics.h"
 #import "OWSBlockingManager.h"
+#import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
@@ -46,6 +47,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 @property (nonatomic, nullable) NSData *plaintextData;
 @property (nonatomic) NSString *source;
 @property (nonatomic) UInt32 sourceDevice;
+@property (nonatomic) BOOL isUDMessage;
 
 @end
 
@@ -57,6 +59,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                       plaintextData:(nullable NSData *)plaintextData
                                              source:(NSString *)source
                                        sourceDevice:(UInt32)sourceDevice
+                                        isUDMessage:(BOOL)isUDMessage
 {
     OWSAssertDebug(envelopeData);
     OWSAssertDebug(source.length > 0);
@@ -67,6 +70,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     result.plaintextData = plaintextData;
     result.source = source;
     result.sourceDevice = sourceDevice;
+    result.isUDMessage = isUDMessage;
     return result;
 }
 
@@ -134,6 +138,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.source];
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
 #pragma mark - Decryption
 
 - (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
@@ -157,11 +166,19 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         });
     };
 
+    NSString *localRecipientId = self.tsAccountManager.localNumber;
+    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
     DecryptSuccessBlock successBlock = ^(
         OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
-            OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
+            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.source);
+            return failureBlock();
+        }
+
+        if ([result.source isEqualToString:localRecipientId] && result.sourceDevice == localDeviceId) {
+            // Self-sent messages should be discarded during the decryption process.
+            OWSFailDebug(@"Unexpected self-sent sync message.");
             return failureBlock();
         }
 
@@ -237,7 +254,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                         [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                           plaintextData:nil
                                                                  source:envelope.source
-                                                           sourceDevice:envelope.sourceDevice];
+                                                           sourceDevice:envelope.sourceDevice
+                                                            isUDMessage:NO];
                     successBlock(result, transaction);
                 }];
                 // Return to avoid double-acknowledging.
@@ -361,11 +379,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 // plaintextData may be nil for some envelope types.
                 NSData *_Nullable plaintextData =
                     [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
-                OWSMessageDecryptResult *result =
-                    [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
-                                                      plaintextData:plaintextData
-                                                             source:envelope.source
-                                                       sourceDevice:envelope.sourceDevice];
+                OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
+                                                                                    plaintextData:plaintextData
+                                                                                           source:envelope.source
+                                                                                     sourceDevice:envelope.sourceDevice
+                                                                                      isUDMessage:NO];
                 successBlock(result, transaction);
             } @catch (NSException *exception) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -414,6 +432,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     id<SMKCertificateValidator> certificateValidator =
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
 
+    NSString *localRecipientId = self.tsAccountManager.localNumber;
+    uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         @try {
             NSError *error;
@@ -433,9 +454,17 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 [cipher decryptMessageWithCertificateValidator:certificateValidator
                                                 cipherTextData:encryptedData
                                                      timestamp:serverTimestamp
+                                              localRecipientId:localRecipientId
+                                                 localDeviceId:localDeviceId
                                                protocolContext:transaction
                                                          error:&error];
             if (error || !decryptResult) {
+                if ([error.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
+                    && error.code == SMKSecretSessionCipherErrorSelfSentMessage) {
+                    // Self-sent messages can be safely discarded.
+                    return failureBlock(error);
+                }
+
                 OWSFailDebug(@"Could not decrypt UD message: %@", error);
                 error = EnsureDecryptError(error, @"Could not decrypt UD message");
                 return failureBlock(error);
@@ -471,7 +500,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                                 plaintextData:plaintextData
                                                                                        source:source
-                                                                                 sourceDevice:(uint32_t)sourceDeviceId];
+                                                                                 sourceDevice:(uint32_t)sourceDeviceId
+                                                                                  isUDMessage:YES];
             successBlock(result, transaction);
         } @catch (NSException *exception) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -517,7 +547,12 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
-            errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
+            if (envelope.source.length > 0) {
+                errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
+            } else {
+                // TODO: Find another way to surface undecryptable UD messages to the user.
+                return;
+            }
         }
 
         OWSAssertDebug(errorMessage);
