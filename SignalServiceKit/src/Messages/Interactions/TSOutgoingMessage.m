@@ -653,7 +653,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                 recipientState.wasSentByUD |= wasSentByUD;
+                                 recipientState.wasSentByUD = wasSentByUD;
                              }];
 }
 
