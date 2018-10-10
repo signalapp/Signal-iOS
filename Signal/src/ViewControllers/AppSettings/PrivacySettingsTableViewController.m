@@ -56,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.udManager;
 }
 
+- (OWSPreferences *)preferences
+{
+    return Environment.shared.preferences;
+}
+
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -121,11 +126,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
     screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
-    [screenSecuritySection
-        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
-                                            isOn:[Environment.shared.preferences screenSecurityIsEnabled]
-                                          target:weakSelf
-                                        selector:@selector(didToggleScreenSecuritySwitch:)]];
+    [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
+                                                               isOn:[self.preferences screenSecurityIsEnabled]
+                                                             target:weakSelf
+                                                           selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
     
     // Allow calls to connect directly vs. using TURN exclusively
@@ -137,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
     [callingSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
                                                                  @"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
                                                                  @"Table cell label")
-                                                        isOn:[Environment.shared.preferences doCallsHideIPAddress]
+                                                        isOn:[self.preferences doCallsHideIPAddress]
                                                       target:weakSelf
                                                     selector:@selector(didToggleCallsHideIPAddressSwitch:)]];
     [contents addSection:callingSection];
@@ -148,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
                                                          @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
                                                          @"Short table cell label")
-                                                isOn:[Environment.shared.preferences isSystemCallLogEnabled]
+                                                isOn:[self.preferences isSystemCallLogEnabled]
                                               target:weakSelf
                                             selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
         callKitSection.footerTitle = NSLocalizedString(
@@ -160,14 +164,14 @@ NS_ASSUME_NONNULL_BEGIN
             = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
         [callKitSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_TITLE",
                                                                      @"Short table cell label")
-                                                            isOn:[Environment.shared.preferences isCallKitEnabled]
+                                                            isOn:[self.preferences isCallKitEnabled]
                                                           target:weakSelf
                                                         selector:@selector(didToggleEnableCallKitSwitch:)]];
-        if (Environment.shared.preferences.isCallKitEnabled) {
+        if (self.preferences.isCallKitEnabled) {
             [callKitSection
                 addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
                                                              @"Label for 'CallKit privacy' preference")
-                                                    isOn:![Environment.shared.preferences isCallKitPrivacyEnabled]
+                                                    isOn:![self.preferences isCallKitPrivacyEnabled]
                                                   target:weakSelf
                                                 selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
         }
@@ -259,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
-    [Environment.shared.preferences setScreenSecurity:enabled];
+    [self.preferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
@@ -273,13 +277,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled callsHideIPAddress: %@", enabled ? @"ON" : @"OFF");
-    [Environment.shared.preferences setDoCallsHideIPAddress:enabled];
+    [self.preferences setDoCallsHideIPAddress:enabled];
 }
 
 - (void)didToggleEnableSystemCallLogSwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [Environment.shared.preferences setIsSystemCallLogEnabled:sender.isOn];
+    [self.preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
@@ -288,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [Environment.shared.preferences setIsCallKitEnabled:sender.isOn];
+    [self.preferences setIsCallKitEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit vs not changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
@@ -300,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
 {
     OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [Environment.shared.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
+    [self.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
