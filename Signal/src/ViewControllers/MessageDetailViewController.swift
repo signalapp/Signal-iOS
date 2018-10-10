@@ -37,11 +37,19 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
+    lazy var shouldShowUD: Bool = {
+        return self.preferences.shouldShowUnidentifiedDeliveryIndicators()
+    }()
+
     var conversationStyle: ConversationStyle
 
     private var contactShareViewHelper: ContactShareViewHelper!
 
     // MARK: Dependencies
+
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
 
     var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
@@ -259,7 +267,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     // context of a table view.
                     let cellView = ContactCellView()
                     // We use the "short" status message to avoid being redundant with the section title.
-                    cellView.accessoryMessage = shortStatusMessage
+                    if self.shouldShowUD, recipientState.wasSentByUD {
+                        // TODO once design is complete, replace stand-in emoji
+                        cellView.accessoryMessage = shortStatusMessage.rtlSafeAppend(" ").rtlSafeAppend("💌")
+                    } else {
+                        cellView.accessoryMessage = shortStatusMessage
+                    }
                     cellView.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
 
                     let wrapper = UIView()
@@ -285,9 +298,13 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             }
         }
 
+        var sentText = DateUtil.formatPastTimestampRelativeToNow(message.timestamp)
+        if self.shouldShowUD, let incomingMessage = message as? TSIncomingMessage, incomingMessage.wasReceivedByUD {
+            sentText = sentText.rtlSafeAppend(" ").rtlSafeAppend("💌")
+        }
         let sentRow = valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                        comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                               value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp))
+                               value: sentText)
         sentRow.isUserInteractionEnabled = true
         sentRow.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressSent)))
         rows.append(sentRow)

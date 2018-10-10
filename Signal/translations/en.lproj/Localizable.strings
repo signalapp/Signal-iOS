@@ -2093,14 +2093,20 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
 
-/* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_FOOTER" = "Normally, only users you've shared your profile with can contact you without identifying themselves to the Signal service. Unrestricted Access means *anyone* will be able to contact you without identifying themselves to the Signal service.";
-
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Unidentified Delivery";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Unrestricted Access";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were sent using unidentified delivery.";
+
+/* switch label */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+
+/* table section footer */
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable unidentified delivery for incoming messages from non-contacts and people with whom you have not shared your profile.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";

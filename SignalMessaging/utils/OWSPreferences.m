@@ -27,6 +27,8 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
 NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHasGeneratedThumbnails";
+NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
+    = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
@@ -186,6 +188,17 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (nullable NSDate *)iOSUpgradeNagDate
 {
     return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagDate];
+}
+
+- (BOOL)shouldShowUnidentifiedDeliveryIndicators
+{
+    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value
+{
+    [self setValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators toValue:@(value)];
 }
 
 #pragma mark - Calling

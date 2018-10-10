@@ -205,21 +205,33 @@ NS_ASSUME_NONNULL_BEGIN
                                                          }]];
     [contents addSection:historyLogsSection];
 
-    OWSTableSection *unidentifiedDeliverySection = [OWSTableSection new];
-    unidentifiedDeliverySection.headerTitle
+    OWSTableSection *unidentifiedDeliveryIndicatorsSection = [OWSTableSection new];
+    unidentifiedDeliveryIndicatorsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE", @"table section label");
 
-    unidentifiedDeliverySection.footerTitle
-        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_FOOTER", @"table section footer");
+    unidentifiedDeliveryIndicatorsSection.footerTitle
+        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER", @"table section footer");
 
+    OWSTableItem *showUDIndicatorsItem = [OWSTableItem
+        switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS", @"switch label")
+                      isOn:weakSelf.preferences.shouldShowUnidentifiedDeliveryIndicators
+                    target:weakSelf
+                  selector:@selector(didToggleUDShowIndicatorsSwitch:)];
+    [unidentifiedDeliveryIndicatorsSection addItem:showUDIndicatorsItem];
+
+    OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
     OWSTableItem *unrestrictedAccessItem = [OWSTableItem
         switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS", @"switch label")
                       isOn:weakSelf.udManager.shouldAllowUnrestrictedAccessLocal
                     target:weakSelf
                   selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
-    [unidentifiedDeliverySection addItem:unrestrictedAccessItem];
+    [unidentifiedDeliveryUnrestrictedSection addItem:unrestrictedAccessItem];
 
-    [contents addSection:unidentifiedDeliverySection];
+    unidentifiedDeliveryUnrestrictedSection.footerTitle
+        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
+
+    [contents addSection:unidentifiedDeliveryIndicatorsSection];
+    [contents addSection:unidentifiedDeliveryUnrestrictedSection];
 
     self.contents = contents;
 }
@@ -314,6 +326,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
     [self.udManager setShouldAllowUnrestrictedAccessLocal:sender.isOn];
+}
+
+- (void)didToggleUDShowIndicatorsSwitch:(UISwitch *)sender
+{
+    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
+    [self.preferences setShouldShowUnidentifiedDeliveryIndicators:sender.isOn];
 }
 
 - (void)show2FASettings
