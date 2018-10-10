@@ -7,6 +7,7 @@
 #import "CDSSigningCertificate.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
+#import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <HKDFKit/HKDFKit.h>
@@ -240,14 +241,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared
 {
-    static dispatch_once_t onceToken;
-    static id sharedInstance = nil;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[ContactDiscoveryService alloc] initDefault];
-    });
-    return sharedInstance;
-}
+    OWSAssertDebug(SSKEnvironment.shared.contactDiscoveryService);
 
+    return SSKEnvironment.shared.contactDiscoveryService;
+}
 
 - (instancetype)initDefault
 {

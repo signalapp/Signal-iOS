@@ -3,7 +3,8 @@
 //
 
 #import "AppVersion.h"
-#import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import "NSUserDefaults+OWS.h"
+#import "SSKEnvironment.h"
 
 NSString *const kNSUserDefaults_FirstAppVersion = @"kNSUserDefaults_FirstAppVersion";
 NSString *const kNSUserDefaults_LastAppVersion = @"kNSUserDefaults_LastVersion";
@@ -31,13 +32,9 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
 
 + (instancetype)sharedInstance
 {
-    static AppVersion *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [AppVersion new];
-        [instance configure];
-    });
-    return instance;
+    OWSAssertDebug(SSKEnvironment.shared.appVersion);
+
+    return SSKEnvironment.shared.appVersion;
 }
 
 - (void)configure {

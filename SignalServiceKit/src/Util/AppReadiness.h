@@ -10,6 +10,8 @@ typedef void (^AppReadyBlock)(void);
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
+
 // This method can be called on any thread.
 + (BOOL)isAppReady;
 

@@ -3,8 +3,13 @@
 //
 
 #import "MockSSKEnvironment.h"
+#import "AppReadiness.h"
+#import "AppVersion.h"
+#import "ContactDiscoveryService.h"
+#import "OWS2FAManager.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSBlockingManager.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
@@ -60,6 +65,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
     TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
+    AppVersion *appVersion = [[AppVersion alloc] init];
+    AppReadiness *appReadiness = [[AppReadiness alloc] initDefault];
+    OWSDisappearingMessagesJob *disappearingMessagesJob =
+        [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
+    ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -75,7 +86,12 @@ NS_ASSUME_NONNULL_BEGIN
                     batchMessageProcessor:batchMessageProcessor
                           messageReceiver:messageReceiver
                             socketManager:socketManager
-                         tsAccountManager:tsAccountManager];
+                         tsAccountManager:tsAccountManager
+                            ows2FAManager:ows2FAManager
+                               appVersion:appVersion
+                             appReadiness:appReadiness
+                  disappearingMessagesJob:disappearingMessagesJob
+                  contactDiscoveryService:contactDiscoveryService];
     if (!self) {
         return nil;
     }
