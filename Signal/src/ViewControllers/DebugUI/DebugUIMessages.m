@@ -239,9 +239,9 @@ NS_ASSUME_NONNULL_BEGIN
             itemWithTitle:@"Request Bogus group info"
               actionBlock:^{
                   OWSLogInfo(@"Requesting bogus group info for thread: %@", thread);
-                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
-                      [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
-                                                                  groupId:[Randomness generateRandomBytes:16]];
+                  OWSSyncGroupsRequestMessage *syncGroupsRequestMessage = [[OWSSyncGroupsRequestMessage alloc]
+                      initWithThread:thread
+                             groupId:[Randomness generateRandomBytes:kGroupIdLength]];
                   [SSKEnvironment.shared.messageSender enqueueMessage:syncGroupsRequestMessage
                       success:^{
                           OWSLogWarn(@"Successfully sent Request Group Info message.");
@@ -3816,7 +3816,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         recipientId,
         [TSAccountManager localNumber],
     ] mutableCopy];
-    NSData *groupId = [Randomness generateRandomBytes:16];
+    NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
     TSGroupModel *groupModel =
         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
@@ -4309,7 +4309,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         recipientId,
                         [TSAccountManager localNumber],
                     ] mutableCopy];
-                    NSData *groupId = [Randomness generateRandomBytes:16];
+                    NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                     TSGroupModel *groupModel =
                         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
@@ -4348,7 +4348,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         recipientId,
                         [TSAccountManager localNumber],
                     ] mutableCopy];
-                    NSData *groupId = [Randomness generateRandomBytes:16];
+                    NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                     TSGroupModel *groupModel =
                         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 

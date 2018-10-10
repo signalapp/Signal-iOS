@@ -22,9 +22,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
-                         messageSender:(OWSMessageSender *)messageSender
-                        networkManager:(TSNetworkManager *)networkManager;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
 + (instancetype)sharedManager;
 

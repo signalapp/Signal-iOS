@@ -8,6 +8,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger kGroupIdLength = 16;
+
 @interface TSGroupModel ()
 
 @property (nullable, nonatomic) NSString *groupName;

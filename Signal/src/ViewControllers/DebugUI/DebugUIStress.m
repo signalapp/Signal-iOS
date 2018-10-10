@@ -506,7 +506,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
                                           memberIds:groupThread.groupModel.groupMemberIds
                                               image:groupThread.groupModel.groupImage
-                                            groupId:[Randomness generateRandomBytes:16]];
+                                            groupId:[Randomness generateRandomBytes:kGroupIdLength]];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
     OWSAssertDebug(thread);
