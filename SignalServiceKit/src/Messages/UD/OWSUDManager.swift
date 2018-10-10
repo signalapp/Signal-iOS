@@ -150,7 +150,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
         }
 
-        guard let existingValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? UnidentifiedAccessMode else {
+        guard let existingRawValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
+            return .unknown
+        }
+        guard let existingValue = UnidentifiedAccessMode(rawValue: existingRawValue) else {
             return .unknown
         }
         return existingValue
@@ -158,7 +161,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String) {
-        dbConnection.setObject(mode, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
+        dbConnection.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
     }
 
     // Returns the UD access key for a given recipient
