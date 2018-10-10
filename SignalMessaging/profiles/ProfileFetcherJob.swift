@@ -56,6 +56,11 @@ public class ProfileFetcherJob: NSObject {
         return SSKEnvironment.shared.identityManager
     }
 
+    private var signalServiceClient: SignalServiceClient {
+        // TODO hang on SSKEnvironment
+        return SignalServiceRestClient()
+    }
+
     // MARK: -
 
     public func run(recipientIds: [String]) {
@@ -88,8 +93,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     enum ProfileFetcherJobError: Error {
-        case throttled(lastTimeInterval: TimeInterval),
-             unknownNetworkError
+        case throttled(lastTimeInterval: TimeInterval)
     }
 
     public func updateProfile(recipientId: String, remainingRetries: Int = 3) {
@@ -130,12 +134,11 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        let request = OWSRequestFactory.getProfileRequest(withRecipientId: recipientId)
-
-        let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
-
         // TODO: Use UD socket for some profile gets.
         if socketManager.canMakeRequests(of: .default) {
+            let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
+            let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
+
             self.socketManager.make(request,
                                     webSocketType: .default,
                 success: { (responseObject: Any?) -> Void in
@@ -149,27 +152,11 @@ public class ProfileFetcherJob: NSObject {
                 failure: { (_: NSInteger, _:Data?, error: Error) in
                     reject(error)
             })
+            return promise
         } else {
-            self.networkManager.makeRequest(request,
-                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-                    do {
-                        let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
-                        fulfill(profile)
-                    } catch {
-                        reject(error)
-                    }
-            },
-                failure: { (_: URLSessionDataTask?, error: Error?) in
-
-                    if let error = error {
-                        reject(error)
-                    }
-
-                    reject(ProfileFetcherJobError.unknownNetworkError)
-            })
+            // TODO unidentified AUTH
+            return self.signalServiceClient.retrieveProfile(recipientId: recipientId, unidentifiedAccess: nil)
         }
-
-        return promise
     }
 
     private func updateProfile(signalServiceProfile: SignalServiceProfile) {
@@ -219,47 +206,5 @@ public class ProfileFetcherJob: NSObject {
                 // no change in identity.
             }
         }
-    }
-}
-
-@objc
-public class SignalServiceProfile: NSObject {
-
-    public enum ValidationError: Error {
-        case invalid(description: String)
-        case invalidIdentityKey(description: String)
-        case invalidProfileName(description: String)
-    }
-
-    public let recipientId: String
-    public let identityKey: Data
-    public let profileNameEncrypted: Data?
-    public let avatarUrlPath: String?
-    public let unidentifiedAccessVerifier: Data?
-    public let hasUnrestrictedUnidentifiedAccess: Bool
-
-    init(recipientId: String, responseObject: Any?) throws {
-        self.recipientId = recipientId
-
-        guard let params = ParamParser(responseObject: responseObject) else {
-            throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
-        }
-
-        let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
-        let kIdentityKeyLength = 33
-        guard identityKeyWithType.count == kIdentityKeyLength else {
-            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
-        }
-        // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
-        self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data
-
-        self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
-
-        let avatarUrlPath: String? = try params.optional(key: "avatar")
-        self.avatarUrlPath = avatarUrlPath
-
-        self.unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
-
-        self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
     }
 }

@@ -998,12 +998,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     TSRequest *request = [OWSRequestFactory submitMessageRequestWithRecipient:recipient.uniqueId
                                                                      messages:deviceMessages
-                                                                    timeStamp:message.timestamp];
-
-    if (messageSend.isUDSend) {
-        DDLogVerbose(@"UD send.");
-        [request useUDAuth:messageSend.udAccessKey];
-    }
+                                                                    timeStamp:message.timestamp
+                                                           unidentifiedAccess:messageSend.unidentifiedAccess];
 
     OWSWebSocketType webSocketType = (messageSend.isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
     BOOL canMakeWebsocketRequests = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] &&
@@ -1090,7 +1086,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
         }];
 
-        [self handleMessageSentLocally:messageSend.message senderCertificate:messageSend.senderCertificate];
+        [self handleMessageSentLocally:messageSend.message
+                     senderCertificate:messageSend.unidentifiedAccess.senderCertificate];
         messageSend.success();
     });
 }
@@ -1399,13 +1396,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // To avoid deadlock, we need to ensure that our success/failure completions
         // are called _off_ the main thread.  Otherwise we'll deadlock if the main
         // thread is blocked on opening a transaction.
-        TSRequest *request =
-            [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId deviceId:[deviceId stringValue]];
-
-        if (messageSend.isUDSend) {
-            DDLogVerbose(@"UD prekey request.");
-            [request useUDAuth:messageSend.udAccessKey];
-        }
+        TSRequest *request = [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
+                                                                           deviceId:[deviceId stringValue]
+                                                                 unidentifiedAccess:messageSend.unidentifiedAccess];
 
         [self.networkManager makeRequest:request
             completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
@@ -1509,7 +1502,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         serializedMessage = [secretCipher encryptMessageWithRecipientId:recipientId
                                                                deviceId:deviceId.intValue
                                                         paddedPlaintext:[plainText paddedMessageBody]
-                                                      senderCertificate:messageSend.senderCertificate
+                                                      senderCertificate:messageSend.unidentifiedAccess.senderCertificate
                                                         protocolContext:transaction
                                                                   error:&error];
         messageType = TSUnidentifiedSenderMessageType;

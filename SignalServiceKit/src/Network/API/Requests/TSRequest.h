@@ -30,6 +30,6 @@
 
 #pragma mark - UD
 
-- (void)useUDAuth:(SMKUDAccessKey *)udAccessKey;
+- (void)useUDAuthWithAccessKey:(SMKUDAccessKey *)udAccessKey;
 
 @end
