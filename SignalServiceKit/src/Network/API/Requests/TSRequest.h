@@ -28,8 +28,4 @@
                         method:(NSString *)method
                     parameters:(nullable NSDictionary<NSString *, id> *)parameters;
 
-#pragma mark - UD
-
-- (void)useUDAuthWithAccessKey:(SMKUDAccessKey *)udAccessKey;
-
 @end

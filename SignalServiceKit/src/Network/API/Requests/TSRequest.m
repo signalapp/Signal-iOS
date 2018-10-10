@@ -112,16 +112,4 @@
     }
 }
 
-#pragma mark - UD
-
-- (void)useUDAuthWithAccessKey:(SMKUDAccessKey *)udAccessKey
-{
-    OWSAssertDebug(udAccessKey);
-
-    // Suppress normal auth headers.
-    self.shouldHaveAuthorizationHeaders = NO;
-    // Add UD auth header.
-    [self setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
-}
-
 @end

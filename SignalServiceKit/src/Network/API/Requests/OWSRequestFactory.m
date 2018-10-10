@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (unidentifiedAccess != nil) {
-        [request useUDAuthWithAccessKey:unidentifiedAccess.accessKey];
+        [self useUDAuthWithRequest:request accessKey:unidentifiedAccess.accessKey];
     }
     return request;
 }
@@ -197,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (unidentifiedAccess != nil) {
-        [request useUDAuthWithAccessKey:unidentifiedAccess.accessKey];
+        [self useUDAuthWithRequest:request accessKey:unidentifiedAccess.accessKey];
     }
     return request;
 }
@@ -342,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     if (unidentifiedAccess != nil) {
-        [request useUDAuthWithAccessKey:unidentifiedAccess.accessKey];
+        [self useUDAuthWithRequest:request accessKey:unidentifiedAccess.accessKey];
     }
     return request;
 }
@@ -477,6 +477,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *path = @"/v1/certificate/delivery";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
++ (void)useUDAuthWithRequest:(TSRequest *)request accessKey:(SMKUDAccessKey *)udAccessKey
+{
+    OWSAssertDebug(request);
+    OWSAssertDebug(udAccessKey);
+
+    // Suppress normal auth headers.
+    request.shouldHaveAuthorizationHeaders = NO;
+
+    // Add UD auth header.
+    [request setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
 }
 
 @end
