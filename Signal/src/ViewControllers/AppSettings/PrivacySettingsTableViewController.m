@@ -12,6 +12,7 @@
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,6 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Dependencies
+
+- (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
 }
 
 #pragma mark - Table Contents
@@ -193,6 +201,22 @@ NS_ASSUME_NONNULL_BEGIN
                                                          }]];
     [contents addSection:historyLogsSection];
 
+    OWSTableSection *unidentifiedDeliverySection = [OWSTableSection new];
+    unidentifiedDeliverySection.headerTitle
+        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE", @"table section label");
+
+    unidentifiedDeliverySection.footerTitle
+        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_FOOTER", @"table section footer");
+
+    OWSTableItem *unrestrictedAccessItem = [OWSTableItem
+        switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS", @"switch label")
+                      isOn:weakSelf.udManager.shouldAllowUnrestrictedAccessLocal
+                    target:weakSelf
+                  selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
+    [unidentifiedDeliverySection addItem:unrestrictedAccessItem];
+
+    [contents addSection:unidentifiedDeliverySection];
+
     self.contents = contents;
 }
 
@@ -280,6 +304,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [SignalApp.sharedApp.callService createCallUIAdapter];
+}
+
+- (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender
+{
+    OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
+    [self.udManager setShouldAllowUnrestrictedAccessLocal:sender.isOn];
 }
 
 - (void)show2FASettings
