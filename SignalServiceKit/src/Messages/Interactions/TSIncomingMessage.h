@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
 
+@property (nonatomic, readonly) BOOL wasReceivedByUD;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -54,7 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
-                                 serverTimestamp:(nullable NSNumber *)serverTimestamp NS_DESIGNATED_INITIALIZER;
+                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
+                                 wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

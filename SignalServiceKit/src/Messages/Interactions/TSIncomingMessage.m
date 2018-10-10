@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
-{
+                                 wasReceivedByUD:(BOOL)wasReceivedByUD {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
                                messageBody:body
@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
     _serverTimestamp = serverTimestamp;
+    _wasReceivedByUD = wasReceivedByUD;
 
     return self;
 }
