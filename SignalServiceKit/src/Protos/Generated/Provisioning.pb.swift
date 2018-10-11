@@ -179,10 +179,10 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: ProvisioningProtos_ProvisionEnvelope) -> Bool {
-    if self._publicKey != other._publicKey {return false}
-    if self._body != other._body {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: ProvisioningProtos_ProvisionEnvelope, rhs: ProvisioningProtos_ProvisionEnvelope) -> Bool {
+    if lhs._publicKey != rhs._publicKey {return false}
+    if lhs._body != rhs._body {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
@@ -239,15 +239,15 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: ProvisioningProtos_ProvisionMessage) -> Bool {
-    if self._identityKeyPublic != other._identityKeyPublic {return false}
-    if self._identityKeyPrivate != other._identityKeyPrivate {return false}
-    if self._number != other._number {return false}
-    if self._provisioningCode != other._provisioningCode {return false}
-    if self._userAgent != other._userAgent {return false}
-    if self._profileKey != other._profileKey {return false}
-    if self._readReceipts != other._readReceipts {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: ProvisioningProtos_ProvisionMessage, rhs: ProvisioningProtos_ProvisionMessage) -> Bool {
+    if lhs._identityKeyPublic != rhs._identityKeyPublic {return false}
+    if lhs._identityKeyPrivate != rhs._identityKeyPrivate {return false}
+    if lhs._number != rhs._number {return false}
+    if lhs._provisioningCode != rhs._provisioningCode {return false}
+    if lhs._userAgent != rhs._userAgent {return false}
+    if lhs._profileKey != rhs._profileKey {return false}
+    if lhs._readReceipts != rhs._readReceipts {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
