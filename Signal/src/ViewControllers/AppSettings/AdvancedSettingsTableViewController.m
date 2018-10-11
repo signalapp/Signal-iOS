@@ -195,15 +195,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contents addSection:censorshipSection];
 
-    OWSTableSection *themeSection = [OWSTableSection new];
-    themeSection.headerTitle = NSLocalizedString(@"THEME_SECTION", nil);
-    [themeSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DARK_THEME",
-                                                               @"Label for setting that enables dark theme.")
-                                                      isOn:[Theme isDarkThemeEnabled]
-                                                    target:weakSelf
-                                                  selector:@selector(didToggleThemeSwitch:)]];
-    [contents addSection:themeSection];
-
     self.contents = contents;
 }
 
@@ -281,13 +272,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleEnableCensorshipCircumventionSwitch:(UISwitch *)sender
 {
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = sender.isOn;
-
-    [self updateTableContents];
-}
-
-- (void)didToggleThemeSwitch:(UISwitch *)sender
-{
-    [Theme setIsDarkThemeEnabled:sender.isOn];
 
     [self updateTableContents];
 }
