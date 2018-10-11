@@ -330,7 +330,10 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                    description:(NSString *)description
                  failureReason:(NSString *)failureReason
             recoverySuggestion:(NSString *)recoverySuggestion
-                 fallbackError:(NSError *_Nonnull)fallbackError {
+                 fallbackError:(NSError *)fallbackError
+{
+    OWSAssertDebug(fallbackError);
+
     if (!description) {
         description = fallbackError.localizedDescription;
     }
@@ -358,6 +361,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     if (failureData) {
         [dict setObject:failureData forKey:AFNetworkingOperationFailingURLResponseDataErrorKey];
     }
+
+    dict[NSUnderlyingErrorKey] = fallbackError;
 
     return [NSError errorWithDomain:TSNetworkManagerErrorDomain code:code userInfo:dict];
 }
