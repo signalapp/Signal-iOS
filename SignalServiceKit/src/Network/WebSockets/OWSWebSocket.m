@@ -1024,6 +1024,13 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     }
 #endif
 
+#ifndef UD_ENABLED
+    if (self.webSocketType == OWSWebSocketTypeUD) {
+        OWSLogWarn(@"Suppressing UD socket in prod.");
+        return;
+    }
+#endif
+
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
