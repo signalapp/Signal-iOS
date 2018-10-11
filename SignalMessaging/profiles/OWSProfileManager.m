@@ -44,6 +44,8 @@ NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManag
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
+typedef void (^ProfileManagerFailureBlock)(NSError *error);
+
 @interface OWSProfileManager ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -244,7 +246,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                             successBlock();
                                         }];
             }
-            failure:^{
+            failure:^(NSError *error) {
                 failureBlock();
             }];
     };
@@ -275,11 +277,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         success:^(NSString *_Nullable avatarUrlPath) {
                             tryToUpdateService(avatarUrlPath, fileName);
                         }
-                        failure:^{
+                        failure:^(NSError *error) {
                             failureBlock();
                         }];
                 }
-                failure:^{
+                failure:^(NSError *error) {
                     failureBlock();
                 }];
         }
@@ -289,7 +291,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             success:^(NSString *_Nullable avatarUrlPath) {
                 tryToUpdateService(nil, nil);
             }
-            failure:^{
+            failure:^(NSError *error) {
                 failureBlock();
             }];
     } else {
@@ -300,8 +302,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (void)writeAvatarToDisk:(UIImage *)avatar
                   success:(void (^)(NSData *data, NSString *fileName))successBlock
-                  failure:(void (^)(void))failureBlock
-{
+                  failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(avatar);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
@@ -316,12 +317,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 BOOL success = [data writeToFile:filePath atomically:YES];
                 OWSAssertDebug(success);
                 if (success) {
-                    successBlock(data, fileName);
-                    return;
+                    return successBlock(data, fileName);
                 }
             }
         }
-        failureBlock();
+        failureBlock(OWSErrorWithCodeDescription(OWSErrorCodeAvatarWriteFailed, @"Avatar write failed."));
     });
 }
 
@@ -351,8 +351,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 // If avatarData is nil, we are clearing the avatar.
 - (void)uploadAvatarToService:(NSData *_Nullable)avatarData
                       success:(void (^)(NSString *_Nullable avatarUrlPath))successBlock
-                      failure:(void (^)(void))failureBlock
-{
+                      failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(avatarData == nil || avatarData.length > 0);
@@ -388,8 +387,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
                 if (![formResponseObject isKindOfClass:[NSDictionary class]]) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidResponse]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSDictionary *responseMap = formResponseObject;
                 OWSLogError(@"responseObject: %@", formResponseObject);
@@ -397,44 +396,44 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 NSString *formAcl = responseMap[@"acl"];
                 if (![formAcl isKindOfClass:[NSString class]] || formAcl.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidAcl]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSString *formKey = responseMap[@"key"];
                 if (![formKey isKindOfClass:[NSString class]] || formKey.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidKey]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSString *formPolicy = responseMap[@"policy"];
                 if (![formPolicy isKindOfClass:[NSString class]] || formPolicy.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidPolicy]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSString *formAlgorithm = responseMap[@"algorithm"];
                 if (![formAlgorithm isKindOfClass:[NSString class]] || formAlgorithm.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidAlgorithm]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSString *formCredential = responseMap[@"credential"];
                 if (![formCredential isKindOfClass:[NSString class]] || formCredential.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidCredential]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSString *formDate = responseMap[@"date"];
                 if (![formDate isKindOfClass:[NSString class]] || formDate.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidDate]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
                 NSString *formSignature = responseMap[@"signature"];
                 if (![formSignature isKindOfClass:[NSString class]] || formSignature.length < 1) {
                     OWSProdFail([OWSAnalyticsEvents profileManagerErrorAvatarUploadFormInvalidSignature]);
-                    failureBlock();
-                    return;
+                    return failureBlock(
+                        OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                 }
 
                 [self.avatarHTTPManager POST:@""
@@ -472,7 +471,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
                         OWSLogError(@"uploading avatar failed with error: %@", error);
-                        failureBlock();
+                        return failureBlock(
+                            OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
                     }];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -483,15 +483,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 }
 
                 OWSLogError(@"Failed to get profile avatar upload form: %@", error);
-                failureBlock();
+                return failureBlock(
+                    OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
             }];
     });
 }
 
 - (void)updateServiceWithProfileName:(nullable NSString *)localProfileName
                              success:(void (^)(void))successBlock
-                             failure:(void (^)(void))failureBlock
-{
+                             failure:(ProfileManagerFailureBlock)failureBlock {
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
@@ -505,7 +505,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 OWSLogError(@"Failed to update profile with error: %@", error);
-                failureBlock();
+                failureBlock(error);
             }];
     });
 }
@@ -566,11 +566,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     [self
         rotateLocalProfileKeyIfNecessaryWithSuccess:^{
         }
-                                            failure:^ {
+                                            failure:^(NSError *error) {
                                             }];
 }
 
-- (void)rotateLocalProfileKeyIfNecessaryWithSuccess:(dispatch_block_t)success failure:(dispatch_block_t)failure {
+- (void)rotateLocalProfileKeyIfNecessaryWithSuccess:(dispatch_block_t)success
+                                            failure:(ProfileManagerFailureBlock)failure {
     OWSAssertDebug(AppReadiness.isAppReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -620,7 +621,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         BOOL isProfileKeySharedWithBlocked = (intersectingRecipientIds.count > 0 || intersectingGroupIds.count > 0);
         if (!isProfileKeySharedWithBlocked) {
             // No need to rotate the profile key.
-            return;
+            return success();
         }
 
         // Rotate the profile key
@@ -656,9 +657,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                         // The value doesn't matter, we just need any non-NSError value.
                         resolve(@(1));
                     }
-                    failure:^{
-                        NSError *error = OWSErrorWithCodeDescription(
-                            OWSErrorCodeProfileUpdateFailed, @"Update to profile name failed.");
+                    failure:^(NSError *error) {
                         resolve(error);
                     }];
             }];
@@ -686,10 +685,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                                                 resolve(@(1));
                                                             }];
                     }
-                    failure:^{
+                    failure:^(NSError *error) {
                         OWSLogInfo(@"Update to profile avatar after profile key rotation failed.");
-                        NSError *error = OWSErrorWithCodeDescription(
-                            OWSErrorCodeProfileUpdateFailed, @"Update to profile avatar failed.");
                         resolve(error);
                     }];
             }];
@@ -717,8 +714,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         promise = promise.then(^(id value) {
             success();
         });
-        promise = promise.catch(^(id error) {
-            failure();
+        promise = promise.catch(^(NSError *error) {
+            if ([error isKindOfClass:[NSError class]]) {
+                failure(error);
+            } else {
+                failure(OWSErrorWithCodeDescription(OWSErrorCodeProfileUpdateFailed, @"Profile key rotation failed."));
+            }
         });
         [promise retainUntilComplete];
     });
