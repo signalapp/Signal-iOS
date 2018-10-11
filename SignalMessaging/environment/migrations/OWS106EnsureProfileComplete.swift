@@ -64,7 +64,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                 self.completionHandler(true)
             }.catch { error in
                 let nserror = error as NSError
-                if nserror.domain == TSNetworkManagerDomain {
+                if nserror.domain == TSNetworkManagerErrorDomain {
                     // Don't retry if we had an unrecoverable error.
                     // In particular, 401 (invalid auth) is unrecoverable.
                     let isUnrecoverableError = nserror.code == 401

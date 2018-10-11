@@ -7,6 +7,7 @@
 #import "NSData+OWS.h"
 #import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
+#import "OWSError.h"
 #import "OWSSignalService.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
@@ -14,11 +15,12 @@
 #import <AFNetworking/AFNetworking.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-NSString *const TSNetworkManagerDomain = @"org.whispersystems.signal.networkManager";
+NSErrorDomain const TSNetworkManagerErrorDomain = @"SignalServiceKit.TSNetworkManager";
 
 BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 {
-    return ([error.domain isEqualToString:TSNetworkManagerDomain] && error.code == 0);
+    return ([error.domain isEqualToString:TSNetworkManagerErrorDomain]
+        && error.code == TSNetworkManagerErrorFailedConnection);
 }
 
 @interface TSNetworkManager ()
@@ -218,16 +220,17 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
       switch (statusCode) {
           case 0: {
-              error.isRetryable = YES;
-
-              OWSLogWarn(@"The network request failed because of a connectivity error: %@", request);
-              failureBlock(task,
-                  [self errorWithHTTPCode:statusCode
+              NSError *connectivityError =
+                  [self errorWithHTTPCode:TSNetworkManagerErrorFailedConnection
                               description:NSLocalizedString(@"ERROR_DESCRIPTION_NO_INTERNET",
                                               @"Generic error used whenever Signal can't contact the server")
                             failureReason:networkError.localizedFailureReason
                        recoverySuggestion:NSLocalizedString(@"NETWORK_ERROR_RECOVERY", nil)
-                            fallbackError:networkError]);
+                            fallbackError:networkError];
+              connectivityError.isRetryable = YES;
+
+              OWSLogWarn(@"The network request failed because of a connectivity error: %@", request);
+              failureBlock(task, connectivityError);
               break;
           }
           case 400: {
@@ -356,7 +359,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [dict setObject:failureData forKey:AFNetworkingOperationFailingURLResponseDataErrorKey];
     }
 
-    return [NSError errorWithDomain:TSNetworkManagerDomain code:code userInfo:dict];
+    return [NSError errorWithDomain:TSNetworkManagerErrorDomain code:code userInfo:dict];
 }
 
 @end
