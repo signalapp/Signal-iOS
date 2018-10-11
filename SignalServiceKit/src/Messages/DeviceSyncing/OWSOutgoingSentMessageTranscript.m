@@ -73,6 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (!recipientState) {
             continue;
         }
+        if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
+            continue;
+        }
 
         NSError *error;
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
