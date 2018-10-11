@@ -725,21 +725,45 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
+                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 // Mark any "sending" recipients as "sent."
-                                 for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
-                                          .allValues) {
-                                     if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
-                                         recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                     }
-                                 }
-                                 [message setIsFromLinkedDevice:YES];
-                             }];
+    [self
+        applyChangeToSelfAndLatestCopy:transaction
+                           changeBlock:^(TSOutgoingMessage *message) {
+                               if (udRecipientIds.count > 0 || nonUdRecipientIds.count > 0) {
+                                   // If we have specific recipient info from the transcript,
+                                   // build a new recipient state map.
+                                   NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap
+                                       = [NSMutableDictionary new];
+                                   for (NSString *recipientId in udRecipientIds) {
+                                       TSOutgoingMessageRecipientState *recipientState =
+                                           [TSOutgoingMessageRecipientState new];
+                                       recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                                       recipientState.wasSentByUD = YES;
+                                       recipientStateMap[recipientId] = recipientState;
+                                   }
+                                   for (NSString *recipientId in nonUdRecipientIds) {
+                                       TSOutgoingMessageRecipientState *recipientState =
+                                           [TSOutgoingMessageRecipientState new];
+                                       recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                                       recipientState.wasSentByUD = NO;
+                                       recipientStateMap[recipientId] = recipientState;
+                                   }
+                                   [message setRecipientStateMap:recipientStateMap];
+                               } else {
+                                   // Otherwise, mark any "sending" recipients as "sent."
+                                   for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
+                                            .allValues) {
+                                       if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
+                                           recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                                       }
+                                   }
+                               }
+                               [message setIsFromLinkedDevice:YES];
+                           }];
 }
 
 - (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
@@ -799,6 +823,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  }
                              }];
 }
+
 #pragma mark -
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
