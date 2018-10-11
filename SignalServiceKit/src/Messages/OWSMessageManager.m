@@ -507,12 +507,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)sendDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^ {
-        });
-}
-
 - (void)sendGroupInfoRequest:(NSData *)groupId
                     envelope:(SSKProtoEnvelope *)envelope
                  transaction:(YapDatabaseReadWriteTransaction *)transaction

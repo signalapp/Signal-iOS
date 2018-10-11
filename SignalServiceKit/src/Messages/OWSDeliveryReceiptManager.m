@@ -10,6 +10,7 @@
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSYapDatabaseObject.h"
+#import <Reachability/Reachability.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,6 +20,8 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
 @interface OWSDeliveryReceiptManager ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+
+@property (nonatomic) Reachability *reachability;
 
 // Should only be accessed on the serialQueue.
 @property (nonatomic) BOOL isProcessing;
@@ -42,9 +45,16 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
         return self;
     }
 
+    self.reachability = [Reachability reachabilityForInternetConnection];
+
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityChanged)
+                                                 name:kReachabilityChangedNotification
+                                               object:nil];
 
     // Start processing.
     [AppReadiness runNowOrWhenAppIsReady:^{
@@ -95,6 +105,12 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
 
 - (void)process {
     OWSLogVerbose(@"Processing outbound delivery receipts.");
+
+    if (!self.reachability.isReachable) {
+        // No network availability; abort.
+        self.isProcessing = NO;
+        return;
+    }
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *deliveryReceiptMap = [NSMutableDictionary new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -219,6 +235,12 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
             }
         }];
     });
+}
+
+- (void)reachabilityChanged {
+    OWSAssertIsOnMainThread();
+
+    [self scheduleProcessing];
 }
 
 @end
