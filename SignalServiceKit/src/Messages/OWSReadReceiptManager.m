@@ -178,6 +178,12 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return SSKEnvironment.shared.messageSender;
 }
 
+- (OWSOutgoingReceiptManager *)outgoingReceiptManager {
+    OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
+
+    return SSKEnvironment.shared.outgoingReceiptManager;
+}
+
 #pragma mark -
 
 // Schedules a processing pass, unless one is already scheduled.
@@ -293,8 +299,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
-                [SSKEnvironment.shared.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId
-                                                                                  timestamp:message.timestamp];
+                [self.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId timestamp:message.timestamp];
             }
 
             [self scheduleProcessing];
