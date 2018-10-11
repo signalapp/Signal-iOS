@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+
 - (void)startAnyExpirationForMessage:(TSMessage *)message
                  expirationStartedAt:(uint64_t)expirationStartedAt
                          transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;

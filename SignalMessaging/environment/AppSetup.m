@@ -9,9 +9,14 @@
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/ContactDiscoveryService.h>
+#import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageDecrypter.h>
 #import <SignalServiceKit/OWSMessageManager.h>
@@ -65,6 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
+        AppVersion *appVersion = [[AppVersion alloc] init];
+        AppReadiness *appReadiness = [[AppReadiness alloc] initDefault];
+        OWSDisappearingMessagesJob *disappearingMessagesJob =
+            [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
+        ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -82,7 +93,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                             batchMessageProcessor:batchMessageProcessor
                                                                   messageReceiver:messageReceiver
                                                                     socketManager:socketManager
-                                                                    tsAccountManager:tsAccountManager]];
+                                                                 tsAccountManager:tsAccountManager
+                                                                    ows2FAManager:ows2FAManager
+                                                                       appVersion:appVersion
+                                                                     appReadiness:appReadiness
+                                                          disappearingMessagesJob:disappearingMessagesJob
+                                                          contactDiscoveryService:contactDiscoveryService]];
 
         appSpecificSingletonBlock();
 

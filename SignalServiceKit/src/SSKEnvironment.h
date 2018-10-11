@@ -4,9 +4,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AppReadiness;
+@class AppVersion;
+@class ContactDiscoveryService;
 @class ContactsUpdater;
+@class OWS2FAManager;
 @class OWSBatchMessageProcessor;
 @class OWSBlockingManager;
+@class OWSDisappearingMessagesJob;
 @class OWSIdentityManager;
 @class OWSMessageDecrypter;
 @class OWSMessageManager;
@@ -40,7 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
                           socketManager:(TSSocketManager *)socketManager
-                          tsAccountManager:(TSAccountManager *)tsAccountManager NS_DESIGNATED_INITIALIZER;
+                       tsAccountManager:(TSAccountManager *)tsAccountManager
+                          ows2FAManager:(OWS2FAManager *)ows2FAManager
+                             appVersion:(AppVersion *)appVersion
+                           appReadiness:(AppReadiness *)appReadiness
+                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
+                contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -68,6 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 @property (nonatomic, readonly) TSSocketManager *socketManager;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;
+@property (nonatomic, readonly) OWS2FAManager *ows2FAManager;
+@property (nonatomic, readonly) AppVersion *appVersion;
+@property (nonatomic, readonly) AppReadiness *appReadiness;
+@property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic, readonly) ContactDiscoveryService *contactDiscoveryService;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

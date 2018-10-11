@@ -3,6 +3,9 @@
 //
 
 #import "MockEnvironment.h"
+#import "OWSBackup.h"
+#import "OWSContactsSyncing.h"
+#import "OWSWindowManager.h"
 #import <SignalMessaging/OWSPreferences.h>
 
 NS_ASSUME_NONNULL_BEGIN

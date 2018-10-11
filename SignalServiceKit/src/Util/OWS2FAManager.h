@@ -9,10 +9,14 @@ extern NSString *const NSNotificationName_2FAStateDidChange;
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
 
+@class OWSPrimaryStorage;
+
 // This class can be safely accessed and used from any thread.
 @interface OWS2FAManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 

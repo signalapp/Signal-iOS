@@ -27,6 +27,11 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSMessageReceiver *messageReceiver;
 @property (nonatomic) TSSocketManager *socketManager;
 @property (nonatomic) TSAccountManager *tsAccountManager;
+@property (nonatomic) OWS2FAManager *ows2FAManager;
+@property (nonatomic) AppVersion *appVersion;
+@property (nonatomic) AppReadiness *appReadiness;
+@property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
 
 @end
 
@@ -53,7 +58,11 @@ static SSKEnvironment *sharedSSKEnvironment;
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
                           socketManager:(TSSocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
-{
+                          ows2FAManager:(OWS2FAManager *)ows2FAManager
+                             appVersion:(AppVersion *)appVersion
+                           appReadiness:(AppReadiness *)appReadiness
+                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
+                contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService {
     self = [super init];
     if (!self) {
         return self;
@@ -74,6 +83,11 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageReceiver);
     OWSAssertDebug(socketManager);
     OWSAssertDebug(tsAccountManager);
+    OWSAssertDebug(ows2FAManager);
+    OWSAssertDebug(appVersion);
+    OWSAssertDebug(appReadiness);
+    OWSAssertDebug(disappearingMessagesJob);
+    OWSAssertDebug(contactDiscoveryService);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -90,6 +104,11 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageReceiver = messageReceiver;
     _socketManager = socketManager;
     _tsAccountManager = tsAccountManager;
+    _ows2FAManager = ows2FAManager;
+    _appVersion = appVersion;
+    _appReadiness = appReadiness;
+    _disappearingMessagesJob = disappearingMessagesJob;
+    _contactDiscoveryService = contactDiscoveryService;
 
     return self;
 }

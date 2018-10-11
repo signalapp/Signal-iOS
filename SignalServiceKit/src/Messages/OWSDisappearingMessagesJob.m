@@ -12,6 +12,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSThread.h"
@@ -51,12 +52,9 @@ void AssertIsOnDisappearingMessagesQueue()
 
 + (instancetype)sharedJob
 {
-    static OWSDisappearingMessagesJob *sharedJob = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedJob = [[self alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
-    });
-    return sharedJob;
+    OWSAssertDebug(SSKEnvironment.shared.disappearingMessagesJob);
+
+    return SSKEnvironment.shared.disappearingMessagesJob;
 }
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage

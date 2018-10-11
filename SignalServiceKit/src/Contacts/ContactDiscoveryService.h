@@ -45,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
+
 + (instancetype)shared;
 
 - (void)testService;
