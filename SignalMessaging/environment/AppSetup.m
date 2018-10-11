@@ -10,7 +10,6 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/ContactDiscoveryService.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -71,7 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
-        AppVersion *appVersion = [[AppVersion alloc] init];
         AppReadiness *appReadiness = [[AppReadiness alloc] initDefault];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
@@ -95,7 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     socketManager:socketManager
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager
-                                                                       appVersion:appVersion
                                                                      appReadiness:appReadiness
                                                           disappearingMessagesJob:disappearingMessagesJob
                                                           contactDiscoveryService:contactDiscoveryService]];
