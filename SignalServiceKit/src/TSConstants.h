@@ -37,10 +37,11 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define contactDiscoveryURL @"https://api.directory.signal.org"
 //// TODO: The production value is not yet known.
 //#define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
+//#define USING_PRODUCTION_SERVICE
 
 //#else
-//
-//// Staging
+
+// Staging
 #define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
 #define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
 #define textSecureCDNServerURL @"https://cdn-staging.signal.org"
@@ -48,8 +49,10 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
 #define contactDiscoveryURL @"https://api-staging.directory.signal.org"
 #define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
-//
+
 //#endif
+
+BOOL IsUsingProductionService(void);
 
 #define textSecureAccountsAPI @"v1/accounts"
 #define textSecureAttributesAPI @"/attributes/"

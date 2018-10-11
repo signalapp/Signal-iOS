@@ -26,6 +26,8 @@ public enum UnidentifiedAccessMode: Int {
 
     @objc func trustRoot() -> ECPublicKey
 
+    @objc func isUDEnabled() -> Bool
+
     // MARK: - Recipient State
 
     @objc
@@ -173,6 +175,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // if we have a valid profile key for them.
     @objc
     public func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+        guard isUDEnabled() else {
+            return nil
+        }
         let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
         if theirAccessMode == .unrestricted {
             return SMKUDAccessKey(randomKeyData: ())
@@ -279,6 +284,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             OWSLogger.error("Invalid certificate")
             return false
         }
+    }
+
+    @objc
+    public func isUDEnabled() -> Bool {
+        return !IsUsingProductionService()
     }
 
     @objc

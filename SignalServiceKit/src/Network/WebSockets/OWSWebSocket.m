@@ -264,6 +264,10 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     return OWSWebsocketSecurityPolicy.sharedPolicy;
 }
 
+- (id<OWSUDManager>)udManager {
+    return SSKEnvironment.shared.udManager;
+}
+
 #pragma mark -
 
 // We want to observe these notifications lazily to avoid accessing
@@ -1023,6 +1027,11 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 #endif
+
+    if (!self.udManager.isUDEnabled && self.webSocketType == OWSWebSocketTypeUD) {
+        OWSLogWarn(@"Suppressing UD socket in prod.");
+        return;
+    }
 
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;

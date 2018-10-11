@@ -945,12 +945,32 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // If _both_ of these pieces of state agree that there are no linked
         // devices, then can safely skip sending sync message.
+        //
+        // NOTE: Sync messages sent via UD include the local device.
 
-        // 1. Check OWSDevice's state.
         BOOL mayHaveLinkedDevices = [OWSDeviceManager.sharedManager mayHaveLinkedDevices:self.dbConnection];
 
-        // 2. Check SignalRecipient's state.
-        BOOL hasDeviceMessages = deviceMessages.count > 0;
+        BOOL hasDeviceMessages = NO;
+        for (NSDictionary<NSString *, id> *deviceMessage in deviceMessages) {
+            NSString *_Nullable destination = deviceMessage[@"destination"];
+            if (!destination) {
+                OWSFailDebug(@"Sync device message missing destination: %@", deviceMessage);
+                continue;
+            }
+            if (![destination isEqualToString:messageSend.localNumber]) {
+                OWSFailDebug(@"Sync device message has invalid destination: %@", deviceMessage);
+                continue;
+            }
+            NSNumber *_Nullable destinationDeviceId = deviceMessage[@"destinationDeviceId"];
+            if (!destinationDeviceId) {
+                OWSFailDebug(@"Sync device message missing destination device id: %@", deviceMessage);
+                continue;
+            }
+            if (destinationDeviceId.intValue != OWSDevicePrimaryDeviceId) {
+                hasDeviceMessages = YES;
+                break;
+            }
+        }
 
         OWSLogInfo(@"mayHaveLinkedDevices: %d, hasDeviceMessages: %d", mayHaveLinkedDevices, hasDeviceMessages);
 
