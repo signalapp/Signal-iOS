@@ -60,8 +60,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private let dbConnection: YapDatabaseConnection
 
-    var certificateValidator: SMKCertificateValidator?
-
     // MARK: Local Configuration State
     private let kUDCollection = "kUDCollection"
     private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
@@ -75,8 +73,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         self.dbConnection = primaryStorage.newDatabaseConnection()
 
         super.init()
-
-        self.certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
 
         SwiftSingletons.register(self)
     }
@@ -268,11 +264,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
-        guard let certificateValidator = self.certificateValidator else {
-            owsFail("Missing certificateValidator.")
-            return false
-        }
-
         // Ensure that the certificate will not expire in the next hour.
         // We want a threshold long enough to ensure that any outgoing message
         // sends will complete before the expiration.
@@ -280,6 +271,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let anHourFromNowMs = nowMs + kHourInMs
 
         do {
+            let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
+
             try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {

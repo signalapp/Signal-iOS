@@ -38,15 +38,13 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         let serverCertificate = SMKServerCertificate(keyId: 1,
                                                      key: try! ECPublicKey(keyData: Randomness.generateRandomBytes(ECCKeyLength)),
-                                                     // TODO: What's the right length?
-            signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
+                                                     signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
         let senderCertificate = SMKSenderCertificate(signer: serverCertificate,
                                                      key: try! ECPublicKey(keyData: Randomness.generateRandomBytes(ECCKeyLength)),
                                                      senderDeviceId: 1,
                                                      senderRecipientId: aliceRecipientId,
                                                      expirationTimestamp: NSDate.ows_millisecondTimeStamp() + kWeekInMs,
-                                                     // TODO: What's the right length?
-            signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
+                                                     signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
 
         udManager.setSenderCertificate(try! senderCertificate.serialized())
     }
