@@ -9,7 +9,7 @@
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
-#import "OWSReadReceiptsForSenderMessage.h"
+#import "OWSReceiptsForSenderMessage.h"
 #import "OWSStorage.h"
 #import "OWSSyncConfigurationMessage.h"
 #import "SSKEnvironment.h"
@@ -117,8 +117,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 @interface OWSReadReceiptManager ()
 
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // A map of "thread unique id"-to-"read receipt" for read receipts that
@@ -146,32 +144,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 + (instancetype)sharedManager
 {
-    static OWSReadReceiptManager *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
+    OWSAssert(SSKEnvironment.shared.readReceiptManager);
+
+    return SSKEnvironment.shared.readReceiptManager;
 }
 
-- (instancetype)initDefault
-{
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-
-    return [self initWithMessageSender:messageSender primaryStorage:primaryStorage];
-}
-
-- (instancetype)initWithMessageSender:(OWSMessageSender *)messageSender
-                       primaryStorage:(OWSPrimaryStorage *)primaryStorage
-{
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage {
     self = [super init];
 
     if (!self) {
         return self;
     }
 
-    _messageSender = messageSender;
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
@@ -191,6 +175,16 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (OWSMessageSender *)messageSender {
+    OWSAssertDebug(SSKEnvironment.shared.messageSender);
+
+    return SSKEnvironment.shared.messageSender;
+}
+
+#pragma mark -
 
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
@@ -243,9 +237,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 OWSAssertDebug(timestamps.count > 0);
 
                 TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-                OWSReadReceiptsForSenderMessage *message =
-                    [[OWSReadReceiptsForSenderMessage alloc] initWithThread:thread
-                                                          messageTimestamps:timestamps.allObjects];
+                OWSReceiptsForSenderMessage *message =
+                    [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
+                                                                      messageTimestamps:timestamps.allObjects];
 
                 [self.messageSender enqueueMessage:message
                     success:^{

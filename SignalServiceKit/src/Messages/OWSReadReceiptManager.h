@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSPrimaryStorage;
 @class SSKProtoSyncMessageRead;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
@@ -32,6 +33,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 @interface OWSReadReceiptManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 + (instancetype)sharedManager;
 
 #pragma mark - Sender/Recipient Read Receipts

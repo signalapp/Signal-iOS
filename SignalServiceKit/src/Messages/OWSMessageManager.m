@@ -12,6 +12,7 @@
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
+#import "OWSDeliveryReceiptManager.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -130,6 +131,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     return SSKEnvironment.shared.networkManager;
 }
+
+- (OWSDeliveryReceiptManager *)deliveryReceiptManager {
+    OWSAssertDebug(SSKEnvironment.shared.deliveryReceiptManager);
+
+    return SSKEnvironment.shared.deliveryReceiptManager;
+}
+
+#pragma mark -
 
 - (void)startObserving
 {
@@ -490,6 +499,15 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
         }
     }
+
+    // Send delivery receipts for "valid data" messages.
+    [self.deliveryReceiptManager envelopeWasReceived:envelope];
+}
+
+- (void)sendDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^ {
+        });
 }
 
 - (void)sendGroupInfoRequest:(NSData *)groupId
