@@ -28,7 +28,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) TSSocketManager *socketManager;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWS2FAManager *ows2FAManager;
-@property (nonatomic) AppReadiness *appReadiness;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
 
@@ -58,7 +57,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                           socketManager:(TSSocketManager *)socketManager
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
-                           appReadiness:(AppReadiness *)appReadiness
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService {
     self = [super init];
@@ -82,7 +80,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(socketManager);
     OWSAssertDebug(tsAccountManager);
     OWSAssertDebug(ows2FAManager);
-    OWSAssertDebug(appReadiness);
     OWSAssertDebug(disappearingMessagesJob);
     OWSAssertDebug(contactDiscoveryService);
 
@@ -102,7 +99,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _socketManager = socketManager;
     _tsAccountManager = tsAccountManager;
     _ows2FAManager = ows2FAManager;
-    _appReadiness = appReadiness;
     _disappearingMessagesJob = disappearingMessagesJob;
     _contactDiscoveryService = contactDiscoveryService;
 

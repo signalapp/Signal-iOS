@@ -3,7 +3,6 @@
 //
 
 #import "AppReadiness.h"
-#import "SSKEnvironment.h"
 #import <SignalCoreKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,9 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedManager
 {
-    OWSAssertDebug(SSKEnvironment.shared.appReadiness);
-
-    return SSKEnvironment.shared.appReadiness;
+    static AppReadiness *sharedMyManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedMyManager = [[self alloc] initDefault];
+    });
+    return sharedMyManager;
 }
 
 - (instancetype)initDefault
