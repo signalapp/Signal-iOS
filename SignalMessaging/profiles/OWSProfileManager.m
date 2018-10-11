@@ -469,10 +469,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                         OWSLogInfo(@"successfully uploaded avatar with key: %@", formKey);
                         successBlock(formKey);
                     }
-                    failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *_Nonnull error) {
+                    failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *error) {
                         OWSLogError(@"uploading avatar failed with error: %@", error);
-                        return failureBlock(
-                            OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
+                        return failureBlock(error);
                     }];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -483,8 +482,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 }
 
                 OWSLogError(@"Failed to get profile avatar upload form: %@", error);
-                return failureBlock(
-                    OWSErrorWithCodeDescription(OWSErrorCodeAvatarUploadFailed, @"Avatar upload failed."));
+                return failureBlock(error);
             }];
     });
 }
@@ -718,7 +716,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             if ([error isKindOfClass:[NSError class]]) {
                 failure(error);
             } else {
-                failure(OWSErrorWithCodeDescription(OWSErrorCodeProfileUpdateFailed, @"Profile key rotation failed."));
+                failure(OWSErrorMakeAssertionError(@"Profile key rotation failure missing error."));
             }
         });
         [promise retainUntilComplete];
