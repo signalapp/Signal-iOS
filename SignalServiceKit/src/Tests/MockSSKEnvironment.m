@@ -17,6 +17,7 @@
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage.h"
+#import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -58,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
     OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
+    TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -72,7 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
                          messageDecrypter:messageDecrypter
                     batchMessageProcessor:batchMessageProcessor
                           messageReceiver:messageReceiver
-                            socketManager:socketManager];
+                            socketManager:socketManager
+                         tsAccountManager:tsAccountManager];
     if (!self) {
         return nil;
     }

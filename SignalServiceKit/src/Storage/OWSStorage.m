@@ -824,8 +824,10 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
-        // Try to reset app by deleting database.
-        [OWSStorage resetAllStorage];
+        if (!CurrentAppContext().isRunningTests) {
+            // Try to reset app by deleting database.
+            [OWSStorage resetAllStorage];
+        }
 
         keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
         [[self class] storeDatabaseCipherKeySpec:keySpec];

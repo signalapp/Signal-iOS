@@ -27,12 +27,9 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedInstance;
-
-@property (nonatomic, strong, readonly) TSNetworkManager *networkManager;
 
 /**
  *  Returns if a user is registered or not
@@ -139,6 +136,10 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 - (BOOL)isManualMessageFetchEnabled;
 - (void)setIsManualMessageFetchEnabled:(BOOL)value;
+
+#ifdef DEBUG
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
+#endif
 
 @end
 

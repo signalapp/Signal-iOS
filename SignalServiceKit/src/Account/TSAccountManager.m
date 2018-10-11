@@ -9,6 +9,7 @@
 #import "OWSError.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSRequestFactory.h"
+#import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
@@ -57,15 +58,13 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
 
 @synthesize isRegistered = _isRegistered;
 
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _networkManager = networkManager;
     _dbConnection = [primaryStorage newDatabaseConnection];
 
     OWSSingletonAssert();
@@ -87,15 +86,21 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
 
 + (instancetype)sharedInstance
 {
-    static dispatch_once_t onceToken;
-    static id sharedInstance = nil;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[self alloc] initWithNetworkManager:[TSNetworkManager sharedManager]
-                                               primaryStorage:[OWSPrimaryStorage sharedManager]];
-    });
-
-    return sharedInstance;
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
 }
+
+#pragma mark - Dependencies
+
+- (TSNetworkManager *)networkManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.networkManager);
+    
+    return SSKEnvironment.shared.networkManager;
+}
+
+#pragma mark -
 
 - (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
 {
@@ -596,6 +601,13 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
     [self.dbConnection setBool:value
                         forKey:TSAccountManager_ManualMessageFetchKey
                   inCollection:TSAccountManager_UserAccountCollection];
+}
+
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber
+{
+    OWSAssertDebug(localNumber.length > 0);
+    
+    [self storeLocalNumber:localNumber];
 }
 
 @end

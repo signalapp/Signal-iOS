@@ -111,6 +111,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair? {
+        let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
+        guard theirAccessMode == .enabled || theirAccessMode == .unrestricted else {
+            return nil
+        }
+
         guard let theirAccessKey = self.udAccessKeyForRecipient(recipientId) else {
             return nil
         }
@@ -141,7 +146,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    private func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
+    func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
         if tsAccountManager.localNumber() == recipientId {
             if shouldAllowUnrestrictedAccessLocal() {
                 return .unrestricted
@@ -150,7 +155,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
         }
 
-        guard let existingValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? UnidentifiedAccessMode else {
+        guard let existingRawValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
+            return .unknown
+        }
+        guard let existingValue = UnidentifiedAccessMode(rawValue: existingRawValue) else {
             return .unknown
         }
         return existingValue
@@ -158,13 +166,18 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String) {
-        dbConnection.setObject(mode, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
+        dbConnection.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
     }
 
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     @objc
     public func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+        let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
+        if theirAccessMode == .unrestricted {
+            return SMKUDAccessKey(randomKeyData: ())
+        }
+
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil
@@ -207,7 +220,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    private func setSenderCertificate(_ certificateData: Data) {
+    func setSenderCertificate(_ certificateData: Data) {
         dbConnection.setObject(certificateData, forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection)
     }
 
@@ -251,9 +264,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
-
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
-
         // Ensure that the certificate will not expire in the next hour.
         // We want a threshold long enough to ensure that any outgoing message
         // sends will complete before the expiration.
@@ -261,6 +271,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let anHourFromNowMs = nowMs + kHourInMs
 
         do {
+            let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
+
             try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {

@@ -5,6 +5,7 @@
 #import "OWSFakeProfileManager.h"
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
 
 @end
+
+#pragma mark -
 
 @implementation OWSFakeProfileManager
 
@@ -37,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 - (OWSAES256Key *)localProfileKey
 {
     if (_localProfileKey == nil) {
@@ -53,6 +55,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.profileKeys[recipientId] = key;
 }
 
+- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId {
+    return self.profileKeys[recipientId].keyData;
+}
+
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
 {
     return [self.recipientWhitelist containsObject:recipientId];
@@ -66,6 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
 {
     [self.recipientWhitelist addObject:recipientId];
+}
+
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId {
+    [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
 @end
