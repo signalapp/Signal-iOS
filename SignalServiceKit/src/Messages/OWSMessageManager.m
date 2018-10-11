@@ -500,8 +500,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    // Send delivery receipts for "valid data" messages.
-    [self.deliveryReceiptManager envelopeWasReceived:envelope];
+    // Send delivery receipts for "valid data" messages received via UD.
+    BOOL wasReceivedByUD = envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender;
+    if (wasReceivedByUD) {
+        [self.deliveryReceiptManager envelopeWasReceived:envelope];
+    }
 }
 
 - (void)sendDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
