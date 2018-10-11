@@ -456,8 +456,11 @@ class CDSFeedbackOperation: OWSOperation {
 
         if let error = cdsOperation.failingError {
             switch error {
+            case TSNetworkManagerError.failedConnection:
+                // Don't submit feedback for connectivity errors
+                self.reportSuccess()
             case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
-                // Server already has this information, no need to report.
+                // Server already has this information, no need submit feedback
                 self.reportSuccess()
             case ContactDiscoveryError.attestationError:
                 self.makeRequest(result: .attestationError)
