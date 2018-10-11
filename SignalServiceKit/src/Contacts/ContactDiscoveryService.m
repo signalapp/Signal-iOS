@@ -8,6 +8,7 @@
 #import "Cryptography.h"
 #import "NSData+OWS.h"
 #import "NSDate+OWS.h"
+#import "NSError+MessageSending.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
@@ -15,6 +16,8 @@
 #import <HKDFKit/HKDFKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.ContactDiscoveryService";
 
 @interface RemoteAttestationAuth ()
 
@@ -357,7 +360,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          auth:auth];
 
                 if (!attestation) {
-                    NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                    NSError *error = [NSError errorWithDomain:ContactDiscoveryServiceErrorDomain
+                                                         code:ContactDiscoveryServiceErrorAttestationFailed
+                                                     userInfo:nil];
+                    error.isRetryable = NO;
                     failureHandler(error);
                     return;
                 }
@@ -366,8 +372,6 @@ NS_ASSUME_NONNULL_BEGIN
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            OWSLogVerbose(@"remote attestation failure: %lu", (unsigned long)response.statusCode);
             failureHandler(error);
         }];
 }
