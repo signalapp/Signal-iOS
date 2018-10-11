@@ -67,6 +67,27 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
+    for (NSString *recipientId in self.message.recipientIds) {
+        TSOutgoingMessageRecipientState *_Nullable recipientState =
+            [self.message recipientStateForRecipientId:recipientId];
+        if (!recipientState) {
+            continue;
+        }
+
+        NSError *error;
+        SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
+            [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
+        [statusBuilder setDestination:recipientId];
+        [statusBuilder setUnidentified:recipientState.wasSentByUD];
+        SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *_Nullable status =
+            [statusBuilder buildAndReturnError:&error];
+        if (error || !status) {
+            OWSFailDebug(@"Couldn't build UD status proto: %@", error);
+            continue;
+        }
+        [sentBuilder addUnidentifiedStatus:status];
+    }
+
     NSError *error;
     SSKProtoSyncMessageSent *_Nullable sentProto = [sentBuilder buildAndReturnError:&error];
     if (error || !sentProto) {
