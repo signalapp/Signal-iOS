@@ -31,7 +31,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
-@property (nonatomic) OWSDeliveryReceiptManager *deliveryReceiptManager;
+@property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
 
 @end
 
@@ -62,7 +62,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
                 disappearingMessagesJob:(OWSReadReceiptManager *)readReceiptManager
-                contactDiscoveryService:(OWSDeliveryReceiptManager *)deliveryReceiptManager {
+                contactDiscoveryService:(OWSOutgoingReceiptManager *)outgoingReceiptManager {
     self = [super init];
     if (!self) {
         return self;
@@ -87,7 +87,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(disappearingMessagesJob);
     OWSAssertDebug(contactDiscoveryService);
     OWSAssertDebug(readReceiptManager);
-    OWSAssertDebug(deliveryReceiptManager);
+    OWSAssertDebug(outgoingReceiptManager);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -108,7 +108,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _disappearingMessagesJob = disappearingMessagesJob;
     _contactDiscoveryService = contactDiscoveryService;
     _readReceiptManager = readReceiptManager;
-    _deliveryReceiptManager = deliveryReceiptManager;
+    _outgoingReceiptManager = outgoingReceiptManager;
 
     return self;
 }

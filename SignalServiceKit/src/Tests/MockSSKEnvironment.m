@@ -7,7 +7,6 @@
 #import "OWS2FAManager.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSBlockingManager.h"
-#import "OWSDeliveryReceiptManager.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeContactsManager.h"
@@ -20,6 +19,7 @@
 #import "OWSMessageDecrypter.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
+#import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "TSAccountManager.h"
@@ -70,8 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
     ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
     OWSReadReceiptManager *readReceiptManager = [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
-    OWSDeliveryReceiptManager *deliveryReceiptManager =
-        [[OWSDeliveryReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSOutgoingReceiptManager *outgoingReceiptManager =
+        [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
                   disappearingMessagesJob:disappearingMessagesJob
                   contactDiscoveryService:contactDiscoveryService
                   disappearingMessagesJob:readReceiptManager
-                  contactDiscoveryService:deliveryReceiptManager];
+                  contactDiscoveryService:outgoingReceiptManager];
     if (!self) {
         return nil;
     }

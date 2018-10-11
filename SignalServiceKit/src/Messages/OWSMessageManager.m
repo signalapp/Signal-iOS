@@ -12,7 +12,6 @@
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
-#import "OWSDeliveryReceiptManager.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -22,6 +21,7 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
+#import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
@@ -132,10 +132,10 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.networkManager;
 }
 
-- (OWSDeliveryReceiptManager *)deliveryReceiptManager {
-    OWSAssertDebug(SSKEnvironment.shared.deliveryReceiptManager);
+- (OWSOutgoingReceiptManager *)outgoingReceiptManager {
+    OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
 
-    return SSKEnvironment.shared.deliveryReceiptManager;
+    return SSKEnvironment.shared.outgoingReceiptManager;
 }
 
 #pragma mark -
@@ -503,7 +503,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Send delivery receipts for "valid data" messages received via UD.
     BOOL wasReceivedByUD = envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender;
     if (wasReceivedByUD) {
-        [self.deliveryReceiptManager envelopeWasReceived:envelope];
+        [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope];
     }
 }
 

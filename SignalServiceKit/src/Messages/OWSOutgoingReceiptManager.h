@@ -7,13 +7,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSPrimaryStorage;
 @class SSKProtoEnvelope;
 
-@interface OWSDeliveryReceiptManager : NSObject
+@interface OWSOutgoingReceiptManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 + (instancetype)sharedManager;
 
-- (void)envelopeWasReceived:(SSKProtoEnvelope *)envelope;
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope;
 
 @end
 

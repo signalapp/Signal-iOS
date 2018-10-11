@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDeliveryReceiptManager.h"
+#import "OWSOutgoingReceiptManager.h"
 #import "AppReadiness.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
@@ -15,9 +15,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCollection";
+NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCollection";
 
-@interface OWSDeliveryReceiptManager ()
+@interface OWSOutgoingReceiptManager ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
@@ -30,12 +30,12 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
 
 #pragma mark -
 
-@implementation OWSDeliveryReceiptManager
+@implementation OWSOutgoingReceiptManager
 
 + (instancetype)sharedManager {
-    OWSAssert(SSKEnvironment.shared.deliveryReceiptManager);
+    OWSAssert(SSKEnvironment.shared.outgoingReceiptManager);
 
-    return SSKEnvironment.shared.deliveryReceiptManager;
+    return SSKEnvironment.shared.outgoingReceiptManager;
 }
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage {
@@ -114,7 +114,7 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *deliveryReceiptMap = [NSMutableDictionary new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction enumerateKeysAndObjectsInCollection:kDeliveryReceiptManagerCollection
+        [transaction enumerateKeysAndObjectsInCollection:kOutgoingReceiptManagerCollection
                                               usingBlock:^(NSString *key, id object, BOOL *stop) {
                                                   NSString *recipientId = key;
                                                   NSSet<NSNumber *> *timestamps = object;
@@ -179,7 +179,7 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
     [completionPromise retainUntilComplete];
 }
 
-- (void)envelopeWasReceived:(SSKProtoEnvelope *)envelope {
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
     OWSLogVerbose(@"");
 
     [self enqueueDeliveryReceiptWithRecipientId:envelope.source timestamp:envelope.timestamp];
@@ -199,12 +199,12 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
     dispatch_async(self.serialQueue, ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId
-                                                                      inCollection:kDeliveryReceiptManagerCollection];
+                                                                      inCollection:kOutgoingReceiptManagerCollection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps addObject:@(timestamp)];
 
-            [transaction setObject:newTimestamps forKey:recipientId inCollection:kDeliveryReceiptManagerCollection];
+            [transaction setObject:newTimestamps forKey:recipientId inCollection:kOutgoingReceiptManagerCollection];
         }];
 
         [self scheduleProcessing];
@@ -223,15 +223,15 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
     dispatch_async(self.serialQueue, ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId
-                                                                      inCollection:kDeliveryReceiptManagerCollection];
+                                                                      inCollection:kOutgoingReceiptManagerCollection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps minusSet:timestamps];
 
             if (newTimestamps.count > 0) {
-                [transaction setObject:newTimestamps forKey:recipientId inCollection:kDeliveryReceiptManagerCollection];
+                [transaction setObject:newTimestamps forKey:recipientId inCollection:kOutgoingReceiptManagerCollection];
             } else {
-                [transaction removeObjectForKey:recipientId inCollection:kDeliveryReceiptManagerCollection];
+                [transaction removeObjectForKey:recipientId inCollection:kOutgoingReceiptManagerCollection];
             }
         }];
     });
