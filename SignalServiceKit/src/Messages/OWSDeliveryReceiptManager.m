@@ -23,12 +23,6 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
 // Should only be accessed on the serialQueue.
 @property (nonatomic) BOOL isProcessing;
 
-// A map of "recipient id"-to-"timestamp list" for delivery receipts that
-// we will send to senders.
-//
-// Should only be accessed on the serialQueue.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSMutableSet<NSNumber *> *> *deliveryReceiptMap;
-
 @end
 
 #pragma mark -
@@ -49,8 +43,6 @@ NSString *const kDeliveryReceiptManagerCollection = @"kDeliveryReceiptManagerCol
     }
 
     _dbConnection = primaryStorage.newDatabaseConnection;
-
-    _deliveryReceiptMap = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
