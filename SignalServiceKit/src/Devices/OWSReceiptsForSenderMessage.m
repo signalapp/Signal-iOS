@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _messageTimestamps = [messageTimestamps copy];
+    _receiptType = receiptType;
 
     return self;
 }

@@ -7,6 +7,7 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
+#import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
@@ -125,12 +126,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSLinkedDeviceReadReceipt *> *toLinkedDevicesReadReceiptMap;
 
-// A map of "recipient id"-to-"timestamp list" for read receipts that
-// we will send to senders.
-//
-// Should only be accessed while synchronized on the OWSReadReceiptManager.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSMutableSet<NSNumber *> *> *toSenderReadReceiptMap;
-
 // Should only be accessed while synchronized on the OWSReadReceiptManager.
 @property (nonatomic) BOOL isProcessing;
 
@@ -159,7 +154,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     _toLinkedDevicesReadReceiptMap = [NSMutableDictionary new];
-    _toSenderReadReceiptMap = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -228,31 +222,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 }];
         }
 
-        NSDictionary<NSString *, NSMutableSet<NSNumber *> *> *toSenderReadReceiptMap =
-            [self.toSenderReadReceiptMap copy];
-        [self.toSenderReadReceiptMap removeAllObjects];
-        if (toSenderReadReceiptMap.count > 0) {
-            for (NSString *recipientId in toSenderReadReceiptMap) {
-                NSSet<NSNumber *> *timestamps = toSenderReadReceiptMap[recipientId];
-                OWSAssertDebug(timestamps.count > 0);
-
-                TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-                OWSReceiptsForSenderMessage *message =
-                    [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
-                                                                      messageTimestamps:timestamps.allObjects];
-
-                [self.messageSender enqueueMessage:message
-                    success:^{
-                        OWSLogInfo(@"Successfully sent %lu read receipts to sender.", (unsigned long)timestamps.count);
-                    }
-                    failure:^(NSError *error) {
-                        OWSLogError(@"Failed to send read receipts to sender with error: %@", error);
-                    }];
-            }
-            [self.toSenderReadReceiptMap removeAllObjects];
-        }
-
-        BOOL didWork = (readReceiptsForLinkedDevices.count > 0 || toSenderReadReceiptMap.count > 0);
+        BOOL didWork = readReceiptsForLinkedDevices.count > 0;
 
         if (didWork) {
             // Wait N seconds before processing read receipts again.
@@ -323,12 +293,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
-                NSMutableSet<NSNumber *> *_Nullable timestamps = self.toSenderReadReceiptMap[messageAuthorId];
-                if (!timestamps) {
-                    timestamps = [NSMutableSet new];
-                    self.toSenderReadReceiptMap[messageAuthorId] = timestamps;
-                }
-                [timestamps addObject:@(message.timestamp)];
+                [SSKEnvironment.shared.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId
+                                                                                  timestamp:message.timestamp];
             }
 
             [self scheduleProcessing];

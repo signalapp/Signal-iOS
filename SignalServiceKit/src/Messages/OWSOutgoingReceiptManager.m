@@ -15,7 +15,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCollection";
+typedef NS_ENUM(NSUInteger, OWSReceiptType) {
+    OWSReceiptType_Delivery,
+    OWSReceiptType_Read,
+};
+
+NSString *const kOutgoingDeliveryReceiptManagerCollection = @"kOutgoingDeliveryReceiptManagerCollection";
+NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptManagerCollection";
 
 @interface OWSOutgoingReceiptManager ()
 
@@ -23,7 +29,7 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
 
 @property (nonatomic) Reachability *reachability;
 
-// Should only be accessed on the serialQueue.
+// This property should only be accessed on the serialQueue.
 @property (nonatomic) BOOL isProcessing;
 
 @end
@@ -82,7 +88,7 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
     static dispatch_queue_t _serialQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.deliveryReceipts", DISPATCH_QUEUE_SERIAL);
+        _serialQueue = dispatch_queue_create("org.whispersystems.outgoingReceipts", DISPATCH_QUEUE_SERIAL);
     });
 
     return _serialQueue;
@@ -104,7 +110,7 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
 }
 
 - (void)process {
-    OWSLogVerbose(@"Processing outbound delivery receipts.");
+    OWSLogVerbose(@"Processing outbound receipts.");
 
     if (!self.reachability.isReachable) {
         // No network availability; abort.
@@ -112,48 +118,11 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
         return;
     }
 
-    NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *deliveryReceiptMap = [NSMutableDictionary new];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction enumerateKeysAndObjectsInCollection:kOutgoingReceiptManagerCollection
-                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                                  NSString *recipientId = key;
-                                                  NSSet<NSNumber *> *timestamps = object;
-                                                  deliveryReceiptMap[recipientId] = [timestamps copy];
-                                              }];
-    }];
-
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
-
-    for (NSString *recipientId in deliveryReceiptMap) {
-        NSSet<NSNumber *> *timestamps = deliveryReceiptMap[recipientId];
-        if (timestamps.count < 1) {
-            OWSFailDebug(@"Missing timestamps.");
-            continue;
-        }
-
-        TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-        OWSReceiptsForSenderMessage *message =
-            [OWSReceiptsForSenderMessage deliveryReceiptsForSenderMessageWithThread:thread
-                                                                  messageTimestamps:timestamps.allObjects];
-
-        AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.messageSender enqueueMessage:message
-                success:^{
-                    OWSLogInfo(@"Successfully sent %lu delivery receipts to sender.", (unsigned long)timestamps.count);
-
-                    [self dequeueDeliveryReceiptsWithRecipientId:recipientId timestamps:timestamps];
-
-                    // The value doesn't matter, we just need any non-NSError value.
-                    resolve(@(1));
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send delivery receipts to sender with error: %@", error);
-
-                    resolve(error);
-                }];
-        }];
-        [sendPromises addObject:sendPromise];
-    }
+    [sendPromises addObjectsFromArray:[self sendReceiptsForCollection:kOutgoingDeliveryReceiptManagerCollection
+                                                          receiptType:OWSReceiptType_Delivery]];
+    [sendPromises addObjectsFromArray:[self sendReceiptsForCollection:kOutgoingReadReceiptManagerCollection
+                                                          receiptType:OWSReceiptType_Read]];
 
     if (sendPromises.count < 1) {
         // No work to do; abort.
@@ -163,12 +132,12 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
 
     AnyPromise *completionPromise = PMKJoin(sendPromises);
     completionPromise.always(^() {
-        // Wait N seconds before processing delivery receipts again.
+        // Wait N seconds before conducting another pass.
         // This allows time for a batch to accumulate.
         //
-        // We want a value high enough to allow us to effectively de-duplicate,
-        // delivery receipts without being so high that we risk not sending delivery
-        // receipts due to app exit.
+        // We want a value high enough to allow us to effectively de-duplicate
+        // receipts without being so high that we incur so much latency that
+        // the user notices.
         const CGFloat kProcessingFrequencySeconds = 3.f;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
             self.serialQueue,
@@ -179,14 +148,82 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
     [completionPromise retainUntilComplete];
 }
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
-    OWSLogVerbose(@"");
+- (NSArray<AnyPromise *> *)sendReceiptsForCollection:(NSString *)collection receiptType:(OWSReceiptType)receiptType {
 
-    [self enqueueDeliveryReceiptWithRecipientId:envelope.source timestamp:envelope.timestamp];
+    NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *queuedReceiptMap = [NSMutableDictionary new];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [transaction enumerateKeysAndObjectsInCollection:collection
+                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                                  NSString *recipientId = key;
+                                                  NSSet<NSNumber *> *timestamps = object;
+                                                  queuedReceiptMap[recipientId] = [timestamps copy];
+                                              }];
+    }];
+
+    NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
+
+    for (NSString *recipientId in queuedReceiptMap) {
+        NSSet<NSNumber *> *timestamps = queuedReceiptMap[recipientId];
+        if (timestamps.count < 1) {
+            OWSFailDebug(@"Missing timestamps.");
+            continue;
+        }
+
+        TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        OWSReceiptsForSenderMessage *message;
+        NSString *receiptName;
+        switch (receiptType) {
+            case OWSReceiptType_Delivery:
+                message =
+                    [OWSReceiptsForSenderMessage deliveryReceiptsForSenderMessageWithThread:thread
+                                                                          messageTimestamps:timestamps.allObjects];
+                receiptName = @"Delivery";
+                break;
+            case OWSReceiptType_Read:
+                message = [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
+                                                                            messageTimestamps:timestamps.allObjects];
+                receiptName = @"Read";
+                break;
+        }
+
+        AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self.messageSender enqueueMessage:message
+                success:^{
+                    OWSLogInfo(
+                        @"Successfully sent %lu %@ receipts to sender.", (unsigned long)timestamps.count, receiptName);
+
+                    [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps collection:collection];
+
+                    // The value doesn't matter, we just need any non-NSError value.
+                    resolve(@(1));
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
+
+                    resolve(error);
+                }];
+        }];
+        [sendPromises addObject:sendPromise];
+    }
+
+    return [sendPromises copy];
 }
 
-- (void)enqueueDeliveryReceiptWithRecipientId:(NSString *)recipientId timestamp:(uint64_t)timestamp {
-    OWSLogVerbose(@"");
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
+    [self enqueueReceiptWithRecipientId:envelope.source
+                              timestamp:envelope.timestamp
+                             collection:kOutgoingDeliveryReceiptManagerCollection];
+}
+
+- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp {
+    [self enqueueReceiptWithRecipientId:messageAuthorId
+                              timestamp:timestamp
+                             collection:kOutgoingReadReceiptManagerCollection];
+}
+
+- (void)enqueueReceiptWithRecipientId:(NSString *)recipientId
+                            timestamp:(uint64_t)timestamp
+                           collection:(NSString *)collection {
 
     if (recipientId.length < 1) {
         OWSFailDebug(@"Invalid recipient id.");
@@ -198,20 +235,21 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
     }
     dispatch_async(self.serialQueue, ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId
-                                                                      inCollection:kOutgoingReceiptManagerCollection];
+            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps addObject:@(timestamp)];
 
-            [transaction setObject:newTimestamps forKey:recipientId inCollection:kOutgoingReceiptManagerCollection];
+            [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
         }];
 
         [self scheduleProcessing];
     });
 }
 
-- (void)dequeueDeliveryReceiptsWithRecipientId:(NSString *)recipientId timestamps:(NSSet<NSNumber *> *)timestamps {
+- (void)dequeueReceiptsWithRecipientId:(NSString *)recipientId
+                            timestamps:(NSSet<NSNumber *> *)timestamps
+                            collection:(NSString *)collection {
     if (recipientId.length < 1) {
         OWSFailDebug(@"Invalid recipient id.");
         return;
@@ -222,16 +260,15 @@ NSString *const kOutgoingReceiptManagerCollection = @"kOutgoingReceiptManagerCol
     }
     dispatch_async(self.serialQueue, ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId
-                                                                      inCollection:kOutgoingReceiptManagerCollection];
+            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps minusSet:timestamps];
 
             if (newTimestamps.count > 0) {
-                [transaction setObject:newTimestamps forKey:recipientId inCollection:kOutgoingReceiptManagerCollection];
+                [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
             } else {
-                [transaction removeObjectForKey:recipientId inCollection:kOutgoingReceiptManagerCollection];
+                [transaction removeObjectForKey:recipientId inCollection:collection];
             }
         }];
     });
