@@ -1627,7 +1627,6 @@
 				4598198D204E2F28009414F2 /* OWS108CallLoggingPreference.m */,
 				34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */,
 				34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */,
-				4C858A552130CBEC001B45D3 /* OWS110SortIdMigration.swift */,
 				349EA07B2162AEA700F7B17F /* OWS111UDAttributesMigration.swift */,
 				346129931FD1E30000532771 /* OWSDatabaseMigration.h */,
 				346129941FD1E30000532771 /* OWSDatabaseMigration.m */,

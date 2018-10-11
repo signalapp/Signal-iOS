@@ -8,12 +8,6 @@ import SignalServiceKit
 @objc
 public class OWS111UDAttributesMigration: OWSDatabaseMigration {
 
-    // MARK: - Singletons
-
-    private var networkManager: TSNetworkManager {
-        return SSKEnvironment.shared.networkManager
-    }
-
     // MARK: -
 
     // increment a similar constant for each migration.

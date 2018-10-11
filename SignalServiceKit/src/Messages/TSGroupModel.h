@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const NSUInteger kGroupIdLength;
+
 @interface TSGroupModel : TSYapDatabaseObject
 
 @property (nonatomic) NSArray<NSString *> *groupMemberIds;
