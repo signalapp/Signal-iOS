@@ -66,7 +66,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
     // Start processing.
     [AppReadiness runNowOrWhenAppIsReady:^{
-        [self scheduleProcessing];
+        [self process];
     }];
 
     return self;
@@ -100,8 +100,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 }
 
 // Schedules a processing pass, unless one is already scheduled.
-- (void)scheduleProcessing
-{
+- (void)process {
     OWSAssertDebug(AppReadiness.isAppReady);
 
     dispatch_async(self.serialQueue, ^{
@@ -109,54 +108,49 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             return;
         }
 
+        OWSLogVerbose(@"Processing outbound receipts.");
+
         self.isProcessing = YES;
 
-        [self process];
+        if (!self.reachability.isReachable) {
+            // No network availability; abort.
+            self.isProcessing = NO;
+            return;
+        }
+
+        NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
+        [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Delivery]];
+        [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Read]];
+
+        if (sendPromises.count < 1) {
+            // No work to do; abort.
+            self.isProcessing = NO;
+            return;
+        }
+
+        AnyPromise *completionPromise = PMKJoin(sendPromises);
+        completionPromise.always(^() {
+            // Wait N seconds before conducting another pass.
+            // This allows time for a batch to accumulate.
+            //
+            // We want a value high enough to allow us to effectively de-duplicate
+            // receipts without being so high that we incur so much latency that
+            // the user notices.
+            const CGFloat kProcessingFrequencySeconds = 3.f;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
+                self.serialQueue,
+                ^{
+                    self.isProcessing = NO;
+
+                    [self process];
+                });
+        });
+        [completionPromise retainUntilComplete];
     });
 }
 
-- (void)process
-{
-    OWSLogVerbose(@"Processing outbound receipts.");
-
-    if (!self.reachability.isReachable) {
-        // No network availability; abort.
-        self.isProcessing = NO;
-        return;
-    }
-
-    NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
-    [sendPromises addObjectsFromArray:[self sendReceiptsForCollection:kOutgoingDeliveryReceiptManagerCollection
-                                                          receiptType:OWSReceiptType_Delivery]];
-    [sendPromises addObjectsFromArray:[self sendReceiptsForCollection:kOutgoingReadReceiptManagerCollection
-                                                          receiptType:OWSReceiptType_Read]];
-
-    if (sendPromises.count < 1) {
-        // No work to do; abort.
-        self.isProcessing = NO;
-        return;
-    }
-
-    AnyPromise *completionPromise = PMKJoin(sendPromises);
-    completionPromise.always(^() {
-        // Wait N seconds before conducting another pass.
-        // This allows time for a batch to accumulate.
-        //
-        // We want a value high enough to allow us to effectively de-duplicate
-        // receipts without being so high that we incur so much latency that
-        // the user notices.
-        const CGFloat kProcessingFrequencySeconds = 3.f;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kProcessingFrequencySeconds * NSEC_PER_SEC)),
-            self.serialQueue,
-            ^{
-                [self process];
-            });
-    });
-    [completionPromise retainUntilComplete];
-}
-
-- (NSArray<AnyPromise *> *)sendReceiptsForCollection:(NSString *)collection receiptType:(OWSReceiptType)receiptType
-{
+- (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
+    NSString *collection = [self collectionForReceiptType:receiptType];
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *queuedReceiptMap = [NSMutableDictionary new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -200,7 +194,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
                     OWSLogInfo(
                         @"Successfully sent %lu %@ receipts to sender.", (unsigned long)timestamps.count, receiptName);
 
-                    [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps collection:collection];
+                    [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
 
                     // The value doesn't matter, we just need any non-NSError value.
                     resolve(@(1));
@@ -221,20 +215,17 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 {
     [self enqueueReceiptWithRecipientId:envelope.source
                               timestamp:envelope.timestamp
-                             collection:kOutgoingDeliveryReceiptManagerCollection];
+                            receiptType:OWSReceiptType_Delivery];
 }
 
-- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp
-{
-    [self enqueueReceiptWithRecipientId:messageAuthorId
-                              timestamp:timestamp
-                             collection:kOutgoingReadReceiptManagerCollection];
+- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp {
+    [self enqueueReceiptWithRecipientId:messageAuthorId timestamp:timestamp receiptType:OWSReceiptType_Read];
 }
 
 - (void)enqueueReceiptWithRecipientId:(NSString *)recipientId
                             timestamp:(uint64_t)timestamp
-                           collection:(NSString *)collection
-{
+                          receiptType:(OWSReceiptType)receiptType {
+    NSString *collection = [self collectionForReceiptType:receiptType];
 
     if (recipientId.length < 1) {
         OWSFailDebug(@"Invalid recipient id.");
@@ -254,14 +245,15 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
         }];
 
-        [self scheduleProcessing];
+        [self process];
     });
 }
 
 - (void)dequeueReceiptsWithRecipientId:(NSString *)recipientId
                             timestamps:(NSSet<NSNumber *> *)timestamps
-                            collection:(NSString *)collection
-{
+                           receiptType:(OWSReceiptType)receiptType {
+    NSString *collection = [self collectionForReceiptType:receiptType];
+
     if (recipientId.length < 1) {
         OWSFailDebug(@"Invalid recipient id.");
         return;
@@ -290,7 +282,16 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 {
     OWSAssertIsOnMainThread();
 
-    [self scheduleProcessing];
+    [self process];
+}
+
+- (NSString *)collectionForReceiptType:(OWSReceiptType)receiptType {
+    switch (receiptType) {
+        case OWSReceiptType_Delivery:
+            return kOutgoingDeliveryReceiptManagerCollection;
+        case OWSReceiptType_Read:
+            return kOutgoingReadReceiptManagerCollection;
+    }
 }
 
 @end
