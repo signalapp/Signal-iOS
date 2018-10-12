@@ -739,6 +739,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                    NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap
                                        = [NSMutableDictionary new];
                                    for (NSString *recipientId in udRecipientIds) {
+                                       if (recipientStateMap[recipientId]) {
+                                           OWSFailDebug(
+                                               @"recipient appears more than once in recipient lists: %@", recipientId);
+                                           continue;
+                                       }
                                        TSOutgoingMessageRecipientState *recipientState =
                                            [TSOutgoingMessageRecipientState new];
                                        recipientState.state = OWSOutgoingMessageRecipientStateSent;
@@ -746,6 +751,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                        recipientStateMap[recipientId] = recipientState;
                                    }
                                    for (NSString *recipientId in nonUdRecipientIds) {
+                                       if (recipientStateMap[recipientId]) {
+                                           OWSFailDebug(
+                                               @"recipient appears more than once in recipient lists: %@", recipientId);
+                                           continue;
+                                       }
                                        TSOutgoingMessageRecipientState *recipientState =
                                            [TSOutgoingMessageRecipientState new];
                                        recipientState.state = OWSOutgoingMessageRecipientStateSent;
@@ -754,7 +764,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                    }
                                    [message setRecipientStateMap:recipientStateMap];
                                } else {
-                                   // Otherwise, mark any "sending" recipients as "sent."
+                                   // Otherwise assume this is a legacy message before UD was introduced, and mark
+                                   // any "sending" recipient as "sent".  Note that this will apply to non-legacy
+                                   // messages with no recipients.
                                    for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
                                             .allValues) {
                                        if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {

@@ -71,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
         TSOutgoingMessageRecipientState *_Nullable recipientState =
             [self.message recipientStateForRecipientId:recipientId];
         if (!recipientState) {
+            OWSFailDebug(@"missing recipient state for: %@", recipientId);
             continue;
         }
         if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
