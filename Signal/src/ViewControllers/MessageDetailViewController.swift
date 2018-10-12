@@ -161,6 +161,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         contentView.autoPinEdge(toSuperviewEdge: .top)
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        scrollView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
 
         if hasMediaAttachment {
             let footer = UIToolbar()
@@ -247,6 +248,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                         continue
                     }
 
+                    // We use the "short" status message to avoid being redundant with the section title.
                     let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientState: recipientState)
 
                     guard recipientStatus == recipientStatusGroup else {
@@ -266,10 +268,9 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     // Table view cells don't layout properly outside the
                     // context of a table view.
                     let cellView = ContactCellView()
-                    // We use the "short" status message to avoid being redundant with the section title.
                     if self.shouldShowUD, recipientState.wasSentByUD {
-                        // TODO once design is complete, replace stand-in emoji
-                        cellView.accessoryMessage = shortStatusMessage.rtlSafeAppend(" ").rtlSafeAppend("💌")
+                        let udAccessoryView = self.buildUDAccessoryView(text: shortStatusMessage)
+                        cellView.setAccessory(udAccessoryView)
                     } else {
                         cellView.accessoryMessage = shortStatusMessage
                     }
@@ -298,13 +299,24 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             }
         }
 
-        var sentText = DateUtil.formatPastTimestampRelativeToNow(message.timestamp)
-        if self.shouldShowUD, let incomingMessage = message as? TSIncomingMessage, incomingMessage.wasReceivedByUD {
-            sentText = sentText.rtlSafeAppend(" ").rtlSafeAppend("💌")
+        let sentText = DateUtil.formatPastTimestampRelativeToNow(message.timestamp)
+        let sentRow: UIStackView = valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
+                                                                    comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
+                                            value: sentText)
+        if let incomingMessage = message as? TSIncomingMessage {
+            if self.shouldShowUD, incomingMessage.wasReceivedByUD {
+                let icon = #imageLiteral(resourceName: "ic_secret_sender_indicator").withRenderingMode(.alwaysTemplate)
+                let iconView = UIImageView(image: icon)
+                iconView.tintColor = Theme.secondaryColor
+                iconView.setContentHuggingHigh()
+                sentRow.addArrangedSubview(iconView)
+                // keep the icon close to the label.
+                let spacerView = UIView()
+                spacerView.setContentHuggingLow()
+                sentRow.addArrangedSubview(spacerView)
+            }
         }
-        let sentRow = valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
-                                                       comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                               value: sentText)
+
         sentRow.isUserInteractionEnabled = true
         sentRow.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressSent)))
         rows.append(sentRow)
@@ -319,24 +331,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         // TODO: We could include the "disappearing messages" state here.
 
-        var lastRow: UIView?
-        for row in rows {
-            contentView.addSubview(row)
-            row.autoPinLeadingToSuperviewMargin()
-            row.autoPinTrailingToSuperviewMargin()
-
-            if let lastRow = lastRow {
-                row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 5)
-            } else {
-                row.autoPinEdge(toSuperviewEdge: .top, withInset: 20)
-            }
-
-            lastRow = row
-        }
-        if let lastRow = lastRow {
-            lastRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: 20)
-        }
-
+        let rowStack = UIStackView(arrangedSubviews: rows)
+        rowStack.axis = .vertical
+        rowStack.spacing = 5
+        contentView.addSubview(rowStack)
+        rowStack.autoPinEdgesToSuperviewMargins()
+        contentView.layoutIfNeeded()
         updateMessageBubbleViewLayout()
     }
 
@@ -358,10 +358,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
-
-        if hasMediaAttachment {
-            rows += addAttachmentRows()
-        }
 
         let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
         messageBubbleView.delegate = self
@@ -414,25 +410,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         return attachment
     }
 
-    private func addAttachmentRows() -> [UIView] {
-        var rows = [UIView]()
-
-        guard let attachment = self.attachment else {
-            Logger.warn("Missing attachment. Was it deleted?")
-            return rows
-        }
-
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED",
-                                                         comment: "Label for 'not yet downloaded' attachments in the 'message metadata' view."),
-                                 value: ""))
-            return rows
-        }
-        self.attachmentStream = attachmentStream
-
-        return rows
-    }
-
     var hasMediaAttachment: Bool {
         guard let attachment = self.attachment else {
             return false
@@ -480,6 +457,24 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         return rows
     }
 
+    private func buildUDAccessoryView(text: String) -> UIView {
+        let label = UILabel()
+        label.textColor = Theme.secondaryColor
+        label.text = text
+        label.textAlignment = .right
+        label.font = UIFont.ows_mediumFont(withSize: 13)
+
+        let image = #imageLiteral(resourceName: "ic_secret_sender_indicator").withRenderingMode(.alwaysTemplate)
+        let imageView = UIImageView(image: image)
+        imageView.tintColor = Theme.middleGrayColor
+
+        let hStack = UIStackView(arrangedSubviews: [imageView, label])
+        hStack.axis = .horizontal
+        hStack.spacing = 8
+
+        return hStack
+    }
+
     private func nameLabel(text: String) -> UILabel {
         let label = UILabel()
         label.textColor = Theme.primaryColor
@@ -498,33 +493,22 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         return label
     }
 
-    private func valueRow(name: String, value: String, subtitle: String = "") -> UIView {
-        let row = UIView.container()
+    private func valueRow(name: String, value: String, subtitle: String = "") -> UIStackView {
         let nameLabel = self.nameLabel(text: name)
         let valueLabel = self.valueLabel(text: value)
-        row.addSubview(nameLabel)
-        row.addSubview(valueLabel)
-        nameLabel.autoPinLeadingToSuperviewMargin(withInset: 20)
-        valueLabel.autoPinTrailingToSuperviewMargin(withInset: 20)
-        valueLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)
-        nameLabel.autoPinEdge(toSuperviewEdge: .top)
-        valueLabel.autoPinEdge(toSuperviewEdge: .top)
+        let hStackView = UIStackView(arrangedSubviews: [nameLabel, valueLabel])
+        hStackView.axis = .horizontal
+        hStackView.spacing = 10
+        hStackView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        hStackView.isLayoutMarginsRelativeArrangement = true
 
         if subtitle.count > 0 {
             let subtitleLabel = self.valueLabel(text: subtitle)
             subtitleLabel.textColor = Theme.secondaryColor
-            row.addSubview(subtitleLabel)
-            subtitleLabel.autoPinTrailingToSuperviewMargin()
-            subtitleLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)
-            subtitleLabel.autoPinEdge(.top, to: .bottom, of: valueLabel, withOffset: 1)
-            subtitleLabel.autoPinEdge(toSuperviewEdge: .bottom)
-        } else if value.count > 0 {
-            valueLabel.autoPinEdge(toSuperviewEdge: .bottom)
-        } else {
-            nameLabel.autoPinEdge(toSuperviewEdge: .bottom)
+            hStackView.addArrangedSubview(subtitleLabel)
         }
 
-        return row
+        return hStackView
     }
 
     // MARK: - Actions
@@ -555,6 +539,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             }
             self.message = newMessage
             self.attachment = self.fetchAttachment(transaction: transaction)
+            self.attachmentStream = self.attachment as? TSAttachmentStream
         }
     }
 
