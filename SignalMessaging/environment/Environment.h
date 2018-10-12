@@ -4,8 +4,12 @@
 
 #import <SignalServiceKit/SSKEnvironment.h>
 
+@class LockInteractionController;
 @class OWSContactsManager;
+@class OWSContactsSyncing;
 @class OWSPreferences;
+@class OWSSounds;
+@class OWSWindowManager;
 
 /**
  *
@@ -19,10 +23,18 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPreferences:(OWSPreferences *)preferences;
+- (instancetype)initWithPreferences:(OWSPreferences *)preferences
+                    contactsSyncing:(OWSContactsSyncing *)contactsSyncing
+                             sounds:(OWSSounds *)sounds
+          lockInteractionController:(LockInteractionController *)lockInteractionController
+                      windowManager:(OWSWindowManager *)windowManager;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
+@property (nonatomic, readonly) OWSContactsSyncing *contactsSyncing;
+@property (nonatomic, readonly) OWSSounds *sounds;
+@property (nonatomic, readonly) LockInteractionController *lockInteractionController;
+@property (nonatomic, readonly) OWSWindowManager *windowManager;
 
 @property (class, nonatomic) Environment *shared;
 

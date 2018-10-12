@@ -36,15 +36,26 @@ static Environment *sharedEnvironment = nil;
 }
 
 - (instancetype)initWithPreferences:(OWSPreferences *)preferences
-{
+                    contactsSyncing:(OWSContactsSyncing *)contactsSyncing
+                             sounds:(OWSSounds *)sounds
+          lockInteractionController:(LockInteractionController *)lockInteractionController
+                      windowManager:(OWSWindowManager *)windowManager {
     self = [super init];
     if (!self) {
         return self;
     }
 
     OWSAssertDebug(preferences);
+    OWSAssertDebug(contactsSyncing);
+    OWSAssertDebug(sounds);
+    OWSAssertDebug(lockInteractionController);
+    OWSAssertDebug(windowManager);
 
     _preferences = preferences;
+    _contactsSyncing = contactsSyncing;
+    _sounds = sounds;
+    _lockInteractionController = lockInteractionController;
+    _windowManager = windowManager;
 
     OWSSingletonAssert();
 

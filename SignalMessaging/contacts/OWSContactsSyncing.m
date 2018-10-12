@@ -24,11 +24,6 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
 @property (nonatomic, readonly) dispatch_queue_t serialQueue;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSIdentityManager *identityManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSProfileManager *profileManager;
-
 @property (nonatomic) BOOL isRequestInFlight;
 
 @end
@@ -37,41 +32,18 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
 + (instancetype)sharedManager
 {
-    static OWSContactsSyncing *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [[self alloc] initDefault];
-    });
-    return instance;
+    OWSAssertDebug(Environment.shared.contactsSyncing);
+
+    return Environment.shared.contactsSyncing;
 }
 
 - (instancetype)initDefault
-{
-    return [self initWithContactsManager:Environment.shared.contactsManager
-                         identityManager:OWSIdentityManager.sharedManager
-                           messageSender:SSKEnvironment.shared.messageSender
-                          profileManager:OWSProfileManager.sharedManager];
-}
-
-- (instancetype)initWithContactsManager:(OWSContactsManager *)contactsManager
-                        identityManager:(OWSIdentityManager *)identityManager
-                          messageSender:(OWSMessageSender *)messageSender
-                         profileManager:(OWSProfileManager *)profileManager
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-
-    OWSAssertDebug(contactsManager);
-    OWSAssertDebug(messageSender);
-    OWSAssertDebug(identityManager);
-
-    _contactsManager = contactsManager;
-    _identityManager = identityManager;
-    _messageSender = messageSender;
-    _profileManager = profileManager;
 
     OWSSingletonAssert();
 
@@ -91,6 +63,34 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager {
+    OWSAssertDebug(Environment.shared.contactsManager);
+
+    return Environment.shared.contactsManager;
+}
+
+- (OWSIdentityManager *)identityManager {
+    OWSAssertDebug(SSKEnvironment.shared.identityManager);
+
+    return SSKEnvironment.shared.identityManager;
+}
+
+- (OWSMessageSender *)messageSender {
+    OWSAssertDebug(SSKEnvironment.shared.messageSender);
+
+    return SSKEnvironment.shared.messageSender;
+}
+
+- (OWSProfileManager *)profileManager {
+    OWSAssertDebug(SSKEnvironment.shared.profileManager);
+
+    return SSKEnvironment.shared.profileManager;
+}
+
+#pragma mark -
 
 - (void)signalAccountsDidChange:(id)notification
 {

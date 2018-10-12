@@ -1,8 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 @interface LockInteractionController : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
 
 typedef void (^LIControllerCompletionBlock)(void);
 typedef BOOL (^LIControllerBlockingOperation)(void);
