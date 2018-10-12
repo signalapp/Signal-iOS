@@ -98,12 +98,16 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Dependencies
+
 - (OWSMessageSender *)messageSender
 {
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
     return SSKEnvironment.shared.messageSender;
 }
+
+#pragma mark -
 
 - (void)observeNotifications
 {

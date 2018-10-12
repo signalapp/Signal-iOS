@@ -19,6 +19,8 @@
 #import <SignalServiceKit/OWSMessageDecrypter.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
+#import <SignalServiceKit/OWSOutgoingReceiptManager.h>
+#import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSSocketManager.h>
@@ -68,6 +70,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
         ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
+        OWSReadReceiptManager *readReceiptManager =
+            [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSOutgoingReceiptManager *outgoingReceiptManager =
+            [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences]];
 
@@ -88,7 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
-                                                          contactDiscoveryService:contactDiscoveryService]];
+                                                          contactDiscoveryService:contactDiscoveryService
+                                                          disappearingMessagesJob:readReceiptManager
+                                                          contactDiscoveryService:outgoingReceiptManager]];
 
         appSpecificSingletonBlock();
 

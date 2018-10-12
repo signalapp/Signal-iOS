@@ -15,7 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageManager;
 @class OWSMessageReceiver;
 @class OWSMessageSender;
+@class OWSOutgoingReceiptManager;
 @class OWSPrimaryStorage;
+@class OWSReadReceiptManager;
 @class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
@@ -46,7 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
-                contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService NS_DESIGNATED_INITIALIZER;
+                contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
+                disappearingMessagesJob:(OWSReadReceiptManager *)readReceiptManager
+                contactDiscoveryService:(OWSOutgoingReceiptManager *)outgoingReceiptManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -77,6 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWS2FAManager *ows2FAManager;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
 @property (nonatomic, readonly) ContactDiscoveryService *contactDiscoveryService;
+@property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
+@property (nonatomic, readonly) OWSOutgoingReceiptManager *outgoingReceiptManager;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

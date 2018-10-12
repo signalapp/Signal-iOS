@@ -19,7 +19,9 @@
 #import "OWSMessageDecrypter.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
+#import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage.h"
+#import "OWSReadReceiptManager.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -67,6 +69,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSDisappearingMessagesJob *disappearingMessagesJob =
         [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
     ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
+    OWSReadReceiptManager *readReceiptManager = [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSOutgoingReceiptManager *outgoingReceiptManager =
+        [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -85,7 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
                          tsAccountManager:tsAccountManager
                             ows2FAManager:ows2FAManager
                   disappearingMessagesJob:disappearingMessagesJob
-                  contactDiscoveryService:contactDiscoveryService];
+                  contactDiscoveryService:contactDiscoveryService
+                  disappearingMessagesJob:readReceiptManager
+                  contactDiscoveryService:outgoingReceiptManager];
     if (!self) {
         return nil;
     }

@@ -6,9 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSReadReceipt;
+@class OWSDeliveryReceipt;
 
-@interface OWSReadReceiptsForSenderMessage : TSOutgoingMessage
+@interface OWSReceiptsForSenderMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(nullable TSThread *)thread
@@ -21,7 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(nullable TSThread *)thread messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps;
++ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
+                                                          messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps;
+
++ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
+                                                      messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps;
 
 @end
 

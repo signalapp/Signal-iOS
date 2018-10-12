@@ -21,6 +21,7 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
+#import "OWSOutgoingReceiptManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
@@ -130,6 +131,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     return SSKEnvironment.shared.networkManager;
 }
+
+- (OWSOutgoingReceiptManager *)outgoingReceiptManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
+
+    return SSKEnvironment.shared.outgoingReceiptManager;
+}
+
+#pragma mark -
 
 - (void)startObserving
 {
@@ -489,6 +499,12 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogVerbose(@"Data message had group avatar attachment");
             [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
         }
+    }
+
+    // Send delivery receipts for "valid data" messages received via UD.
+    BOOL wasReceivedByUD = envelope.type == SSKProtoEnvelopeTypeUnidentifiedSender;
+    if (wasReceivedByUD) {
+        [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope];
     }
 }
 
