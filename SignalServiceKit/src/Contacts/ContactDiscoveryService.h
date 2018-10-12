@@ -4,6 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSErrorDomain const ContactDiscoveryServiceErrorDomain;
+typedef NS_ERROR_ENUM(ContactDiscoveryServiceErrorDomain, ContactDiscoveryServiceError){
+    ContactDiscoveryServiceErrorAttestationFailed = 100,
+};
+
 @class ECKeyPair;
 @class OWSAES256Key;
 

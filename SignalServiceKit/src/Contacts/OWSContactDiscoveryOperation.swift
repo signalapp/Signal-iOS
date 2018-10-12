@@ -139,7 +139,6 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 enum ContactDiscoveryError: Error {
     case parseError(description: String)
     case assertionError(description: String)
-    case attestationError(underlyingError: Error)
     case clientError(underlyingError: Error)
     case serverError(underlyingError: Error)
 }
@@ -234,13 +233,7 @@ class CDSBatchOperation: OWSOperation {
         contactDiscoveryService.performRemoteAttestation(success: { (remoteAttestation: RemoteAttestation) in
             self.makeContactDiscoveryRequest(remoteAttestation: remoteAttestation)
         },
-                                                         failure: self.attestationFailure)
-    }
-
-    private func attestationFailure(error: Error) {
-        let attestationError: NSError = ContactDiscoveryError.attestationError(underlyingError: error) as NSError
-        attestationError.isRetryable = false
-        self.reportError(attestationError)
+                                                         failure: self.reportError)
     }
 
     private func makeContactDiscoveryRequest(remoteAttestation: RemoteAttestation) {
@@ -456,10 +449,13 @@ class CDSFeedbackOperation: OWSOperation {
 
         if let error = cdsOperation.failingError {
             switch error {
-            case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
-                // Server already has this information, no need to report.
+            case TSNetworkManagerError.failedConnection:
+                // Don't submit feedback for connectivity errors
                 self.reportSuccess()
-            case ContactDiscoveryError.attestationError:
+            case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
+                // Server already has this information, no need submit feedback
+                self.reportSuccess()
+            case ContactDiscoveryServiceError.attestationFailed:
                 self.makeRequest(result: .attestationError)
             default:
                 self.makeRequest(result: .unexpectedError)

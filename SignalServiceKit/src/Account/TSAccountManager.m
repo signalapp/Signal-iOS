@@ -386,7 +386,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents accountsErrorVerifyAccountRequestFailed]);
             }
-            OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerDomain]);
+            OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerErrorDomain]);
 
             OWSLogWarn(@"Error verifying code: %@", error.debugDescription);
 
