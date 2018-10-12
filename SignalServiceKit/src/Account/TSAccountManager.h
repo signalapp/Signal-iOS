@@ -12,6 +12,7 @@ extern NSString *const RegistrationStateDidChangeNotification;
 extern NSString *const DeregistrationStateDidChangeNotification;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
+@class AnyPromise;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
 @class YapDatabaseReadWriteTransaction;
@@ -135,11 +136,13 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 #pragma mark - Manual Message Fetch
 
 - (BOOL)isManualMessageFetchEnabled;
-- (void)setIsManualMessageFetchEnabled:(BOOL)value;
+- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value;
 
 #ifdef DEBUG
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
 #endif
+
+- (AnyPromise *)updateAccountAttributes;
 
 @end
 

@@ -4,6 +4,7 @@
 
 #import "TSAccountManager.h"
 #import "AppContext.h"
+#import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"
@@ -14,8 +15,11 @@
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
+#import <PromiseKit/AnyPromise.h>
+#import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,6 +39,7 @@ NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountC
 NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
 NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
+NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountManager_NeedsAccountAttributesUpdateKey";
 
 @interface TSAccountManager ()
 
@@ -49,6 +54,8 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
+
+@property (nonatomic) Reachability *reachability;
 
 @end
 
@@ -66,6 +73,7 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
     }
 
     _dbConnection = [primaryStorage newDatabaseConnection];
+    self.reachability = [Reachability reachabilityForInternetConnection];
 
     OWSSingletonAssert();
 
@@ -75,6 +83,15 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
                                                      name:YapDatabaseModifiedExternallyNotification
                                                    object:nil];
     }
+
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self updateAccountAttributesIfNecessary];
+    }];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityChanged)
+                                                 name:kReachabilityChangedNotification
+                                               object:nil];
 
     return self;
 }
@@ -596,11 +613,13 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
                             defaultValue:NO];
 }
 
-- (void)setIsManualMessageFetchEnabled:(BOOL)value
-{
+- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value {
     [self.dbConnection setBool:value
                         forKey:TSAccountManager_ManualMessageFetchKey
                   inCollection:TSAccountManager_UserAccountCollection];
+
+    // Try to update the account attributes to reflect this change.
+    return [self updateAccountAttributes];
 }
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber
@@ -608,6 +627,51 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
     OWSAssertDebug(localNumber.length > 0);
     
     [self storeLocalNumber:localNumber];
+}
+
+#pragma mark - Account Attributes
+
+- (AnyPromise *)updateAccountAttributes {
+    // Enqueue a "account attribute update", recording the "request time".
+    [self.dbConnection setObject:[NSDate new]
+                          forKey:TSAccountManager_NeedsAccountAttributesUpdateKey
+                    inCollection:TSAccountManager_UserAccountCollection];
+
+    return [self updateAccountAttributesIfNecessary];
+}
+
+- (AnyPromise *)updateAccountAttributesIfNecessary {
+    NSDate *_Nullable updateRequestDate =
+        [self.dbConnection objectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
+                           inCollection:TSAccountManager_UserAccountCollection];
+    if (!updateRequestDate) {
+        return [AnyPromise promiseWithValue:@(1)];
+    }
+
+    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributesObjC];
+    promise = promise.then(^(id value) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // Clear the update request unless a new update has been requested
+            // while this update was in flight.
+            NSDate *_Nullable latestUpdateRequestDate =
+                [transaction objectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
+                             inCollection:TSAccountManager_UserAccountCollection];
+            if (latestUpdateRequestDate && [latestUpdateRequestDate isEqual:updateRequestDate]) {
+                [transaction removeObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
+                                   inCollection:TSAccountManager_UserAccountCollection];
+            }
+        }];
+    });
+    [promise retainUntilComplete];
+    return promise;
+}
+
+- (void)reachabilityChanged {
+    OWSAssertIsOnMainThread();
+
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self updateAccountAttributesIfNecessary];
+    }];
 }
 
 @end

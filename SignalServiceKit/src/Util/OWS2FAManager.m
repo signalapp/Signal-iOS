@@ -7,6 +7,7 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "TSNetworkManager.h"
 #import "YapDatabaseConnection+OWS.h"
 
@@ -64,6 +65,10 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     return SSKEnvironment.shared.networkManager;
 }
 
+- (TSAccountManager *)tsAccountManager {
+    return TSAccountManager.sharedInstance;
+}
+
 #pragma mark -
 
 - (nullable NSString *)pinCode
@@ -83,6 +88,8 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
                                                              object:nil
                                                            userInfo:nil];
+
+    [self.tsAccountManager updateAccountAttributes];
 }
 
 - (void)mark2FAAsEnabledWithPin:(NSString *)pin
@@ -97,6 +104,8 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
                                                              object:nil
                                                            userInfo:nil];
+
+    [self.tsAccountManager updateAccountAttributes];
 }
 
 - (void)requestEnable2FAWithPin:(NSString *)pin

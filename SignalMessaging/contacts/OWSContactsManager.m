@@ -48,6 +48,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
+@property (atomic) BOOL isSetup;
 
 @end
 
@@ -84,8 +85,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return self;
 }
 
-- (void)loadSignalAccountsFromCache
-{
+- (void)setup {
     __block NSMutableArray<SignalAccount *> *signalAccounts;
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
@@ -570,6 +570,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.signalAccountMap = [signalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
     [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
+
+    self.isSetup = YES;
 
     [[NSNotificationCenter defaultCenter]
         postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification

@@ -114,10 +114,7 @@ public class AccountManager: NSObject {
     }
 
     func enableManualMessageFetching() -> Promise<Void> {
-        tsAccountManager.setIsManualMessageFetchEnabled(true)
-
-        // Try to update the account attributes to reflect this change.
-        return SignalServiceRestClient().updateAcountAttributes()
+        return tsAccountManager.setIsManualMessageFetchEnabled(true).asPromise().asVoid()
     }
 
     // MARK: Turn Server

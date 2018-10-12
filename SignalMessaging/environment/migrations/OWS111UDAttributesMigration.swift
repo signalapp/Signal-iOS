@@ -8,6 +8,12 @@ import SignalServiceKit
 @objc
 public class OWS111UDAttributesMigration: OWSDatabaseMigration {
 
+    // MARK: - Dependencies
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: -
 
     // increment a similar constant for each migration.
@@ -29,13 +35,10 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
     }
 
     private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
-        return SignalServiceRestClient().updateAcountAttributes().then(execute: { _ in
-            self.dbReadWriteConnection().readWrite { transaction in
-                self.save(with: transaction)
-            }
-        })
-            .always {
-            completion()
-        }.retainUntilComplete()
+        tsAccountManager.updateAccountAttributes()
+
+        self.dbReadWriteConnection().readWrite { transaction in
+            self.save(with: transaction)
+        }
     }
 }

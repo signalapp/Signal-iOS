@@ -39,6 +39,8 @@ NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificatio
 NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
 
+NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_ProfileKeyDidChange";
+
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
@@ -95,6 +97,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [AppReadiness runNowOrWhenAppIsReady:^{
         [self rotateLocalProfileKeyIfNecessary];
     }];
+
+    [self observeNotifications];
 
     return self;
 }
@@ -621,8 +625,20 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             // No need to rotate the profile key.
             return success();
         }
+        [self rotateProfileKeyWithIntersectingRecipientIds:intersectingRecipientIds
+                                      intersectingGroupIds:intersectingGroupIds
+                                                   success:success
+                                                   failure:failure];
+    });
+}
 
+- (void)rotateProfileKeyWithIntersectingRecipientIds:(NSSet<NSString *> *)intersectingRecipientIds
+                                intersectingGroupIds:(NSSet<NSData *> *)intersectingGroupIds
+                                             success:(dispatch_block_t)success
+                                             failure:(ProfileManagerFailureBlock)failure {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Rotate the profile key
+        OWSLogInfo(@"Rotating the profile key.");
 
         // Make copies of the current local profile state.
         OWSUserProfile *localUserProfile = self.localUserProfile;
@@ -709,7 +725,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return @(1);
         });
 
+        // Update account attributes.
+        //
+        // This may fail.
         promise = promise.then(^(id value) {
+            return [self.tsAccountManager updateAccountAttributes];
+        });
+
+        promise = promise.then(^(id value) {
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
+                                                                     object:nil
+                                                                   userInfo:nil];
+
             success();
         });
         promise = promise.catch(^(NSError *error) {

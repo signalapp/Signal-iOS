@@ -265,7 +265,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
 
-        Environment.shared.contactsManager.loadSignalAccountsFromCache()
+        Environment.shared.contactsManager.setup()
         Environment.shared.contactsManager.startObserving()
 
         ensureRootViewController()

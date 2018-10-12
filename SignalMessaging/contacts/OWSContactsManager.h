@@ -44,7 +44,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
 - (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
 
-- (void)loadSignalAccountsFromCache;
+- (void)setup;
 
 #pragma mark - System Contact Fetching
 
@@ -54,6 +54,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (nonatomic, readonly) BOOL systemContactsHaveBeenRequestedAtLeastOnce;
 
 @property (nonatomic, readonly) BOOL supportsContactEditing;
+
+@property (atomic, readonly) BOOL isSetup;
 
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.

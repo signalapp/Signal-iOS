@@ -1041,7 +1041,7 @@ static NSTimeInterval launchStartedAt;
 
     [AppVersion.sharedInstance mainAppLaunchDidComplete];
 
-    [Environment.shared.contactsManager loadSignalAccountsFromCache];
+    [Environment.shared.contactsManager setup];
     [Environment.shared.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
