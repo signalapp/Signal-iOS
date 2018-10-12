@@ -46,6 +46,29 @@ NS_ASSUME_NONNULL_BEGIN
     _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
     _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
+    if (sentProto.unidentifiedStatus.count > 0) {
+        NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];
+        NSMutableArray<NSString *> *udRecipientIds = [NSMutableArray new];
+        for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
+            if (!statusProto.hasDestination || statusProto.destination.length < 1) {
+                OWSFailDebug(@"Delivery status proto is missing destination.");
+                continue;
+            }
+            if (!statusProto.hasUnidentified) {
+                OWSFailDebug(@"Delivery status proto is missing value.");
+                continue;
+            }
+            NSString *recipientId = statusProto.destination;
+            if (statusProto.unidentified) {
+                [udRecipientIds addObject:recipientId];
+            } else {
+                [nonUdRecipientIds addObject:recipientId];
+            }
+        }
+        _nonUdRecipientIds = [nonUdRecipientIds copy];
+        _udRecipientIds = [udRecipientIds copy];
+    }
+
     return self;
 }
 

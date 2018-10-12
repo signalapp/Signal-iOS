@@ -151,7 +151,7 @@ struct WebSocketProtos_WebSocketMessage {
   /// Returns true if `type` has been explicitly set.
   var hasType: Bool {return _storage._type != nil}
   /// Clears the value of `type`. Subsequent reads from it will return its default value.
-  mutating func clearType() {_storage._type = nil}
+  mutating func clearType() {_uniqueStorage()._type = nil}
 
   var request: WebSocketProtos_WebSocketRequestMessage {
     get {return _storage._request ?? WebSocketProtos_WebSocketRequestMessage()}
@@ -160,7 +160,7 @@ struct WebSocketProtos_WebSocketMessage {
   /// Returns true if `request` has been explicitly set.
   var hasRequest: Bool {return _storage._request != nil}
   /// Clears the value of `request`. Subsequent reads from it will return its default value.
-  mutating func clearRequest() {_storage._request = nil}
+  mutating func clearRequest() {_uniqueStorage()._request = nil}
 
   var response: WebSocketProtos_WebSocketResponseMessage {
     get {return _storage._response ?? WebSocketProtos_WebSocketResponseMessage()}
@@ -169,7 +169,7 @@ struct WebSocketProtos_WebSocketMessage {
   /// Returns true if `response` has been explicitly set.
   var hasResponse: Bool {return _storage._response != nil}
   /// Clears the value of `response`. Subsequent reads from it will return its default value.
-  mutating func clearResponse() {_storage._response = nil}
+  mutating func clearResponse() {_uniqueStorage()._response = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -261,13 +261,13 @@ extension WebSocketProtos_WebSocketRequestMessage: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: WebSocketProtos_WebSocketRequestMessage) -> Bool {
-    if self._verb != other._verb {return false}
-    if self._path != other._path {return false}
-    if self._body != other._body {return false}
-    if self.headers != other.headers {return false}
-    if self._requestID != other._requestID {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: WebSocketProtos_WebSocketRequestMessage, rhs: WebSocketProtos_WebSocketRequestMessage) -> Bool {
+    if lhs._verb != rhs._verb {return false}
+    if lhs._path != rhs._path {return false}
+    if lhs._body != rhs._body {return false}
+    if lhs.headers != rhs.headers {return false}
+    if lhs._requestID != rhs._requestID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
@@ -314,13 +314,13 @@ extension WebSocketProtos_WebSocketResponseMessage: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: WebSocketProtos_WebSocketResponseMessage) -> Bool {
-    if self._requestID != other._requestID {return false}
-    if self._status != other._status {return false}
-    if self._message != other._message {return false}
-    if self.headers != other.headers {return false}
-    if self._body != other._body {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: WebSocketProtos_WebSocketResponseMessage, rhs: WebSocketProtos_WebSocketResponseMessage) -> Bool {
+    if lhs._requestID != rhs._requestID {return false}
+    if lhs._status != rhs._status {return false}
+    if lhs._message != rhs._message {return false}
+    if lhs.headers != rhs.headers {return false}
+    if lhs._body != rhs._body {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
@@ -385,19 +385,19 @@ extension WebSocketProtos_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: WebSocketProtos_WebSocketMessage) -> Bool {
-    if _storage !== other._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((_storage, other._storage)) { (_args: (_StorageClass, _StorageClass)) in
+  static func ==(lhs: WebSocketProtos_WebSocketMessage, rhs: WebSocketProtos_WebSocketMessage) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
-        let other_storage = _args.1
-        if _storage._type != other_storage._type {return false}
-        if _storage._request != other_storage._request {return false}
-        if _storage._response != other_storage._response {return false}
+        let rhs_storage = _args.1
+        if _storage._type != rhs_storage._type {return false}
+        if _storage._request != rhs_storage._request {return false}
+        if _storage._response != rhs_storage._response {return false}
         return true
       }
       if !storagesAreEqual {return false}
     }
-    if unknownFields != other.unknownFields {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }

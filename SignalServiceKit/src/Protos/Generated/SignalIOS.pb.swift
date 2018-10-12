@@ -133,9 +133,9 @@ extension IOSProtos_BackupSnapshot: SwiftProtobuf.Message, SwiftProtobuf._Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: IOSProtos_BackupSnapshot) -> Bool {
-    if self.entity != other.entity {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: IOSProtos_BackupSnapshot, rhs: IOSProtos_BackupSnapshot) -> Bool {
+    if lhs.entity != rhs.entity {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
@@ -167,10 +167,10 @@ extension IOSProtos_BackupSnapshot.BackupEntity: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: IOSProtos_BackupSnapshot.BackupEntity) -> Bool {
-    if self._type != other._type {return false}
-    if self._entityData != other._entityData {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: IOSProtos_BackupSnapshot.BackupEntity, rhs: IOSProtos_BackupSnapshot.BackupEntity) -> Bool {
+    if lhs._type != rhs._type {return false}
+    if lhs._entityData != rhs._entityData {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }

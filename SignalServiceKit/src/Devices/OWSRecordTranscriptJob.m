@@ -146,7 +146,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [outgoingMessage saveWithTransaction:transaction];
-    [outgoingMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
+    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
+                                                       nonUdRecipientIds:transcript.nonUdRecipientIds
+                                                             transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:outgoingMessage
                                                                         contactsManager:self.contactsManager
                                                                             transaction:transaction];

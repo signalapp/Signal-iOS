@@ -57,7 +57,7 @@ struct FingerprintProtos_LogicalFingerprints {
   /// Returns true if `version` has been explicitly set.
   var hasVersion: Bool {return _storage._version != nil}
   /// Clears the value of `version`. Subsequent reads from it will return its default value.
-  mutating func clearVersion() {_storage._version = nil}
+  mutating func clearVersion() {_uniqueStorage()._version = nil}
 
   /// @required
   var localFingerprint: FingerprintProtos_LogicalFingerprint {
@@ -67,7 +67,7 @@ struct FingerprintProtos_LogicalFingerprints {
   /// Returns true if `localFingerprint` has been explicitly set.
   var hasLocalFingerprint: Bool {return _storage._localFingerprint != nil}
   /// Clears the value of `localFingerprint`. Subsequent reads from it will return its default value.
-  mutating func clearLocalFingerprint() {_storage._localFingerprint = nil}
+  mutating func clearLocalFingerprint() {_uniqueStorage()._localFingerprint = nil}
 
   /// @required
   var remoteFingerprint: FingerprintProtos_LogicalFingerprint {
@@ -77,7 +77,7 @@ struct FingerprintProtos_LogicalFingerprints {
   /// Returns true if `remoteFingerprint` has been explicitly set.
   var hasRemoteFingerprint: Bool {return _storage._remoteFingerprint != nil}
   /// Clears the value of `remoteFingerprint`. Subsequent reads from it will return its default value.
-  mutating func clearRemoteFingerprint() {_storage._remoteFingerprint = nil}
+  mutating func clearRemoteFingerprint() {_uniqueStorage()._remoteFingerprint = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -112,9 +112,9 @@ extension FingerprintProtos_LogicalFingerprint: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: FingerprintProtos_LogicalFingerprint) -> Bool {
-    if self._identityData != other._identityData {return false}
-    if unknownFields != other.unknownFields {return false}
+  static func ==(lhs: FingerprintProtos_LogicalFingerprint, rhs: FingerprintProtos_LogicalFingerprint) -> Bool {
+    if lhs._identityData != rhs._identityData {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
@@ -179,19 +179,19 @@ extension FingerprintProtos_LogicalFingerprints: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  func _protobuf_generated_isEqualTo(other: FingerprintProtos_LogicalFingerprints) -> Bool {
-    if _storage !== other._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((_storage, other._storage)) { (_args: (_StorageClass, _StorageClass)) in
+  static func ==(lhs: FingerprintProtos_LogicalFingerprints, rhs: FingerprintProtos_LogicalFingerprints) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
-        let other_storage = _args.1
-        if _storage._version != other_storage._version {return false}
-        if _storage._localFingerprint != other_storage._localFingerprint {return false}
-        if _storage._remoteFingerprint != other_storage._remoteFingerprint {return false}
+        let rhs_storage = _args.1
+        if _storage._version != rhs_storage._version {return false}
+        if _storage._localFingerprint != rhs_storage._localFingerprint {return false}
+        if _storage._remoteFingerprint != rhs_storage._remoteFingerprint {return false}
         return true
       }
       if !storagesAreEqual {return false}
     }
-    if unknownFields != other.unknownFields {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }

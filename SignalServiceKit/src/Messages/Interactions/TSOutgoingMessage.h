@@ -206,7 +206,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
+                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
+                                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be

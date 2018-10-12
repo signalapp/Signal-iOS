@@ -36,6 +36,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contact;
 
+// If either nonUdRecipientIds or udRecipientIds is nil,
+// this is either a legacy transcript or it reflects a legacy sync message.
+@property (nonatomic, readonly, nullable) NSArray<NSString *> *nonUdRecipientIds;
+@property (nonatomic, readonly, nullable) NSArray<NSString *> *udRecipientIds;
+
 @end
 
 NS_ASSUME_NONNULL_END
