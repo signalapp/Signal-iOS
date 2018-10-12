@@ -576,6 +576,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                             failure:(ProfileManagerFailureBlock)failure {
     OWSAssertDebug(AppReadiness.isAppReady);
 
+    if (!self.tsAccountManager.isRegistered) {
+        success();
+        return;
+    }
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableSet<NSString *> *whitelistedRecipientIds = [NSMutableSet new];
         NSMutableSet<NSData *> *whitelistedGroupIds = [NSMutableSet new];
