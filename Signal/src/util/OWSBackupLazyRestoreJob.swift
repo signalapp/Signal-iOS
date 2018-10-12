@@ -39,7 +39,7 @@ public class OWSBackupLazyRestoreJob: NSObject {
     }
 
     private func restoreAttachments() {
-        let temporaryDirectory = NSTemporaryDirectory()
+        let temporaryDirectory = OWSTemporaryDirectory()
         let jobTempDirPath = (temporaryDirectory as NSString).appendingPathComponent(NSUUID().uuidString)
 
         guard OWSFileSystem.ensureDirectoryExists(jobTempDirPath) else {

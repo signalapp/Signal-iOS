@@ -183,12 +183,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    NSString *colorName = ^{
+    ConversationColorName colorName = ^{
         if (self.thread) {
             return self.thread.conversationColorName;
         } else {
             OWSAssertDebug(self.recipientId);
-            return [TSThread stableConversationColorNameForString:self.recipientId];
+            return [TSThread stableColorNameForNewConversationWithString:self.recipientId];
         }
     }();
 

@@ -67,8 +67,12 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
+#ifdef SHOW_COLOR_PICKER
     UIColor *backgroundColor =
         [OWSConversationColor conversationColorOrDefaultForColorName:conversationColorName].themeColor;
+#else
+    UIColor *backgroundColor = UIColor.ows_darkSkyBlueColor;
+#endif
     UIImage *_Nullable image =
         [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
     if (!image) {

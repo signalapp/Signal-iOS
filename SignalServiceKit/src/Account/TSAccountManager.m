@@ -371,7 +371,7 @@ NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_Manu
             if (!IsNSErrorNetworkFailure(error)) {
                 OWSProdError([OWSAnalyticsEvents accountsErrorVerifyAccountRequestFailed]);
             }
-            OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerDomain]);
+            OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerErrorDomain]);
 
             OWSLogWarn(@"Error verifying code: %@", error.debugDescription);
 

@@ -193,12 +193,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath
 {
+    return [self ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+}
+
++ (BOOL)ensureDirectoryExists:(NSString *)dirPath fileProtectionType:(NSFileProtectionType)fileProtectionType
+{
     BOOL isDirectory;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:dirPath isDirectory:&isDirectory];
     if (exists) {
         OWSAssertDebug(isDirectory);
 
-        return [self protectFileOrFolderAtPath:dirPath];
+        return [self protectFileOrFolderAtPath:dirPath fileProtectionType:fileProtectionType];
     } else {
         OWSLogInfo(@"Creating directory at: %@", dirPath);
 
@@ -211,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Failed to create directory: %@, error: %@", dirPath, error);
             return NO;
         }
-        return [self protectFileOrFolderAtPath:dirPath];
+        return [self protectFileOrFolderAtPath:dirPath fileProtectionType:fileProtectionType];
     }
 }
 
@@ -288,7 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)temporaryFilePathWithFileExtension:(NSString *_Nullable)fileExtension
 {
-    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *temporaryDirectory = OWSTemporaryDirectory();
     NSString *tempFileName = NSUUID.UUID.UUIDString;
     if (fileExtension.length > 0) {
         tempFileName = [[tempFileName stringByAppendingString:@"."] stringByAppendingString:fileExtension];
@@ -330,5 +335,23 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+NSString *OWSTemporaryDirectory(void)
+{
+    NSString *dirName = @"ows_temp";
+    NSString *dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
+    BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionComplete];
+    OWSCAssert(success);
+    return dirPath;
+}
+
+NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void)
+{
+    NSString *dirPath = NSTemporaryDirectory();
+    BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath
+                                     fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+    OWSCAssert(success);
+    return dirPath;
+}
 
 NS_ASSUME_NONNULL_END

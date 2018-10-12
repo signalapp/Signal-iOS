@@ -38,11 +38,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+//#define SHOW_COLOR_PICKER
+
 const CGFloat kIconViewLength = 24;
 
 @interface OWSConversationSettingsViewController () <ContactEditingDelegate,
     ContactsViewHelperDelegate,
+#ifdef SHOW_COLOR_PICKER
     ColorPickerDelegate,
+#endif
     OWSSheetViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
@@ -59,7 +63,9 @@ const CGFloat kIconViewLength = 24;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
+#ifdef SHOW_COLOR_PICKER
 @property (nonatomic) OWSColorPicker *colorPicker;
+#endif
 
 @end
 
@@ -250,8 +256,10 @@ const CGFloat kIconViewLength = 24;
             [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
     }
 
+#ifdef SHOW_COLOR_PICKER
     self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
     self.colorPicker.delegate = self;
+#endif
 
     [self updateTableContents];
 }
@@ -289,19 +297,6 @@ const CGFloat kIconViewLength = 24;
     }
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
-                             }]];
-
-    [mainSection addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 NSString *colorName = self.thread.conversationColorName;
-                                 UIColor *currentColor =
-                                     [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
-                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
-                                     @"Label for table cell which leads to picking a new conversation color");
-                                 return [weakSelf disclosureCellWithName:title iconColor:currentColor];
-                             }
-                             actionBlock:^{
-                                 [weakSelf showColorPicker];
                              }]];
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
@@ -478,6 +473,22 @@ const CGFloat kIconViewLength = 24;
                                 customRowHeight:UITableViewAutomaticDimension
                                     actionBlock:nil]];
     }
+#ifdef SHOW_COLOR_PICKER
+    [mainSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        ConversationColorName colorName = self.thread.conversationColorName;
+                        UIColor *currentColor =
+                            [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
+                        NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
+                            @"Label for table cell which leads to picking a new conversation color");
+                        return
+                            [weakSelf cellWithName:title iconName:@"ic_color_palette" disclosureIconColor:currentColor];
+                    }
+                    actionBlock:^{
+                        [weakSelf showColorPicker];
+                    }]];
+#endif
 
     [contents addSection:mainSection];
 
@@ -693,22 +704,17 @@ const CGFloat kIconViewLength = 24;
     return 12.f;
 }
 
-- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconColor:(UIColor *)iconColor
+- (UITableViewCell *)cellWithName:(NSString *)name
+                         iconName:(NSString *)iconName
+              disclosureIconColor:(UIColor *)disclosureIconColor
 {
-    OWSAssertDebug(name.length > 0);
+    UITableViewCell *cell = [self cellWithName:name iconName:iconName];
+    OWSColorPickerAccessoryView *accessoryView =
+        [[OWSColorPickerAccessoryView alloc] initWithColor:disclosureIconColor];
+    [accessoryView sizeToFit];
+    cell.accessoryView = accessoryView;
 
-    UIView *iconView = [UIView containerView];
-    [iconView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
-
-    UIView *swatchView = [NeverClearView new];
-    const CGFloat kSwatchWidth = 20;
-    [swatchView autoSetDimensionsToSize:CGSizeMake(kSwatchWidth, kSwatchWidth)];
-    swatchView.layer.cornerRadius = kSwatchWidth / 2;
-    swatchView.backgroundColor = iconColor;
-    [iconView addSubview:swatchView];
-    [swatchView autoCenterInSuperview];
-
-    return [self cellWithName:name iconView:iconView];
+    return cell;
 }
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
@@ -1301,6 +1307,8 @@ const CGFloat kIconViewLength = 24;
 
 #pragma mark - ColorPickerDelegate
 
+#ifdef SHOW_COLOR_PICKER
+
 - (void)showColorPicker
 {
     OWSSheetViewController *sheetViewController = self.colorPicker.sheetViewController;
@@ -1332,6 +1340,8 @@ const CGFloat kIconViewLength = 24;
         [operation start];
     });
 }
+
+#endif
 
 #pragma mark - OWSSheetViewController
 

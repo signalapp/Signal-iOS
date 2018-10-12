@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (contactThread) {
         return contactThread.conversationColorName;
     }
-    return [self stableConversationColorNameForString:recipientId];
+    return [self stableColorNameForNewConversationWithString:recipientId];
 }
 
 @end

@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Use a predictable file path so that we reuse the cache between app launches.
-    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *temporaryDirectory = OWSTemporaryDirectory();
     NSString *cacheDirectory = [temporaryDirectory stringByAppendingPathComponent:@"cached_random_files"];
     [OWSFileSystem ensureDirectoryExists:cacheDirectory];
     NSString *filePath = [cacheDirectory stringByAppendingPathComponent:self.filename];

@@ -1054,7 +1054,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
 
-        NSString *tempDirectory = NSTemporaryDirectory();
+        NSString *tempDirectory = OWSTemporaryDirectory();
         NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
 
         void (^completionHandler)(NSURLResponse *_Nonnull, NSURL *_Nullable, NSError *_Nullable) = ^(

@@ -146,14 +146,33 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
+    public let bubbleColorOutgoingFailed = UIColor.ows_darkSkyBlue
+
+    @objc
+    public let bubbleColorOutgoingSending = UIColor.ows_darkSkyBlue
+
+    @objc
+    public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
+
+    @objc
     public let dateBreakTextColor = UIColor.ows_gray60
 
     @objc
     public func bubbleColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return bubbleColor(isIncoming: true)
+            return ConversationStyle.defaultBubbleColorIncoming
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .failed:
+                return bubbleColorOutgoingFailed
+            case .sending:
+                return bubbleColorOutgoingSending
+            default:
+                return bubbleColorOutgoingSent
+            }
         } else {
-            return bubbleColor(isIncoming: false)
+            owsFailDebug("Unexpected message type: \(message)")
+            return bubbleColorOutgoingSent
         }
     }
 
@@ -162,7 +181,7 @@ public class ConversationStyle: NSObject {
         if isIncoming {
             return ConversationStyle.defaultBubbleColorIncoming
         } else {
-            return conversationColor.primaryColor
+            return self.bubbleColorOutgoingSent
         }
     }
 
@@ -197,37 +216,38 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    // Note that the exception for outgoing text only applies
-    // to secondary text within bubbles.
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        if !isIncoming {
-            // All Outgoing
-            return UIColor.ows_white.withAlphaComponent(0.8)
-        } else if Theme.isDarkThemeEnabled {
-            // Incoming, dark.
-            return UIColor.ows_gray25
-        } else {
-            // Incoming, light.
-            return UIColor.ows_gray60
-        }
+        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
     }
 
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
-            return conversationColor.shadeColor
+            if isIncoming {
+                return UIColor(rgbHex: 0x1976D2).withAlphaComponent(0.75)
+            } else {
+                return UIColor.ows_black.withAlphaComponent(0.4)
+            }
+        } else if isIncoming {
+            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
         } else {
-            return conversationColor.tintColor
+            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        if isIncoming {
-            return conversationColor.primaryColor
+        if Theme.isDarkThemeEnabled {
+            if isIncoming {
+                return UIColor(rgbHex: 0x1976D2)
+            } else {
+                return UIColor.ows_black
+            }
+        } else if isIncoming {
+            return bubbleColorOutgoingSent
         } else {
-            return Theme.backgroundColor
+            return UIColor.white
         }
     }
 

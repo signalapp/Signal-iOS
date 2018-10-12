@@ -85,7 +85,7 @@
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
                                                       action:@selector(dismissWasPressed:)];
-
+    [self updateRightBarButtonForTheme];
     [self observeNotifications];
 
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
@@ -465,6 +465,44 @@
 - (void)reregisterUser
 {
     [RegistrationUtils showReregistrationUIFromViewController:self];
+}
+
+#pragma mark - Dark Theme
+
+- (UIBarButtonItem *)darkThemeBarButton
+{
+    UIBarButtonItem *barButtonItem;
+    if (Theme.isDarkThemeEnabled) {
+        barButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_dark_theme_on"]
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:self
+                                                        action:@selector(didPressDisableDarkTheme:)];
+    } else {
+        barButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_dark_theme_off"]
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:self
+                                                        action:@selector(didPressEnableDarkTheme:)];
+    }
+    return barButtonItem;
+}
+
+- (void)didPressEnableDarkTheme:(id)sender
+{
+    [Theme setIsDarkThemeEnabled:YES];
+    [self updateRightBarButtonForTheme];
+    [self updateTableContents];
+}
+
+- (void)didPressDisableDarkTheme:(id)sender
+{
+    [Theme setIsDarkThemeEnabled:NO];
+    [self updateRightBarButtonForTheme];
+    [self updateTableContents];
+}
+
+- (void)updateRightBarButtonForTheme
+{
+    self.navigationItem.rightBarButtonItem = [self darkThemeBarButton];
 }
 
 #pragma mark - Socket Status Notifications

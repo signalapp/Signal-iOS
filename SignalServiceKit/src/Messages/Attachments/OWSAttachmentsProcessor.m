@@ -312,36 +312,20 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     const long kMaxDownloadSize = 150 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
 
-    NSString *tempSubdirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSString *tempFilePath1 = [tempSubdirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSString *tempFilePath2 = [tempSubdirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSURL *tempFileURL1 = [NSURL fileURLWithPath:tempFilePath1];
+    NSString *tempFilePath =
+        [OWSTemporaryDirectoryAccessibleAfterFirstAuth() stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSURL *tempFileURL = [NSURL fileURLWithPath:tempFilePath];
 
     __block NSURLSessionDownloadTask *task;
     void (^failureHandler)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Failed to download attachment with error: %@", error.description);
 
-        if (![OWSFileSystem deleteFileIfExists:tempFilePath1]) {
+        if (![OWSFileSystem deleteFileIfExists:tempFilePath]) {
             OWSLogError(@"Could not delete temporary file #1.");
-        }
-        if (![OWSFileSystem deleteFileIfExists:tempFilePath2]) {
-            OWSLogError(@"Could not delete temporary file #2.");
         }
 
         failureHandlerParam(task, error);
     };
-
-    // downloadTaskWithRequest's destination callback needs to
-    // return a path to a non-existent file path, and we can't apply
-    // file protection to a non-existent file path.
-    // By creating the temporary file inside a temporary subdirectory,
-    // we can apply file protection to that subdirectory.
-    if (![OWSFileSystem ensureDirectoryExists:tempSubdirPath]) {
-        OWSLogError(@"Could not create temporary subdirectory for attachment download.");
-        NSError *error = OWSErrorWithCodeDescription(
-            OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
-        return failureHandler(error);
-    }
 
     NSString *method = @"GET";
     NSError *serializationError = nil;
@@ -428,29 +412,21 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             hasCheckedContentLength = YES;
         }
         destination:^(NSURL *targetPath, NSURLResponse *response) {
-            return tempFileURL1;
+            return tempFileURL;
         }
         completionHandler:^(NSURLResponse *response, NSURL *_Nullable filePath, NSError *_Nullable error) {
             if (error) {
                 failureHandler(error);
                 return;
             }
-            if (![tempFileURL1 isEqual:filePath]) {
+            if (![tempFileURL isEqual:filePath]) {
                 OWSLogError(@"Unexpected temp file path.");
                 NSError *error = OWSErrorWithCodeDescription(
                     OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
                 return failureHandler(error);
             }
 
-            // Move the temporary file to a second temporary location
-            // to ensure that it isn't deleted before we're done with it.
-            NSError *moveError;
-            if (![NSFileManager.defaultManager moveItemAtPath:tempFilePath1 toPath:tempFilePath2 error:&moveError]) {
-                OWSLogError(@"Could not move temporary file.");
-                return failureHandler(moveError);
-            }
-
-            NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:tempFilePath2];
+            NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:tempFilePath];
             if (!fileSize) {
                 OWSLogError(@"Could not determine attachment file size.");
                 NSError *error = OWSErrorWithCodeDescription(
@@ -463,7 +439,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                     OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
                 return failureHandler(error);
             }
-            successHandler(tempFilePath2);
+            successHandler(tempFilePath);
         }];
     [task resume];
 }

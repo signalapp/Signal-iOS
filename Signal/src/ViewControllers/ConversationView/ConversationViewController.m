@@ -3239,17 +3239,7 @@ typedef enum : NSUInteger {
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            TSGroupThread *gThread = (TSGroupThread *)self.thread;
-
-            if (gThread.groupModel) {
-                TSGroupThread *_Nullable updatedThread =
-                    [TSGroupThread threadWithGroupId:gThread.groupModel.groupId transaction:transaction];
-                if (updatedThread) {
-                    self.thread = updatedThread;
-                } else {
-                    OWSFailDebug(@"Could not reload thread.");
-                }
-            }
+            [self.thread reloadWithTransaction:transaction];
         }];
         [self updateNavigationTitle];
     }
@@ -3617,7 +3607,7 @@ typedef enum : NSUInteger {
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;
 
-    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *temporaryDirectory = OWSTemporaryDirectory();
     NSString *filename = [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]];
     NSString *filepath = [temporaryDirectory stringByAppendingPathComponent:filename];
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];

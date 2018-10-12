@@ -498,7 +498,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     //  Settings button.
     UIBarButtonItem *settingsButton;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
         const NSUInteger kAvatarSize = 28;
         UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
         UIImage *avatarImage = (localProfileAvatarImage
@@ -1208,13 +1208,16 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
-    // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
         ConversationViewController *conversationVC = [ConversationViewController new];
         [conversationVC configureForThread:thread action:action focusMessageId:focusMessageId];
         self.lastThread = thread;
 
-        [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
+        if (self.homeViewMode == HomeViewMode_Archive) {
+            [self.navigationController pushViewController:conversationVC animated:isAnimated];
+        } else {
+            [self.navigationController setViewControllers:@[ self, conversationVC ] animated:isAnimated];
+        }
     });
 }
 
@@ -1512,7 +1515,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             // In Debug this pops up *every* time, which is helpful, but annoying.
             // In Production this will pop up at most 3 times per 365 days.
 #ifndef DEBUG
-            [SKStoreReviewController requestReview];
+            static dispatch_once_t onceToken;
+            // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
+            // repeatedly after first installation. Let's make sure it only happens at most once per launch.
+            dispatch_once(&onceToken, ^{
+                [SKStoreReviewController requestReview];
+            });
 #endif
         }
     } else {
