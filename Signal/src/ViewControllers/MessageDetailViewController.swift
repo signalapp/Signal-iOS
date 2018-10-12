@@ -359,14 +359,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
 
-        if hasMediaAttachment {
-            // TODO this is only used for adding a not-yet-downloaded-attachment. Name more clearly? Or inline?
-            // if let undownloadedAttachmentRow = getUndownloadedAttachmentRow() {
-            //    rows.append(undownloadedAttachmentRow)
-            // }
-            rows += addAttachmentRows()
-        }
-
         let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
         messageBubbleView.delegate = self
         messageBubbleView.addTapGestureHandler()
@@ -416,25 +408,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
 
         return attachment
-    }
-
-    private func addAttachmentRows() -> [UIView] {
-        var rows = [UIView]()
-
-        guard let attachment = self.attachment else {
-            Logger.warn("Missing attachment. Was it deleted?")
-            return rows
-        }
-
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED",
-                                                         comment: "Label for 'not yet downloaded' attachments in the 'message metadata' view."),
-                                 value: ""))
-            return rows
-        }
-        self.attachmentStream = attachmentStream
-
-        return rows
     }
 
     var hasMediaAttachment: Bool {
@@ -566,6 +539,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             }
             self.message = newMessage
             self.attachment = self.fetchAttachment(transaction: transaction)
+            self.attachmentStream = self.attachment as? TSAttachmentStream
         }
     }
 
