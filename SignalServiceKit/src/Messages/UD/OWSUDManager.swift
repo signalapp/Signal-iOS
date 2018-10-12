@@ -316,5 +316,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
         dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection)
+
+        // Try to update the account attributes to reflect this change.
+        tsAccountManager.updateAccountAttributes()
     }
 }

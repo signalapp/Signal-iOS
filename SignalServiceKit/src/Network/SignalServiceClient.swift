@@ -8,12 +8,16 @@ import SignalMetadataKit
 
 public typealias RecipientIdentifier = String
 
-public protocol SignalServiceClient {
+@objc
+public protocol SignalServiceClientObjC {
+    @objc func updateAccountAttributes() -> AnyPromise
+}
+
+public protocol SignalServiceClient: SignalServiceClientObjC {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate() -> Promise<Data>
-    func updateAcountAttributes() -> Promise<Void>
     func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile>
 }
 
@@ -77,7 +81,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return try parser.requiredBase64EncodedData(key: "certificate")
     }
 
-    public func updateAcountAttributes() -> Promise<Void> {
+    @objc
+    public func updateAccountAttributes() -> AnyPromise {
         let request = OWSRequestFactory.updateAttributesRequest()
         let promise: Promise<Void> = networkManager.makePromise(request: request)
             .then(execute: { (_, _) in
@@ -85,12 +90,12 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             }).catch(execute: { (error) in
                 Logger.error("failed to update account attributes on server with error: \(error)")
             })
-        return promise
+        return AnyPromise(promise)
     }
 
     public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
         let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-        return networkManager.makePromise(request: request).then { (task: URLSessionDataTask, responseObject: Any?) in
+        return networkManager.makePromise(request: request).then { (_: URLSessionDataTask, responseObject: Any?) in
             return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
         }
     }
