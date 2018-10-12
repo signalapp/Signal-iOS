@@ -10,7 +10,7 @@ public typealias RecipientIdentifier = String
 
 @objc
 public protocol SignalServiceClientObjC {
-    @objc func updateAccountAttributes() -> AnyPromise
+    @objc func updateAccountAttributesObjC() -> AnyPromise
 }
 
 public protocol SignalServiceClient: SignalServiceClientObjC {
@@ -18,6 +18,7 @@ public protocol SignalServiceClient: SignalServiceClientObjC {
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate() -> Promise<Data>
+    func updateAccountAttributes() -> Promise<Void>
     func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile>
 }
 
@@ -82,7 +83,11 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     }
 
     @objc
-    public func updateAccountAttributes() -> AnyPromise {
+    public func updateAccountAttributesObjC() -> AnyPromise {
+        return AnyPromise(updateAccountAttributes())
+    }
+
+    public func updateAccountAttributes() -> Promise<Void> {
         let request = OWSRequestFactory.updateAttributesRequest()
         let promise: Promise<Void> = networkManager.makePromise(request: request)
             .then(execute: { (_, _) in
@@ -90,7 +95,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             }).catch(execute: { (error) in
                 Logger.error("failed to update account attributes on server with error: \(error)")
             })
-        return AnyPromise(promise)
+        return promise
     }
 
     public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {

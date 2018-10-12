@@ -625,17 +625,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             // No need to rotate the profile key.
             return success();
         }
-        [self rotateProfileKeyWithSuccess:success
-                                  failure:failure
-                 intersectingRecipientIds:intersectingRecipientIds
-                     intersectingGroupIds:intersectingGroupIds];
+        [self rotateProfileKeyWithIntersectingRecipientIds:intersectingRecipientIds
+                                      intersectingGroupIds:intersectingGroupIds
+                                                   success:success
+                                                   failure:failure];
     });
 }
 
-- (void)rotateProfileKeyWithSuccess:(dispatch_block_t)success
-                            failure:(ProfileManagerFailureBlock)failure
-           intersectingRecipientIds:(NSSet<NSString *> *)intersectingRecipientIds
-               intersectingGroupIds:(NSSet<NSData *> *)intersectingGroupIds {
+- (void)rotateProfileKeyWithIntersectingRecipientIds:(NSSet<NSString *> *)intersectingRecipientIds
+                                intersectingGroupIds:(NSSet<NSData *> *)intersectingGroupIds
+                                             success:(dispatch_block_t)success
+                                             failure:(ProfileManagerFailureBlock)failure {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Rotate the profile key
         OWSLogInfo(@"Rotating the profile key.");

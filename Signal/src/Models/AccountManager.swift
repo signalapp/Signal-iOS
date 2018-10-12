@@ -114,14 +114,7 @@ public class AccountManager: NSObject {
     }
 
     func enableManualMessageFetching() -> Promise<Void> {
-        let (promise, fulfill, reject) = Promise<Void>.pending()
-        tsAccountManager.setIsManualMessageFetchEnabled(true)
-            .then(execute: { (_) in
-                fulfill(())
-            }).catch(execute: { (error) in
-                reject(error)
-            })
-        return promise
+        return tsAccountManager.setIsManualMessageFetchEnabled(true).asPromise().asVoid()
     }
 
     // MARK: Turn Server

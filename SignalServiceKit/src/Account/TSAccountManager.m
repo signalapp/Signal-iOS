@@ -632,6 +632,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 #pragma mark - Account Attributes
 
 - (AnyPromise *)updateAccountAttributes {
+    // Enqueue a "account attribute update", recording the "request time".
     [self.dbConnection setObject:[NSDate new]
                           forKey:TSAccountManager_NeedsAccountAttributesUpdateKey
                     inCollection:TSAccountManager_UserAccountCollection];
@@ -647,10 +648,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         return [AnyPromise promiseWithValue:@(1)];
     }
 
-    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributes];
+    AnyPromise *promise = [[SignalServiceRestClient new] updateAccountAttributesObjC];
     promise = promise.then(^(id value) {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            // Clear the update request unless a new update has been requested.
+            // Clear the update request unless a new update has been requested
+            // while this update was in flight.
             NSDate *_Nullable latestUpdateRequestDate =
                 [transaction objectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
                              inCollection:TSAccountManager_UserAccountCollection];
