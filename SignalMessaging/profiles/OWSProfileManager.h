@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kNSNotificationName_ProfileWhitelistDidChange;
+extern NSString *const kNSNotificationName_ProfileKeyDidChange;
 
 extern const NSUInteger kOWSProfileManager_NameDataLength;
 extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;

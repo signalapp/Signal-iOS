@@ -39,6 +39,8 @@ NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificatio
 NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
 
+NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_ProfileKeyDidChange";
+
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
@@ -731,6 +733,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         });
 
         promise = promise.then(^(id value) {
+            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
+                                                                     object:nil
+                                                                   userInfo:nil];
+
             success();
         });
         promise = promise.catch(^(NSError *error) {

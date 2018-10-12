@@ -79,6 +79,10 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileKeyDidChange:)
+                                                 name:kNSNotificationName_ProfileKeyDidChange
+                                               object:nil];
 
     return self;
 }
@@ -90,6 +94,12 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
 - (void)signalAccountsDidChange:(id)notification
 {
+    OWSAssertIsOnMainThread();
+
+    [self sendSyncContactsMessageIfPossible];
+}
+
+- (void)profileKeyDidChange:(id)notification {
     OWSAssertIsOnMainThread();
 
     [self sendSyncContactsMessageIfPossible];
@@ -172,9 +182,9 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 - (void)sendSyncContactsMessageIfPossible
 {
     OWSAssertIsOnMainThread();
-    if (self.contactsManager.signalAccounts.count == 0) {
-        // Don't bother if the contacts manager has no contacts,
-        // e.g. if the contacts manager hasn't finished setup.
+
+    if (!self.contactsManager.isSetup) {
+        // Don't bother if the contacts manager hasn't finished setup.
         return;
     }
 
