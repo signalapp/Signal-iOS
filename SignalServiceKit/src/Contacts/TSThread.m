@@ -43,6 +43,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
+// DEPRECATED - not used since migrating to sortId
+// but keeping these propeties around to ease any pain in the back-forth
+// migration while testing. Eventually we can safely delete these as they aren't used anywhere.
+@property (nonatomic, nullable) NSDate *lastMessageDate DEPRECATED_ATTRIBUTE;
+@property (nonatomic, nullable) NSDate *archivalDate DEPRECATED_ATTRIBUTE;
+
 @end
 
 #pragma mark -
@@ -119,7 +125,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         _conversationColorName = mappedColorName;
     }
 
-    // MJK TODO - keep these legacy properties around for a while, just in case...
     NSDate *_Nullable lastMessageDate = [coder decodeObjectOfClass:NSDate.class forKey:@"lastMessageDate"];
     NSDate *_Nullable archivalDate = [coder decodeObjectOfClass:NSDate.class forKey:@"archivalDate"];
     _isArchivedByLegacyTimestampForSorting =
