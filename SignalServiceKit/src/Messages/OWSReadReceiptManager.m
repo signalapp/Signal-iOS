@@ -144,7 +144,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return SSKEnvironment.shared.readReceiptManager;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage {
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+{
     self = [super init];
 
     if (!self) {
@@ -172,13 +173,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Dependencies
 
-- (OWSMessageSender *)messageSender {
+- (OWSMessageSender *)messageSender
+{
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
     return SSKEnvironment.shared.messageSender;
 }
 
-- (OWSOutgoingReceiptManager *)outgoingReceiptManager {
+- (OWSOutgoingReceiptManager *)outgoingReceiptManager
+{
     OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
 
     return SSKEnvironment.shared.outgoingReceiptManager;

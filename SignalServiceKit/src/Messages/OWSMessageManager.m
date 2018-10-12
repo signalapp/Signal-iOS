@@ -132,7 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.networkManager;
 }
 
-- (OWSOutgoingReceiptManager *)outgoingReceiptManager {
+- (OWSOutgoingReceiptManager *)outgoingReceiptManager
+{
     OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
 
     return SSKEnvironment.shared.outgoingReceiptManager;

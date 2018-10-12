@@ -62,7 +62,8 @@ static SSKEnvironment *sharedSSKEnvironment;
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
                 disappearingMessagesJob:(OWSReadReceiptManager *)readReceiptManager
-                contactDiscoveryService:(OWSOutgoingReceiptManager *)outgoingReceiptManager {
+                contactDiscoveryService:(OWSOutgoingReceiptManager *)outgoingReceiptManager
+{
     self = [super init];
     if (!self) {
         return self;

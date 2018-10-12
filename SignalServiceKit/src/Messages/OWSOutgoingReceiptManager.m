@@ -38,13 +38,15 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 @implementation OWSOutgoingReceiptManager
 
-+ (instancetype)sharedManager {
++ (instancetype)sharedManager
+{
     OWSAssert(SSKEnvironment.shared.outgoingReceiptManager);
 
     return SSKEnvironment.shared.outgoingReceiptManager;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage {
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+{
     self = [super init];
 
     if (!self) {
@@ -70,13 +72,15 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Dependencies
 
-- (OWSMessageSender *)messageSender {
+- (OWSMessageSender *)messageSender
+{
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
     return SSKEnvironment.shared.messageSender;
@@ -84,7 +88,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 #pragma mark -
 
-- (dispatch_queue_t)serialQueue {
+- (dispatch_queue_t)serialQueue
+{
     static dispatch_queue_t _serialQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -95,7 +100,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 }
 
 // Schedules a processing pass, unless one is already scheduled.
-- (void)scheduleProcessing {
+- (void)scheduleProcessing
+{
     OWSAssertDebug(AppReadiness.isAppReady);
 
     dispatch_async(self.serialQueue, ^{
@@ -109,7 +115,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     });
 }
 
-- (void)process {
+- (void)process
+{
     OWSLogVerbose(@"Processing outbound receipts.");
 
     if (!self.reachability.isReachable) {
@@ -148,7 +155,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     [completionPromise retainUntilComplete];
 }
 
-- (NSArray<AnyPromise *> *)sendReceiptsForCollection:(NSString *)collection receiptType:(OWSReceiptType)receiptType {
+- (NSArray<AnyPromise *> *)sendReceiptsForCollection:(NSString *)collection receiptType:(OWSReceiptType)receiptType
+{
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *queuedReceiptMap = [NSMutableDictionary new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -209,13 +217,15 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     return [sendPromises copy];
 }
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope {
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
+{
     [self enqueueReceiptWithRecipientId:envelope.source
                               timestamp:envelope.timestamp
                              collection:kOutgoingDeliveryReceiptManagerCollection];
 }
 
-- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp {
+- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp
+{
     [self enqueueReceiptWithRecipientId:messageAuthorId
                               timestamp:timestamp
                              collection:kOutgoingReadReceiptManagerCollection];
@@ -223,7 +233,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 - (void)enqueueReceiptWithRecipientId:(NSString *)recipientId
                             timestamp:(uint64_t)timestamp
-                           collection:(NSString *)collection {
+                           collection:(NSString *)collection
+{
 
     if (recipientId.length < 1) {
         OWSFailDebug(@"Invalid recipient id.");
@@ -249,7 +260,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 - (void)dequeueReceiptsWithRecipientId:(NSString *)recipientId
                             timestamps:(NSSet<NSNumber *> *)timestamps
-                            collection:(NSString *)collection {
+                            collection:(NSString *)collection
+{
     if (recipientId.length < 1) {
         OWSFailDebug(@"Invalid recipient id.");
         return;
@@ -274,7 +286,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     });
 }
 
-- (void)reachabilityChanged {
+- (void)reachabilityChanged
+{
     OWSAssertIsOnMainThread();
 
     [self scheduleProcessing];

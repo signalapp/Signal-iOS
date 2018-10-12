@@ -22,14 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSReceiptsForSenderMessage
 
 + (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
-                                                          messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps {
+                                                          messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+{
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
                                              messageTimestamps:messageTimestamps
                                                    receiptType:SSKProtoReceiptMessageTypeDelivery];
 }
 
 + (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
-                                                      messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps {
+                                                      messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
+{
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
                                              messageTimestamps:messageTimestamps
                                                    receiptType:SSKProtoReceiptMessageTypeRead];
@@ -37,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(nullable TSThread *)thread
              messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
-                   receiptType:(SSKProtoReceiptMessageType)receiptType {
+                   receiptType:(SSKProtoReceiptMessageType)receiptType
+{
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                           inThread:thread
                                        messageBody:nil
@@ -60,17 +63,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - TSOutgoingMessage overrides
 
-- (BOOL)shouldSyncTranscript {
+- (BOOL)shouldSyncTranscript
+{
     return NO;
 }
 
-- (BOOL)isSilent {
+- (BOOL)isSilent
+{
     // Avoid "phantom messages" for "recipient read receipts".
 
     return YES;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient {
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+{
     OWSAssertDebug(recipient);
 
     SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
@@ -91,7 +97,8 @@ NS_ASSUME_NONNULL_BEGIN
     return contentData;
 }
 
-- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId {
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+{
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builderWithType:self.receiptType];
 
     OWSAssertDebug(self.messageTimestamps.count > 0);
@@ -110,11 +117,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - TSYapDatabaseObject overrides
 
-- (BOOL)shouldBeSaved {
+- (BOOL)shouldBeSaved
+{
     return NO;
 }
 
-- (NSString *)debugDescription {
+- (NSString *)debugDescription
+{
     return [NSString
         stringWithFormat:@"%@ with message timestamps: %lu", self.logTag, (unsigned long)self.messageTimestamps.count];
 }
