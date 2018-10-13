@@ -674,12 +674,13 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             let hardenedSessionDescription = HardenedRTCSessionDescription(rtcSessionDescription: sessionDescription)
 
-            strongSelf.setLocalSessionDescriptionInternal(hardenedSessionDescription)
-                .done(on: PeerConnectionClient.signalingQueue) {
-                    resolver.fulfill(hardenedSessionDescription)
-                }.catch { error in
-                    resolver.reject(error)
-            }
+            firstly {
+                strongSelf.setLocalSessionDescriptionInternal(hardenedSessionDescription)
+            }.done(on: PeerConnectionClient.signalingQueue) {
+                resolver.fulfill(hardenedSessionDescription)
+            }.catch { error in
+                resolver.reject(error)
+            }.retainUntilComplete()
         }
 
         PeerConnectionClient.signalingQueue.async {
