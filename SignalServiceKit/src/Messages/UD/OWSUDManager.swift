@@ -232,39 +232,44 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
                                             failure:@escaping (Error) -> Void) {
-        ensureSenderCertificate()
-            .then(execute: { certificate in
-                success(certificate)
-            })
-            .catch(execute: { (error) in
-                failure(error)
-            }).retainUntilComplete()
+        firstly {
+            ensureSenderCertificate()
+        }.map { certificate in
+            success(certificate)
+        }.catch { error in
+            failure(error)
+        }.retainUntilComplete()
     }
 
     public func ensureSenderCertificate() -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
         if let certificate = senderCertificate() {
-            return Promise(value: certificate)
+            return Promise.value(certificate)
         }
+
         // Try to obtain a new sender certificate.
-        return requestSenderCertificate().then { (certificateData, certificate) in
+        return firstly {
+            requestSenderCertificate()
+        }.map { (certificateData: Data, certificate: SMKSenderCertificate) in
 
             // Cache the current sender certificate.
             self.setSenderCertificate(certificateData)
 
-            return Promise(value: certificate)
+            return certificate
         }
     }
 
-    private func requestSenderCertificate() -> Promise<(Data, SMKSenderCertificate)> {
-        return SignalServiceRestClient().requestUDSenderCertificate().then { (certificateData) -> Promise<(Data, SMKSenderCertificate)> in
+    private func requestSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
+        return firstly {
+            SignalServiceRestClient().requestUDSenderCertificate()
+        }.map { certificateData -> (certificateData: Data, certificate: SMKSenderCertificate) in
             let certificate = try SMKSenderCertificate.parse(data: certificateData)
 
             guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
-            return Promise(value: (certificateData, certificate) )
+            return (certificateData: certificateData, certificate: certificate)
         }
     }
 

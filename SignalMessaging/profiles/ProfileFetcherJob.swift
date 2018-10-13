@@ -97,7 +97,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func updateProfile(recipientId: String, remainingRetries: Int = 3) {
-        self.getProfile(recipientId: recipientId).then { profile in
+        self.getProfile(recipientId: recipientId).map { profile in
             self.updateProfile(signalServiceProfile: profile)
         }.catch { error in
             switch error {
@@ -138,20 +138,20 @@ public class ProfileFetcherJob: NSObject {
         let socketType: OWSWebSocketType = unidentifiedAccess == nil ? .default : .UD
         if socketManager.canMakeRequests(of: socketType) {
             let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-            let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
+            let (promise, resolver) = Promise<SignalServiceProfile>.pending()
 
             self.socketManager.make(request,
                                     webSocketType: socketType,
                 success: { (responseObject: Any?) -> Void in
                     do {
                         let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
-                        fulfill(profile)
+                        resolver.fulfill(profile)
                     } catch {
-                        reject(error)
+                        resolver.reject(error)
                     }
             },
                 failure: { (_: NSInteger, _:Data?, error: Error) in
-                    reject(error)
+                    resolver.reject(error)
             })
             return promise
         } else {

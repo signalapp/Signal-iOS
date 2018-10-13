@@ -38,13 +38,15 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         Logger.debug("")
 
         let request = OWSRequestFactory.availablePreKeysCountRequest()
-        return networkManager.makePromise(request: request).then { (_, responseObject) -> Int in
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map { _, responseObject in
             Logger.debug("got response")
             guard let params = ParamParser(responseObject: responseObject) else {
                 throw self.unexpectedServerResponseError()
             }
 
-            let count: Int = try! params.required(key: "count")
+            let count: Int = try params.required(key: "count")
 
             return count
         }
@@ -66,20 +68,15 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     public func requestUDSenderCertificate() -> Promise<Data> {
         let request = OWSRequestFactory.udSenderCertificateRequest()
-        return self.networkManager.makePromise(request: request)
-            .then(execute: { (_, responseObject) -> Data in
-                let certificateData = try self.parseUDSenderCertificateResponse(responseObject: responseObject)
+        return firstly {
+            self.networkManager.makePromise(request: request)
+        }.map { _, responseObject in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                throw OWSUDError.invalidData(description: "Invalid sender certificate response")
+            }
 
-                return certificateData
-            })
-    }
-
-    private func parseUDSenderCertificateResponse(responseObject: Any?) throws -> Data {
-        guard let parser = ParamParser(responseObject: responseObject) else {
-            throw OWSUDError.invalidData(description: "Invalid sender certificate response")
+            return try parser.requiredBase64EncodedData(key: "certificate")
         }
-
-        return try parser.requiredBase64EncodedData(key: "certificate")
     }
 
     @objc
@@ -89,19 +86,15 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     public func updateAccountAttributes() -> Promise<Void> {
         let request = OWSRequestFactory.updateAttributesRequest()
-        let promise: Promise<Void> = networkManager.makePromise(request: request)
-            .then(execute: { (_, _) in
-                Logger.info("updated account attributes on server")
-            }).catch(execute: { (error) in
-                Logger.error("failed to update account attributes on server with error: \(error)")
-            })
-        return promise
+        return networkManager.makePromise(request: request).asVoid()
     }
 
     public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
         let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-        return networkManager.makePromise(request: request).then { (_: URLSessionDataTask, responseObject: Any?) in
-            return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map { _, responseObject in
+            try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
         }
     }
 }

@@ -27,18 +27,19 @@ extension NetworkManagerError {
 }
 
 extension TSNetworkManager {
+
     public func makePromise(request: TSRequest) -> Promise<(task: URLSessionDataTask, responseObject: Any?)> {
-        let (promise, fulfill, reject) = Promise<(task: URLSessionDataTask, responseObject: Any?)>.pending()
+        let (promise, resolver) = Promise<(task: URLSessionDataTask, responseObject: Any?)>.pending()
 
         self.makeRequest(request,
                          success: { task, responseObject in
-                            fulfill((task: task, responseObject: responseObject))
+                            resolver.fulfill((task: task, responseObject: responseObject))
         },
                          failure: { task, error in
                             let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
                             let nsError: NSError = nmError as NSError
                             nsError.isRetryable = (error as NSError).isRetryable
-                            reject(nsError)
+                            resolver.reject(nsError)
         })
 
         return promise

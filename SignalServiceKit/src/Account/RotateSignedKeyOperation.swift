@@ -29,10 +29,10 @@ public class RotateSignedPreKeyOperation: OWSOperation {
 
         let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
 
+        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
         firstly {
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
-        }.then(on: DispatchQueue.global()) { () -> Void in
+        }.done(on: DispatchQueue.global()) {
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
@@ -40,7 +40,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
-        }.then { () -> Void in
+
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in

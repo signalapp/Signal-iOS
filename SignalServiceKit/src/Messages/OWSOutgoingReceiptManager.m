@@ -129,7 +129,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         }
 
         AnyPromise *completionPromise = PMKJoin(sendPromises);
-        completionPromise.always(^() {
+        completionPromise.ensure(^() {
             // Wait N seconds before conducting another pass.
             // This allows time for a batch to accumulate.
             //

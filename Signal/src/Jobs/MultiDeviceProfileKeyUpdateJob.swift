@@ -68,7 +68,7 @@ import SignalMessaging
             },
             failure: { error in
                 Logger.error("failed with error: \(error) retrying in \(retryDelay)s.")
-                after(interval: retryDelay).then {
+                after(seconds: retryDelay).done {
                     self.run(retryDelay: retryDelay * 2)
                 }.retainUntilComplete()
             })

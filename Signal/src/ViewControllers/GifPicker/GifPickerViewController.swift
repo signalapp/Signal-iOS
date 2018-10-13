@@ -6,6 +6,7 @@ import Foundation
 import SignalServiceKit
 import Reachability
 import SignalMessaging
+import PromiseKit
 
 @objc
 protocol GifPickerViewControllerDelegate: class {
@@ -361,7 +362,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     public func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.sharedInstance.cancelAllRequests()
-        cell.requestRenditionForSending().then { [weak self] (asset: GiphyAsset) -> Void in
+        firstly {
+            cell.requestRenditionForSending()
+        }.done { [weak self] (asset: GiphyAsset) in
             guard let strongSelf = self else {
                 Logger.info("ignoring send, since VC was dismissed before fetching finished.")
                 return
@@ -397,7 +400,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
             strongSelf.present(alert, animated: true, completion: nil)
         }.retainUntilComplete()
-
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

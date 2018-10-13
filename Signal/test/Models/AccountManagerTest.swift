@@ -68,7 +68,7 @@ class AccountManagerTest: SignalBaseTest {
 
         firstly {
             accountManager.register(verificationCode: "", pin: "")
-        }.then {
+        }.done {
             XCTFail("Should fail")
         }.catch { error in
             let nserror = error as NSError
@@ -77,7 +77,7 @@ class AccountManagerTest: SignalBaseTest {
             } else {
                 XCTFail("Unexpected error: \(error)")
             }
-        }
+        }.retainUntilComplete()
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
@@ -89,7 +89,7 @@ class AccountManagerTest: SignalBaseTest {
 
         firstly {
             accountManager.register(verificationCode: "123456", pin: "")
-        }.then {
+        }.done {
             XCTFail("Should fail")
         }.catch { error in
             if error is VerificationFailedError {
@@ -97,7 +97,7 @@ class AccountManagerTest: SignalBaseTest {
             } else {
                 XCTFail("Unexpected error: \(error)")
             }
-        }
+        }.retainUntilComplete()
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
@@ -111,11 +111,11 @@ class AccountManagerTest: SignalBaseTest {
 
         firstly {
             accountManager.register(verificationCode: "123456", pin: "")
-        }.then {
+        }.done {
             expectation.fulfill()
         }.catch { error in
             XCTFail("Unexpected error: \(error)")
-        }
+        }.retainUntilComplete()
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
@@ -125,11 +125,13 @@ class AccountManagerTest: SignalBaseTest {
 
         let expectation = self.expectation(description: "should fail")
 
-        accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever").then {
+        firstly {
+            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever")
+        }.done {
             XCTFail("Expected to fail.")
         }.catch { _ in
             expectation.fulfill()
-        }
+        }.retainUntilComplete()
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }

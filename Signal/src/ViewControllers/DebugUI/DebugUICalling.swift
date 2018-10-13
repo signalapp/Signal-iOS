@@ -41,11 +41,11 @@ class DebugUICalling: DebugUIPage {
                 }
                 let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
 
-                strongSelf.messageSender.sendPromise(message: callMessage).then {
+                strongSelf.messageSender.sendPromise(message: callMessage).done {
                     Logger.debug("Successfully sent hangup call message to \(thread.contactIdentifier())")
                 }.catch { error in
                     Logger.error("failed to send hangup call message to \(thread.contactIdentifier()) with error: \(error)")
-                }
+                }.retainUntilComplete()
             },
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
                 guard let strongSelf = self else { return }
@@ -62,11 +62,11 @@ class DebugUICalling: DebugUIPage {
 
                 let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
 
-                strongSelf.messageSender.sendPromise(message: callMessage).then {
+                strongSelf.messageSender.sendPromise(message: callMessage).done {
                     Logger.debug("Successfully sent busy call message to \(thread.contactIdentifier())")
                 }.catch { error in
                     Logger.error("failed to send busy call message to \(thread.contactIdentifier()) with error: \(error)")
-                }
+                }.retainUntilComplete()
             }
         ]
 

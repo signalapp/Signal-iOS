@@ -275,8 +275,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
         // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
         // manually failing the call.
-        let callPromise = self.callService.handleOutgoingCall(call)
-        callPromise.retainUntilComplete()
+        self.callService.handleOutgoingCall(call).retainUntilComplete()
 
         action.fulfill()
         self.provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
