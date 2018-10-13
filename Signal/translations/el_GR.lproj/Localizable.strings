@@ -153,7 +153,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Το συννημένο είναι κενό.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Επιλέξτε ή τραβήξετε μια φωτογραφία και στείλτε την";
+"ATTACHMENT_HINT" = "Επιλέξτε ή τραβήξτε μια φωτογραφία και στείλτε την";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Συνημμένο";

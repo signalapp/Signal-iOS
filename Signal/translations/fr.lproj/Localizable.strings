@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ dans le groupe %@ : %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ne peut pas démarrer. Veuillez envoyer un journal de débogage à support@signal.org afin que nous puissions résoudre ce problème.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ne peut pas démarrer. Veuillez envoyer un journal de débogage à support@signal.org afin que nous cherchions la cause de ce problème.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Erreur";
@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %@ est maintenant proposée dans la logithèque App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Signal est disponible";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Signal est proposée";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Mise à jour";
@@ -96,7 +96,7 @@
 "ARCHIVE_ACTION" = "Archiver";
 
 /* No comment provided by engineer. */
-"ATTACHMENT" = "Pièce jointe";
+"ATTACHMENT" = "Fichier joint";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "La limite de messages a été atteinte.";
@@ -111,10 +111,10 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Pièce jointe";
+"ATTACHMENT_DEFAULT_FILENAME" = "Fichier joint";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Le téléchargement a échoué. Appuyez pour réessayer.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Échec de téléchargement. Touchez pour ressayer.";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Téléchargement…";
@@ -123,7 +123,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "En attente";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Erreur d’envoi de la pièce jointe";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Erreur d’envoi du fichier joint";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Impossible de convertir l’image.";
@@ -141,22 +141,22 @@
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Impossible de redimensionner l’image.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "La pièce jointe est trop volumineuse.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Le fichier joint est trop volumineux.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "La pièce jointe comporte du contenu non valide.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Le fichier joint comporte du contenu non valide.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "La pièce jointe présente un format de fichier invalide.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Le fichier joint présente un format de fichier invalide.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "La pièce jointe est vide.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Le fichier joint est vide.";
 
 /* Accessibility hint describing what you can do with the attachment button */
 "ATTACHMENT_HINT" = "Choisissez ou prenez une photo, puis envoyez-la.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Pièce jointe";
+"ATTACHMENT_LABEL" = "Fichier joint";
 
 /* attachment menu option to send contact */
 "ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
@@ -165,7 +165,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Échec de sélection du document.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez créer un archive compressée de ce fichier ou dossier et essayez de l’envoyer à la place.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Veuillez compresser ce fichier ou ce dossier et essayez plutôt d’envoyer le fichier compressé.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non pris en charge";
@@ -246,10 +246,10 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Débloquer";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Les utilisateurs existants pourront vous ajouter au groupe de nouveau.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Les membres actuels pourront vous ajouter au groupe de nouveau.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Débloquer ce groupe ?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Débloquer ce groupe ?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Débloquer %@ ?";
@@ -276,7 +276,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ a été débloqué.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Les membres actuels peuvent désormais vous rajouter au groupe.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Les membres actuels peuvent désormais vous ajouter au groupe de nouveau.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Bloquer";
@@ -300,7 +300,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Rappeler";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Vous pouvez autoriser l’accès à l’appareil photo dans l’application Réglages d’iOS pour passer des appels et enregistrer des messages vocaux avec Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès au microphone dans l’appli Réglages d’iOS pour passer des appels et enregistrer des messages vocaux avec Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "L’accès au microphone est exigé";
@@ -408,7 +408,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Inviter";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Vous pouvez autoriser l’accès aux contacts dans l’application Réglages d’iOS pour voir qui dans vos contacts utilise Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir qui de vos contacts utilise Signal.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ceci va réinitialiser l’application en supprimant vos messages et en vous désinscrivant du serveur. L’application se fermera une fois le processus terminé.";
@@ -727,7 +727,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez autoriser l’accès dans l’application Réglages d’iOS.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d’accéder aux contacts pour modifier les renseignements des contacts";
@@ -754,7 +754,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Mise à jour";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous enregistrer les changements apportés à ce groupe ?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous enregistrer les changements apportées à ce groupe ?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
@@ -793,7 +793,7 @@
 "EMPTY_INBOX_TEXT" = "Rien. Zéro. Que dalle.";
 
 /* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Inbox Zero";
+"EMPTY_INBOX_TITLE" = "Boîte de réception vide";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirmez votre NIP";
@@ -847,7 +847,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Échec d’envoi du message, car vous avez bloqué cet utilisateur.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed to write and send attachment.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Échec d’écriture et d’envoi du fichier joint.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal n’a pas pu se connecter à Internet. Veuillez réessayer ultérieurement.";
@@ -877,7 +877,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le contact n’est pas un utilisateur de Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Échec de fichier joint : demandez à ce contact de renvoyer son message après avoir mis Signal à jour vers la dernière version.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d’un message en double.";
@@ -937,7 +937,7 @@
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Chargement de médias plus anciens…";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Pièce jointe";
+"GENERIC_ATTACHMENT_LABEL" = "Fichier joint";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Échec de récupération du GIF demandé. Veuillez vérifier que vous êtes bien en ligne.";
@@ -988,7 +988,7 @@
 "GROUP_MEMBERS_CALL" = "Appeler";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Effacer les vérifications pour tous";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Cela annulera la vérification de tous les membres du groupe dont les numéros de sécurité ont changé depuis la dernière vérification.";
@@ -1057,7 +1057,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ces conversations sont archivées et apparaîtront dans la boîte de réception seulement si de nouveaux messages sont reçus.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Vous pouvez autoriser l’accès aux contacts dans l’application Réglages d’iOS pour voir le nom de vos contacts dans la liste des conversations de Signal.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir le nom des contacts dans votre liste de conversations de Signal.";
 
 /* notification body */
 "INCOMING_CALL" = "Appel entrant";
@@ -1078,7 +1078,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Le fichier audio est invalide";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Vous pouvez autoriser l’accès aux contacts dans l’application Réglages d’iOS pour inviter vos amis à rejoindre Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour inviter vos amis à se joindre à Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Autoriser l’accès aux contacts";
@@ -1108,7 +1108,7 @@
 "LEAVE_GROUP_ACTION" = "Quitter le groupe ";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veillez à analyser le code QR affiché sur l’appareil que vous voulez relier.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veillez à analyser le code QR affiché sur l’appareil que vous voulez lier.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Échec de liaison de l’appareil";
@@ -1123,7 +1123,7 @@
 "LINK_DEVICE_RESTART" = "Ressayer";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Analysez le code QR affiché sur l’appareil que vous voulez relier.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Analysez le code QR affiché sur l’appareil que vous voulez lier.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Lire le code QR";
@@ -1231,7 +1231,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Téléversement";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Le message n’a ni contenu ni pièce jointe";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Le message n’a ni contenu ni fichier joint";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Reçu";
@@ -1309,7 +1309,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Il y a d’autres messages non lus";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Il y a d’autres messages non lus (incluant des changements de numéro de sécurité)";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Il y a d’autres messages non lus (dont des changements de numéro de sécurité)";
 
 /* notification title */
 "MISSED_CALL" = "Appel manqué";
@@ -1322,14 +1322,14 @@
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Vous pouvez autoriser l’accès à l’appareil photo dans l’application Réglages d’iOS pour passer des appels vidéo avec Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Vous pouvez accorder l’accès à l’appareil photo dans l’appli Réglages d’iOS pour passer des appels vidéo avec Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d’accéder à votre appareil photo.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette permission dans l’application Réglages d’iOS.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l’appli Réglages d’iOS.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal a besoin d’accéder à vos photos pour cette fonctionnalité.";
@@ -1341,7 +1341,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Impossible de lier d’autres appareils.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Vous avez atteint le nombre maximal d’appareils que vous pouvez actuellement relier à votre compte. Veuillez supprimer un appareil et réessayer.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Vous avez atteint le nombre maximal d’appareils que vous pouvez actuellement lier à votre compte. Veuillez supprimer un appareil et réessayer.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Vous ne recevrez pas de notifications pour les conversations en sourdine.";
@@ -1395,7 +1395,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autres utilisateurs";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous supprimer ces modifications ?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous supprimer ces changements ?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
@@ -1545,7 +1545,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Votre partenaire utilise une ancienne version de Signal. Il doit la mettre à jour avant que vous puissiez vérifier son numéro de sécurité. ";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code analysé ne ressemble pas à un numéro de sécurité. Avez-vous tous les deux une version à jour de Signal ?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code lu ne semble pas être un numéro de sécurité. Utilisez-vous tous les deux une version à jour de Signal ?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si vous souhaitez vérifier la sécurité du chiffrement de bout en bout avec %@, comparez les numéros ci-dessus avec ceux sur son appareil.\n\nVous pouvez aussi lire le code sur son appareil ou lui demander de lire le vôtre.";
@@ -1635,7 +1635,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Le message original est introuvable.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "Pièce jointe";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Fichier joint";
 
 /* Indicates this message is a quoted reply to an audio file. */
 "QUOTED_REPLY_TYPE_AUDIO" = "Fichier audio";
@@ -1860,7 +1860,7 @@
 "SEND_INVITE_FAILURE" = "Échec d’envoi de l’invitation. Veuillez ressayer plus tard. ";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal !";
+"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal !";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Inviter par texto : %@";
@@ -1983,7 +1983,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Supprimer toutes les données";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Êtes-vous sûr(e) de vouloir supprimer tout l’historique (messages, fichiers joints, appels, etc.) ? Cette action est irréversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Voulez-vous vraiment supprimer tout l’historique (messages, fichiers joints, appels, etc.) ? Cette action est irréversible.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Tout supprimer";
@@ -2124,13 +2124,13 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Pas prête";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Impossible d’envoyer la pièce jointe";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Impossible d’envoyer le fichier joint";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Téléversement…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Impossible de préparer la pièce jointe";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Impossible de préparer le fichier joint";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Partager vers Signal";
@@ -2211,7 +2211,7 @@
 "UNARCHIVE_ACTION" = "Désarchiver";
 
 /* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Pièce jointe inconnue";
+"UNKNOWN_ATTACHMENT_LABEL" = "Fichier joint inconnu";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "L’utilisateur n’est pas dans vos contacts. Voulez-vous bloquer cet utilisateur ?";
@@ -2226,7 +2226,7 @@
 "UNLINK_ACTION" = "Annuler le lien";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Cet appareil ne pourra plus envoyer ni recevoir de messages s’il n’est plus relié.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Cet appareil ne pourra plus envoyer ni recevoir de messages s’il n’est plus lié.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Annuler le lien avec « %@ » ?";
@@ -2241,7 +2241,7 @@
 "UNREGISTER_SIGNAL_FAIL" = "Échec de désinscription de Signal.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Réception d’un type de pièce jointe non pris en charge";
+"UNSUPPORTED_ATTACHMENT" = "Un type de fichier joint non pris en charge a été reçu.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne prend pas cette fonction en charge";

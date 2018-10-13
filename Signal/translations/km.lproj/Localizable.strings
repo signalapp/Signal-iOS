@@ -5,10 +5,10 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "ទទួលយកលេខសុវត្ថិភាពថ្មី";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "ការហៅ ស៊ីហ្គណល ";
+"ACTION_AUDIO_CALL" = "ការហៅ Signal ";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "អញ្ជើញចូលប្រើស៊ីហ្គណល";
+"ACTION_INVITE" = "អញ្ជើញចូលប្រើSignal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -90,7 +90,7 @@
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "បច្ចុប្បន្នភាព";
 
 /* Name of application */
-"APPLICATION_NAME" = "ស៊ីហ្គណល";
+"APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "បណ្ណសារ";
@@ -312,7 +312,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "ស៊ីហ្គណល %@";
+"CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "ហៅ";
@@ -366,7 +366,7 @@
 "CALLBACK_BUTTON_TITLE" = "ហៅទៅវិញ";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "អ្នកប្រើប្រាស់ ស៊ីហ្គណល";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "អ្នកប្រើប្រាស់ Signal";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "អ្នកប្រើប្រាស់នេះមិនអាចផ្ទៀងផ្ទាត់បានទេ ទាល់តែអ្នកបានផ្លាស់ប្តូរសារជាមួយពួកគេ។";
@@ -384,7 +384,7 @@
 "CLOUDKIT_STATUS_NO_ACCOUNT" = "អ្នកមិនមានគណនី iCloud ដើម្បីធ្វើការបម្រុងទុក។";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "ស៊ីហ្គណលមិនត្រូវបានអនុញ្ញាតឲ្យចូលប្រើប្រាស់គណនី iCloud សម្រាប់បម្រុងទុកទេ។";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalមិនត្រូវបានអនុញ្ញាតឲ្យចូលប្រើប្រាស់គណនី iCloud សម្រាប់បម្រុងទុកទេ។";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
@@ -694,7 +694,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ចុះឈ្មោះលេខទូរសព្ទនេះម្តងទៀត";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "ឧបករណ៍មិនអាចចុះឈ្មោះទៀតបានទេ។ លេខទូរសព្ទរបស់អ្នកប្រហែលជាត្រូវបានចុះឈ្មោះជាមួយ ស៊ីហ្គណលលើឧបករណ៍ផ្សេងទៀត។ វាយដើម្បីចុះឈ្មោះម្តងទៀត។";
+"DEREGISTRATION_WARNING" = "ឧបករណ៍មិនអាចចុះឈ្មោះទៀតបានទេ។ លេខទូរសព្ទរបស់អ្នកប្រហែលជាត្រូវបានចុះឈ្មោះជាមួយ Signalលើឧបករណ៍ផ្សេងទៀត។ វាយដើម្បីចុះឈ្មោះម្តងទៀត។";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "សកម្មភាពចុងក្រោយ៖ %@";
@@ -730,7 +730,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "ស៊ីហ្គណលត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signalត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "កែក្រុម";
@@ -766,10 +766,10 @@
 "EDIT_TXT" = "កែប្រែ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "សួស្តី,\n\nថ្មីៗនេះ ខ្ញុំបានប្រើប្រាស់ ស៊ីហ្គណល ដើម្បីរក្សាការសន្ទនាឯកជនលើទូរស័ព្ទ iPhone របស់ខ្ញុំ។ ខ្ញុំចង់ឲ្យអ្នកបញ្ចូលវាដែរ ដូចនេះ យើងអាចទុកចិត្តថា មានតែអ្នកនិងខ្ញុំ ដែលអាចអានសាររបស់យើង ឬស្តាប់ការហៅរបស់យើង។\n\nស៊ីហ្គណលមានសម្រាប់ ទូរស័ព្ទ iPhone និង Android។ ទាញយកនៅទីនេះ៖ %@\n\nស៊ីហ្គណលដំណើរការដូចគ្នានឹងកម្មវិធីផ្ញើសារ ដែលមានស្រាប់ដែរ។ យើងអាចបញ្ជូនរូបភាព និងវីដេអូ ហៅទូរស័ព្ទ និងចាប់ផ្តើមការជជែកជាក្រុម។ អ្វីដែលល្អបំផុតគឺ គ្មាននរណាអាចមើលឃើញ សូម្បីអ្នកដែលបង្កើត ស៊ីហ្គណលក៏ដោយ!\n\nអ្នកអាចអានបន្ថែមអំពី Open Whisper Systems, មនុស្សបង្កើត ស៊ីហ្គណលនៅទីនេះ %@";
+"EMAIL_INVITE_BODY" = "សួស្តី,\n\nថ្មីៗនេះ ខ្ញុំបានប្រើប្រាស់ Signal ដើម្បីរក្សាការសន្ទនាឯកជនលើទូរស័ព្ទ iPhone របស់ខ្ញុំ។ ខ្ញុំចង់ឲ្យអ្នកបញ្ចូលវាដែរ ដូចនេះ យើងអាចទុកចិត្តថា មានតែអ្នកនិងខ្ញុំ ដែលអាចអានសាររបស់យើង ឬស្តាប់ការហៅរបស់យើង។\n\nSignalមានសម្រាប់ ទូរស័ព្ទ iPhone និង Android។ ទាញយកនៅទីនេះ៖ %@\n\nSignalដំណើរការដូចគ្នានឹងកម្មវិធីផ្ញើសារ ដែលមានស្រាប់ដែរ។ យើងអាចបញ្ជូនរូបភាព និងវីដេអូ ហៅទូរស័ព្ទ និងចាប់ផ្តើមការជជែកជាក្រុម។ អ្វីដែលល្អបំផុតគឺ គ្មាននរណាអាចមើលឃើញ សូម្បីអ្នកដែលបង្កើត Signalក៏ដោយ!\n\nអ្នកអាចអានបន្ថែមអំពី Open Whisper Systems, មនុស្សបង្កើត Signalនៅទីនេះ %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "តោះប្តូរទៅប្រើ ស៊ីហ្គណល";
+"EMAIL_INVITE_SUBJECT" = "តោះប្តូរទៅប្រើ Signal";
 
 /* Body text an existing user sees when viewing an empty archive */
 "EMPTY_ARCHIVE_TEXT" = "You can archive inactive conversations from your Inbox.";
@@ -778,7 +778,7 @@
 "EMPTY_ARCHIVE_TITLE" = "Clean Up Your Conversation List";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "គ្មានលេខទំនាក់ទំនងណាមួយ ប្រើស៊ីហ្គណលទេ។";
+"EMPTY_CONTACTS_LABEL_LINE1" = "គ្មានលេខទំនាក់ទំនងណាមួយ ប្រើSignalទេ។";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "ហេតុអី អ្នកមិនអញ្ជើញនរណាម្នាក់?";
@@ -787,7 +787,7 @@
 "EMPTY_INBOX_NEW_USER_TEXT" = "ចុចលើប៊ូតុង បង្កើតសារ";
 
 /* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "ចាប់ផ្តើមការសន្ទនាលើ ស៊ីហ្គណល លើកដំបូង!";
+"EMPTY_INBOX_NEW_USER_TITLE" = "ចាប់ផ្តើមការសន្ទនាលើ Signal លើកដំបូង!";
 
 /* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
@@ -817,13 +817,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "លេខPIN  មិនត្រូវគ្នា។";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "បញ្ចូលលេខកូដ PIN សម្រាប់ចាក់សោរការចុះឈ្មោះ។ អ្នកនឹងត្រូវបញ្ចូលលេខកូដ PINនេះ ពេលអ្នកចុះឈ្មោះលេខទូរសព្ទនេះជាមួយស៊ីហ្គណលនៅពេលក្រោយ។";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "បញ្ចូលលេខកូដ PIN សម្រាប់ចាក់សោរការចុះឈ្មោះ។ អ្នកនឹងត្រូវបញ្ចូលលេខកូដ PINនេះ ពេលអ្នកចុះឈ្មោះលេខទូរសព្ទនេះជាមួយSignalនៅពេលក្រោយ។";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "ដើម្បីបង្កើនសុវត្ថិភាព បើកកូដ PIN សម្រាប់ចាក់សោរការចុះឈ្មោះ ដែលនឹងទាមទារ ពេលអ្នកចង់ឈ្មោះលេខទូរសព្ទនេះ ម្តងទៀតជាមួយ ស៊ីហ្គណល។ ";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "ដើម្បីបង្កើនសុវត្ថិភាព បើកកូដ PIN សម្រាប់ចាក់សោរការចុះឈ្មោះ ដែលនឹងទាមទារ ពេលអ្នកចង់ឈ្មោះលេខទូរសព្ទនេះ ម្តងទៀតជាមួយ Signal។ ";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "ការចាក់សោរចុះឈ្មោះ បានបើក។ អ្នកនឹងតម្រូវឲ្យបញ្ចូលកូដ PIN របស់អ្នក នៅពេលធ្វើការចុះឈ្មោះលេខទូរសព្ទរបស់អ្នកជាមួយស៊ីហ្គណលម្តងទៀត។";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "ការចាក់សោរចុះឈ្មោះ បានបើក។ អ្នកនឹងតម្រូវឲ្យបញ្ចូលកូដ PIN របស់អ្នក នៅពេលធ្វើការចុះឈ្មោះលេខទូរសព្ទរបស់អ្នកជាមួយSignalម្តងទៀត។";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "ចាក់សោរចុះឈ្មោះ";
@@ -874,7 +874,7 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "បញ្ហាមិនស្គាល់កើតឡើង។";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "លេខទំនាក់ទំនងមិនមែនជាអ្នកប្រើប្រាស់ ស៊ីហ្គណល។";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "លេខទំនាក់ទំនងមិនមែនជាអ្នកប្រើប្រាស់ Signal។";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
@@ -1036,7 +1036,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "បណ្ណសារ";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "ស៊ីហ្គណល";
+"HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "កំពុងតភ្ជាប់...";
@@ -1084,7 +1084,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "អនុញ្ញាតចូលប្រើប្រាស់លេខទំនាក់ទំនង";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "អញ្ជើញមិត្តភក្តិប្រើស៊ីហ្គណល";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "អញ្ជើញមិត្តភក្តិប្រើSignal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ស្វែងរក";
@@ -1326,7 +1326,7 @@
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "ស៊ីហ្គណលត្រូវការចូលប្រើប្រាស់កាមេរ៉ារបស់អ្នក។";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signalត្រូវការចូលប្រើប្រាស់កាមេរ៉ារបស់អ្នក។";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
@@ -1452,7 +1452,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ កំណត់រយៈពេលការរលុបសារទៅជា %@។";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "ស៊ីហ្គណល កំពុងជួបប្រទះបញ្ហាបច្ចេកទេស។ យើងកំពុងធ្វើការស្តារសេវាកម្មយ៉ាងរហ័សតាមដែលអាចធ្វើទៅបាន។";
+"OUTAGE_WARNING" = "Signal កំពុងជួបប្រទះបញ្ហាបច្ចេកទេស។ យើងកំពុងធ្វើការស្តារសេវាកម្មយ៉ាងរហ័សតាមដែលអាចធ្វើទៅបាន។";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "ហៅចេញក្រៅ";
@@ -1533,16 +1533,16 @@
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "លេខក្នុងក្តាចុចរបស់អ្នក ទំនងមិនមែនជាលេខសុវត្ថិភាពត្រឹមត្រូវសម្រាប់ការសន្ទនានេះទេ។ ";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "ស៊ីហ្គណល មិនអាចស្វែងរកលេខសុវត្ថិភាពនៅក្នុងក្តាចុចរបស់អ្នកបានទេ។ តើអ្នកបានថតចម្លងវា ត្រឹមត្រូវឬទេ?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal មិនអាចស្វែងរកលេខសុវត្ថិភាពនៅក្នុងក្តាចុចរបស់អ្នកបានទេ។ តើអ្នកបានថតចម្លងវា ត្រឹមត្រូវឬទេ?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "រាល់គូនៃអ្នកប្រើប្រាស់ ស៊ីហ្គណល ចែករំលែកលេខសុវត្ថិភាពខុសៗគ្នា។ ពិនិត្យម្តងទៀត ថា%@ គឹកំពុងបង្ហាញ លេខសុវត្ថិភាពខុសៗគ្នារបស់ *អ្នក*។";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "រាល់គូនៃអ្នកប្រើប្រាស់ Signal ចែករំលែកលេខសុវត្ថិភាពខុសៗគ្នា។ ពិនិត្យម្តងទៀត ថា%@ គឹកំពុងបង្ហាញ លេខសុវត្ថិភាពខុសៗគ្នារបស់ *អ្នក*។";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "អ្នកកំពុងដំណើរការ ស៊ីហ្គណល ជំនាន់ចាស់។ អ្នកត្រូវធ្វើបច្ចុប្បន្នភាព មុនពេលអ្នកអាចផ្ទៀងផ្ទាត់បាន។";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "អ្នកកំពុងដំណើរការ Signal ជំនាន់ចាស់។ អ្នកត្រូវធ្វើបច្ចុប្បន្នភាព មុនពេលអ្នកអាចផ្ទៀងផ្ទាត់បាន។";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "ដៃគូរបស់អ្នកកំពុងដំណើរការ ស៊ីហ្គណល ជំនាន់ចាស់។ ពួកគេត្រូវធ្វើបច្ចុប្បន្នភាព មុនពេលអ្នកអាចផ្ទៀងផ្ទាត់បាន។";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "ដៃគូរបស់អ្នកកំពុងដំណើរការ Signal ជំនាន់ចាស់។ ពួកគេត្រូវធ្វើបច្ចុប្បន្នភាព មុនពេលអ្នកអាចផ្ទៀងផ្ទាត់បាន។";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
@@ -1584,7 +1584,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "រូបតំណាង";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបស៊ីហ្គណលរបស់អ្នកនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើមសន្ទនាថ្មី និងពេលអ្នកចែករំលែកវាជាមួយអ្នកប្រើប្រាស់និងក្រុមផ្សេង។";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបSignalរបស់អ្នកនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើមសន្ទនាថ្មី និងពេលអ្នកចែករំលែកវាជាមួយអ្នកប្រើប្រាស់និងក្រុមផ្សេង។";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "ចុចទីនេះ ដើម្បីស្វែងយល់បន្ថែម។";
@@ -1653,7 +1653,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "ការចុះឈ្មោះជាមួយលេខទូរស័ព្ទនេះ នឹងអាចធ្វើបាន ដោយគ្មានលេខកូដ PIN ចាក់សោរការចុះឈ្មោះ បន្ទាប់ពី 7 ថ្ងៃក្រោយ ដោយសារលេខនេះធ្លាប់បានចុះឈ្មោះជាមួយ ស៊ីហ្គណលពីមុន។";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "ការចុះឈ្មោះជាមួយលេខទូរស័ព្ទនេះ នឹងអាចធ្វើបាន ដោយគ្មានលេខកូដ PIN ចាក់សោរការចុះឈ្មោះ បន្ទាប់ពី 7 ថ្ងៃក្រោយ ដោយសារលេខនេះធ្លាប់បានចុះឈ្មោះជាមួយ Signalពីមុន។";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
 "REGISTER_2FA_INSTRUCTIONS" = "លេខទូរស័ព្ទនេះ មានបើក ការចាក់សោរចុះឈ្មោះ។ សូមបញ្ចូលលេខកូដ PIN ចាក់សោរការចុះឈ្មោះ។\n\nលេខកូដ PIN ចាក់សោរការចុះឈ្មោះនេះ ខុសពីលេខកូដផ្ទៀងផ្ទាត់ ដែលផ្ញើទៅកាន់លេខទូរស័ព្ទក្នុងជំហានចុងក្រោយ។";
@@ -1692,19 +1692,19 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "អ្នកមិនអាចបើកគណនីរបស់អ្នក រហូតអ្នកបានផ្ទៀងផ្ទាត់លេខកូដ ដែលយើងបានផ្ញើជូនអ្នក។";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "ការចុះឈ្មោះឥឡូវនេះគឺបិទ ដោយសារស៊ីហ្គណលទើបតែបានចុះឈ្មោះលើឧបករណ៍ផ្សេងទៀតជាមួយលេខទូរសព្ទនេះ។";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "ការចុះឈ្មោះឥឡូវនេះគឺបិទ ដោយសារSignalទើបតែបានចុះឈ្មោះលើឧបករណ៍ផ្សេងទៀតជាមួយលេខទូរសព្ទនេះ។";
 
 /* button text to proceed with registration when on an iPad */
 "REGISTRATION_IPAD_CONFIRM_BUTTON" = "ចុះឈ្មោះ iPad នេះ";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "មានគណនីស៊ីហ្គណលរួចហើយ";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "មានគណនីSignalរួចហើយ";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "លក្ខខណ្ឌនិងគោលការណ៍ឯកជន";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "ដោយចុះឈ្មោះឧបករណ៍នេះ អ្នកយល់ព្រម%@របស់ស៊ីហ្គណល";
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "ដោយចុះឈ្មោះឧបករណ៍នេះ អ្នកយល់ព្រម%@របស់Signal";
 
 /* embedded in legal topmatter, styled as a link */
 "REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "លក្ខខណ្ឌ";
@@ -1752,13 +1752,13 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "លេខទូរស័ព្ទដែលអ្នកព្យាយាមចុះឈ្មោះនេះ បានចុះឈ្មោះរួចហើយ នៅលើម៉ាស៊ីនមេផ្សេង សូមលុបឈ្មោះពីទីនោះសិន ហើយព្យាយាមម្តងទៀត។";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "ការចាក់សោរការចុះឈ្មោះ បានបើកសម្រាប់លេខទូរស័ព្ទអ្នក។ ដើម្បីងាយចាំលេខកូដនេះ ស៊ីហ្គណលនឹងសួរអ្នក ឲ្យផ្ទៀងផ្ទាត់វាជារឿយៗ។";
+"REMINDER_2FA_BODY" = "ការចាក់សោរការចុះឈ្មោះ បានបើកសម្រាប់លេខទូរស័ព្ទអ្នក។ ដើម្បីងាយចាំលេខកូដនេះ Signalនឹងសួរអ្នក ឲ្យផ្ទៀងផ្ទាត់វាជារឿយៗ។";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "ក្រើនរំលឹក៖";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "ការចាក់សោរការចុះឈ្មោះ ជួយការពារលេខទូរស័ព្ទអ្នក ពីការព្យាយាមចុះឈ្មោះដោយគ្មានការអនុញ្ញាត។ មុខងារនេះ អាចបិទបានគ្រប់ពេល ក្នុងការកំណត់ឯកជនភាព ស៊ីហ្គណល។";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "ការចាក់សោរការចុះឈ្មោះ ជួយការពារលេខទូរស័ព្ទអ្នក ពីការព្យាយាមចុះឈ្មោះដោយគ្មានការអនុញ្ញាត។ មុខងារនេះ អាចបិទបានគ្រប់ពេល ក្នុងការកំណត់ឯកជនភាព Signal។";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "បញ្ចូលលេខPIN ចាក់សោរការចុះឈ្មោះរបស់អ្នក";
@@ -1785,7 +1785,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "បញ្ជូន យ៉ាងណាក៏ដោយ";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "លេខសុវត្ថិភាព ស៊ីហ្គណលរបស់យើង៖\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "លេខសុវត្ថិភាព Signalរបស់យើង៖\n%@";
 
 /* Action sheet heading */
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្លាស់ប្តូរ។ អ្នកប្រហែលចង់ផ្ទៀងផ្ទាត់វា។";
@@ -1818,13 +1818,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "អ្នកត្រូវប្រើលេខកូដ ក្នុង iOS អ្នក ដើម្បីប្រើប្រាស់ អេក្រង់ចាក់សោរ។";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "ផ្ទៀងផ្ទាត់ដើម្បីបើកស៊ីហ្គណល។";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "ផ្ទៀងផ្ទាត់ដើម្បីបើកSignal។";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "ការផ្ទៀងផ្ទាត់បរាជ័យ";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "ដោះសោរស៊ីហ្គណល";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "ដោះសោរSignal";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ស្វែងរកតាមឈ្មោះ ឬលេខទូរស័ព្ទ";
@@ -1869,7 +1869,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "អញ្ជើញមិត្តភក្តិតាម SMS ដែលមិនមានសុវត្ថិភាព?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "តើអ្នកចង់អញ្ជើញលេខខាងក្រោម មកកាន់ស៊ីហ្គណល៖";
+"SEND_SMS_INVITE_TITLE" = "តើអ្នកចង់អញ្ជើញលេខខាងក្រោម មកកាន់Signal៖";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "អំពី";
@@ -1890,7 +1890,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "ទីតាំង៖ %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "បើសិនបើក ស៊ីហ្គណលនឹងព្យាយាមចៀសវាងការឃ្លាំមើល។ កុំបើកមុខងារនេះ លុះត្រាអ្នកកំពុងស្ថិតនៅទីតាំងដែល ស៊ីហ្គណលត្រូវបានឃ្លាំមើល។";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "បើសិនបើក Signalនឹងព្យាយាមចៀសវាងការឃ្លាំមើល។ កុំបើកមុខងារនេះ លុះត្រាអ្នកកំពុងស្ថិតនៅទីតាំងដែល Signalត្រូវបានឃ្លាំមើល។";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "ការចៀសវាងការឃ្លាំមើល ត្រូវបានដំណើរការ ផ្អែកលើលេខទូរស័ព្ទរបស់គណនីអ្នក។";
@@ -1899,7 +1899,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "ការចៀសវាងការឃ្លាំមើល អាចត្រូវបានដំណើរការ ពេលភ្ជាប់អ៊ីនធើណេតតែប៉ុណ្ណោះ។";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ការចៀសវាងការឃ្លាំមើលមិនចាំបាច់ទេ  អ្នកបានតភ្ជាប់សេវាកម្ម ស៊ីហ្គណលរួចរាល់ហើយ។";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "ការចៀសវាងការឃ្លាំមើលមិនចាំបាច់ទេ  អ្នកបានតភ្ជាប់សេវាកម្ម Signalរួចរាល់ហើយ។";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "ការចៀសវាងការឃ្លាំមើល";
@@ -1956,7 +1956,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "អ្នកមិនមានលេខទំនាក់ទំនងលើស៊ីហ្គណលទេ។";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "អ្នកមិនមានលេខទំនាក់ទំនងលើSignalទេ។";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "គ្មានលទ្ធផលស្វែងរក";
@@ -2049,7 +2049,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "រយៈពេលចាក់សោរអេក្រង់";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ដោះសោរ អេក្រង់ ស៊ីហ្គណល ដោយប្រើ  Touch ID, Face ID, ឬលេខកូដលើឧបករណ៍ iOS របស់អ្នក។ អ្នកនៅតែអាចទទួលការហៅចូល និងសារជូនដំណឹង នៅពេល បានបើកសោរអេក្រង់។ ការកំណត់ការជូនដំណឹង ស៊ីហ្គណល អនុញ្ញាតឲ្យអ្នកកំណត់ព័ត៌មាន ដែលបានបង្ហាញ។";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ដោះសោរ អេក្រង់ Signal ដោយប្រើ  Touch ID, Face ID, ឬលេខកូដលើឧបករណ៍ iOS របស់អ្នក។ អ្នកនៅតែអាចទទួលការហៅចូល និងសារជូនដំណឹង នៅពេល បានបើកសោរអេក្រង់។ ការកំណត់ការជូនដំណឹង Signal អនុញ្ញាតឲ្យអ្នកកំណត់ព័ត៌មាន ដែលបានបង្ហាញ។";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "អេក្រង់ចាក់សោរ";
@@ -2061,10 +2061,10 @@
 "SETTINGS_SCREEN_SECURITY" = "បើកអេក្រង់សុវត្ថិភាព";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "រារាំងការបើកមើលស៊ីហ្គណល  ពីការបង្ហាញក្នុងការផ្លាស់ប្តូរកម្មវិធី។";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "រារាំងការបើកមើលSignal  ពីការបង្ហាញក្នុងការផ្លាស់ប្តូរកម្មវិធី។";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "សមាហរណកម្មការហៅ iOS បង្ហាញការហៅតាម ស៊ីហ្គណលលើអេក្រង់ជាប់សោររបស់អ្នក និង ក្នុងបញ្ជីការហៅរបស់ប្រព័ន្ធ។ អ្នកអាចមានជម្រើសក្នុងការបង្ហាញឈ្មោះ និងលេខទំនាក់ទំនងរបស់អ្នក។ ប្រសិនបើ iCloud បានបើក ប្រវត្តិរបស់ការហៅនេះ នឹងត្រូវបានចែករំលែកជាមួយ Apple​ ដែរ។";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "សមាហរណកម្មការហៅ iOS បង្ហាញការហៅតាម Signalលើអេក្រង់ជាប់សោររបស់អ្នក និង ក្នុងបញ្ជីការហៅរបស់ប្រព័ន្ធ។ អ្នកអាចមានជម្រើសក្នុងការបង្ហាញឈ្មោះ និងលេខទំនាក់ទំនងរបស់អ្នក។ ប្រសិនបើ iCloud បានបើក ប្រវត្តិរបស់ការហៅនេះ នឹងត្រូវបានចែករំលែកជាមួយ Apple​ ដែរ។";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "ការជូនដំណឹង";
@@ -2112,13 +2112,13 @@
 "SHARE_EXTENSION_LOADING" = "Loading…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "បើកកម្មវិធី​ស៊ីហ្គណល ដើម្បីចុះឈ្មោះ។";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "បើកកម្មវិធី​Signal ដើម្បីចុះឈ្មោះ។";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "មិនបានចុះឈ្មោះ";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "បើកកម្មវិធី​ស៊ីហ្គណល ដើម្បីធ្វើបច្ចុប្បន្នភាព ឬ ចុះឈ្មោះ។";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "បើកកម្មវិធី​Signal ដើម្បីធ្វើបច្ចុប្បន្នភាព ឬ ចុះឈ្មោះ។";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "មិនទាន់រួចរាល់";
@@ -2133,7 +2133,7 @@
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "មិនអាចរៀបចំឯកសារភ្ជាប់";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "ចែករំលែកទៅ ស៊ីហ្គណល";
+"SHARE_EXTENSION_VIEW_TITLE" = "ចែករំលែកទៅ Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "បង្ហាញលេខសុវត្ថិភាព";
@@ -2142,7 +2142,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "បង្ហាញការសន្ទនា";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "ខ្ញុំអញ្ជើញអ្នក ដំឡើងស៊ីហ្គណល! នេះជាតំណ៖";
+"SMS_INVITE_BODY" = "ខ្ញុំអញ្ជើញអ្នក ដំឡើងSignal! នេះជាតំណ៖";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "គ្មាន";
@@ -2232,13 +2232,13 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "ផ្តាច់ \"%@\"?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "ស៊ីហ្គណលមិនអាចផ្តាច់ឧបករណ៍របស់អ្នកបានទេ។";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signalមិនអាចផ្តាច់ឧបករណ៍របស់អ្នកបានទេ។";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "ឧបករណ៍គ្មានឈ្មោះ";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "បរាជ័យក្នុងការលុបឈ្មោះពី ស៊ីហ្គណល។";
+"UNREGISTER_SIGNAL_FAIL" = "បរាជ័យក្នុងការលុបឈ្មោះពី Signal។";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "បានទទួលប្រភេទឯកសារភ្ជាប់ដែលមិនគាំទ្រ។";
@@ -2274,7 +2274,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "កំណត់ប្រវត្តិរូបរបស់អ្នក";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "អ្នកអាចចែករំលែករូបតំណាងមួយ និងឈ្មោះជាមួយមិត្តភក្តិលើ ស៊ីហ្គណល។";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "អ្នកអាចចែករំលែករូបតំណាងមួយ និងឈ្មោះជាមួយមិត្តភក្តិលើ Signal។";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "ត្រៀមខ្លួនសម្រាប់ការបិទជិតរបស់អ្នក?";
@@ -2289,7 +2289,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "សូមណែនាំ ការទទួលអាន";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "ស៊ីហ្គណលឥលូវគាំទ្រការហៅវីដេអូសុវត្ថិភាព។ គ្រាន់តែហៅតាមធម្មតា ចុចលើប៊ូតុង កាមេរ៉ា ហើយបក់ដៃ សួស្តី។";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signalឥលូវគាំទ្រការហៅវីដេអូសុវត្ថិភាព។ គ្រាន់តែហៅតាមធម្មតា ចុចលើប៊ូតុង កាមេរ៉ា ហើយបក់ដៃ សួស្តី។";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "សួស្តី ការហៅវីដេអូសុវត្ថិភាព!";
@@ -2355,7 +2355,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "សារជាសំឡេង";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "បញ្ចប់ការកំណត់លើ ស៊ីហ្គណល Desktop។";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "បញ្ចប់ការកំណត់លើ Signal Desktop។";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកបានបិទការរលុបសារ។";

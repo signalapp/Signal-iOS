@@ -90,7 +90,7 @@
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "تحديث التطبيق";
 
 /* Name of application */
-"APPLICATION_NAME" = "سجنال";
+"APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "ارشفة المحادثة";
@@ -730,7 +730,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "يحتاج تطبيق سجنال السماح بالوصول إلى جهات الإتصال الخاصة بكم من اجل تعديل البينات الخاصة بجهة الإتصال.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "يحتاج تطبيق Signal السماح بالوصول إلى جهات الإتصال الخاصة بكم من اجل تعديل البينات الخاصة بجهة الإتصال.";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "تعديل المجموعة";
@@ -1036,7 +1036,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "الأرشيف";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "سجنال";
+"HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "جار الربط…";
