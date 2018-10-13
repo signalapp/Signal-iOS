@@ -41,7 +41,7 @@ public class MessageFetcherJob: NSObject {
         guard signalService.isCensorshipCircumventionActive else {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
             TSSocketManager.shared.requestSocketOpen()
-            return Promise(value: ())
+            return Promise.value(())
         }
 
         Logger.info("fetching messages via REST.")
@@ -63,7 +63,7 @@ public class MessageFetcherJob: NSObject {
                 return self.run()
             } else {
                 // All finished
-                return Promise(value: ())
+                return Promise.value(())
             }
         }
 
@@ -75,7 +75,7 @@ public class MessageFetcherJob: NSObject {
     @objc
     @discardableResult
     public func run() -> AnyPromise {
-        return AnyPromise(run())
+        return AnyPromise(run() as Promise)
     }
 
     // use in DEBUG or wherever you can't receive push notifications to poll for messages.
@@ -176,25 +176,25 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
-        return Promise { fulfill, reject in
+        return Promise { resolver in
             let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
                 request,
                 success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
                     guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
                         Logger.error("response object had unexpected content")
-                        return reject(OWSErrorMakeUnableToProcessServerResponseError())
+                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                     }
 
-                    fulfill((envelopes: envelopes, more: more))
+                    resolver.fulfill((envelopes: envelopes, more: more))
                 },
                 failure: { (_: URLSessionDataTask?, error: Error?) in
                     guard let error = error else {
                         Logger.error("error was surpringly nil. sheesh rough day.")
-                        return reject(OWSErrorMakeUnableToProcessServerResponseError())
+                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                     }
 
-                    reject(error)
+                    resolver.reject(error)
             })
         }
     }

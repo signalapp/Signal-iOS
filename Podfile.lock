@@ -43,16 +43,14 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - PromiseKit (4.5.2):
-    - PromiseKit/Foundation (= 4.5.2)
-    - PromiseKit/QuartzCore (= 4.5.2)
-    - PromiseKit/UIKit (= 4.5.2)
-  - PromiseKit/CorePromise (4.5.2)
-  - PromiseKit/Foundation (4.5.2):
+  - PromiseKit (6.5.2):
+    - PromiseKit/CorePromise (= 6.5.2)
+    - PromiseKit/Foundation (= 6.5.2)
+    - PromiseKit/UIKit (= 6.5.2)
+  - PromiseKit/CorePromise (6.5.2)
+  - PromiseKit/Foundation (6.5.2):
     - PromiseKit/CorePromise
-  - PromiseKit/QuartzCore (4.5.2):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (4.5.2):
+  - PromiseKit/UIKit (6.5.2):
     - PromiseKit/CorePromise
   - PureLayout (3.0.2)
   - Reachability (3.2)
@@ -85,7 +83,7 @@ PODS:
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
     - Mantle
-    - PromiseKit (~> 4.0)
+    - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
     - SignalCoreKit
@@ -101,7 +99,7 @@ PODS:
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
     - Mantle
-    - PromiseKit (~> 4.0)
+    - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
     - SignalCoreKit

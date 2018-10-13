@@ -59,7 +59,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                 return
             }
 
-            self.ensureProfileComplete().then { _ -> Void in
+            self.ensureProfileComplete().done {
                 Logger.info("complete. Canceling timer and saving.")
                 self.completionHandler(true)
             }.catch { error in
@@ -83,33 +83,33 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         func ensureProfileComplete() -> Promise<Void> {
             guard let localRecipientId = TSAccountManager.localNumber() else {
                 // local app doesn't think we're registered, so nothing to worry about.
-                return Promise(value: ())
+                return Promise.value(())
             }
 
-            let (promise, fulfill, reject) = Promise<Void>.pending()
-
-            ProfileFetcherJob().getProfile(recipientId: localRecipientId).then { _ -> Void in
+            return firstly {
+                ProfileFetcherJob().getProfile(recipientId: localRecipientId)
+            }.done { _ in
                 Logger.info("verified recipient profile is in good shape: \(localRecipientId)")
-
-                fulfill(())
-            }.catch { error in
+            }.recover { error -> Promise<Void> in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
                     Logger.warn("detected incomplete profile for \(localRecipientId) error: \(description)")
+
+                    let (promise, resolver) = Promise<Void>.pending()
                     // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.
                     TSPreKeyManager.createPreKeys(success: {
                         Logger.info("successfully uploaded pre-keys. Profile should be fixed.")
-                        fulfill(())
+                        resolver.fulfill(())
                     },
                                                   failure: { _ in
-                                                    reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error"))
+                                                    resolver.reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.logTag) Unknown error"))
                     })
-                default:
-                    reject(error)
-                }
-            }.retainUntilComplete()
 
-            return promise
+                    return promise
+                default:
+                    throw error
+                }
+            }
         }
     }
 }

@@ -42,7 +42,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             Logger.debug("preKeysCount: \(preKeysCount)")
             guard preKeysCount < kEphemeralPreKeysMinimumCount || self.primaryStorage.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
-                return Promise(value: ())
+                return Promise.value(())
             }
 
             let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
@@ -52,7 +52,9 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.primaryStorage.storePreKeyRecords(preKeyRecords)
 
-            return self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords).then { () -> Void in
+            return firstly {
+                self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
+            }.done {
                 signedPreKeyRecord.markAsAcceptedByService()
                 self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
                 self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
@@ -60,7 +62,7 @@ public class RefreshPreKeysOperation: OWSOperation {
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()
             }
-        }.then { () -> Void in
+        }.done {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in

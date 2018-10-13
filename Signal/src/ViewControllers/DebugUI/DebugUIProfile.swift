@@ -42,11 +42,11 @@ class DebugUIProfile: DebugUIPage {
                 guard let strongSelf = self else { return }
 
                 let message = OWSProfileKeyMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: aThread)
-                strongSelf.messageSender.sendPromise(message: message).then {
+                strongSelf.messageSender.sendPromise(message: message).done {
                     Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
-                    }.catch { _ in
-                        owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
-                }
+                }.catch { _ in
+                    owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
+                }.retainUntilComplete()
             }
         ]
 

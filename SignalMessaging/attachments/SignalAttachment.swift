@@ -954,7 +954,7 @@ public class SignalAttachment: NSObject {
         guard let url = dataSource.dataUrl() else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .missingData
-            return (Promise(value: attachment), nil)
+            return (Promise.value(attachment), nil)
         }
 
         let asset = AVAsset(url: url)
@@ -962,7 +962,7 @@ public class SignalAttachment: NSObject {
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality) else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .couldNotConvertToMpeg4
-            return (Promise(value: attachment), nil)
+            return (Promise.value(attachment), nil)
         }
 
         exportSession.shouldOptimizeForNetworkUse = true
@@ -972,7 +972,7 @@ public class SignalAttachment: NSObject {
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
         exportSession.outputURL = exportURL
 
-        let (promise, fulfill, _) = Promise<SignalAttachment>.pending()
+        let (promise, resolver) = Promise<SignalAttachment>.pending()
 
         Logger.debug("starting video export")
         exportSession.exportAsynchronously {
@@ -985,14 +985,14 @@ public class SignalAttachment: NSObject {
                 owsFailDebug("Failed to build data source for exported video URL")
                 let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
                 attachment.error = .couldNotConvertToMpeg4
-                fulfill(attachment)
+                resolver.fulfill(attachment)
                 return
             }
 
             dataSource.sourceFilename = mp4Filename
 
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-            fulfill(attachment)
+            resolver.fulfill(attachment)
         }
 
         return (promise, exportSession)

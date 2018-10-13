@@ -74,7 +74,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.loadViewController = loadViewController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 0.5).then { [weak self] () -> Void in
+        after(seconds: 0.5).done { [weak self] in
             AssertIsOnMainThread()
 
             guard let strongSelf = self else { return }
@@ -532,7 +532,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func buildAttachmentAndPresentConversationPicker() {
         AssertIsOnMainThread()
 
-        self.buildAttachment().then { [weak self] attachment -> Void in
+        self.buildAttachment().map { [weak self] attachment in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
 
@@ -544,7 +544,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             conversationPicker.attachment = attachment
             strongSelf.showPrimaryViewController(conversationPicker)
             Logger.info("showing picker with attachment: \(attachment)")
-        }.catch {[weak self]  error in
+        }.catch { [weak self] error in
             AssertIsOnMainThread()
             guard let strongSelf = self else { return }
 
@@ -690,7 +690,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
         Logger.debug("matched utiType: \(srcUtiType)")
 
-        let (promise, fulfill, reject) = Promise<(itemUrl: URL, utiType: String)>.pending()
+        let (promise, resolver) = Promise<(itemUrl: URL, utiType: String)>.pending()
 
         var customFileName: String?
         var isConvertibleToTextMessage = false
@@ -702,13 +702,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             guard let strongSelf = self else { return }
 
             guard error == nil else {
-                reject(error!)
+                resolver.reject(error!)
                 return
             }
 
             guard let value = value else {
                 let missingProviderError = ShareViewControllerError.assertionError(description: "missing item provider")
-                reject(missingProviderError)
+                resolver.reject(missingProviderError)
                 return
             }
 
@@ -726,7 +726,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     } else {
                         Logger.error("could not parse vcard.")
                         let writeError = ShareViewControllerError.assertionError(description: "Could not parse vcard data.")
-                        reject(writeError)
+                        resolver.reject(writeError)
                         return
                     }
                 }
@@ -734,21 +734,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 let customFileExtension = MIMETypeUtil.fileExtension(forUTIType: srcUtiType)
                 guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: customFileExtension) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
-                    reject(writeError)
+                    resolver.reject(writeError)
                     return
                 }
                 let fileUrl = URL(fileURLWithPath: tempFilePath)
-                fulfill((itemUrl: fileUrl, utiType: srcUtiType))
+                resolver.fulfill((itemUrl: fileUrl, utiType: srcUtiType))
             } else if let string = value as? String {
                 Logger.debug("string provider: \(string)")
                 guard let data = string.filterStringForDisplay().data(using: String.Encoding.utf8) else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
-                    reject(writeError)
+                    resolver.reject(writeError)
                     return
                 }
                 guard let tempFilePath = OWSFileSystem.writeData(toTemporaryFile: data, fileExtension: "txt") else {
                     let writeError = ShareViewControllerError.assertionError(description: "Error writing item data: \(String(describing: error))")
-                    reject(writeError)
+                    resolver.reject(writeError)
                     return
                 }
 
@@ -757,18 +757,18 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 isConvertibleToTextMessage = !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String)
 
                 if UTTypeConformsTo(srcUtiType as CFString, kUTTypeText) {
-                    fulfill((itemUrl: fileUrl, utiType: srcUtiType))
+                    resolver.fulfill((itemUrl: fileUrl, utiType: srcUtiType))
                 } else {
-                    fulfill((itemUrl: fileUrl, utiType:  kUTTypeText as String))
+                    resolver.fulfill((itemUrl: fileUrl, utiType:  kUTTypeText as String))
                 }
             } else if let url = value as? URL {
                 // If the share itself is a URL (e.g. a link from Safari), try to send this as a text message.
                 isConvertibleToTextMessage = (itemProvider.registeredTypeIdentifiers.contains(kUTTypeURL as String) &&
                     !itemProvider.registeredTypeIdentifiers.contains(kUTTypeFileURL as String))
                 if isConvertibleToTextMessage {
-                    fulfill((itemUrl: url, utiType: kUTTypeURL as String))
+                    resolver.fulfill((itemUrl: url, utiType: kUTTypeURL as String))
                 } else {
-                    fulfill((itemUrl: url, utiType: srcUtiType))
+                    resolver.fulfill((itemUrl: url, utiType: srcUtiType))
                 }
             } else if let image = value as? UIImage {
                 if let data = UIImagePNGRepresentation(image) {
@@ -776,18 +776,18 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     do {
                         let url = NSURL.fileURL(withPath: tempFilePath)
                         try data.write(to: url)
-                        fulfill((url, srcUtiType))
+                        resolver.fulfill((url, srcUtiType))
                     } catch {
-                        reject(ShareViewControllerError.assertionError(description: "couldn't write UIImage: \(String(describing: error))"))
+                        resolver.reject(ShareViewControllerError.assertionError(description: "couldn't write UIImage: \(String(describing: error))"))
                     }
                 } else {
-                    reject(ShareViewControllerError.assertionError(description: "couldn't convert UIImage to PNG: \(String(describing: error))"))
+                    resolver.reject(ShareViewControllerError.assertionError(description: "couldn't convert UIImage to PNG: \(String(describing: error))"))
                 }
             } else {
                 // It's unavoidable that we may sometimes receives data types that we
                 // don't know how to handle.
                 let unexpectedTypeError = ShareViewControllerError.assertionError(description: "unexpected value: \(String(describing: value))")
-                reject(unexpectedTypeError)
+                resolver.reject(unexpectedTypeError)
             }
         }
 
@@ -861,7 +861,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 Logger.info("isConvertibleToTextMessage")
                 attachment.isConvertibleToTextMessage = isConvertibleToTextMessage
             }
-            return Promise(value: attachment)
+            return Promise.value(attachment)
         }
     }
 

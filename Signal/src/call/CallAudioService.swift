@@ -442,7 +442,7 @@ protocol CallAudioServiceDelegate: class {
         // Since a call notification is more urgent than a message notifaction, we
         // vibrate twice, like a pulse, to differentiate from a normal notification vibration.
         vibrate()
-        DispatchQueue.default.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {
             self.vibrate()
         }
     }

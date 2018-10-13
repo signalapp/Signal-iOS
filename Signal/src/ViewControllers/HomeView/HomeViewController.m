@@ -939,7 +939,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
-    [SignalApp.sharedApp.messageFetcherJob run].always(^{
+    [SignalApp.sharedApp.messageFetcherJob run].ensure(^{
         OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
     });
