@@ -11,30 +11,27 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: Initializers
 
-    @objc public override init()
+    @objc
+    public override init()
     {
-        super
-            .init()
+        super.init()
 
-                SwiftSingletons.register(self)
+        SwiftSingletons.register(self)
     }
 
     // MARK: - Dependencies
 
-private
-    var messageSender : MessageSender
+    private var messageSender : MessageSender
     {
         return SSKEnvironment.shared.messageSender
     }
 
-private
-    var accountManager : AccountManager
+    private var accountManager : AccountManager
     {
         return AppEnvironment.shared.accountManager
     }
 
-private
-    var callService : CallService
+    private var callService : CallService
     {
         return AppEnvironment.shared.callService
     }

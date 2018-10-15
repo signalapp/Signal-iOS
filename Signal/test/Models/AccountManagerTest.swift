@@ -42,10 +42,11 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(withCode
-                                : String, pin
-                                : String ?, success : @escaping()->Void, failure
-                                : @escaping(Error)->Void) { success() } s
+    override func verifyAccount(withCode: String,
+                                pin: String?,
+                                success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
+        success()
+    }
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {

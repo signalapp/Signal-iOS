@@ -18,7 +18,7 @@ public class CallNotificationsAdapter: NSObject {
         // We have to first port *all* the existing UINotification categories to UNNotifications
         // which is a good thing to do, but in trying to limit the scope of changes that's been
         // left out for now.
-        return SignalApp.shared().notificationsManager
+        return AppEnvironment.shared.notificationsManager
     }
 
     @objc public override init() {

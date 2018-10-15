@@ -54,10 +54,10 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (instancetype)initDefault
 {
-    return [self initWithMessageFetcherJob:SignalApp.sharedApp.messageFetcherJob
+    return [self initWithMessageFetcherJob:AppEnvironment.shared.messageFetcherJob
                             primaryStorage:[OWSPrimaryStorage sharedManager]
                              messageSender:SSKEnvironment.shared.messageSender
-                      notificationsManager:SignalApp.sharedApp.notificationsManager];
+                      notificationsManager:AppEnvironment.shared.notificationsManager];
 }
 
 - (instancetype)initWithMessageFetcherJob:(OWSMessageFetcherJob *)messageFetcherJob
@@ -89,7 +89,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 - (CallUIAdapter *)callUIAdapter
 {
-    return SignalApp.sharedApp.callService.callUIAdapter;
+    return AppEnvironment.shared.callService.callUIAdapter;
 }
 
 - (void)handleMessageRead:(NSNotification *)notification

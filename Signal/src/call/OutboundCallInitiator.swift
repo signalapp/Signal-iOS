@@ -20,14 +20,12 @@ import SignalMessaging
 
     // MARK: - Dependencies
 
-private
-    var contactsManager : OWSContactsManager
+    private var contactsManager : OWSContactsManager
     {
         return Environment.shared.contactsManager
     }
 
-private
-    var contactsUpdater : ContactsUpdater
+    private var contactsUpdater : ContactsUpdater
     {
         return SSKEnvironment.shared.contactsUpdater
     }
@@ -53,9 +51,10 @@ private
      */
     @discardableResult @objc public func initiateCall(recipientId: String,
         isVideo: Bool) -> Bool {
-        // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
-        // because it can change after app launch due to user settings
-        let callUIAdapter = SignalApp.shared().callUIAdapter
+        guard let callUIAdapter = AppEnvironment.shared.callService.callUIAdapter else {
+            owsFailDebug("missing callUIAdapter")
+            return false
+        }
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFailDebug("could not identify frontmostViewController")
             return false

@@ -623,7 +623,7 @@ static NSTimeInterval launchStartedAt;
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
                 // restart the app, so we check every activation for users who haven't yet registered.
                 __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
+                    [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                                     preferences:Environment.shared.preferences];
             }
 
@@ -766,10 +766,10 @@ static NSTimeInterval launchStartedAt;
             // * It can be received if the user taps the "video" button for a contact in the
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
-            if (SignalApp.sharedApp.callService.call != nil) {
-                if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.remotePhoneNumber]) {
+            if (AppEnvironment.shared.callService.call != nil) {
+                if ([phoneNumber isEqualToString:AppEnvironment.shared.callService.call.remotePhoneNumber]) {
                     OWSLogWarn(@"trying to upgrade ongoing call to video.");
-                    [SignalApp.sharedApp.callService handleCallKitStartVideo];
+                    [AppEnvironment.shared.callService handleCallKitStartVideo];
                     return;
                 } else {
                     OWSLogWarn(@"ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.");
@@ -777,7 +777,7 @@ static NSTimeInterval launchStartedAt;
                 }
             }
 
-            OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
+            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
             OWSAssertDebug(outboundCallInitiator);
             [outboundCallInitiator initiateCallWithHandle:phoneNumber];
         }];
@@ -815,12 +815,12 @@ static NSTimeInterval launchStartedAt;
                 }
             }
 
-            if (SignalApp.sharedApp.callService.call != nil) {
+            if (AppEnvironment.shared.callService.call != nil) {
                 OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
                 return;
             }
 
-            OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
+            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
             OWSAssertDebug(outboundCallInitiator);
             [outboundCallInitiator initiateCallWithHandle:phoneNumber];
         }];
@@ -959,7 +959,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppIsReady:^{
-        __block AnyPromise *job = [[SignalApp sharedApp].messageFetcherJob run].then(^{
+        __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
             // HACK: Call completion handler after n seconds.
             //
             // We don't currently have a convenient API to know when message fetching is *done* when
@@ -1031,11 +1031,11 @@ static NSTimeInterval launchStartedAt;
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
-        __unused AnyPromise *messagePromise = [SignalApp.sharedApp.messageFetcherJob run];
+        __unused AnyPromise *messagePromise = [AppEnvironment.shared.messageFetcherJob run];
 
         // This should happen at any launch, background or foreground.
         __unused AnyPromise *pushTokenpromise =
-            [OWSSyncPushTokensJob runWithAccountManager:SignalApp.sharedApp.accountManager
+            [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                             preferences:Environment.shared.preferences];
     }
 

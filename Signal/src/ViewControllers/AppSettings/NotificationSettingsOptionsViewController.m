@@ -56,7 +56,7 @@
     [Environment.shared.preferences setNotificationPreviewType:notificationType];
 
     // rebuild callUIAdapter since notification configuration changed.
-    [SignalApp.sharedApp.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService createCallUIAdapter];
 
     [self.navigationController popViewControllerAnimated:YES];
 }

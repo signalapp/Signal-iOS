@@ -18,7 +18,8 @@ public class AccountManager: NSObject {
         return PushManager.shared()
     }
 
-    @objc public override init()
+    @objc
+    public override init()
     {
         super.init()
 

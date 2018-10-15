@@ -9,16 +9,14 @@ import SignalServiceKit
 @objc(OWSMessageFetcherJob)
 public class MessageFetcherJob: NSObject {
 
-private
-    var timer : Timer ?
-
-                      @objc public override
-                      init()
+    private var timer : Timer?
+    
+    @objc
+    public override init()
     {
-        super
-            .init()
-
-                SwiftSingletons.register(self)
+        super.init()
+        
+        SwiftSingletons.register(self)
     }
 
     // MARK: Singletons

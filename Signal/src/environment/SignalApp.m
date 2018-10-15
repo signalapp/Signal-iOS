@@ -49,41 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
-- (OWSWebRTCCallMessageHandler *)callMessageHandler
-{
-    return AppEnvironment.shared.callMessageHandler;
-}
-
-- (CallService *)callService
-{
-    return AppEnvironment.shared.callService;
-}
-
-- (CallUIAdapter *)callUIAdapter
-{
-    return AppEnvironment.shared.callService.callUIAdapter;
-}
-
-- (OutboundCallInitiator *)outboundCallInitiator
-{
-    return AppEnvironment.shared.outboundCallInitiator;
-}
-
-- (OWSMessageFetcherJob *)messageFetcherJob
-{
-    return AppEnvironment.shared.messageFetcherJob;
-}
-
-- (NotificationsManager *)notificationsManager
-{
-    return AppEnvironment.shared.notificationsManager;
-}
-
-- (AccountManager *)accountManager
-{
-    return AppEnvironment.shared.accountManager;
-}
-
 #pragma mark - View Convenience Methods
 
 - (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated
@@ -157,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didChangeCallLoggingPreference:(NSNotification *)notitication
 {
-    [self.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 #pragma mark - Methods
