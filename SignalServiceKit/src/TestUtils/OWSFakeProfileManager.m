@@ -55,7 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.profileKeys[recipientId] = key;
 }
 
-- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId {
+- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
+{
     return self.profileKeys[recipientId].keyData;
 }
 
@@ -74,7 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.recipientWhitelist addObject:recipientId];
 }
 
-- (void)addGroupIdToProfileWhitelist:(NSData *)groupId {
+- (void)addGroupIdToProfileWhitelist:(NSData *)groupId
+{
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
