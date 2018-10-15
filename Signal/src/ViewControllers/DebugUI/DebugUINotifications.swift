@@ -29,8 +29,7 @@ class DebugUINotifications: DebugUIPage {
         return "Notifications"
     }
 
-    override func section(thread aThread: TSThread?) -> OWSTableSection?
-    {
+    override func section(thread aThread: TSThread?) -> OWSTableSection? {
         guard let thread = aThread else {
             owsFailDebug("Notifications must specify thread.")
             return nil

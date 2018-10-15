@@ -11,8 +11,7 @@ import SignalMessaging
  */
 @objc public class OutboundCallInitiator: NSObject {
 
-    @objc public override init()
-    {
+    @objc public override init() {
         super.init()
 
         SwiftSingletons.register(self)

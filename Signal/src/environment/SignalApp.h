@@ -22,14 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, weak) HomeViewController *homeViewController;
 @property (nonatomic, nullable, weak) OWSNavigationController *signUpFlowNavigationController;
 
-//@property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
-//@property (nonatomic, readonly) CallService *callService;
-//@property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
-//@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
-//@property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
-//@property (nonatomic, readonly) NotificationsManager *notificationsManager;
-//@property (nonatomic, readonly) AccountManager *accountManager;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedApp;

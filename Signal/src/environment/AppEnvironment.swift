@@ -48,8 +48,7 @@ import SignalMessaging
                 messageFetcherJob : MessageFetcherJob,
                 notificationsManager : NotificationsManager,
                 accountManager : AccountManager,
-                callNotificationsAdapter : CallNotificationsAdapter)
-    {
+                callNotificationsAdapter : CallNotificationsAdapter) {
         self.callMessageHandler = callMessageHandler
         self.callService = callService
         self.outboundCallInitiator = outboundCallInitiator
@@ -66,8 +65,7 @@ import SignalMessaging
         setup()
     }
     
-    private override init()
-    {
+    private override init() {
         let accountManager = AccountManager()
         let notificationsManager = NotificationsManager()
         let callNotificationsAdapter = CallNotificationsAdapter()
@@ -91,8 +89,7 @@ import SignalMessaging
         setup()
     }
     
-    private func setup()
-    {
+    private func setup() {
         callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.

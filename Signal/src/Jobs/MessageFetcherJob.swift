@@ -15,7 +15,7 @@ public class MessageFetcherJob: NSObject {
     public override init()
     {
         super.init()
-        
+
         SwiftSingletons.register(self)
     }
 
