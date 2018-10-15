@@ -61,6 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(block);
 
+    if (CurrentAppContext().isRunningTests) {
+        // We don't need to an any "on app ready" work
+        // in the tests.
+        return;
+    }
+
     if (self.isAppReady) {
         block();
         return;
@@ -93,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<AppReadyBlock> *appReadyBlocks = [self.appReadyBlocks copy];
     [self.appReadyBlocks removeAllObjects];
+
     for (AppReadyBlock block in appReadyBlocks) {
         block();
     }
