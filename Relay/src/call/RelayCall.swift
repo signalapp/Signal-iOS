@@ -43,8 +43,8 @@ protocol CallObserver: class {
 
     var observers = [Weak<CallObserver>]()
 
-    @objc
-    let callId: String
+    @objc let callId: String
+    @objc let orginatorId: String
 
     var isTerminated: Bool {
         switch state {
@@ -156,8 +156,9 @@ protocol CallObserver: class {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, peerId: String, state: CallState, callId: String) {
+    init(direction: CallDirection, localId: UUID, peerId: String, originatorId: String, state: CallState, callId: String) {
         self.direction = direction
+        self.orginatorId = originatorId
         self.localId = localId
         self.peerId = peerId
         self.state = state
@@ -171,12 +172,12 @@ protocol CallObserver: class {
         return "{\(callId), \(localId), \(peerId)}"
     }
 
-    class func outgoingCall(localId: UUID, remotePhoneNumber: String) -> RelayCall {
-        return RelayCall(direction: .outgoing, localId: localId, peerId: newCallSignalingId(), state: .dialing, callId: remotePhoneNumber)
+    class func outgoingCall(localId: UUID, callId: String) -> RelayCall {
+        return RelayCall(direction: .outgoing, localId: localId, peerId: newCallSignalingId(), originatorId: TSAccountManager.localUID()!, state: .dialing, callId: callId)
     }
 
-    class func incomingCall(localId: UUID, callId: String, peerId: String) -> RelayCall {
-        return RelayCall(direction: .incoming, localId: localId, peerId: peerId, state: .answering, callId: callId)
+    class func incomingCall(localId: UUID, originatorId: String, callId: String, peerId: String) -> RelayCall {
+        return RelayCall(direction: .incoming, localId: localId, peerId: peerId, originatorId: originatorId, state: .answering, callId: callId)
     }
 
     // -

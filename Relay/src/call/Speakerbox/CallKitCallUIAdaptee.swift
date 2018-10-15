@@ -106,7 +106,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
-        let call = RelayCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        let call = RelayCall.outgoingCall(localId: UUID(), callId: handle)
 
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)

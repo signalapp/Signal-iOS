@@ -118,6 +118,7 @@ public class AccountManager: NSObject {
 
     func getTurnServerInfo() -> Promise<TurnServerInfo> {
         return Promise { fulfill, reject in
+            let request = OWSRequestFactory.turnServerInfoRequest()
             self.networkManager.makeRequest(OWSRequestFactory.turnServerInfoRequest(),
                                             success: { (_: URLSessionDataTask, responseObject: Any?) in
                                                 guard responseObject != nil else {

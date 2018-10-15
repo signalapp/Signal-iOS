@@ -576,10 +576,10 @@ private class SignalCallData: NSObject {
      * Received an incoming call offer. We still have to complete setting up the Signaling channel before we notify
      * the user of an incoming call.
      */
-    public func handleReceivedOffer(thread: TSThread, peerId: String, sessionDescription callerSessionDescription: String) {
+    public func handleReceivedOffer(thread: TSThread, originatorId: String, peerId: String, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
-        let newCall = RelayCall.incomingCall(localId: UUID(), callId: thread.uniqueId, peerId: peerId)
+        let newCall = RelayCall.incomingCall(localId: UUID(), originatorId: originatorId, callId: thread.uniqueId, peerId: peerId)
 
         Logger.info("\(self.logTag) receivedCallOffer: \(newCall.identifiersForLogs)")
 
@@ -703,13 +703,14 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
 
-            let callId = self.call?.peerId
-            let peerId = self.call?.localId.uuidString
+            let callId = self.call?.callId
+            let peerId = self.call?.peerId
             let members = thread.participantIds
-            let originator = self.call?.callId
+            let originator = self.call?.orginatorId
             let answer = [ "type" : "answer",
                 "sdp" : negotiatedSessionDescription.sdp ]
             
+            // Build data object
             let allTheData = [ "answer" : answer,
                                "callId" : callId!,
                                "members" : members,
@@ -717,20 +718,16 @@ private class SignalCallData: NSObject {
                                "peerId" : peerId!,
                 ] as NSMutableDictionary
             
-            // Build data object
-//            let dataDict = Dictionary()
-            // Make control message
-            let answerControlMessage = OutgoingControlMessage(thread: thread, controlType: FLControlMessageCallAcceptOfferKey, moreData: allTheData)
-            
-            return self.messageSender.sendPromise(message: answerControlMessage)
-            // Send the control
-            // UI requires message locally, make that
-
+//            // UI requires message locally, make that
 //            let answerMessage = OWSCallAnswerMessage(peerId: newCall.peerId, sessionDescription: negotiatedSessionDescription.sdp)
 //            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
+//            callAnswerMessage.save()
+            
+            // Make control message
+            let answerControlMessage = OutgoingControlMessage(thread: thread, controlType: FLControlMessageCallAcceptOfferKey, moreData: allTheData)
+            return self.messageSender.sendPromise(message: answerControlMessage)
 
-//            return self.messageSender.sendPromise(message: callAnswerMessage)
-        }.then {
+            }.then {
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")
             }
@@ -863,7 +860,6 @@ private class SignalCallData: NSObject {
 //            let iceUpdateMessage = OWSCallIceUpdateMessage(peerId: call.peerId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
-            Logger.debug("Control message: \(iceControlMessage.body)")
 //            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
             let sendPromise = self.messageSender.sendPromise(message: iceControlMessage)
             sendPromise.retainUntilComplete()

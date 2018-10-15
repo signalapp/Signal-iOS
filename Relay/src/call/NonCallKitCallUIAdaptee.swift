@@ -31,7 +31,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     func startOutgoingCall(handle: String) -> RelayCall {
         SwiftAssertIsOnMainThread(#function)
 
-        let call = RelayCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        let call = RelayCall.outgoingCall(localId: UUID(), callId: handle)
 
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)

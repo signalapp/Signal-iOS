@@ -123,7 +123,7 @@ class ControlMessageManager : NSObject
         }
         
         DispatchQueue.main.async {
-            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: callId!, peerId: peerId!, sessionDescription: sdpString!)
+            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: callId!, originatorId: message.authorId, peerId: peerId!, sessionDescription: sdpString!)
         }
     }
     
