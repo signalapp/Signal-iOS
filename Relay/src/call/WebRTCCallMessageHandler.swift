@@ -88,6 +88,14 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 //        self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
 //    }
 
+    public func handleRemoteHangup(withCallId callId: String) {
+
+        SwiftAssertIsOnMainThread(#function)
+
+        let thread = TSThread.getOrCreateThread(withId: callId)
+        self.callService.handleRemoteHangup(thread: thread, callId: callId)
+    }
+    
     public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
         SwiftAssertIsOnMainThread(#function)
         guard hangup.hasId() else {

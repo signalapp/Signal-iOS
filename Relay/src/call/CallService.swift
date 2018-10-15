@@ -931,6 +931,45 @@ private class SignalCallData: NSObject {
     /**
      * The remote client (caller or callee) ended the call.
      */
+    public func handleRemoteHangup(thread: TSThread, callId: String) {
+        Logger.debug("\(self.logTag) in \(#function)")
+        SwiftAssertIsOnMainThread(#function)
+        
+        guard let call = self.call else {
+            // This may happen if we hang up slightly before they hang up.
+            handleFailedCurrentCall(error: .obsoleteCall(description:"\(self.logTag) call was unexpectedly nil in \(#function)"))
+            return
+        }
+        
+        guard call.callId == callId else {
+            Logger.warn("\(self.logTag) ignoring mismatched call: \(callId) currentCall: \(call.callId) in \(#function)")
+            return
+        }
+        
+        guard thread.uniqueId == call.thread.uniqueId else {
+            // This can safely be ignored.
+            // We don't want to fail the current call because an old call was slow to send us the hangup message.
+            Logger.warn("\(self.logTag) ignoring hangup for thread: \(thread.uniqueId) which is not the current call: \(call.identifiersForLogs)")
+            return
+        }
+        
+        Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
+        
+        switch call.state {
+        case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
+            handleMissedCall(call)
+        case .connected, .reconnecting, .localHangup, .remoteHangup:
+            Logger.info("\(self.logTag) call is finished.")
+        }
+        
+        call.state = .remoteHangup
+        // Notify UI
+        callUIAdapter.remoteDidHangupCall(call)
+        
+        // self.call is nil'd in `terminateCall`, so it's important we update it's state *before* calling `terminateCall`
+        terminateCall()
+    }
+    
     public func handleRemoteHangup(thread: TSThread, peerId: String) {
         Logger.debug("\(self.logTag) in \(#function)")
         SwiftAssertIsOnMainThread(#function)

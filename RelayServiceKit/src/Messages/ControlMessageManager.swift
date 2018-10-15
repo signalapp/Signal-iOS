@@ -137,7 +137,6 @@ class ControlMessageManager : NSObject
     {
         //        Logger.info("Received callLeave message: \(message.forstaPayload)")
         // FIXME: Message processing stops while call is pending.
-        //  TextSecureKitEnv.shared().callMessageHandler .receivedHangup(<#T##hangup: OWSSignalServiceProtosCallMessageHangup##OWSSignalServiceProtosCallMessageHangup#>, from: <#T##String#>)
 
         let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary
         
@@ -153,8 +152,9 @@ class ControlMessageManager : NSObject
             return
         }
         
-        //        Environment.endCall(withId: callId!)
-        
+        DispatchQueue.main.async {
+            TextSecureKitEnv.shared().callMessageHandler.handleRemoteHangup(withCallId: callId!)
+        }
     }
     
     static private func handleThreadUpdate(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
