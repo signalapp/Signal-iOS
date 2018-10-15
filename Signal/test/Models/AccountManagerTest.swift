@@ -47,11 +47,6 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
                                 success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
         success()
     }
-
-    // TODO:
-//    override func updateAcountAttributes() -> Promise<Void> {
-//        return Promise(value: ())
-//    }
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
@@ -114,6 +109,8 @@ class AccountManagerTest: SignalBaseTest {
 
     func testSuccessfulRegistration() {
         let tsAccountManager = TokenObtainingTSAccountManager(primaryStorage: OWSPrimaryStorage.shared())
+        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
+        sskEnvironment.tsAccountManager = tsAccountManager
 
         let accountManager = AccountManager()
 
