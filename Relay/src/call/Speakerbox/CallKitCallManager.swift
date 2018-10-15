@@ -38,11 +38,11 @@ final class CallKitCallManager: NSObject {
         var handle: CXHandle
 
         if showNamesOnCallScreen {
-            handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+            handle = CXHandle(type: .phoneNumber, value: call.callId)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
-            OWSPrimaryStorage.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId: callKitId)
+            OWSPrimaryStorage.shared().setPhoneNumber(call.callId, forCallKitId: callKitId)
         }
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)

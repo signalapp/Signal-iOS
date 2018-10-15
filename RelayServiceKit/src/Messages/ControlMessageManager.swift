@@ -60,15 +60,17 @@ class ControlMessageManager : NSObject
             
             if let icecandidates: NSArray = dataBlob.object(forKey: "icecandidates") as? NSArray {
                 for candidate in icecandidates as NSArray {
-                    if let candidateDictiontary: Dictionary<String, Any> = candidate as? Dictionary<String, String> {
+                    if let candidateDictiontary: Dictionary<String, Any> = candidate as? Dictionary<String, Any> {
                         if let sdpMLineIndex: Int32 = candidateDictiontary["sdpMLineIndex"] as? Int32,
                             let sdpMid: String = candidateDictiontary["sdpMid"] as? String,
                             let sdp: String = candidateDictiontary["candidate"] as? String {
                             
-                            TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: callId!,
-                                                                                           sessionDescription: sdp,
-                                                                                           sdpMid: sdpMid,
-                                                                                           sdpMLineIndex: sdpMLineIndex)
+                            DispatchQueue.main.async {
+                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: callId!,
+                                                                                               sessionDescription: sdp,
+                                                                                               sdpMid: sdpMid,
+                                                                                               sdpMLineIndex: sdpMLineIndex)
+                            }
                         }
                     }
                 }

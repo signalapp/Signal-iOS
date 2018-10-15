@@ -371,7 +371,7 @@ private class SignalCallData: NSObject {
         let callData = SignalCallData(call: call)
         self.callData = callData
 
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.callId, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -562,7 +562,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.uniqueId == call.remotePhoneNumber else {
+        guard thread.uniqueId == call.callId else {
             Logger.warn("\(self.logTag) ignoring obsolete call in \(#function)")
             return
         }
@@ -579,7 +579,7 @@ private class SignalCallData: NSObject {
     public func handleReceivedOffer(thread: TSThread, peerId: String, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
-        let newCall = RelayCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.uniqueId, peerId: peerId)
+        let newCall = RelayCall.incomingCall(localId: UUID(), callId: thread.uniqueId, peerId: peerId)
 
         Logger.info("\(self.logTag) receivedCallOffer: \(newCall.identifiersForLogs)")
 
@@ -621,7 +621,7 @@ private class SignalCallData: NSObject {
 
             handleLocalBusyCall(newCall)
 
-            if existingCall.remotePhoneNumber == newCall.remotePhoneNumber {
+            if existingCall.callId == newCall.callId {
                 Logger.info("\(self.logTag) handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
                 // If we're receiving a new call offer from the user we already think we have a call with,
@@ -706,7 +706,7 @@ private class SignalCallData: NSObject {
             let callId = self.call?.peerId
             let peerId = self.call?.localId.uuidString
             let members = thread.participantIds
-            let originator = self.call?.remotePhoneNumber
+            let originator = self.call?.callId
             let answer = [ "type" : "answer",
                 "sdp" : negotiatedSessionDescription.sdp ]
             
@@ -1030,7 +1030,7 @@ private class SignalCallData: NSObject {
 
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
 
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.callId, callType: RPRecentCallTypeIncomingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -1109,7 +1109,7 @@ private class SignalCallData: NSObject {
             owsFail("Not expecting callrecord to already be set")
             callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
         } else {
-            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.callId, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
             callRecord.save()
             call.callRecord = callRecord
         }

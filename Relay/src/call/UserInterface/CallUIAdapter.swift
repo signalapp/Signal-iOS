@@ -136,14 +136,14 @@ extension CallUIAdaptee {
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)
 
-        let callerName = self.contactsManager.displayName(forRecipientId: call.remotePhoneNumber)
+        let callerName = self.contactsManager.displayName(forRecipientId: call.callId)
         adaptee.reportIncomingCall(call, callerName: callerName!)
     }
 
     internal func reportMissedCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
-        let callerName = self.contactsManager.displayName(forRecipientId: call.remotePhoneNumber)
+        let callerName = self.contactsManager.displayName(forRecipientId: call.callId)
         adaptee.reportMissedCall(call, callerName: callerName!)
     }
 

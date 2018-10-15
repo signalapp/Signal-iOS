@@ -67,8 +67,9 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
         let thread = TSThread.getOrCreateThread(withId: threadId)
 
-        // Need to untangle callId/peerId/threadId for calls
-        self.callService.handleRemoteAddedIceCandidate(thread: thread, peerId: threadId, sdp: sdp, lineIndex: sdpMLineIndex, mid: sdpMid)
+        if let peerId = callService.call?.peerId {
+            self.callService.handleRemoteAddedIceCandidate(thread: thread, peerId: peerId, sdp: sdp, lineIndex: sdpMLineIndex, mid: sdpMid)
+        }
     }
     
 //    public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {

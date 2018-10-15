@@ -144,7 +144,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     required init(call: RelayCall) {
         contactsManager = Environment.current().contactsManager
         self.call = call
-        self.thread = TSThread.getOrCreateThread(withId: call.remotePhoneNumber)
+        self.thread = TSThread.getOrCreateThread(withId: call.callId)
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)

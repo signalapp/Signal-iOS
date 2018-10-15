@@ -44,7 +44,7 @@ protocol CallObserver: class {
     var observers = [Weak<CallObserver>]()
 
     @objc
-    let remotePhoneNumber: String
+    let callId: String
 
     var isTerminated: Bool {
         switch state {
@@ -156,27 +156,27 @@ protocol CallObserver: class {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, peerId: String, state: CallState, remotePhoneNumber: String) {
+    init(direction: CallDirection, localId: UUID, peerId: String, state: CallState, callId: String) {
         self.direction = direction
         self.localId = localId
         self.peerId = peerId
         self.state = state
-        self.remotePhoneNumber = remotePhoneNumber
-        self.thread = TSThread.getOrCreateThread(withId: remotePhoneNumber)
-        self.audioActivity = AudioActivity(audioDescription: "[RelayCall] with \(remotePhoneNumber)")
+        self.callId = callId
+        self.thread = TSThread.getOrCreateThread(withId: callId)
+        self.audioActivity = AudioActivity(audioDescription: "[RelayCall] with \(callId)")
     }
 
     // A string containing the three identifiers for this call.
     var identifiersForLogs: String {
-        return "{\(remotePhoneNumber), \(localId), \(peerId)}"
+        return "{\(callId), \(localId), \(peerId)}"
     }
 
     class func outgoingCall(localId: UUID, remotePhoneNumber: String) -> RelayCall {
-        return RelayCall(direction: .outgoing, localId: localId, peerId: newCallSignalingId(), state: .dialing, remotePhoneNumber: remotePhoneNumber)
+        return RelayCall(direction: .outgoing, localId: localId, peerId: newCallSignalingId(), state: .dialing, callId: remotePhoneNumber)
     }
 
-    class func incomingCall(localId: UUID, remotePhoneNumber: String, peerId: String) -> RelayCall {
-        return RelayCall(direction: .incoming, localId: localId, peerId: peerId, state: .answering, remotePhoneNumber: remotePhoneNumber)
+    class func incomingCall(localId: UUID, callId: String, peerId: String) -> RelayCall {
+        return RelayCall(direction: .incoming, localId: localId, peerId: peerId, state: .answering, callId: callId)
     }
 
     // -
