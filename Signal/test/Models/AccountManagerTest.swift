@@ -52,6 +52,12 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
+class VerifyingPushRegistrationManager: PushRegistrationManager {
+    public override func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
+        return Promise.value(("a", "b"))
+    }
+}
+
 class AccountManagerTest: SignalBaseTest {
 
     override func setUp() {
@@ -111,6 +117,8 @@ class AccountManagerTest: SignalBaseTest {
         let tsAccountManager = TokenObtainingTSAccountManager(primaryStorage: OWSPrimaryStorage.shared())
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
         sskEnvironment.tsAccountManager = tsAccountManager
+
+        AppEnvironment.shared.pushRegistrationManager = VerifyingPushRegistrationManager()
 
         let accountManager = AccountManager()
 

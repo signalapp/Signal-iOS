@@ -159,7 +159,7 @@ static NSTimeInterval launchStartedAt;
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
             // Create AppEnvironment.
-            [AppEnvironment shared];
+            [AppEnvironment.shared setup];
             [SignalApp.sharedApp setup];
         }
         migrationCompletion:^{
@@ -429,7 +429,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered vanilla push token: %@", deviceToken);
-    [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:deviceToken];
+    [PushRegistrationManager.shared didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -444,7 +444,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogError(@"failed to register vanilla push token with error: %@", error);
 #ifdef DEBUG
     OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier");
-    [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
+    [PushRegistrationManager.shared didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
     [PushRegistrationManager.sharedManager didFailToReceiveVanillaPushTokenWithError:error];
@@ -462,7 +462,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered user notification settings");
-    [PushRegistrationManager.sharedManager didRegisterUserNotificationSettings];
+    [PushRegistrationManager.shared didRegisterUserNotificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application

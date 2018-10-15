@@ -20,16 +20,21 @@ public enum PushRegistrationError: Error {
 @objc public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: - Dependencies
+
     private var pushManager: PushManager {
         return PushManager.shared()
     }
 
     // MARK: - Singleton class
 
-    @objc(sharedManager)
-    public static let shared = PushRegistrationManager()
+    @objc
+    public static var shared: PushRegistrationManager {
+        get {
+            return AppEnvironment.shared.pushRegistrationManager
+        }
+    }
 
-    private override init() {
+    override init() {
         super.init()
 
         SwiftSingletons.register(self)

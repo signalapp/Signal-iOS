@@ -6,49 +6,58 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc public class AppEnvironment : NSObject {
-    
-    private static var _shared : AppEnvironment = AppEnvironment()
-    
+@objc public class AppEnvironment: NSObject {
+
+    private static var _shared: AppEnvironment = AppEnvironment()
+
     @objc
-    public class var shared : AppEnvironment {
+    public class var shared: AppEnvironment {
         get {
             return _shared
         }
         set {
+            guard CurrentAppContext().isRunningTests else {
+                owsFailDebug("Can only switch environments in tests.")
+                return
+            }
+
             _shared = newValue
         }
     }
-    
+
     @objc
-    public var callMessageHandler : WebRTCCallMessageHandler
-    
+    public var callMessageHandler: WebRTCCallMessageHandler
+
     @objc
-    public var callService : CallService
-    
+    public var callService: CallService
+
     @objc
-    public var outboundCallInitiator : OutboundCallInitiator
-    
+    public var outboundCallInitiator: OutboundCallInitiator
+
     @objc
-    public var messageFetcherJob : MessageFetcherJob
-    
+    public var messageFetcherJob: MessageFetcherJob
+
     @objc
-    public var notificationsManager : NotificationsManager
-    
+    public var notificationsManager: NotificationsManager
+
     @objc
-    public var accountManager : AccountManager
-    
+    public var accountManager: AccountManager
+
     @objc
-    public var callNotificationsAdapter : CallNotificationsAdapter
-    
+    public var callNotificationsAdapter: CallNotificationsAdapter
+
     @objc
-    public init(callMessageHandler : WebRTCCallMessageHandler,
-                callService : CallService,
-                outboundCallInitiator : OutboundCallInitiator,
-                messageFetcherJob : MessageFetcherJob,
-                notificationsManager : NotificationsManager,
-                accountManager : AccountManager,
-                callNotificationsAdapter : CallNotificationsAdapter) {
+    public var pushRegistrationManager: PushRegistrationManager
+
+    @objc
+    public init(callMessageHandler: WebRTCCallMessageHandler,
+                callService: CallService,
+                outboundCallInitiator: OutboundCallInitiator,
+                messageFetcherJob: MessageFetcherJob,
+                notificationsManager: NotificationsManager,
+                accountManager: AccountManager,
+                callNotificationsAdapter: CallNotificationsAdapter,
+                pushRegistrationManager: PushRegistrationManager) {
         self.callMessageHandler = callMessageHandler
         self.callService = callService
         self.outboundCallInitiator = outboundCallInitiator
@@ -56,15 +65,13 @@ import SignalMessaging
         self.notificationsManager = notificationsManager
         self.accountManager = accountManager
         self.callNotificationsAdapter = callNotificationsAdapter
-        
-        super
-            .init()
-        
+        self.pushRegistrationManager = pushRegistrationManager
+
+        super.init()
+
         SwiftSingletons.register(self)
-        
-        setup()
     }
-    
+
     private override init() {
         let accountManager = AccountManager()
         let notificationsManager = NotificationsManager()
@@ -73,7 +80,8 @@ import SignalMessaging
         let callMessageHandler = WebRTCCallMessageHandler()
         let outboundCallInitiator = OutboundCallInitiator()
         let messageFetcherJob = MessageFetcherJob()
-        
+        let pushRegistrationManager = PushRegistrationManager()
+
         self.callMessageHandler = callMessageHandler
         self.callService = callService
         self.outboundCallInitiator = outboundCallInitiator
@@ -81,15 +89,15 @@ import SignalMessaging
         self.notificationsManager = notificationsManager
         self.accountManager = accountManager
         self.callNotificationsAdapter = callNotificationsAdapter
-        
+        self.pushRegistrationManager = pushRegistrationManager
+
         super.init()
-        
+
         SwiftSingletons.register(self)
-        
-        setup()
     }
-    
-    private func setup() {
+
+    @objc
+    public func setup() {
         callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
