@@ -22,6 +22,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// LOG_ALL_FILE_PATHS can be used to determine if there are other kinds of files
+// that we're not cleaning up.
+//#define LOG_ALL_FILE_PATHS
+
+#define ENABLE_ORPHAN_DATA_CLEANER
+
 NSString *const OWSOrphanDataCleaner_Collection = @"OWSOrphanDataCleaner_Collection";
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
 NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
@@ -177,9 +183,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     __block BOOL shouldAbort = NO;
 
-    // LOG_ALL_FILE_PATHS can be used to determine if there are other kinds of files
-    // that we're not cleaning up.
-//#define LOG_ALL_FILE_PATHS
 #ifdef LOG_ALL_FILE_PATHS
     {
         NSString *documentDirPath = [OWSFileSystem appDocumentDirectoryPath];
@@ -413,8 +416,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     OWSAssertIsOnMainThread();
 
-    // In production, do not audit or clean up.
-#ifndef DEBUG
+#ifndef ENABLE_ORPHAN_DATA_CLEANER
     return;
 #endif
 
