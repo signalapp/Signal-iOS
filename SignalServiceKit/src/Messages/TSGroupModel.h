@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const NSUInteger kGroupIdLength;
+extern const int32_t kGroupIdLength;
 
 @interface TSGroupModel : TSYapDatabaseObject
 
