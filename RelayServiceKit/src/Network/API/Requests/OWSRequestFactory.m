@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)turnServerInfoRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/turn"] method:@"GET" parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/rtc/servers"] method:@"GET" parameters:@{}];
 }
 
 + (TSRequest *)allocAttachmentRequest

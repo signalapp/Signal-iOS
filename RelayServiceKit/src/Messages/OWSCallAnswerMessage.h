@@ -5,17 +5,22 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosCallMessageAnswer;
+@class OutgoingControlMessage;
 
 /**
  * Sent by the call recipient upon accepting a CallOffer
  */
 @interface OWSCallAnswerMessage : NSObject
 
-- (instancetype)initWithCallId:(UInt64)callId sessionDescription:(NSString *)sessionDescription;
+- (instancetype)initWithPeerId:(NSString *)peerId sessionDescription:(NSString *)sessionDescription;
 
-@property (nonatomic, readonly) UInt64 callId;
+@property (nonatomic, readonly, copy) NSString *peerId;
 @property (nonatomic, readonly, copy) NSString *sessionDescription;
 
+
+//-(OutgoingControlMessage *)asOutgoingControlMessage;
+
+// TODO: Convert to control message
 - (OWSSignalServiceProtosCallMessageAnswer *)asProtobuf;
 
 @end

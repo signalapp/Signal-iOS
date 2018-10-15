@@ -140,24 +140,24 @@ protocol CallAudioServiceDelegate: class {
 
     // MARK: - CallObserver
 
-    internal func stateDidChange(call: SignalCall, state: CallState) {
+    internal func stateDidChange(call: RelayCall, state: CallState) {
         SwiftAssertIsOnMainThread(#function)
         self.handleState(call: call)
     }
 
-    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+    internal func muteDidChange(call: RelayCall, isMuted: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
     }
 
-    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
+    internal func holdDidChange(call: RelayCall, isOnHold: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
     }
 
-    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
+    internal func audioSourceDidChange(call: RelayCall, audioSource: AudioSource?) {
         SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
@@ -169,7 +169,7 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
+    internal func hasLocalVideoDidChange(call: RelayCall, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
@@ -207,7 +207,7 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func ensureProperAudioSession(call: SignalCall?) {
+    private func ensureProperAudioSession(call: RelayCall?) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = call, !call.isTerminated else {
@@ -266,13 +266,13 @@ protocol CallAudioServiceDelegate: class {
 
     // MARK: - Service action handlers
 
-    public func didUpdateVideoTracks(call: SignalCall?) {
+    public func didUpdateVideoTracks(call: RelayCall?) {
         Logger.verbose("\(self.logTag) in \(#function)")
 
         self.ensureProperAudioSession(call: call)
     }
 
-    public func handleState(call: SignalCall) {
+    public func handleState(call: RelayCall) {
         assert(Thread.isMainThread)
 
         Logger.verbose("\(self.logTag) in \(#function) new state: \(call.state)")
@@ -297,11 +297,11 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func handleIdle(call: SignalCall) {
+    private func handleIdle(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
     }
 
-    private func handleDialing(call: SignalCall) {
+    private func handleDialing(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
@@ -312,36 +312,36 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func handleAnswering(call: SignalCall) {
+    private func handleAnswering(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
     }
 
-    private func handleRemoteRinging(call: SignalCall) {
+    private func handleRemoteRinging(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
         self.play(sound: OWSSound.callOutboundRinging)
     }
 
-    private func handleLocalRinging(call: SignalCall) {
+    private func handleLocalRinging(call: RelayCall) {
         Logger.debug("\(self.logTag) in \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
         startRinging(call: call)
     }
 
-    private func handleConnected(call: SignalCall) {
+    private func handleConnected(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
     }
 
-    private func handleReconnecting(call: SignalCall) {
+    private func handleReconnecting(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
     }
 
-    private func handleLocalFailure(call: SignalCall) {
+    private func handleLocalFailure(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
@@ -349,14 +349,14 @@ protocol CallAudioServiceDelegate: class {
         handleCallEnded(call: call)
     }
 
-    private func handleLocalHangup(call: SignalCall) {
+    private func handleLocalHangup(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
         handleCallEnded(call: call)
     }
 
-    private func handleRemoteHangup(call: SignalCall) {
+    private func handleRemoteHangup(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
@@ -365,7 +365,7 @@ protocol CallAudioServiceDelegate: class {
         handleCallEnded(call: call)
     }
 
-    private func handleBusy(call: SignalCall) {
+    private func handleBusy(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
@@ -377,7 +377,7 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    private func handleCallEnded(call: SignalCall) {
+    private func handleCallEnded(call: RelayCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
@@ -412,7 +412,7 @@ protocol CallAudioServiceDelegate: class {
 
     // MARK: - Ringing
 
-    private func startRinging(call: SignalCall) {
+    private func startRinging(call: RelayCall) {
         guard handleRinging else {
             Logger.debug("\(self.logTag) ignoring \(#function) since CallKit handles it's own ringing state")
             return
@@ -471,7 +471,7 @@ protocol CallAudioServiceDelegate: class {
         }
     }
 
-    func currentAudioSource(call: SignalCall) -> AudioSource? {
+    func currentAudioSource(call: RelayCall) -> AudioSource? {
         if let audioSource = call.audioSource {
             return audioSource
         }

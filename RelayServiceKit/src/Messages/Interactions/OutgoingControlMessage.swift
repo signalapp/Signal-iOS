@@ -12,8 +12,8 @@ import UIKit
     
     @objc let controlMessageType: String
 
-    @objc required public init(thread: TSThread, controlType: String) {
-
+    @objc required public init(thread: TSThread, controlType: String, moreData: NSMutableDictionary?) {
+        
         self.controlMessageType = controlType
         
         super.init(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
@@ -27,6 +27,8 @@ import UIKit
                    contactShare: nil)
         
         self.messageType = "control"
+        self.moreData = moreData
+        
         self.body = FLCCSMJSONService.blob(from: self)
     }
     
@@ -57,12 +59,4 @@ import UIKit
     @objc override public func previewText(with transaction: YapDatabaseReadTransaction) -> String {
         return ""
     }
-
-//    @objc override public func save() {
-//        return      // never save control messages
-//    }
-//
-//    @objc override public func save(with transaction: YapDatabaseReadWriteTransaction) {
-//        return      // never save control messages
-//    }
 }

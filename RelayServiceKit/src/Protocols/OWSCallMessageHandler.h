@@ -11,14 +11,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol OWSCallMessageHandler <NSObject>
 
-- (void)receivedOffer:(OWSSignalServiceProtosCallMessageOffer *)offer
-         fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedOffer(_:from:));
+-(void)receivedOfferWithThreadId:(NSString *)threadId peerId:(NSString *)peerId sessionDescription:(NSString *)sessionDescription;
+//- (void)receivedOffer:(OWSSignalServiceProtosCallMessageOffer *)offer
+//         fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedOffer(_:from:));
+
 - (void)receivedAnswer:(OWSSignalServiceProtosCallMessageAnswer *)answer
           fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedAnswer(_:from:));
-- (void)receivedIceUpdate:(OWSSignalServiceProtosCallMessageIceUpdate *)iceUpdate
-             fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedIceUpdate(_:from:));
+
+-(void)receivedIceUpdateWithThreadId:(NSString *)threadId
+                  sessionDescription:(NSString *)sdp
+                              sdpMid:(NSString *)sdpMid
+                       sdpMLineIndex:(int32_t)sdpMLineIndex;
+//- (void)receivedIceUpdate:(OWSSignalServiceProtosCallMessageIceUpdate *)iceUpdate
+//             fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedIceUpdate(_:from:));
+
 - (void)receivedHangup:(OWSSignalServiceProtosCallMessageHangup *)hangup
           fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedHangup(_:from:));
+
 - (void)receivedBusy:(OWSSignalServiceProtosCallMessageBusy *)busy
         fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedBusy(_:from:));
 

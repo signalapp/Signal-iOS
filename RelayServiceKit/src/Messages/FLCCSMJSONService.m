@@ -181,7 +181,13 @@
     NSString *messageType = message.messageType;
     NSString *threadType = (message.thread.type.length > 0 ? message.thread.type : @"");
     NSString *controlMessageType = message.controlMessageType;
-    NSMutableDictionary *data = [NSMutableDictionary new];
+    
+    NSMutableDictionary *data = nil;
+    if (message.moreData) {
+        data = message.moreData;
+    } else {
+        data = [NSMutableDictionary new];
+    }
 
     
     // Sender blob

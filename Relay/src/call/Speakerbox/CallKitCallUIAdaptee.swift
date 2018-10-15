@@ -102,11 +102,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // MARK: CallUIAdaptee
 
-    func startOutgoingCall(handle: String) -> SignalCall {
+    func startOutgoingCall(handle: String) -> RelayCall {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
-        let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        let call = RelayCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)
@@ -120,7 +120,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
-    func failCall(_ call: SignalCall, error: CallError) {
+    func failCall(_ call: RelayCall, error: CallError) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
@@ -134,7 +134,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.callManager.removeCall(call)
     }
 
-    func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    func reportIncomingCall(_ call: RelayCall, callerName: String) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
@@ -177,7 +177,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         owsFail("\(self.TAG) \(#function) CallKit should answer calls via system call screen, not via notifications.")
     }
 
-    func answerCall(_ call: SignalCall) {
+    func answerCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
@@ -190,14 +190,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         owsFail("\(self.TAG) \(#function) CallKit should decline calls via system call screen, not via notifications.")
     }
 
-    func declineCall(_ call: SignalCall) {
+    func declineCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
         callManager.localHangup(call: call)
     }
 
-    func recipientAcceptedCall(_ call: SignalCall) {
+    func recipientAcceptedCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
@@ -209,35 +209,35 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         provider.reportCall(with: call.localId, updated: update)
     }
 
-    func localHangupCall(_ call: SignalCall) {
+    func localHangupCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
         callManager.localHangup(call: call)
     }
 
-    func remoteDidHangupCall(_ call: SignalCall) {
+    func remoteDidHangupCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
         provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
     }
 
-    func remoteBusy(_ call: SignalCall) {
+    func remoteBusy(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
         provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
     }
 
-    func setIsMuted(call: SignalCall, isMuted: Bool) {
+    func setIsMuted(call: RelayCall, isMuted: Bool) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) \(#function)")
 
         callManager.setIsMuted(call: call, isMuted: isMuted)
     }
 
-    func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
+    func setHasLocalVideo(call: RelayCall, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
         Logger.debug("\(self.TAG) \(#function)")
 

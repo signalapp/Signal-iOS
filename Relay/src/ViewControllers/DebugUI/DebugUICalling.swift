@@ -37,8 +37,8 @@ class DebugUICalling: DebugUIPage {
             OWSTableItem(title: "Send 'hangup' for old call") { [weak self] in
                 guard let strongSelf = self else { return }
 
-                let kFakeCallId = UInt64(12345)
-                let hangupMessage = OWSCallHangupMessage(callId: kFakeCallId)
+                let kFakeCallId = "12345"
+                let hangupMessage = OWSCallHangupMessage(peerId: kFakeCallId)
                 let callMessage = OWSOutgoingCallMessage(thread: aThread!, hangupMessage: hangupMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).then {
@@ -50,8 +50,8 @@ class DebugUICalling: DebugUIPage {
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
                 guard let strongSelf = self else { return }
 
-                let kFakeCallId = UInt64(12345)
-                let busyMessage = OWSCallBusyMessage(callId: kFakeCallId)
+                let kFakeCallId = "12345"
+                let busyMessage = OWSCallBusyMessage(peerId: kFakeCallId)
                 let callMessage = OWSOutgoingCallMessage(thread: aThread!, busyMessage: busyMessage)
 
                 strongSelf.messageSender.sendPromise(message: callMessage).then {

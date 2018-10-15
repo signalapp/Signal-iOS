@@ -4,32 +4,40 @@
 
 #import "OWSCallOfferMessage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import <RelayServiceKit/RelayServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSCallOfferMessage
 
-- (instancetype)initWithCallId:(UInt64)callId sessionDescription:(NSString *)sessionDescription
+- (instancetype)initWithPeerId:(NSString *)peerId sessionDescription:(NSString *)sessionDescription
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _callId = callId;
+    _peerId = peerId;
     _sessionDescription = sessionDescription;
 
     return self;
 }
 
+-(OutgoingControlMessage *)asOutgoingControlMessasge
+{
+    // TODO: Make this useful
+    return [OutgoingControlMessage new];
+}
+
 - (OWSSignalServiceProtosCallMessageOffer *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageOfferBuilder *builder = [OWSSignalServiceProtosCallMessageOfferBuilder new];
-
-    builder.id = self.callId;
-    builder.sessionDescription = self.sessionDescription;
-
-    return [builder build];
+//    OWSSignalServiceProtosCallMessageOfferBuilder *builder = [OWSSignalServiceProtosCallMessageOfferBuilder new];
+//
+//    builder.id = self.peerId;
+//    builder.sessionDescription = self.sessionDescription;
+//
+//    return [builder build];
+    return [OWSSignalServiceProtosCallMessageOffer new];
 }
 
 @end

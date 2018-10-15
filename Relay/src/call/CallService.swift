@@ -88,19 +88,19 @@ protocol CallServiceObserver: class {
     /**
      * Fired whenever the call changes.
      */
-    func didUpdateCall(call: SignalCall?)
+    func didUpdateCall(call: RelayCall?)
 
     /**
      * Fired whenever the local or remote video track become active or inactive.
      */
-    func didUpdateVideoTracks(call: SignalCall?,
+    func didUpdateVideoTracks(call: RelayCall?,
                               localCaptureSession: AVCaptureSession?,
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
 // Gather all per-call state in one place.
 private class SignalCallData: NSObject {
-    public let call: SignalCall
+    public let call: RelayCall
 
     // Used to coordinate promises across delegate methods
     let fulfillCallConnectedPromise: (() -> Void)
@@ -149,7 +149,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(call: SignalCall) {
+    required init(call: RelayCall) {
         self.call = call
 
         let (callConnectedPromise, fulfillCallConnectedPromise, rejectCallConnectedPromise) = Promise<Void>.pending()
@@ -261,7 +261,7 @@ private class SignalCallData: NSObject {
     }
 
     @objc
-    var call: SignalCall? {
+    var call: RelayCall? {
         get {
             SwiftAssertIsOnMainThread(#function)
 
@@ -357,7 +357,7 @@ private class SignalCallData: NSObject {
     /**
      * Initiate an outgoing call.
      */
-    func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
+    func handleOutgoingCall(_ call: RelayCall) -> Promise<Void> {
         SwiftAssertIsOnMainThread(#function)
 
         guard self.call == nil else {
@@ -407,7 +407,7 @@ private class SignalCallData: NSObject {
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
-                let offerMessage = OWSCallOfferMessage(callId: call.signalingId, sessionDescription: sessionDescription.sdp)
+                let offerMessage = OWSCallOfferMessage(peerId: call.peerId, sessionDescription: sessionDescription.sdp)
                 let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offerMessage)
                 return self.messageSender.sendPromise(message: callMessage)
             }
@@ -452,7 +452,7 @@ private class SignalCallData: NSObject {
         return promise
     }
 
-    func readyToSendIceUpdates(call: SignalCall) {
+    func readyToSendIceUpdates(call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let callData = self.callData else {
@@ -470,17 +470,17 @@ private class SignalCallData: NSObject {
     /**
      * Called by the call initiator after receiving a CallAnswer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSThread, callId: UInt64, sessionDescription: String) {
-        Logger.info("\(self.logTag) received call answer for call: \(callId) thread: \(thread.uniqueId)")
+    public func handleReceivedAnswer(thread: TSThread, peerId: String, sessionDescription: String) {
+        Logger.info("\(self.logTag) received call answer for call: \(peerId) thread: \(thread.uniqueId)")
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
-            Logger.warn("\(self.logTag) ignoring obsolete call: \(callId) in \(#function)")
+            Logger.warn("\(self.logTag) ignoring obsolete call: \(peerId) in \(#function)")
             return
         }
 
-        guard call.signalingId == callId else {
-            Logger.warn("\(self.logTag) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
+        guard call.peerId == peerId else {
+            Logger.warn("\(self.logTag) ignoring mismatched call: \(peerId) currentCall: \(call.peerId) in \(#function)")
             return
         }
 
@@ -509,7 +509,7 @@ private class SignalCallData: NSObject {
     /**
      * User didn't answer incoming call
      */
-    public func handleMissedCall(_ call: SignalCall) {
+    public func handleMissedCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         // Insert missed call record
@@ -533,11 +533,11 @@ private class SignalCallData: NSObject {
     /**
      * Received a call while already in another call.
      */
-    private func handleLocalBusyCall(_ call: SignalCall) {
+    private func handleLocalBusyCall(_ call: RelayCall) {
         Logger.info("\(self.logTag) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.uniqueId)")
         SwiftAssertIsOnMainThread(#function)
 
-        let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
+        let busyMessage = OWSCallBusyMessage(peerId: call.peerId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
         let sendPromise = messageSender.sendPromise(message: callMessage)
         sendPromise.retainUntilComplete()
@@ -548,17 +548,17 @@ private class SignalCallData: NSObject {
     /**
      * The callee was already in another call.
      */
-    public func handleRemoteBusy(thread: TSThread, callId: UInt64) {
+    public func handleRemoteBusy(thread: TSThread, peerId: String) {
         Logger.info("\(self.logTag) \(#function) for thread: \(thread.uniqueId)")
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
-            Logger.warn("\(self.logTag) ignoring obsolete call: \(callId) in \(#function)")
+            Logger.warn("\(self.logTag) ignoring obsolete call: \(peerId) in \(#function)")
             return
         }
 
-        guard call.signalingId == callId else {
-            Logger.warn("\(self.logTag) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
+        guard call.peerId == peerId else {
+            Logger.warn("\(self.logTag) ignoring mismatched call: \(peerId) currentCall: \(call.peerId) in \(#function)")
             return
         }
 
@@ -576,10 +576,10 @@ private class SignalCallData: NSObject {
      * Received an incoming call offer. We still have to complete setting up the Signaling channel before we notify
      * the user of an incoming call.
      */
-    public func handleReceivedOffer(thread: TSThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
+    public func handleReceivedOffer(thread: TSThread, peerId: String, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.uniqueId, signalingId: callId)
+        let newCall = RelayCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.uniqueId, peerId: peerId)
 
         Logger.info("\(self.logTag) receivedCallOffer: \(newCall.identifiersForLogs)")
 
@@ -635,7 +635,7 @@ private class SignalCallData: NSObject {
                 case .idle, .dialing, .remoteRinging:
                     // If both users are trying to call each other at the same time,
                     // both should see busy.
-                    handleRemoteBusy(thread: existingCall.thread, callId: existingCall.signalingId)
+                    handleRemoteBusy(thread: existingCall.thread, peerId: existingCall.peerId)
                 case .answering, .localRinging, .connected, .localFailure, .localHangup, .remoteHangup, .remoteBusy, .reconnecting:
                     // If one user calls another while the other has a "vestigial" call with
                     // that same user, fail the old call.
@@ -703,10 +703,33 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
             }
 
-            let answerMessage = OWSCallAnswerMessage(callId: newCall.signalingId, sessionDescription: negotiatedSessionDescription.sdp)
-            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
+            let callId = self.call?.peerId
+            let peerId = self.call?.localId.uuidString
+            let members = thread.participantIds
+            let originator = self.call?.remotePhoneNumber
+            let answer = [ "type" : "answer",
+                "sdp" : negotiatedSessionDescription.sdp ]
+            
+            let allTheData = [ "answer" : answer,
+                               "callId" : callId!,
+                               "members" : members,
+                               "originator" : originator!,
+                               "peerId" : peerId!,
+                ] as NSMutableDictionary
+            
+            // Build data object
+//            let dataDict = Dictionary()
+            // Make control message
+            let answerControlMessage = OutgoingControlMessage(thread: thread, controlType: FLControlMessageCallAcceptOfferKey, moreData: allTheData)
+            
+            return self.messageSender.sendPromise(message: answerControlMessage)
+            // Send the control
+            // UI requires message locally, make that
 
-            return self.messageSender.sendPromise(message: callAnswerMessage)
+//            let answerMessage = OWSCallAnswerMessage(peerId: newCall.peerId, sessionDescription: negotiatedSessionDescription.sdp)
+//            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
+
+//            return self.messageSender.sendPromise(message: callAnswerMessage)
         }.then {
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")
@@ -754,9 +777,9 @@ private class SignalCallData: NSObject {
     /**
      * Remote client (could be caller or callee) sent us a connectivity update
      */
-    public func handleRemoteAddedIceCandidate(thread: TSThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
+    public func handleRemoteAddedIceCandidate(thread: TSThread, peerId: String, sdp: String, lineIndex: Int32, mid: String) {
         SwiftAssertIsOnMainThread(#function)
-        Logger.verbose("\(logTag) \(#function) callId: \(callId)")
+        Logger.verbose("\(logTag) \(#function) callId: \(peerId)")
 
         guard let callData = self.callData else {
             Logger.info("\(logTag) ignoring remote ice update, since there is no current call.")
@@ -771,8 +794,8 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            guard call.signalingId == callId else {
-                Logger.warn("\(self.logTag) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
+            guard call.peerId == peerId else {
+                Logger.warn("\(self.logTag) ignoring mismatched call: \(peerId) currentCall: \(call.peerId) in \(#function)")
                 return
             }
 
@@ -824,11 +847,25 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
+            let sdp = iceCandidate.sdp
+            let sdpMLineIndex = iceCandidate.sdpMLineIndex
+            let sdpMid = iceCandidate.sdpMid
+
+            let allTheData = [ "candidate" : sdp,
+                               "sdpMLineIndex" : sdpMLineIndex,
+                               "sdpMid" : sdpMid!,
+                               ] as NSMutableDictionary
+
+            let iceControlMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallICECandidatesKey, moreData: allTheData)
+            
+            
+            
+//            let iceUpdateMessage = OWSCallIceUpdateMessage(peerId: call.peerId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
-            let sendPromise = self.messageSender.sendPromise(message: callMessage)
+            Logger.debug("Control message: \(iceControlMessage.body)")
+//            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
+            let sendPromise = self.messageSender.sendPromise(message: iceControlMessage)
             sendPromise.retainUntilComplete()
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalAddedIceCandidate(), file: #file, function: #function, line: #line)
@@ -898,7 +935,7 @@ private class SignalCallData: NSObject {
     /**
      * The remote client (caller or callee) ended the call.
      */
-    public func handleRemoteHangup(thread: TSThread, callId: UInt64) {
+    public func handleRemoteHangup(thread: TSThread, peerId: String) {
         Logger.debug("\(self.logTag) in \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
@@ -908,8 +945,8 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard call.signalingId == callId else {
-            Logger.warn("\(self.logTag) ignoring mismatched call: \(callId) currentCall: \(call.signalingId) in \(#function)")
+        guard call.peerId == peerId else {
+            Logger.warn("\(self.logTag) ignoring mismatched call: \(peerId) currentCall: \(call.peerId) in \(#function)")
             return
         }
 
@@ -967,7 +1004,7 @@ private class SignalCallData: NSObject {
     /**
      * User chose to answer call referred to by call `localId`. Used by the Callee only.
      */
-    public func handleAnswerCall(_ call: SignalCall) {
+    public func handleAnswerCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(self.logTag) in \(#function)")
@@ -997,7 +1034,7 @@ private class SignalCallData: NSObject {
         callRecord.save()
         call.callRecord = callRecord
 
-        let message = DataChannelMessage.forConnected(callId: call.signalingId)
+        let message = DataChannelMessage.forConnected(peerId: call.peerId)
         peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "connected", isCritical: true)
 
         handleConnectedCall(currentCallData)
@@ -1063,7 +1100,7 @@ private class SignalCallData: NSObject {
      *
      * Incoming call only.
      */
-    public func handleDeclineCall(_ call: SignalCall) {
+    public func handleDeclineCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
@@ -1086,7 +1123,7 @@ private class SignalCallData: NSObject {
      *
      * Can be used for Incoming and Outgoing calls.
      */
-    func handleLocalHungupCall(_ call: SignalCall) {
+    func handleLocalHungupCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let currentCall = self.call else {
@@ -1124,14 +1161,14 @@ private class SignalCallData: NSObject {
             ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
 
             // If the call is connected, we can send the hangup via the data channel for faster hangup.
-            let message = DataChannelMessage.forHangup(callId: call.signalingId)
+            let message = DataChannelMessage.forHangup(peerId: call.peerId)
             peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "hangup", isCritical: true)
         } else {
             Logger.info("\(self.logTag) ending call before peer connection created. Device offline or quick hangup.")
         }
 
         // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
-        let hangupMessage = OWSCallHangupMessage(callId: call.signalingId)
+        let hangupMessage = OWSCallHangupMessage(peerId: call.peerId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
         let sendPromise = self.messageSender.sendPromise(message: callMessage).then {_ in
             Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.uniqueId)")
@@ -1149,7 +1186,7 @@ private class SignalCallData: NSObject {
      *
      * Can be used for Incoming and Outgoing calls.
      */
-    func setIsMuted(call: SignalCall, isMuted: Bool) {
+    func setIsMuted(call: RelayCall, isMuted: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         guard call == self.call else {
@@ -1172,7 +1209,7 @@ private class SignalCallData: NSObject {
      * Local user toggled to hold call. Currently only possible via CallKit screen,
      * e.g. when another Call comes in.
      */
-    func setIsOnHold(call: SignalCall, isOnHold: Bool) {
+    func setIsOnHold(call: RelayCall, isOnHold: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         guard call == self.call else {
@@ -1190,7 +1227,7 @@ private class SignalCallData: NSObject {
         ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
     }
 
-    func ensureAudioState(call: SignalCall, peerConnectionClient: PeerConnectionClient) {
+    func ensureAudioState(call: RelayCall, peerConnectionClient: PeerConnectionClient) {
         guard call.state == .connected else {
             peerConnectionClient.setAudioEnabled(enabled: false)
             return
@@ -1269,7 +1306,7 @@ private class SignalCallData: NSObject {
         self.setHasLocalVideo(hasLocalVideo: true)
     }
 
-    func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
+    func setCameraSource(call: RelayCall, isUsingFrontCamera: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let peerConnectionClient = self.peerConnectionClient else {
@@ -1306,11 +1343,11 @@ private class SignalCallData: NSObject {
 
             let connected = message.connected!
 
-            guard connected.id == call.signalingId else {
+            guard "\(connected.id)" == call.peerId else {
                 // This should never happen; return to a known good state.
-                owsFail("\(self.logTag) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)")
+                owsFail("\(self.logTag) received connected message for call with id:\(connected.id) but current call has id:\(call.peerId)")
                 OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-                handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received connected message for call with id:\(connected.id) but current call has id:\(call.signalingId)"))
+                handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received connected message for call with id:\(connected.id) but current call has id:\(call.peerId)"))
                 return
             }
 
@@ -1322,15 +1359,15 @@ private class SignalCallData: NSObject {
 
             let hangup = message.hangup!
 
-            guard hangup.id == call.signalingId else {
+            guard "\(hangup.id)" == call.peerId else {
                 // This should never happen; return to a known good state.
-                owsFail("\(self.logTag) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)")
+                owsFail("\(self.logTag) received hangup message for call with id:\(hangup.id) but current call has id:\(call.peerId)")
                 OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-                handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received hangup message for call with id:\(hangup.id) but current call has id:\(call.signalingId)"))
+                handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) received hangup message for call with id:\(hangup.id) but current call has id:\(call.peerId)"))
                 return
             }
 
-            handleRemoteHangup(thread: call.thread, callId: hangup.id)
+            handleRemoteHangup(thread: call.thread, peerId: "\(hangup.id)")
         } else if message.hasVideoStreamingStatus() {
             Logger.debug("\(self.logTag) remote participant sent VideoStreamingStatus via data channel: \(call.identifiersForLogs).")
 
@@ -1493,7 +1530,7 @@ private class SignalCallData: NSObject {
     // * If we know which call it was, we should update that call's state
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
-    public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
+    public func handleFailedCall(failedCall: RelayCall?, error: CallError) {
         SwiftAssertIsOnMainThread(#function)
 
         if case CallError.assertionError(description: let description) = error {
@@ -1551,29 +1588,29 @@ private class SignalCallData: NSObject {
 
     // MARK: - CallObserver
 
-    internal func stateDidChange(call: SignalCall, state: CallState) {
+    internal func stateDidChange(call: RelayCall, state: CallState) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.logTag) \(#function): \(state)")
         updateIsVideoEnabled()
     }
 
-    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
+    internal func hasLocalVideoDidChange(call: RelayCall, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.logTag) \(#function): \(hasLocalVideo)")
         self.updateIsVideoEnabled()
     }
 
-    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+    internal func muteDidChange(call: RelayCall, isMuted: Bool) {
         SwiftAssertIsOnMainThread(#function)
         // Do nothing
     }
 
-    internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
+    internal func holdDidChange(call: RelayCall, isOnHold: Bool) {
         SwiftAssertIsOnMainThread(#function)
         // Do nothing
     }
 
-    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
+    internal func audioSourceDidChange(call: RelayCall, audioSource: AudioSource?) {
         SwiftAssertIsOnMainThread(#function)
         // Do nothing
     }
@@ -1613,7 +1650,7 @@ private class SignalCallData: NSObject {
 
         self.peerConnectionClient?.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack)
 
-        let message = DataChannelMessage.forVideoStreamingStatus(callId: call.signalingId, enabled: shouldHaveLocalVideoTrack)
+        let message = DataChannelMessage.forVideoStreamingStatus(peerId: call.peerId, enabled: shouldHaveLocalVideoTrack)
         peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "videoStreamingStatus", isCritical: false)
     }
 
@@ -1683,7 +1720,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    func ensureCallScreenPresented(call: SignalCall) {
+    func ensureCallScreenPresented(call: RelayCall) {
         guard let currentCall = self.call else {
             owsFail("\(self.logTag) obsolete call: \(call.identifiersForLogs) in \(#function)")
             return

@@ -446,36 +446,39 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleIncomingEnvelope:(SSKEnvelope *)envelope
                withCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
 {
-    OWSAssert(envelope);
-    OWSAssert(callMessage);
-    
-    if ([callMessage hasProfileKey]) {
-        NSData *profileKey = [callMessage profileKey];
-        NSString *recipientId = envelope.source;
-        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
-    }
-    
-    // By dispatching async, we introduce the possibility that these messages might be lost
-    // if the app exits before this block is executed.  This is fine, since the call by
-    // definition will end if the app exits.
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (callMessage.hasOffer) {
-            [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.source];
-        } else if (callMessage.hasAnswer) {
-            [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.source];
-        } else if (callMessage.iceUpdate.count > 0) {
-            for (OWSSignalServiceProtosCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
-                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.source];
-            }
-        } else if (callMessage.hasHangup) {
-            DDLogVerbose(@"%@ Received CallMessage with Hangup.", self.logTag);
-            [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.source];
-        } else if (callMessage.hasBusy) {
-            [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.source];
-        } else {
-            OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
-        }
-    });
+    // This should not be called in Forsta environment
+    // handled by control message
+    DDLogDebug(@"Received unhandled callMessage.  This should be handled with a control message.  Source: %@", envelope.source);
+//    OWSAssert(envelope);
+//    OWSAssert(callMessage);
+//
+//    if ([callMessage hasProfileKey]) {
+//        NSData *profileKey = [callMessage profileKey];
+//        NSString *recipientId = envelope.source;
+//        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+//    }
+//
+//    // By dispatching async, we introduce the possibility that these messages might be lost
+//    // if the app exits before this block is executed.  This is fine, since the call by
+//    // definition will end if the app exits.
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if (callMessage.hasOffer) {
+//            [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.source];
+//        } else if (callMessage.hasAnswer) {
+//            [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.source];
+//        } else if (callMessage.iceUpdate.count > 0) {
+//            for (OWSSignalServiceProtosCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
+//                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.source];
+//            }
+//        } else if (callMessage.hasHangup) {
+//            DDLogVerbose(@"%@ Received CallMessage with Hangup.", self.logTag);
+//            [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.source];
+//        } else if (callMessage.hasBusy) {
+//            [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.source];
+//        } else {
+//            OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
+//        }
+//    });
 }
 
 // TODO:  Handled by control message

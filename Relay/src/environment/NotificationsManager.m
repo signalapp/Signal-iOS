@@ -55,7 +55,7 @@
 /**
  * Notify user for incoming WebRTC Call
  */
-- (void)presentIncomingCall:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentIncomingCall:(RelayCall *)call callerName:(NSString *)callerName
 {
     DDLogDebug(@"%@ incoming call from: %@", self.logTag, call.remotePhoneNumber);
 
@@ -87,7 +87,7 @@
 /**
  * Notify user for missed WebRTC Call
  */
-- (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentMissedCall:(RelayCall *)call callerName:(NSString *)callerName
 {
     TSThread *thread = [TSThread getOrCreateThreadWithId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
@@ -125,7 +125,7 @@
 }
 
 
-- (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentMissedCallBecauseOfNewIdentity:(RelayCall *)call callerName:(NSString *)callerName
 {
     TSThread *thread = [TSThread getOrCreateThreadWithId:call.remotePhoneNumber];
     OWSAssert(thread != nil);
@@ -162,7 +162,7 @@
     [self presentNotification:notification identifier:localCallId];
 }
 
-- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(RelayCall *)call callerName:(NSString *)callerName
 {
     TSThread *thread = [TSThread getOrCreateThreadWithId:call.remotePhoneNumber];
     OWSAssert(thread != nil);

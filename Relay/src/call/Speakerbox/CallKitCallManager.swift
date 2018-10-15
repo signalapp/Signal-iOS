@@ -34,7 +34,7 @@ final class CallKitCallManager: NSObject {
 
     // MARK: Actions
 
-    func startCall(_ call: SignalCall) {
+    func startCall(_ call: RelayCall) {
         var handle: CXHandle
 
         if showNamesOnCallScreen {
@@ -55,7 +55,7 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
-    func localHangup(call: SignalCall) {
+    func localHangup(call: RelayCall) {
         let endCallAction = CXEndCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
@@ -63,7 +63,7 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
-    func setHeld(call: SignalCall, onHold: Bool) {
+    func setHeld(call: RelayCall, onHold: Bool) {
         let setHeldCallAction = CXSetHeldCallAction(call: call.localId, onHold: onHold)
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
@@ -71,7 +71,7 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
-    func setIsMuted(call: SignalCall, isMuted: Bool) {
+    func setIsMuted(call: RelayCall, isMuted: Bool) {
         let muteCallAction = CXSetMutedCallAction(call: call.localId, muted: isMuted)
         let transaction = CXTransaction()
         transaction.addAction(muteCallAction)
@@ -79,7 +79,7 @@ final class CallKitCallManager: NSObject {
         requestTransaction(transaction)
     }
 
-    func answer(call: SignalCall) {
+    func answer(call: RelayCall) {
         let answerCallAction = CXAnswerCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(answerCallAction)
@@ -99,20 +99,20 @@ final class CallKitCallManager: NSObject {
 
     // MARK: Call Management
 
-    private(set) var calls = [SignalCall]()
+    private(set) var calls = [RelayCall]()
 
-    func callWithLocalId(_ localId: UUID) -> SignalCall? {
+    func callWithLocalId(_ localId: UUID) -> RelayCall? {
         guard let index = calls.index(where: { $0.localId == localId }) else {
             return nil
         }
         return calls[index]
     }
 
-    func addCall(_ call: SignalCall) {
+    func addCall(_ call: RelayCall) {
         calls.append(call)
     }
 
-    func removeCall(_ call: SignalCall) {
+    func removeCall(_ call: RelayCall) {
         calls.removeFirst(where: { $0 === call })
     }
 
