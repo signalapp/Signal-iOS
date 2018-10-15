@@ -16,6 +16,10 @@ extern NSString *const kNSNotificationName_IdentityStateDidChange;
 // number of bytes in a signal identity key, excluding the key-type byte.
 extern const NSUInteger kIdentityKeyLength;
 
+#ifdef DEBUG
+extern const NSUInteger kStoredIdentityKeyLength;
+#endif
+
 @class OWSRecipientIdentity;
 @class OWSStorage;
 @class SSKProtoVerified;

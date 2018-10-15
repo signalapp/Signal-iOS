@@ -68,9 +68,9 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
     func testParse_roundtrip() {
         let builder = SSKProtoEnvelope.builder(type: SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle,
-                                               source: "+13213214321",
-                                               sourceDevice: 1,
                                                timestamp: 123)
+        builder.setSource("+13213214321")
+        builder.setSourceDevice(1)
 
         let phonyContent = "phony data".data(using: .utf8)!
 

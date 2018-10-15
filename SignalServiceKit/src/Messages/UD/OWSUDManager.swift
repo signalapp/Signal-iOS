@@ -70,9 +70,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: Recipient State
     private let kUnidentifiedAccessCollection = "kUnidentifiedAccessCollection"
 
+    var certificateValidator: SMKCertificateValidator
+
     @objc
     public required init(primaryStorage: OWSPrimaryStorage) {
         self.dbConnection = primaryStorage.newDatabaseConnection()
+        self.certificateValidator = SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot())
 
         super.init()
 
@@ -281,8 +284,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let anHourFromNowMs = nowMs + kHourInMs
 
         do {
-            let certificateValidator = SMKCertificateDefaultValidator(trustRoot: trustRoot())
-
             try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {
@@ -298,6 +299,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func trustRoot() -> ECPublicKey {
+        return OWSUDManagerImpl.trustRoot()
+    }
+
+    @objc
+    public class func trustRoot() -> ECPublicKey {
         guard let trustRootData = NSData(fromBase64String: kUDTrustRoot) else {
             // This exits.
             owsFail("Invalid trust root data.")

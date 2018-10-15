@@ -9,6 +9,19 @@
 
 static Environment *sharedEnvironment = nil;
 
+@interface Environment ()
+
+@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic) OWSPreferences *preferences;
+@property (nonatomic) OWSContactsSyncing *contactsSyncing;
+@property (nonatomic) OWSSounds *sounds;
+@property (nonatomic) LockInteractionController *lockInteractionController;
+@property (nonatomic) OWSWindowManager *windowManager;
+
+@end
+
+#pragma mark -
+
 @implementation Environment
 
 + (Environment *)shared
