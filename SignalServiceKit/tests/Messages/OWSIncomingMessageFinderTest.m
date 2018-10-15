@@ -55,7 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                     expiresInSeconds:0
                                                                                        quotedMessage:nil
                                                                                         contactShare:nil
-                                                                                     serverTimestamp:nil];
+                                                                                     serverTimestamp:nil
+                                                                                     wasReceivedByUD:NO];
     [incomingMessage save];
 }
 

@@ -2,10 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSContactThread.h"
 #import "MockSSKEnvironment.h"
 #import "OWSIdentityManager.h"
 #import "SSKBaseTestObjC.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testHasSafetyNumbersWithRemoteIdentity
 {
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:[NSData new]
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:[[NSMutableData alloc] initWithLength:kStoredIdentityKeyLength]
                                                recipientId:self.contactThread.contactIdentifier];
     XCTAssert(self.contactThread.hasSafetyNumbers);
 }

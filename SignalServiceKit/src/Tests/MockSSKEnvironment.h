@@ -21,6 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageManager *messageManager;
 @property (nonatomic) OWSBlockingManager *blockingManager;
 @property (nonatomic) OWSIdentityManager *identityManager;
+@property (nonatomic) id<OWSUDManager> udManager;
+@property (nonatomic) OWSMessageDecrypter *messageDecrypter;
+@property (nonatomic) OWSBatchMessageProcessor *batchMessageProcessor;
+@property (nonatomic) OWSMessageReceiver *messageReceiver;
+@property (nonatomic) TSSocketManager *socketManager;
+@property (nonatomic) TSAccountManager *tsAccountManager;
+@property (nonatomic) OWS2FAManager *ows2FAManager;
+@property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
+@property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
+@property (nonatomic) OWSReadReceiptManager *readReceiptManager;
+@property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
 
 @end
 
