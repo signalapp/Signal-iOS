@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "LockInteractionController.h"
+#import "Environment.h"
 #import <SignalServiceKit/AppContext.h>
 
 @interface LockInteractionController ()
@@ -17,12 +18,22 @@
 
 + (instancetype)sharedController
 {
-    static LockInteractionController *sharedController = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedController = [self new];
-    });
-    return sharedController;
+    OWSAssertDebug(Environment.shared.lockInteractionController);
+
+    return Environment.shared.lockInteractionController;
+}
+
+- (instancetype)initDefault {
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    OWSAssertIsOnMainThread();
+    OWSSingletonAssert();
+
+    return self;
 }
 
 + (void)performBlock:(LIControllerBlockingOperation)blockingOperation

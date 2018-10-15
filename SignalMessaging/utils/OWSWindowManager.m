@@ -3,6 +3,7 @@
 //
 
 #import "OWSWindowManager.h"
+#import "Environment.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -129,12 +130,9 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 + (instancetype)sharedManager
 {
-    static OWSWindowManager *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [[self alloc] initDefault];
-    });
-    return instance;
+    OWSAssertDebug(Environment.shared.windowManager);
+
+    return Environment.shared.windowManager;
 }
 
 - (instancetype)initDefault

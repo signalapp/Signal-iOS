@@ -40,12 +40,15 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 };
 
 @class OWSAudioPlayer;
+@class OWSPrimaryStorage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
 @interface OWSSounds : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (NSString *)displayNameForSound:(OWSSound)sound;
 

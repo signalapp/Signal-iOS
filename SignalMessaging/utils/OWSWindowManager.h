@@ -20,6 +20,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 @interface OWSWindowManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
