@@ -246,10 +246,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 9a69cc64f1533813bfdb42a4fd3e07f99c05be76
+    :commit: fe5d8234188f5cc079a43f51eda6cfb29bb374ef
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: 9d0f5e68d52a70e10b2469900ca0e63093e6952a
+    :commit: 14effe344be35f5d9f5597a2fd56824f78a4067d
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
