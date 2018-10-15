@@ -158,7 +158,9 @@ static NSTimeInterval launchStartedAt;
 
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
-            [SignalApp.sharedApp createSingletons];
+            // Create AppEnvironment.
+            [AppEnvironment shared];
+            [SignalApp.sharedApp setup];
         }
         migrationCompletion:^{
             OWSAssertIsOnMainThread();

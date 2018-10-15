@@ -18,8 +18,8 @@ public class AccountManager: NSObject {
         return PushManager.shared()
     }
 
-    @objc
-    public required override init() {
+    @objc public override init()
+    {
         super.init()
 
         SwiftSingletons.register(self)

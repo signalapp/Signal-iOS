@@ -9,17 +9,16 @@ import SignalServiceKit
 @objc(OWSMessageFetcherJob)
 public class MessageFetcherJob: NSObject {
 
-    private var timer: Timer?
+private
+    var timer : Timer ?
 
-    // MARK: injected dependencies
-    private let signalService: OWSSignalService
+                      @objc public override
+                      init()
+    {
+        super
+            .init()
 
-    @objc public init(signalService: OWSSignalService) {
-        self.signalService = signalService
-
-        super.init()
-
-        SwiftSingletons.register(self)
+                SwiftSingletons.register(self)
     }
 
     // MARK: Singletons
@@ -30,6 +29,12 @@ public class MessageFetcherJob: NSObject {
 
     private var messageReceiver: OWSMessageReceiver {
         return SSKEnvironment.shared.messageReceiver
+    }
+
+private
+    var signalService : OWSSignalService
+    {
+        return OWSSignalService.sharedInstance()
     }
 
     // MARK: 

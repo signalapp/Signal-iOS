@@ -42,11 +42,10 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(withCode: String,
-                                pin: String?,
-                                success: @escaping () -> Void, failure: @escaping (Error) -> Void) {
-        success()
-    }
+    override func verifyAccount(withCode
+                                : String, pin
+                                : String ?, success : @escaping()->Void, failure
+                                : @escaping(Error)->Void) { success() } s
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
@@ -142,5 +141,4 @@ class AccountManagerTest: SignalBaseTest {
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
-
 }

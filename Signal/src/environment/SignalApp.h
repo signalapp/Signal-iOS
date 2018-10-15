@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedApp;
 
-- (void)createSingletons;
+- (void)setup;
 
 #pragma mark - Conversation Presentation
 

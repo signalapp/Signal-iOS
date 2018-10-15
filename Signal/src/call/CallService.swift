@@ -147,25 +147,28 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(call: SignalCall) {
-        self.call = call
+    required init(call
+                  : SignalCall) { self.call = call
 
-        let (callConnectedPromise, callConnectedResolver) = Promise<Void>.pending()
-        self.callConnectedPromise = callConnectedPromise
-        self.callConnectedResolver = callConnectedResolver
+                                      let(callConnectedPromise, callConnectedResolver)
+        = Promise<Void>.pending() self.callConnectedPromise = callConnectedPromise self.callConnectedResolver
+        = callConnectedResolver
 
-        let (peerConnectionClientPromise, peerConnectionClientResolver) = Promise<Void>.pending()
-        self.peerConnectionClientPromise = peerConnectionClientPromise
-        self.peerConnectionClientResolver = peerConnectionClientResolver
+            let(peerConnectionClientPromise, peerConnectionClientResolver)
+        = Promise<Void>.pending() self.peerConnectionClientPromise
+        = peerConnectionClientPromise self.peerConnectionClientResolver = peerConnectionClientResolver
 
-        let (readyToSendIceUpdatesPromise, readyToSendIceUpdatesResolver) = Promise<Void>.pending()
-        self.readyToSendIceUpdatesPromise = readyToSendIceUpdatesPromise
-        self.readyToSendIceUpdatesResolver = readyToSendIceUpdatesResolver
+            let(readyToSendIceUpdatesPromise, readyToSendIceUpdatesResolver)
+        = Promise<Void>.pending() self.readyToSendIceUpdatesPromise
+        = readyToSendIceUpdatesPromise self.readyToSendIceUpdatesResolver = readyToSendIceUpdatesResolver
 
-        super.init()
-    }
+                                                                                super
+                                                                                    .init()
 
-    deinit {
+                                                                                        SwiftSingletons.register(self) }
+
+    deinit
+    {
         Logger.debug("[SignalCallData] deinit")
     }
 
@@ -202,24 +205,23 @@ private class SignalCallData: NSObject {
 
     var observers = [Weak<CallServiceObserver>]()
 
-    // MARK: Dependencies
+        // MARK: Dependencies
 
-    private let accountManager: AccountManager
-    private let messageSender: MessageSender
-    private let contactsManager: OWSContactsManager
-    private let primaryStorage: OWSPrimaryStorage
+        // Exposed by environment.m
 
-    // Exposed by environment.m
-    internal let notificationsAdapter: CallNotificationsAdapter
-    @objc public var callUIAdapter: CallUIAdapter!
+        @objc public var callUIAdapter : CallUIAdapter !
 
-    // MARK: Class
+                                         // MARK: Class
 
-    static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
+                                         static let fallbackIceServer
+                                         = RTCIceServer(urlStrings
+                                                        : ["stun:stun1.l.google.com:19302"])
 
-    // MARK: Ivars
+                                         // MARK: Ivars
 
-    fileprivate var callData: SignalCallData? {
+                                         fileprivate var callData : SignalCallData
+                                                                    ?
+    {
         didSet {
             AssertIsOnMainThread()
 
@@ -291,32 +293,58 @@ private class SignalCallData: NSObject {
         }
     }
 
-    @objc public required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
-        self.accountManager = accountManager
-        self.contactsManager = contactsManager
-        self.messageSender = messageSender
-        self.notificationsAdapter = notificationsAdapter
-        self.primaryStorage = OWSPrimaryStorage.shared()
+    @objc public override init() { super
+                                       .init()
 
-        super.init()
+                                           SwiftSingletons
+                                       .register(self)
 
-        SwiftSingletons.register(self)
+                                           self
+                                       .createCallUIAdapter()
 
-        self.createCallUIAdapter()
+                                           NotificationCenter.default
+                                       .addObserver(self, selector
+                                                    : #selector(didEnterBackground), name
+                                                    : NSNotification.Name.OWSApplicationDidEnterBackground, object
+                                                    : nil)
+                                           NotificationCenter.default.addObserver(
+                                               self, selector
+                                               : #selector(didBecomeActive), name
+                                               : NSNotification.Name.OWSApplicationDidBecomeActive, object
+                                               : nil) }
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didEnterBackground),
-                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
-                                               object: nil)
-    }
-
-    deinit {
+    deinit
+    {
         NotificationCenter.default.removeObserver(self)
     }
+
+    // MARK: - Dependencies
+
+private
+    var contactsManager : OWSContactsManager
+    {
+        return Environment.shared.contactsManager
+    }
+
+private
+    var messageSender : MessageSender
+    {
+        return SSKEnvironment.shared.messageSender
+    }
+
+private
+    var accountManager : AccountManager
+    {
+        return AppEnvironment.shared.accountManager
+    }
+
+private
+    var notificationsAdapter : CallNotificationsAdapter
+    {
+        return AppEnvironment.shared.callNotificationsAdapter
+    }
+
+    // MARK: - Notifications
 
     @objc func didEnterBackground() {
         AssertIsOnMainThread()
@@ -327,6 +355,8 @@ private class SignalCallData: NSObject {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
     }
+
+    // MARK: -
 
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.

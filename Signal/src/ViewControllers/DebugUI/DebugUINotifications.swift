@@ -14,7 +14,7 @@ class DebugUINotifications: DebugUIPage {
         return SignalApp.shared().notificationsManager
     }
     var notificationsAdapter: CallNotificationsAdapter {
-        return SignalApp.shared().callService.notificationsAdapter
+        return AppEnvironment.shared.callNotificationsAdapter
     }
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
@@ -29,7 +29,8 @@ class DebugUINotifications: DebugUIPage {
         return "Notifications"
     }
 
-    override func section(thread aThread: TSThread?) -> OWSTableSection? {
+    override func section(thread aThread: TSThread?) -> OWSTableSection?
+    {
         guard let thread = aThread else {
             owsFailDebug("Notifications must specify thread.")
             return nil

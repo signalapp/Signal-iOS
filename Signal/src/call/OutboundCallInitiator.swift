@@ -11,17 +11,28 @@ import SignalMessaging
  */
 @objc public class OutboundCallInitiator: NSObject {
 
-    let contactsManager: OWSContactsManager
-    let contactsUpdater: ContactsUpdater
-
-    @objc public init(contactsManager: OWSContactsManager, contactsUpdater: ContactsUpdater) {
-        self.contactsManager = contactsManager
-        self.contactsUpdater = contactsUpdater
-
+    @objc public override init()
+    {
         super.init()
 
         SwiftSingletons.register(self)
     }
+
+    // MARK: - Dependencies
+
+private
+    var contactsManager : OWSContactsManager
+    {
+        return Environment.shared.contactsManager
+    }
+
+private
+    var contactsUpdater : ContactsUpdater
+    {
+        return SSKEnvironment.shared.contactsUpdater
+    }
+
+    // MARK: -
 
     /**
      * |handle| is a user formatted phone number, e.g. from a system contacts entry
