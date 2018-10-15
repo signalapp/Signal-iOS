@@ -15,19 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SignalApp ()
-
-@property (nonatomic) OWSWebRTCCallMessageHandler *callMessageHandler;
-@property (nonatomic) CallService *callService;
-@property (nonatomic) OutboundCallInitiator *outboundCallInitiator;
-@property (nonatomic) OWSMessageFetcherJob *messageFetcherJob;
-@property (nonatomic) NotificationsManager *notificationsManager;
-@property (nonatomic) AccountManager *accountManager;
-
-@end
-
-#pragma mark -
-
 @implementation SignalApp
 
 + (instancetype)sharedApp
@@ -55,88 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Singletons
 
-- (void)createSingletons
-{
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-    OWSAssertDebug(Environment.shared.contactsManager);
-    OWSAssertDebug(Environment.shared.preferences);
-    OWSAssertDebug(SSKEnvironment.shared.networkManager);
-    OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
-
-    _accountManager = [[AccountManager alloc] init];
-
-    _notificationsManager = [NotificationsManager new];
-    SSKEnvironment.shared.notificationsManager = self.notificationsManager;
-
+- (void)setup {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didChangeCallLoggingPreference:)
                                                  name:OWSPreferencesCallLoggingDidChangeNotification
                                                object:nil];
-    _callService = [[CallService alloc] initWithAccountManager:self.accountManager
-                                               contactsManager:Environment.shared.contactsManager
-                                                 messageSender:SSKEnvironment.shared.messageSender
-                                          notificationsAdapter:[OWSCallNotificationsAdapter new]];
-
-    _callMessageHandler =
-        [[OWSWebRTCCallMessageHandler alloc] initWithAccountManager:self.accountManager
-                                                        callService:self.callService
-                                                      messageSender:SSKEnvironment.shared.messageSender];
-    SSKEnvironment.shared.callMessageHandler = self.callMessageHandler;
-
-    _outboundCallInitiator =
-        [[OutboundCallInitiator alloc] initWithContactsManager:Environment.shared.contactsManager
-                                               contactsUpdater:SSKEnvironment.shared.contactsUpdater];
-
-    _messageFetcherJob = [[OWSMessageFetcherJob alloc] initWithSignalService:[OWSSignalService sharedInstance]];
-}
-
-- (OWSWebRTCCallMessageHandler *)callMessageHandler
-{
-    OWSAssertDebug(_callMessageHandler);
-
-    return _callMessageHandler;
-}
-
-- (CallService *)callService
-{
-    OWSAssertDebug(_callService);
-
-    return _callService;
-}
-
-- (CallUIAdapter *)callUIAdapter
-{
-    OWSAssertDebug(self.callService.callUIAdapter);
-
-    return self.callService.callUIAdapter;
-}
-
-- (OutboundCallInitiator *)outboundCallInitiator
-{
-    OWSAssertDebug(_outboundCallInitiator);
-
-    return _outboundCallInitiator;
-}
-
-- (OWSMessageFetcherJob *)messageFetcherJob
-{
-    OWSAssertDebug(_messageFetcherJob);
-
-    return _messageFetcherJob;
-}
-
-- (NotificationsManager *)notificationsManager
-{
-    OWSAssertDebug(_notificationsManager);
-
-    return _notificationsManager;
-}
-
-- (AccountManager *)accountManager
-{
-    OWSAssertDebug(_accountManager);
-
-    return _accountManager;
 }
 
 #pragma mark - View Convenience Methods
@@ -212,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didChangeCallLoggingPreference:(NSNotification *)notitication
 {
-    [self.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 #pragma mark - Methods

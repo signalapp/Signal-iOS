@@ -146,7 +146,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)commonInit
 {
-    _accountManager = SignalApp.sharedApp.accountManager;
+    _accountManager = AppEnvironment.shared.accountManager;
     _contactsManager = Environment.shared.contactsManager;
     _messageSender = SSKEnvironment.shared.messageSender;
     _blocklistCache = [OWSBlockListCache new];
@@ -939,7 +939,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
-    [SignalApp.sharedApp.messageFetcherJob run].ensure(^{
+    [AppEnvironment.shared.messageFetcherJob run].ensure(^{
         OWSLogInfo(@"ending refreshing.");
         [refreshControl endRefreshing];
     });

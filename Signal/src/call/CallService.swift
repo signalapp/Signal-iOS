@@ -202,15 +202,8 @@ private class SignalCallData: NSObject {
 
     var observers = [Weak<CallServiceObserver>]()
 
-    // MARK: Dependencies
-
-    private let accountManager: AccountManager
-    private let messageSender: MessageSender
-    private let contactsManager: OWSContactsManager
-    private let primaryStorage: OWSPrimaryStorage
-
     // Exposed by environment.m
-    internal let notificationsAdapter: CallNotificationsAdapter
+
     @objc public var callUIAdapter: CallUIAdapter!
 
     // MARK: Class
@@ -291,18 +284,11 @@ private class SignalCallData: NSObject {
         }
     }
 
-    @objc public required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
-        self.accountManager = accountManager
-        self.contactsManager = contactsManager
-        self.messageSender = messageSender
-        self.notificationsAdapter = notificationsAdapter
-        self.primaryStorage = OWSPrimaryStorage.shared()
+    @objc public override init() {
 
         super.init()
 
         SwiftSingletons.register(self)
-
-        self.createCallUIAdapter()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didEnterBackground),
@@ -317,6 +303,30 @@ private class SignalCallData: NSObject {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+    
+    // MARK: - Dependencies
+    
+    private var contactsManager : OWSContactsManager
+    {
+        return Environment.shared.contactsManager
+    }
+    
+    private var messageSender : MessageSender
+    {
+        return SSKEnvironment.shared.messageSender
+    }
+    
+    private var accountManager : AccountManager
+    {
+        return AppEnvironment.shared.accountManager
+    }
+    
+    private var notificationsAdapter : CallNotificationsAdapter
+    {
+        return AppEnvironment.shared.callNotificationsAdapter
+    }
+    
+    // MARK: - Notifications
 
     @objc func didEnterBackground() {
         AssertIsOnMainThread()

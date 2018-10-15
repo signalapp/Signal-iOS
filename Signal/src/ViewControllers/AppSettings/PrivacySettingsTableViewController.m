@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.preferences setIsSystemCallLogEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
-    [SignalApp.sharedApp.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 - (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
@@ -307,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.preferences setIsCallKitEnabled:sender.isOn];
 
     // rebuild callUIAdapter since CallKit vs not changed.
-    [SignalApp.sharedApp.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService createCallUIAdapter];
 
     // Show/Hide dependent switch: CallKit privacy
     [self updateTableContents];
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
-    [SignalApp.sharedApp.callService createCallUIAdapter];
+    [AppEnvironment.shared.callService createCallUIAdapter];
 }
 
 - (void)didToggleUDUnrestrictedAccessSwitch:(UISwitch *)sender

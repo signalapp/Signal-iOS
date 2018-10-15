@@ -19,7 +19,8 @@ public class AccountManager: NSObject {
     }
 
     @objc
-    public required override init() {
+    public override init()
+    {
         super.init()
 
         SwiftSingletons.register(self)

@@ -9,24 +9,31 @@ import SignalMessaging
 @objc(OWSWebRTCCallMessageHandler)
 public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
-    // MARK: - Properties
-
-    // MARK: Dependencies
-
-    let accountManager: AccountManager
-    let callService: CallService
-    let messageSender: MessageSender
-
     // MARK: Initializers
 
-    @objc public required init(accountManager: AccountManager, callService: CallService, messageSender: MessageSender) {
-        self.accountManager = accountManager
-        self.callService = callService
-        self.messageSender = messageSender
-
+    @objc
+    public override init()
+    {
         super.init()
 
         SwiftSingletons.register(self)
+    }
+
+    // MARK: - Dependencies
+
+    private var messageSender : MessageSender
+    {
+        return SSKEnvironment.shared.messageSender
+    }
+
+    private var accountManager : AccountManager
+    {
+        return AppEnvironment.shared.accountManager
+    }
+
+    private var callService : CallService
+    {
+        return AppEnvironment.shared.callService
     }
 
     // MARK: - Call Handlers

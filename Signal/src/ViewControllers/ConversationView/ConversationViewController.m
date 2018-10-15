@@ -277,7 +277,7 @@ typedef enum : NSUInteger {
     _contactsManager = Environment.shared.contactsManager;
     _contactsUpdater = SSKEnvironment.shared.contactsUpdater;
     _messageSender = SSKEnvironment.shared.messageSender;
-    _outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
+    _outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
     _primaryStorage = [OWSPrimaryStorage sharedManager];
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];

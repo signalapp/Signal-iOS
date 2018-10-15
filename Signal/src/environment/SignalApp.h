@@ -17,26 +17,16 @@ NS_ASSUME_NONNULL_BEGIN
 @class OutboundCallInitiator;
 @class TSThread;
 
-// TODO: Pull out singletons to MainAppEnvironment?
 @interface SignalApp : NSObject
 
 @property (nonatomic, nullable, weak) HomeViewController *homeViewController;
 @property (nonatomic, nullable, weak) OWSNavigationController *signUpFlowNavigationController;
 
-// TODO: Convert to singletons?
-@property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
-@property (nonatomic, readonly) CallService *callService;
-@property (nonatomic, readonly) CallUIAdapter *callUIAdapter;
-@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
-@property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
-@property (nonatomic, readonly) NotificationsManager *notificationsManager;
-@property (nonatomic, readonly) AccountManager *accountManager;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedApp;
 
-- (void)createSingletons;
+- (void)setup;
 
 #pragma mark - Conversation Presentation
 

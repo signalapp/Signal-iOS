@@ -11,10 +11,10 @@ class DebugUINotifications: DebugUIPage {
     // MARK: Dependencies
 
     var notificationsManager: NotificationsManager {
-        return SignalApp.shared().notificationsManager
+        return AppEnvironment.shared.notificationsManager
     }
     var notificationsAdapter: CallNotificationsAdapter {
-        return SignalApp.shared().callService.notificationsAdapter
+        return AppEnvironment.shared.callNotificationsAdapter
     }
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender

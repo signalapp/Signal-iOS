@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _accountManager = SignalApp.sharedApp.accountManager;
+    _accountManager = AppEnvironment.shared.accountManager;
 
     return self;
 }
@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _accountManager = SignalApp.sharedApp.accountManager;
+    _accountManager = AppEnvironment.shared.accountManager;
 
     return self;
 }

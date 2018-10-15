@@ -52,6 +52,12 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
+class VerifyingPushRegistrationManager: PushRegistrationManager {
+    public override func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
+        return Promise.value(("a", "b"))
+    }
+}
+
 class AccountManagerTest: SignalBaseTest {
 
     override func setUp() {
@@ -112,6 +118,8 @@ class AccountManagerTest: SignalBaseTest {
         let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
         sskEnvironment.tsAccountManager = tsAccountManager
 
+        AppEnvironment.shared.pushRegistrationManager = VerifyingPushRegistrationManager()
+
         let accountManager = AccountManager()
 
         let expectation = self.expectation(description: "should succeed")
@@ -142,5 +150,4 @@ class AccountManagerTest: SignalBaseTest {
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
-
 }

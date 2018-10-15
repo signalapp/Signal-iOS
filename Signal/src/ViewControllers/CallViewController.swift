@@ -14,7 +14,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // Dependencies
     var callUIAdapter: CallUIAdapter {
-        return SignalApp.shared().callUIAdapter
+        return AppEnvironment.shared.callService.callUIAdapter
     }
 
     // Feature Flag
@@ -208,7 +208,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Subscribe for future call updates
         call.addObserverAndSyncState(observer: self)
 
-        SignalApp.shared().callService.addObserverAndSyncState(observer: self)
+        AppEnvironment.shared.callService.addObserverAndSyncState(observer: self)
 
         assert(callUIAdapter.audioService.delegate == nil)
         callUIAdapter.audioService.delegate = self
