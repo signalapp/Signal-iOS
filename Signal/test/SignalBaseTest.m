@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    NSLog(@"%@ setUp", self.logTag);
+    OWSLogInfo(@"");
 
     [super setUp];
 
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
-    NSLog(@"%@ tearDown", self.logTag);
+    OWSLogInfo(@"");
 
     [super tearDown];
 }

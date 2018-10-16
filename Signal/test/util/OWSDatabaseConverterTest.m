@@ -156,7 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self waitForExpectationsWithTimeout:5.0
                                      handler:^(NSError *error) {
                                          if (error) {
-                                             NSLog(@"Timeout Error: %@", error);
+                                             OWSLogInfo(@"Timeout Error: %@", error);
                                          }
                                      }];
     }

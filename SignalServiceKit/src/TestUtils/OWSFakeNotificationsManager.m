@@ -14,22 +14,22 @@ NS_ASSUME_NONNULL_BEGIN
                             inThread:(TSThread *)thread
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
                          transaction:(YapDatabaseReadTransaction *)transaction {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)error
                            thread:(TSThread *)thread
                       transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)error
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)clearAllNotifications {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 @end

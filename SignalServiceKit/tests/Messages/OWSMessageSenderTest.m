@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                                forRecipient:(SignalRecipient *)recipient
                                    inThread:(TSThread *)thread
 {
-    NSLog(@"[OWSFakeMessagesManager] Faking deviceMessages.");
+    OWSLogInfo(@"[OWSFakeMessagesManager] Faking deviceMessages.");
     return @[];
 }
 
@@ -298,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self waitForExpectationsWithTimeout:5
                                  handler:^(NSError *error) {
-                                     NSLog(@"Expiration timer not set in time.");
+                                     OWSLogInfo(@"Expiration timer not set in time.");
                                  }];
 }
 
@@ -324,7 +324,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self waitForExpectationsWithTimeout:5
                                  handler:^(NSError *error) {
-                                     NSLog(@"Expiration timer not set in time.");
+                                     OWSLogInfo(@"Expiration timer not set in time.");
                                  }];
 }
 

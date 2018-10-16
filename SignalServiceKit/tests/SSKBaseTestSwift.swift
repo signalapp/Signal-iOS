@@ -4,6 +4,7 @@
 
 import XCTest
 import SignalServiceKit
+import CocoaLumberjack
 
 @objc
 public class SSKBaseTestSwift: XCTestCase {
@@ -11,6 +12,8 @@ public class SSKBaseTestSwift: XCTestCase {
     @objc
     public override func setUp() {
         super.setUp()
+
+        DDLog.add(DDTTYLogger.sharedInstance)
 
         ClearCurrentAppContextForTests()
         SetCurrentAppContext(TestAppContext())
