@@ -854,13 +854,7 @@ private class SignalCallData: NSObject {
                                ] as NSMutableDictionary
 
             let iceControlMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallICECandidatesKey, moreData: allTheData)
-            
-            
-            
-//            let iceUpdateMessage = OWSCallIceUpdateMessage(peerId: call.peerId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
-
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
-//            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
             let sendPromise = self.messageSender.sendPromise(message: iceControlMessage)
             sendPromise.retainUntilComplete()
         }.catch { error in
@@ -1196,16 +1190,19 @@ private class SignalCallData: NSObject {
             ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
 
             // If the call is connected, we can send the hangup via the data channel for faster hangup.
-            let message = DataChannelMessage.forHangup(peerId: call.peerId)
-            peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "hangup", isCritical: true)
+            // Forsta not presently setup for data channel messaging.
+//            let message = DataChannelMessage.forHangup(peerId: call.peerId)
+//            peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "hangup", isCritical: true)
         } else {
             Logger.info("\(self.logTag) ending call before peer connection created. Device offline or quick hangup.")
         }
 
-        // If the call hasn't started yet, we don't have a data channel to communicate the hang up. Use Signal Service Message.
-        let hangupMessage = OWSCallHangupMessage(peerId: call.peerId)
-        let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: hangupMessage)
-        let sendPromise = self.messageSender.sendPromise(message: callMessage).then {_ in
+        let allTheData = [ "callId" : call.callId,
+                           ] as NSMutableDictionary
+        
+        let hangupMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallICECandidatesKey, moreData: allTheData)
+
+        let sendPromise = self.messageSender.sendPromise(message: hangupMessage).then {_ in
             Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.uniqueId)")
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
