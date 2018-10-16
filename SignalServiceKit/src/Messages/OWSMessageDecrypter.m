@@ -550,7 +550,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             if (envelope.source.length > 0) {
                 errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
             } else {
-                // TODO: Find another way to surface undecryptable UD messages to the user.
+                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                    transaction:transaction];
                 return;
             }
         }
