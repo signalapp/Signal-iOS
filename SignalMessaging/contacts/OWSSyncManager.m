@@ -21,8 +21,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOWSPrimaryStorageOWSSyncManagerCollection = @"kTSStorageManagerOWSSyncManagerCollection";
-NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
+NSString *const kSyncManagerCollection = @"kTSStorageManagerOWSSyncManagerCollection";
+NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 
 @interface OWSSyncManager ()
 
@@ -137,8 +137,8 @@ NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageMan
         __block NSData *_Nullable lastMessageData;
         [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-            lastMessageData = [transaction objectForKey:kOWSPrimaryStorageOWSSyncManagerLastMessageKey
-                                           inCollection:kOWSPrimaryStorageOWSSyncManagerCollection];
+            lastMessageData = [transaction objectForKey:kSyncManagerLastContactSyncKey
+                                           inCollection:kSyncManagerCollection];
         }];
 
         if (!messageData) {
@@ -161,8 +161,8 @@ NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageMan
                 OWSLogInfo(@"Successfully sent contacts sync message.");
 
                 [self.editingDatabaseConnection setObject:messageData
-                                                   forKey:kOWSPrimaryStorageOWSSyncManagerLastMessageKey
-                                             inCollection:kOWSPrimaryStorageOWSSyncManagerCollection];
+                                                   forKey:kSyncManagerLastContactSyncKey
+                                             inCollection:kSyncManagerCollection];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;
