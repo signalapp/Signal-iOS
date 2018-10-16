@@ -7,6 +7,7 @@
 #import "OWSBackgroundTask.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
+#import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
@@ -66,15 +67,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 // errors that occur while initializing OWSPrimaryStorage.
 + (YapDatabaseConnection *)dbConnection
 {
-    static YapDatabaseConnection *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-        OWSAssertDebug(primaryStorage);
-        // Use a newDatabaseConnection so as not to block reads in the launch path.
-        instance = primaryStorage.newDatabaseConnection;
-    });
-    return instance;
+    return SSKEnvironment.shared.analyticsDBConnection;
 }
 
 - (instancetype)initDefault
