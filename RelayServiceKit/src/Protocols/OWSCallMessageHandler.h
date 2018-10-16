@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 //- (void)receivedIceUpdate:(OWSSignalServiceProtosCallMessageIceUpdate *)iceUpdate
 //             fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedIceUpdate(_:from:));
 
--(void)handleRemoteHangupWithCallId:(NSString *)callId;
+-(void)receivedHangupWithCallId:(NSString *)callId;
 //- (void)receivedHangup:(OWSSignalServiceProtosCallMessageHangup *)hangup
 //          fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedHangup(_:from:));
 

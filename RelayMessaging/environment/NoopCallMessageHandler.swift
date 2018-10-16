@@ -6,7 +6,7 @@ import RelayServiceKit
 
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
-    public func handleRemoteHangup(withCallId callId: String) {
+    public func receivedHangup(withCallId callId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
         

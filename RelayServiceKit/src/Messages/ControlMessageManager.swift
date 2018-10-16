@@ -153,7 +153,7 @@ class ControlMessageManager : NSObject
         }
         
         DispatchQueue.main.async {
-            TextSecureKitEnv.shared().callMessageHandler.handleRemoteHangup(withCallId: callId!)
+            TextSecureKitEnv.shared().callMessageHandler.receivedHangup(withCallId: callId!)
         }
     }
     
