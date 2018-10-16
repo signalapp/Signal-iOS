@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSContactsManager *contactsManager;
 @property (nonatomic) OWSPreferences *preferences;
-@property (nonatomic) OWSSyncManager *syncManager;
 @property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) LockInteractionController *lockInteractionController;
 @property (nonatomic) OWSWindowManager *windowManager;

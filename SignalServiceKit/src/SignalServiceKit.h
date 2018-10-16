@@ -5,3 +5,4 @@
 // Anything used by Swift outside of the framework must be imported.
 #import "OWSFileSystem.h"
 #import "OWSOperation.h"
+#import "OWSSyncManagerProtocol.h"

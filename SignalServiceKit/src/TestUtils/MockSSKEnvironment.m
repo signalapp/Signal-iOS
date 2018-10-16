@@ -72,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSReadReceiptManager *readReceiptManager = [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSOutgoingReceiptManager *outgoingReceiptManager =
         [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+    id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -91,11 +92,13 @@ NS_ASSUME_NONNULL_BEGIN
                             ows2FAManager:ows2FAManager
                   disappearingMessagesJob:disappearingMessagesJob
                   contactDiscoveryService:contactDiscoveryService
-                  disappearingMessagesJob:readReceiptManager
-                  contactDiscoveryService:outgoingReceiptManager];
+                       readReceiptManager:readReceiptManager
+                   outgoingReceiptManager:outgoingReceiptManager
+                              syncManager:syncManager];
     if (!self) {
         return nil;
     }
+
     self.callMessageHandler = [OWSFakeCallMessageHandler new];
     self.notificationsManager = [OWSFakeNotificationsManager new];
     return self;

@@ -16,7 +16,6 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSPreferences.h>
-#import <SignalMessaging/OWSSyncManager.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>

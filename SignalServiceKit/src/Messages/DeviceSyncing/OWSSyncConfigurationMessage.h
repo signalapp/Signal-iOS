@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const NSNotificationName_SyncConfigurationNeeded;
-
 @interface OWSSyncConfigurationMessage : OWSOutgoingSyncMessage
 
 - (instancetype)init NS_UNAVAILABLE;

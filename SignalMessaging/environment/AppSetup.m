@@ -88,7 +88,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences
-                                                            syncManager:syncManager
                                                                  sounds:sounds
                                               lockInteractionController:lockInteractionController
                                                           windowManager:windowManager]];
@@ -111,8 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
                                                           contactDiscoveryService:contactDiscoveryService
-                                                          disappearingMessagesJob:readReceiptManager
-                                                          contactDiscoveryService:outgoingReceiptManager]];
+                                                               readReceiptManager:readReceiptManager
+                                                           outgoingReceiptManager:outgoingReceiptManager
+                                                                      syncManager:syncManager]];
 
         appSpecificSingletonBlock();
 

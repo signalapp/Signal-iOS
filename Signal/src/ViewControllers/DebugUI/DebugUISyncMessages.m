@@ -17,7 +17,6 @@
 #import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
@@ -142,8 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendConfigurationSyncMessage
 {
-    [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_SyncConfigurationNeeded
-                                                           object:nil];
+    [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 }
 
 @end

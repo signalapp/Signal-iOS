@@ -27,7 +27,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
-#import "OWSSyncConfigurationMessage.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -849,8 +848,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
-            [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_SyncConfigurationNeeded
-                                                                   object:nil];
+            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         } else {
             OWSLogWarn(@"ignoring unsupported sync request message");
         }

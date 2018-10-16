@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const NSNotificationName_SyncConfigurationNeeded = @"NSNotificationName_SyncConfigurationNeeded";
-
 @interface OWSSyncConfigurationMessage ()
 
 @property (nonatomic, readonly) BOOL areReadReceiptsEnabled;

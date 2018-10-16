@@ -8,12 +8,14 @@
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
 #import "OWSReadReceiptManager.h"
+#import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
@@ -33,9 +35,9 @@ NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageMan
 @implementation OWSSyncManager
 
 + (instancetype)shared {
-    OWSAssertDebug(Environment.shared.syncManager);
+    OWSAssertDebug(SSKEnvironment.shared.syncManager);
 
-    return Environment.shared.syncManager;
+    return SSKEnvironment.shared.syncManager;
 }
 
 - (instancetype)initDefault {
@@ -54,10 +56,6 @@ NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageMan
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(profileKeyDidChange:)
                                                  name:kNSNotificationName_ProfileKeyDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(syncConfigurationNeeded:)
-                                                 name:NSNotificationName_SyncConfigurationNeeded
                                                object:nil];
 
     return self;
@@ -105,12 +103,6 @@ NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageMan
     OWSAssertIsOnMainThread();
 
     [self sendSyncContactsMessageIfPossible];
-}
-
-- (void)syncConfigurationNeeded:(id)notification {
-    OWSAssertIsOnMainThread();
-
-    [self sendConfigurationSyncMessage];
 }
 
 #pragma mark -
@@ -200,6 +192,12 @@ NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageMan
 }
 
 - (void)sendConfigurationSyncMessage {
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [self sendConfigurationSyncMessage_AppReady];
+    }];
+}
+
+- (void)sendConfigurationSyncMessage_AppReady {
     DDLogInfo(@"");
 
     BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;

@@ -4,7 +4,6 @@
 
 #import "OWSReadReceiptManager.h"
 #import "AppReadiness.h"
-#import "NSNotificationCenter+OWS.h"
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingReceiptManager.h"
@@ -12,7 +11,6 @@
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
 #import "OWSStorage.h"
-#import "OWSSyncConfigurationMessage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
@@ -571,8 +569,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
                   inCollection:OWSReadReceiptManagerCollection];
 
-    [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_SyncConfigurationNeeded
-                                                           object:nil];
+    [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 
     self.areReadReceiptsEnabledCached = @(value);
 }

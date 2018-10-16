@@ -28,7 +28,6 @@
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalMessaging/OWSSyncManager.h>
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -192,9 +191,6 @@ static NSTimeInterval launchStartedAt;
     [[OWSWindowManager sharedManager] setupWithRootWindow:self.window
                                      screenBlockingWindow:OWSScreenLockUI.sharedManager.screenBlockingWindow];
     [OWSScreenLockUI.sharedManager startObserving];
-
-    // Ensure OWSSyncManager is instantiated.
-    [OWSSyncManager shared];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(storageIsReady)

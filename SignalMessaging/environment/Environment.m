@@ -13,7 +13,6 @@ static Environment *sharedEnvironment = nil;
 
 @property (nonatomic) OWSContactsManager *contactsManager;
 @property (nonatomic) OWSPreferences *preferences;
-@property (nonatomic) OWSSyncManager *syncManager;
 @property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) LockInteractionController *lockInteractionController;
 @property (nonatomic) OWSWindowManager *windowManager;
@@ -49,7 +48,6 @@ static Environment *sharedEnvironment = nil;
 }
 
 - (instancetype)initWithPreferences:(OWSPreferences *)preferences
-                        syncManager:(OWSSyncManager *)syncManager
                              sounds:(OWSSounds *)sounds
           lockInteractionController:(LockInteractionController *)lockInteractionController
                       windowManager:(OWSWindowManager *)windowManager {
@@ -59,13 +57,11 @@ static Environment *sharedEnvironment = nil;
     }
 
     OWSAssertDebug(preferences);
-    OWSAssertDebug(syncManager);
     OWSAssertDebug(sounds);
     OWSAssertDebug(lockInteractionController);
     OWSAssertDebug(windowManager);
 
     _preferences = preferences;
-    _syncManager = syncManager;
     _sounds = sounds;
     _lockInteractionController = lockInteractionController;
     _windowManager = windowManager;
