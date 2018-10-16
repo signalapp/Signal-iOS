@@ -103,7 +103,7 @@
     NSDateFormatter *formatter = [NSDateFormatter new];
     formatter.dateStyle = NSDateFormatterLongStyle;
     formatter.timeStyle = NSDateFormatterLongStyle;
-    NSLog(@"now: %@", [formatter stringFromDate:now]);
+    OWSLogInfo(@"now: %@", [formatter stringFromDate:now]);
 
     NSDate *oneSecondAgo =
         [NSDate dateWithTimeIntervalSinceReferenceDate:[now timeIntervalSinceReferenceDate] - kSecondInterval];
@@ -135,7 +135,7 @@
     NSDate *twoYearsAhead =
         [NSDate dateWithTimeIntervalSinceReferenceDate:[now timeIntervalSinceReferenceDate] + kYearInterval * 2];
 
-    NSLog(@"oneSecondAgo: %@", [formatter stringFromDate:oneSecondAgo]);
+    OWSLogInfo(@"oneSecondAgo: %@", [formatter stringFromDate:oneSecondAgo]);
 
     XCTAssertTrue([DateUtil dateIsToday:oneSecondAgo now:now]);
     XCTAssertTrue([DateUtil dateIsToday:oneMinuteAgo now:now]);
@@ -236,13 +236,13 @@
     formatter.timeStyle = NSDateFormatterLongStyle;
 
     NSDate *yesterdayBeforeMidnight = [self dateWithYear:2015 month:8 day:10 hour:23 minute:55];
-    NSLog(@"yesterdayBeforeMidnight: %@", [formatter stringFromDate:yesterdayBeforeMidnight]);
+    OWSLogInfo(@"yesterdayBeforeMidnight: %@", [formatter stringFromDate:yesterdayBeforeMidnight]);
 
     NSDate *todayAfterMidnight = [self dateWithYear:2015 month:8 day:11 hour:0 minute:5];
-    NSLog(@"todayAfterMidnight: %@", [formatter stringFromDate:todayAfterMidnight]);
+    OWSLogInfo(@"todayAfterMidnight: %@", [formatter stringFromDate:todayAfterMidnight]);
 
     NSDate *todayNoon = [self dateWithYear:2015 month:8 day:11 hour:12 minute:0];
-    NSLog(@"todayNoon: %@", [formatter stringFromDate:todayNoon]);
+    OWSLogInfo(@"todayNoon: %@", [formatter stringFromDate:todayNoon]);
 
     // Before Midnight, after Midnight.
     XCTAssertFalse([DateUtil dateIsToday:yesterdayBeforeMidnight now:todayAfterMidnight]);

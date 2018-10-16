@@ -15,8 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NotificationsManager : NSObject <NotificationsProtocol, OWSCallNotificationsAdaptee>
 
-- (void)clearAllNotifications;
-
 #ifdef DEBUG
 
 + (void)presentDebugNotification;

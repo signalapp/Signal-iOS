@@ -2,8 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSFileSystem.h"
+#import "OWSPrimaryStorage+SessionStore.h"
+#import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
@@ -23,14 +24,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
  */
 + (YapDatabaseConnection *)sessionStoreDBConnection
 {
-    static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sessionStoreDBConnection;
-    dispatch_once(&onceToken, ^{
-        sessionStoreDBConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
-        sessionStoreDBConnection.objectCacheEnabled = NO;
-    });
-
-    return sessionStoreDBConnection;
+    return SSKEnvironment.shared.sessionStoreDBConnection;
 }
 
 - (YapDatabaseConnection *)sessionStoreDBConnection

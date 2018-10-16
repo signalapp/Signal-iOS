@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)error
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (void)clearAllNotifications;
+
 @end
 
 NS_ASSUME_NONNULL_END

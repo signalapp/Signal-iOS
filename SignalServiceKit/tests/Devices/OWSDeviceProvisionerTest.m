@@ -20,7 +20,7 @@
                          success:(void (^)())successCallback
                          failure:(void (^)(NSError *))failureCallback
 {
-    NSLog(@"faking successful provisioning");
+    OWSLogInfo(@"faking successful provisioning");
     successCallback();
 }
 
@@ -35,7 +35,7 @@
 - (void)requestProvisioningCodeWithSuccess:(void (^)(NSString *))successCallback
                                    failure:(void (^)(NSError *))failureCallback
 {
-    NSLog(@"faking successful provisioning code fetching");
+    OWSLogInfo(@"faking successful provisioning code fetching");
     successCallback(@"fake-provisioning-code");
 }
 
@@ -90,7 +90,7 @@
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
-                                         NSLog(@"Timeout Error: %@", error);
+                                         OWSLogInfo(@"Timeout Error: %@", error);
                                      }
                                  }];
 }

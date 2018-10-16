@@ -220,12 +220,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 + (YapDatabaseConnection *)dbMigrationConnection
 {
-    static YapDatabaseConnection *connection = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        connection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-    });
-    return connection;
+    return SSKEnvironment.shared.migrationDBConnection;
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread

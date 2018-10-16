@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //- (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
 //{
-//    NSLog(@"[OWSFakeContactsUpdater] Faking contact lookup.");
+//    OWSLogInfo(@"[OWSFakeContactsUpdater] Faking contact lookup.");
 //    return [[SignalRecipient alloc] initWithTextSecureIdentifier:@"fake-recipient-id"
 //                                                           relay:nil];
 //}

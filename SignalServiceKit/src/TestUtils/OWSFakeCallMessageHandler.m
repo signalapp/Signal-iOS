@@ -12,27 +12,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer fromCallerId:(NSString *)callerId
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer fromCallerId:(NSString *)callerId
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)receivedIceUpdate:(SSKProtoCallMessageIceUpdate *)iceUpdate fromCallerId:(NSString *)callerId
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)receivedHangup:(SSKProtoCallMessageHangup *)hangup fromCallerId:(NSString *)callerId
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 - (void)receivedBusy:(SSKProtoCallMessageBusy *)busy fromCallerId:(NSString *)callerId
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    OWSLogInfo(@"");
 }
 
 @end

@@ -4,6 +4,7 @@
 
 #import "OWSDatabaseMigration.h"
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -81,13 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    static dispatch_once_t onceToken;
-    static YapDatabaseConnection *sharedDBConnection;
-    dispatch_once(&onceToken, ^{
-        sharedDBConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
-    });
-
-    return sharedDBConnection;
+    return SSKEnvironment.shared.migrationDBConnection;
 }
 
 - (YapDatabaseConnection *)dbReadConnection

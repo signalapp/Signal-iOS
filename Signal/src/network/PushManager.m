@@ -35,47 +35,26 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
 @property (nonatomic) NSMutableArray *currentNotifications;
 @property (nonatomic) UIBackgroundTaskIdentifier callBackgroundTask;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSMessageFetcherJob *messageFetcherJob;
-@property (nonatomic, readonly) NotificationsManager *notificationsManager;
 
 @end
 
 @implementation PushManager
 
 + (instancetype)sharedManager {
-    static PushManager *sharedManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] initDefault];
-    });
-    return sharedManager;
+    OWSAssertDebug(AppEnvironment.shared.pushManager);
+
+    return AppEnvironment.shared.pushManager;
 }
 
-- (instancetype)initDefault
-{
-    return [self initWithMessageFetcherJob:AppEnvironment.shared.messageFetcherJob
-                            primaryStorage:[OWSPrimaryStorage sharedManager]
-                             messageSender:SSKEnvironment.shared.messageSender
-                      notificationsManager:AppEnvironment.shared.notificationsManager];
-}
-
-- (instancetype)initWithMessageFetcherJob:(OWSMessageFetcherJob *)messageFetcherJob
-                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                            messageSender:(OWSMessageSender *)messageSender
-                     notificationsManager:(NotificationsManager *)notificationsManager
-{
+- (instancetype)init {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _messageSender = messageSender;
-    _messageFetcherJob = messageFetcherJob;
     _callBackgroundTask = UIBackgroundTaskInvalid;
     // TODO: consolidate notification tracking with NotificationsManager, which also maintains a list of notifications.
     _currentNotifications = [NSMutableArray array];
-    _notificationsManager = notificationsManager;
 
     OWSSingletonAssert();
 
@@ -86,6 +65,22 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
     return self;
 }
+
+#pragma mark - Dependencies
+
+- (OWSMessageSender *)messageSender {
+    return SSKEnvironment.shared.messageSender;
+}
+
+- (OWSMessageFetcherJob *)messageFetcherJob {
+    return AppEnvironment.shared.messageFetcherJob;
+}
+
+- (id<NotificationsProtocol>)notificationsManager {
+    return SSKEnvironment.shared.notificationsManager;
+}
+
+#pragma mark -
 
 - (CallUIAdapter *)callUIAdapter
 {

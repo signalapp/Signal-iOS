@@ -7,6 +7,9 @@
 #import "SSKEnvironment.h"
 #import "TestAppContext.h"
 
+@import CocoaLumberjack;
+#import <CocoaLumberjack/DDTTYLogger.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
@@ -15,9 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    NSLog(@"%@ setUp", self.logTag);
+    OWSLogInfo(@"%@ setUp", self.logTag);
 
     [super setUp];
+
+    [DDLog addLogger:DDTTYLogger.sharedInstance];
 
     ClearCurrentAppContextForTests();
     SetCurrentAppContext([TestAppContext new]);
@@ -27,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
-    NSLog(@"%@ tearDown", self.logTag);
+    OWSLogInfo(@"%@ tearDown", self.logTag);
 
     [super tearDown];
 }

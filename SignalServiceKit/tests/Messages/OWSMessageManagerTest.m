@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self waitForExpectationsWithTimeout:5
                                  handler:^(NSError *error) {
-                                     NSLog(@"No message submitted.");
+                                     OWSLogInfo(@"No message submitted.");
                                  }];
 }
 
