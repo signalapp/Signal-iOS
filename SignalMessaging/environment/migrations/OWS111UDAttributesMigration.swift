@@ -26,15 +26,13 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
         Logger.debug("")
-        BenchAsync(title: "UD Attributes Migration") { completeBenchmark in
-            self.doMigration {
-                completeBenchmark()
-                completion()
-            }
+        Bench(title: "UD Attributes Migration") {
+            self.doMigration()
         }
+        completion()
     }
 
-    private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
+    private func doMigration() {
         tsAccountManager.updateAccountAttributes()
 
         self.dbReadWriteConnection().readWrite { transaction in
