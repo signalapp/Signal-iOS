@@ -17,7 +17,6 @@
 #import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
@@ -142,21 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendConfigurationSyncMessage
 {
-    __block BOOL areReadReceiptsEnabled;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        areReadReceiptsEnabled =
-            [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
-    }];
-
-    OWSSyncConfigurationMessage *syncConfigurationMessage =
-        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
-    [self.messageSender enqueueMessage:syncConfigurationMessage
-        success:^{
-            OWSLogInfo(@"Successfully sent Configuration response syncMessage.");
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send Configuration response syncMessage with error: %@", error);
-        }];
+    [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 }
 
 @end

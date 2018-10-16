@@ -28,7 +28,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSContactAvatarBuilder.h>
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/OWSContactsSyncing.h>
 #import <SignalMessaging/OWSConversationColor.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSFormat.h>
@@ -40,6 +39,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSQuotedReplyModel.h>
 #import <SignalMessaging/OWSSearchBar.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/OWSSyncManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/OWSTextField.h>
 #import <SignalMessaging/OWSTextView.h>

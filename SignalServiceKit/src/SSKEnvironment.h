@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSCallMessageHandler;
 @protocol ProfileManagerProtocol;
 @protocol OWSUDManager;
+@protocol OWSSyncManagerProtocol;
 
 @interface SSKEnvironment : NSObject
 
@@ -49,8 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
-                disappearingMessagesJob:(OWSReadReceiptManager *)readReceiptManager
-                contactDiscoveryService:(OWSOutgoingReceiptManager *)outgoingReceiptManager NS_DESIGNATED_INITIALIZER;
+                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
+                 outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
+                            syncManager:(id<OWSSyncManagerProtocol>)syncManager NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -83,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ContactDiscoveryService *contactDiscoveryService;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic, readonly) OWSOutgoingReceiptManager *outgoingReceiptManager;
+@property (nonatomic, readonly) id<OWSSyncManagerProtocol> syncManager;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

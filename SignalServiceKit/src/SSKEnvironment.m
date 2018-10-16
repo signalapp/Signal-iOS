@@ -32,6 +32,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
+@property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
 
 @end
 
@@ -64,9 +65,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
-                disappearingMessagesJob:(OWSReadReceiptManager *)readReceiptManager
-                contactDiscoveryService:(OWSOutgoingReceiptManager *)outgoingReceiptManager
-{
+                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
+                 outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
+                            syncManager:(id<OWSSyncManagerProtocol>)syncManager {
     self = [super init];
     if (!self) {
         return self;
@@ -92,6 +93,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(contactDiscoveryService);
     OWSAssertDebug(readReceiptManager);
     OWSAssertDebug(outgoingReceiptManager);
+    OWSAssertDebug(syncManager);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -113,6 +115,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _contactDiscoveryService = contactDiscoveryService;
     _readReceiptManager = readReceiptManager;
     _outgoingReceiptManager = outgoingReceiptManager;
+    _syncManager = syncManager;
 
     return self;
 }

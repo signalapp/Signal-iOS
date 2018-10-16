@@ -1646,11 +1646,21 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `readReceipts`. Subsequent reads from it will return its default value.
     mutating func clearReadReceipts() {self._readReceipts = nil}
 
+    var unidentifiedDeliveryIndicators: Bool {
+      get {return _unidentifiedDeliveryIndicators ?? false}
+      set {_unidentifiedDeliveryIndicators = newValue}
+    }
+    /// Returns true if `unidentifiedDeliveryIndicators` has been explicitly set.
+    var hasUnidentifiedDeliveryIndicators: Bool {return self._unidentifiedDeliveryIndicators != nil}
+    /// Clears the value of `unidentifiedDeliveryIndicators`. Subsequent reads from it will return its default value.
+    mutating func clearUnidentifiedDeliveryIndicators() {self._unidentifiedDeliveryIndicators = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _readReceipts: Bool? = nil
+    fileprivate var _unidentifiedDeliveryIndicators: Bool? = nil
   }
 
   init() {}
@@ -3895,12 +3905,14 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Configuration"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "readReceipts"),
+    2: .same(proto: "unidentifiedDeliveryIndicators"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularBoolField(value: &self._readReceipts)
+      case 2: try decoder.decodeSingularBoolField(value: &self._unidentifiedDeliveryIndicators)
       default: break
       }
     }
@@ -3910,11 +3922,15 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
     if let v = self._readReceipts {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 1)
     }
+    if let v = self._unidentifiedDeliveryIndicators {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Configuration, rhs: SignalServiceProtos_SyncMessage.Configuration) -> Bool {
     if lhs._readReceipts != rhs._readReceipts {return false}
+    if lhs._unidentifiedDeliveryIndicators != rhs._unidentifiedDeliveryIndicators {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

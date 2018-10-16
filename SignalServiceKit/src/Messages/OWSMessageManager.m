@@ -7,6 +7,7 @@
 #import "AppReadiness.h"
 #import "ContactsManagerProtocol.h"
 #import "MimeTypeUtil.h"
+#import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"
@@ -26,7 +27,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
-#import "OWSSyncConfigurationMessage.h"
 #import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -848,17 +848,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
-            BOOL areReadReceiptsEnabled =
-                [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
-            OWSSyncConfigurationMessage *syncConfigurationMessage =
-                [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
-            [self.messageSender enqueueMessage:syncConfigurationMessage
-                success:^{
-                    OWSLogInfo(@"Successfully sent Configuration response syncMessage.");
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send Configuration response syncMessage with error: %@", error);
-                }];
+            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         } else {
             OWSLogWarn(@"ignoring unsupported sync request message");
         }

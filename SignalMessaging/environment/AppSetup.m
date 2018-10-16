@@ -82,13 +82,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSOutgoingReceiptManager *outgoingReceiptManager =
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
 
-        OWSContactsSyncing *contactsSyncing = [[OWSContactsSyncing alloc] initDefault];
+        OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
         LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences
-                                                        contactsSyncing:contactsSyncing
                                                                  sounds:sounds
                                               lockInteractionController:lockInteractionController
                                                           windowManager:windowManager]];
@@ -111,8 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
                                                           contactDiscoveryService:contactDiscoveryService
-                                                          disappearingMessagesJob:readReceiptManager
-                                                          contactDiscoveryService:outgoingReceiptManager]];
+                                                               readReceiptManager:readReceiptManager
+                                                           outgoingReceiptManager:outgoingReceiptManager
+                                                                      syncManager:syncManager]];
 
         appSpecificSingletonBlock();
 
