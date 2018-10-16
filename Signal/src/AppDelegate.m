@@ -447,7 +447,7 @@ static NSTimeInterval launchStartedAt;
     [PushRegistrationManager.shared didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
-    [PushRegistrationManager.sharedManager didFailToReceiveVanillaPushTokenWithError:error];
+    [PushRegistrationManager.shared didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }
 
