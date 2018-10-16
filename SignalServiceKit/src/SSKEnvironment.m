@@ -42,6 +42,9 @@ static SSKEnvironment *sharedSSKEnvironment;
 @synthesize callMessageHandler = _callMessageHandler;
 @synthesize notificationsManager = _notificationsManager;
 @synthesize objectReadWriteConnection = _objectReadWriteConnection;
+@synthesize sessionStoreDBConnection = _sessionStoreDBConnection;
+@synthesize migrationDBConnection = _migrationDBConnection;
+@synthesize analyticsDBConnection = _analyticsDBConnection;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                           messageSender:(OWSMessageSender *)messageSender
@@ -188,6 +191,34 @@ static SSKEnvironment *sharedSSKEnvironment;
         return _objectReadWriteConnection;
     }
 }
+
+- (YapDatabaseConnection *)sessionStoreDBConnection {
+    @synchronized(self) {
+        if (!_sessionStoreDBConnection) {
+            _sessionStoreDBConnection = self.primaryStorage.newDatabaseConnection;
+        }
+        return _sessionStoreDBConnection;
+    }
+}
+
+- (YapDatabaseConnection *)migrationDBConnection {
+    @synchronized(self) {
+        if (!_migrationDBConnection) {
+            _migrationDBConnection = self.primaryStorage.newDatabaseConnection;
+        }
+        return _migrationDBConnection;
+    }
+}
+
+- (YapDatabaseConnection *)analyticsDBConnection {
+    @synchronized(self) {
+        if (!_analyticsDBConnection) {
+            _analyticsDBConnection = self.primaryStorage.newDatabaseConnection;
+        }
+        return _analyticsDBConnection;
+    }
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

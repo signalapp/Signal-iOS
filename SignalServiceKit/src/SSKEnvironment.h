@@ -90,6 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, nullable) id<NotificationsProtocol> notificationsManager;
 
 @property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
+@property (atomic, readonly) YapDatabaseConnection *sessionStoreDBConnection;
+@property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
+@property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
 
 - (BOOL)isComplete;
 
