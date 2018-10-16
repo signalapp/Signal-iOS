@@ -18,4 +18,8 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     public func notifyUser(forThreadlessErrorMessage error: TSErrorMessage, transaction: YapDatabaseReadWriteTransaction) {
         Logger.warn("skipping notification for: \(error.description)")
     }
+
+    public func clearAllNotifications() {
+        Logger.warn("clearAllNotifications")
+    }
 }

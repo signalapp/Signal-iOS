@@ -50,46 +50,18 @@ import SignalMessaging
     public var pushRegistrationManager: PushRegistrationManager
 
     @objc
-    public init(callMessageHandler: WebRTCCallMessageHandler,
-                callService: CallService,
-                outboundCallInitiator: OutboundCallInitiator,
-                messageFetcherJob: MessageFetcherJob,
-                notificationsManager: NotificationsManager,
-                accountManager: AccountManager,
-                callNotificationsAdapter: CallNotificationsAdapter,
-                pushRegistrationManager: PushRegistrationManager) {
-        self.callMessageHandler = callMessageHandler
-        self.callService = callService
-        self.outboundCallInitiator = outboundCallInitiator
-        self.messageFetcherJob = messageFetcherJob
-        self.notificationsManager = notificationsManager
-        self.accountManager = accountManager
-        self.callNotificationsAdapter = callNotificationsAdapter
-        self.pushRegistrationManager = pushRegistrationManager
-
-        super.init()
-
-        SwiftSingletons.register(self)
-    }
+    public var pushManager: PushManager
 
     private override init() {
-        let accountManager = AccountManager()
-        let notificationsManager = NotificationsManager()
-        let callNotificationsAdapter = CallNotificationsAdapter()
-        let callService = CallService()
-        let callMessageHandler = WebRTCCallMessageHandler()
-        let outboundCallInitiator = OutboundCallInitiator()
-        let messageFetcherJob = MessageFetcherJob()
-        let pushRegistrationManager = PushRegistrationManager()
-
-        self.callMessageHandler = callMessageHandler
-        self.callService = callService
-        self.outboundCallInitiator = outboundCallInitiator
-        self.messageFetcherJob = messageFetcherJob
-        self.notificationsManager = notificationsManager
-        self.accountManager = accountManager
-        self.callNotificationsAdapter = callNotificationsAdapter
-        self.pushRegistrationManager = pushRegistrationManager
+        self.callMessageHandler = WebRTCCallMessageHandler()
+        self.callService = CallService()
+        self.outboundCallInitiator = OutboundCallInitiator()
+        self.messageFetcherJob = MessageFetcherJob()
+        self.notificationsManager = NotificationsManager()
+        self.accountManager = AccountManager()
+        self.callNotificationsAdapter = CallNotificationsAdapter()
+        self.pushRegistrationManager = PushRegistrationManager()
+        self.pushManager = PushManager()
 
         super.init()
 

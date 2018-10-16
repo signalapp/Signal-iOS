@@ -39,8 +39,6 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
 
 @property (nonatomic) BOOL hasPresentedConversationSinceLastDeactivation;
 
-- (instancetype)init NS_UNAVAILABLE;
-
 + (PushManager *)sharedManager;
 
 /**
