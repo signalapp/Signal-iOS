@@ -3984,6 +3984,9 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
         if hasReadReceipts {
             builder.setReadReceipts(readReceipts)
         }
+        if hasUnidentifiedDeliveryIndicators {
+            builder.setUnidentifiedDeliveryIndicators(unidentifiedDeliveryIndicators)
+        }
         return builder
     }
 
@@ -3995,6 +3998,10 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 
         @objc public func setReadReceipts(_ valueParam: Bool) {
             proto.readReceipts = valueParam
+        }
+
+        @objc public func setUnidentifiedDeliveryIndicators(_ valueParam: Bool) {
+            proto.unidentifiedDeliveryIndicators = valueParam
         }
 
         @objc public func build() throws -> SSKProtoSyncMessageConfiguration {
@@ -4013,6 +4020,13 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
     }
     @objc public var hasReadReceipts: Bool {
         return proto.hasReadReceipts
+    }
+
+    @objc public var unidentifiedDeliveryIndicators: Bool {
+        return proto.unidentifiedDeliveryIndicators
+    }
+    @objc public var hasUnidentifiedDeliveryIndicators: Bool {
+        return proto.hasUnidentifiedDeliveryIndicators
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Configuration) {
