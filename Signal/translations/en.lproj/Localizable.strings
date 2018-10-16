@@ -1911,7 +1911,7 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Enable Debug Log";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Submit Debug Log";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Create Debug Log";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Advanced";
