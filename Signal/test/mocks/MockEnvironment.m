@@ -4,7 +4,7 @@
 
 #import "MockEnvironment.h"
 #import "OWSBackup.h"
-#import "OWSContactsSyncing.h"
+#import "OWSSyncManager.h"
 #import "OWSWindowManager.h"
 #import <SignalMessaging/LockInteractionController.h>
 #import <SignalMessaging/OWSPreferences.h>
@@ -28,13 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: We should probably mock this out.
     OWSPreferences *preferences = [OWSPreferences new];
-    OWSContactsSyncing *contactsSyncing = [[OWSContactsSyncing alloc] initDefault];
+    OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
     OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
     LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
     OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
 
     self = [super initWithPreferences:preferences
-                      contactsSyncing:contactsSyncing
+                          syncManager:syncManager
                                sounds:sounds
             lockInteractionController:lockInteractionController
                         windowManager:windowManager];

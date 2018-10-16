@@ -571,15 +571,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                         forKey:OWSReadReceiptManagerAreReadReceiptsEnabled
                   inCollection:OWSReadReceiptManagerCollection];
 
-    OWSSyncConfigurationMessage *syncConfigurationMessage =
-        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:value];
-    [self.messageSender enqueueMessage:syncConfigurationMessage
-        success:^{
-            OWSLogInfo(@"Successfully sent Configuration syncMessage.");
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send Configuration syncMessage with error: %@", error);
-        }];
+    [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_SyncConfigurationNeeded
+                                                           object:nil];
 
     self.areReadReceiptsEnabledCached = @(value);
 }

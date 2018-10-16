@@ -82,13 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSOutgoingReceiptManager *outgoingReceiptManager =
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
 
-        OWSContactsSyncing *contactsSyncing = [[OWSContactsSyncing alloc] initDefault];
+        OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
         LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
 
         [Environment setShared:[[Environment alloc] initWithPreferences:preferences
-                                                        contactsSyncing:contactsSyncing
+                                                            syncManager:syncManager
                                                                  sounds:sounds
                                               lockInteractionController:lockInteractionController
                                                           windowManager:windowManager]];

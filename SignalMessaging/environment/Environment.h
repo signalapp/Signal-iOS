@@ -6,9 +6,9 @@
 
 @class LockInteractionController;
 @class OWSContactsManager;
-@class OWSContactsSyncing;
 @class OWSPreferences;
 @class OWSSounds;
+@class OWSSyncManager;
 @class OWSWindowManager;
 
 /**
@@ -24,14 +24,14 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithPreferences:(OWSPreferences *)preferences
-                    contactsSyncing:(OWSContactsSyncing *)contactsSyncing
+                        syncManager:(OWSSyncManager *)syncManager
                              sounds:(OWSSounds *)sounds
           lockInteractionController:(LockInteractionController *)lockInteractionController
                       windowManager:(OWSWindowManager *)windowManager;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
-@property (nonatomic, readonly) OWSContactsSyncing *contactsSyncing;
+@property (nonatomic, readonly) OWSSyncManager *syncManager;
 @property (nonatomic, readonly) OWSSounds *sounds;
 @property (nonatomic, readonly) LockInteractionController *lockInteractionController;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;

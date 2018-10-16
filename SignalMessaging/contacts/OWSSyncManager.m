@@ -2,25 +2,27 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContactsSyncing.h"
+#import "OWSSyncManager.h"
 #import "Environment.h"
 #import "OWSContactsManager.h"
+#import "OWSPreferences.h"
 #import "OWSProfileManager.h"
+#import "OWSReadReceiptManager.h"
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kOWSPrimaryStorageOWSContactsSyncingCollection = @"kTSStorageManagerOWSContactsSyncingCollection";
-NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
-    = @"kTSStorageManagerOWSContactsSyncingLastMessageKey";
+NSString *const kOWSPrimaryStorageOWSSyncManagerCollection = @"kTSStorageManagerOWSSyncManagerCollection";
+NSString *const kOWSPrimaryStorageOWSSyncManagerLastMessageKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 
-@interface OWSContactsSyncing ()
+@interface OWSSyncManager ()
 
 @property (nonatomic, readonly) dispatch_queue_t serialQueue;
 
@@ -28,17 +30,15 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
 @end
 
-@implementation OWSContactsSyncing
+@implementation OWSSyncManager
 
-+ (instancetype)sharedManager
-{
-    OWSAssertDebug(Environment.shared.contactsSyncing);
++ (instancetype)shared {
+    OWSAssertDebug(Environment.shared.syncManager);
 
-    return Environment.shared.contactsSyncing;
+    return Environment.shared.syncManager;
 }
 
-- (instancetype)initDefault
-{
+- (instancetype)initDefault {
     self = [super init];
 
     if (!self) {
@@ -55,12 +55,15 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                                              selector:@selector(profileKeyDidChange:)
                                                  name:kNSNotificationName_ProfileKeyDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(syncConfigurationNeeded:)
+                                                 name:NSNotificationName_SyncConfigurationNeeded
+                                               object:nil];
 
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -90,10 +93,9 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     return SSKEnvironment.shared.profileManager;
 }
 
-#pragma mark -
+#pragma mark - Notifications
 
-- (void)signalAccountsDidChange:(id)notification
-{
+- (void)signalAccountsDidChange:(id)notification {
     OWSAssertIsOnMainThread();
 
     [self sendSyncContactsMessageIfPossible];
@@ -105,15 +107,21 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     [self sendSyncContactsMessageIfPossible];
 }
 
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
+- (void)syncConfigurationNeeded:(id)notification {
+    OWSAssertIsOnMainThread();
+
+    [self sendConfigurationSyncMessage];
+}
+
+#pragma mark -
+
+- (YapDatabaseConnection *)editingDatabaseConnection {
     return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
 }
 
 #pragma mark - Methods
 
-- (void)sendSyncContactsMessageIfNecessary
-{
+- (void)sendSyncContactsMessageIfNecessary {
     OWSAssertIsOnMainThread();
 
     if (!self.serialQueue) {
@@ -121,7 +129,6 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     }
 
     dispatch_async(self.serialQueue, ^{
-
         if (self.isRequestInFlight) {
             // De-bounce.  It's okay if we ignore some new changes;
             // `sendSyncContactsMessageIfPossible` is called fairly
@@ -138,8 +145,8 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
         __block NSData *_Nullable lastMessageData;
         [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-            lastMessageData = [transaction objectForKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
-                                           inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
+            lastMessageData = [transaction objectForKey:kOWSPrimaryStorageOWSSyncManagerLastMessageKey
+                                           inCollection:kOWSPrimaryStorageOWSSyncManagerCollection];
         }];
 
         if (!messageData) {
@@ -162,8 +169,8 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                 OWSLogInfo(@"Successfully sent contacts sync message.");
 
                 [self.editingDatabaseConnection setObject:messageData
-                                                   forKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
-                                             inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
+                                                   forKey:kOWSPrimaryStorageOWSSyncManagerLastMessageKey
+                                             inCollection:kOWSPrimaryStorageOWSSyncManagerCollection];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;
@@ -179,8 +186,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     });
 }
 
-- (void)sendSyncContactsMessageIfPossible
-{
+- (void)sendSyncContactsMessageIfPossible {
     OWSAssertIsOnMainThread();
 
     if (!self.contactsManager.isSetup) {
@@ -191,6 +197,24 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     if ([TSAccountManager sharedInstance].isRegistered) {
         [self sendSyncContactsMessageIfNecessary];
     }
+}
+
+- (void)sendConfigurationSyncMessage {
+    DDLogInfo(@"");
+
+    BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;
+    BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
+
+    OWSSyncConfigurationMessage *syncConfigurationMessage =
+        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled
+                                      showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators];
+    [self.messageSender enqueueMessage:syncConfigurationMessage
+        success:^{
+            OWSLogInfo(@"Send configuration sync message succeeded.");
+        }
+        failure:^(NSError *error) {
+            OWSLogError(@"Send configuration sync message failed with error: %@", error);
+        }];
 }
 
 @end

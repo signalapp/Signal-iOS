@@ -123,8 +123,8 @@
 		346129FF1FD5F31400532771 /* OWS103EnableVideoCalling.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129F21FD5F31400532771 /* OWS103EnableVideoCalling.m */; };
 		34612A001FD5F31400532771 /* OWS105AttachmentFilePaths.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129F31FD5F31400532771 /* OWS105AttachmentFilePaths.h */; };
 		34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */; };
-		34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSContactsSyncing.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSContactsSyncing.m */; };
+		34612A061FD7238600532771 /* OWSSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSSyncManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34612A071FD7238600532771 /* OWSSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSSyncManager.m */; };
 		34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */; };
 		34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */; };
 		3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3466087120E550F300AFFE73 /* ConversationStyle.swift */; };
@@ -754,8 +754,8 @@
 		346129F21FD5F31400532771 /* OWS103EnableVideoCalling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS103EnableVideoCalling.m; sourceTree = "<group>"; };
 		346129F31FD5F31400532771 /* OWS105AttachmentFilePaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS105AttachmentFilePaths.h; sourceTree = "<group>"; };
 		346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS104CreateRecipientIdentities.h; sourceTree = "<group>"; };
-		34612A041FD7238500532771 /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
-		34612A051FD7238500532771 /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
+		34612A041FD7238500532771 /* OWSSyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncManager.h; sourceTree = "<group>"; };
+		34612A051FD7238500532771 /* OWSSyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncManager.m; sourceTree = "<group>"; };
 		34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWindowManager.m; sourceTree = "<group>"; };
 		34641E1120878FB000E2EDE5 /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWindowManager.h; sourceTree = "<group>"; };
 		34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSScreenLock.swift; sourceTree = "<group>"; };
@@ -1645,8 +1645,8 @@
 			children = (
 				346129A21FD1F09100532771 /* OWSContactsManager.h */,
 				346129A31FD1F09100532771 /* OWSContactsManager.m */,
-				34612A041FD7238500532771 /* OWSContactsSyncing.h */,
-				34612A051FD7238500532771 /* OWSContactsSyncing.m */,
+				34612A041FD7238500532771 /* OWSSyncManager.h */,
+				34612A051FD7238500532771 /* OWSSyncManager.m */,
 				346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */,
 			);
 			path = contacts;
@@ -2517,7 +2517,7 @@
 				34AC09EC211B39B100997B47 /* OWSTableViewController.h in Headers */,
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
 				346129D61FD20ADC00532771 /* UIViewController+OWS.h in Headers */,
-				34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */,
+				34612A061FD7238600532771 /* OWSSyncManager.h in Headers */,
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				346129FC1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.h in Headers */,
 				34AC09F2211B39B100997B47 /* OWSViewController.h in Headers */,
@@ -3250,7 +3250,7 @@
 				34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */,
 				34AC09FA211B39B100997B47 /* SharingThreadPickerViewController.m in Sources */,
 				45F59A082028E4FB00E8D2B0 /* OWSAudioSession.swift in Sources */,
-				34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */,
+				34612A071FD7238600532771 /* OWSSyncManager.m in Sources */,
 				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
 				451F8A471FD715BA005CB9DA /* OWSAvatarBuilder.m in Sources */,
 				34AC09E7211B39B100997B47 /* MessageApprovalViewController.swift in Sources */,

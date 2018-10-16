@@ -9,13 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageSender;
 @class OWSProfileManager;
 
-@interface OWSContactsSyncing : NSObject
+@interface OWSSyncManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)sharedManager;
++ (instancetype)shared;
 
 @end
 

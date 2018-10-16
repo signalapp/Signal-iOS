@@ -104,8 +104,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use "screen protection" in the SAE.
 
-        // Ensure OWSContactsSyncing is instantiated.
-        OWSContactsSyncing.sharedManager()
+        // Ensure OWSSyncManager is instantiated.
+        OWSSyncManager.shared()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(storageIsReady),

@@ -6,6 +6,7 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
@@ -199,6 +200,9 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value
 {
     [self setValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators toValue:@(value)];
+
+    [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_SyncConfigurationNeeded
+                                                           object:nil];
 }
 
 #pragma mark - Calling

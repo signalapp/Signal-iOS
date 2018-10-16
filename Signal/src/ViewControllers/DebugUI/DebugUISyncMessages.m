@@ -142,21 +142,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendConfigurationSyncMessage
 {
-    __block BOOL areReadReceiptsEnabled;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        areReadReceiptsEnabled =
-            [[OWSReadReceiptManager sharedManager] areReadReceiptsEnabledWithTransaction:transaction];
-    }];
-
-    OWSSyncConfigurationMessage *syncConfigurationMessage =
-        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled];
-    [self.messageSender enqueueMessage:syncConfigurationMessage
-        success:^{
-            OWSLogInfo(@"Successfully sent Configuration response syncMessage.");
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send Configuration response syncMessage with error: %@", error);
-        }];
+    [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_SyncConfigurationNeeded
+                                                           object:nil];
 }
 
 @end
