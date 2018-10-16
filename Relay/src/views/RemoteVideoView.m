@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     _remoteVideoConstraints = @[];
 
 // Currently RTC only supports metal on 64bit machines
-#if defined(RTC_SUPPORTS_METAL)
+#if defined(__arm64__)
     // On 64-bit, iOS9+: uses the MetalKit backed view for improved battery/rendering performance.
     if (_videoRenderer == nil) {
 
@@ -59,9 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
-#elif defined(__arm64__)
-    // Canary incase the upstream RTC_SUPPORTS_METAL macro changes semantics
-    OWSFail(@"should only use legacy video view on 32bit systems");
+//#elif defined(__arm64__)
+//    // Canary incase the upstream RTC_SUPPORTS_METAL macro changes semantics
+//    OWSFail(@"should only use legacy video view on 32bit systems");
 #endif
 
     // On 32-bit iOS9+ systems, use the legacy EAGL backed view.
