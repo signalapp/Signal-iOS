@@ -297,7 +297,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         }
     };
 
-    [self uploadLogsWithSuccess:^(NSURL *url) {
+    [[self sharedManager] uploadLogsWithUIWithSuccess:^(NSURL *url) {
         UIAlertController *alert = [UIAlertController
             alertControllerWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                              message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")
@@ -357,28 +357,52 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     }];
 }
 
-+ (void)uploadLogsWithSuccess:(nullable UploadDebugLogsSuccess)success
-{
-    OWSAssertDebug(success);
+- (void)uploadLogsWithUIWithSuccess:(UploadDebugLogsSuccess)successParam {
+    OWSAssertIsOnMainThread();
 
-    [[self sharedManager] uploadLogsWithSuccess:success
-                                        failure:^(NSString *localizedErrorMessage) {
-                                            [Pastelog showFailureAlertWithMessage:localizedErrorMessage];
-                                        }];
+    [ModalActivityIndicatorViewController
+        presentFromViewController:UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts
+                        canCancel:YES
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      [self
+                          uploadLogsWithSuccess:^(NSURL *url) {
+                              OWSAssertIsOnMainThread();
+
+                              if (modalActivityIndicator.wasCancelled) {
+                                  return;
+                              }
+
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  OWSAssertIsOnMainThread();
+
+                                  successParam(url);
+                              }];
+                          }
+                          failure:^(NSString *localizedErrorMessage) {
+                              OWSAssertIsOnMainThread();
+
+                              if (modalActivityIndicator.wasCancelled) {
+                                  return;
+                              }
+
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  OWSAssertIsOnMainThread();
+
+                                  [Pastelog showFailureAlertWithMessage:localizedErrorMessage];
+                              }];
+                          }];
+                  }];
 }
 
-- (void)uploadLogsWithSuccess:(nullable UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
-{
+- (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam {
     OWSAssertDebug(successParam);
     OWSAssertDebug(failureParam);
 
     // Ensure that we call the completions on the main thread.
     UploadDebugLogsSuccess success = ^(NSURL *url) {
-        if (successParam) {
-            DispatchMainThreadSafe(^{
-                successParam(url);
-            });
-        }
+        DispatchMainThreadSafe(^{
+            successParam(url);
+        });
     };
     UploadDebugLogsFailure failure = ^(NSString *localizedErrorMessage) {
         DispatchMainThreadSafe(^{
