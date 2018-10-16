@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalServiceKit
 
 /// Factories for creating some default TSYapDatabaseObjects.
 ///
@@ -94,7 +93,7 @@ class ContactThreadFactory: Factory {
         outgoingMessageFactory.threadCreator = { _ in return thread }
 
         (0..<messageCount).forEach { _ in
-            if Bool.random() {
+            if [true, false].ows_randomElement()! {
                 _ = incomingMessageFactory.create(transaction: transaction)
             } else {
                 _ = outgoingMessageFactory.create(transaction: transaction)
@@ -207,8 +206,8 @@ class GroupThreadFactory: Factory {
         outgoingMessageFactory.threadCreator = { _ in return thread }
 
         (0..<messageCount).forEach { _ in
-            if Bool.random() {
-                incomingMessageFactory.authorIdBuilder = { thread.recipientIdentifiers.randomElement()!  }
+            if [true, false].ows_randomElement()! {
+                incomingMessageFactory.authorIdBuilder = { thread.recipientIdentifiers.ows_randomElement()!  }
                 _ = incomingMessageFactory.create(transaction: transaction)
             } else {
                 _ = outgoingMessageFactory.create(transaction: transaction)
@@ -240,8 +239,18 @@ class GroupThreadFactory: Factory {
     }
 
     var memberIdsBuilder: () -> [RecipientIdentifier] = {
-        let groupSize = (1..<10).randomElement()!
+        let groupSize = arc4random_uniform(10)
         return (0..<groupSize).map { _ in CommonGenerator.contactId }
+    }
+}
+
+extension Array {
+    func ows_randomElement() -> Element? {
+        guard self.count > 0 else {
+            return nil
+        }
+        let index = arc4random_uniform(UInt32(self.count))
+        return self[Int(index)]
     }
 }
 
@@ -250,7 +259,7 @@ struct CommonGenerator {
     static var contactId: String {
         let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-        let randomDigits = (0..<10).map { _ in return digits.randomElement()! }
+        let randomDigits = (0..<10).map { _ in return digits.ows_randomElement()! }
 
         return "+1".appending(randomDigits.joined())
     }
@@ -296,16 +305,15 @@ struct CommonGenerator {
     }
 
     static var sentence: String {
-        return sentences.randomElement()!
+        return sentences.ows_randomElement()!
     }
 
     static func sentences(count: UInt) -> [String] {
         return (0..<count).map { _ in sentence }
     }
 
-    static let sentenceCountInParagraph: Range<UInt> = (2..<9)
     static var paragraph: String {
-        let sentenceCount = sentenceCountInParagraph.randomElement()!
+        let sentenceCount = UInt(arc4random_uniform(7) + 2)
         return paragraph(sentenceCount: sentenceCount)
     }
 
