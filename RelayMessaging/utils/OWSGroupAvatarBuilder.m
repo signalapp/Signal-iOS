@@ -4,6 +4,7 @@
 
 #import "OWSGroupAvatarBuilder.h"
 #import "TSThread.h"
+#import <RelayMessaging/RelayMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    return self.thread.image;
+    UIImage *returnImage = nil;
+    if (self.thread.image) {
+        returnImage = self.thread.image;
+    } else if (self.thread.isOneOnOne) {
+        returnImage = [FLContactsManager.shared avatarImageRecipientId:self.thread.otherParticipantId];
+    }
+    
+    if (returnImage == nil) {
+        returnImage = self.buildDefaultImage;
+    }
+    
+    return returnImage;
 }
 
 - (UIImage *)buildDefaultImage
