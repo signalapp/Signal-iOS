@@ -281,39 +281,39 @@ NS_ASSUME_NONNULL_BEGIN
     [self startActivityIndicator];
     OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
     __weak CodeVerificationViewController *weakSelf = self;
-    [self.accountManager registerWithVerificationCode:[self validationCodeFromTextField] pin:nil]
-        .then(^{
-            OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
+    [[self.accountManager registerWithVerificationCode:[self validationCodeFromTextField] pin:nil]
+            .then(^{
+                OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
 
-            OWSLogInfo(@"Successfully registered Signal account.");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf stopActivityIndicator];
-                [weakSelf verificationWasCompleted];
-            });
-        })
-        .catch(^(NSError *error) {
-            OWSLogError(@"error: %@, %@, %zd", [error class], error.domain, error.code);
-            OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
-            OWSLogError(@"error verifying challenge: %@", error);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf stopActivityIndicator];
+                OWSLogInfo(@"Successfully registered Signal account.");
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf stopActivityIndicator];
+                    [weakSelf verificationWasCompleted];
+                });
+            })
+            .catch(^(NSError *error) {
+                OWSLogError(@"error: %@, %@, %zd", [error class], error.domain, error.code);
+                OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
+                OWSLogError(@"error verifying challenge: %@", error);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf stopActivityIndicator];
 
-                if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
-                    && error.code == OWSErrorCodeRegistrationMissing2FAPIN) {
-                    CodeVerificationViewController *strongSelf = weakSelf;
-                    if (!strongSelf) {
-                        return;
+                    if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
+                        && error.code == OWSErrorCodeRegistrationMissing2FAPIN) {
+                        CodeVerificationViewController *strongSelf = weakSelf;
+                        if (!strongSelf) {
+                            return;
+                        }
+                        OWSLogInfo(@"Showing 2FA registration view.");
+                        OWS2FARegistrationViewController *viewController = [OWS2FARegistrationViewController new];
+                        viewController.verificationCode = strongSelf.validationCodeFromTextField;
+                        [strongSelf.navigationController pushViewController:viewController animated:YES];
+                    } else {
+                        [weakSelf presentAlertWithVerificationError:error];
+                        [weakSelf.challengeTextField becomeFirstResponder];
                     }
-                    OWSLogInfo(@"Showing 2FA registration view.");
-                    OWS2FARegistrationViewController *viewController = [OWS2FARegistrationViewController new];
-                    viewController.verificationCode = strongSelf.validationCodeFromTextField;
-                    [strongSelf.navigationController pushViewController:viewController animated:YES];
-                } else {
-                    [weakSelf presentAlertWithVerificationError:error];
-                    [weakSelf.challengeTextField becomeFirstResponder];
-                }
-            });
-        });
+                });
+            }) retainUntilComplete];
 }
 
 - (void)verificationWasCompleted
