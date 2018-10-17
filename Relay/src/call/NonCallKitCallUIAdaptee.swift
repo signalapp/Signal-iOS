@@ -28,10 +28,10 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         super.init()
     }
 
-    func startOutgoingCall(handle: String) -> SignalCall {
+    func startOutgoingCall(handle: String) -> RelayCall {
         SwiftAssertIsOnMainThread(#function)
 
-        let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        let call = RelayCall.outgoingCall(localId: UUID(), callId: handle)
 
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)
@@ -45,7 +45,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         return call
     }
 
-    func reportIncomingCall(_ call: SignalCall, callerName: String) {
+    func reportIncomingCall(_ call: RelayCall, callerName: String) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(TAG) \(#function)")
@@ -60,7 +60,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         }
     }
 
-    func reportMissedCall(_ call: SignalCall, callerName: String) {
+    func reportMissedCall(_ call: RelayCall, callerName: String) {
         SwiftAssertIsOnMainThread(#function)
 
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
@@ -82,7 +82,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.answerCall(call)
     }
 
-    func answerCall(_ call: SignalCall) {
+    func answerCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         guard call.localId == self.callService.call?.localId else {
@@ -110,7 +110,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.declineCall(call)
     }
 
-    func declineCall(_ call: SignalCall) {
+    func declineCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         guard call.localId == self.callService.call?.localId else {
@@ -121,13 +121,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.callService.handleDeclineCall(call)
     }
 
-    func recipientAcceptedCall(_ call: SignalCall) {
+    func recipientAcceptedCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         OWSAudioSession.shared.isRTCAudioEnabled = true
     }
 
-    func localHangupCall(_ call: SignalCall) {
+    func localHangupCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         // If both parties hang up at the same moment,
@@ -140,25 +140,25 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.callService.handleLocalHungupCall(call)
     }
 
-    internal func remoteDidHangupCall(_ call: SignalCall) {
+    internal func remoteDidHangupCall(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
-    internal func remoteBusy(_ call: SignalCall) {
+    internal func remoteBusy(_ call: RelayCall) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
-    internal func failCall(_ call: SignalCall, error: CallError) {
+    internal func failCall(_ call: RelayCall, error: CallError) {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(TAG) in \(#function) is no-op")
     }
 
-    func setIsMuted(call: SignalCall, isMuted: Bool) {
+    func setIsMuted(call: RelayCall, isMuted: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         guard call.localId == self.callService.call?.localId else {
@@ -169,7 +169,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.callService.setIsMuted(call: call, isMuted: isMuted)
     }
 
-    func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
+    func setHasLocalVideo(call: RelayCall, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         guard call.localId == self.callService.call?.localId else {

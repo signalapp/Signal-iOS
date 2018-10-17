@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class FLContactsManager;
 @class OWSPreferences;
-@class SignalCall;
+@class RelayCall;
 @class TSCall;
 @class TSThread;
 

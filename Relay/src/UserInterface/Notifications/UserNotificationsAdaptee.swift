@@ -100,13 +100,13 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
 
     // MARK: - OWSCallNotificationsAdaptee
 
-    public func presentIncomingCall(_ call: SignalCall, callerName: String) {
+    public func presentIncomingCall(_ call: RelayCall, callerName: String) {
         Logger.debug("\(TAG) \(#function) is no-op, because it's handled with callkit.")
         // TODO since CallKit doesn't currently work on the simulator,
         // we could implement UNNotifications for simulator testing, or if people have opted out of callkit.
     }
 
-    public func presentMissedCall(_ call: SignalCall, callerName: String) {
+    public func presentMissedCall(_ call: RelayCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         let content = UNMutableNotificationContent()
@@ -132,7 +132,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         center.add(request)
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: RelayCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         let content = UNMutableNotificationContent()
@@ -158,7 +158,7 @@ class UserNotificationsAdaptee: NSObject, OWSCallNotificationsAdaptee, UNUserNot
         center.add(request)
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
+    public func presentMissedCallBecauseOfNewIdentity(call: RelayCall, callerName: String) {
         Logger.debug("\(TAG) \(#function)")
 
         let content = UNMutableNotificationContent()

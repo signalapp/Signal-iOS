@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OWSCallBusyMessage : OWSOutgoingCallMessage
 
-- (instancetype)initWithCallId:(UInt64)callId;
+- (instancetype)initWithPeerId:(NSString *)peerId;
 
-@property (nonatomic, readonly) UInt64 callId;
+@property (nonatomic, readonly, copy) NSString *peerId;
 
 - (OWSSignalServiceProtosCallMessageBusy *)asProtobuf;
 

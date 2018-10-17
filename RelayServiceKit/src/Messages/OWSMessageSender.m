@@ -45,7 +45,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
+const NSUInteger kOversizeTextMessageSizeThreshold = NSUIntegerMax; //2 * 1024;
 
 void AssertIsOnSendingQueue()
 {
@@ -267,9 +267,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssert(message);
-    if (message.body.length > 0) {
-        OWSAssert([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
-    }
+//    if (message.body.length > 0) {
+//        OWSAssert([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
+//    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         

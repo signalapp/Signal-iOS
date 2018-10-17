@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(recipient);
 
     OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setCallMessage:[self buildCallMessage:recipient.recipientId]];
+    [contentBuilder setCallMessage:[self buildCallMessage:recipient.uniqueId]];
     return [[contentBuilder build] data];
 }
 

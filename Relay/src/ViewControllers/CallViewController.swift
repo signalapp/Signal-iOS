@@ -27,7 +27,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: - Properties
 
     let thread: TSThread
-    let call: SignalCall
+    let call: RelayCall
     var hasDismissed = false
 
     // MARK: - Views
@@ -141,10 +141,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         fatalError("Unimplemented")
     }
 
-    required init(call: SignalCall) {
+    required init(call: RelayCall) {
         contactsManager = Environment.current().contactsManager
         self.call = call
-        self.thread = TSThread.getOrCreateThread(withId: call.remotePhoneNumber)
+        self.thread = TSThread.getOrCreateThread(withId: call.callId)
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
@@ -955,28 +955,28 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - CallObserver
 
-    internal func stateDidChange(call: SignalCall, state: CallState) {
+    internal func stateDidChange(call: RelayCall, state: CallState) {
         SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.TAG) new call status: \(state)")
         self.updateCallUI(callState: state)
     }
 
-    internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
+    internal func hasLocalVideoDidChange(call: RelayCall, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
         self.updateCallUI(callState: call.state)
     }
 
-    internal func muteDidChange(call: SignalCall, isMuted: Bool) {
+    internal func muteDidChange(call: RelayCall, isMuted: Bool) {
         SwiftAssertIsOnMainThread(#function)
         self.updateCallUI(callState: call.state)
     }
 
-    func holdDidChange(call: SignalCall, isOnHold: Bool) {
+    func holdDidChange(call: RelayCall, isOnHold: Bool) {
         SwiftAssertIsOnMainThread(#function)
         self.updateCallUI(callState: call.state)
     }
 
-    internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
+    internal func audioSourceDidChange(call: RelayCall, audioSource: AudioSource?) {
         SwiftAssertIsOnMainThread(#function)
         self.updateCallUI(callState: call.state)
     }
@@ -1113,11 +1113,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - CallServiceObserver
 
-    internal func didUpdateCall(call: SignalCall?) {
+    internal func didUpdateCall(call: RelayCall?) {
         // Do nothing.
     }
 
-    internal func didUpdateVideoTracks(call: SignalCall?,
+    internal func didUpdateVideoTracks(call: RelayCall?,
                                        localCaptureSession: AVCaptureSession?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)

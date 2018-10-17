@@ -25,11 +25,11 @@ enum CallDirection {
 
 // All Observer methods will be invoked from the main thread.
 protocol CallObserver: class {
-    func stateDidChange(call: SignalCall, state: CallState)
-    func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool)
-    func muteDidChange(call: SignalCall, isMuted: Bool)
-    func holdDidChange(call: SignalCall, isOnHold: Bool)
-    func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?)
+    func stateDidChange(call: RelayCall, state: CallState)
+    func hasLocalVideoDidChange(call: RelayCall, hasLocalVideo: Bool)
+    func muteDidChange(call: RelayCall, isMuted: Bool)
+    func holdDidChange(call: RelayCall, isOnHold: Bool)
+    func audioSourceDidChange(call: RelayCall, audioSource: AudioSource?)
 }
 
 /**
@@ -37,14 +37,14 @@ protocol CallObserver: class {
  *
  * This class' state should only be accessed on the main queue.
  */
-@objc public class SignalCall: NSObject {
+@objc public class RelayCall: NSObject {
 
-    let TAG = "[SignalCall]"
+    let TAG = "[RelayCall]"
 
     var observers = [Weak<CallObserver>]()
 
-    @objc
-    let remotePhoneNumber: String
+    @objc let callId: String
+    @objc let orginatorId: String
 
     var isTerminated: Bool {
         switch state {
@@ -56,7 +56,7 @@ protocol CallObserver: class {
     }
 
     // Signal Service identifier for this Call. Used to coordinate the call across remote clients.
-    let signalingId: UInt64
+    let peerId: String
 
     let direction: CallDirection
 
@@ -156,27 +156,28 @@ protocol CallObserver: class {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, signalingId: UInt64, state: CallState, remotePhoneNumber: String) {
+    init(direction: CallDirection, localId: UUID, peerId: String, originatorId: String, state: CallState, callId: String) {
         self.direction = direction
+        self.orginatorId = originatorId
         self.localId = localId
-        self.signalingId = signalingId
+        self.peerId = peerId
         self.state = state
-        self.remotePhoneNumber = remotePhoneNumber
-        self.thread = TSThread.getOrCreateThread(withId: remotePhoneNumber)
-        self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remotePhoneNumber)")
+        self.callId = callId
+        self.thread = TSThread.getOrCreateThread(withId: callId)
+        self.audioActivity = AudioActivity(audioDescription: "[RelayCall] with \(callId)")
     }
 
     // A string containing the three identifiers for this call.
     var identifiersForLogs: String {
-        return "{\(remotePhoneNumber), \(localId), \(signalingId)}"
+        return "{\(callId), \(localId), \(peerId)}"
     }
 
-    class func outgoingCall(localId: UUID, remotePhoneNumber: String) -> SignalCall {
-        return SignalCall(direction: .outgoing, localId: localId, signalingId: newCallSignalingId(), state: .dialing, remotePhoneNumber: remotePhoneNumber)
+    class func outgoingCall(localId: UUID, callId: String) -> RelayCall {
+        return RelayCall(direction: .outgoing, localId: localId, peerId: newCallSignalingId(), originatorId: TSAccountManager.localUID()!, state: .dialing, callId: callId)
     }
 
-    class func incomingCall(localId: UUID, remotePhoneNumber: String, signalingId: UInt64) -> SignalCall {
-        return SignalCall(direction: .incoming, localId: localId, signalingId: signalingId, state: .answering, remotePhoneNumber: remotePhoneNumber)
+    class func incomingCall(localId: UUID, originatorId: String, callId: String, peerId: String) -> RelayCall {
+        return RelayCall(direction: .incoming, localId: localId, peerId: peerId, originatorId: originatorId, state: .answering, callId: callId)
     }
 
     // -
@@ -224,12 +225,12 @@ protocol CallObserver: class {
 
     // MARK: Equatable
 
-    static func == (lhs: SignalCall, rhs: SignalCall) -> Bool {
+    static func == (lhs: RelayCall, rhs: RelayCall) -> Bool {
         return lhs.localId == rhs.localId
     }
 
-    static func newCallSignalingId() -> UInt64 {
-        return UInt64.ows_random()
+    static func newCallSignalingId() -> String {
+        return UUID.init().uuidString.lowercased()
     }
 
     // This method should only be called when the call state is "connected".

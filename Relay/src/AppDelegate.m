@@ -767,7 +767,7 @@ static NSTimeInterval launchStartedAt;
             //   contacts app.  If so, the correct response is to try to initiate a new call
             //   to that user - unless there already is another call in progress.
             if (SignalApp.sharedApp.callService.call != nil) {
-                if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.remotePhoneNumber]) {
+                if ([phoneNumber isEqualToString:SignalApp.sharedApp.callService.call.callId]) {
                     DDLogWarn(@"%@ trying to upgrade ongoing call to video.", self.logTag);
                     [SignalApp.sharedApp.callService handleCallKitStartVideo];
                     return;

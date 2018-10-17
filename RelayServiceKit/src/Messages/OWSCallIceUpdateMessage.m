@@ -6,7 +6,7 @@
 
 @implementation OWSCallIceUpdateMessage
 
-- (instancetype)initWithCallId:(UInt64)callId
+- (instancetype)initWithPeerId:(NSString *)peerId
                            sdp:(NSString *)sdp
                  sdpMLineIndex:(SInt32)sdpMLineIndex
                         sdpMid:(nullable NSString *)sdpMid
@@ -16,7 +16,7 @@
         return self;
     }
 
-    _callId = callId;
+    _peerId = peerId;
     _sdp = sdp;
     _sdpMLineIndex = sdpMLineIndex;
     _sdpMid = sdpMid;
@@ -26,15 +26,17 @@
 
 - (OWSSignalServiceProtosCallMessageIceUpdate *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageIceUpdateBuilder *builder =
-        [OWSSignalServiceProtosCallMessageIceUpdateBuilder new];
-
-    [builder setId:self.callId];
-    [builder setSdp:self.sdp];
-    [builder setSdpMlineIndex:self.sdpMLineIndex];
-    [builder setSdpMid:self.sdpMid];
-
-    return [builder build];
+    //  TODO: Replace with control message handling
+//    OWSSignalServiceProtosCallMessageIceUpdateBuilder *builder =
+//        [OWSSignalServiceProtosCallMessageIceUpdateBuilder new];
+//
+//    [builder setId:self.peerId];
+//    [builder setSdp:self.sdp];
+//    [builder setSdpMlineIndex:self.sdpMLineIndex];
+//    [builder setSdpMid:self.sdpMid];
+//
+//    return [builder build];
+    return [OWSSignalServiceProtosCallMessageIceUpdate new];
 }
 
 @end

@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "96688B4B938FC6EC6926CDABBF8DE27D"
+               BlueprintIdentifier = "B61A60AE751671BDDF0D37B99040DECD"
                BuildableName = "RelayServiceKit.framework"
                BlueprintName = "RelayServiceKit"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">

@@ -361,7 +361,8 @@ OWSNavigationView>
     
     // Send control message for changes
     OutgoingControlMessage *controlMessage = [[OutgoingControlMessage alloc] initWithThread:self.thread
-                                                                                controlType:FLControlMessageThreadUpdateKey];
+                                                                                controlType:FLControlMessageThreadUpdateKey
+                                                                                  moreData:nil];
     if (self.avatarHasChanged) {
         self.thread.image = self.groupAvatar;
         

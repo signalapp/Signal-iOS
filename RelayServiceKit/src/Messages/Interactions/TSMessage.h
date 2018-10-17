@@ -48,13 +48,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 // JSON body handlers
-@property (nullable, nonatomic, strong) NSString *plainTextBody;
-@property (nullable, nonatomic, strong) NSString *htmlTextBody;
-@property (nonatomic, strong) NSString *messageType;
+@property (nullable, nonatomic, copy) NSString *plainTextBody;
+@property (nullable, nonatomic, copy) NSString *htmlTextBody;
+@property (nonatomic, copy) NSString *messageType;
 @property BOOL hasAnnotation;
 @property (nonatomic, readonly) BOOL isGiphy;
-@property (nonatomic) NSString *giphyURLString;
+@property (nonatomic, copy) NSString *giphyURLString;
 
+// Used for supplemental data for support things like webRTC
+@property (nullable, nonatomic) NSMutableDictionary *moreData;
 
 #pragma mark - Update With... Methods
 

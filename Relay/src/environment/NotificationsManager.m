@@ -55,9 +55,9 @@
 /**
  * Notify user for incoming WebRTC Call
  */
-- (void)presentIncomingCall:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentIncomingCall:(RelayCall *)call callerName:(NSString *)callerName
 {
-    DDLogDebug(@"%@ incoming call from: %@", self.logTag, call.remotePhoneNumber);
+    DDLogDebug(@"%@ incoming call from: %@", self.logTag, call.callId);
 
     UILocalNotification *notification = [UILocalNotification new];
     notification.category = PushManagerCategoriesIncomingCall;
@@ -87,9 +87,9 @@
 /**
  * Notify user for missed WebRTC Call
  */
-- (void)presentMissedCall:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentMissedCall:(RelayCall *)call callerName:(NSString *)callerName
 {
-    TSThread *thread = [TSThread getOrCreateThreadWithId:call.remotePhoneNumber];
+    TSThread *thread = [TSThread getOrCreateThreadWithId:call.callId];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
@@ -97,7 +97,7 @@
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{
         PushManagerUserInfoKeysLocalCallId : localCallId,
-        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.callId,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
 
@@ -125,9 +125,9 @@
 }
 
 
-- (void)presentMissedCallBecauseOfNewIdentity:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentMissedCallBecauseOfNewIdentity:(RelayCall *)call callerName:(NSString *)callerName
 {
-    TSThread *thread = [TSThread getOrCreateThreadWithId:call.remotePhoneNumber];
+    TSThread *thread = [TSThread getOrCreateThreadWithId:call.callId];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
@@ -136,7 +136,7 @@
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{
         PushManagerUserInfoKeysLocalCallId : localCallId,
-        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.callId,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {
@@ -162,9 +162,9 @@
     [self presentNotification:notification identifier:localCallId];
 }
 
-- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(SignalCall *)call callerName:(NSString *)callerName
+- (void)presentMissedCallBecauseOfNoLongerVerifiedIdentity:(RelayCall *)call callerName:(NSString *)callerName
 {
-    TSThread *thread = [TSThread getOrCreateThreadWithId:call.remotePhoneNumber];
+    TSThread *thread = [TSThread getOrCreateThreadWithId:call.callId];
     OWSAssert(thread != nil);
 
     UILocalNotification *notification = [UILocalNotification new];
@@ -173,7 +173,7 @@
     NSString *localCallId = call.localId.UUIDString;
     notification.userInfo = @{
         PushManagerUserInfoKeysLocalCallId : localCallId,
-        PushManagerUserInfoKeysCallBackSignalRecipientId : call.remotePhoneNumber,
+        PushManagerUserInfoKeysCallBackSignalRecipientId : call.callId,
         Signal_Thread_UserInfo_Key : thread.uniqueId
     };
     if ([self shouldPlaySoundForNotification]) {

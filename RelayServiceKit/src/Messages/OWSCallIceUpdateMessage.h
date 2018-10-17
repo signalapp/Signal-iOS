@@ -13,12 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OWSCallIceUpdateMessage : NSObject
 
-- (instancetype)initWithCallId:(UInt64)callId
+- (instancetype)initWithPeerId:(NSString *)peerId
                            sdp:(NSString *)sdp
                  sdpMLineIndex:(SInt32)sdpMLineIndex
                         sdpMid:(nullable NSString *)sdpMid;
 
-@property (nonatomic, readonly) UInt64 callId;
+@property (nonatomic, readonly, copy) NSString *peerId;
 @property (nonatomic, readonly, copy) NSString *sdp;
 @property (nonatomic, readonly) SInt32 sdpMLineIndex;
 @property (nullable, nonatomic, readonly, copy) NSString *sdpMid;

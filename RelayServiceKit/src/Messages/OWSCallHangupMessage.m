@@ -8,25 +8,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSCallHangupMessage
 
-- (instancetype)initWithCallId:(UInt64)callId
+- (instancetype)initWithPeerId:(NSString *)peerId
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _callId = callId;
+    _peerId = peerId;
 
     return self;
 }
 
 - (OWSSignalServiceProtosCallMessageHangup *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageHangupBuilder *builder = [OWSSignalServiceProtosCallMessageHangupBuilder new];
-
-    builder.id = self.callId;
-
-    return [builder build];
+    // TODO: Convert to control message handler
+//    OWSSignalServiceProtosCallMessageHangupBuilder *builder = [OWSSignalServiceProtosCallMessageHangupBuilder new];
+//
+//    builder.id = self.callId;
+//
+//    return [builder build];
+    return [OWSSignalServiceProtosCallMessageHangup new];
 }
 
 

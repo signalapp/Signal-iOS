@@ -9,25 +9,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSCallBusyMessage
 
-- (instancetype)initWithCallId:(UInt64)callId
+- (instancetype)initWithPeerId:(NSString *)peerId
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _callId = callId;
+    _peerId = peerId;
 
     return self;
 }
 
+// TODO: Convert to control message
 - (OWSSignalServiceProtosCallMessageBusy *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageBusyBuilder *builder = [OWSSignalServiceProtosCallMessageBusyBuilder new];
-
-    builder.id = self.callId;
-
-    return [builder build];
+//    OWSSignalServiceProtosCallMessageBusyBuilder *builder = [OWSSignalServiceProtosCallMessageBusyBuilder new];
+//
+//    builder.id = self.peerId;
+//
+//    return [builder build];
+    
+    return [OWSSignalServiceProtosCallMessageBusy new];
 }
 
 @end

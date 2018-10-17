@@ -10,47 +10,53 @@ class DataChannelMessage {
     private let videoStreamingStatus: VideoStreamingStatus?
 
     private class Connected {
-        let callId: UInt64
+        let peerId: String
 
-        init(callId: UInt64) {
-            self.callId = callId
+        init(peerId: String) {
+            self.peerId = peerId
         }
 
         func asProtobuf() -> OWSWebRTCProtosConnected {
-            let builder = OWSWebRTCProtosConnectedBuilder()
-            builder.setId(callId)
-            return builder.build()
+            // TODO: Replace with control message handling
+//            let builder = OWSWebRTCProtosConnectedBuilder()
+//            builder.setId(callId)
+//            return builder.build()
+            return OWSWebRTCProtosConnected()
         }
     }
 
     private class Hangup {
-        let callId: UInt64
+        let peerId: String
 
-        init(callId: UInt64) {
-            self.callId = callId
+        init(peerId: String) {
+            self.peerId = peerId
         }
 
         func asProtobuf() -> OWSWebRTCProtosHangup {
-            let builder = OWSWebRTCProtosHangupBuilder()
-            builder.setId(callId)
-            return builder.build()
+            // TODO: Convert to control message handler
+//            let builder = OWSWebRTCProtosHangupBuilder()
+//            builder.setId(callId)
+//            return builder.build()
+            return OWSWebRTCProtosHangup()
         }
     }
 
     private class VideoStreamingStatus {
-        private let callId: UInt64
+        private let peerId: String
         private let enabled: Bool
 
-        init(callId: UInt64, enabled: Bool) {
-            self.callId = callId
+        init(peerId: String, enabled: Bool) {
+            self.peerId = peerId
             self.enabled = enabled
         }
 
         func asProtobuf() -> OWSWebRTCProtosVideoStreamingStatus {
-            let builder = OWSWebRTCProtosVideoStreamingStatusBuilder()
-            builder.setId(callId)
-            builder.setEnabled(enabled)
-            return builder.build()
+            // TODO: Convert to control message handling
+//            let builder = OWSWebRTCProtosVideoStreamingStatusBuilder()
+//            builder.setId(peerId)
+//            builder.setEnabled(enabled)
+//            return builder.build()
+            return OWSWebRTCProtosVideoStreamingStatus()
         }
     }
 
@@ -76,16 +82,16 @@ class DataChannelMessage {
 
     // MARK: Factory
 
-    class func forConnected(callId: UInt64) -> DataChannelMessage {
-        return DataChannelMessage(connected:Connected(callId: callId))
+    class func forConnected(peerId: String) -> DataChannelMessage {
+        return DataChannelMessage(connected:Connected(peerId: peerId))
     }
 
-    class func forHangup(callId: UInt64) -> DataChannelMessage {
-        return DataChannelMessage(hangup: Hangup(callId: callId))
+    class func forHangup(peerId: String) -> DataChannelMessage {
+        return DataChannelMessage(hangup: Hangup(peerId: peerId))
     }
 
-    class func forVideoStreamingStatus(callId: UInt64, enabled: Bool) -> DataChannelMessage {
-        return DataChannelMessage(videoStreamingStatus: VideoStreamingStatus(callId: callId, enabled: enabled))
+    class func forVideoStreamingStatus(peerId: String, enabled: Bool) -> DataChannelMessage {
+        return DataChannelMessage(videoStreamingStatus: VideoStreamingStatus(peerId: peerId, enabled: enabled))
     }
 
     // MARK: Serialization

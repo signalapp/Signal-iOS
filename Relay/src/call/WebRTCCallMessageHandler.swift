@@ -32,55 +32,86 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     // MARK: - Call Handlers
-
-    public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
+    public func receivedOffer(withThreadId threadId: String, originatorId: String, peerId: String, sessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
-        guard offer.hasId() else {
-            owsFail("no callId in \(#function)")
-            return
-        }
+        
+        let thread = TSThread.getOrCreateThread(withId: threadId)
+        
+        self.callService.handleReceivedOffer(thread: thread, originatorId: originatorId, peerId: peerId, sessionDescription: sessionDescription)
+    }
+    
+//    public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
+//        SwiftAssertIsOnMainThread(#function)
+//        guard offer.hasId() else {
+//            owsFail("no callId in \(#function)")
+//            return
+//        }
+//
+//        let thread = TSThread.getOrCreateThread(withId: callerId)
+//        self.callService.handleReceivedOffer(thread: thread, peerId: "\(offer.id)", sessionDescription: offer.sessionDescription)
+//    }
 
-        let thread = TSThread.getOrCreateThread(withId: callerId)
-        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
+    public func receivedAnswer(forCallId callId: String, peerId: String, sessionDescription: String) {
+        SwiftAssertIsOnMainThread(#function)
+        
+        let thread = TSThread.getOrCreateThread(withId: callId)
+        self.callService.handleReceivedAnswer(thread: thread, peerId: peerId, sessionDescription: sessionDescription)
     }
 
-    public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
+//    public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
+//        SwiftAssertIsOnMainThread(#function)
+//        guard answer.hasId() else {
+//            owsFail("no callId in \(#function)")
+//            return
+//        }
+//        let thread = TSThread.getOrCreateThread(withId: callerId)
+//        self.callService.handleReceivedAnswer(thread: thread, peerId: "\(answer.id)", sessionDescription: answer.sessionDescription)
+//    }
+    
+    public func receivedIceUpdate(withThreadId threadId: String, sessionDescription sdp: String, sdpMid: String, sdpMLineIndex: Int32) {
         SwiftAssertIsOnMainThread(#function)
-        guard answer.hasId() else {
-            owsFail("no callId in \(#function)")
-            return
+
+        let thread = TSThread.getOrCreateThread(withId: threadId)
+
+        if let peerId = callService.call?.peerId {
+            self.callService.handleRemoteAddedIceCandidate(thread: thread, peerId: peerId, sdp: sdp, lineIndex: sdpMLineIndex, mid: sdpMid)
         }
-
-        let thread = TSThread.getOrCreateThread(withId: callerId)
-        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
     }
+    
+//    public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
+//        SwiftAssertIsOnMainThread(#function)
+//        guard iceUpdate.hasId() else {
+//            owsFail("no callId in \(#function)")
+//            return
+//        }
+//
+//        let thread = TSThread.getOrCreateThread(withId: callerId)
+//
+//        // Discrepency between our protobuf's sdpMlineIndex, which is unsigned,
+//        // while the RTC iOS API requires a signed int.
+//        let lineIndex = Int32(iceUpdate.sdpMlineIndex)
+//
+//        self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
+//    }
 
-    public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
+    public func receivedHangup(withCallId callId: String) {
+
         SwiftAssertIsOnMainThread(#function)
-        guard iceUpdate.hasId() else {
-            owsFail("no callId in \(#function)")
-            return
-        }
 
-        let thread = TSThread.getOrCreateThread(withId: callerId)
-
-        // Discrepency between our protobuf's sdpMlineIndex, which is unsigned, 
-        // while the RTC iOS API requires a signed int.
-        let lineIndex = Int32(iceUpdate.sdpMlineIndex)
-
-        self.callService.handleRemoteAddedIceCandidate(thread: thread, callId: iceUpdate.id, sdp: iceUpdate.sdp, lineIndex: lineIndex, mid: iceUpdate.sdpMid)
+        let thread = TSThread.getOrCreateThread(withId: callId)
+        self.callService.handleRemoteHangup(thread: thread, callId: callId)
     }
-
-    public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
-        guard hangup.hasId() else {
-            owsFail("no callId in \(#function)")
-            return
-        }
-
-        let thread = TSThread.getOrCreateThread(withId: callerId)
-        self.callService.handleRemoteHangup(thread: thread, callId: hangup.id)
-    }
+    
+//    public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
+//        SwiftAssertIsOnMainThread(#function)
+//        guard hangup.hasId() else {
+//            owsFail("no callId in \(#function)")
+//            return
+//        }
+//
+//        let thread = TSThread.getOrCreateThread(withId: callerId)
+//        self.callService.handleRemoteHangup(thread: thread, peerId: "\(hangup.id)")
+//    }
 
     public func receivedBusy(_ busy: OWSSignalServiceProtosCallMessageBusy, from callerId: String) {
         SwiftAssertIsOnMainThread(#function)
@@ -90,7 +121,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         }
 
         let thread = TSThread.getOrCreateThread(withId: callerId)
-        self.callService.handleRemoteBusy(thread: thread, callId: busy.id)
+        self.callService.handleRemoteBusy(thread: thread, peerId: "\(busy.id)")
     }
 
 }

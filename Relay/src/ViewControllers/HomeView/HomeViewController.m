@@ -1192,7 +1192,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                             style:UIAlertActionStyleDestructive
                                                           handler:^(UIAlertAction * _Nonnull action) {
                                                               OutgoingControlMessage *message = [[OutgoingControlMessage alloc] initWithThread:thread
-                                                                                                                                   controlType:FLControlMessageThreadUpdateKey];
+                                                                                                                                   controlType:FLControlMessageThreadUpdateKey
+                                                                                                                                     moreData:nil];
                                                               [self.messageSender sendControlMessage:message
                                                                                         toRecipients:[NSCountedSet setWithArray:thread.participantIds]
                                                                                              success:^{
@@ -1253,10 +1254,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         OutgoingControlMessage *controlMessage = nil;
         switch (self.homeViewMode) {
             case HomeViewMode_Inbox:
-                controlMessage = [[OutgoingControlMessage alloc] initWithThread:thread controlType:FLControlMessageThreadArchiveKey];
+                controlMessage = [[OutgoingControlMessage alloc] initWithThread:thread controlType:FLControlMessageThreadArchiveKey moreData:nil];
                 break;
             case HomeViewMode_Archive:
-                controlMessage = [[OutgoingControlMessage alloc] initWithThread:thread controlType:FLControlMessageThreadRestoreKey];
+                controlMessage = [[OutgoingControlMessage alloc] initWithThread:thread controlType:FLControlMessageThreadRestoreKey moreData:nil];
                 break;
         }
         
