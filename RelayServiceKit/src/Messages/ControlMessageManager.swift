@@ -51,13 +51,11 @@ class ControlMessageManager : NSObject
         
         if let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary {
             
-            let callId: String? = dataBlob.object(forKey: "callId") as? String
-            
-            guard callId != nil else {
+            guard let callId: String = dataBlob.object(forKey: "callId") as? String else {
                 Logger.debug("Received callICECandidates message with no callId.")
                 return
             }
-            
+                        
             if let icecandidates: NSArray = dataBlob.object(forKey: "icecandidates") as? NSArray {
                 for candidate in icecandidates as NSArray {
                     if let candidateDictiontary: Dictionary<String, Any> = candidate as? Dictionary<String, Any> {
@@ -66,7 +64,7 @@ class ControlMessageManager : NSObject
                             let sdp: String = candidateDictiontary["candidate"] as? String {
                             
                             DispatchQueue.main.async {
-                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: callId!,
+                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: callId,
                                                                                                sessionDescription: sdp,
                                                                                                sdpMid: sdpMid,
                                                                                                sdpMLineIndex: sdpMLineIndex)

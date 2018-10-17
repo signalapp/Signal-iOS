@@ -854,10 +854,16 @@ private class SignalCallData: NSObject {
             let sdpMLineIndex = iceCandidate.sdpMLineIndex
             let sdpMid = iceCandidate.sdpMid
 
-            let allTheData = [ "candidate" : sdp,
+            
+            let iceCandidate = [ "candidate" : sdp,
                                "sdpMLineIndex" : sdpMLineIndex,
                                "sdpMid" : sdpMid!,
-                               ] as NSMutableDictionary
+                               ] as NSDictionary
+            
+            let allTheData = [ "callId": call.callId ,
+                               "peerId": call.peerId,
+                               "icecandidates" : [ iceCandidate ]
+                            ] as NSMutableDictionary
 
             let iceControlMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallICECandidatesKey, moreData: allTheData)
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
@@ -887,15 +893,15 @@ private class SignalCallData: NSObject {
         }
 
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
-
+        
         switch call.state {
-        case .dialing:
-            call.state = .remoteRinging
+        case .dialing, .remoteRinging:
+            
+            self.callUIAdapter.recipientAcceptedCall(call)
+            self.handleConnectedCall(callData!)
         case .answering:
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
-        case .remoteRinging:
-            Logger.info("\(self.logTag) call already ringing. Ignoring \(#function): \(call.identifiersForLogs).")
         case .connected:
             Logger.info("\(self.logTag) Call reconnected \(#function): \(call.identifiersForLogs).")
         case .reconnecting:
@@ -1206,7 +1212,7 @@ private class SignalCallData: NSObject {
         let allTheData = [ "callId" : call.callId,
                            ] as NSMutableDictionary
         
-        let hangupMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallICECandidatesKey, moreData: allTheData)
+        let hangupMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallLeaveKey, moreData: allTheData)
 
         let sendPromise = self.messageSender.sendPromise(message: hangupMessage).then {_ in
             Logger.debug("\(self.logTag) successfully sent hangup call message to \(call.thread.uniqueId)")
