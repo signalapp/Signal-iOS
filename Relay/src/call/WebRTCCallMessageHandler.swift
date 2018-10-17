@@ -51,16 +51,22 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 //        self.callService.handleReceivedOffer(thread: thread, peerId: "\(offer.id)", sessionDescription: offer.sessionDescription)
 //    }
 
-    public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
+    public func receivedAnswer(forCallId callId: String, peerId: String, sessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
-        guard answer.hasId() else {
-            owsFail("no callId in \(#function)")
-            return
-        }
-
-        let thread = TSThread.getOrCreateThread(withId: callerId)
-        self.callService.handleReceivedAnswer(thread: thread, peerId: "\(answer.id)", sessionDescription: answer.sessionDescription)
+        
+        let thread = TSThread.getOrCreateThread(withId: callId)
+        self.callService.handleReceivedAnswer(thread: thread, peerId: peerId, sessionDescription: sessionDescription)
     }
+
+//    public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
+//        SwiftAssertIsOnMainThread(#function)
+//        guard answer.hasId() else {
+//            owsFail("no callId in \(#function)")
+//            return
+//        }
+//        let thread = TSThread.getOrCreateThread(withId: callerId)
+//        self.callService.handleReceivedAnswer(thread: thread, peerId: "\(answer.id)", sessionDescription: answer.sessionDescription)
+//    }
     
     public func receivedIceUpdate(withThreadId threadId: String, sessionDescription sdp: String, sdpMid: String, sdpMLineIndex: Int32) {
         SwiftAssertIsOnMainThread(#function)
@@ -96,16 +102,16 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         self.callService.handleRemoteHangup(thread: thread, callId: callId)
     }
     
-    public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
-        SwiftAssertIsOnMainThread(#function)
-        guard hangup.hasId() else {
-            owsFail("no callId in \(#function)")
-            return
-        }
-
-        let thread = TSThread.getOrCreateThread(withId: callerId)
-        self.callService.handleRemoteHangup(thread: thread, peerId: "\(hangup.id)")
-    }
+//    public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
+//        SwiftAssertIsOnMainThread(#function)
+//        guard hangup.hasId() else {
+//            owsFail("no callId in \(#function)")
+//            return
+//        }
+//
+//        let thread = TSThread.getOrCreateThread(withId: callerId)
+//        self.callService.handleRemoteHangup(thread: thread, peerId: "\(hangup.id)")
+//    }
 
     public func receivedBusy(_ busy: OWSSignalServiceProtosCallMessageBusy, from callerId: String) {
         SwiftAssertIsOnMainThread(#function)

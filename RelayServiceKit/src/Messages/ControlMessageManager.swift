@@ -129,14 +129,42 @@ class ControlMessageManager : NSObject
     
     static private func handleCallAcceptOffer(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
-        Logger.info("\(self.tag): Recieved Unimplemented control message type: \(message.controlMessageType)")
+        Logger.debug("Received callAcceptOffer message: \(message.forstaPayload)")
+
+        guard let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary else {
+            Logger.debug("Received callAcceptOffer message with no data object.")
+            return
+        }
+
+        guard let callId = dataBlob.object(forKey: "callId") as? String else {
+            Logger.debug("Received callAcceptOffer message without callId.")
+            return
+        }
+
+        guard let peerId = dataBlob.object(forKey: "peerId") as? String else {
+            Logger.debug("Received callAcceptOffer message without peerId.")
+            return
+        }
+        
+        guard let answer = dataBlob["answer"] as? Dictionary<String, String>  else {
+            Logger.debug("Received callAcceptOffer message without answer object.")
+            return
+        }
+        
+        guard let sdp = answer["sdp"] else {
+            Logger.debug("Received callAcceptOffer message without session description.")
+            return
+        }
+
+        DispatchQueue.main.async {
+            TextSecureKitEnv.shared().callMessageHandler.receivedAnswer(forCallId: callId, peerId: peerId, sessionDescription: sdp)
+        }
     }
     
     
     static private func handleCallLeave(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
-        //        Logger.info("Received callLeave message: \(message.forstaPayload)")
-        // FIXME: Message processing stops while call is pending.
+        Logger.debug("Received callLeave message: \(message.forstaPayload)")
 
         let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary
         

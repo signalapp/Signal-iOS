@@ -294,11 +294,12 @@ private class SignalCallData: NSObject {
     var isRemoteVideoEnabled: Bool {
         get {
             SwiftAssertIsOnMainThread(#function)
-
-            guard let callData = callData else {
-                return false
-            }
-            return callData.isRemoteVideoEnabled
+            // TODO: modify when our video toggle signallying is implemented
+            return true
+//            guard let callData = callData else {
+//                return false
+//            }
+//            return callData.isRemoteVideoEnabled
         }
     }
 
@@ -407,9 +408,19 @@ private class SignalCallData: NSObject {
             }
 
             return peerConnectionClient.setLocalSessionDescription(sessionDescription).then {
-                let offerMessage = OWSCallOfferMessage(peerId: call.peerId, sessionDescription: sessionDescription.sdp)
-                let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: offerMessage)
-                return self.messageSender.sendPromise(message: callMessage)
+                
+                // Build data object
+                let allTheData = [ "callId" : call.callId,
+                                   "members" : call.thread.participantIds,
+                                   "originator" : TSAccountManager.localUID()!,
+                                   "peerId" : call.peerId,
+                                   "offer" : [ "type" : "offer",
+                                               "sdp" : sessionDescription.sdp ],
+                                   ] as NSMutableDictionary
+                
+                let answerControlMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallOfferKey, moreData: allTheData)
+
+                return self.messageSender.sendPromise(message: answerControlMessage)
             }
         }.then {
             guard self.call == call else {
@@ -717,11 +728,6 @@ private class SignalCallData: NSObject {
                                "originator" : originator!,
                                "peerId" : peerId!,
                 ] as NSMutableDictionary
-            
-//            // UI requires message locally, make that
-//            let answerMessage = OWSCallAnswerMessage(peerId: newCall.peerId, sessionDescription: negotiatedSessionDescription.sdp)
-//            let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: answerMessage)
-//            callAnswerMessage.save()
             
             // Make control message
             let answerControlMessage = OutgoingControlMessage(thread: thread, controlType: FLControlMessageCallAcceptOfferKey, moreData: allTheData)

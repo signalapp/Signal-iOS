@@ -18,8 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 //- (void)receivedOffer:(OWSSignalServiceProtosCallMessageOffer *)offer
 //         fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedOffer(_:from:));
 
-- (void)receivedAnswer:(OWSSignalServiceProtosCallMessageAnswer *)answer
-          fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedAnswer(_:from:));
+-(void)receivedAnswerForCallId:(NSString *)callId
+                        peerId:(NSString *)peerId
+            sessionDescription:(NSString *)sessionDescription;
+//- (void)receivedAnswer:(OWSSignalServiceProtosCallMessageAnswer *)answer
+//          fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedAnswer(_:from:));
 
 -(void)receivedIceUpdateWithThreadId:(NSString *)threadId
                   sessionDescription:(NSString *)sdp

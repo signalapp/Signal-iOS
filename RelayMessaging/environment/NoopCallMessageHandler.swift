@@ -6,6 +6,10 @@ import RelayServiceKit
 
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
+    public func receivedAnswer(forCallId callId: String, peerId: String, sessionDescription: String) {
+        owsFail("\(self.logTag) in \(#function).")
+    }
+    
     public func receivedHangup(withCallId callId: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
