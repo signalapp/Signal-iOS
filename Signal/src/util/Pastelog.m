@@ -17,6 +17,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
+#import <sys/sysctl.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -502,13 +503,33 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 {
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
 
-    NSString *body = [NSString stringWithFormat:@"Log URL: %@ \n Tell us about the issue: ", url];
+    NSMutableString *body = [NSMutableString new];
+
+    [body appendFormat:@"Tell us about the issue: \n\n\n"];
+
+    size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *machine = malloc(size);
+    sysctlbyname("hw.machine", machine, &size, NULL, 0);
+    NSString *platform = [NSString stringWithUTF8String:machine];
+    free(machine);
+
+    [body appendFormat:@"Device: %@ (%@)\n", UIDevice.currentDevice.model, platform];
+    [body appendFormat:@"iOS Version: %@ \n", [UIDevice currentDevice].systemVersion];
+    [body appendFormat:@"Signal Version: %@ \n", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+    [body appendFormat:@"Log URL: %@ \n", url];
+
     NSString *escapedBody =
         [body stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
     NSString *urlString =
         [NSString stringWithFormat:@"mailto:%@?subject=iOS%%20Debug%%20Log&body=%@", emailAddress, escapedBody];
 
-    [UIApplication.sharedApplication openURL:[NSURL URLWithString:urlString]];
+    BOOL success = [UIApplication.sharedApplication openURL:[NSURL URLWithString:urlString]];
+    if (!success) {
+        OWSLogError(@"Could not open Email app.");
+        [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"DEBUG_LOG_COULD_NOT_EMAIL",
+                                                 @"Error indicating that the app could not launch the Email app.")];
+    }
 }
 
 - (void)prepareRedirection:(NSURL *)url completion:(SubmitDebugLogsCompletion)completion
