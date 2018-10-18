@@ -1365,22 +1365,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     for (NSNumber *deviceId in deviceIds) {
         @try {
+            // This may involve blocking network requests, so we do it _before_
+            // we open a transaction.
             [self ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
-        } @catch (NSException *exception) {
-            if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient updateRegisteredRecipientWithDevicesToAdd:nil
-                                                         devicesToRemove:@[ deviceId ]
-                                                             transaction:transaction];
-                }];
-                continue;
-            } else {
-                @throw exception;
-            }
-        }
 
-        @
-        try {
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
             [self.dbConnection
