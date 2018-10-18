@@ -100,7 +100,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 #pragma mark - Dependencies
 
-- (id<OWSSyncManagerProtocol>)syncManager {
+- (id<OWSSyncManagerProtocol>)syncManager
+{
     return SSKEnvironment.shared.syncManager;
 }
 

@@ -94,7 +94,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SSKEnvironment.shared.profileManager;
 }
 
-- (TSAccountManager *)tsAccountManager {
+- (TSAccountManager *)tsAccountManager
+{
     return TSAccountManager.sharedInstance;
 }
 
@@ -224,7 +225,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 #pragma mark - Local Sync
 
-- (AnyPromise *)syncLocalContact {
+- (AnyPromise *)syncLocalContact
+{
     NSString *localNumber = self.tsAccountManager.localNumber;
     SignalAccount *signalAccount = [[SignalAccount alloc] initWithRecipientId:localNumber];
     signalAccount.contact = [Contact new];
@@ -232,17 +234,19 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return [self syncContactsForSignalAccounts:@[ signalAccount ]];
 }
 
-- (AnyPromise *)syncAllContacts {
+- (AnyPromise *)syncAllContacts
+{
     return [self syncContactsForSignalAccounts:self.contactsManager.signalAccounts];
 }
 
-- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts {
+- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+{
     OWSSyncContactsMessage *syncContactsMessage =
         [[OWSSyncContactsMessage alloc] initWithSignalAccounts:signalAccounts
                                                identityManager:self.identityManager
                                                 profileManager:self.profileManager];
     __block DataSource *dataSource;
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
             dataSourceWithSyncMessageData:[syncContactsMessage
                                               buildPlainTextAttachmentDataWithTransaction:transaction]];

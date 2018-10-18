@@ -90,13 +90,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSPrimaryStorage.sharedManager newDatabaseConnection];
 }
 
-+ (id<OWSSyncManagerProtocol>)syncManager {
++ (id<OWSSyncManagerProtocol>)syncManager
+{
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
 
     return SSKEnvironment.shared.syncManager;
 }
 
-+ (void)sendContactsSyncMessage {
++ (void)sendContactsSyncMessage
+{
     [self.syncManager syncAllContacts];
 }
 
