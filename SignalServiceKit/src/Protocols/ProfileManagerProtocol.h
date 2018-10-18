@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-@class TSThread;
 @class OWSAES256Key;
+@class TSThread;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
+
+- (void)fetchLocalUsersProfile;
 
 @end
 
