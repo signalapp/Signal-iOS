@@ -157,6 +157,9 @@ public class ProfileFetcherJob: NSObject {
                     // If UD auth fails, try again with non-UD auth.
                     if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
                         Logger.info("Profile request failing over to non-UD auth.")
+
+                        self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+
                         let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
                         self.socketManager.make(nonUDRequest,
                                                 webSocketType: .default,
