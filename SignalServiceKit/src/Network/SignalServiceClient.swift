@@ -94,41 +94,24 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     }
 
     public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
-        let (promise, resolver) = Promise<(task: URLSessionDataTask, responseObject: Any?)>.pending()
-
         let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-        networkManager.makeRequest(request,
-                         success: { task, responseObject in
-                            resolver.fulfill((task: task, responseObject: responseObject))
-        },
-                         failure: { task, error in
-                            let statusCode = task.statusCode()
-                            if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
-                                Logger.verbose("REST profile request failing over to non-UD auth.")
+        return networkManager.makePromise(request: request)
+            .recover { (error: Error) -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
+                switch error {
+                case NetworkManagerError.taskError(let task, _):
+                    let statusCode = task.statusCode()
+                    if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
+                        Logger.verbose("REST profile request failing over to non-UD auth.")
 
-                                self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+                        self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
 
-                                let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
-                                self.networkManager.makeRequest(nonUDRequest,
-                                                           success: { task, responseObject in
-                                                            resolver.fulfill((task: task, responseObject: responseObject))
-                                },
-                                                           failure: { task, error in
-                                                            let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
-                                                            let nsError: NSError = nmError as NSError
-                                                            nsError.isRetryable = (error as NSError).isRetryable
-                                                            resolver.reject(nsError)
-                                })
-                                return
-                            }
-                            Logger.info("REST profile request failed.")
-                            let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
-                            let nsError: NSError = nmError as NSError
-                            nsError.isRetryable = (error as NSError).isRetryable
-                            resolver.reject(nsError)
-        })
-        return promise.map { _, responseObject in
-            Logger.info("REST profile request succeeded.")
+                        let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
+                        return self.networkManager.makePromise(request: nonUDRequest)
+                    }
+                    default: break
+                }
+                throw error
+        }.map { _, responseObject in
             return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
         }
     }

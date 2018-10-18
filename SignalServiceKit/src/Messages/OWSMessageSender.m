@@ -1040,7 +1040,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         OWSLogDebug(@"UD send failed; failing over to non-UD send.");
                         [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
                                                       recipientId:recipient.uniqueId];
-                        messageSend.hasUDAuthFailed = YES;
+                        [messageSend setHasUDAuthFailed];
                         dispatch_async([OWSDispatch sendingQueue], ^{
                             [self sendMessageToRecipient:messageSend];
                         });
@@ -1070,7 +1070,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
                     [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
                                                   recipientId:recipient.uniqueId];
-                    messageSend.hasUDAuthFailed = YES;
+                    [messageSend setHasUDAuthFailed];
                     dispatch_async([OWSDispatch sendingQueue], ^{
                         [self sendMessageToRecipient:messageSend];
                     });
@@ -1464,8 +1464,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
             dispatch_semaphore_signal(sema);
         }];
-    // FIXME: Currently this happens within a readwrite transaction - meaning our read-write transaction blocks
-    // on a network request.
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     if (exception) {
         @throw exception;
@@ -1499,6 +1497,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 }
+
 - (void)makePrekeyRequestForMessageSend:(OWSMessageSend *)messageSend
                                deviceId:(NSNumber *)deviceId
                                 success:(void (^)(PreKeyBundle *_Nullable))success
@@ -1541,7 +1540,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
                                                   recipientId:recipient.uniqueId];
                 });
-                messageSend.hasUDAuthFailed = YES;
+                [messageSend setHasUDAuthFailed];
                 // Try again without UD auth.
                 [self makePrekeyRequestForMessageSend:messageSend deviceId:deviceId success:success failure:failure];
                 return;

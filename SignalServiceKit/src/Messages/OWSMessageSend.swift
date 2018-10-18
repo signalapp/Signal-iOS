@@ -31,16 +31,6 @@ public class OWSMessageSend: NSObject {
     @objc
     public var hasWebsocketSendFailed = false
 
-    // We "fail over" to non-UD sends after auth errors sending via UD.
-    @objc
-    public var hasUDAuthFailed = false {
-        didSet {
-            if hasUDAuthFailed {
-                unidentifiedAccess = nil
-            }
-        }
-    }
-
     @objc
     public var unidentifiedAccess: SSKUnidentifiedAccess?
 
@@ -85,6 +75,13 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var isUDSend: Bool {
-        return (!hasUDAuthFailed && self.unidentifiedAccess != nil)
+        return self.unidentifiedAccess != nil
     }
+
+    @objc
+    public func setHasUDAuthFailed() {
+        // We "fail over" to non-UD sends after auth errors sending via UD.
+        unidentifiedAccess = nil
+    }
+
 }
