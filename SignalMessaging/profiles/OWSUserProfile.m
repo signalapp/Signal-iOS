@@ -106,7 +106,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 #pragma mark -
 
-
 - (nullable NSString *)avatarUrlPath
 {
     @synchronized(self)
