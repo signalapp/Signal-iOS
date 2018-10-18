@@ -10,6 +10,7 @@
 #import "OWSError.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSRequestFactory.h"
+#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
@@ -115,6 +116,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     OWSAssertDebug(SSKEnvironment.shared.networkManager);
     
     return SSKEnvironment.shared.networkManager;
+}
+
+- (id<ProfileManagerProtocol>)profileManager {
+    OWSAssertDebug(SSKEnvironment.shared.profileManager);
+
+    return SSKEnvironment.shared.profileManager;
 }
 
 #pragma mark -
@@ -374,6 +381,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                     OWSLogInfo(@"Verification code accepted.");
                     [self storeServerAuthToken:authToken signalingKey:signalingKey];
                     [TSPreKeyManager createPreKeysWithSuccess:successBlock failure:failureBlock];
+                    [self.profileManager fetchLocalUsersProfile];
                     break;
                 }
                 default: {
@@ -661,6 +669,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                    inCollection:TSAccountManager_UserAccountCollection];
             }
         }];
+
+        // Fetch the local profile, as we may have changed its
+        // account attributes.  Specifically, we need to determine
+        // if all devices for our account now support UD for sync
+        // messages.
+        [self.profileManager fetchLocalUsersProfile];
     });
     [promise retainUntilComplete];
     return promise;

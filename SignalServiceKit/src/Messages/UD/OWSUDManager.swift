@@ -152,14 +152,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
-        if tsAccountManager.localNumber() == recipientId {
-            if shouldAllowUnrestrictedAccessLocal() {
-                return .unrestricted
-            } else {
-                return .enabled
-            }
-        }
-
         guard let existingRawValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
             return .unknown
         }

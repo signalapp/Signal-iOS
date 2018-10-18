@@ -737,6 +737,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return [self.tsAccountManager updateAccountAttributes];
         });
 
+        // Fetch local profile.
+        promise = promise.then(^(id value) {
+            [self fetchLocalUsersProfile];
+
+            return @(1);
+        });
+
         promise = promise.then(^(id value) {
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_ProfileKeyDidChange
                                                                      object:nil
