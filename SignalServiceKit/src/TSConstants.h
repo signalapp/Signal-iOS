@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
 //#define contactDiscoveryURL @"https://api.directory.signal.org"
 //// TODO: The production value is not yet known.
-//#define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
+//#define kUDTrustRoot @"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
 //#define USING_PRODUCTION_SERVICE
 
 //#else
