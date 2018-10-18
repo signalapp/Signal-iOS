@@ -25,9 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
                                              transaction:(YapDatabaseReadTransaction *)transaction;
 
-- (void)addDevicesToRegisteredRecipient:(NSSet *)devices
-                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
+                                  devicesToRemove:(nullable NSArray *)devicesToRemove
+                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (NSString *)recipientId;
 

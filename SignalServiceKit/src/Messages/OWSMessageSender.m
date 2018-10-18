@@ -1040,7 +1040,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         OWSLogDebug(@"UD send failed; failing over to non-UD send.");
                         [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
                                                       recipientId:recipient.uniqueId];
-                        messageSend.hasUDAuthFailed = YES;
+                        [messageSend setHasUDAuthFailed];
                         dispatch_async([OWSDispatch sendingQueue], ^{
                             [self sendMessageToRecipient:messageSend];
                         });
@@ -1070,7 +1070,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     OWSLogDebug(@"UD send failed; failing over to non-UD send.");
                     [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
                                                   recipientId:recipient.uniqueId];
-                    messageSend.hasUDAuthFailed = YES;
+                    [messageSend setHasUDAuthFailed];
                     dispatch_async([OWSDispatch sendingQueue], ^{
                         [self sendMessageToRecipient:messageSend];
                     });
@@ -1264,21 +1264,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
 
+            [recipient updateRegisteredRecipientWithDevicesToAdd:missingDevices
+                                                 devicesToRemove:extraDevices
+                                                     transaction:transaction];
+
             if (extraDevices && extraDevices.count > 0) {
-                OWSLogInfo(@"removing extra devices: %@", extraDevices);
+                OWSLogInfo(@"Deleting sessions for extra devices: %@", extraDevices);
                 for (NSNumber *extraDeviceId in extraDevices) {
                     [self.primaryStorage deleteSessionForContact:recipient.uniqueId
                                                         deviceId:extraDeviceId.intValue
                                                  protocolContext:transaction];
                 }
-
-                [recipient removeDevicesFromRecipient:[NSSet setWithArray:extraDevices] transaction:transaction];
-            }
-
-            if (missingDevices && missingDevices.count > 0) {
-                OWSLogInfo(@"Adding missing devices: %@", missingDevices);
-                [recipient addDevicesToRegisteredRecipient:[NSSet setWithArray:missingDevices]
-                                              transaction:transaction];
             }
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1369,6 +1365,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     for (NSNumber *deviceId in deviceIds) {
         @try {
+            [self ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+        } @catch (NSException *exception) {
+            if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [recipient updateRegisteredRecipientWithDevicesToAdd:nil
+                                                         devicesToRemove:@[ deviceId ]
+                                                             transaction:transaction];
+                }];
+                continue;
+            } else {
+                @throw exception;
+            }
+        }
+
+        @
+        try {
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
             [self.dbConnection
@@ -1396,7 +1408,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceId] transaction:transaction];
+                    [recipient updateRegisteredRecipientWithDevicesToAdd:nil
+                                                         devicesToRemove:@[ deviceId ]
+                                                             transaction:transaction];
                 }];
             } else {
                 @throw exception;
@@ -1410,83 +1424,130 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 // NOTE: This method uses exceptions for control flow.
 - (void)ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend
                                        deviceId:(NSNumber *)deviceId
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
-    OWSAssertDebug(transaction);
 
     OWSPrimaryStorage *storage = self.primaryStorage;
     SignalRecipient *recipient = messageSend.recipient;
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
-    if (![storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction]) {
-        __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        __block PreKeyBundle *_Nullable bundle;
-        __block NSException *_Nullable exception;
-        // It's not ideal that we're using a semaphore inside a read/write transaction.
-        // To avoid deadlock, we need to ensure that our success/failure completions
-        // are called _off_ the main thread.  Otherwise we'll deadlock if the main
-        // thread is blocked on opening a transaction.
-        TSRequest *request = [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
-                                                                           deviceId:[deviceId stringValue]
-                                                                 unidentifiedAccess:messageSend.unidentifiedAccess];
+    __block BOOL hasSession;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        hasSession = [storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction];
+    }];
+    if (hasSession) {
+        return;
+    }
 
-        [self.networkManager makeRequest:request
-            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject forDeviceNumber:deviceId];
-                dispatch_semaphore_signal(sema);
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
-                }
-                OWSLogError(@"Server replied to PreKeyBundle request with error: %@", error);
-                NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-                if (response.statusCode == 404) {
-                    // Can't throw exception from within callback as it's probabably a different thread.
-                    exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
-                                                        reason:@"Device not registered"
-                                                      userInfo:nil];
-                } else if (response.statusCode == 413) {
-                    // Can't throw exception from within callback as it's probabably a different thread.
-                    exception = [NSException exceptionWithName:OWSMessageSenderRateLimitedException
-                                                        reason:@"Too many prekey requests"
-                                                      userInfo:nil];
-                }
-                dispatch_semaphore_signal(sema);
-            }];
-        // FIXME: Currently this happens within a readwrite transaction - meaning our read-write transaction blocks
-        // on a network request.
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-        if (exception) {
-            @throw exception;
+    __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    __block PreKeyBundle *_Nullable bundle;
+    __block NSException *_Nullable exception;
+    [self makePrekeyRequestForMessageSend:messageSend
+        deviceId:deviceId
+        success:^(PreKeyBundle *_Nullable responseBundle) {
+            bundle = responseBundle;
+            dispatch_semaphore_signal(sema);
         }
+        failure:^(NSUInteger statusCode) {
+            if (statusCode == 404) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
+                                                    reason:@"Device not registered"
+                                                  userInfo:nil];
+            } else if (statusCode == 413) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:OWSMessageSenderRateLimitedException
+                                                    reason:@"Too many prekey requests"
+                                                  userInfo:nil];
+            }
+            dispatch_semaphore_signal(sema);
+        }];
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    if (exception) {
+        @throw exception;
+    }
 
-        if (!bundle) {
-            OWSRaiseException(
-                InvalidVersionException, @"Can't get a prekey bundle from the server with required information");
-        } else {
-            SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
-                                                                       preKeyStore:storage
-                                                                 signedPreKeyStore:storage
-                                                                  identityKeyStore:self.identityManager
-                                                                       recipientId:recipientId
-                                                                          deviceId:[deviceId intValue]];
+    if (!bundle) {
+        NSString *missingPrekeyBundleException = @"missingPrekeyBundleException";
+        OWSRaiseException(
+            missingPrekeyBundleException, @"Can't get a prekey bundle from the server with required information");
+    } else {
+        SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
+                                                                   preKeyStore:storage
+                                                             signedPreKeyStore:storage
+                                                              identityKeyStore:self.identityManager
+                                                                   recipientId:recipientId
+                                                                      deviceId:[deviceId intValue]];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
                 [builder processPrekeyBundle:bundle protocolContext:transaction];
-            } @catch (NSException *exception) {
-                if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-                    OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
-                        (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientId }),
-                        @"");
-                }
-                @throw exception;
+            } @catch (NSException *caughtException) {
+                exception = caughtException;
             }
+        }];
+        if (exception) {
+            if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+                OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
+                    (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : recipientId }),
+                    @"");
+            }
+            @throw exception;
         }
     }
+}
+
+- (void)makePrekeyRequestForMessageSend:(OWSMessageSend *)messageSend
+                               deviceId:(NSNumber *)deviceId
+                                success:(void (^)(PreKeyBundle *_Nullable))success
+                                failure:(void (^)(NSUInteger))failure {
+    OWSAssertDebug(messageSend);
+    OWSAssertDebug(deviceId);
+
+    SignalRecipient *recipient = messageSend.recipient;
+    NSString *recipientId = recipient.recipientId;
+    OWSAssertDebug(recipientId.length > 0);
+
+    const BOOL isUDSend = messageSend.isUDSend;
+    TSRequest *request = [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
+                                                                       deviceId:[deviceId stringValue]
+                                                             unidentifiedAccess:messageSend.unidentifiedAccess];
+
+    [self.networkManager makeRequest:request
+        completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        success:^(NSURLSessionDataTask *task, id responseObject) {
+            PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
+                                                                      forDeviceNumber:deviceId];
+            success(bundle);
+        }
+        failure:^(NSURLSessionDataTask *task, NSError *error) {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
+            }
+            OWSLogError(@"request: %@", request);
+            OWSLogError(@"Server replied to PreKeyBundle request with error: %@", error);
+            OWSLogFlush();
+            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+            NSUInteger statusCode = response.statusCode;
+            if (isUDSend && (statusCode == 401 || statusCode == 403)) {
+                // If a UD send fails due to service response (as opposed to network
+                // failure), mark recipient as _not_ in UD mode, then retry.
+                OWSLogDebug(@"UD prekey request failed; failing over to non-UD prekey request.");
+                // We need to update the UD access mode for this user async to
+                // avoid deadlock, since this method is called inside a transaction.
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
+                                                  recipientId:recipient.uniqueId];
+                });
+                [messageSend setHasUDAuthFailed];
+                // Try again without UD auth.
+                [self makePrekeyRequestForMessageSend:messageSend deviceId:deviceId success:success failure:failure];
+                return;
+            }
+
+            failure(statusCode);
+        }];
 }
 
 // NOTE: This method uses exceptions for control flow.
@@ -1507,9 +1568,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(recipientId.length > 0);
 
     // This may throw an exception.
-    [self ensureRecipientHasSessionForMessageSend:messageSend
-                                         deviceId:deviceId
-                                      transaction:transaction];
+    if (![storage containsSession:recipientId deviceId:[deviceId intValue] protocolContext:transaction]) {
+        NSString *missingSessionException = @"missingSessionException";
+        OWSRaiseException(missingSessionException,
+            @"Unexpectedly missing session for recipient: %@, device: %@",
+            recipientId,
+            deviceId);
+    }
 
     SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storage
                                                             preKeyStore:storage

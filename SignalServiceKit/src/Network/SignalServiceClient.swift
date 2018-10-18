@@ -30,6 +30,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return TSNetworkManager.shared()
     }
 
+    private var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
+    }
+
     func unexpectedServerResponseError() -> Error {
         return OWSErrorMakeUnableToProcessServerResponseError()
     }
@@ -91,10 +95,24 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
         let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-        return firstly {
-            networkManager.makePromise(request: request)
+        return networkManager.makePromise(request: request)
+            .recover { (error: Error) -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
+                switch error {
+                case NetworkManagerError.taskError(let task, _):
+                    let statusCode = task.statusCode()
+                    if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
+                        Logger.verbose("REST profile request failing over to non-UD auth.")
+
+                        self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+
+                        let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
+                        return self.networkManager.makePromise(request: nonUDRequest)
+                    }
+                    default: break
+                }
+                throw error
         }.map { _, responseObject in
-            try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
+            return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
         }
     }
 }

@@ -234,7 +234,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                   networkError.debugDescription,
                   request);
               error.isRetryable = NO;
-              [self deregisterAfterAuthErrorIfNecessary:task statusCode:statusCode];
+              [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
               failureBlock(task, error);
               break;
           }
@@ -242,7 +242,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               OWSLogError(
                   @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
               error.isRetryable = NO;
-              [self deregisterAfterAuthErrorIfNecessary:task statusCode:statusCode];
+              [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
               failureBlock(task, error);
               break;
           }
@@ -300,13 +300,24 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     };
 }
 
-+ (void)deregisterAfterAuthErrorIfNecessary:(NSURLSessionDataTask *)task statusCode:(NSInteger)statusCode
-{
++ (void)deregisterAfterAuthErrorIfNecessary:(NSURLSessionDataTask *)task
+                                    request:(TSRequest *)request
+                                 statusCode:(NSInteger)statusCode {
     OWSLogVerbose(@"Invalid auth: %@", task.originalRequest.allHTTPHeaderFields);
 
-    // Distinguish CDS requests.
-    // We don't want a bad CDS request to trigger "Signal deauth" logic.
-    if ([task.originalRequest.URL.absoluteString hasPrefix:textSecureServerURL]) {
+    // We only want to de-register for:
+    //
+    // * Auth errors...
+    // * ...received from Signal service...
+    // * ...that used standard authorization.
+    //
+    // * We don't want want to deregister for:
+    //
+    // * CDS requests.
+    // * Requests using UD auth.
+    // * etc.
+    if ([task.originalRequest.URL.absoluteString hasPrefix:textSecureServerURL]
+        && request.shouldHaveAuthorizationHeaders) {
         [TSAccountManager.sharedInstance setIsDeregistered:YES];
     } else {
         OWSLogWarn(@"Ignoring %d for URL: %@", (int)statusCode, task.originalRequest.URL.absoluteString);
