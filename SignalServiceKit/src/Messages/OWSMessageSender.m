@@ -1498,7 +1498,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 }
-// NOTE: This method uses exceptions for control flow.
 - (void)makePrekeyRequestForMessageSend:(OWSMessageSend *)messageSend
                                deviceId:(NSNumber *)deviceId
                                 success:(void (^)(PreKeyBundle *_Nullable))success
