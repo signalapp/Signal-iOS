@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 #if DEBUG
 
@@ -11,6 +12,24 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
 
     @objc public func sendConfigurationSyncMessage() {
         Logger.info("")
+    }
+
+    @objc public func syncLocalContact() -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
+    }
+
+    @objc public func syncAllContacts() -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
+    }
+
+    @objc public func syncContacts(for signalAccounts: [SignalAccount]) -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
     }
 }
 

@@ -193,11 +193,6 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
-{
-    OWSFailDebug(@"");
-}
-
 - (BOOL)isRunningTests
 {
     // We don't need to distinguish this in the SAE.
