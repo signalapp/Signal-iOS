@@ -64,7 +64,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: Local Configuration State
     private let kUDCollection = "kUDCollection"
-    private let kUDCurrentSenderCertificateKey = "kUDCurrentSenderCertificateKey"
+    private let kUDCurrentSenderCertificateKey_Production = "kUDCurrentSenderCertificateKey_Production"
+    private let kUDCurrentSenderCertificateKey_Staging = "kUDCurrentSenderCertificateKey_Staging"
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
 
     // MARK: Recipient State
@@ -201,7 +202,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     #endif
 
     private func senderCertificate() -> SMKSenderCertificate? {
-        guard let certificateData = dbConnection.object(forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection) as? Data else {
+        guard let certificateData = dbConnection.object(forKey: senderCertificateKey(), inCollection: kUDCollection) as? Data else {
             return nil
         }
 
@@ -221,7 +222,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     func setSenderCertificate(_ certificateData: Data) {
-        dbConnection.setObject(certificateData, forKey: kUDCurrentSenderCertificateKey, inCollection: kUDCollection)
+        dbConnection.setObject(certificateData, forKey: senderCertificateKey(), inCollection: kUDCollection)
+    }
+
+    private func senderCertificateKey() -> String {
+        return IsUsingProductionService() ? kUDCurrentSenderCertificateKey_Production : kUDCurrentSenderCertificateKey_Staging
     }
 
     @objc
@@ -286,7 +291,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func isUDEnabled() -> Bool {
-        return !IsUsingProductionService()
+        return true
     }
 
     @objc

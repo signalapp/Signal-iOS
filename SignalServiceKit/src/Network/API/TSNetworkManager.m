@@ -255,44 +255,52 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           case 411: {
               OWSLogInfo(
                   @"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
-              failureBlock(task,
-                           [self errorWithHTTPCode:statusCode
-                                       description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC", @"alert title: cannot link - reached max linked devices")
-                                     failureReason:networkError.localizedFailureReason
-                                recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY", @"alert body: cannot link - reached max linked devices")
-                                     fallbackError:networkError]);
+              NSError *customError =
+                  [self errorWithHTTPCode:statusCode
+                              description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC",
+                                              @"alert title: cannot link - reached max linked devices")
+                            failureReason:networkError.localizedFailureReason
+                       recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY",
+                                              @"alert body: cannot link - reached max linked devices")
+                            fallbackError:networkError];
+              error.isRetryable = NO;
+              failureBlock(task, error);
               break;
           }
           case 413: {
               OWSLogWarn(@"Rate limit exceeded: %@", request);
-              failureBlock(task,
-                           [self errorWithHTTPCode:statusCode
-                                       description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
-                                     failureReason:networkError.localizedFailureReason
-                                recoverySuggestion:NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", nil)
-                                     fallbackError:networkError]);
+              NSError *customError = [self errorWithHTTPCode:statusCode
+                                                 description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                               failureReason:networkError.localizedFailureReason
+                                          recoverySuggestion:NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", nil)
+                                               fallbackError:networkError];
+              error.isRetryable = NO;
+              failureBlock(task, error);
               break;
           }
           case 417: {
               // TODO: Is this response code obsolete?
               OWSLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
-              failureBlock(task,
-                           [self errorWithHTTPCode:statusCode
-                                       description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
-                                     failureReason:networkError.localizedFailureReason
-                                recoverySuggestion:NSLocalizedString(@"RELAY_REGISTERED_ERROR_RECOVERY", nil)
-                                     fallbackError:networkError]);
+              NSError *customError = [self errorWithHTTPCode:statusCode
+                                                 description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                               failureReason:networkError.localizedFailureReason
+                                          recoverySuggestion:NSLocalizedString(@"RELAY_REGISTERED_ERROR_RECOVERY", nil)
+                                               fallbackError:networkError];
+              customError.isRetryable = NO;
+              failureBlock(task, customError);
               break;
           }
           case 422: {
               OWSLogError(@"The registration was requested over an unknown transport: %@, %@",
                   networkError.debugDescription,
                   request);
+              error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }
           default: {
               OWSLogWarn(@"Unknown error: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
+              error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }
