@@ -1264,20 +1264,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
 
-            if (missingDevices && missingDevices.count > 0) {
-                OWSLogInfo(@"Adding missing devices: %@", missingDevices);
-                [recipient addDevicesToRegisteredRecipient:[NSSet setWithArray:missingDevices] transaction:transaction];
-            }
+            [recipient updateRegisteredRecipientWithDevicesToAdd:missingDevices
+                                                 devicesToRemove:extraDevices
+                                                     transaction:transaction];
 
             if (extraDevices && extraDevices.count > 0) {
-                OWSLogInfo(@"removing extra devices: %@", extraDevices);
+                OWSLogInfo(@"Deleting sessions for extra devices: %@", extraDevices);
                 for (NSNumber *extraDeviceId in extraDevices) {
                     [self.primaryStorage deleteSessionForContact:recipient.uniqueId
                                                         deviceId:extraDeviceId.intValue
                                                  protocolContext:transaction];
                 }
-
-                [recipient removeDevicesFromRecipient:[NSSet setWithArray:extraDevices] transaction:transaction];
             }
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1372,7 +1369,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceId] transaction:transaction];
+                    [recipient updateRegisteredRecipientWithDevicesToAdd:nil
+                                                         devicesToRemove:@[ deviceId ]
+                                                             transaction:transaction];
                 }];
                 continue;
             } else {
@@ -1409,7 +1408,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceId] transaction:transaction];
+                    [recipient updateRegisteredRecipientWithDevicesToAdd:nil
+                                                         devicesToRemove:@[ deviceId ]
+                                                             transaction:transaction];
                 }];
             } else {
                 @throw exception;

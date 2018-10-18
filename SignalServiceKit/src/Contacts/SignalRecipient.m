@@ -112,6 +112,23 @@ NS_ASSUME_NONNULL_BEGIN
     self.devices = [updatedDevices copy];
 }
 
+- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
+                                  devicesToRemove:(nullable NSArray *)devicesToRemove
+                                      transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
+
+    // Add before we remove, since removeDevicesFromRecipient:...
+    // can removeUnregisteredRecipient:... if the recipient has
+    // no devices left.
+    if (devicesToAdd.count > 0) {
+        [self addDevicesToRegisteredRecipient:[NSSet setWithArray:devicesToAdd] transaction:transaction];
+    }
+    if (devicesToRemove.count > 0) {
+        [self removeDevicesFromRecipient:[NSSet setWithArray:devicesToRemove] transaction:transaction];
+    }
+}
+
 - (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -119,8 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self addDevices:devices];
 
-    SignalRecipient *latest =
-        [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId transaction:transaction];
+    SignalRecipient *latest = [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId
+                                                                   transaction:transaction];
 
     if ([devices isSubsetOfSet:latest.devices.set]) {
         return;
