@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUserDefaults *)appUserDefaults
 {
+    if (CurrentAppContext().isRunningTests) {
+        return [[NSUserDefaults alloc] init];
+    }
+
     return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
 }
 
