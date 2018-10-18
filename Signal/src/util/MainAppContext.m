@@ -220,16 +220,6 @@ NS_ASSUME_NONNULL_BEGIN
                                   }];
 }
 
-- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
-{
-    OWSAssertDebug(profileKey);
-
-    [MultiDeviceProfileKeyUpdateJob runWithProfileKey:profileKey
-                                      identityManager:OWSIdentityManager.sharedManager
-                                        messageSender:SSKEnvironment.shared.messageSender
-                                       profileManager:OWSProfileManager.sharedManager];
-}
-
 - (BOOL)isRunningTests
 {
     return getenv("runningTests_dontStartApp");

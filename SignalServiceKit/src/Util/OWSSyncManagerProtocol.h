@@ -4,9 +4,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AnyPromise;
+@class SignalAccount;
+
 @protocol OWSSyncManagerProtocol <NSObject>
 
 - (void)sendConfigurationSyncMessage;
+
+- (AnyPromise *)syncLocalContact;
+
+- (AnyPromise *)syncAllContacts;
+
+- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts;
 
 @end
 
