@@ -27,7 +27,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
-#import "OWSSyncContactsMessage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
@@ -137,6 +136,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.outgoingReceiptManager);
 
     return SSKEnvironment.shared.outgoingReceiptManager;
+}
+
+- (id<OWSSyncManagerProtocol>)syncManager {
+    OWSAssertDebug(SSKEnvironment.shared.syncManager);
+
+    return SSKEnvironment.shared.syncManager;
 }
 
 #pragma mark -
@@ -804,28 +809,7 @@ NS_ASSUME_NONNULL_BEGIN
             // In rare cases this means we won't respond to the sync request, but that's
             // acceptable.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSSyncContactsMessage *syncContactsMessage =
-                    [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
-                                                           identityManager:self.identityManager
-                                                            profileManager:self.profileManager];
-                __block NSData *_Nullable syncData;
-                [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                    syncData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-                }];
-                if (!syncData) {
-                    OWSFailDebug(@"Failed to serialize contacts sync message.");
-                    return;
-                }
-                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
-                [self.messageSender enqueueTemporaryAttachment:dataSource
-                    contentType:OWSMimeTypeApplicationOctetStream
-                    inMessage:syncContactsMessage
-                    success:^{
-                        OWSLogInfo(@"Successfully sent Contacts response syncMessage.");
-                    }
-                    failure:^(NSError *error) {
-                        OWSLogError(@"Failed to send Contacts response syncMessage with error: %@", error);
-                    }];
+                [self.syncManager syncAllContacts];
             });
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];

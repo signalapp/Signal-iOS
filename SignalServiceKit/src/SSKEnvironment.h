@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSSyncManagerProtocol.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactDiscoveryService;
@@ -28,7 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSCallMessageHandler;
 @protocol ProfileManagerProtocol;
 @protocol OWSUDManager;
-@protocol OWSSyncManagerProtocol;
 
 @interface SSKEnvironment : NSObject
 

@@ -23,12 +23,8 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         return Environment.shared.contactsManager
     }
 
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
-    private var identityManager: OWSIdentityManager {
-        return OWSIdentityManager.shared()
+    private var syncManager: OWSSyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
     }
 
     private let thread: TSThread
@@ -60,25 +56,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
 
-        let syncMessage: OWSSyncContactsMessage = OWSSyncContactsMessage(signalAccounts: [signalAccount],
-                                                                                 identityManager: self.identityManager,
-                                                                                 profileManager: self.profileManager)
-
-        var dataSource: DataSource?
-        self.dbConnection.readWrite { transaction in
-            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFailDebug("could not serialize sync contacts data")
-                return
-            }
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-        }
-
-        guard let attachmentDataSource = dataSource else {
-            self.reportAssertionError(description: "unable to build attachment data source")
-            return
-        }
-
-        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+        syncManager.syncContacts(for: [signalAccount])
     }
 
     private func sync(groupThread: TSGroupThread) {

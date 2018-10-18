@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AnyPromise;
 @class OWSContactsManager;
 @class OWSIdentityManager;
 @class OWSMessageSender;

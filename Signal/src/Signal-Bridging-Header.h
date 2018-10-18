@@ -104,7 +104,6 @@
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
