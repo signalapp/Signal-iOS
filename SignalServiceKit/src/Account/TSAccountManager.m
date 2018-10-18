@@ -381,6 +381,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                     OWSLogInfo(@"Verification code accepted.");
                     [self storeServerAuthToken:authToken signalingKey:signalingKey];
                     [TSPreKeyManager createPreKeysWithSuccess:successBlock failure:failureBlock];
+                    [self.profileManager fetchLocalUsersProfile];
                     break;
                 }
                 default: {
