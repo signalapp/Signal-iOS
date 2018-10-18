@@ -137,20 +137,36 @@ public class ProfileFetcherJob: NSObject {
         let unidentifiedAccess: SSKUnidentifiedAccess? = self.getUnidentifiedAccess(forRecipientId: recipientId)
         let socketType: OWSWebSocketType = unidentifiedAccess == nil ? .default : .UD
         if socketManager.canMakeRequests(of: socketType) {
-            let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
             let (promise, resolver) = Promise<SignalServiceProfile>.pending()
 
+            let socketSuccess = { (responseObject: Any?) -> Void in
+                do {
+                    let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
+                    resolver.fulfill(profile)
+                } catch {
+                    resolver.reject(error)
+                }
+            }
+
+            let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
             self.socketManager.make(request,
                                     webSocketType: socketType,
-                success: { (responseObject: Any?) -> Void in
-                    do {
-                        let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
-                        resolver.fulfill(profile)
-                    } catch {
-                        resolver.reject(error)
+                success: socketSuccess,
+                failure: { (statusCode: NSInteger, _:Data?, error: Error) in
+
+                    // If UD auth fails, try again with non-UD auth.
+                    if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
+                        Logger.info("Profile request failing over to non-UD auth.")
+                        let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
+                        self.socketManager.make(nonUDRequest,
+                                                webSocketType: .default,
+                                                success: socketSuccess,
+                                                failure: { (_: NSInteger, _:Data?, error: Error) in
+                                                    resolver.reject(error)
+                        })
+                        return
                     }
-            },
-                failure: { (_: NSInteger, _:Data?, error: Error) in
+
                     resolver.reject(error)
             })
             return promise

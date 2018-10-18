@@ -90,11 +90,39 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     }
 
     public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
+        let (promise, resolver) = Promise<(task: URLSessionDataTask, responseObject: Any?)>.pending()
+
         let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map { _, responseObject in
-            try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
+        networkManager.makeRequest(request,
+                         success: { task, responseObject in
+                            resolver.fulfill((task: task, responseObject: responseObject))
+        },
+                         failure: { task, error in
+                            let statusCode = task.statusCode()
+                            if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
+                                Logger.verbose("REST profile request failing over to non-UD auth.")
+                                let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
+                                self.networkManager.makeRequest(nonUDRequest,
+                                                           success: { task, responseObject in
+                                                            resolver.fulfill((task: task, responseObject: responseObject))
+                                },
+                                                           failure: { task, error in
+                                                            let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
+                                                            let nsError: NSError = nmError as NSError
+                                                            nsError.isRetryable = (error as NSError).isRetryable
+                                                            resolver.reject(nsError)
+                                })
+                                return
+                            }
+                            Logger.info("REST profile request failed.")
+                            let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
+                            let nsError: NSError = nmError as NSError
+                            nsError.isRetryable = (error as NSError).isRetryable
+                            resolver.reject(nsError)
+        })
+        return promise.map { _, responseObject in
+            Logger.info("REST profile request succeeded.")
+            return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
         }
     }
 }

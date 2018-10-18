@@ -487,8 +487,9 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
-    TSSocketMessage *socketMessage =
-        [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64] success:success failure:failure];
+    TSSocketMessage *socketMessage = [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64]
+                                                                        success:success
+                                                                        failure:failure];
 
     @synchronized(self) {
         self.socketMessageMap[@(socketMessage.requestId)] = socketMessage;
@@ -633,7 +634,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
-            if (responseStatus == 403) {
+            if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
                 [self.tsAccountManager setIsDeregistered:YES];
@@ -701,7 +702,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
     if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
         NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
-        if (statusCode.unsignedIntegerValue == 403) {
+        if (statusCode.unsignedIntegerValue == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
             [self.tsAccountManager setIsDeregistered:YES];
         }
     }

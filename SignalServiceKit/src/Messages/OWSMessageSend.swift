@@ -33,10 +33,16 @@ public class OWSMessageSend: NSObject {
 
     // We "fail over" to non-UD sends after auth errors sending via UD.
     @objc
-    public var hasUDAuthFailed = false
+    public var hasUDAuthFailed = false {
+        didSet {
+            if hasUDAuthFailed {
+                unidentifiedAccess = nil
+            }
+        }
+    }
 
     @objc
-    public let unidentifiedAccess: SSKUnidentifiedAccess?
+    public var unidentifiedAccess: SSKUnidentifiedAccess?
 
     @objc
     public let localNumber: String

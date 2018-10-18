@@ -150,7 +150,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, latest.recipientId);
 
     [latest removeDevices:devices];
-    [latest saveWithTransaction_internal:transaction];
+
+    if (latest.devices.count > 0) {
+        [latest saveWithTransaction_internal:transaction];
+    } else {
+        [SignalRecipient removeUnregisteredRecipient:self.recipientId transaction:transaction];
+    }
 }
 
 - (NSString *)recipientId
