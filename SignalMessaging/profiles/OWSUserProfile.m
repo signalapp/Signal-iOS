@@ -10,7 +10,6 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -97,15 +96,6 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
     return self;
 }
-
-#pragma mark - Dependencies
-
-- (id<OWSSyncManagerProtocol>)syncManager {
-    return SSKEnvironment.shared.syncManager;
-}
-
-#pragma mark -
-
 
 - (nullable NSString *)avatarUrlPath
 {
@@ -219,8 +209,8 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             // We populate an initial (empty) profile on launch of a new install, but until
             // we have a registered account, syncing will fail (and there could not be any
             // linked device to sync to at this point anyway).
-            if ([TSAccountManager isRegistered] && CurrentAppContext().isMainApp) {
-                [self.syncManager syncLocalContact];
+            if ([TSAccountManager isRegistered]) {
+                [CurrentAppContext() doMultiDeviceUpdateWithProfileKey:self.profileKey];
             }
 
             [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange

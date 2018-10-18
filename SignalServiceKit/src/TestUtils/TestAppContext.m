@@ -112,6 +112,10 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey
+{
+}
+
 - (BOOL)isRunningTests
 {
     return YES;

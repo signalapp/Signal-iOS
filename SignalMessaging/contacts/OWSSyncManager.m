@@ -8,7 +8,6 @@
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
 #import "OWSReadReceiptManager.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
@@ -17,8 +16,6 @@
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
@@ -92,10 +89,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     OWSAssertDebug(SSKEnvironment.shared.profileManager);
 
     return SSKEnvironment.shared.profileManager;
-}
-
-- (TSAccountManager *)tsAccountManager {
-    return TSAccountManager.sharedInstance;
 }
 
 #pragma mark - Notifications
@@ -220,49 +213,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         failure:^(NSError *error) {
             OWSLogError(@"Send configuration sync message failed with error: %@", error);
         }];
-}
-
-#pragma mark - Local Sync
-
-- (AnyPromise *)syncLocalContact {
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    SignalAccount *signalAccount = [[SignalAccount alloc] initWithRecipientId:localNumber];
-    signalAccount.contact = [Contact new];
-
-    return [self syncContactsForSignalAccounts:@[ signalAccount ]];
-}
-
-- (AnyPromise *)syncAllContacts {
-    return [self syncContactsForSignalAccounts:self.contactsManager.signalAccounts];
-}
-
-- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts {
-    OWSSyncContactsMessage *syncContactsMessage =
-        [[OWSSyncContactsMessage alloc] initWithSignalAccounts:signalAccounts
-                                               identityManager:self.identityManager
-                                                profileManager:self.profileManager];
-    __block DataSource *dataSource;
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncContactsMessage
-                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
-    }];
-
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.messageSender enqueueTemporaryAttachment:dataSource
-            contentType:OWSMimeTypeApplicationOctetStream
-            inMessage:syncContactsMessage
-            success:^{
-                OWSLogInfo(@"Successfully sent contacts sync message.");
-                resolve(@(1));
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send contacts sync message with error: %@", error);
-                resolve(error);
-            }];
-    }];
-    [promise retainUntilComplete];
-    return promise;
 }
 
 @end

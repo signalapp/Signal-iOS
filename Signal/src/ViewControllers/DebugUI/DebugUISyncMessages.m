@@ -17,6 +17,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -90,14 +91,28 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSPrimaryStorage.sharedManager newDatabaseConnection];
 }
 
-+ (id<OWSSyncManagerProtocol>)syncManager {
-    OWSAssertDebug(SSKEnvironment.shared.syncManager);
++ (void)sendContactsSyncMessage
+{
+    OWSSyncContactsMessage *syncContactsMessage =
+        [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
+                                               identityManager:self.identityManager
+                                                profileManager:self.profileManager];
+    __block DataSource *dataSource;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        dataSource = [DataSourceValue
+            dataSourceWithSyncMessageData:[syncContactsMessage
+                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
+    }];
 
-    return SSKEnvironment.shared.syncManager;
-}
-
-+ (void)sendContactsSyncMessage {
-    [self.syncManager syncAllContacts];
+    [self.messageSender enqueueTemporaryAttachment:dataSource
+        contentType:OWSMimeTypeApplicationOctetStream
+        inMessage:syncContactsMessage
+        success:^{
+            OWSLogInfo(@"Successfully sent Contacts response syncMessage.");
+        }
+        failure:^(NSError *error) {
+            OWSLogError(@"Failed to send Contacts response syncMessage with error: %@", error);
+        }];
 }
 
 + (void)sendGroupSyncMessage

@@ -150,10 +150,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return SSKEnvironment.shared.blockingManager;
 }
 
-- (id<OWSSyncManagerProtocol>)syncManager {
-    return SSKEnvironment.shared.syncManager;
-}
-
 #pragma mark - User Profile Accessor
 
 - (void)ensureLocalProfileCached
@@ -744,13 +740,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // Fetch local profile.
         promise = promise.then(^(id value) {
             [self fetchLocalUsersProfile];
-            
-            return @(1);
-        });
 
-        // Sync local profile key.
-        promise = promise.then(^(id value) {
-            return [self.syncManager syncLocalContact];
+            return @(1);
         });
 
         promise = promise.then(^(id value) {

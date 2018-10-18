@@ -87,6 +87,10 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // Returns nil if isMainApp is NO
 @property (nullable, nonatomic, readonly) UIAlertAction *openSystemSettingsAction;
 
+// Should only be called if isMainApp is YES,
+// but should only be necessary to call if isMainApp is YES.
+- (void)doMultiDeviceUpdateWithProfileKey:(OWSAES256Key *)profileKey;
+
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;
 
