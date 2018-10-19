@@ -299,7 +299,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (!attachment) {
-            OWSProdLogAndFail(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
+            DDLogDebug(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
             continue;
         }
         [attachment removeWithTransaction:transaction];
