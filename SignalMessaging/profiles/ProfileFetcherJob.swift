@@ -135,46 +135,17 @@ public class ProfileFetcherJob: NSObject {
         Logger.error("getProfile: \(recipientId)")
 
         let unidentifiedAccess: SSKUnidentifiedAccess? = self.getUnidentifiedAccess(forRecipientId: recipientId)
-        let socketType: OWSWebSocketType = unidentifiedAccess == nil ? .default : .UD
-        if socketManager.canMakeRequests(of: socketType) {
-            let (promise, resolver) = Promise<SignalServiceProfile>.pending()
-
-            let socketSuccess = { (responseObject: Any?) -> Void in
-                do {
-                    let profile = try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
-                    resolver.fulfill(profile)
-                } catch {
-                    resolver.reject(error)
-                }
-            }
-
-            let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-            self.socketManager.make(request,
-                                    webSocketType: socketType,
-                success: socketSuccess,
-                failure: { (statusCode: NSInteger, _:Data?, error: Error) in
-
-                    // If UD auth fails, try again with non-UD auth.
-                    if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
-                        Logger.info("Profile request failing over to non-UD auth.")
-
-                        self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
-
-                        let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
-                        self.socketManager.make(nonUDRequest,
-                                                webSocketType: .default,
-                                                success: socketSuccess,
-                                                failure: { (_: NSInteger, _:Data?, error: Error) in
-                                                    resolver.reject(error)
-                        })
-                        return
-                    }
-
-                    resolver.reject(error)
-            })
-            return promise
-        } else {
-            return self.signalServiceClient.retrieveProfile(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
+        let requestMaker = RequestMaker(requestFactoryBlock: { (unidentifiedAccessForRequest) -> TSRequest in
+            return OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccessForRequest)
+        }, udAuthFailureBlock: {
+            // Do nothing
+        }, websocketFailureBlock: {
+            // Do nothing
+        }, recipientId: recipientId,
+           unidentifiedAccess: unidentifiedAccess)
+        return requestMaker.makeRequest()
+            .map { (result: RequestMakerResult) -> SignalServiceProfile in
+                try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
         }
     }
 

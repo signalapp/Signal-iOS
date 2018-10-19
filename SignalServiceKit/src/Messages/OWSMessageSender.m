@@ -1016,74 +1016,53 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    const BOOL isUDSend = messageSend.isUDSend;
-    TSRequest *request = [OWSRequestFactory submitMessageRequestWithRecipient:recipient.uniqueId
-                                                                     messages:deviceMessages
-                                                                    timeStamp:message.timestamp
-                                                           unidentifiedAccess:messageSend.unidentifiedAccess];
-    OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
-    BOOL canMakeWebsocketRequests = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] &&
-                                     !messageSend.hasWebsocketSendFailed);
-    if (canMakeWebsocketRequests) {
-        [TSSocketManager.shared makeRequest:request
-            webSocketType:webSocketType
-            success:^(id _Nullable responseObject) {
-                [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:isUDSend];
-            }
-            failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
+    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
+        initWithRequestFactoryBlock:^(SSKUnidentifiedAccess *_Nullable unidentifiedAccess) {
+            return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
+                                                               messages:deviceMessages
+                                                              timeStamp:message.timestamp
+                                                     unidentifiedAccess:unidentifiedAccess];
+        }
+        udAuthFailureBlock:^{
+            [messageSend setHasUDAuthFailed];
+        }
+        websocketFailureBlock:^{
+            messageSend.hasWebsocketSendFailed = YES;
+        }
+        recipientId:recipient.recipientId
+        unidentifiedAccess:messageSend.unidentifiedAccess];
+    [[requestMaker makeRequestObjc]
+            .then(^(OWSRequestMakerResult *result) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
-                    OWSLogDebug(@"Web socket send failed; failing over to REST.");
+                    const BOOL wasSentByUD = result.wasSentByUD;
+                    [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:wasSentByUD];
+                });
+            })
+            .catch(^(NSError *error) {
+                dispatch_async([OWSDispatch sendingQueue], ^{
+                    NSUInteger statusCode = 0;
+                    NSData *_Nullable responseData = nil;
+                    if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                        statusCode = error.code;
 
-                    if (isUDSend && (statusCode == 401 || statusCode == 403)) {
-                        // If a UD send fails due to service response (as opposed to network
-                        // failure), mark recipient as _not_ in UD mode, then retry.
-                        OWSLogDebug(@"UD send failed; failing over to non-UD send.");
-                        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
-                                                      recipientId:recipient.uniqueId];
-                        [messageSend setHasUDAuthFailed];
-                        dispatch_async([OWSDispatch sendingQueue], ^{
-                            [self sendMessageToRecipient:messageSend];
-                        });
-                        return;
+                        NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
+                        if (underlyingError) {
+                            responseData
+                                = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+                        } else {
+                            OWSFailDebug(@"Missing underlying error: %@", error);
+                        }
+                    } else {
+                        OWSFailDebug(@"Unexpected error: %@", error);
                     }
 
-                    // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket
-                    // failure. Instead we fall back to REST, which will decrement retries. e.g. after linking a new
-                    // device, sync messages will fail until the websocket re-opens.
-                    messageSend.hasWebsocketSendFailed = YES;
-                    [self sendMessageToRecipient:messageSend];
+                    [self messageSendDidFail:messageSend
+                              deviceMessages:deviceMessages
+                                  statusCode:statusCode
+                                       error:error
+                                responseData:responseData];
                 });
-            }];
-    } else {
-        [self.networkManager makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:isUDSend];
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-                NSInteger statusCode = response.statusCode;
-                NSData *_Nullable responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-
-                if (isUDSend && (statusCode == 401 || statusCode == 403)) {
-                    // If a UD send fails due to service response (as opposed to network
-                    // failure), mark recipient as _not_ in UD mode, then retry.
-                    OWSLogDebug(@"UD send failed; failing over to non-UD send.");
-                    [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
-                                                  recipientId:recipient.uniqueId];
-                    [messageSend setHasUDAuthFailed];
-                    dispatch_async([OWSDispatch sendingQueue], ^{
-                        [self sendMessageToRecipient:messageSend];
-                    });
-                    return;
-                }
-
-                [self messageSendDidFail:messageSend
-                          deviceMessages:deviceMessages
-                              statusCode:statusCode
-                                   error:error
-                            responseData:responseData];
-            }];
-    }
+            }) retainUntilComplete];
 }
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
@@ -1497,90 +1476,41 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
-    const BOOL isUDSend = messageSend.isUDSend;
-    TSRequest *request = [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
-                                                                       deviceId:[deviceId stringValue]
-                                                             unidentifiedAccess:messageSend.unidentifiedAccess];
-    OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
-    BOOL canMakeWebsocketRequests
-        = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] && !messageSend.hasWebsocketSendFailed);
-    if (canMakeWebsocketRequests) {
-        [TSSocketManager.shared makeRequest:request
-            webSocketType:webSocketType
-            success:^(id _Nullable responseObject) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
-                                                                              forDeviceNumber:deviceId];
-                    success(bundle);
-                });
-            }
-            failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    OWSLogDebug(@"Web socket prekey request failed; failing over to REST: %@.", error);
+    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
+        initWithRequestFactoryBlock:^(SSKUnidentifiedAccess *_Nullable unidentifiedAccess) {
+            return [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
+                                                                 deviceId:[deviceId stringValue]
+                                                       unidentifiedAccess:unidentifiedAccess];
+        }
+        udAuthFailureBlock:^{
+            [messageSend setHasUDAuthFailed];
+        }
+        websocketFailureBlock:^{
+            messageSend.hasWebsocketSendFailed = YES;
+        }
+        recipientId:recipientId
+        unidentifiedAccess:messageSend.unidentifiedAccess];
+    [[requestMaker makeRequestObjc]
+            .then(^(OWSRequestMakerResult *result) {
+                // We _do not_ want to dispatch to the sendingQueue here; we're
+                // using a semaphore on the sendingQueue to block on this request.
+                const id responseObject = result.responseObject;
+                PreKeyBundle *_Nullable bundle =
+                    [PreKeyBundle preKeyBundleFromDictionary:responseObject forDeviceNumber:deviceId];
+                success(bundle);
+            })
+            .catch(^(NSError *error) {
+                // We _do not_ want to dispatch to the sendingQueue here; we're
+                // using a semaphore on the sendingQueue to block on this request.
+                NSUInteger statusCode = 0;
+                if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                    statusCode = error.code;
+                } else {
+                    OWSFailDebug(@"Unexpected error: %@", error);
+                }
 
-                    if (isUDSend && (statusCode == 401 || statusCode == 403)) {
-                        // If a UD send fails due to service response (as opposed to network
-                        // failure), mark recipient as _not_ in UD mode, then retry.
-                        OWSLogDebug(@"UD prekey request failed; failing over to non-UD prekey request.");
-                        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
-                                                      recipientId:recipient.uniqueId];
-                        [messageSend setHasUDAuthFailed];
-                        // Try again without UD auth.
-                        [self makePrekeyRequestForMessageSend:messageSend
-                                                     deviceId:deviceId
-                                                      success:success
-                                                      failure:failure];
-                        return;
-                    }
-
-                    // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket
-                    // failure. Instead we fall back to REST, which will decrement retries. e.g. after linking a new
-                    // device, sync messages will fail until the websocket re-opens.
-                    messageSend.hasWebsocketSendFailed = YES;
-                    // Try again without websocket.
-                    [self makePrekeyRequestForMessageSend:messageSend
-                                                 deviceId:deviceId
-                                                  success:success
-                                                  failure:failure];
-                });
-            }];
-    } else {
-        [self.networkManager makeRequest:request
-            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
-                                                                              forDeviceNumber:deviceId];
-                    success(bundle);
-                });
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    if (!IsNSErrorNetworkFailure(error)) {
-                        OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
-                    }
-                    OWSLogDebug(@"REST prekey request failed: %@.", error);
-                    NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-                    NSUInteger statusCode = response.statusCode;
-                    if (isUDSend && (statusCode == 401 || statusCode == 403)) {
-                        // If a UD send fails due to service response (as opposed to network
-                        // failure), mark recipient as _not_ in UD mode, then retry.
-                        OWSLogDebug(@"UD prekey request failed; failing over to non-UD prekey request.");
-                        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
-                                                      recipientId:recipient.uniqueId];
-                        [messageSend setHasUDAuthFailed];
-                        // Try again without UD auth.
-                        [self makePrekeyRequestForMessageSend:messageSend
-                                                     deviceId:deviceId
-                                                      success:success
-                                                      failure:failure];
-                        return;
-                    }
-
-                    failure(statusCode);
-                });
-            }];
-    }
+                failure(statusCode);
+            }) retainUntilComplete];
 }
 
 // NOTE: This method uses exceptions for control flow.
