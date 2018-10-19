@@ -619,10 +619,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
            senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
-                     success:(void (^)(void))successHandler
-                     failure:(RetryableFailureHandler)failureHandler
+                     success:(void (^)(void))successHandlerParam
+                     failure:(RetryableFailureHandler)failureHandlerParam
 {
     AssertIsOnSendingQueue();
+
+    void (^successHandler)(void) = ^() {
+        dispatch_async([OWSDispatch sendingQueue], ^{
+            [self handleMessageSentLocally:message senderCertificate:senderCertificate];
+        });
+        successHandlerParam();
+    };
+    void (^failureHandler)(NSError *) = ^(NSError *error) {
+        if (message.wasSentToAnyRecipient) {
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                [self handleMessageSentLocally:message senderCertificate:senderCertificate];
+            });
+        }
+        failureHandlerParam(error);
+    };
 
     TSThread *_Nullable thread = message.thread;
 
@@ -638,9 +653,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                        transaction:transaction];
             }
         }];
-
-        [self handleMessageSentLocally:message senderCertificate:senderCertificate];
-
         successHandler();
         return;
     }
@@ -1103,8 +1115,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
         }];
 
-        [self handleMessageSentLocally:messageSend.message
-                     senderCertificate:messageSend.unidentifiedAccess.senderCertificate];
         messageSend.success();
     });
 }
@@ -1273,6 +1283,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if (message.shouldSyncTranscript) {
         // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
         //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
+        // TODO: We might send to a recipient, then to another recipient on retry.
+        //       To ensure desktop receives all "delivery status" info, we might
+        //       want to send a transcript after every send that reaches _any_
+        //       new recipients.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [message updateWithHasSyncedTranscript:YES transaction:transaction];
         }];

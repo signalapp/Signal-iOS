@@ -405,6 +405,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return (self.hasLegacyMessageState && self.legacyWasDelivered && self.messageState == TSOutgoingMessageStateSent);
 }
 
+- (BOOL)wasSentToAnyRecipient
+{
+    if ([self sentRecipientIds].count > 0) {
+        return YES;
+    }
+    return (self.hasLegacyMessageState && self.messageState == TSOutgoingMessageStateSent);
+}
+
 + (TSOutgoingMessageState)messageStateForRecipientStates:(NSArray<TSOutgoingMessageRecipientState *> *)recipientStates
 {
     OWSAssertDebug(recipientStates);
@@ -503,6 +511,18 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     for (NSString *recipientId in self.recipientStateMap) {
         TSOutgoingMessageRecipientState *recipientState = self.recipientStateMap[recipientId];
         if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
+            [result addObject:recipientId];
+        }
+    }
+    return result;
+}
+
+- (NSArray<NSString *> *)sentRecipientIds
+{
+    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    for (NSString *recipientId in self.recipientStateMap) {
+        TSOutgoingMessageRecipientState *recipientState = self.recipientStateMap[recipientId];
+        if (recipientState.state == OWSOutgoingMessageRecipientStateSent) {
             [result addObject:recipientId];
         }
     }

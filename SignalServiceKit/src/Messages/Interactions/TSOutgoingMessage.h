@@ -113,6 +113,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (readonly) TSOutgoingMessageState messageState;
 @property (readonly) BOOL wasDeliveredToAnyRecipient;
+@property (readonly) BOOL wasSentToAnyRecipient;
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly) NSString *customMessage;
@@ -155,7 +156,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // All recipients of this message who we are currently trying to send to (queued, uploading or during send).
 - (NSArray<NSString *> *)sendingRecipientIds;
 
-// All recipients of this message to whom it has been sent and delivered.
+// All recipients of this message to whom it has been sent (and possibly delivered or read).
+- (NSArray<NSString *> *)sentRecipientIds;
+
+// All recipients of this message to whom it has been sent and delivered (and possibly read).
 - (NSArray<NSString *> *)deliveredRecipientIds;
 
 // All recipients of this message to whom it has been sent, delivered and read.
