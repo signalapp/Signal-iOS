@@ -1016,7 +1016,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    OWSLogVerbose(@"sending to recipient.recipientId: %@", recipient.recipientId);
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]
         && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
         [messageSend disableUD];
