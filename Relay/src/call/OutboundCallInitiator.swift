@@ -30,12 +30,17 @@ import RelayMessaging
     @discardableResult @objc public func initiateCall(handle: String) -> Bool {
         Logger.info("\(TAG) in \(#function) with handle: \(handle)")
 
-        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
-            Logger.warn("\(TAG) unable to parse signalId from phone number: \(handle)")
+        guard let uuid = UUID.init(uuidString: handle) else {
+            Logger.warn("\(TAG) unable to parse uuid from id: \(handle)")
             return false
         }
+        
+//        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
+//            Logger.warn("\(TAG) unable to parse uuid from id: \(handle)")
+//            return false
+//        }
 
-        return initiateCall(recipientId: recipientId, isVideo: false)
+        return initiateCall(recipientId: uuid.uuidString.lowercased(), isVideo: false)
     }
 
     /**

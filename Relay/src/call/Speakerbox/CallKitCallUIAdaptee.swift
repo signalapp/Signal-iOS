@@ -141,15 +141,18 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
 
-        if showNamesOnCallScreen {
-            update.localizedCallerName = self.contactsManager.displayName(forRecipientId: call.callId)
-            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.callId)
-        } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-            update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            OWSPrimaryStorage.shared().setPhoneNumber(call.callId, forCallKitId: callKitId)
-            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
-        }
+        update.localizedCallerName = call.thread.displayName() // self.contactsManager.displayName(forRecipientId: call.callId)
+        update.remoteHandle = CXHandle(type: .generic, value: call.thread.displayName())
+
+//        if showNamesOnCallScreen {
+//            update.localizedCallerName = self.contactsManager.displayName(forRecipientId: call.callId)
+//            update.remoteHandle = CXHandle(type: .phoneNumber, value: call.callId)
+//        } else {
+//            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+//            update.remoteHandle = CXHandle(type: .generic, value: callKitId)
+//            OWSPrimaryStorage.shared().setPhoneNumber(call.callId, forCallKitId: callKitId)
+//            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
+//        }
 
         update.hasVideo = call.hasLocalVideo
 
