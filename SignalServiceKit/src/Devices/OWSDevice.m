@@ -7,11 +7,13 @@
 #import "OWSPrimaryStorage.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -114,6 +116,25 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 @implementation OWSDevice
 
+#pragma mark - Dependencies
+
++ (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
++ (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
+}
+
++ (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
+#pragma mark -
+
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super saveWithTransaction:transaction];
@@ -177,7 +198,16 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     }
 
     if (didChange) {
-        [SSKEnvironment.shared.profileManager fetchLocalUsersProfile];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Device changes can affect the UD access mode for a recipient,
+            // so we need to:
+            //
+            // * Mark the UD access mode as "unknown".
+            // * Fetch the profile for this user to update UD access mode.
+            [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                          recipientId:self.tsAccountManager.localNumber];
+            [self.profileManager fetchLocalUsersProfile];
+        });
     }
 }
 
