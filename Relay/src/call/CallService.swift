@@ -1190,7 +1190,7 @@ private class SignalCallData: NSObject {
                 callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
             }
         } else {
-            owsFail("\(self.logTag) missing call record in \(#function)")
+            Logger.debug("\(self.logTag) missing call record in \(#function)")
         }
 
         // TODO something like this lifted from Signal-Android.

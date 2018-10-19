@@ -35,15 +35,18 @@ final class CallKitCallManager: NSObject {
     // MARK: Actions
 
     func startCall(_ call: RelayCall) {
-        var handle: CXHandle
-
-        if showNamesOnCallScreen {
-            handle = CXHandle(type: .phoneNumber, value: call.callId)
-        } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-            handle = CXHandle(type: .generic, value: callKitId)
-            OWSPrimaryStorage.shared().setPhoneNumber(call.callId, forCallKitId: callKitId)
-        }
+        
+        let handle = CXHandle(type: .generic, value: call.thread.displayName())
+        
+//        var handle: CXHandle
+//
+//        if showNamesOnCallScreen {
+//            handle = CXHandle(type: .phoneNumber, value: call.callId)
+//        } else {
+//            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+//            handle = CXHandle(type: .generic, value: callKitId)
+//            OWSPrimaryStorage.shared().setPhoneNumber(call.callId, forCallKitId: callKitId)
+//        }
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
