@@ -1501,41 +1501,86 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSRequest *request = [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
                                                                        deviceId:[deviceId stringValue]
                                                              unidentifiedAccess:messageSend.unidentifiedAccess];
-
-    [self.networkManager makeRequest:request
-        completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
-                                                                      forDeviceNumber:deviceId];
-            success(bundle);
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
-            }
-            OWSLogError(@"request: %@", request);
-            OWSLogError(@"Server replied to PreKeyBundle request with error: %@", error);
-            OWSLogFlush();
-            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            NSUInteger statusCode = response.statusCode;
-            if (isUDSend && (statusCode == 401 || statusCode == 403)) {
-                // If a UD send fails due to service response (as opposed to network
-                // failure), mark recipient as _not_ in UD mode, then retry.
-                OWSLogDebug(@"UD prekey request failed; failing over to non-UD prekey request.");
-                // We need to update the UD access mode for this user async to
-                // avoid deadlock, since this method is called inside a transaction.
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
-                                                  recipientId:recipient.uniqueId];
+    OWSWebSocketType webSocketType = (isUDSend ? OWSWebSocketTypeUD : OWSWebSocketTypeDefault);
+    BOOL canMakeWebsocketRequests
+        = ([TSSocketManager.shared canMakeRequestsOfType:webSocketType] && !messageSend.hasWebsocketSendFailed);
+    if (canMakeWebsocketRequests) {
+        [TSSocketManager.shared makeRequest:request
+            webSocketType:webSocketType
+            success:^(id _Nullable responseObject) {
+                dispatch_async([OWSDispatch sendingQueue], ^{
+                    PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
+                                                                              forDeviceNumber:deviceId];
+                    success(bundle);
                 });
-                [messageSend setHasUDAuthFailed];
-                // Try again without UD auth.
-                [self makePrekeyRequestForMessageSend:messageSend deviceId:deviceId success:success failure:failure];
-                return;
             }
+            failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
+                dispatch_async([OWSDispatch sendingQueue], ^{
+                    OWSLogDebug(@"Web socket prekey request failed; failing over to REST: %@.", error);
 
-            failure(statusCode);
-        }];
+                    if (isUDSend && (statusCode == 401 || statusCode == 403)) {
+                        // If a UD send fails due to service response (as opposed to network
+                        // failure), mark recipient as _not_ in UD mode, then retry.
+                        OWSLogDebug(@"UD prekey request failed; failing over to non-UD prekey request.");
+                        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
+                                                      recipientId:recipient.uniqueId];
+                        [messageSend setHasUDAuthFailed];
+                        // Try again without UD auth.
+                        [self makePrekeyRequestForMessageSend:messageSend
+                                                     deviceId:deviceId
+                                                      success:success
+                                                      failure:failure];
+                        return;
+                    }
+
+                    // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket
+                    // failure. Instead we fall back to REST, which will decrement retries. e.g. after linking a new
+                    // device, sync messages will fail until the websocket re-opens.
+                    messageSend.hasWebsocketSendFailed = YES;
+                    // Try again without websocket.
+                    [self makePrekeyRequestForMessageSend:messageSend
+                                                 deviceId:deviceId
+                                                  success:success
+                                                  failure:failure];
+                });
+            }];
+    } else {
+        [self.networkManager makeRequest:request
+            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+            success:^(NSURLSessionDataTask *task, id responseObject) {
+                dispatch_async([OWSDispatch sendingQueue], ^{
+                    PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
+                                                                              forDeviceNumber:deviceId];
+                    success(bundle);
+                });
+            }
+            failure:^(NSURLSessionDataTask *task, NSError *error) {
+                dispatch_async([OWSDispatch sendingQueue], ^{
+                    if (!IsNSErrorNetworkFailure(error)) {
+                        OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
+                    }
+                    OWSLogDebug(@"REST prekey request failed: %@.", error);
+                    NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+                    NSUInteger statusCode = response.statusCode;
+                    if (isUDSend && (statusCode == 401 || statusCode == 403)) {
+                        // If a UD send fails due to service response (as opposed to network
+                        // failure), mark recipient as _not_ in UD mode, then retry.
+                        OWSLogDebug(@"UD prekey request failed; failing over to non-UD prekey request.");
+                        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeDisabled
+                                                      recipientId:recipient.uniqueId];
+                        [messageSend setHasUDAuthFailed];
+                        // Try again without UD auth.
+                        [self makePrekeyRequestForMessageSend:messageSend
+                                                     deviceId:deviceId
+                                                      success:success
+                                                      failure:failure];
+                        return;
+                    }
+
+                    failure(statusCode);
+                });
+            }];
+    }
 }
 
 // NOTE: This method uses exceptions for control flow.
