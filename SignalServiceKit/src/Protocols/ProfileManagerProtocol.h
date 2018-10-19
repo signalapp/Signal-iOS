@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fetchLocalUsersProfile;
 
+- (void)fetchProfileForRecipientId:(NSString *)recipientId;
+
 @end
 
 NS_ASSUME_NONNULL_END

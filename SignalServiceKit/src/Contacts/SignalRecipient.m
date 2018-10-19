@@ -4,7 +4,10 @@
 
 #import "SignalRecipient.h"
 #import "OWSDevice.h"
+#import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
 #import "TSAccountManager.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,6 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation SignalRecipient
+
+#pragma mark - Dependencies
+
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
+- (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
+}
+
+#pragma mark -
 
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
                                              transaction:(YapDatabaseReadTransaction *)transaction
@@ -127,6 +144,17 @@ NS_ASSUME_NONNULL_BEGIN
     if (devicesToRemove.count > 0) {
         [self removeDevicesFromRecipient:[NSSet setWithArray:devicesToRemove] transaction:transaction];
     }
+
+    // Device changes
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Device changes can affect the UD access mode for a recipient,
+        // so we need to:
+        //
+        // * Mark the UD access mode as "unknown".
+        // * Fetch the profile for this user to update UD access mode.
+        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown recipientId:self.recipientId];
+        [self.profileManager fetchProfileForRecipientId:self.recipientId];
+    });
 }
 
 - (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction

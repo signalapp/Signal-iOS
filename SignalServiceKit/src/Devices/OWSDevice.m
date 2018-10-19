@@ -5,11 +5,15 @@
 #import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
+#import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -112,6 +116,30 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 @implementation OWSDevice
 
+#pragma mark - Dependencies
+
++ (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
++ (id<OWSUDManager>)udManager
+{
+    return SSKEnvironment.shared.udManager;
+}
+
++ (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
+#pragma mark -
+
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super saveWithTransaction:transaction];
+}
+
 + (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
 {
     OWSDevice *device = [MTLJSONAdapter modelOfClass:[self class] fromJSONDictionary:deviceAttributes error:error];
@@ -145,16 +173,19 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 + (void)replaceAll:(NSArray<OWSDevice *> *)currentDevices
 {
+    BOOL didChange = NO;
     NSMutableArray<OWSDevice *> *existingDevices = [[self allObjectsInCollection] mutableCopy];
     for (OWSDevice *currentDevice in currentDevices) {
         NSUInteger existingDeviceIndex = [existingDevices indexOfObject:currentDevice];
         if (existingDeviceIndex == NSNotFound) {
             // New Device
             [currentDevice save];
+            didChange = YES;
         } else {
             OWSDevice *existingDevice = existingDevices[existingDeviceIndex];
             if ([existingDevice updateAttributesWithDevice:currentDevice]) {
                 [existingDevice save];
+                didChange = YES;
             }
             [existingDevices removeObjectAtIndex:existingDeviceIndex];
         }
@@ -163,6 +194,20 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     // Since we removed existing devices as we went, only stale devices remain
     for (OWSDevice *staleDevice in existingDevices) {
         [staleDevice remove];
+        didChange = YES;
+    }
+
+    if (didChange) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Device changes can affect the UD access mode for a recipient,
+            // so we need to:
+            //
+            // * Mark the UD access mode as "unknown".
+            // * Fetch the profile for this user to update UD access mode.
+            [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                          recipientId:self.tsAccountManager.localNumber];
+            [self.profileManager fetchLocalUsersProfile];
+        });
     }
 }
 

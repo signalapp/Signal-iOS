@@ -525,7 +525,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     if (!localNumber) {
         return;
     }
-    [ProfileFetcherJob runWithRecipientId:localNumber ignoreThrottling:YES];
+    [self fetchProfileForRecipientId:localNumber];
+}
+
+- (void)fetchProfileForRecipientId:(NSString *)recipientId
+{
+    OWSAssertIsOnMainThread();
+
+    [ProfileFetcherJob runWithRecipientId:recipientId ignoreThrottling:YES];
 }
 
 #pragma mark - Profile Key Rotation
@@ -997,8 +1004,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                             dbConnection:self.dbConnection
                               completion:^{
                                   dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                      [ProfileFetcherJob runWithRecipientId:recipientId
-                                                           ignoreThrottling:YES];
+                                      [self fetchProfileForRecipientId:recipientId];
                                   });
                               }];
     });
