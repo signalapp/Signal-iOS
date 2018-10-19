@@ -507,7 +507,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
         // it's a stand-alone text message.
         if (self.messageCellType == OWSMessageCellType_Unknown) {
-            OWSAssert(message.attachmentIds.count == 0);
+//            OWSAssert(message.attachmentIds.count == 0);
             self.messageCellType = OWSMessageCellType_TextMessage;
         }
         self.displayableBodyText = [self displayableBodyTextForText:message.plainTextBody interactionId:message.uniqueId];
