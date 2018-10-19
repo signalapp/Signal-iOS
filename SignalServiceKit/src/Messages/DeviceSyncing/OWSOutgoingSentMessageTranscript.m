@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
-    for (NSString *recipientId in self.message.recipientIds) {
+    for (NSString *recipientId in self.message.sentRecipientIds) {
         TSOutgoingMessageRecipientState *_Nullable recipientState =
             [self.message recipientStateForRecipientId:recipientId];
         if (!recipientState) {
@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
         if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
+            OWSFailDebug(@"unexpected recipient state for: %@", recipientId);
             continue;
         }
 
