@@ -5,6 +5,8 @@
 #import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
+#import "ProfileManagerProtocol.h"
+#import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
@@ -112,6 +114,11 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 @implementation OWSDevice
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super saveWithTransaction:transaction];
+}
+
 + (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
 {
     OWSDevice *device = [MTLJSONAdapter modelOfClass:[self class] fromJSONDictionary:deviceAttributes error:error];
@@ -145,16 +152,19 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 + (void)replaceAll:(NSArray<OWSDevice *> *)currentDevices
 {
+    BOOL didChange = NO;
     NSMutableArray<OWSDevice *> *existingDevices = [[self allObjectsInCollection] mutableCopy];
     for (OWSDevice *currentDevice in currentDevices) {
         NSUInteger existingDeviceIndex = [existingDevices indexOfObject:currentDevice];
         if (existingDeviceIndex == NSNotFound) {
             // New Device
             [currentDevice save];
+            didChange = YES;
         } else {
             OWSDevice *existingDevice = existingDevices[existingDeviceIndex];
             if ([existingDevice updateAttributesWithDevice:currentDevice]) {
                 [existingDevice save];
+                didChange = YES;
             }
             [existingDevices removeObjectAtIndex:existingDeviceIndex];
         }
@@ -163,6 +173,11 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     // Since we removed existing devices as we went, only stale devices remain
     for (OWSDevice *staleDevice in existingDevices) {
         [staleDevice remove];
+        didChange = YES;
+    }
+
+    if (didChange) {
+        [SSKEnvironment.shared.profileManager fetchLocalUsersProfile];
     }
 }
 
