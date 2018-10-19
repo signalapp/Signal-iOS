@@ -80,7 +80,7 @@ public class RequestMaker: NSObject {
                 default:
                     throw error
                 }
-        }
+            }
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
@@ -103,7 +103,7 @@ public class RequestMaker: NSObject {
         if canMakeWebsocketRequests {
             return Promise { resolver in
                 socketManager.make(request, webSocketType: webSocketType, success: { (responseObject: Any?) in
-                    _ = resolver.fulfill(RequestMakerResult(responseObject: responseObject, wasSentByUD: isUDSend))
+                    resolver.fulfill(RequestMakerResult(responseObject: responseObject, wasSentByUD: isUDSend))
                 }) { (statusCode: Int, responseData: Data?, error: Error) in
                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
                 }
@@ -126,12 +126,12 @@ public class RequestMaker: NSObject {
                     self.websocketFailureBlock()
                     Logger.info("Non-UD Web socket request failed; failing over to REST request: \(error).")
                     return self.makeRequestInternal(skipUD: skipUD, skipWebsocket: true)
-            }
+                }
         } else {
             return self.networkManager.makePromise(request: request)
-                .then { (networkManagerResult: TSNetworkManager.NetworkManagerResult) -> Promise<RequestMakerResult> in
+                .map { (networkManagerResult: TSNetworkManager.NetworkManagerResult) -> RequestMakerResult in
                     // Unwrap the network manager promise into a request maker promise.
-                    return Promise.value(RequestMakerResult(responseObject: networkManagerResult.responseObject, wasSentByUD: isUDSend))
+                    RequestMakerResult(responseObject: networkManagerResult.responseObject, wasSentByUD: isUDSend)
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case NetworkManagerError.taskError(let task, _):
@@ -151,7 +151,7 @@ public class RequestMaker: NSObject {
 
                     Logger.debug("Non-UD REST request failed: \(error).")
                     throw error
-            }
+                }
         }
     }
 }

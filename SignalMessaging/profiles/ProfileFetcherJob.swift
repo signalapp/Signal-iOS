@@ -144,9 +144,8 @@ public class ProfileFetcherJob: NSObject {
         }, recipientId: recipientId,
            unidentifiedAccess: unidentifiedAccess)
         return requestMaker.makeRequest()
-            .then { (result: RequestMakerResult) -> Promise<SignalServiceProfile> in
-                let responseObject: Any? = result.responseObject
-                return Promise.value(try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject))
+            .map { (result: RequestMakerResult) -> SignalServiceProfile in
+                try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
         }
     }
 
