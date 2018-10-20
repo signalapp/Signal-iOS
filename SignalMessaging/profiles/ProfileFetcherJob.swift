@@ -166,7 +166,7 @@ public class ProfileFetcherJob: NSObject {
             return
         }
 
-        guard let verifier = verifier, let udAccessKey = udManager.udAccessKeyForRecipient(recipientId) else {
+        guard let verifier = verifier, let udAccessKey = udManager.rawUDAccessKeyForRecipient(recipientId) else {
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }

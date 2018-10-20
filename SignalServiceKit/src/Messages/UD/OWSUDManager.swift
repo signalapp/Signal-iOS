@@ -36,9 +36,17 @@ public enum UnidentifiedAccessMode: Int {
     @objc
     func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair?
 
-    // Returns the UD access key for a given recipient if they are
-    // a UD recipient and we have a valid profile key for them.
-    @objc func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey?
+    // Returns the UD access key for a given recipient if:
+    //
+    // * UD is enabled.
+    // * Their UD mode is enabled or unrestricted.
+    // * We have a valid profile key for them.
+    @objc func enabledUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey?
+
+    // Returns the UD access key for a given recipient if:
+    //
+    // * We have a valid profile key for them.
+    @objc func rawUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey?
 
     // MARK: - Local State
 
@@ -122,24 +130,24 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
 
-        guard let theirAccessKey = self.udAccessKeyForRecipient(recipientId) else {
+        guard let theirAccessKey = enabledUDAccessKeyForRecipient(recipientId) else {
             return nil
         }
 
-        guard let ourSenderCertificate = self.senderCertificate() else {
+        guard let ourSenderCertificate = senderCertificate() else {
             return nil
         }
 
         guard let ourAccessKey: SMKUDAccessKey = {
-            if self.shouldAllowUnrestrictedAccessLocal() {
+            if shouldAllowUnrestrictedAccessLocal() {
                 return SMKUDAccessKey(randomKeyData: ())
             } else {
-                guard let localNumber = self.tsAccountManager.localNumber() else {
+                guard let localNumber = tsAccountManager.localNumber() else {
                     owsFailDebug("localNumber was unexpectedly nil")
                     return nil
                 }
 
-                return self.udAccessKeyForRecipient(localNumber)
+                return enabledUDAccessKeyForRecipient(localNumber)
             }
         }() else {
             return nil
@@ -170,7 +178,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     @objc
-    public func udAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+    public func enabledUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
         guard isUDEnabled() else {
             return nil
         }
@@ -178,7 +186,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         if theirAccessMode == .unrestricted {
             return SMKUDAccessKey(randomKeyData: ())
         }
+        return rawUDAccessKeyForRecipient(recipientId)
+    }
 
+    // Returns the UD access key for a given recipient
+    // if we have a valid profile key for them.
+    @objc
+    public func rawUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil
@@ -291,7 +305,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func isUDEnabled() -> Bool {
-        return true
+        // Only enable UD if UD is supported by all linked devices,
+        // so that sync messages can also be sent via UD.
+        guard let localNumber = tsAccountManager.localNumber() else {
+            return false
+        }
+        let ourAccessMode = unidentifiedAccessMode(recipientId: localNumber)
+        return ourAccessMode == .enabled || ourAccessMode == .unrestricted
     }
 
     @objc
