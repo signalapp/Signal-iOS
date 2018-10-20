@@ -189,11 +189,13 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         }
 
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.messageSender enqueueMessage:message
+            [self.messageSender sendMessage:message
                 success:^{
                     OWSLogInfo(
                         @"Successfully sent %lu %@ receipts to sender.", (unsigned long)timestamps.count, receiptName);
 
+                    // DURABLE CLEANUP - we could replace the custom durability logic in this class
+                    // with a durable JobQueue.
                     [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
 
                     // The value doesn't matter, we just need any non-NSError value.

@@ -193,7 +193,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a failed send to all "sending" recipients.
-- (void)updateWithSendingError:(NSError *)error;
+- (void)updateWithSendingError:(NSError *)error
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+    NS_SWIFT_NAME(update(sendingError:transaction:));
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
                           transaction:(YapDatabaseReadWriteTransaction *)transaction;

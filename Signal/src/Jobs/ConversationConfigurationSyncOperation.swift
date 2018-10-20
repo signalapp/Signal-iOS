@@ -15,8 +15,8 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         return OWSPrimaryStorage.shared().dbReadConnection
     }
 
-    private var messageSender: MessageSender {
-        return SSKEnvironment.shared.messageSender
+    private var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
     }
 
     private var contactsManager: OWSContactsManager {
@@ -84,15 +84,12 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private func sendConfiguration(attachmentDataSource: DataSource, syncMessage: OWSOutgoingSyncMessage) {
-        self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,
-                                                      contentType: OWSMimeTypeApplicationOctetStream,
-                                                      in: syncMessage,
-                                                      success: {
-                                                        self.reportSuccess()
-        },
-                                                      failure: { error in
-                                                        self.reportError(error)
-        })
+        self.messageSenderJobQueue.add(mediaMessage: syncMessage,
+                                       dataSource: attachmentDataSource,
+                                       contentType: OWSMimeTypeApplicationOctetStream,
+                                       sourceFilename: nil,
+                                       isTemporaryAttachment: true)
+        self.reportSuccess()
     }
 
 }

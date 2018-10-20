@@ -238,32 +238,21 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     // via params and instead have to create our own sneaky transaction here.
     [groupThread leaveGroupWithSneakyTransaction];
 
-    [ThreadUtil
-        sendLeaveGroupMessageInThread:groupThread
-             presentingViewController:fromViewController
-                        messageSender:messageSender
-                           completion:^(NSError *_Nullable error) {
-                               if (error) {
-                                   OWSLogError(@"Failed to leave blocked group with error: %@", error);
-                               }
+    [ThreadUtil enqueueLeaveGroupMessageInThread:groupThread];
 
-                               NSString *groupName
-                                   = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
+    NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
 
-                               [self
-                                   showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
-                                                            @"The title of the 'group blocked' alert.")
-                                                message:[NSString
-                                                            stringWithFormat:
-                                                                NSLocalizedString(
-                                                                    @"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
-                                                                    @"The message format of the 'conversation blocked' "
-                                                                    @"alert. "
-                                                                    @"Embeds the {{conversation title}}."),
-                                                            [self formatDisplayNameForAlertMessage:groupName]]
-                                     fromViewController:fromViewController
-                                        completionBlock:completionBlock];
-                           }];
+    NSString *alertTitle
+        = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
+    NSString *alertBodyFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+        @"The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}.");
+    NSString *alertBody =
+        [NSString stringWithFormat:alertBodyFormat, [self formatDisplayNameForAlertMessage:groupName]];
+
+    [self showOkAlertWithTitle:alertTitle
+                       message:alertBody
+            fromViewController:fromViewController
+               completionBlock:completionBlock];
 }
 
 #pragma mark - Unblock

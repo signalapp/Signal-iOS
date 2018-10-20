@@ -10,39 +10,54 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeMessageSender
 
-- (void)enqueueMessage:(TSOutgoingMessage *)message
+- (void)sendMessage:(TSOutgoingMessage *)message
+            success:(void (^)(void))successHandler
+            failure:(void (^)(NSError *error))failureHandler
+{
+    if (self.sendMessageWasCalledBlock) {
+        self.sendMessageWasCalledBlock(message);
+    }
+
+    if (self.stubbedFailingError) {
+        failureHandler(self.stubbedFailingError);
+    } else {
+        successHandler();
+    }
+}
+
+- (void)sendAttachment:(DataSource *)dataSource
+           contentType:(NSString *)contentType
+        sourceFilename:(nullable NSString *)sourceFilename
+             inMessage:(TSOutgoingMessage *)outgoingMessage
                success:(void (^)(void))successHandler
                failure:(void (^)(NSError *error))failureHandler
 {
-    if (self.enqueueMessageBlock) {
-        self.enqueueMessageBlock();
+    if (self.sendAttachmentWasCalledBlock) {
+        self.sendAttachmentWasCalledBlock(outgoingMessage);
     }
-    successHandler();
+
+    if (self.stubbedFailingError) {
+        failureHandler(self.stubbedFailingError);
+    } else {
+        successHandler();
+    }
 }
 
-- (void)enqueueAttachment:(DataSource *)dataSource
-              contentType:(NSString *)contentType
-           sourceFilename:(nullable NSString *)sourceFilename
-                inMessage:(TSOutgoingMessage *)outgoingMessage
-                  success:(void (^)(void))successHandler
-                  failure:(void (^)(NSError *error))failureHandler
+- (void)sendTemporaryAttachment:(DataSource *)dataSource
+                    contentType:(NSString *)contentType
+                      inMessage:(TSOutgoingMessage *)outgoingMessage
+                        success:(void (^)(void))successHandler
+                        failure:(void (^)(NSError *error))failureHandler
 {
-    if (self.enqueueAttachmentBlock) {
-        self.enqueueAttachmentBlock();
+    if (self.sendTemporaryAttachmentWasCalledBlock) {
+        self.sendTemporaryAttachmentWasCalledBlock(outgoingMessage);
     }
-    successHandler();
-}
 
-- (void)enqueueTemporaryAttachment:(DataSource *)dataSource
-                       contentType:(NSString *)contentType
-                         inMessage:(TSOutgoingMessage *)outgoingMessage
-                           success:(void (^)(void))successHandler
-                           failure:(void (^)(NSError *error))failureHandler
-{
-    if (self.enqueueTemporaryAttachmentBlock) {
-        self.enqueueTemporaryAttachmentBlock();
+    if (self.stubbedFailingError) {
+        failureHandler(self.stubbedFailingError);
+    } else {
+        successHandler();
     }
-    successHandler();
 }
 
 

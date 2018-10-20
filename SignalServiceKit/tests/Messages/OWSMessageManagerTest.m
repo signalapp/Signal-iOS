@@ -2,7 +2,6 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageManager.h"
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
 #import "MockSSKEnvironment.h"
@@ -11,6 +10,7 @@
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSIdentityManager.h"
+#import "OWSMessageManager.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert([SSKEnvironment.shared.messageSender isKindOfClass:[OWSFakeMessageSender class]]);
     OWSFakeMessageSender *fakeMessageSender = (OWSFakeMessageSender *)SSKEnvironment.shared.messageSender;
-    fakeMessageSender.enqueueTemporaryAttachmentBlock = ^{
+    fakeMessageSender.sendTemporaryAttachmentWasCalledBlock = ^{
         [messageWasSent fulfill];
     };
 

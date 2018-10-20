@@ -135,7 +135,6 @@ void AssertIsOnSendingQueue()
         return self;
     }
 
-    self.remainingRetries = 6;
     _message = message;
     _messageSender = messageSender;
     _dbConnection = dbConnection;
@@ -201,8 +200,6 @@ void AssertIsOnSendingQueue()
 
 - (void)didFailWithError:(NSError *)error
 {
-    [self.message updateWithSendingError:error];
-
     OWSLogDebug(@"failed with error: %@", error);
     self.failureHandler(error);
 }
@@ -314,9 +311,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (void)enqueueMessage:(TSOutgoingMessage *)message
-               success:(void (^)(void))successHandler
-               failure:(void (^)(NSError *error))failureHandler
+- (void)sendMessage:(TSOutgoingMessage *)message
+            success:(void (^)(void))successHandler
+            failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(message);
     if (message.body.length > 0) {
@@ -341,24 +338,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            if (message.quotedMessage) {
-                quotedThumbnailAttachments =
-                    [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
-            }
-
-            if (message.contactShare.avatarAttachmentId != nil) {
-                TSAttachment *avatarAttachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
-                if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
-                    contactShareAvatarAttachment = (TSAttachmentStream *)avatarAttachment;
-                } else {
-                    OWSFailDebug(@"unexpected avatarAttachment: %@", avatarAttachment);
-                }
-            }
-
-            // All outgoing messages should be saved at the time they are enqueued.
-            [message saveWithTransaction:transaction];
-            // When we start a message send, all "failed" recipients should be marked as "sending".
-            [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
+            [OutgoingMessagePreparer prepareMessageForSending:message
+                                   quotedThumbnailAttachments:&quotedThumbnailAttachments
+                                 contactShareAvatarAttachment:&contactShareAvatarAttachment
+                                                  transaction:transaction];
         }];
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
@@ -409,11 +392,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (void)enqueueTemporaryAttachment:(DataSource *)dataSource
-                       contentType:(NSString *)contentType
-                         inMessage:(TSOutgoingMessage *)message
-                           success:(void (^)(void))successHandler
-                           failure:(void (^)(NSError *error))failureHandler
+- (void)sendTemporaryAttachment:(DataSource *)dataSource
+                    contentType:(NSString *)contentType
+                      inMessage:(TSOutgoingMessage *)message
+                        success:(void (^)(void))successHandler
+                        failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(dataSource);
 
@@ -431,46 +414,33 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message remove];
     };
 
-    [self enqueueAttachment:dataSource
-                contentType:contentType
-             sourceFilename:nil
-                  inMessage:message
-                    success:successWithDeleteHandler
-                    failure:failureWithDeleteHandler];
+    [self sendAttachment:dataSource
+             contentType:contentType
+          sourceFilename:nil
+               inMessage:message
+                 success:successWithDeleteHandler
+                 failure:failureWithDeleteHandler];
 }
 
-- (void)enqueueAttachment:(DataSource *)dataSource
-              contentType:(NSString *)contentType
-           sourceFilename:(nullable NSString *)sourceFilename
-                inMessage:(TSOutgoingMessage *)message
-                  success:(void (^)(void))successHandler
-                  failure:(void (^)(NSError *error))failureHandler
+- (void)sendAttachment:(DataSource *)dataSource
+           contentType:(NSString *)contentType
+        sourceFilename:(nullable NSString *)sourceFilename
+             inMessage:(TSOutgoingMessage *)message
+               success:(void (^)(void))successHandler
+               failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(dataSource);
-
-    dispatch_async([OWSDispatch attachmentsQueue], ^{
-        TSAttachmentStream *attachmentStream =
-            [[TSAttachmentStream alloc] initWithContentType:contentType
-                                                  byteCount:(UInt32)dataSource.dataLength
-                                             sourceFilename:sourceFilename];
-        if (message.isVoiceMessage) {
-            attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
-        }
-
-        if (![attachmentStream writeDataSource:dataSource]) {
-            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
-            NSError *error = OWSErrorMakeWriteAttachmentDataError();
-            return failureHandler(error);
-        }
-
-        [attachmentStream save];
-        [message.attachmentIds addObject:attachmentStream.uniqueId];
-        if (sourceFilename) {
-            message.attachmentFilenameMap[attachmentStream.uniqueId] = sourceFilename;
-        }
-
-        [self enqueueMessage:message success:successHandler failure:failureHandler];
-    });
+    [OutgoingMessagePreparer prepareAttachmentWithDataSource:dataSource
+                                                 contentType:contentType
+                                              sourceFilename:sourceFilename
+                                                   inMessage:message
+                                           completionHandler:^(NSError *_Nullable error) {
+                                               if (error) {
+                                                   failureHandler(error);
+                                                   return;
+                                               }
+                                               [self sendMessage:message success:successHandler failure:failureHandler];
+                                           }];
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
@@ -866,16 +836,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return nil;
         }
 
-        if (messageSend.remainingAttempts == 0) {
-            OWSLogWarn(@"Terminal failure to build any device messages. Giving up with exception: %@", exception);
-            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-            // Since we've already repeatedly failed to build messages, it's unlikely that repeating the whole process
-            // will succeed.
-            [error setIsRetryable:NO];
-            *errorHandle = error;
-            return nil;
-        }
-
         OWSLogWarn(@"Could not build device messages: %@", exception);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:YES];
@@ -1149,9 +1109,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     void (^retrySend)(void) = ^void() {
         if (messageSend.remainingAttempts <= 0) {
-            // Since we've already repeatedly failed to send to the messaging API,
-            // it's unlikely that repeating the whole process will succeed.
-            [responseError setIsRetryable:NO];
             return messageSend.failure(responseError);
         }
 
@@ -1697,6 +1654,81 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         }];
         completionHandler();
+    });
+}
+
+@end
+
+@implementation OutgoingMessagePreparer
+
+#pragma mark - Dependencies
+
++ (YapDatabaseConnection *)dbConnection
+{
+    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+}
+
+#pragma mark -
+
++ (void)prepareMessageForSending:(TSOutgoingMessage *)message
+      quotedThumbnailAttachments:(NSArray<TSAttachmentStream *> **)outQuotedThumbnailAttachments
+    contactShareAvatarAttachment:(TSAttachmentStream *_Nullable *)outContactShareAvatarAttachment
+                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (message.quotedMessage) {
+        *outQuotedThumbnailAttachments =
+            [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
+    }
+
+    if (message.contactShare.avatarAttachmentId != nil) {
+        TSAttachment *avatarAttachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
+        if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            *outContactShareAvatarAttachment = (TSAttachmentStream *)avatarAttachment;
+        } else {
+            OWSFailDebug(@"unexpected avatarAttachment: %@", avatarAttachment);
+        }
+    }
+
+    // All outgoing messages should be saved at the time they are enqueued.
+    [message saveWithTransaction:transaction];
+    // When we start a message send, all "failed" recipients should be marked as "sending".
+    [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
+}
+
++ (void)prepareAttachmentWithDataSource:(DataSource *)dataSource
+                            contentType:(NSString *)contentType
+                         sourceFilename:(nullable NSString *)sourceFilename
+                              inMessage:(TSOutgoingMessage *)outgoingMessage
+                      completionHandler:(void (^)(NSError *_Nullable error))completionHandler
+{
+    OWSAssertDebug(dataSource);
+
+    dispatch_async([OWSDispatch attachmentsQueue], ^{
+        TSAttachmentStream *attachmentStream =
+            [[TSAttachmentStream alloc] initWithContentType:contentType
+                                                  byteCount:(UInt32)dataSource.dataLength
+                                             sourceFilename:sourceFilename];
+        if (outgoingMessage.isVoiceMessage) {
+            attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
+        }
+
+        if (![attachmentStream writeDataSource:dataSource]) {
+            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
+            NSError *error = OWSErrorMakeWriteAttachmentDataError();
+            completionHandler(error);
+        }
+
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [attachmentStream saveWithTransaction:transaction];
+
+            [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
+            if (sourceFilename) {
+                outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = sourceFilename;
+            }
+            [outgoingMessage saveWithTransaction:transaction];
+        }];
+
+        completionHandler(nil);
     });
 }
 

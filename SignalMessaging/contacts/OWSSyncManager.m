@@ -88,6 +88,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SSKEnvironment.shared.messageSender;
 }
 
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageSenderJobQueue);
+
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
 - (OWSProfileManager *)profileManager {
     OWSAssertDebug(SSKEnvironment.shared.profileManager);
 
@@ -161,8 +168,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
         self.isRequestInFlight = YES;
 
+        // DURABLE CLEANUP - we could replace the custom durability logic in this class
+        // with a durable JobQueue.
         DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
-        [self.messageSender enqueueTemporaryAttachment:dataSource
+        [self.messageSender sendTemporaryAttachment:dataSource
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{
@@ -214,13 +223,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     OWSSyncConfigurationMessage *syncConfigurationMessage =
         [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled
                                       showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators];
-    [self.messageSender enqueueMessage:syncConfigurationMessage
-        success:^{
-            OWSLogInfo(@"Send configuration sync message succeeded.");
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Send configuration sync message failed with error: %@", error);
-        }];
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
+    }];
 }
 
 #pragma mark - Local Sync
@@ -253,7 +259,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     }];
 
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.messageSender enqueueTemporaryAttachment:dataSource
+        [self.messageSender sendTemporaryAttachment:dataSource
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{

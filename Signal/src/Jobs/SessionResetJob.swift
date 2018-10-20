@@ -6,67 +6,171 @@ import Foundation
 import PromiseKit
 import SignalServiceKit
 
-@objc(OWSSessionResetJob)
-public class SessionResetJob: NSObject {
+@objc(OWSSessionResetJobQueue)
+public class SessionResetJobQueue: NSObject, JobQueue {
 
-    let recipientId: String
-    let thread: TSThread
-    let primaryStorage: OWSPrimaryStorage
-    let messageSender: MessageSender
-
-    @objc public required init(recipientId: String, thread: TSThread, messageSender: MessageSender, primaryStorage: OWSPrimaryStorage) {
-        self.thread = thread
-        self.recipientId = recipientId
-        self.messageSender = messageSender
-        self.primaryStorage = primaryStorage
+    @objc(addContactThread:transaction:)
+    public func add(contactThread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {
+        let jobRecord = OWSSessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
+        self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
-    func run() {
-        Logger.info("Local user reset session.")
+    // MARK: JobQueue
 
-        let dbConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-        dbConnection.asyncReadWrite { (transaction) in
-            Logger.info("deleting sessions for recipient: \(self.recipientId)")
-            self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
+    public typealias DurableOperationType = SessionResetOperation
+    public let jobRecordLabel: String = "SessionReset"
+    public static let maxRetries: UInt = 10
 
-            DispatchQueue.main.async {
-                let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.thread)
+    @objc
+    public func setup() {
+        defaultSetup()
+    }
 
-                self.messageSender.enqueue(endSessionMessage, success: {
-                    dbConnection.asyncReadWrite { (transaction) in
-                        // Archive the just-created session since the recipient should delete their corresponding
-                        // session upon receiving and decrypting our EndSession message.
-                        // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                        self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
-                    }
-                    Logger.info("successfully sent EndSessionMessage.")
-                    let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                                in: self.thread,
-                                                messageType: TSInfoMessageType.typeSessionDidEnd)
-                    message.save()
-                }, failure: {error in
-                    dbConnection.asyncReadWrite { (transaction) in
-                        // Even though this is the error handler - which means probably the recipient didn't receive the message
-                        // there's a chance that our send did succeed and the server just timed out our repsonse or something.
-                        // Since the cost of sending a future message using a session the recipient doesn't have is so high,
-                        // we archive the session just in case.
-                        //
-                        // Archive the just-created session since the recipient should delete their corresponding
-                        // session upon receiving and decrypting our EndSession message.
-                        // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                        self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
-                    }
-                    Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
-                })
-            }
+    public var isReady: Bool = false {
+        didSet {
+            if isReady {
+                DispatchQueue.global().async {
+                    self.workStep()
+                }
             }
         }
+    }
 
-    @objc public class func run(contactThread: TSContactThread, messageSender: MessageSender, primaryStorage: OWSPrimaryStorage) {
-        let job = self.init(recipientId: contactThread.contactIdentifier(),
-                            thread: contactThread,
-                            messageSender: messageSender,
-                            primaryStorage: primaryStorage)
-        job.run()
+    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
+        // no special handling
+    }
+
+    let operationQueue: OperationQueue = {
+        // no need to serialize the operation queuing, since sending will ultimately be serialized by MessageSender
+        let operationQueue = OperationQueue()
+        operationQueue.name = "SessionReset.OperationQueue"
+        return operationQueue
+    }()
+
+    public func operationQueue(jobRecord: OWSSessionResetJobRecord) -> OperationQueue {
+        return self.operationQueue
+    }
+
+    public func buildOperation(jobRecord: OWSSessionResetJobRecord, transaction: YapDatabaseReadTransaction) throws -> SessionResetOperation {
+        guard let contactThread = TSThread.fetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
+            throw JobError.obsolete(description: "thread for session reset no longer exists")
+        }
+
+        return SessionResetOperation(contactThread: contactThread, jobRecord: jobRecord)
+    }
+}
+
+@objc(OWSSessionResetJob)
+public class SessionResetOperation: OWSOperation, DurableOperation {
+
+    // MARK: DurableOperation
+
+    public let jobRecord: OWSSessionResetJobRecord
+
+    weak public var durableOperationDelegate: SessionResetJobQueue?
+
+    public var operation: Operation {
+        return self
+    }
+
+    // MARK: 
+
+    let contactThread: TSContactThread
+    var recipientId: String {
+        return contactThread.contactIdentifier()
+    }
+
+    @objc public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
+        self.contactThread = contactThread
+        self.jobRecord = jobRecord
+    }
+
+    // MARK: Dependencies
+
+    var dbConnection: YapDatabaseConnection {
+        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    }
+
+    var primaryStorage: OWSPrimaryStorage {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
+    var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
+    // MARK: 
+
+    override public func run() {
+        assert(self.durableOperationDelegate != nil)
+
+        self.dbConnection.readWrite { transaction in
+            Logger.info("deleting sessions for recipient: \(self.recipientId)")
+            self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
+        }
+
+        let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
+
+        firstly {
+            return self.messageSender.sendPromise(message: endSessionMessage)
+        }.done {
+            Logger.info("successfully sent EndSessionMessage.")
+            self.dbConnection.readWrite { transaction in
+                // Archive the just-created session since the recipient should delete their corresponding
+                // session upon receiving and decrypting our EndSession message.
+                // Otherwise if we send another message before them, they wont have the session to decrypt it.
+                self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
+
+                let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                            in: self.contactThread,
+                                            messageType: TSInfoMessageType.typeSessionDidEnd)
+                message.save(with: transaction)
+            }
+            self.reportSuccess()
+        }.catch { error in
+            Logger.error("sending error: \(error.localizedDescription)")
+            self.reportError(error)
+        }.retainUntilComplete()
+    }
+
+    override public func didSucceed() {
+        self.dbConnection.readWrite { transaction in
+            self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+        }
+    }
+
+    override public func didReportError(_ error: Error) {
+        Logger.debug("remainingRetries: \(self.remainingRetries)")
+
+        self.dbConnection.readWrite { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
+        }
+    }
+
+    override public func retryDelay() -> dispatch_time_t {
+        // Arbitrary backoff factor...
+        // 10 failures, wait ~1min
+        let backoffFactor = 1.9
+        let maxBackoff = kHourInterval
+
+        let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.jobRecord.failureCount)))
+        return UInt64(seconds) * NSEC_PER_SEC
+    }
+
+    override public func didFail(error: Error) {
+        Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
+        self.dbConnection.readWrite { transaction in
+            self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
+
+            // Even though this is the failure handler - which means probably the recipient didn't receive the message
+            // there's a chance that our send did succeed and the server just timed out our repsonse or something.
+            // Since the cost of sending a future message using a session the recipient doesn't have is so high,
+            // we archive the session just in case.
+            //
+            // Archive the just-created session since the recipient should delete their corresponding
+            // session upon receiving and decrypting our EndSession message.
+            // Otherwise if we send another message before them, they wont have the session to decrypt it.
+            self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
+        }
     }
 }

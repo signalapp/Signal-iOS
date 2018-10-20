@@ -20,6 +20,7 @@
 #import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -60,9 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-+ (OWSMessageSender *)messageSender
++ (SSKMessageSenderJobQueue *)messageSenderJobQueue
 {
-    return SSKEnvironment.shared.messageSender;
+    return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
 + (OWSContactsManager *)contactsManager
@@ -97,6 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.syncManager;
 }
 
+#pragma mark -
+
 + (void)sendContactsSyncMessage
 {
     [self.syncManager syncAllContacts];
@@ -110,15 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
         dataSource = [DataSourceValue
             dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
     }];
-    [self.messageSender enqueueTemporaryAttachment:dataSource
-        contentType:OWSMimeTypeApplicationOctetStream
-        inMessage:syncGroupsMessage
-        success:^{
-            OWSLogInfo(@"Successfully sent Groups response syncMessage.");
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send Groups response syncMessage with error: %@", error);
-        }];
+
+    [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
+                                     dataSource:dataSource
+                                    contentType:OWSMimeTypeApplicationOctetStream
+                                 sourceFilename:nil
+                          isTemporaryAttachment:YES];
 }
 
 + (void)sendBlockListSyncMessage

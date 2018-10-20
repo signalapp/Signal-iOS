@@ -289,6 +289,20 @@ typedef enum : NSUInteger {
     _voiceNoteAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
 }
 
+#pragma mark - Dependencies
+
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
+- (OWSSessionResetJobQueue *)sessionResetJobQueue
+{
+    return AppEnvironment.shared.sessionResetJobQueue;
+}
+
+#pragma mark
+
 - (void)addNotificationListeners
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1790,18 +1804,15 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self.messageSender enqueueMessage:message
-                                       success:^{
-                                           OWSLogInfo(@"Successfully resent failed message.");
-                                       }
-                                       failure:^(NSError *error) {
-                                           OWSLogWarn(@"Failed to send message with error: %@", error);
-                                       }];
-                               }];
+    UIAlertAction *resendMessageAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *action) {
+                    [self.editingDatabaseConnection
+                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                        }];
+                }];
 
     [actionSheetController addAction:resendMessageAction];
 
@@ -1850,9 +1861,10 @@ typedef enum : NSUInteger {
                         return;
                     }
                     TSContactThread *contactThread = (TSContactThread *)self.thread;
-                    [OWSSessionResetJob runWithContactThread:contactThread
-                                               messageSender:self.messageSender
-                                              primaryStorage:self.primaryStorage];
+                    [self.editingDatabaseConnection
+                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                            [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
+                        }];
                 }];
     [alertController addAction:resetSessionAction];
 
@@ -3099,11 +3111,9 @@ typedef enum : NSUInteger {
         [attachment mimeType]);
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
-                                                              inThread:self.thread
-                                                      quotedReplyModel:self.inputToolbar.quotedReply
-                                                         messageSender:self.messageSender
-                                                            completion:nil];
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachment:attachment
+                                                                 inThread:self.thread
+                                                         quotedReplyModel:self.inputToolbar.quotedReply];
 
     [self messageWasSent:message];
 
@@ -3121,16 +3131,17 @@ typedef enum : NSUInteger {
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        if (contactShare.avatarImage) {
-            [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+    [self.editingDatabaseConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
+            // preparation rather than duplicated here and in the SAE
+            if (contactShare.avatarImage) {
+                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+            }
         }
-    }
         completionBlock:^{
-            TSOutgoingMessage *message = [ThreadUtil sendMessageWithContactShare:contactShare.dbRecord
-                                                                        inThread:self.thread
-                                                                   messageSender:self.messageSender
-                                                                      completion:nil];
+            TSOutgoingMessage *message =
+                [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord inThread:self.thread];
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
@@ -3956,7 +3967,10 @@ typedef enum : NSUInteger {
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueTemporaryAttachment:dataSource
+        // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
+        // which causes this code to be called. Once we're more aggressive about durable sending retry,
+        // we could get rid of this "retryable tappable error message".
+        [self.messageSender sendTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
             inMessage:message
             success:^{
@@ -3969,7 +3983,10 @@ typedef enum : NSUInteger {
                 OWSLogError(@"Failed to send group avatar update with error: %@", error);
             }];
     } else {
-        [self.messageSender enqueueMessage:message
+        // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
+        // which causes this code to be called. Once we're more aggressive about durable sending retry,
+        // we could get rid of this "retryable tappable error message".
+        [self.messageSender sendMessage:message
             success:^{
                 OWSLogDebug(@"Successfully sent group update");
                 if (successCompletion) {
@@ -4442,7 +4459,7 @@ typedef enum : NSUInteger {
     // We convert large text messages to attachments
     // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    TSOutgoingMessage *message;
+    __block TSOutgoingMessage *message;
 
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
@@ -4451,16 +4468,16 @@ typedef enum : NSUInteger {
         // TODO we should redundantly send the first n chars in the body field so it can be viewed
         // on clients that don't support oversized text messgaes, (and potentially generate a preview
         // before the attachment is downloaded)
-        message = [ThreadUtil sendMessageWithAttachment:attachment
-                                               inThread:self.thread
-                                       quotedReplyModel:self.inputToolbar.quotedReply
-                                          messageSender:self.messageSender
-                                             completion:nil];
+        message = [ThreadUtil enqueueMessageWithAttachment:attachment
+                                                  inThread:self.thread
+                                          quotedReplyModel:self.inputToolbar.quotedReply];
     } else {
-        message = [ThreadUtil sendMessageWithText:text
-                                         inThread:self.thread
-                                 quotedReplyModel:self.inputToolbar.quotedReply
-                                    messageSender:self.messageSender];
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            message = [ThreadUtil enqueueMessageWithText:text
+                                                inThread:self.thread
+                                        quotedReplyModel:self.inputToolbar.quotedReply
+                                             transaction:transaction];
+        }];
     }
 
     [self messageWasSent:message];

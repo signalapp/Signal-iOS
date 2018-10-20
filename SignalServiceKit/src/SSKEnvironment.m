@@ -49,6 +49,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                           messageSender:(OWSMessageSender *)messageSender
+                  messageSenderJobQueue:(SSKMessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
@@ -67,7 +68,8 @@ static SSKEnvironment *sharedSSKEnvironment;
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
-                            syncManager:(id<OWSSyncManagerProtocol>)syncManager {
+                            syncManager:(id<OWSSyncManagerProtocol>)syncManager
+{
     self = [super init];
     if (!self) {
         return self;
@@ -75,6 +77,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
     OWSAssertDebug(contactsManager);
     OWSAssertDebug(messageSender);
+    OWSAssertDebug(messageSenderJobQueue);
     OWSAssertDebug(profileManager);
     OWSAssertDebug(primaryStorage);
     OWSAssertDebug(contactsUpdater);
@@ -97,6 +100,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
+    _messageSenderJobQueue = messageSenderJobQueue;
     _profileManager = profileManager;
     _primaryStorage = primaryStorage;
     _contactsUpdater = contactsUpdater;

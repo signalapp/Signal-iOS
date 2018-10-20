@@ -28,7 +28,6 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -124,6 +123,15 @@ const CGFloat kIconViewLength = 24;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
+#pragma mark
 
 - (void)observeNotifications
 {
@@ -913,20 +921,23 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [self.disappearingMessagesConfiguration save];
-        OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
-            [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                     initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                thread:self.thread
-                         configuration:self.disappearingMessagesConfiguration
-                   createdByRemoteName:nil
-                createdInExistingGroup:NO];
-        [infoMessage save];
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
+            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
+                [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                         initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                    thread:self.thread
+                             configuration:self.disappearingMessagesConfiguration
+                       createdByRemoteName:nil
+                    createdInExistingGroup:NO];
+            [infoMessage saveWithTransaction:transaction];
 
-        [OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob
-            runWithConfiguration:self.disappearingMessagesConfiguration
-                          thread:self.thread
-                   messageSender:self.messageSender];
+            OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
+                initWithConfiguration:self.disappearingMessagesConfiguration
+                               thread:self.thread];
+
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        }];
     }
 }
 
@@ -1042,16 +1053,9 @@ const CGFloat kIconViewLength = 24;
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
-    [self.messageSender enqueueMessage:message
-        success:^{
-            OWSLogInfo(@"Successfully left group.");
-        }
-        failure:^(NSError *error) {
-            OWSLogWarn(@"Failed to leave group with error: %@", error);
-        }];
-
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
         [gThread leaveGroupWithTransaction:transaction];
     }];
 

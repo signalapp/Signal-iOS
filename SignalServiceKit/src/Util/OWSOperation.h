@@ -45,8 +45,14 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 // Called at most one time.
 - (void)didCancel;
 
+// Called zero or more times, retry may be possible
+- (void)didReportError:(NSError *)error;
+
 // Called at most one time, once retry is no longer possible.
 - (void)didFailWithError:(NSError *)error NS_SWIFT_NAME(didFail(error:));
+
+// How long to wait before retry, if possible
+- (dispatch_time_t)retryDelay;
 
 #pragma mark - Success/Error - Do Not Override
 

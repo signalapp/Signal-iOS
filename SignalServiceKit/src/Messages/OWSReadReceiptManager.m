@@ -171,11 +171,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Dependencies
 
-- (OWSMessageSender *)messageSender
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
 {
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
+    return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
 - (OWSOutgoingReceiptManager *)outgoingReceiptManager
@@ -219,14 +217,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             OWSReadReceiptsForLinkedDevicesMessage *message =
                 [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
 
-            [self.messageSender enqueueMessage:message
-                success:^{
-                    OWSLogInfo(@"Successfully sent %lu read receipt to linked devices.",
-                        (unsigned long)readReceiptsForLinkedDevices.count);
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send read receipt to linked devices with error: %@", error);
-                }];
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            }];
         }
 
         BOOL didWork = readReceiptsForLinkedDevices.count > 0;
