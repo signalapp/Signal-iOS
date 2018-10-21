@@ -86,7 +86,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
 
     OWSBackgroundTask *_Nullable backgroundTask = nil;
-    if (CurrentAppContext().isMainApp) {
+    if (CurrentAppContext().isMainApp && !CurrentAppContext().isRunningTests) {
         backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
     }
     [super readWriteWithBlock:block];
