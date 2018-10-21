@@ -5018,7 +5018,8 @@ typedef enum : NSUInteger {
                 // ...and always show the "disappearing messages" animation.
                 shouldHideFooter
                     = ([timestampText isEqualToString:nextTimestampText] && receiptStatus == nextReceiptStatus
-                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.hasCellHeader
+                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed
+                        && outgoingMessage.messageState != TSOutgoingMessageStateSending && !nextViewItem.hasCellHeader
                         && !isDisappearingMessage);
             }
 
