@@ -9,6 +9,7 @@
 #import "NSTimer+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
+#import "OWSDevicesService.h"
 #import "OWSError.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
@@ -296,6 +297,10 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(isCensorshipCircumventionActiveDidChange:)
                                                  name:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceListUpdateModifiedDeviceList:)
+                                                 name:NSNotificationName_DeviceListUpdateModifiedDeviceList
                                                object:nil];
 }
 
@@ -1132,6 +1137,15 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     OWSAssertIsOnMainThread();
 
     [self applyDesiredSocketState];
+}
+
+- (void)deviceListUpdateModifiedDeviceList:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.webSocketType == OWSWebSocketTypeDefault) {
+        [self cycleSocket];
+    }
 }
 
 @end
