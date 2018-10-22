@@ -100,6 +100,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (NSString *)appSharedDataDirectoryPath;
 
+- (NSUserDefaults *)appUserDefaults;
+
 @end
 
 id<AppContext> CurrentAppContext(void);

@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUserDefaults *)appUserDefaults
 {
-    return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
+    return CurrentAppContext().appUserDefaults;
 }
 
 + (void)migrateToSharedUserDefaults

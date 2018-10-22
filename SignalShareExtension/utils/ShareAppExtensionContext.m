@@ -229,6 +229,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [groupContainerDirectoryURL path];
 }
 
+- (NSUserDefaults *)appUserDefaults
+{
+    return [[NSUserDefaults alloc] initWithSuiteName:SignalApplicationGroup];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
