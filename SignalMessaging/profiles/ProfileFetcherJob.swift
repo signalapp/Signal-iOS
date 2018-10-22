@@ -142,7 +142,8 @@ public class ProfileFetcherJob: NSObject {
         }, websocketFailureBlock: {
             // Do nothing
         }, recipientId: recipientId,
-           unidentifiedAccess: unidentifiedAccess)
+           unidentifiedAccess: unidentifiedAccess,
+           canFailoverUDAuth: true)
         return requestMaker.makeRequest()
             .map { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)

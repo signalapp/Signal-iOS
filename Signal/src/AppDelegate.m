@@ -76,6 +76,69 @@ static NSTimeInterval launchStartedAt;
 
 @synthesize window = _window;
 
+#pragma mark - Dependencies
+
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
+- (OWSReadReceiptManager *)readReceiptManager
+{
+    return [OWSReadReceiptManager sharedManager];
+}
+
+- (id<OWSUDManager>)udManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.udManager);
+
+    return SSKEnvironment.shared.udManager;
+}
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+- (PushRegistrationManager *)pushRegistrationManager
+{
+    OWSAssertDebug(AppEnvironment.shared.pushRegistrationManager);
+
+    return AppEnvironment.shared.pushRegistrationManager;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (OWSDisappearingMessagesJob *)disappearingMessagesJob
+{
+    OWSAssertDebug(SSKEnvironment.shared.disappearingMessagesJob);
+
+    return SSKEnvironment.shared.disappearingMessagesJob;
+}
+
+- (TSSocketManager *)socketManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.socketManager);
+
+    return SSKEnvironment.shared.socketManager;
+}
+
+- (OWSMessageManager *)messageManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.messageManager);
+
+    return SSKEnvironment.shared.messageManager;
+}
+
+#pragma mark -
+
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     OWSLogWarn(@"applicationDidEnterBackground.");
 
@@ -425,7 +488,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered vanilla push token: %@", deviceToken);
-    [PushRegistrationManager.shared didReceiveVanillaPushToken:deviceToken];
+    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -440,10 +503,10 @@ static NSTimeInterval launchStartedAt;
     OWSLogError(@"failed to register vanilla push token with error: %@", error);
 #ifdef DEBUG
     OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier");
-    [PushRegistrationManager.shared didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
+    [self.pushRegistrationManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
-    [PushRegistrationManager.shared didFailToReceiveVanillaPushTokenWithError:error];
+    [self.pushRegistrationManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }
 
@@ -458,7 +521,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"registered user notification settings");
-    [PushRegistrationManager.shared didRegisterUserNotificationSettings];
+    [self.pushRegistrationManager didRegisterUserNotificationSettings];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -482,7 +545,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
-        if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
+        if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
             id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
             if ([signupController isKindOfClass:[OWSNavigationController class]]) {
                 OWSNavigationController *navController = (OWSNavigationController *)signupController;
@@ -542,7 +605,7 @@ static NSTimeInterval launchStartedAt;
 - (void)enableBackgroundRefreshIfNecessary
 {
     [AppReadiness runNowOrWhenAppIsReady:^{
-        if (OWS2FAManager.sharedManager.is2FAEnabled && [TSAccountManager isRegistered]) {
+        if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegistered]) {
             // Ping server once a day to keep-alive 2FA clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
             [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
@@ -566,26 +629,25 @@ static NSTimeInterval launchStartedAt;
     dispatch_once(&onceToken, ^{
         RTCInitializeSSL();
 
-        if ([TSAccountManager isRegistered]) {
+        if ([self.tsAccountManager isRegistered]) {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSLogInfo(@"running post launch block for registered user: %@", [TSAccountManager localNumber]);
+                OWSLogInfo(@"running post launch block for registered user: %@", [self.tsAccountManager localNumber]);
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
-                [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
+                [self.disappearingMessagesJob startIfNecessary];
 
                 [self enableBackgroundRefreshIfNecessary];
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
-                [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]] run];
+                [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
                 // connected, failed or hung up before the app existed should be marked as missed.
-                [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]] run];
-                [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-                    run];
+                [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+                [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
             });
         } else {
             OWSLogInfo(@"running post launch block for unregistered user.");
@@ -593,7 +655,7 @@ static NSTimeInterval launchStartedAt;
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [SignalApp clearAllNotifications];
 
-            [TSSocketManager.shared requestSocketOpen];
+            [self.socketManager requestSocketOpen];
 
             UITapGestureRecognizer *gesture =
                 [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class] action:@selector(submitLogs)];
@@ -603,11 +665,11 @@ static NSTimeInterval launchStartedAt;
     }); // end dispatchOnce for first time we become active
 
     // Every time we become active...
-    if ([TSAccountManager isRegistered]) {
+    if ([self.tsAccountManager isRegistered]) {
         // At this point, potentially lengthy DB locking migrations could be running.
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
-            [TSSocketManager.shared requestSocketOpen];
+            [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             // This will fetch new messages, if we're using domain fronting.
             [[PushManager sharedManager] applicationDidBecomeActive];
@@ -674,7 +736,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     [AppReadiness runNowOrWhenAppIsReady:^{
-        if (![TSAccountManager isRegistered]) {
+        if (![self.tsAccountManager isRegistered]) {
             UIAlertController *controller =
                 [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
                                                     message:NSLocalizedString(@"REGISTRATION_RESTRICTED_MESSAGE", nil)
@@ -747,7 +809,7 @@ static NSTimeInterval launchStartedAt;
         [AppReadiness runNowOrWhenAppIsReady:^{
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [[OWSPrimaryStorage sharedManager] phoneNumberForCallKitId:handle];
+                phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
                 if (phoneNumber.length < 1) {
                     OWSLogWarn(@"ignoring attempt to initiate video call to unknown anonymous signal user.");
                     return;
@@ -804,7 +866,7 @@ static NSTimeInterval launchStartedAt;
         [AppReadiness runNowOrWhenAppIsReady:^{
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-                phoneNumber = [[OWSPrimaryStorage sharedManager] phoneNumberForCallKitId:handle];
+                phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
                 if (phoneNumber.length < 1) {
                     OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
                     return;
@@ -1010,8 +1072,8 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"checkIfAppIsReady");
 
     // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
-    [[OWSProfileManager sharedManager] ensureLocalProfileCached];
-    
+    [self.profileManager ensureLocalProfileCached];
+
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
@@ -1021,8 +1083,8 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    if ([TSAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+    if ([self.tsAccountManager isRegistered]) {
+        OWSLogVerbose(@"localNumber: %@", [self.tsAccountManager localNumber]);
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
@@ -1047,7 +1109,7 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
-        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+        [self.primaryStorage.newDatabaseConnection
             asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
                 [TSAttachmentStream enumerateCollectionObjectsUsingBlock:^(id _Nonnull obj, BOOL *_Nonnull stop){
                     // no-op. It's sufficient to initWithCoder: each object.
@@ -1069,8 +1131,8 @@ static NSTimeInterval launchStartedAt;
     [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
 
-    [OWSProfileManager.sharedManager fetchLocalUsersProfile];
-    [[OWSReadReceiptManager sharedManager] prepareCachedValues];
+    [self.profileManager fetchLocalUsersProfile];
+    [self.readReceiptManager prepareCachedValues];
 
     // Disable the SAE until the main app has successfully completed launch process
     // at least once in the post-SAE world.
@@ -1080,14 +1142,14 @@ static NSTimeInterval launchStartedAt;
 
     [OWSBackup.sharedManager setup];
 
-    [SSKEnvironment.shared.messageManager startObserving];
+    [self.messageManager startObserving];
 
 #ifdef DEBUG
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];
 #endif
 
-    [SSKEnvironment.shared.udManager setup];
+    [self.udManager setup];
 }
 
 - (void)registrationStateDidChange
@@ -1098,20 +1160,20 @@ static NSTimeInterval launchStartedAt;
 
     [self enableBackgroundRefreshIfNecessary];
 
-    if ([TSAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+    if ([self.tsAccountManager isRegistered]) {
+        OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
 
-        [[OWSPrimaryStorage sharedManager].newDatabaseConnection
+        [self.primaryStorage.newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
             }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
-        [[OWSDisappearingMessagesJob sharedJob] startIfNecessary];
-        [[OWSProfileManager sharedManager] ensureLocalProfileCached];
+        [self.disappearingMessagesJob startIfNecessary];
+        [self.profileManager ensureLocalProfileCached];
 
         // For non-legacy users, read receipts are on by default.
-        [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
+        [self.readReceiptManager setAreReadReceiptsEnabled:YES];
     }
 }
 
@@ -1134,7 +1196,7 @@ static NSTimeInterval launchStartedAt;
     NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
     OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
 
-    if ([TSAccountManager isRegistered]) {
+    if ([self.tsAccountManager isRegistered]) {
         HomeViewController *homeView = [HomeViewController new];
         SignalsNavigationController *navigationController =
             [[SignalsNavigationController alloc] initWithRootViewController:homeView];

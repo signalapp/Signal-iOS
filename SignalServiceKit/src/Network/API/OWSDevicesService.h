@@ -1,17 +1,20 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
+
+extern NSString *const NSNotificationName_DeviceListUpdateSucceeded;
+extern NSString *const NSNotificationName_DeviceListUpdateFailed;
+extern NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList;
 
 @class OWSDevice;
 
 @interface OWSDevicesService : NSObject
 
-- (void)getDevicesWithSuccess:(void (^)(NSArray<OWSDevice *> *))successCallback
-                      failure:(void (^)(NSError *))failureCallback;
++ (void)refreshDevices;
 
-- (void)unlinkDevice:(OWSDevice *)device
++ (void)unlinkDevice:(OWSDevice *)device
              success:(void (^)(void))successCallback
              failure:(void (^)(NSError *))failureCallback;
 

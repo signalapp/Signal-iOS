@@ -14,6 +14,7 @@
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
 #import "OWSDevice.h"
+#import "OWSDevicesService.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -47,6 +48,7 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+SSK.h>
+#import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -88,6 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     return self;
 }
+
+#pragma mark - Dependencies
 
 - (id<OWSCallMessageHandler>)callMessageHandler
 {
@@ -143,6 +147,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
 
     return SSKEnvironment.shared.syncManager;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
 }
 
 #pragma mark -
@@ -234,6 +245,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
+
+    [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
     switch (envelope.type) {
         case SSKProtoEnvelopeTypeCiphertext:
@@ -471,7 +484,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (groupThread) {
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
-                if (![groupThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+                if (![groupThread.groupModel.groupMemberIds containsObject:self.tsAccountManager.localNumber]) {
                     OWSLogInfo(@"Ignoring messages for left group.");
                     return;
                 }
@@ -749,7 +762,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = self.tsAccountManager.localNumber;
     if (![localNumber isEqualToString:envelope.source]) {
         // Sync messages should only come from linked devices.
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
@@ -1062,7 +1075,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure we are in the group.
-    NSString *localNumber = [TSAccountManager localNumber];
+    NSString *localNumber = self.tsAccountManager.localNumber;
     if (![gThread.groupModel.groupMemberIds containsObject:localNumber]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
         return;
@@ -1298,7 +1311,7 @@ NS_ASSUME_NONNULL_BEGIN
     [incomingMessage saveWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([envelope.source isEqualToString:TSAccountManager.localNumber]) {
+    if ([envelope.source isEqualToString:self.tsAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
@@ -1421,6 +1434,48 @@ NS_ASSUME_NONNULL_BEGIN
         return groupThread;
     } else {
         return [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    }
+}
+
+#pragma mark -
+
+- (void)checkForUnknownLinkedDevice:(SSKProtoEnvelope *)envelope
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(envelope);
+    OWSAssertDebug(transaction);
+
+    NSString *localNumber = self.tsAccountManager.localNumber;
+    if (![localNumber isEqualToString:envelope.source]) {
+        return;
+    }
+
+    NSMutableSet<NSNumber *> *deviceIdSet = [NSMutableSet new];
+    for (OWSDevice *device in [OWSDevice currentDevicesWithTransaction:transaction]) {
+        [deviceIdSet addObject:@(device.deviceId)];
+    }
+    SignalRecipient *_Nullable recipient =
+        [SignalRecipient registeredRecipientForRecipientId:localNumber transaction:transaction];
+    if (!recipient) {
+        OWSFailDebug(@"No local SignalRecipient.");
+    } else {
+        BOOL isRecipientDevice = [recipient.devices containsObject:@(envelope.sourceDevice)];
+        if (!isRecipientDevice) {
+            OWSLogInfo(@"Message received from unknown linked device; adding to local SignalRecipient: %lu.",
+                       (unsigned long) envelope.sourceDevice);
+
+            [recipient updateRegisteredRecipientWithDevicesToAdd:@[ @(envelope.sourceDevice) ]
+                                                 devicesToRemove:nil
+                                                     transaction:transaction];
+        }
+    }
+
+    BOOL isInDeviceList = [deviceIdSet containsObject:@(envelope.sourceDevice)];
+    if (!isInDeviceList) {
+        OWSLogInfo(@"Message received from unknown linked device; refreshing device list: %lu.",
+                   (unsigned long) envelope.sourceDevice);
+
+        [OWSDevicesService refreshDevices];
     }
 }
 
