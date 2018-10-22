@@ -1108,8 +1108,7 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.messageReceiver handleAnyUnprocessedEnvelopesAsync];
     [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
 
-    // TODO
-    // - incorporate reachability check
+    [SSKEnvironment.shared.reachabilityManager setup];
     [SSKEnvironment.shared.messageSenderJobQueue setup];
     [AppEnvironment.shared.sessionResetJobQueue setup];
 
