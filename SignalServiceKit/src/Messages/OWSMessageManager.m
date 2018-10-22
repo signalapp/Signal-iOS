@@ -1450,10 +1450,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSMutableSet<NSNumber *> *deviceIdSet = [NSMutableSet new];
-    for (OWSDevice *device in [OWSDevice currentDevicesWithTransaction:transaction]) {
-        [deviceIdSet addObject:@(device.deviceId)];
-    }
     SignalRecipient *_Nullable recipient =
         [SignalRecipient registeredRecipientForRecipientId:localNumber transaction:transaction];
     if (!recipient) {
@@ -1470,6 +1466,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    NSMutableSet<NSNumber *> *deviceIdSet = [NSMutableSet new];
+    for (OWSDevice *device in [OWSDevice currentDevicesWithTransaction:transaction]) {
+        [deviceIdSet addObject:@(device.deviceId)];
+    }
     BOOL isInDeviceList = [deviceIdSet containsObject:@(envelope.sourceDevice)];
     if (!isInDeviceList) {
         OWSLogInfo(@"Message received from unknown linked device; refreshing device list: %lu.",
