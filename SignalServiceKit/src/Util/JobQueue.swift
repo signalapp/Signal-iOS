@@ -37,7 +37,7 @@ public protocol DurableOperation: class {
 
     var jobRecord: JobRecordType { get }
     var durableOperationDelegate: DurableOperationDelegateType? { get set }
-    var operation: Operation { get }
+    var operation: OWSOperation { get }
     var remainingRetries: UInt { get set }
 }
 
@@ -67,6 +67,7 @@ public protocol JobQueue: DurableOperationDelegate {
 
     // MARK: Required
 
+    var runningOperations: [DurableOperationType] { get set }
     var jobRecordLabel: String { get }
 
     var isSetup: Bool { get set }
@@ -76,6 +77,12 @@ public protocol JobQueue: DurableOperationDelegate {
     func operationQueue(jobRecord: JobRecordType) -> OperationQueue
     func buildOperation(jobRecord: JobRecordType, transaction: YapDatabaseReadTransaction) throws -> DurableOperationType
 
+    /// When `requiresInternet` is true, we immediately run any jobs which are waiting for retry upon detecting Reachability.
+    ///
+    /// Because `Reachability` isn't 100% reliable, the jobs will be attempted regardless of what we think our current Reachability is.
+    /// However, because these jobs will likely fail many times in succession, their `retryInterval` could be quite long by the time we
+    /// are back online.
+    var requiresInternet: Bool { get }
     static var maxRetries: UInt { get }
 }
 
@@ -89,6 +96,10 @@ public extension JobQueue {
 
     var finder: JobRecordFinder {
         return JobRecordFinder()
+    }
+
+    var reachabilityManager: SSKReachabilityManager {
+        return SSKEnvironment.shared.reachabilityManager
     }
 
     // MARK: 
@@ -130,6 +141,8 @@ public extension JobQueue {
 
                 let remainingRetries = self.remainingRetries(durableOperation: durableOperation)
                 durableOperation.remainingRetries = remainingRetries
+
+                self.runningOperations.append(durableOperation)
 
                 Logger.debug("adding operation: \(durableOperation) with remainingRetries: \(remainingRetries)")
                 operationQueue.addOperation(durableOperation.operation)
@@ -186,6 +199,20 @@ public extension JobQueue {
         }
         self.restartOldJobs()
 
+        if self.requiresInternet {
+            NotificationCenter.default.addObserver(forName: .reachabilityChanged,
+                                                   object: self.reachabilityManager.observationContext,
+                                                   queue: nil) { _ in
+
+                                                    if self.reachabilityManager.isReachable {
+                                                        Logger.verbose("isReachable: true")
+                                                        self.becameReachable()
+                                                    } else {
+                                                        Logger.verbose("isReachable: false")
+                                                    }
+            }
+        }
+
         self.isSetup = true
 
         DispatchQueue.global().async {
@@ -204,9 +231,18 @@ public extension JobQueue {
         return maxRetries - failureCount
     }
 
+    func becameReachable() {
+        guard requiresInternet else {
+            return
+        }
+
+        self.runningOperations.first?.operation.runAnyQueuedRetry()
+    }
+
     // MARK: DurableOperationDelegate
 
     func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: YapDatabaseReadWriteTransaction) {
+        self.runningOperations = self.runningOperations.filter { $0 !== operation }
         operation.jobRecord.remove(with: transaction)
     }
 
@@ -220,6 +256,7 @@ public extension JobQueue {
     }
 
     func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: YapDatabaseReadWriteTransaction) {
+        self.runningOperations = self.runningOperations.filter { $0 !== operation }
         operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
     }
 }

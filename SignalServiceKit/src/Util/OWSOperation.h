@@ -52,9 +52,13 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 - (void)didFailWithError:(NSError *)error NS_SWIFT_NAME(didFail(error:));
 
 // How long to wait before retry, if possible
-- (dispatch_time_t)retryDelay;
+- (NSTimeInterval)retryInterval;
 
 #pragma mark - Success/Error - Do Not Override
+
+// Runs now if a retry timer has been set by a previous failure,
+// otherwise assumes we're currently running and does nothing.
+- (void)runAnyQueuedRetry;
 
 // Report that the operation completed successfully.
 //

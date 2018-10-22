@@ -66,6 +66,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = MessageSenderOperation
     public static let jobRecordLabel: String = "MessageSender"
     public static let maxRetries: UInt = 10
+    public let requiresInternet: Bool = true
+    public var runningOperations: [MessageSenderOperation] = []
 
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -136,7 +138,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
 
     weak public var durableOperationDelegate: MessageSenderJobQueue?
 
-    public var operation: Operation {
+    public var operation: OWSOperation {
         return self
     }
 
@@ -183,7 +185,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         }
     }
 
-    override public func retryDelay() -> dispatch_time_t {
+    override public func retryInterval() -> TimeInterval {
         guard !CurrentAppContext().isRunningTests else {
             return 0
         }
@@ -200,7 +202,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         let maxBackoff = kHourInterval
 
         let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.jobRecord.failureCount)))
-        return UInt64(seconds) * NSEC_PER_SEC
+        return seconds
     }
 
     override public func didFail(error: Error) {
