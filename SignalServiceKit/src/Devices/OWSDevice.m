@@ -171,21 +171,37 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     return self.millisecondTimestampToDateTransformer;
 }
 
-+ (void)replaceAll:(NSArray<OWSDevice *> *)currentDevices
++ (NSArray<OWSDevice *> *)currentDevicesWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    BOOL didChange = NO;
+    OWSAssertDebug(transaction);
+
+    NSMutableArray<OWSDevice *> *result = [NSMutableArray new];
+    [transaction enumerateKeysAndObjectsInCollection:OWSDevice.collection
+                                          usingBlock:^(NSString *key, OWSDevice *object, BOOL *stop) {
+                                              if (![object isKindOfClass:[OWSDevice class]]) {
+                                                  OWSFailDebug(@"Unexpected object in collection: %@", object.class);
+                                                  return;
+                                              }
+                                              [result addObject:object];
+                                          }];
+    return result;
+}
+
++ (BOOL)replaceAll:(NSArray<OWSDevice *> *)currentDevices
+{
+    BOOL didAddOrRemove = NO;
     NSMutableArray<OWSDevice *> *existingDevices = [[self allObjectsInCollection] mutableCopy];
     for (OWSDevice *currentDevice in currentDevices) {
         NSUInteger existingDeviceIndex = [existingDevices indexOfObject:currentDevice];
         if (existingDeviceIndex == NSNotFound) {
             // New Device
+            OWSLogInfo(@"Adding device: %@", currentDevice);
             [currentDevice save];
-            didChange = YES;
+            didAddOrRemove = YES;
         } else {
             OWSDevice *existingDevice = existingDevices[existingDeviceIndex];
             if ([existingDevice updateAttributesWithDevice:currentDevice]) {
                 [existingDevice save];
-                didChange = YES;
             }
             [existingDevices removeObjectAtIndex:existingDeviceIndex];
         }
@@ -193,11 +209,12 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
     // Since we removed existing devices as we went, only stale devices remain
     for (OWSDevice *staleDevice in existingDevices) {
+        OWSLogVerbose(@"Removing device: %@", staleDevice);
         [staleDevice remove];
-        didChange = YES;
+        didAddOrRemove = YES;
     }
 
-    if (didChange) {
+    if (didAddOrRemove) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // Device changes can affect the UD access mode for a recipient,
             // so we need to:
@@ -208,6 +225,9 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
                                           recipientId:self.tsAccountManager.localNumber];
             [self.profileManager fetchLocalUsersProfile];
         });
+        return YES;
+    } else {
+        return NO;
     }
 }
 

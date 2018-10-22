@@ -933,6 +933,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Consume an attempt.
     messageSend.remainingAttempts = messageSend.remainingAttempts - 1;
 
+    // We need to disable UD for sync messages before we build the device messages,
+    // since we don't want to build a device message for the local device in the
+    // non-UD auth case.
+    if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]
+        && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
+        [messageSend disableUD];
+    }
+
     NSError *deviceMessagesError;
     NSArray<NSDictionary *> *_Nullable deviceMessages =
         [self deviceMessagesForMessageSendSafe:messageSend error:&deviceMessagesError];
@@ -1028,11 +1036,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]
-        && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
-        [messageSend disableUD];
-    }
-
+    // NOTE: canFailoverUDAuth is NO because UD-auth and Non-UD-auth requests
+    // use different device lists.
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
         initWithRequestFactoryBlock:^(SSKUnidentifiedAccess *_Nullable unidentifiedAccess) {
             return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
@@ -1047,7 +1052,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             messageSend.hasWebsocketSendFailed = YES;
         }
         recipientId:recipient.recipientId
-        unidentifiedAccess:messageSend.unidentifiedAccess];
+        unidentifiedAccess:messageSend.unidentifiedAccess
+        canFailoverUDAuth:NO];
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
@@ -1059,7 +1065,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 dispatch_async([OWSDispatch sendingQueue], ^{
                     NSUInteger statusCode = 0;
                     NSData *_Nullable responseData = nil;
-                    if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                    if ([error.domain isEqualToString:@"SignalServiceKit.RequestMakerUDAuthError"]) {
+                        // Try again.
+                        OWSLogInfo(@"UD request auth failed; failing over to non-UD request.");
+                        [error setIsRetryable:YES];
+                    } else if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
                         statusCode = error.code;
 
                         NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
@@ -1508,7 +1518,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             messageSend.hasWebsocketSendFailed = YES;
         }
         recipientId:recipientId
-        unidentifiedAccess:messageSend.unidentifiedAccess];
+        unidentifiedAccess:messageSend.unidentifiedAccess
+        canFailoverUDAuth:YES];
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
                 // We _do not_ want to dispatch to the sendingQueue here; we're

@@ -5,6 +5,11 @@
 import Foundation
 import PromiseKit
 
+@objc
+public enum RequestMakerUDAuthError: Int, Error {
+    case udAuthFailure
+}
+
 public enum RequestMakerError: Error {
     case websocketRequestError(statusCode : Int, responseData : Data?, underlyingError : Error)
 }
@@ -40,18 +45,21 @@ public class RequestMaker: NSObject {
     private let websocketFailureBlock: WebsocketFailureBlock
     private let recipientId: String
     private let unidentifiedAccess: SSKUnidentifiedAccess?
+    private let canFailoverUDAuth: Bool
 
     @objc
     public init(requestFactoryBlock : @escaping RequestFactoryBlock,
                 udAuthFailureBlock : @escaping UDAuthFailureBlock,
                 websocketFailureBlock : @escaping WebsocketFailureBlock,
                 recipientId: String,
-                unidentifiedAccess: SSKUnidentifiedAccess?) {
+                unidentifiedAccess: SSKUnidentifiedAccess?,
+                canFailoverUDAuth: Bool) {
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
         self.websocketFailureBlock = websocketFailureBlock
         self.recipientId = recipientId
         self.unidentifiedAccess = unidentifiedAccess
+        self.canFailoverUDAuth = canFailoverUDAuth
     }
 
     // MARK: - Dependencies
@@ -115,8 +123,13 @@ public class RequestMaker: NSObject {
                             // failure), mark recipient as _not_ in UD mode, then retry.
                             self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
                             self.udAuthFailureBlock()
-                            Logger.info("UD websocket request failed; failing over to non-UD websocket request.")
-                            return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
+                            if self.canFailoverUDAuth {
+                                Logger.info("UD websocket request auth failed; failing over to non-UD websocket request.")
+                                return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
+                            } else {
+                                Logger.info("UD websocket request auth failed; aborting.")
+                                throw RequestMakerUDAuthError.udAuthFailure
+                            }
                         }
                         break
                     default:
@@ -141,8 +154,13 @@ public class RequestMaker: NSObject {
                             // failure), mark recipient as _not_ in UD mode, then retry.
                             self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
                             self.udAuthFailureBlock()
-                            Logger.info("UD REST request failed; failing over to non-UD REST request.")
-                            return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
+                            if self.canFailoverUDAuth {
+                                Logger.info("UD REST request auth failed; failing over to non-UD REST request.")
+                                return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
+                            } else {
+                                Logger.info("UD REST request auth failed; aborting.")
+                                throw RequestMakerUDAuthError.udAuthFailure
+                            }
                         }
                         break
                     default:

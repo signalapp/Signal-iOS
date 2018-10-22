@@ -3,6 +3,7 @@
 //
 
 #import "OWSDevicesService.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
@@ -11,9 +12,47 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const NSNotificationName_DeviceListUpdateSucceeded = @"NSNotificationName_DeviceListUpdateSucceeded";
+NSString *const NSNotificationName_DeviceListUpdateFailed = @"NSNotificationName_DeviceListUpdateFailed";
+NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
+    = @"NSNotificationName_DeviceListUpdateModifiedDeviceList";
+
 @implementation OWSDevicesService
 
-- (void)getDevicesWithSuccess:(void (^)(NSArray<OWSDevice *> *))successCallback
++ (void)refreshDevices
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self
+            getDevicesWithSuccess:^(NSArray<OWSDevice *> *devices) {
+                // If we have more than one device; we may have a linked device.
+                if (devices.count > 1) {
+                    // Setting this flag here shouldn't be necessary, but we do so
+                    // because the "cost" is low and it will improve robustness.
+                    [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
+                }
+
+                BOOL didAddOrRemove = [OWSDevice replaceAll:devices];
+
+                [NSNotificationCenter.defaultCenter
+                    postNotificationNameAsync:NSNotificationName_DeviceListUpdateSucceeded
+                                       object:nil];
+
+                if (didAddOrRemove) {
+                    [NSNotificationCenter.defaultCenter
+                        postNotificationNameAsync:NSNotificationName_DeviceListUpdateModifiedDeviceList
+                                           object:nil];
+                }
+            }
+            failure:^(NSError *error) {
+                OWSLogError(@"Request device list failed with error: %@", error);
+
+                [NSNotificationCenter.defaultCenter postNotificationNameAsync:NSNotificationName_DeviceListUpdateFailed
+                                                                       object:error];
+            }];
+    });
+}
+
++ (void)getDevicesWithSuccess:(void (^)(NSArray<OWSDevice *> *))successCallback
                       failure:(void (^)(NSError *))failureCallback
 {
     TSRequest *request = [OWSRequestFactory getDevicesRequest];
@@ -39,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)unlinkDevice:(OWSDevice *)device
++ (void)unlinkDevice:(OWSDevice *)device
              success:(void (^)(void))successCallback
              failure:(void (^)(NSError *))failureCallback
 {
@@ -59,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (NSArray<OWSDevice *> *)parseResponse:(id)responseObject
++ (NSArray<OWSDevice *> *)parseResponse:(id)responseObject
 {
     if (![responseObject isKindOfClass:[NSDictionary class]]) {
         OWSLogError(@"Device response was not a dictionary.");
