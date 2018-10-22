@@ -1084,7 +1084,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogVerbose(@"localNumber: %@", [self.tsAccountManager localNumber]);
+        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
