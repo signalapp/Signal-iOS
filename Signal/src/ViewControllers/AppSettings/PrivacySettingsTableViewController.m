@@ -10,6 +10,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -218,6 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
                     target:weakSelf
                   selector:@selector(didToggleUDShowIndicatorsSwitch:)];
     [unidentifiedDeliveryIndicatorsSection addItem:showUDIndicatorsItem];
+    [contents addSection:unidentifiedDeliveryIndicatorsSection];
 
     OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
     OWSTableItem *unrestrictedAccessItem = [OWSTableItem
@@ -226,12 +228,54 @@ NS_ASSUME_NONNULL_BEGIN
                     target:weakSelf
                   selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
     [unidentifiedDeliveryUnrestrictedSection addItem:unrestrictedAccessItem];
-
-    unidentifiedDeliveryUnrestrictedSection.footerTitle
-        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
-
-    [contents addSection:unidentifiedDeliveryIndicatorsSection];
     [contents addSection:unidentifiedDeliveryUnrestrictedSection];
+
+    OWSTableSection *unidentifiedDeliveryLearnMoreSection = [OWSTableSection new];
+    [unidentifiedDeliveryLearnMoreSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^UITableViewCell * {
+                        UITableViewCell *cell = [OWSTableItem newCell];
+                        cell.preservesSuperviewLayoutMargins = YES;
+                        cell.contentView.preservesSuperviewLayoutMargins = YES;
+
+                        NSAttributedString *attributedText = [NSAttributedString new];
+                        attributedText = [attributedText
+                            rtlSafeAppend:NSLocalizedString(
+                                              @"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER",
+                                              @"table section footer")
+                               attributes:@{
+                                   NSFontAttributeName : [UIFont ows_dynamicTypeFootnoteFont],
+                                   NSForegroundColorAttributeName : [Theme secondaryColor],
+                               }];
+                        attributedText =
+                            [attributedText rtlSafeAppend:@" "
+                                               attributes:@{
+                                                   NSFontAttributeName : [UIFont ows_dynamicTypeFootnoteFont],
+                                               }];
+                        attributedText = [attributedText
+                            rtlSafeAppend:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE",
+                                              @"Label for a link to more info about unidentified delivery.")
+                               attributes:@{
+                                   NSFontAttributeName : [UIFont ows_dynamicTypeFootnoteFont],
+                                   NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                               }];
+
+                        UILabel *label = [UILabel new];
+                        label.attributedText = attributedText;
+                        label.numberOfLines = 0;
+                        label.lineBreakMode = NSLineBreakByWordWrapping;
+
+                        [cell.contentView addSubview:label];
+                        [label ows_autoPinToSuperviewMargins];
+                        return cell;
+                    }
+                    customRowHeight:UITableViewAutomaticDimension
+                    actionBlock:^{
+                        NSURL *url = [NSURL URLWithString:@"https://signal.org/blog/secret-sender/"];
+                        OWSAssertDebug(url);
+                        [UIApplication.sharedApplication openURL:url];
+                    }]];
+    [contents addSection:unidentifiedDeliveryLearnMoreSection];
 
     self.contents = contents;
 }
