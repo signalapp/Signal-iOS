@@ -172,6 +172,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String) {
+        if let localNumber = tsAccountManager.localNumber() {
+            if recipientId == localNumber {
+                Logger.info("Setting local UD access mode: \(mode.rawValue)")
+            }
+        }
+
         dbConnection.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
     }
 

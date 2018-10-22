@@ -1036,6 +1036,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
+    OWSLogVerbose(@"Sending message; ud? %d %d.", messageSend.isUDSend, messageSend.unidentifiedAccess != nil);
+
     // NOTE: canFailoverUDAuth is NO because UD-auth and Non-UD-auth requests
     // use different device lists.
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
@@ -1359,13 +1361,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSLogDebug(
         @"built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
 
-    OWSLogDebug(@"recipient.devices: %@", recipient.devices);
-    [DDLog flushLog];
+    OWSLogVerbose(@"building device messages for: %@ %@ (isLocalNumber: %d, isUDSend: %d)",
+        recipient.recipientId,
+        recipient.devices,
+        messageSend.isLocalNumber,
+        messageSend.isUDSend);
 
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
     OWSAssertDebug(deviceIds);
 
     if (messageSend.isUDSend && messageSend.isLocalNumber) {
+        OWSLogVerbose(@"Adding device message for UD send to local device.");
         OWSAssertDebug(![deviceIds containsObject:@(OWSDevicePrimaryDeviceId)]);
 
         [deviceIds addObject:@(OWSDevicePrimaryDeviceId)];
