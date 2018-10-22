@@ -162,12 +162,19 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func updateUnidentifiedAccess(recipientId: String, verifier: Data?, hasUnrestrictedAccess: Bool) {
+        guard let verifier = verifier else {
+            // If there is no verifier, at least one of this user's devices
+            // do not support UD.
+            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            return
+        }
+
         if hasUnrestrictedAccess {
             udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: recipientId)
             return
         }
 
-        guard let verifier = verifier, let udAccessKey = udManager.rawUDAccessKeyForRecipient(recipientId) else {
+        guard let udAccessKey = udManager.rawUDAccessKeyForRecipient(recipientId) else {
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }
