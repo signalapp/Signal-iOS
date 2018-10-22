@@ -5,21 +5,60 @@
 import Foundation
 import WebRTC
 
+public struct AudioActivityOptions: OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let playback = AudioActivityOptions(rawValue: 1 << 0)
+    public static let record = AudioActivityOptions(rawValue: 1 << 1)
+    public static let proximitySwitchesToEarPiece = AudioActivityOptions(rawValue: 1 << 2)
+}
+
 @objc
 public class AudioActivity: NSObject {
     let audioDescription: String
 
-    override public var description: String {
-        return "<\(self.logTag) audioDescription: \"\(audioDescription)\">"
-    }
+    let options: AudioActivityOptions
 
     @objc
     public init(audioDescription: String) {
         self.audioDescription = audioDescription
+        self.options = []
+    }
+
+    public init(audioDescription: String, options: AudioActivityOptions) {
+        self.audioDescription = audioDescription
+        self.options = options
     }
 
     deinit {
         OWSAudioSession.shared.ensureAudioSessionActivationStateAfterDelay()
+    }
+
+    // MARK: Factory Methods
+
+    @objc
+    public class func playbackActivity(audioDescription: String) -> AudioActivity {
+        return AudioActivity(audioDescription: audioDescription, options: .playback)
+    }
+
+    @objc
+    public class func recordActivity(audioDescription: String) -> AudioActivity {
+        return AudioActivity(audioDescription: audioDescription, options: .record)
+    }
+
+    @objc
+    public class func voiceNoteActivity(audioDescription: String) -> AudioActivity {
+        return AudioActivity(audioDescription: audioDescription, options: [.playback, .proximitySwitchesToEarPiece])
+    }
+
+    // MARK: 
+
+    override public var description: String {
+        return "<\(self.logTag) audioDescription: \"\(audioDescription)\">"
     }
 }
 
@@ -28,79 +67,88 @@ public class OWSAudioSession: NSObject {
 
     // Force singleton access
     @objc public static let shared = OWSAudioSession()
+
     private override init() {}
+
+    public func setup() {
+        NotificationCenter.default.addObserver(forName: .UIDeviceProximityStateDidChange,
+                                               object: nil,
+                                               queue: nil) { [weak self] _ in
+                                                self?.ensureProximityState()
+        }
+    }
+
+    // MARK: Dependencies
+
     private let avAudioSession = AVAudioSession.sharedInstance()
 
+    private let device = UIDevice.current
+
+    // MARK: 
+
     private var currentActivities: [Weak<AudioActivity>] = []
-
-    // Respects hardware mute switch, plays through external speaker, mixes with backround audio
-    // appropriate for foreground sound effects.
-    @objc
-    public func startAmbientAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("")
-
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
-
-        startAudioActivity(audioActivity)
-        guard currentActivities.count == 1 else {
-            // We don't want to clobber the audio capabilities configured by (e.g.) media playback or an in-progress call
-            Logger.info("not touching audio session since another currentActivity exists.")
-            return
-        }
-
-        do {
-            try avAudioSession.setCategory(AVAudioSessionCategoryAmbient)
-        } catch {
-            owsFailDebug("failed with error: \(error)")
-        }
-    }
-
-    // Ignores hardware mute switch, plays through external speaker
-    @objc
-    public func startPlaybackAudioActivity(_ audioActivity: AudioActivity) {
-        Logger.debug("")
-
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
-
-        startAudioActivity(audioActivity)
-
-        do {
-            try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
-        } catch {
-            owsFailDebug("failed with error: \(error)")
-        }
+    var aggregateOptions: AudioActivityOptions {
+        return  AudioActivityOptions(self.currentActivities.compactMap { $0.value?.options })
     }
 
     @objc
-    public func startRecordingAudioActivity(_ audioActivity: AudioActivity) -> Bool {
-        Logger.debug("")
-
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
-
-        assert(avAudioSession.recordPermission() == .granted)
-
-        startAudioActivity(audioActivity)
-
-        do {
-            try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
-            return true
-        } catch {
-            owsFailDebug("failed with error: \(error)")
-            return false
-        }
-    }
-
-    @objc
-    public func startAudioActivity(_ audioActivity: AudioActivity) {
+    public func startAudioActivity(_ audioActivity: AudioActivity) -> Bool {
         Logger.debug("with \(audioActivity)")
 
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
 
         self.currentActivities.append(Weak(value: audioActivity))
+
+        do {
+            if aggregateOptions.contains(.record) {
+                assert(avAudioSession.recordPermission() == .granted)
+                try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
+            } else if aggregateOptions.contains(.playback) {
+                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+            } else {
+                Logger.debug("no category option specified. Leaving category untouched.")
+            }
+
+            if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
+                self.device.isProximityMonitoringEnabled = true
+                self.shouldAdjustAudioForProximity = true
+            } else {
+                self.device.isProximityMonitoringEnabled = false
+                self.shouldAdjustAudioForProximity = false
+            }
+            ensureProximityState()
+
+            return true
+        } catch {
+            owsFailDebug("failed with error: \(error)")
+            return false
+        }
+
+    }
+
+    var shouldAdjustAudioForProximity: Bool = false
+    func proximitySensorStateDidChange(notification: Notification) {
+        if shouldAdjustAudioForProximity {
+            ensureProximityState()
+        }
+    }
+
+    // TODO: externally modified proximityState monitoring e.g. CallViewController
+    // TODO: make sure we *undo* anything as appropriate if there are concurrent audio activities
+    func ensureProximityState() {
+        if self.device.proximityState {
+            Logger.debug("proximityState: true")
+
+            try! self.avAudioSession.overrideOutputAudioPort(.none)
+        } else {
+            Logger.debug("proximityState: false")
+            do {
+                try self.avAudioSession.overrideOutputAudioPort(.speaker)
+            } catch {
+                Logger.error("error: \(error)")
+            }
+        }
     }
 
     @objc
@@ -111,6 +159,16 @@ public class OWSAudioSession: NSObject {
         defer { objc_sync_exit(self) }
 
         currentActivities = currentActivities.filter { return $0.value != audioActivity }
+
+        if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
+            self.device.isProximityMonitoringEnabled = true
+            self.shouldAdjustAudioForProximity = true
+        } else {
+            self.device.isProximityMonitoringEnabled = false
+            self.shouldAdjustAudioForProximity = false
+        }
+        ensureProximityState()
+
         ensureAudioSessionActivationStateAfterDelay()
     }
 

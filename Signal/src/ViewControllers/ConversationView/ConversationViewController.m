@@ -149,7 +149,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
-@property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
+@property (nonatomic, readonly) AudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 // These two properties must be updated in lockstep.
@@ -286,7 +286,7 @@ typedef enum : NSUInteger {
     _contactShareViewHelper.delegate = self;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
-    _voiceNoteAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
+    _recordVoiceNoteAudioActivity = [AudioActivity recordActivityWithAudioDescription:audioActivityDescription];
 }
 
 - (void)addNotificationListeners
@@ -2223,12 +2223,13 @@ typedef enum : NSUInteger {
         // Is this player associated with this media adapter?
         if (self.audioAttachmentPlayer.owner == viewItem) {
             // Tap to pause & unpause.
-            [self.audioAttachmentPlayer togglePlayState];
+            [self.audioAttachmentPlayer togglePlayStateWithPlaybackAudioCategory];
             return;
         }
         [self.audioAttachmentPlayer stop];
         self.audioAttachmentPlayer = nil;
     }
+
     self.audioAttachmentPlayer =
         [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL delegate:viewItem];
     // Associate the player with this media adapter.
@@ -3613,7 +3614,7 @@ typedef enum : NSUInteger {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    BOOL configuredAudio = [OWSAudioSession.shared startRecordingAudioActivity:self.voiceNoteAudioActivity];
+    BOOL configuredAudio = [OWSAudioSession.shared startAudioActivity:self.recordVoiceNoteAudioActivity];
     if (!configuredAudio) {
         OWSFailDebug(@"Couldn't configure audio session");
         [self cancelVoiceMemo];
@@ -3714,7 +3715,7 @@ typedef enum : NSUInteger {
 - (void)stopRecording
 {
     [self.audioRecorder stop];
-    [OWSAudioSession.shared endAudioActivity:self.voiceNoteAudioActivity];
+    [OWSAudioSession.shared endAudioActivity:self.recordVoiceNoteAudioActivity];
 }
 
 - (void)cancelRecordingVoiceMemo

@@ -22,7 +22,7 @@ public class OWSVideoPlayer: NSObject {
 
     @objc init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
-        self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)")
+        self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", options: [.playback])
 
         super.init()
 
@@ -42,7 +42,8 @@ public class OWSVideoPlayer: NSObject {
 
     @objc
     public func play() {
-        OWSAudioSession.shared.startPlaybackAudioActivity(self.audioActivity)
+        let success = OWSAudioSession.shared.startAudioActivity(self.audioActivity)
+        assert(success)
 
         guard let item = avPlayer.currentItem else {
             owsFailDebug("video player item was unexpectedly nil")

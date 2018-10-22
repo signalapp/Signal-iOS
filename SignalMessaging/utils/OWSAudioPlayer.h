@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 - (void)pause;
 - (void)stop;
-- (void)togglePlayState;
+- (void)togglePlayStateWithPlaybackAudioCategory;
 
 @end
 

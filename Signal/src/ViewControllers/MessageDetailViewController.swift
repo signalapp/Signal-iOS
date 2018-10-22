@@ -668,7 +668,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             // Is this player associated with this media adapter?
             if audioAttachmentPlayer.owner === viewItem {
                 // Tap to pause & unpause.
-                audioAttachmentPlayer.togglePlayState()
+                audioAttachmentPlayer.togglePlayStateWithPlaybackAudioCategory()
                 return
             }
             audioAttachmentPlayer.stop()

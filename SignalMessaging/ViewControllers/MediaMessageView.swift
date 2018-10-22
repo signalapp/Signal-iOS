@@ -393,7 +393,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     @objc
     func audioPlayButtonPressed(sender: UIButton) {
-        audioPlayer?.togglePlayState()
+        audioPlayer?.togglePlayStateWithPlaybackAudioCategory()
     }
 
     // MARK: - OWSAudioPlayerDelegate
