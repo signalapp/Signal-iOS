@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SSKTestKeychainStorage *testKeychainStorage;
 @property (nonatomic) NSString *mockAppDocumentDirectoryPath;
 @property (nonatomic) NSString *mockAppSharedDataDirectoryPath;
+@property (nonatomic) NSUserDefaults *appUserDefaults;
 
 @end
 
@@ -37,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *temporaryDirectory = OWSTemporaryDirectory();
     self.mockAppDocumentDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
     self.mockAppSharedDataDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
-
+    self.appUserDefaults = [[NSUserDefaults alloc] init];
     _appLaunchTime = [NSDate new];
 
     return self;
