@@ -69,7 +69,7 @@ public protocol JobQueue: DurableOperationDelegate {
 
     var jobRecordLabel: String { get }
 
-    var isReady: Bool { get set }
+    var isSetup: Bool { get set }
     func setup()
     func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction)
 
@@ -105,12 +105,11 @@ public extension JobQueue {
     func workStep() {
         Logger.debug("")
 
-        guard isReady else {
+        guard isSetup else {
             if !CurrentAppContext().isRunningTests {
-                owsFailDebug("not ready")
+                owsFailDebug("not setup")
             }
 
-            Logger.error("not ready")
             return
         }
 
@@ -181,13 +180,17 @@ public extension JobQueue {
     /// `setup` is called from objc, and default implementations from a protocol
     /// cannot be marked as @objc.
     func defaultSetup() {
-        guard !isReady else {
+        guard !isSetup else {
             owsFailDebug("already ready already")
             return
         }
         self.restartOldJobs()
 
-        self.isReady = true
+        self.isSetup = true
+
+        DispatchQueue.global().async {
+            self.workStep()
+        }
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {

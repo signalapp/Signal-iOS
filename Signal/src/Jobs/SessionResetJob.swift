@@ -26,15 +26,7 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isReady: Bool = false {
-        didSet {
-            if isReady {
-                DispatchQueue.global().async {
-                    self.workStep()
-                }
-            }
-        }
-    }
+    public var isSetup: Bool = false
 
     public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
         // no special handling

@@ -76,16 +76,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    @objc
-    public var isReady: Bool = false {
-        didSet {
-            if isReady {
-                DispatchQueue.global().async {
-                    self.workStep()
-                }
-            }
-        }
-    }
+    public var isSetup: Bool = false
 
     public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: YapDatabaseReadWriteTransaction) {
         if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.fetch(uniqueId: messageId, transaction: transaction) {
