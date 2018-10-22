@@ -43,7 +43,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
  * This will create missing devices, update existing devices, and delete stale devices.
  * @param devices Removes any existing devices, replacing them with `devices`
  *
- * Returns YET if any devices were added or removed.
+ * Returns YES if any devices were added or removed.
  */
 + (BOOL)replaceAll:(NSArray<OWSDevice *> *)devices;
 

@@ -933,6 +933,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Consume an attempt.
     messageSend.remainingAttempts = messageSend.remainingAttempts - 1;
 
+    // We need to disable UD for sync messages before we build the device messages,
+    // since we don't want to build a device message for the local device in the
+    // non-UD auth case.
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]
         && ![message isKindOfClass:[OWSOutgoingSentMessageTranscript class]]) {
         [messageSend disableUD];
