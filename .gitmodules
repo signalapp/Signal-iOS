@@ -1,6 +1,9 @@
-[submodule "Carthage"]
-	path = Carthage
+[submodule "ThirdParty/Carthage"]
+	path = ThirdParty/Carthage
 	url = https://github.com/signalapp/Signal-Carthage.git
 [submodule "Pods"]
 	path = Pods
 	url = https://github.com/signalapp/Signal-Pods.git
+[submodule "ThirdParty/WebRTC"]
+	path = ThirdParty/WebRTC
+	url = git@github.com:signalapp/signal-webrtc-ios-artifacts

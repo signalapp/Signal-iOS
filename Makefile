@@ -2,6 +2,7 @@
 SHELL=/bin/bash -o pipefail -o errexit
 
 WORKING_DIR = ./
+THIRD_PARTY_DIR = $(WORKING_DIR)/ThirdParty
 SCHEME = Signal
 XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME) -sdk iphonesimulator
 
@@ -19,7 +20,8 @@ update_dependencies:
 dependencies:
 	cd $(WORKING_DIR) && \
 		git submodule update --init
-		carthage build --platform iOS
+		cd $(THIRD_PARTY_DIR) && \
+			carthage build --platform iOS
 
 build: dependencies
 	cd $(WORKING_DIR) && \
@@ -29,10 +31,13 @@ test:
 	bundle exec fastlane scan
 	cd SignalServiceKit && make test
 
-clean:
+clean: clean_carthage
 	cd $(WORKING_DIR) && \
-		rm -fr Carthage/Build && \
 		$(XCODE_BUILD) clean | xcpretty
+
+clean_carthage:
+	cd $(THIRD_PARTY_DIR) && \
+		rm -fr Carthage/Build
 
 # Migrating across swift versions requires me to run this sometimes
 clean_carthage_cache:
