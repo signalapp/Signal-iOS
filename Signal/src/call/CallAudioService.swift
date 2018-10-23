@@ -110,8 +110,9 @@ protocol CallAudioServiceDelegate: class {
     private let pulseDuration = 0.2
 
     var audioSession: OWSAudioSession {
-        return OWSAudioSession.shared
+        return Environment.shared.audioSession
     }
+
     var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }

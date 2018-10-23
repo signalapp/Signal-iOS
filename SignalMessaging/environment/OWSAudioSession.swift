@@ -35,7 +35,13 @@ public class AudioActivity: NSObject {
     }
 
     deinit {
-        OWSAudioSession.shared.ensureAudioSessionActivationStateAfterDelay()
+        audioSession.ensureAudioSessionActivationStateAfterDelay()
+    }
+
+    // MARK: Dependencies
+
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
     }
 
     // MARK: Factory Methods
@@ -65,17 +71,9 @@ public class AudioActivity: NSObject {
 @objc
 public class OWSAudioSession: NSObject {
 
-    // Force singleton access
-    @objc public static let shared = OWSAudioSession()
-
-    private override init() {}
-
+    @objc
     public func setup() {
-        NotificationCenter.default.addObserver(forName: .UIDeviceProximityStateDidChange,
-                                               object: nil,
-                                               queue: nil) { [weak self] _ in
-                                                self?.ensureProximityState()
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: .UIDeviceProximityStateDidChange, object: nil)
     }
 
     // MARK: Dependencies

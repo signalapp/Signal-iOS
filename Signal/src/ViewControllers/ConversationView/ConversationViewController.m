@@ -289,6 +289,15 @@ typedef enum : NSUInteger {
     _recordVoiceNoteAudioActivity = [AudioActivity recordActivityWithAudioDescription:audioActivityDescription];
 }
 
+#pragma mark - Dependencies
+
+- (OWSAudioSession *)audioSession
+{
+    return Environment.shared.audioSession;
+}
+
+#pragma mark
+
 - (void)addNotificationListeners
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -3614,7 +3623,7 @@ typedef enum : NSUInteger {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    BOOL configuredAudio = [OWSAudioSession.shared startAudioActivity:self.recordVoiceNoteAudioActivity];
+    BOOL configuredAudio = [self.audioSession startAudioActivity:self.recordVoiceNoteAudioActivity];
     if (!configuredAudio) {
         OWSFailDebug(@"Couldn't configure audio session");
         [self cancelVoiceMemo];
@@ -3715,7 +3724,7 @@ typedef enum : NSUInteger {
 - (void)stopRecording
 {
     [self.audioRecorder stop];
-    [OWSAudioSession.shared endAudioActivity:self.recordVoiceNoteAudioActivity];
+    [self.audioSession endAudioActivity:self.recordVoiceNoteAudioActivity];
 }
 
 - (void)cancelRecordingVoiceMemo

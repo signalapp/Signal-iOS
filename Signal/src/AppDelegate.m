@@ -1107,6 +1107,7 @@ static NSTimeInterval launchStartedAt;
     // If there were any messages in our local queue which we hadn't yet processed.
     [SSKEnvironment.shared.messageReceiver handleAnyUnprocessedEnvelopesAsync];
     [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
+    [Environment.shared.audioSession setup];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.primaryStorage.newDatabaseConnection

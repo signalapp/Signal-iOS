@@ -84,6 +84,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self stop];
 }
 
+#pragma mark - Dependencies
+
+- (OWSAudioSession *)audioSession
+{
+    return Environment.shared.audioSession;
+}
+
+#pragma mark
+
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     [self stop];
@@ -107,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    BOOL success = [OWSAudioSession.shared startAudioActivity:audioActivity];
+    BOOL success = [self.audioSession startAudioActivity:audioActivity];
     OWSAssertDebug(success);
 
     OWSAssertDebug(self.mediaUrl);
@@ -179,8 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)endAudioActivities
 {
-    [OWSAudioSession.shared endAudioActivity:self.playbackAudioActivity];
-    [OWSAudioSession.shared endAudioActivity:self.currentCategoryAudioActivity];
+    [self.audioSession endAudioActivity:self.playbackAudioActivity];
+    [self.audioSession endAudioActivity:self.currentCategoryAudioActivity];
 }
 
 - (void)togglePlayStateWithPlaybackAudioCategory
