@@ -4,11 +4,23 @@
 
 import Foundation
 
-public extension Error {
-    var isRetryable: Bool {
-        return (self as NSError).isRetryable
-    }
-}
+/// Durably enqueues a message for sending.
+///
+/// The queue's operations (`MessageSenderOperation`) uses `MessageSender` to send a message.
+///
+/// ## Retry behavior
+///
+/// Like all JobQueue's, MessageSenderJobQueue implements retry handling for operation errors.
+///
+/// `MessageSender` also includes it's own retry logic necessary to encapsulate business logic around
+/// a user changing their Registration ID, or adding/removing devices. That is, it is sometimes *normal*
+/// for MessageSender to have to resend to a recipient multiple times before it is accepted, and doesn't
+/// represent a "failure" from the application standpoint.
+///
+/// So we have an inner non-durable retry (MessageSender) and an outer durable retry (MessageSenderJobQueue).
+///
+/// Both respect the `error.isRetryable` convention to be sure we don't keep retrying in some situations
+/// (e.g. rate limiting)
 
 @objc(SSKMessageSenderJobQueue)
 public class MessageSenderJobQueue: NSObject, JobQueue {
@@ -104,6 +116,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         return operationQueue
     }()
 
+    // We use a per-thread serial OperationQueue to ensure messages are delivered to the
+    // service in the order the user sent them.
     public func operationQueue(jobRecord: SSKMessageSenderJobRecord) -> OperationQueue {
         guard let threadId = jobRecord.threadId else {
             return defaultQueue

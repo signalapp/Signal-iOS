@@ -9,12 +9,22 @@ import Foundation
 /// When work needs to be done, add it to the JobQueue.
 /// The JobQueue will persist a JobRecord to be sure that work can be restarted if the app is killed.
 ///
-/// The actual work, is carried out in an operation which the JobQueue spins off, based on the contents
+/// The actual work, is carried out in a DurableOperation which the JobQueue spins off, based on the contents
 /// of a JobRecord.
 ///
-/// For a concrete example, adding a message to MessageSenderJobQueue, first records a SSKMessageSenderJobRecord.
-/// The MessageSenderJobQueue can use that SSKMessageSenderJobRecord to create a MessageSenderOperation which
+/// For a concrete example, take message sending.
+/// Add an outgoing message to the MessageSenderJobQueue, which first records a SSKMessageSenderJobRecord.
+/// The MessageSenderJobQueue then uses that SSKMessageSenderJobRecord to create a MessageSenderOperation which
 /// takes care of the actual business of communicating with the service.
+///
+/// DurableOperations are retryable - via their `remainingRetries` logic. However, if the operation encounters
+/// an error where `error.isRetryable == false`, the operation will fail, regardless of available retries.
+
+public extension Error {
+    var isRetryable: Bool {
+        return (self as NSError).isRetryable
+    }
+}
 
 public enum JobError: Error {
     case assertionFailure(description: String)
