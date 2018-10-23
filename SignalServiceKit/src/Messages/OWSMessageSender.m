@@ -1062,7 +1062,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     SignalRecipient *recipient = messageSend.recipient;
 
-    OWSLogInfo(@"Message send succeeded.");
+    OWSLogInfo(
+        @"successfully sent message: %@ timestamp: %llu", messageSend.message.class, messageSend.message.timestamp);
 
     if (messageSend.isLocalNumber && deviceMessages.count == 0) {
         OWSLogInfo(@"Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.");
@@ -1105,7 +1106,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
 
-    OWSLogInfo(@"sending to recipient: %@, failed with error.", recipient.uniqueId);
+    OWSLogInfo(@"failed to send message: %@, timestamp: %llu, to recipient: %@",
+        message.class,
+        message.timestamp,
+        recipient.uniqueId);
 
     void (^retrySend)(void) = ^void() {
         if (messageSend.remainingAttempts <= 0) {
