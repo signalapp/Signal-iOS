@@ -10,6 +10,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -208,16 +209,59 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *unidentifiedDeliveryIndicatorsSection = [OWSTableSection new];
     unidentifiedDeliveryIndicatorsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE", @"table section label");
+    [unidentifiedDeliveryIndicatorsSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^UITableViewCell * {
+                        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
+                                                                       reuseIdentifier:@"UITableViewCellStyleValue1"];
+                        [OWSTableItem configureCell:cell];
+                        cell.preservesSuperviewLayoutMargins = YES;
+                        cell.contentView.preservesSuperviewLayoutMargins = YES;
+                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                        UILabel *label = [UILabel new];
+                        label.text
+                            = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS", @"switch label");
+                        label.font = [UIFont ows_regularFontWithSize:18.f];
+                        label.textColor = [Theme primaryColor];
+                        [label setContentHuggingHorizontalHigh];
+
+                        UIImage *icon = [UIImage imageNamed:@"ic_secret_sender_indicator"];
+                        UIImageView *iconView = [[UIImageView alloc]
+                            initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+                        iconView.tintColor = Theme.secondaryColor;
+                        [iconView setContentHuggingHorizontalHigh];
+
+                        UIView *spacer = [UIView new];
+                        [spacer setContentHuggingHorizontalLow];
+
+                        UISwitch *cellSwitch = [UISwitch new];
+                        cell.accessoryView = cellSwitch;
+                        [cellSwitch setOn:weakSelf.preferences.shouldShowUnidentifiedDeliveryIndicators];
+                        [cellSwitch addTarget:weakSelf
+                                       action:@selector(didToggleUDShowIndicatorsSwitch:)
+                             forControlEvents:UIControlEventValueChanged];
+                        [cellSwitch setContentHuggingHorizontalHigh];
+
+                        UIStackView *stackView =
+                            [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer, cellSwitch ]];
+                        stackView.axis = UILayoutConstraintAxisHorizontal;
+                        stackView.spacing = 10;
+
+                        [cell.contentView addSubview:stackView];
+                        [stackView ows_autoPinToSuperviewMargins];
+                        return cell;
+                    }
+                    customRowHeight:UITableViewAutomaticDimension
+                    actionBlock:^{
+                        NSURL *url = [NSURL URLWithString:@"https://signal.org/blog/secret-sender/"];
+                        OWSAssertDebug(url);
+                        [UIApplication.sharedApplication openURL:url];
+                    }]];
 
     unidentifiedDeliveryIndicatorsSection.footerTitle
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER", @"table section footer");
-
-    OWSTableItem *showUDIndicatorsItem = [OWSTableItem
-        switchItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS", @"switch label")
-                      isOn:weakSelf.preferences.shouldShowUnidentifiedDeliveryIndicators
-                    target:weakSelf
-                  selector:@selector(didToggleUDShowIndicatorsSwitch:)];
-    [unidentifiedDeliveryIndicatorsSection addItem:showUDIndicatorsItem];
+    [contents addSection:unidentifiedDeliveryIndicatorsSection];
 
     OWSTableSection *unidentifiedDeliveryUnrestrictedSection = [OWSTableSection new];
     OWSTableItem *unrestrictedAccessItem = [OWSTableItem
@@ -226,12 +270,21 @@ NS_ASSUME_NONNULL_BEGIN
                     target:weakSelf
                   selector:@selector(didToggleUDUnrestrictedAccessSwitch:)];
     [unidentifiedDeliveryUnrestrictedSection addItem:unrestrictedAccessItem];
-
     unidentifiedDeliveryUnrestrictedSection.footerTitle
         = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
-
-    [contents addSection:unidentifiedDeliveryIndicatorsSection];
     [contents addSection:unidentifiedDeliveryUnrestrictedSection];
+
+    OWSTableSection *unidentifiedDeliveryLearnMoreSection = [OWSTableSection new];
+    [unidentifiedDeliveryLearnMoreSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE",
+                                                         @"Label for a link to more info about unidentified delivery.")
+                                         actionBlock:^{
+                                             NSURL *url =
+                                                 [NSURL URLWithString:@"https://signal.org/blog/secret-sender/"];
+                                             OWSAssertDebug(url);
+                                             [UIApplication.sharedApplication openURL:url];
+                                         }]];
+    [contents addSection:unidentifiedDeliveryLearnMoreSection];
 
     self.contents = contents;
 }
