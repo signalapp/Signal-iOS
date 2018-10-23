@@ -60,7 +60,6 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     }
 }
 
-@objc(OWSSessionResetJob)
 public class SessionResetOperation: OWSOperation, DurableOperation {
 
     // MARK: DurableOperation
@@ -101,12 +100,17 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     // MARK: 
 
+    var firstAttempt = true
+
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
-        self.dbConnection.readWrite { transaction in
-            Logger.info("deleting sessions for recipient: \(self.recipientId)")
-            self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
+        if firstAttempt {
+            self.dbConnection.readWrite { transaction in
+                Logger.info("deleting sessions for recipient: \(self.recipientId)")
+                self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
+            }
+            firstAttempt = false
         }
 
         let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
