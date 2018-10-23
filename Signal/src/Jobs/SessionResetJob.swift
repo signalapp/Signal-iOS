@@ -153,7 +153,13 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     override public func retryDelay() -> dispatch_time_t {
         // Arbitrary backoff factor...
-        // 10 failures, wait ~1min
+        // With backOffFactor of 1.9
+        // try  1 delay:  0.00s
+        // try  2 delay:  0.19s
+        // ...
+        // try  5 delay:  1.30s
+        // ...
+        // try 11 delay: 61.31s
         let backoffFactor = 1.9
         let maxBackoff = kHourInterval
 
