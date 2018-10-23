@@ -22,7 +22,7 @@ public class OWSVideoPlayer: NSObject {
 
     @objc init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
-        self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", options: [.playback])
+        self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", behavior: .playback)
 
         super.init()
 

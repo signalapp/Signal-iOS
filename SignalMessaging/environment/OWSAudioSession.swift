@@ -5,33 +5,16 @@
 import Foundation
 import WebRTC
 
-public struct AudioActivityOptions: OptionSet {
-    public let rawValue: Int
-
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
-    }
-
-    public static let playback = AudioActivityOptions(rawValue: 1 << 0)
-    public static let record = AudioActivityOptions(rawValue: 1 << 1)
-    public static let proximitySwitchesToEarPiece = AudioActivityOptions(rawValue: 1 << 2)
-}
-
-@objc
+@objc(OWSAudioActivity)
 public class AudioActivity: NSObject {
     let audioDescription: String
 
-    let options: AudioActivityOptions
+    let behavior: OWSAudioBehavior
 
     @objc
-    public init(audioDescription: String) {
+    public init(audioDescription: String, behavior: OWSAudioBehavior) {
         self.audioDescription = audioDescription
-        self.options = []
-    }
-
-    public init(audioDescription: String, options: AudioActivityOptions) {
-        self.audioDescription = audioDescription
-        self.options = options
+        self.behavior = behavior
     }
 
     deinit {
@@ -42,23 +25,6 @@ public class AudioActivity: NSObject {
 
     var audioSession: OWSAudioSession {
         return Environment.shared.audioSession
-    }
-
-    // MARK: Factory Methods
-
-    @objc
-    public class func playbackActivity(audioDescription: String) -> AudioActivity {
-        return AudioActivity(audioDescription: audioDescription, options: .playback)
-    }
-
-    @objc
-    public class func recordActivity(audioDescription: String) -> AudioActivity {
-        return AudioActivity(audioDescription: audioDescription, options: .record)
-    }
-
-    @objc
-    public class func voiceNoteActivity(audioDescription: String) -> AudioActivity {
-        return AudioActivity(audioDescription: audioDescription, options: [.playback, .proximitySwitchesToEarPiece])
     }
 
     // MARK: 
@@ -85,8 +51,8 @@ public class OWSAudioSession: NSObject {
     // MARK: 
 
     private var currentActivities: [Weak<AudioActivity>] = []
-    var aggregateOptions: AudioActivityOptions {
-        return  AudioActivityOptions(self.currentActivities.compactMap { $0.value?.options })
+    var aggregateBehaviors: Set<OWSAudioBehavior> {
+        return Set(self.currentActivities.compactMap { $0.value?.behavior })
     }
 
     @objc
@@ -99,21 +65,28 @@ public class OWSAudioSession: NSObject {
         self.currentActivities.append(Weak(value: audioActivity))
 
         do {
-            if aggregateOptions.contains(.record) {
-                assert(avAudioSession.recordPermission() == .granted)
-                try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
-            } else if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
-                try ensureCategoryForProximityState()
-            } else if aggregateOptions.contains(.playback) {
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+            if aggregateBehaviors.contains(.call) {
+                // Do nothing while on a call.
+                // WebRTC/CallAudioService manages call audio
+                // Eventually it would be nice to consolidate more of the audio
+                // session handling.
             } else {
-                Logger.debug("no category option specified. Leaving category untouched.")
-            }
+                if aggregateBehaviors.contains(.playAndRecord) {
+                    assert(avAudioSession.recordPermission() == .granted)
+                    try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
+                } else if aggregateBehaviors.contains(.audioMessagePlayback) {
+                    try ensureCategoryForProximityState()
+                } else if aggregateBehaviors.contains(.playback) {
+                    try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+                } else {
+                    owsFailDebug("no category option specified. Leaving category untouched.")
+                }
 
-            if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
-                self.device.isProximityMonitoringEnabled = true
-            } else {
-                self.device.isProximityMonitoringEnabled = false
+                if aggregateBehaviors.contains(.audioMessagePlayback) {
+                    self.device.isProximityMonitoringEnabled = true
+                } else {
+                    self.device.isProximityMonitoringEnabled = false
+                }
             }
 
             return true
@@ -133,7 +106,7 @@ public class OWSAudioSession: NSObject {
     }
 
     func ensureCategoryForProximityState() throws {
-        if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
+        if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")
 

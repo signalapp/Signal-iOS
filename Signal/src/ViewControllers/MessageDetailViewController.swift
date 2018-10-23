@@ -668,19 +668,19 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             // Is this player associated with this media adapter?
             if audioAttachmentPlayer.owner === viewItem {
                 // Tap to pause & unpause.
-                audioAttachmentPlayer.togglePlayStateWithPlaybackAudioCategory()
+                audioAttachmentPlayer.togglePlayState()
                 return
             }
             audioAttachmentPlayer.stop()
             self.audioAttachmentPlayer = nil
         }
 
-        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, delegate: viewItem)
+        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback, delegate: viewItem)
         self.audioAttachmentPlayer = audioAttachmentPlayer
 
         // Associate the player with this media adapter.
         audioAttachmentPlayer.owner = viewItem
-        audioAttachmentPlayer.playWithPlaybackAudioCategory()
+        audioAttachmentPlayer.play()
     }
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {

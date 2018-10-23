@@ -88,7 +88,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
 
-        self.audioActivity = AudioActivity(audioDescription: "[CallKitCallUIAdaptee]")
+        self.audioActivity = AudioActivity(audioDescription: "[CallKitCallUIAdaptee]", behavior: .call)
         self.showNamesOnCallScreen = showNamesOnCallScreen
 
         super.init()

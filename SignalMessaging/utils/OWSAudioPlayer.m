@@ -35,8 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSURL *mediaUrl;
 @property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
 @property (nonatomic, nullable) NSTimer *audioPlayerPoller;
-@property (nonatomic, readonly) AudioActivity *playbackAudioActivity;
-@property (nonatomic, readonly) AudioActivity *currentCategoryAudioActivity;
+@property (nonatomic, readonly) OWSAudioActivity *audioActivity;
 
 @end
 
@@ -45,11 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSAudioPlayer
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
+                   audioBehavior:(OWSAudioBehavior)audioBehavior
 {
-    return [self initWithMediaUrl:mediaUrl delegate:[OWSAudioPlayerDelegateStub new]];
+    return [self initWithMediaUrl:mediaUrl audioBehavior:audioBehavior delegate:[OWSAudioPlayerDelegateStub new]];
 }
 
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioPlayerDelegate>)delegate
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
+                        audioBehavior:(OWSAudioBehavior)audioBehavior
+                        delegate:(id<OWSAudioPlayerDelegate>)delegate
 {
     self = [super init];
     if (!self) {
@@ -59,13 +61,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(mediaUrl);
     OWSAssertDebug(delegate);
 
-    _delegate = delegate;
     _mediaUrl = mediaUrl;
+    _delegate = delegate;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", self.logTag, self.mediaUrl];
-    //    _playbackAudioActivity = [AudioActivity playbackActivityWithAudioDescription:audioActivityDescription];
-    _playbackAudioActivity = [AudioActivity voiceNoteActivityWithAudioDescription:audioActivityDescription];
-    _currentCategoryAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
+    _audioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:audioBehavior];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
@@ -100,19 +100,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (void)playWithCurrentAudioCategory
+- (void)play
 {
+
+    // get current audio activity
     OWSAssertIsOnMainThread();
-    [self playWithAudioActivity:self.currentCategoryAudioActivity];
+    [self playWithAudioActivity:self.audioActivity];
 }
 
-- (void)playWithPlaybackAudioCategory
-{
-    OWSAssertIsOnMainThread();
-    [self playWithAudioActivity:self.playbackAudioActivity];
-}
-
-- (void)playWithAudioActivity:(AudioActivity *)audioActivity
+- (void)playWithAudioActivity:(OWSAudioActivity *)audioActivity
 {
     OWSAssertIsOnMainThread();
 
@@ -188,18 +184,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)endAudioActivities
 {
-    [self.audioSession endAudioActivity:self.playbackAudioActivity];
-    [self.audioSession endAudioActivity:self.currentCategoryAudioActivity];
+    [self.audioSession endAudioActivity:self.audioActivity];
 }
 
-- (void)togglePlayStateWithPlaybackAudioCategory
+- (void)togglePlayState
 {
     OWSAssertIsOnMainThread();
 
     if (self.delegate.audioPlaybackState == AudioPlaybackState_Playing) {
         [self pause];
     } else {
-        [self playWithAudioActivity:self.playbackAudioActivity];
+        [self playWithAudioActivity:self.audioActivity];
     }
 }
 

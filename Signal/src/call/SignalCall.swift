@@ -161,7 +161,7 @@ protocol CallObserver: class {
         self.state = state
         self.remotePhoneNumber = remotePhoneNumber
         self.thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
-        self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remotePhoneNumber)")
+        self.audioActivity = AudioActivity(audioDescription: "[SignalCall] with \(remotePhoneNumber)", behavior: .call)
     }
 
     // A string containing the three identifiers for this call.

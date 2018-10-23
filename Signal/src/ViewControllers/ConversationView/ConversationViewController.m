@@ -149,7 +149,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
-@property (nonatomic, readonly) AudioActivity *recordVoiceNoteAudioActivity;
+@property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 // These two properties must be updated in lockstep.
@@ -286,7 +286,7 @@ typedef enum : NSUInteger {
     _contactShareViewHelper.delegate = self;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
-    _recordVoiceNoteAudioActivity = [AudioActivity recordActivityWithAudioDescription:audioActivityDescription];
+    _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 }
 
 #pragma mark - Dependencies
@@ -2232,7 +2232,7 @@ typedef enum : NSUInteger {
         // Is this player associated with this media adapter?
         if (self.audioAttachmentPlayer.owner == viewItem) {
             // Tap to pause & unpause.
-            [self.audioAttachmentPlayer togglePlayStateWithPlaybackAudioCategory];
+            [self.audioAttachmentPlayer togglePlayState];
             return;
         }
         [self.audioAttachmentPlayer stop];
@@ -2240,10 +2240,11 @@ typedef enum : NSUInteger {
     }
 
     self.audioAttachmentPlayer =
-        [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL delegate:viewItem];
+        [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL audioBehavior:OWSAudioBehavior_AudioMessagePlayback delegate:viewItem];
+    
     // Associate the player with this media adapter.
     self.audioAttachmentPlayer.owner = viewItem;
-    [self.audioAttachmentPlayer playWithPlaybackAudioCategory];
+    [self.audioAttachmentPlayer play];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
