@@ -4,6 +4,51 @@ Signal is a messaging app for simple private communication with friends.
 
 [![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8)
 
+# Building
+
+For now you can use the latest Xcode version (10.0 at the moment)
+
+## 0. Prerequisites
+
+Make sure [CocoaPods](https://cocoapods.org/about) and [Carthage](https://github.com/Carthage/Carthage) both installed on your computer. You can install both using [Homebrew](https://brew.sh)
+Once you have brew installed, run 2 commands in the Terminal : 
+
+```ruby
+brew install cocoapods
+```
+
+```ruby
+brew install carthage
+```
+
+Moreover, ask your colleagues to add you to our Apple developers team.
+
+Once you are done with these steps, move on.
+
+## 1. Clone
+
+Clone our repository using SSH or HTTP
+
+## 2. Dependencies
+
+Before first build run 3 commands inside your local project's folder :
+
+```ruby
+pod install
+```
+
+```ruby
+// DO NOT run: `carthage update` or `carthage checkout`.
+git submodule update --init
+carthage build --platform iOS
+```
+
+## 3. Xcode
+
+For now our project doesn't work with simulators, so you need to build on the real device.
+To achieve it make sure you've been added to Apple Developers team and you are logged in with your account inside Xcode.
+Then go to the Project tab inside Xcode and set signing to Automatic. Select "LETKNOW HQ COMPANY LIMITED" for both targets : Signal & Signal-ShareExtension. Run on the device.
+
 ## Translation
 
 Help us translate Signal! The translation effort happens on [Transifex](https://www.transifex.com/signalapp/signal-ios/)
