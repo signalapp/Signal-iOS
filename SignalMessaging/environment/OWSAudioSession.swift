@@ -102,6 +102,8 @@ public class OWSAudioSession: NSObject {
             if aggregateOptions.contains(.record) {
                 assert(avAudioSession.recordPermission() == .granted)
                 try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
+            } else if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
+                try ensureCategoryForProximityState()
             } else if aggregateOptions.contains(.playback) {
                 try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
             } else {
@@ -110,41 +112,36 @@ public class OWSAudioSession: NSObject {
 
             if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
                 self.device.isProximityMonitoringEnabled = true
-                self.shouldAdjustAudioForProximity = true
             } else {
                 self.device.isProximityMonitoringEnabled = false
-                self.shouldAdjustAudioForProximity = false
             }
-            ensureProximityState()
 
             return true
         } catch {
             owsFailDebug("failed with error: \(error)")
             return false
         }
-
     }
 
-    var shouldAdjustAudioForProximity: Bool = false
+    @objc
     func proximitySensorStateDidChange(notification: Notification) {
-        if shouldAdjustAudioForProximity {
-            ensureProximityState()
+        do {
+            try ensureCategoryForProximityState()
+        } catch {
+            owsFailDebug("error in response to proximity change: \(error)")
         }
     }
 
-    // TODO: externally modified proximityState monitoring e.g. CallViewController
-    // TODO: make sure we *undo* anything as appropriate if there are concurrent audio activities
-    func ensureProximityState() {
-        if self.device.proximityState {
-            Logger.debug("proximityState: true")
+    func ensureCategoryForProximityState() throws {
+        if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
+            if self.device.proximityState {
+                Logger.debug("proximityState: true")
 
-            try! self.avAudioSession.overrideOutputAudioPort(.none)
-        } else {
-            Logger.debug("proximityState: false")
-            do {
-                try self.avAudioSession.overrideOutputAudioPort(.speaker)
-            } catch {
-                Logger.error("error: \(error)")
+                try avAudioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+                try avAudioSession.overrideOutputAudioPort(.none)
+            } else {
+                Logger.debug("proximityState: false")
+                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
             }
         }
     }
@@ -157,16 +154,11 @@ public class OWSAudioSession: NSObject {
         defer { objc_sync_exit(self) }
 
         currentActivities = currentActivities.filter { return $0.value != audioActivity }
-
-        if aggregateOptions.contains(.proximitySwitchesToEarPiece) {
-            self.device.isProximityMonitoringEnabled = true
-            self.shouldAdjustAudioForProximity = true
-        } else {
-            self.device.isProximityMonitoringEnabled = false
-            self.shouldAdjustAudioForProximity = false
+        do {
+            try ensureCategoryForProximityState()
+        } catch {
+            owsFailDebug("error in ensureProximityState: \(error)")
         }
-        ensureProximityState()
-
         ensureAudioSessionActivationStateAfterDelay()
     }
 
