@@ -1219,6 +1219,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             [self handleMismatchedDevicesWithResponseJson:responseJson recipient:recipient completion:retrySend];
+
+            if (messageSend.isLocalNumber) {
+                // Don't use websocket; it may have obsolete cached state.
+                [messageSend setHasWebsocketSendFailed:YES];
+            }
+
             break;
         }
         case 410: {
@@ -1238,6 +1244,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             [self handleStaleDevicesWithResponseJson:responseJson recipientId:recipient.uniqueId completion:retrySend];
+
+            if (messageSend.isLocalNumber) {
+                // Don't use websocket; it may have obsolete cached state.
+                [messageSend setHasWebsocketSendFailed:YES];
+            }
+
             break;
         }
         default:
