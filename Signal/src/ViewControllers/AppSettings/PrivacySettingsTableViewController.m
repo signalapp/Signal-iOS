@@ -247,6 +247,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer, cellSwitch ]];
                         stackView.axis = UILayoutConstraintAxisHorizontal;
                         stackView.spacing = 10;
+                        stackView.alignment = UIStackViewAlignmentCenter;
 
                         [cell.contentView addSubview:stackView];
                         [stackView ows_autoPinToSuperviewMargins];
