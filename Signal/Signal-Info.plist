@@ -135,5 +135,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>WebRTCCommit</key>
+	<string>af8b6b232df749574744cd5d092227f8559969f9 M69</string>
 </dict>
 </plist>
