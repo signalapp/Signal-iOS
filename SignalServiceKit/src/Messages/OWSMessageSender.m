@@ -626,15 +626,40 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     void (^successHandler)(void) = ^() {
         dispatch_async([OWSDispatch sendingQueue], ^{
-            [self handleMessageSentLocally:message senderCertificate:senderCertificate];
+            [self handleMessageSentLocally:message
+                senderCertificate:senderCertificate
+                success:^{
+                    successHandlerParam();
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu",
+                        message.class,
+                        message.timestamp);
+
+                    failureHandlerParam(error);
+                }];
         });
-        successHandlerParam();
     };
     void (^failureHandler)(NSError *) = ^(NSError *error) {
         if (message.wasSentToAnyRecipient) {
             dispatch_async([OWSDispatch sendingQueue], ^{
-                [self handleMessageSentLocally:message senderCertificate:senderCertificate];
+                [self handleMessageSentLocally:message
+                    senderCertificate:senderCertificate
+                    success:^{
+                        failureHandlerParam(error);
+                    }
+                    failure:^(NSError *syncError) {
+                        OWSLogError(@"Error sending sync message for message: %@ timestamp: %llu, %@",
+                            message.class,
+                            message.timestamp,
+                            syncError);
+
+                        // Discard the "sync message" error in favor of the
+                        // original error.
+                        failureHandlerParam(error);
+                    }];
             });
+            return;
         }
         failureHandlerParam(error);
     };
@@ -1303,29 +1328,40 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
                senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                         success:(void (^)(void))success
+                         failure:(RetryableFailureHandler)failure
 {
-    if (message.shouldSyncTranscript) {
-        // TODO: I suspect we shouldn't optimistically set hasSyncedTranscript.
-        //       We could set this in a success handler for [sendSyncTranscriptForMessage:].
-        // TODO: We might send to a recipient, then to another recipient on retry.
-        //       To ensure desktop receives all "delivery status" info, we might
-        //       want to send a transcript after every send that reaches _any_
-        //       new recipients.
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [message updateWithHasSyncedTranscript:YES transaction:transaction];
-        }];
-        [self sendSyncTranscriptForMessage:message senderCertificate:senderCertificate];
-    }
-
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];
     }];
+
+    if (!message.shouldSyncTranscript) {
+        return success();
+    }
+
+    [self
+        sendSyncTranscriptForMessage:message
+                   senderCertificate:senderCertificate
+                             success:^{
+                                 // TODO: We might send to a recipient, then to another recipient on retry.
+                                 //       To ensure desktop receives all "delivery status" info, we might
+                                 //       want to send a transcript after every send that reaches _any_
+                                 //       new recipients.
+                                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                     [message updateWithHasSyncedTranscript:YES transaction:transaction];
+                                 }];
+
+                                 success();
+                             }
+                             failure:failure];
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
                    senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                             success:(void (^)(void))success
+                             failure:(RetryableFailureHandler)failure
 {
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message];
@@ -1344,14 +1380,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         localNumber:self.tsAccountManager.localNumber
         success:^{
             OWSLogInfo(@"Successfully sent sync transcript.");
+
+            success();
         }
         failure:^(NSError *error) {
-            // FIXME: We don't yet honor the isRetryable flag here, since sendSyncTranscriptForMessage
-            // isn't yet wrapped in our retryable SendMessageOperation. Addressing this would require
-            // a refactor to the MessageSender. Note that we *do* however continue to respect the
-            // OWSMessageSenderRetryAttempts, which is an "inner" retry loop, encompassing only the
-            // messaging API.
             OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
+
+            failure(error);
         }];
     [self sendMessageToRecipient:messageSend];
 }
