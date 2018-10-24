@@ -726,11 +726,11 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         [userProfile clearWithProfileKey:profileKey
                             dbConnection:self.dbConnection
                               completion:^{
-                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
-                                      [ProfileFetcherJob runWithRecipientId:recipientId
-                                                             networkManager:self.networkManager
-                                                           ignoreThrottling:YES];
-                                  });
+//                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
+//                                      [ProfileFetcherJob runWithRecipientId:recipientId
+//                                                             networkManager:self.networkManager
+//                                                           ignoreThrottling:YES];
+//                                  });
                               }];
     });
 }

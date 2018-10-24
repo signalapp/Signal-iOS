@@ -85,40 +85,40 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func ensureProfileComplete() -> Promise<Void> {
-            guard let localRecipientId = TSAccountManager.localUID() else {
+//            guard let localRecipientId = TSAccountManager.localUID() else {
                 // local app doesn't think we're registered, so nothing to worry about.
                 return Promise(value: ())
-            }
+//            }
 
-            let (promise, fulfill, reject) = Promise<Void>.pending()
-
-            guard let networkManager = Environment.current().networkManager else {
-                return Promise(error: OWSErrorMakeAssertionError("\(TAG) network manager was unexpectedly not set"))
-            }
-
-            ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
-                Logger.info("\(self.TAG) verified recipient profile is in good shape: \(localRecipientId)")
-
-                fulfill(())
-            }.catch { error in
-                switch error {
-                case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
-                    Logger.warn("\(self.TAG) detected incomplete profile for \(localRecipientId) error: \(description)")
-                    // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.
-                    TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
-                                                    success: {
-                                                        Logger.info("\(self.TAG) successfully uploaded pre-keys. Profile should be fixed.")
-                                                        fulfill(())
-                    },
-                                                    failure: { _ in
-                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.TAG) Unknown error in \(#function)"))
-                    })
-                default:
-                    reject(error)
-                }
-            }.retainUntilComplete()
-
-            return promise
+//            let (promise, fulfill, reject) = Promise<Void>.pending()
+//
+//            guard let networkManager = Environment.current().networkManager else {
+//                return Promise(error: OWSErrorMakeAssertionError("\(TAG) network manager was unexpectedly not set"))
+//            }
+//
+//            ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
+//                Logger.info("\(self.TAG) verified recipient profile is in good shape: \(localRecipientId)")
+//
+//                fulfill(())
+//            }.catch { error in
+//                switch error {
+//                case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
+//                    Logger.warn("\(self.TAG) detected incomplete profile for \(localRecipientId) error: \(description)")
+//                    // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.
+//                    TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
+//                                                    success: {
+//                                                        Logger.info("\(self.TAG) successfully uploaded pre-keys. Profile should be fixed.")
+//                                                        fulfill(())
+//                    },
+//                                                    failure: { _ in
+//                                                        reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.TAG) Unknown error in \(#function)"))
+//                    })
+//                default:
+//                    reject(error)
+//                }
+//            }.retainUntilComplete()
+//
+//            return promise
         }
     }
 }

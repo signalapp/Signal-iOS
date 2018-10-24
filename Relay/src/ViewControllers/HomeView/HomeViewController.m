@@ -374,8 +374,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     [super viewDidLoad];
 
-    self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
-    
     // Create the database connection.
     [self uiDatabaseConnection];
 
@@ -1477,7 +1475,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 -(YapDatabaseConnection *)editingDbConnection {
     
-    NSAssert(![NSThread isMainThread], @"editingDbConnenction must not be access on the main thread!");
+//    NSAssert(![NSThread isMainThread], @"editingDbConnection must not be access on the main thread!");
     if (_editingDbConnection == nil) {
         _editingDbConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
     }
