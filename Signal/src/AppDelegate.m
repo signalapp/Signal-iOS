@@ -476,6 +476,7 @@ static NSTimeInterval launchStartedAt;
     free(machine);
 
     OWSLogInfo(@"iPhone Version: %@", platform);
+    OWSLogInfo(@"WebRTC Commit: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"WebRTCCommit"]);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
