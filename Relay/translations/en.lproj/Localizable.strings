@@ -2401,3 +2401,9 @@
 
 "APPEARANCE_GRAVATAR_SECTION" = "Avatars";
 "APPEARANCE_USE_GRAVATARS" = "Use Gravatars";
+
+/* Pressing this button pins a thread */
+"PIN_ACTION" = "Pin";
+
+/* Pressing this button unpins a thread */
+"UNPIN_ACTION" = "Unpin";
