@@ -265,7 +265,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     } else {
         OWSProdLogAndFail(@"%@ Could not decode object: %@", self.logTag, name);
     }
-    OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
 }
 
@@ -317,7 +316,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         // The best we can try to do is to discard the current database
         // and behave like a clean install.
         OWSFail(@"%@ Could not load database", self.logTag);
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabase]);
 
         // Try to reset app by deleting all databases.
         //
@@ -326,7 +324,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
         if (![self tryToLoadDatabase]) {
             OWSFail(@"%@ Could not load database (second try)", self.logTag);
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
 
             // Sleep to give analytics events time to be delivered.
             [NSThread sleepForTimeInterval:15.0f];
@@ -494,7 +491,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         } @catch (NSException *exception) {
             // Sync log in case we bail.
             OWSProdLogAndFail(@"%@ error deserializing object: %@, %@", self.logTag, collection, exception);
-            OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
     };
@@ -796,7 +792,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
             OWSFail(@"%@ Could not load database metadata", self.logTag);
-            OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
         }
 
         // Try to reset app by deleting database.
@@ -877,7 +872,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     BOOL success = [SAMKeychain setPasswordData:data forService:keychainService account:keychainKey error:&error];
     if (!success || error) {
         OWSFail(@"%@ Could not store database metadata", self.logTag);
-        OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotStoreKeychainValue]);
 
         // Sleep to give analytics events time to be delivered.
         [NSThread sleepForTimeInterval:15.0f];

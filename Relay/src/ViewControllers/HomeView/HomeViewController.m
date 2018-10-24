@@ -374,8 +374,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     [super viewDidLoad];
 
-    self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
-    
     // Create the database connection.
     [self uiDatabaseConnection];
 
@@ -1401,7 +1399,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Perform the first step.
     if (self.presentedViewController) {
         if ([self.presentedViewController isKindOfClass:[CallViewController class]]) {
-            OWSProdInfo([OWSAnalyticsEvents errorCouldNotPresentViewDueToCall]);
+            DDLogError(@"errorCouldNotPresentViewDueToCall");
             return;
         }
         [self.presentedViewController dismissViewControllerAnimated:animateDismissal completion:dismissNavigationBlock];
@@ -1474,6 +1472,15 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 #pragma mark Database delegates
+
+-(YapDatabaseConnection *)editingDbConnection {
+    
+//    NSAssert(![NSThread isMainThread], @"editingDbConnection must not be access on the main thread!");
+    if (_editingDbConnection == nil) {
+        _editingDbConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
+    }
+    return _editingDbConnection;
+}
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
@@ -1705,17 +1712,20 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 -(void)togglePinningForThreadAtIndexPath:(NSIndexPath *)indexPath
 {
+
     __block TSThread *thread = [self threadForIndexPath:indexPath];
     
     if (thread) {
-        if (thread.pinPosition) {
-            thread.pinPosition = nil;
-        } else {
-            thread.pinPosition = [NSNumber numberWithInteger:[self.tableView numberOfRowsInSection:HomeViewControllerSectionPinned] + 1];
-        }
-        [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [thread saveWithTransaction:transaction];
-        }];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            if (thread.pinPosition) {
+                thread.pinPosition = nil;
+            } else {
+                thread.pinPosition = [NSNumber numberWithInteger:[self.tableView numberOfRowsInSection:HomeViewControllerSectionPinned] + 1];
+            }
+            [self.editingDbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [thread saveWithTransaction:transaction];
+            }];
+        });
     }
 }
 

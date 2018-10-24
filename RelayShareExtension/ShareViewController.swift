@@ -127,8 +127,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                object: nil)
 
         Logger.info("\(self.logTag) \(#function) completed.")
-
-        OWSAnalytics.appLaunchDidBegin()
     }
 
     deinit {

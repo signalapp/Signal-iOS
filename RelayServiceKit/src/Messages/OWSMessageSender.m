@@ -419,7 +419,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         
         if (![attachmentStream writeDataSource:dataSource]) {
-            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
             NSError *error = OWSErrorMakeWriteAttachmentDataError();
             return failureHandler(error);
         }
@@ -777,8 +776,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     AssertIsOnSendingQueue();
     
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
-        OWSProdError([OWSAnalyticsEvents messageSendErrorFailedDueToPrekeyUpdateFailures]);
-        
         // Retry prekey update every time user tries to send a message while app
         // is disabled due to prekey update failures.
         //
@@ -799,8 +796,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     if (remainingAttemptsParam <= 0) {
         // We should always fail with a specific error.
-        OWSProdFail([OWSAnalyticsEvents messageSenderErrorGenericSendFailure]);
-        
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         [error setIsRetryable:YES];
         return failureHandler(error);
@@ -817,8 +812,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
             // If it's happening a lot, we should rethink our profile fetching strategy.
-            OWSProdInfo([OWSAnalyticsEvents messageSendErrorFailedDueToUntrustedKey]);
-            
             NSString *localizedErrorDescriptionFormat
             = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
                                 @"action sheet header when re-sending message which failed because of untrusted identity keys");
@@ -836,13 +829,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             
             PreKeyBundle *_Nullable newKeyBundle = exception.userInfo[TSInvalidPreKeyBundleKey];
             if (newKeyBundle == nil) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorMissingNewPreKeyBundle]);
+                DDLogError(@"messageSenderErrorMissingNewPreKeyBundle");
                 failureHandler(error);
                 return;
             }
             
             if (![newKeyBundle isKindOfClass:[PreKeyBundle class]]) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorUnexpectedKeyBundle]);
+                DDLogError(@"messageSenderErrorUnexpectedKeyBundle");
                 failureHandler(error);
                 return;
             }
@@ -850,14 +843,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSData *newIdentityKeyWithVersion = newKeyBundle.identityKey;
             
             if (![newIdentityKeyWithVersion isKindOfClass:[NSData class]]) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorInvalidIdentityKeyType]);
+                DDLogError(@"messageSenderErrorInvalidIdentityKeyType");
                 failureHandler(error);
                 return;
             }
             
             // TODO migrate to storing the full 33 byte representation of the identity key.
             if (newIdentityKeyWithVersion.length != kIdentityKeyLength) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorInvalidIdentityKeyLength]);
+                DDLogError(@"messageSenderErrorInvalidIdentityKeyLength");
                 failureHandler(error);
                 return;
             }
@@ -1153,7 +1146,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 responseJson = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
             }
             if (error || !responseJson) {
-                OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotParseMismatchedDevicesJson]);
                 [error setIsRetryable:YES];
                 return failureHandler(error);
             }
@@ -1214,7 +1206,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self.dbConnection
      readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
          if (extraDevices.count < 1 && missingDevices.count < 1) {
-             OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
+             DDLogError(@"messageSenderErrorNoMissingOrExtraDevices");
          }
          
          if (extraDevices && extraDevices.count > 0) {
@@ -1369,9 +1361,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                      dispatch_semaphore_signal(sema);
                                  }
                                  failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                     if (!IsNSErrorNetworkFailure(error)) {
-                                         OWSProdError([OWSAnalyticsEvents messageSenderErrorRecipientPrekeyRequestFailed]);
-                                     }
                                      DDLogError(@"Server replied to PreKeyBundle request with error: %@", error);
                                      NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                                      if (response.statusCode == 404) {
@@ -1443,7 +1432,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
     
     if (error) {
-        OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
+        DDLogError(@"messageSendErrorCouldNotSerializeMessageJson");
         return nil;
     }
     

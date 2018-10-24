@@ -124,11 +124,9 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      OWSProdInfo([OWSAnalyticsEvents registrationRegisteringCode]);
                       [self.accountManager registerWithVerificationCode:self.verificationCode pin:pinCode]
                           .then(^{
                               OWSAssertIsOnMainThread();
-                              OWSProdInfo([OWSAnalyticsEvents registrationRegisteringSubmittedCode]);
                               [[OWS2FAManager sharedManager] mark2FAAsEnabledWithPin:pinCode];
 
                               DDLogInfo(@"%@ Successfully registered Signal account.", weakSelf.logTag);
@@ -142,7 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
                           })
                           .catch(^(NSError *error) {
                               OWSAssertIsOnMainThread();
-                              OWSProdInfo([OWSAnalyticsEvents registrationRegistrationFailed]);
                               DDLogError(@"%@ error verifying challenge: %@", weakSelf.logTag, error);
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{

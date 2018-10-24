@@ -61,7 +61,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     }];
 
     if (!attachmentStream) {
-        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
         // Not finding local attachment is a terminal failure.
         error.isRetryable = NO;

@@ -357,7 +357,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                                remainingRetries:remainingRetries - 1];
             } else {
                 if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents accountsErrorRegisterPushTokensFailed]);
+                    DDLogError(@"accountsErrorRegisterPushTokensFailed");
                 }
                 failureHandler(error);
             }
@@ -394,9 +394,6 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             successBlock();
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents accountsErrorVerificationCodeRequestFailed]);
-            }
             DDLogError(@"%@ Failed to request verification code request with error:%@", self.logTag, error);
             failureBlock(error);
         }];
@@ -480,9 +477,6 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents accountsErrorVerifyAccountRequestFailed]);
-            }
             OWSAssert([error.domain isEqualToString:TSNetworkManagerDomain]);
 
             DDLogWarn(@"%@ Error verifying code: %@", self.logTag, error.debugDescription);
@@ -598,9 +592,6 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                                                    userInfo:nil];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents accountsErrorUnregisterAccountRequestFailed]);
-            }
             DDLogError(@"%@ Failed to unregister with error: %@", self.logTag, error);
             failureBlock(error);
         }];
