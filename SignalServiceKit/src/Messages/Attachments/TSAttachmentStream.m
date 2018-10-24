@@ -564,7 +564,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 // This message has not yet been saved or has been deleted; do nothing.
                 // This isn't an error per se, but these race conditions should be
                 // _very_ rare.
-                OWSFailDebug(@"Attachment not yet saved.");
+                //
+                // An exception is incoming group avatar updates which we don't ever save.
+                OWSLogWarn(@"Attachment not yet saved.");
             }
         }];
 
