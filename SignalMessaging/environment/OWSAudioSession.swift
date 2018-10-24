@@ -44,6 +44,10 @@ public class OWSAudioSession: NSObject {
 
     // MARK: Dependencies
 
+    var proximityMonitoringManager: OWSProximityMonitoringManager {
+        return Environment.shared.proximityMonitoringManager
+    }
+
     private let avAudioSession = AVAudioSession.sharedInstance()
 
     private let device = UIDevice.current
@@ -65,57 +69,11 @@ public class OWSAudioSession: NSObject {
         self.currentActivities.append(Weak(value: audioActivity))
 
         do {
-            if aggregateBehaviors.contains(.call) {
-                // Do nothing while on a call.
-                // WebRTC/CallAudioService manages call audio
-                // Eventually it would be nice to consolidate more of the audio
-                // session handling.
-            } else {
-                if aggregateBehaviors.contains(.playAndRecord) {
-                    assert(avAudioSession.recordPermission() == .granted)
-                    try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
-                } else if aggregateBehaviors.contains(.audioMessagePlayback) {
-                    try ensureCategoryForProximityState()
-                } else if aggregateBehaviors.contains(.playback) {
-                    try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
-                } else {
-                    owsFailDebug("no category option specified. Leaving category untouched.")
-                }
-
-                if aggregateBehaviors.contains(.audioMessagePlayback) {
-                    self.device.isProximityMonitoringEnabled = true
-                } else {
-                    self.device.isProximityMonitoringEnabled = false
-                }
-            }
-
+            try ensureAudioCategory()
             return true
         } catch {
             owsFailDebug("failed with error: \(error)")
             return false
-        }
-    }
-
-    @objc
-    func proximitySensorStateDidChange(notification: Notification) {
-        do {
-            try ensureCategoryForProximityState()
-        } catch {
-            owsFailDebug("error in response to proximity change: \(error)")
-        }
-    }
-
-    func ensureCategoryForProximityState() throws {
-        if aggregateBehaviors.contains(.audioMessagePlayback) {
-            if self.device.proximityState {
-                Logger.debug("proximityState: true")
-
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
-                try avAudioSession.overrideOutputAudioPort(.none)
-            } else {
-                Logger.debug("proximityState: false")
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
-            }
         }
     }
 
@@ -128,11 +86,51 @@ public class OWSAudioSession: NSObject {
 
         currentActivities = currentActivities.filter { return $0.value != audioActivity }
         do {
-            try ensureCategoryForProximityState()
+            try ensureAudioCategory()
         } catch {
-            owsFailDebug("error in ensureProximityState: \(error)")
+            owsFailDebug("error in ensureAudioCategory: \(error)")
         }
-        ensureAudioSessionActivationStateAfterDelay()
+    }
+
+    func ensureAudioCategory() throws {
+        if aggregateBehaviors.contains(.audioMessagePlayback) {
+            self.proximityMonitoringManager.add(lifetime: self)
+        } else {
+            self.proximityMonitoringManager.remove(lifetime: self)
+        }
+
+        if aggregateBehaviors.contains(.call) {
+            // Do nothing while on a call.
+            // WebRTC/CallAudioService manages call audio
+            // Eventually it would be nice to consolidate more of the audio
+            // session handling.
+        } else if aggregateBehaviors.contains(.playAndRecord) {
+            assert(avAudioSession.recordPermission() == .granted)
+            try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
+        } else if aggregateBehaviors.contains(.audioMessagePlayback) {
+            if self.device.proximityState {
+                Logger.debug("proximityState: true")
+
+                try avAudioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+                try avAudioSession.overrideOutputAudioPort(.none)
+            } else {
+                Logger.debug("proximityState: false")
+                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+            }
+        } else if aggregateBehaviors.contains(.playback) {
+            try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+        } else {
+            ensureAudioSessionActivationStateAfterDelay()
+        }
+    }
+
+    @objc
+    func proximitySensorStateDidChange(notification: Notification) {
+        do {
+            try ensureAudioCategory()
+        } catch {
+            owsFailDebug("error in response to proximity change: \(error)")
+        }
     }
 
     fileprivate func ensureAudioSessionActivationStateAfterDelay() {
