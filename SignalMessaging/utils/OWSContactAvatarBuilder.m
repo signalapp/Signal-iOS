@@ -136,9 +136,10 @@ NS_ASSUME_NONNULL_BEGIN
         // We don't have a name for this contact, so we can't make an "initials" image.
 
         UIImage *icon = [UIImage imageNamed:@"contact-avatar"];
-        // The contact-avatar asset is designed for the kStandardAvatarSize.
+        // The contact-avatar asset is designed to be 28pt if the avatar is kStandardAvatarSize.
         // Adjust its size to reflect the actual output diameter.
-        CGFloat scaling = self.diameter / (CGFloat)kStandardAvatarSize;
+        // We use an oversize 1024px version of the asset to ensure quality results for larger avatars.
+        CGFloat scaling = (self.diameter / (CGFloat)kStandardAvatarSize) * (28 / 1024.f);
         CGSize iconSize = CGSizeScale(icon.size, scaling);
         image =
             [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:color diameter:self.diameter];
