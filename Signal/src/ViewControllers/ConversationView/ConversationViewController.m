@@ -149,7 +149,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
-@property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
+@property (nonatomic, readonly) OWSAudioActivity *recordVoiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 // These two properties must be updated in lockstep.
@@ -286,8 +286,17 @@ typedef enum : NSUInteger {
     _contactShareViewHelper.delegate = self;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
-    _voiceNoteAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
+    _recordVoiceNoteAudioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:OWSAudioBehavior_PlayAndRecord];
 }
+
+#pragma mark - Dependencies
+
+- (OWSAudioSession *)audioSession
+{
+    return Environment.shared.audioSession;
+}
+
+#pragma mark
 
 - (void)addNotificationListeners
 {
@@ -2229,11 +2238,13 @@ typedef enum : NSUInteger {
         [self.audioAttachmentPlayer stop];
         self.audioAttachmentPlayer = nil;
     }
+
     self.audioAttachmentPlayer =
-        [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL delegate:viewItem];
+        [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL audioBehavior:OWSAudioBehavior_AudioMessagePlayback delegate:viewItem];
+    
     // Associate the player with this media adapter.
     self.audioAttachmentPlayer.owner = viewItem;
-    [self.audioAttachmentPlayer playWithPlaybackAudioCategory];
+    [self.audioAttachmentPlayer play];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
@@ -3613,7 +3624,7 @@ typedef enum : NSUInteger {
     NSURL *fileURL = [NSURL fileURLWithPath:filepath];
 
     // Setup audio session
-    BOOL configuredAudio = [OWSAudioSession.shared startRecordingAudioActivity:self.voiceNoteAudioActivity];
+    BOOL configuredAudio = [self.audioSession startAudioActivity:self.recordVoiceNoteAudioActivity];
     if (!configuredAudio) {
         OWSFailDebug(@"Couldn't configure audio session");
         [self cancelVoiceMemo];
@@ -3714,7 +3725,7 @@ typedef enum : NSUInteger {
 - (void)stopRecording
 {
     [self.audioRecorder stop];
-    [OWSAudioSession.shared endAudioActivity:self.voiceNoteAudioActivity];
+    [self.audioSession endAudioActivity:self.recordVoiceNoteAudioActivity];
 }
 
 - (void)cancelRecordingVoiceMemo

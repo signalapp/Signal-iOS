@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSAudioPlayer.h"
 #import <AudioToolbox/AudioServices.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -68,7 +69,8 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 #pragma mark - AudioPlayer
 
-+ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound;
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound
+                                   audioBehavior:(OWSAudioBehavior)audioBehavior;
 
 @end
 

@@ -5,6 +5,7 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 
 @class LockInteractionController;
+@class OWSAudioSession;
 @class OWSContactsManager;
 @class OWSPreferences;
 @class OWSSounds;
@@ -17,16 +18,18 @@
  * It also handles network configuration for testing/deployment server configurations.
  *
  **/
-// TODO: Rename to AppEnvironment?
+// TODO: Rename to SMGEnvironment?
 @interface Environment : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPreferences:(OWSPreferences *)preferences
-                             sounds:(OWSSounds *)sounds
-          lockInteractionController:(LockInteractionController *)lockInteractionController
-                      windowManager:(OWSWindowManager *)windowManager;
+- (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
+                         preferences:(OWSPreferences *)preferences
+                              sounds:(OWSSounds *)sounds
+           lockInteractionController:(LockInteractionController *)lockInteractionController
+                       windowManager:(OWSWindowManager *)windowManager;
 
+@property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;

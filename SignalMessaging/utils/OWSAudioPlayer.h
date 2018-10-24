@@ -21,6 +21,14 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 #pragma mark -
 
+typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
+    OWSAudioBehavior_Unknown,
+    OWSAudioBehavior_Playback,
+    OWSAudioBehavior_AudioMessagePlayback,
+    OWSAudioBehavior_PlayAndRecord,
+    OWSAudioBehavior_Call,
+};
+
 @interface OWSAudioPlayer : NSObject
 
 @property (nonatomic, readonly, weak) id<OWSAudioPlayerDelegate> delegate;
@@ -31,16 +39,13 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 @property (nonatomic) BOOL isLooping;
 
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl;
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior;
 
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl delegate:(id<OWSAudioPlayerDelegate>)delegate;
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
+                     audioBehavior:(OWSAudioBehavior)audioBehavior
+                        delegate:(id<OWSAudioPlayerDelegate>)delegate;
 
-// respects silent switch
-- (void)playWithCurrentAudioCategory;
-
-// will ensure sound is audible, even if silent switch is enabled
-- (void)playWithPlaybackAudioCategory;
-
+- (void)play;
 - (void)pause;
 - (void)stop;
 - (void)togglePlayState;

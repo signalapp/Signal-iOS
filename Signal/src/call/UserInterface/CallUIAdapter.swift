@@ -129,11 +129,19 @@ extension CallUIAdaptee {
         callService.addObserverAndSyncState(observer: self)
     }
 
+    // MARK: Dependencies
+
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
+    // MARK: 
+
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
 
         // make sure we don't terminate audio session during call
-        OWSAudioSession.shared.startAudioActivity(call.audioActivity)
+        audioSession.startAudioActivity(call.audioActivity)
 
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportIncomingCall(call, callerName: callerName)
@@ -181,7 +189,7 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         if let call = call {
-            OWSAudioSession.shared.endAudioActivity(call.audioActivity)
+            self.audioSession.endAudioActivity(call.audioActivity)
         }
     }
 

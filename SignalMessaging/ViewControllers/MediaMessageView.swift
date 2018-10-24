@@ -131,7 +131,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             return
         }
 
-        audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, delegate: self)
+        audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback, delegate: self)
 
         var subviews = [UIView]()
 
