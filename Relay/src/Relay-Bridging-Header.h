@@ -77,8 +77,6 @@
 #import <RelayServiceKit/NSNotificationCenter+OWS.h>
 #import <RelayServiceKit/NSString+SSK.h>
 #import <RelayServiceKit/NSTimer+OWS.h>
-#import <RelayServiceKit/OWSAnalytics.h>
-#import <RelayServiceKit/OWSAnalyticsEvents.h>
 #import <RelayServiceKit/OWSAsserts.h>
 #import <RelayServiceKit/OWSAttachmentsProcessor.h>
 #import <RelayServiceKit/OWSBackgroundTask.h>

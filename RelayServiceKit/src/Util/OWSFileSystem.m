@@ -61,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (error || !success) {
         OWSFail(@"Could not protect file or folder: %@", error);
-        OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
     }
     return YES;

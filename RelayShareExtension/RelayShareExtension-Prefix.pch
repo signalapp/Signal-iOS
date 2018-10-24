@@ -17,7 +17,6 @@
 
     #import <RelayServiceKit/OWSAsserts.h>
     #import <RelayServiceKit/Constraints.h>
-    #import <RelayServiceKit/OWSAnalytics.h>
     #import <RelayServiceKit/OWSDispatch.h>
     #import <RelayServiceKit/iOSVersions.h>
     #import <RelayServiceKit/NSObject+OWS.h>

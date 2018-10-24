@@ -13,7 +13,6 @@ static const NSUInteger ddLogLevel = DDLogLevelInfo;
 #endif
 #import "Constraints.h"
 #import "NSObject+OWS.h"
-#import "OWSAnalytics.h"
 #import "OWSAsserts.h"
 #import "OWSDispatch.h"
 #import "iOSVersions.h"

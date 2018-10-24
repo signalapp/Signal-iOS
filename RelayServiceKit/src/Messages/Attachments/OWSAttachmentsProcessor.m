@@ -193,9 +193,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents errorAttachmentRequestFailed]);
-            }
             DDLogError(@"Failed retrieval of attachment with error: %@", error);
             if (attachment.serverId < 100) {
                 // This _shouldn't_ be the symptom of the "frequent 404

@@ -192,8 +192,6 @@ static NSTimeInterval launchStartedAt;
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
 
-    [OWSAnalytics appLaunchDidBegin];
-
     return YES;
 }
 
@@ -439,7 +437,6 @@ static NSTimeInterval launchStartedAt;
         @"%@ We're in debug mode. Faking success for remote registration with a fake push identifier", self.logTag);
     [PushRegistrationManager.sharedManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
-    OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
     [PushRegistrationManager.sharedManager didFailToReceiveVanillaPushTokenWithError:error];
 #endif
 }

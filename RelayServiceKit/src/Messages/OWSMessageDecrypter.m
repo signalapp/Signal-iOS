@@ -5,7 +5,6 @@
 #import "OWSMessageDecrypter.h"
 #import "NSData+messagePadding.h"
 #import "NotificationsProtocol.h"
-#import "OWSAnalytics.h"
 #import "OWSBlockingManager.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
@@ -140,7 +139,6 @@ NS_ASSUME_NONNULL_BEGIN
                             self.logTag,
                             envelopeAddress(envelope),
                             error);
-                        OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleSecureMessage]);
                         failureBlock();
                     }];
                 // Return to avoid double-acknowledging.
@@ -158,7 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
                             self.logTag,
                             envelopeAddress(envelope),
                             error);
-                        OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandlePrekeyBundle]);
                         failureBlock();
                     }];
                 // Return to avoid double-acknowledging.
@@ -180,7 +177,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } @catch (NSException *exception) {
         OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
-        OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -249,7 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
     // DEPRECATED - Remove `legacyMessage` after all clients have been upgraded.
     NSData *encryptedData = envelope.content ?: envelope.legacyMessage;
     if (!encryptedData) {
-        OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
         failureBlock(nil);
         return;
     }
@@ -292,28 +287,22 @@ NS_ASSUME_NONNULL_BEGIN
         TSErrorMessage *errorMessage;
 
         if ([exception.name isEqualToString:NoSessionException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
             errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:InvalidKeyException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
             errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
             errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:DuplicateMessageException]) {
             // Duplicate messages are dismissed
             return;
         } else if ([exception.name isEqualToString:InvalidVersionException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
             errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
         } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // Should no longer get here, since we now record the new identity for incoming messages.
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
             OWSFail(
                 @"%@ Failed to trust identity on incoming message from: %@", self.logTag, envelopeAddress(envelope));
             return;
         } else {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
             errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
         }
 

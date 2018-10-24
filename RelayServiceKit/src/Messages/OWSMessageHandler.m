@@ -25,19 +25,16 @@ NSString *envelopeAddress(SSKEnvelope *envelope)
             return @"DeliveryReceipt";
         case SSKEnvelopeTypeUnknown:
             // Shouldn't happen
-            OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
             return @"Unknown";
         case SSKEnvelopeTypeCiphertext:
             return @"SignalEncryptedMessage";
         case SSKEnvelopeTypeKeyExchange:
             // Unsupported
-            OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeKeyExchange]);
             return @"KeyExchange";
         case SSKEnvelopeTypePrekeyBundle:
             return @"PreKeyEncryptedMessage";
         default:
             // Shouldn't happen
-            OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeOther]);
             return @"Other";
     }
 }

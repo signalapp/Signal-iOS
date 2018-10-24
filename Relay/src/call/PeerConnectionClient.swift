@@ -811,9 +811,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(strongSelf.logTag) sendDataChannelMessage succeeded: \(description)")
             } else {
                 Logger.warn("\(strongSelf.logTag) sendDataChannelMessage failed: \(description)")
-                if isCritical {
-                    OWSProdError(OWSAnalyticsEvents.peerConnectionClientErrorSendDataChannelMessageFailed(), file: #file, function: #function, line: #line)
-                }
             }
         }
     }

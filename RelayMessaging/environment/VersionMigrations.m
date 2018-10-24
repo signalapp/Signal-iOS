@@ -150,9 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
                 dispatch_semaphore_signal(sema);
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
-                if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
-                }
                 success = NO;
                 DDLogError(@"Updating attributess failed with error: %@", error.description);
                 dispatch_semaphore_signal(sema);
