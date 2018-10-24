@@ -1285,7 +1285,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        peerConnectionClient.setAudioEnabled(enabled: true)
+        peerConnectionClient.setAudioEnabled(enabled: !call.isMuted)
     }
 
     /**
