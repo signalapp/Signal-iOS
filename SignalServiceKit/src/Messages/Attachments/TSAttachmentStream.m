@@ -644,6 +644,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     NSError *error;
     AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.originalMediaURL error:&error];
+    [audioPlayer prepareToPlay];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
         && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
         // Ignore "invalid audio file" errors.

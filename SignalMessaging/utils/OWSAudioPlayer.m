@@ -162,6 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         self.audioPlayer.delegate = self;
+        [self.audioPlayer prepareToPlay];
         if (self.isLooping) {
             self.audioPlayer.numberOfLoops = -1;
         }
