@@ -53,23 +53,23 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.userInteractionEnabled = NO;
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithRecipientId:(NSString *)recipientId
 {
     [OWSTableItem configureCell:self];
 
-    [self.cellView configureWithRecipientId:recipientId contactsManager:contactsManager];
+    [self.cellView configureWithRecipientId:recipientId];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
     [OWSTableItem configureCell:self];
 
-    [self.cellView configureWithThread:thread contactsManager:contactsManager];
+    [self.cellView configureWithThread:thread];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

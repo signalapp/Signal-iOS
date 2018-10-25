@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                  }
 
-                                 [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
+                                 [cell configureWithRecipientId:recipientId];
 
                                  if (isVerified) {
                                      [cell setAttributedSubtitle:cell.verifiedSubtitle];

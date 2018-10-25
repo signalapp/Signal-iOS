@@ -283,8 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"An indicator that a user is a new member of the group.");
                             }
 
-                            [cell configureWithRecipientId:recipientId
-                                           contactsManager:contactsViewHelper.contactsManager];
+                            [cell configureWithRecipientId:recipientId];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension

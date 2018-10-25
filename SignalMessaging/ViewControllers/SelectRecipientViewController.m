@@ -9,7 +9,6 @@
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIFont+OWS.h>
@@ -549,8 +548,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                         cell.accessoryMessage =
                                             [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
                                     }
-                                    [cell configureWithRecipientId:signalAccount.recipientId
-                                                   contactsManager:helper.contactsManager];
+                                    [cell configureWithRecipientId:signalAccount.recipientId];
 
                                     if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
                                         cell.selectionStyle = UITableViewCellSelectionStyleNone;

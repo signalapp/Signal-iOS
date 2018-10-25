@@ -7,6 +7,14 @@ import SignalServiceKit
 
 @objc class GroupTableViewCell: UITableViewCell {
 
+    // MARK: - Dependencies
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    // MARK: -
+
     private let avatarView = AvatarImageView()
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
@@ -43,7 +51,7 @@ import SignalServiceKit
     }
 
     @objc
-    public func configure(thread: TSGroupThread, contactsManager: OWSContactsManager) {
+    public func configure(thread: TSGroupThread) {
         OWSTableItem.configureCell(self)
 
         if let groupName = thread.groupModel.groupName, !groupName.isEmpty {
