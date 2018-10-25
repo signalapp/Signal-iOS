@@ -100,9 +100,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
-    UIImage *_Nullable cachedAvatar = nil;
-    [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:self.cacheKey
-                                                            diameter:(CGFloat)self.diameter];
+    UIImage *_Nullable cachedAvatar =
+        [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:self.cacheKey diameter:(CGFloat)self.diameter];
     if (cachedAvatar) {
         return cachedAvatar;
     }
@@ -135,11 +134,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (initials.length == 0) {
         // We don't have a name for this contact, so we can't make an "initials" image.
 
-        UIImage *icon = [UIImage imageNamed:@"contact-avatar"];
+        UIImage *icon;
+        if (self.diameter > kStandardAvatarSize) {
+            icon = [UIImage imageNamed:@"contact-avatar-1024"];
+        } else {
+            icon = [UIImage imageNamed:@"contact-avatar-84"];
+        }
+        CGFloat assetWidthPixels = CGImageGetWidth(icon.CGImage);
         // The contact-avatar asset is designed to be 28pt if the avatar is kStandardAvatarSize.
         // Adjust its size to reflect the actual output diameter.
         // We use an oversize 1024px version of the asset to ensure quality results for larger avatars.
-        CGFloat scaling = (self.diameter / (CGFloat)kStandardAvatarSize) * (28 / 1024.f);
+        CGFloat scaling = (self.diameter / (CGFloat)kStandardAvatarSize) * (28 / assetWidthPixels);
+
         CGSize iconSize = CGSizeScale(icon.size, scaling);
         image =
             [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:color diameter:self.diameter];
