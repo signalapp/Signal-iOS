@@ -139,22 +139,26 @@ public class ProfileFetcherJob: NSObject {
         if self.udManager.unidentifiedAccessMode(recipientId: recipientId) == .unknown,
             let randomUnidentifiedAccess = self.udManager.getRandomAccess() {
             return requestProfile(recipientId: recipientId,
-                                  unidentifiedAccess: randomUnidentifiedAccess)
+                                  unidentifiedAccess: randomUnidentifiedAccess,
+                                  canFailoverUDAuth: false)
                 .recover { (_: Error) -> Promise<SignalServiceProfile> in
                     Logger.verbose("Failing over to non-random access.")
                     let unidentifiedAccess = self.getUnidentifiedAccess(forRecipientId: recipientId)
                     return self.requestProfile(recipientId: recipientId,
-                                               unidentifiedAccess: unidentifiedAccess)
+                                               unidentifiedAccess: unidentifiedAccess,
+                                               canFailoverUDAuth: true)
             }
         } else {
             let unidentifiedAccess = getUnidentifiedAccess(forRecipientId: recipientId)
             return requestProfile(recipientId: recipientId,
-                                  unidentifiedAccess: unidentifiedAccess)
+                                  unidentifiedAccess: unidentifiedAccess,
+                                  canFailoverUDAuth: true)
         }
     }
 
     private func requestProfile(recipientId: String,
-                                unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
+                                unidentifiedAccess: SSKUnidentifiedAccess?,
+                                canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
         AssertIsOnMainThread()
 
         let requestMaker = RequestMaker(requestFactoryBlock: { (unidentifiedAccessForRequest) -> TSRequest in
@@ -165,7 +169,7 @@ public class ProfileFetcherJob: NSObject {
             // Do nothing
         }, recipientId: recipientId,
            unidentifiedAccess: unidentifiedAccess,
-           canFailoverUDAuth: true)
+           canFailoverUDAuth: canFailoverUDAuth)
         return requestMaker.makeRequest()
             .map { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
