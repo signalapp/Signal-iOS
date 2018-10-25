@@ -157,6 +157,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        self.proximityMonitoringManager.remove(lifetime: self)
     }
 
     @objc func didBecomeActive() {
@@ -169,9 +170,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        self.proximityMonitoringManager.remove(lifetime: self)
-        UIDevice.current.isProximityMonitoringEnabled = false
 
         callDurationTimer?.invalidate()
         callDurationTimer = nil
