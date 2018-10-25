@@ -147,4 +147,11 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     return YES;
 }
 
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 @end

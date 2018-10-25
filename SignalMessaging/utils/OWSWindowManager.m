@@ -91,6 +91,13 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     return YES;
 }
 
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 @end
 
 #pragma mark -
@@ -259,7 +266,8 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     OWSAssertDebug(!self.callNavigationController);
     self.callNavigationController = navigationController;
 
-    window.rootViewController = navigationController;
+    // MJK DO NOT COMMIT.
+    window.rootViewController = viewController;
 
     return window;
 }

@@ -137,6 +137,11 @@ static NSTimeInterval launchStartedAt;
     return SSKEnvironment.shared.messageManager;
 }
 
+- (OWSWindowManager *)windowManager
+{
+    return Environment.shared.windowManager;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -917,6 +922,23 @@ static NSTimeInterval launchStartedAt;
     //    }
 
     return NO;
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application
+    supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
+{
+    if (self.windowManager.rootWindow != window) {
+        return UIInterfaceOrientationMaskPortrait;
+    }
+
+    if (self.windowManager.hasCall) {
+        // The call-banner window is only suitable for portrait display
+        return UIInterfaceOrientationMaskPortrait;
+    }
+
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 #pragma mark Push Notifications Delegate Methods

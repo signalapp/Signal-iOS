@@ -510,7 +510,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        mediaGalleryDataSource.dismissMediaDetailViewController(self, animated: isAnimated, completion: completion)
+        mediaGalleryDataSource.dismissMediaDetailViewController(self, animated: isAnimated) {
+            UIDevice.current.ows_setOrientation(.portrait)
+            completion?()
+        }
     }
 
     // MARK: MediaDetailViewControllerDelegate
