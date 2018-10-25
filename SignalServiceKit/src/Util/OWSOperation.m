@@ -191,6 +191,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     self.remainingRetries--;
 
     dispatch_sync(self.retryTimerSerialQueue, ^{
+        OWSAssertDebug(self.retryTimer == nil);
         [self.retryTimer invalidate];
         self.retryTimer = [NSTimer weakScheduledTimerWithTimeInterval:self.retryInterval
                                                                target:self

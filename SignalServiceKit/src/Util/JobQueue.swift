@@ -233,6 +233,7 @@ public extension JobQueue {
 
     func becameReachable() {
         guard requiresInternet else {
+            owsFailDebug("should only be called if `requiresInternet` is true")
             return
         }
 
