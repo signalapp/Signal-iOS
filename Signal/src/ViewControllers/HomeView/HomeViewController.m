@@ -871,7 +871,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
 
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
-    [cell configureWithThread:thread contactsManager:self.contactsManager isBlocked:isBlocked];
+    [cell configureWithThread:thread isBlocked:isBlocked];
 
     return cell;
 }

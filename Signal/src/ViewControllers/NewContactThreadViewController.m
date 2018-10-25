@@ -589,7 +589,7 @@ NS_ASSUME_NONNULL_BEGIN
         [groupSection addItem:[OWSTableItem
                                   itemWithCustomCellBlock:^{
                                       GroupTableViewCell *cell = [GroupTableViewCell new];
-                                      [cell configureWithThread:thread contactsManager:helper.contactsManager];
+                                      [cell configureWithThread:thread];
                                       return cell;
                                   }
                                   customRowHeight:UITableViewAutomaticDimension
