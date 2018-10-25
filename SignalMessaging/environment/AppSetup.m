@@ -85,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
 
         OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
+        id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
         LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
@@ -115,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           contactDiscoveryService:contactDiscoveryService
                                                                readReceiptManager:readReceiptManager
                                                            outgoingReceiptManager:outgoingReceiptManager
+                                                              reachabilityManager:reachabilityManager
                                                                       syncManager:syncManager]];
 
         appSpecificSingletonBlock();

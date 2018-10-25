@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSReadReceiptManager *readReceiptManager = [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSOutgoingReceiptManager *outgoingReceiptManager =
         [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+    id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
     id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
 
     self = [super initWithContactsManager:contactsManager
@@ -96,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
                   contactDiscoveryService:contactDiscoveryService
                        readReceiptManager:readReceiptManager
                    outgoingReceiptManager:outgoingReceiptManager
+                      reachabilityManager:reachabilityManager
                               syncManager:syncManager];
     if (!self) {
         return nil;

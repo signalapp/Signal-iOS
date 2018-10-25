@@ -33,6 +33,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
 @property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
+@property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 
 @end
 
@@ -68,6 +69,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                 contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
+                    reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<OWSSyncManagerProtocol>)syncManager
 {
     self = [super init];
@@ -97,6 +99,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(readReceiptManager);
     OWSAssertDebug(outgoingReceiptManager);
     OWSAssertDebug(syncManager);
+    OWSAssertDebug(reachabilityManager);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -120,6 +123,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _readReceiptManager = readReceiptManager;
     _outgoingReceiptManager = outgoingReceiptManager;
     _syncManager = syncManager;
+    _reachabilityManager = reachabilityManager;
 
     return self;
 }

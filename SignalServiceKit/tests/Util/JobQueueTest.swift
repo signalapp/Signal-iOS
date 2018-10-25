@@ -47,13 +47,7 @@ class TestJobQueue: JobQueue {
         // no special handling
     }
 
-    var isReady: Bool = false {
-        didSet {
-            DispatchQueue.global().async {
-                self.workStep()
-            }
-        }
-    }
+    var isSetup: Bool = false
 
     let operationQueue = OperationQueue()
 
@@ -161,8 +155,7 @@ class JobQueueTest: SSKBaseTestSwift {
         }
 
         // Verify re-queue
-
-        jobQueue.isReady = false
+        jobQueue.isSetup = false
         jobQueue.setup()
 
         self.readWrite { transaction in
@@ -181,7 +174,7 @@ class JobQueueTest: SSKBaseTestSwift {
             rerunGroup.leave()
         }
 
-        jobQueue.isReady = true
+        jobQueue.isSetup = true
 
         switch rerunGroup.wait(timeout: .now() + 1.0) {
         case .timedOut:

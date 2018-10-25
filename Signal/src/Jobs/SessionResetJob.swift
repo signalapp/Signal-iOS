@@ -20,21 +20,15 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = SessionResetOperation
     public let jobRecordLabel: String = "SessionReset"
     public static let maxRetries: UInt = 10
+    public let requiresInternet: Bool = true
+    public var runningOperations: [SessionResetOperation] = []
 
     @objc
     public func setup() {
         defaultSetup()
     }
 
-    public var isReady: Bool = false {
-        didSet {
-            if isReady {
-                DispatchQueue.global().async {
-                    self.workStep()
-                }
-            }
-        }
-    }
+    public var isSetup: Bool = false
 
     public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
         // no special handling
@@ -68,7 +62,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     weak public var durableOperationDelegate: SessionResetJobQueue?
 
-    public var operation: Operation {
+    public var operation: OWSOperation {
         return self
     }
 
@@ -151,7 +145,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         }
     }
 
-    override public func retryDelay() -> dispatch_time_t {
+    override public func retryInterval() -> TimeInterval {
         // Arbitrary backoff factor...
         // With backOffFactor of 1.9
         // try  1 delay:  0.00s
@@ -164,7 +158,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         let maxBackoff = kHourInterval
 
         let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.jobRecord.failureCount)))
-        return UInt64(seconds) * NSEC_PER_SEC
+
+        return seconds
     }
 
     override public func didFail(error: Error) {

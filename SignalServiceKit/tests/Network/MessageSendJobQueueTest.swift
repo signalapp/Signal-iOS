@@ -127,7 +127,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         error.isRetryable = true
         self.messageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
-            jobQueue.isReady = false
+            jobQueue.isSetup = false
         }
 
         jobQueue.setup()
@@ -188,7 +188,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         error.isRetryable = false
         self.messageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
-            jobQueue.isReady = false
+            jobQueue.isSetup = false
         }
         jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
