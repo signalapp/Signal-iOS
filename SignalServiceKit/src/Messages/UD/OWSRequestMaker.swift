@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalMetadataKit
 
 @objc
 public enum RequestMakerUDAuthError: Int, Error {
@@ -36,7 +37,7 @@ public class RequestMakerResult: NSObject {
 // * Websocket-to-REST failover.
 @objc(OWSRequestMaker)
 public class RequestMaker: NSObject {
-    public typealias RequestFactoryBlock = (SSKUnidentifiedAccess?) -> TSRequest
+    public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest
     public typealias UDAuthFailureBlock = () -> Void
     public typealias WebsocketFailureBlock = () -> Void
 
@@ -44,7 +45,7 @@ public class RequestMaker: NSObject {
     private let udAuthFailureBlock: UDAuthFailureBlock
     private let websocketFailureBlock: WebsocketFailureBlock
     private let recipientId: String
-    private let unidentifiedAccess: SSKUnidentifiedAccess?
+    private let udAccessKey: SMKUDAccessKey?
     private let canFailoverUDAuth: Bool
 
     @objc
@@ -52,13 +53,13 @@ public class RequestMaker: NSObject {
                 udAuthFailureBlock : @escaping UDAuthFailureBlock,
                 websocketFailureBlock : @escaping WebsocketFailureBlock,
                 recipientId: String,
-                unidentifiedAccess: SSKUnidentifiedAccess?,
+                udAccessKey: SMKUDAccessKey?,
                 canFailoverUDAuth: Bool) {
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
         self.websocketFailureBlock = websocketFailureBlock
         self.recipientId = recipientId
-        self.unidentifiedAccess = unidentifiedAccess
+        self.udAccessKey = udAccessKey
         self.canFailoverUDAuth = canFailoverUDAuth
     }
 
@@ -99,12 +100,12 @@ public class RequestMaker: NSObject {
     }
 
     private func makeRequestInternal(skipUD: Bool, skipWebsocket: Bool) -> Promise<RequestMakerResult> {
-        var unidentifiedAccessForRequest: SSKUnidentifiedAccess?
+        var udAccessKeyForRequest: SMKUDAccessKey?
         if !skipUD {
-            unidentifiedAccessForRequest = unidentifiedAccess
+            udAccessKeyForRequest = udAccessKey
         }
-        let isUDSend = unidentifiedAccessForRequest != nil
-        let request = requestFactoryBlock(unidentifiedAccessForRequest)
+        let isUDSend = udAccessKeyForRequest != nil
+        let request = requestFactoryBlock(udAccessKeyForRequest)
         let webSocketType: OWSWebSocketType = (isUDSend ? .UD : .default)
         let canMakeWebsocketRequests = (socketManager.canMakeRequests(of: webSocketType) && !skipWebsocket)
 

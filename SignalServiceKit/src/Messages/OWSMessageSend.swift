@@ -32,7 +32,10 @@ public class OWSMessageSend: NSObject {
     public var hasWebsocketSendFailed = false
 
     @objc
-    public var unidentifiedAccess: SSKUnidentifiedAccess?
+    public var udAccessKey: SMKUDAccessKey?
+
+    @objc
+    public var senderCertificate: SMKSenderCertificate?
 
     @objc
     public let localNumber: String
@@ -59,14 +62,22 @@ public class OWSMessageSend: NSObject {
         self.thread = thread
         self.recipient = recipient
         self.localNumber = localNumber
+        self.senderCertificate = senderCertificate
 
         if let recipientId = recipient.uniqueId {
-            self.unidentifiedAccess = udManager.getAccess(forRecipientId: recipientId)
+            if senderCertificate != nil {
+                let accessMode = udManager.unidentifiedAccessMode(forRecipientId: recipientId)
+                if accessMode == .unrestricted {
+                    self.udAccessKey = udManager.randomUDAccessKey()
+                } else if accessMode == .unrestricted {
+                    self.udAccessKey = udManager.udAccessKey(forRecipientId: recipientId)
+                }
+            }
+
             self.isLocalNumber = localNumber == recipientId
         } else {
             owsFailDebug("SignalRecipient missing recipientId")
             self.isLocalNumber = false
-            self.unidentifiedAccess = nil
         }
 
         self.success = success
@@ -75,12 +86,12 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var isUDSend: Bool {
-        return self.unidentifiedAccess != nil
+        return udAccessKey != nil && senderCertificate != nil
     }
 
     @objc
     public func disableUD() {
-        unidentifiedAccess = nil
+        udAccessKey = nil
     }
 
     @objc
