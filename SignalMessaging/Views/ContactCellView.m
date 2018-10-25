@@ -8,6 +8,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -27,7 +28,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UIStackView *nameContainerView;
 @property (nonatomic) UIView *accessoryViewContainer;
 
-@property (nonatomic) OWSContactsManager *contactsManager;
 @property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) NSString *recipientId;
 
@@ -44,6 +44,24 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     }
     return self;
 }
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    OWSAssertDebug(Environment.shared.contactsManager);
+
+    return Environment.shared.contactsManager;
+}
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
 
 - (void)configure
 {
@@ -102,19 +120,17 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithRecipientId:(NSString *)recipientId
 {
     OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug(contactsManager);
 
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
     self.recipientId = recipientId;
-    self.contactsManager = contactsManager;
 
     self.nameLabel.attributedText =
-        [contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
+        [self.contactsManager formattedFullNameForRecipientId:recipientId font:self.nameLabel.font];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -132,15 +148,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
+- (void)configureWithThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);
     self.thread = thread;
     
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
-
-    self.contactsManager = contactsManager;
 
     NSString *threadName = thread.name;
     if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {

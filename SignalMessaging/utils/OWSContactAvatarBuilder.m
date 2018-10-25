@@ -100,11 +100,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildDefaultImage
 {
-    UIImage *_Nullable cachedAvatar =
-        [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:self.cacheKey diameter:(CGFloat)self.diameter];
-    if (cachedAvatar) {
-        return cachedAvatar;
-    }
+    UIImage *_Nullable cachedAvatar = nil;
+    //        [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:self.cacheKey
+    //        diameter:(CGFloat)self.diameter];
+    //    if (cachedAvatar) {
+    //        return cachedAvatar;
+    //    }
 
     NSMutableString *initials = [NSMutableString string];
 

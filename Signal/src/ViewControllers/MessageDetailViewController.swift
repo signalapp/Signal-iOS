@@ -274,7 +274,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     } else {
                         cellView.accessoryMessage = shortStatusMessage
                     }
-                    cellView.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                    cellView.configure(withRecipientId: recipientId)
 
                     let wrapper = UIView()
                     wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)

@@ -470,8 +470,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     @"An indicator that a contact has been blocked.");
                                             }
 
-                                            [cell configureWithRecipientId:signalAccount.recipientId
-                                                           contactsManager:self.contactsViewHelper.contactsManager];
+                                            [cell configureWithRecipientId:signalAccount.recipientId];
 
                                             return cell;
                                         }
@@ -518,7 +517,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     cell.accessoryMessage = NSLocalizedString(
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
-                                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+                                [cell configureWithRecipientId:phoneNumber];
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
@@ -566,8 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
-                            [cell configureWithRecipientId:signalAccount.recipientId
-                                           contactsManager:helper.contactsManager];
+                            [cell configureWithRecipientId:signalAccount.recipientId];
 
                             return cell;
                         }

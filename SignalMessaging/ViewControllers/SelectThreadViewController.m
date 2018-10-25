@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
-                            [cell configureWithThread:thread contactsManager:helper.contactsManager];
+                            [cell configureWithThread:thread];
 
                             if (!cell.hasAccessoryText) {
                                 // Don't add a disappearing messages indicator if we've already added a "blocked" label.
@@ -277,8 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
-                            [cell configureWithRecipientId:signalAccount.recipientId
-                                           contactsManager:helper.contactsManager];
+                            [cell configureWithRecipientId:signalAccount.recipientId];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
