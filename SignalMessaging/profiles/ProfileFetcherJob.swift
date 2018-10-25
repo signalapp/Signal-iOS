@@ -146,22 +146,23 @@ public class ProfileFetcherJob: NSObject {
                 .recover { (_: Error) -> Promise<SignalServiceProfile> in
                     Logger.verbose("Failing over to non-random access.")
                     let udAccessKey = self.udManager.udAccessKey(forRecipientId: recipientId)
+                    // This may fail over again to non-UD-auth.
                     return self.requestProfile(recipientId: recipientId,
                                                udAccessKey: udAccessKey,
                                                canFailoverUDAuth: true)
             }
-            break
         case .disabled:
+            // This may fail over to non-UD-auth.
             return requestProfile(recipientId: recipientId,
                                   udAccessKey: nil,
                                   canFailoverUDAuth: true)
-            break
         case .enabled:
+            // This may be nil if we don't have a profile key for them.
             let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId)
+            // This may fail over to non-UD-auth.
             return requestProfile(recipientId: recipientId,
                                   udAccessKey: udAccessKey,
                                   canFailoverUDAuth: true)
-            break
         }
     }
 
