@@ -2,14 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>BuildCarthageVersion</key>
-	<string>0.31.0</string>
-	<key>BuildCocoapodsVersion</key>
-	<string>1.5.3</string>
-	<key>BuildOSXVersion</key>
-	<string>10.13.6</string>
-	<key>BuildXCodeVersion</key>
-	<string>0900.0940</string>
+	<key>BuildDetails</key>
+	<dict>
+		<key>CarthageVersion</key>
+		<string>0.31.0</string>
+		<key>CocoapodsVersion</key>
+		<string>1.5.3</string>
+		<key>DateTime</key>
+		<string>Thu Oct 25 20:07:42 UTC 2018</string>
+		<key>OSXVersion</key>
+		<string>10.13.6</string>
+		<key>WebRTCCommit</key>
+		<string>ca71024b4993ba95e3e6b8d0758004cffc54ddaf M70</string>
+		<key>XCodeVersion</key>
+		<string>0900.0940</string>
+	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -143,9 +150,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>WebRTCCommit</key>
-	<string>ca71024b4993ba95e3e6b8d0758004cffc54ddaf M70</string>
-	<key>XCodeVersion</key>
-	<string>0900.0940</string>
 </dict>
 </plist>

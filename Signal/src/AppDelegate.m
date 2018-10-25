@@ -475,13 +475,14 @@ static NSTimeInterval launchStartedAt;
         UIDevice.currentDevice.model,
         [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
 
-    OWSLogInfo(@"WebRTC Commit: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"WebRTCCommit"]);
-    OWSLogInfo(@"Build XCode Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildXCodeVersion"]);
-    OWSLogInfo(@"Build OS X Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildOSXVersion"]);
-    OWSLogInfo(
-        @"Build Cocoapods Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildCocoapodsVersion"]);
-    OWSLogInfo(
-        @"Build Carthage Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildCarthageVersion"]);
+    NSDictionary<NSString *, NSString *> *buildDetails =
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
+    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
+    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
+    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
+    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
+    OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
+    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
