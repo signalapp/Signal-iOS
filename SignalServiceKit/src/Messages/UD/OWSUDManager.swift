@@ -34,7 +34,13 @@ public enum UnidentifiedAccessMode: Int {
     func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
 
     @objc
-    func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair?
+    func getRandomAccess() -> SSKUnidentifiedAccess?
+
+    @objc
+    func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccess?
+
+    @objc
+    func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode
 
     // Returns the UD access key for a given recipient if:
     //
@@ -124,7 +130,18 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Recipient state
 
     @objc
-    public func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair? {
+    public func getRandomAccess() -> SSKUnidentifiedAccess? {
+        guard let ourSenderCertificate = senderCertificate() else {
+            return nil
+        }
+
+        let theirAccessKey = SMKUDAccessKey(randomKeyData: ())
+
+        return SSKUnidentifiedAccess(accessKey: theirAccessKey, senderCertificate: ourSenderCertificate)
+    }
+
+    @objc
+    public func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccess? {
         let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
         guard theirAccessMode == .enabled || theirAccessMode == .unrestricted else {
             return nil
@@ -138,29 +155,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
 
-        guard let ourAccessKey: SMKUDAccessKey = {
-            if shouldAllowUnrestrictedAccessLocal() {
-                return SMKUDAccessKey(randomKeyData: ())
-            } else {
-                guard let localNumber = tsAccountManager.localNumber() else {
-                    owsFailDebug("localNumber was unexpectedly nil")
-                    return nil
-                }
-
-                return enabledUDAccessKeyForRecipient(localNumber)
-            }
-        }() else {
-            return nil
-        }
-
-        let targetUnidentifiedAccess = SSKUnidentifiedAccess(accessKey: theirAccessKey, senderCertificate: ourSenderCertificate)
-        let selfUnidentifiedAccess = SSKUnidentifiedAccess(accessKey: ourAccessKey, senderCertificate: ourSenderCertificate)
-        return SSKUnidentifiedAccessPair(targetUnidentifiedAccess: targetUnidentifiedAccess,
-                                         selfUnidentifiedAccess: selfUnidentifiedAccess)
+        return SSKUnidentifiedAccess(accessKey: theirAccessKey, senderCertificate: ourSenderCertificate)
     }
 
     @objc
-    func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
+    public func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
         guard let existingRawValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
             return .unknown
         }

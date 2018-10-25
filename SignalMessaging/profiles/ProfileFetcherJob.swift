@@ -134,7 +134,29 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        let unidentifiedAccess: SSKUnidentifiedAccess? = self.getUnidentifiedAccess(forRecipientId: recipientId)
+        // If we are in unknown mode, try using a random UD access key
+        // in case they support unrestricted access.
+        if self.udManager.unidentifiedAccessMode(recipientId: recipientId) == .unknown,
+            let randomUnidentifiedAccess = self.udManager.getRandomAccess() {
+            return requestProfile(recipientId: recipientId,
+                                  unidentifiedAccess: randomUnidentifiedAccess)
+                .recover { (_: Error) -> Promise<SignalServiceProfile> in
+                    Logger.verbose("Failing over to non-random access.")
+                    let unidentifiedAccess = self.getUnidentifiedAccess(forRecipientId: recipientId)
+                    return self.requestProfile(recipientId: recipientId,
+                                               unidentifiedAccess: unidentifiedAccess)
+            }
+        } else {
+            let unidentifiedAccess = getUnidentifiedAccess(forRecipientId: recipientId)
+            return requestProfile(recipientId: recipientId,
+                                  unidentifiedAccess: unidentifiedAccess)
+        }
+    }
+
+    private func requestProfile(recipientId: String,
+                                unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
+        AssertIsOnMainThread()
+
         let requestMaker = RequestMaker(requestFactoryBlock: { (unidentifiedAccessForRequest) -> TSRequest in
             return OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccessForRequest)
         }, udAuthFailureBlock: {
@@ -158,7 +180,9 @@ public class ProfileFetcherJob: NSObject {
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
-        updateUnidentifiedAccess(recipientId: recipientId, verifier: signalServiceProfile.unidentifiedAccessVerifier, hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+        updateUnidentifiedAccess(recipientId: recipientId,
+                                 verifier: signalServiceProfile.unidentifiedAccessVerifier,
+                                 hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
     }
 
     private func updateUnidentifiedAccess(recipientId: String, verifier: Data?, hasUnrestrictedAccess: Bool) {
@@ -207,6 +231,6 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func getUnidentifiedAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccess? {
-        return self.udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
+        return self.udManager.getAccess(forRecipientId: recipientId)
     }
 }

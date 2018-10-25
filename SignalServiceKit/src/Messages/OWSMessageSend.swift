@@ -61,7 +61,7 @@ public class OWSMessageSend: NSObject {
         self.localNumber = localNumber
 
         if let recipientId = recipient.uniqueId {
-            self.unidentifiedAccess = udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
+            self.unidentifiedAccess = udManager.getAccess(forRecipientId: recipientId)
             self.isLocalNumber = localNumber == recipientId
         } else {
             owsFailDebug("SignalRecipient missing recipientId")
