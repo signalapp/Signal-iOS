@@ -48,7 +48,7 @@ public class OWSNavigationBar: UINavigationBar {
         applyTheme()
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
                                                name: .ThemeDidChange,

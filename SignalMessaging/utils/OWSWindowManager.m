@@ -19,7 +19,6 @@ const CGFloat OWSWindowManagerCallBannerHeight(void)
         return CurrentAppContext().statusBarHeight + 20;
     }
 
-
     if (![UIDevice currentDevice].hasIPhoneXNotch) {
         return CurrentAppContext().statusBarHeight + 20;
     }
@@ -90,6 +89,21 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
     return YES;
 }
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+@end
+
+@interface OWSWindowRootNavigationViewController : UINavigationController
+
+@end
+
+@implementation OWSWindowRootNavigationViewController : UINavigationController
 
 #pragma mark - Orientation
 
@@ -186,10 +200,17 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)didChangeStatusBarFrame:(NSNotification *)notification
 {
+    // Apple bug? Upon returning from landscape, this method *is* fired, but both the notification and [UIApplication
+    // sharedApplication].statusBarFrame still show a height of 0. So to work around we also call
+    // `ensureReturnToCallWindowFrame` before showing the call banner.
+    [self ensureReturnToCallWindowFrame];
+}
+
+- (void)ensureReturnToCallWindowFrame
+{
     CGRect newFrame = self.returnToCallWindow.frame;
     newFrame.size.height = OWSWindowManagerCallBannerHeight();
-
-    OWSLogDebug(@"StatusBar changed frames - updating returnToCallWindowFrame: %@", NSStringFromCGRect(newFrame));
+    OWSLogDebug(@"returnToCallWindowFrame: %@", NSStringFromCGRect(newFrame));
     self.returnToCallWindow.frame = newFrame;
 }
 
@@ -260,14 +281,13 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     // It adjusts the size of the navigation bar to reflect the
     // call window.  We don't want those adjustments made within
     // the call window itself.
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:viewController];
+    OWSWindowRootNavigationViewController *navigationController =
+        [[OWSWindowRootNavigationViewController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
     OWSAssertDebug(!self.callNavigationController);
     self.callNavigationController = navigationController;
 
-    // MJK DO NOT COMMIT.
-    window.rootViewController = viewController;
+    window.rootViewController = navigationController;
 
     return window;
 }
@@ -478,6 +498,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         return;
     }
 
+    [self ensureReturnToCallWindowFrame];
     OWSLogInfo(@"showing 'return to call' window.");
     self.returnToCallWindow.hidden = NO;
     [self.returnToCallViewController startAnimating];
