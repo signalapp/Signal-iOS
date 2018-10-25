@@ -1111,32 +1111,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread = (TSGroupThread *)thread;
-        if ([gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
-            [ThreadUtil sendLeaveGroupMessageInThread:gThread
-                             presentingViewController:self
-                                        messageSender:self.messageSender
-                                           completion:^(NSError *_Nullable error) {
-                                               if (error) {
-                                                   NSString *title = NSLocalizedString(@"GROUP_REMOVING_FAILED",
-                                                       @"Title of alert indicating that group deletion failed.");
-
-                                                   [OWSAlerts showAlertWithTitle:title
-                                                                         message:error.localizedRecoverySuggestion];
-                                                   return;
-                                               }
-
-                                               [self deleteThread:thread];
-                                           }];
-        } else {
-            // MJK - turn these trailing elses into guards
-            [self deleteThread:thread];
-        }
-    } else {
-        // MJK - turn these trailing elses into guards
+    if (![thread isKindOfClass:[TSGroupThread class]]) {
         [self deleteThread:thread];
+        return;
     }
+
+    TSGroupThread *gThread = (TSGroupThread *)thread;
+    if (![gThread.groupModel.groupMemberIds containsObject:[TSAccountManager localNumber]]) {
+        [self deleteThread:thread];
+        return;
+    }
+
+    [ThreadUtil enqueueLeaveGroupMessageInThread:gThread];
+
+    // MJK TODO - DURABLE TESTPLAN is this safe to delete the gThread when the outgoing message hasn't completed
+    // sending?
+    [self deleteThread:thread];
 }
 
 - (void)deleteThread:(TSThread *)thread

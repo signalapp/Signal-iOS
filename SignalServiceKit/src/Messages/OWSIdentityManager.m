@@ -640,16 +640,20 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     // subsequently
     OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
                                                                    verificationStateSyncMessage:message];
-    [self.messageSender enqueueMessage:nullMessage
+
+    // DURABLE CLEANUP - we could replace the custom durability logic in this class
+    // with a durable JobQueue.
+    [self.messageSender sendMessage:nullMessage
         success:^{
             OWSLogInfo(@"Successfully sent verification state NullMessage");
-            [self.messageSender enqueueMessage:message
+            [self.messageSender sendMessage:message
                 success:^{
                     OWSLogInfo(@"Successfully sent verification state sync message");
 
                     // Record that this verification state was successfully synced.
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
-                        [self clearSyncMessageForRecipientId:message.verificationForRecipientId transaction:transaction];
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [self clearSyncMessageForRecipientId:message.verificationForRecipientId
+                                                 transaction:transaction];
                     }];
                 }
                 failure:^(NSError *error) {
@@ -662,7 +666,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 OWSLogInfo(@"Removing retries for syncing verification state, since user is no longer registered: %@",
                     message.verificationForRecipientId);
                 // Otherwise this will fail forever.
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [self clearSyncMessageForRecipientId:message.verificationForRecipientId transaction:transaction];
                 }];
             }

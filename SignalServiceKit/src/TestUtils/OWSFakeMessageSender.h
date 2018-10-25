@@ -8,11 +8,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #ifdef DEBUG
 
+typedef void (^messageBlock)(TSOutgoingMessage *);
+
 @interface OWSFakeMessageSender : OWSMessageSender
 
-@property (nonatomic, nullable) dispatch_block_t enqueueMessageBlock;
-@property (nonatomic, nullable) dispatch_block_t enqueueAttachmentBlock;
-@property (nonatomic, nullable) dispatch_block_t enqueueTemporaryAttachmentBlock;
+@property (nonatomic, nullable) NSError *stubbedFailingError;
+
+@property (nonatomic, nullable) messageBlock sendMessageWasCalledBlock;
+@property (nonatomic, nullable) messageBlock sendAttachmentWasCalledBlock;
+@property (nonatomic, nullable) messageBlock sendTemporaryAttachmentWasCalledBlock;
 
 @end
 

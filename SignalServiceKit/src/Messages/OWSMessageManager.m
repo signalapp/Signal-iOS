@@ -107,11 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.contactsManager;
 }
 
-- (OWSMessageSender *)messageSender
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
 {
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
+    return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
 - (OWSBlockingManager *)blockingManager
@@ -553,13 +551,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
-    [self.messageSender enqueueMessage:syncGroupsRequestMessage
-        success:^{
-            OWSLogWarn(@"Successfully sent Request Group Info message.");
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send Request Group Info message with error: %@", error);
-        }];
+
+    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
 }
 
 - (id<ProfileManagerProtocol>)profileManager
@@ -833,15 +826,11 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
-            [self.messageSender enqueueTemporaryAttachment:dataSource
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncGroupsMessage
-                success:^{
-                    OWSLogInfo(@"Successfully sent Groups response syncMessage.");
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send Groups response syncMessage with error: %@", error);
-                }];
+            [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
+                                             dataSource:dataSource
+                                            contentType:OWSMimeTypeApplicationOctetStream
+                                         sourceFilename:nil
+                                  isTemporaryAttachment:YES];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
@@ -993,44 +982,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self handleReceivedEnvelope:envelope withDataMessage:dataMessage attachmentIds:@[] transaction:transaction];
 }
 
-- (void)sendGroupUpdateForThread:(TSGroupThread *)gThread message:(TSOutgoingMessage *)message
-{
-    if (!gThread) {
-        OWSFailDebug(@"Missing gThread.");
-        return;
-    }
-    if (!gThread.groupModel) {
-        OWSFailDebug(@"Missing gThread.groupModel.");
-        return;
-    }
-    if (!message) {
-        OWSFailDebug(@"Missing message.");
-        return;
-    }
-
-    if (gThread.groupModel.groupImage) {
-        NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueTemporaryAttachment:dataSource
-            contentType:OWSMimeTypeImagePng
-            inMessage:message
-            success:^{
-                OWSLogDebug(@"Successfully sent group update with avatar");
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send group avatar update with error: %@", error);
-            }];
-    } else {
-        [self.messageSender enqueueMessage:message
-            success:^{
-                OWSLogDebug(@"Successfully sent group update");
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send group update with error: %@", error);
-            }];
-    }
-}
-
 - (void)handleGroupInfoRequest:(SSKProtoEnvelope *)envelope
                    dataMessage:(SSKProtoDataMessage *)dataMessage
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -1093,7 +1044,18 @@ NS_ASSUME_NONNULL_BEGIN
     // Only send this group update to the requester.
     [message updateWithSendingToSingleGroupRecipient:envelope.source transaction:transaction];
 
-    [self sendGroupUpdateForThread:gThread message:message];
+    if (gThread.groupModel.groupImage) {
+        NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        [self.messageSenderJobQueue addMediaMessage:message
+                                         dataSource:dataSource
+                                        contentType:OWSMimeTypeImagePng
+                                     sourceFilename:nil
+                              isTemporaryAttachment:YES];
+
+    } else {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }
 }
 
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope

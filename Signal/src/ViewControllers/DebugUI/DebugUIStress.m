@@ -21,6 +21,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIStress
 
+#pragma mark - Dependencies
+
++ (SSKMessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+{
+    return self.class.messageSenderJobQueue;
+}
+
+- (YapDatabaseConnection *)dbConnection
+{
+    return self.class.dbConnection;
+}
+
++ (YapDatabaseConnection *)dbConnection
+{
+    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+}
+
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -462,14 +484,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(message);
 
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-    [messageSender enqueueMessage:message
-        success:^{
-            OWSLogInfo(@"Successfully sent message.");
-        }
-        failure:^(NSError *error) {
-            OWSLogWarn(@"Failed to deliver message with error: %@", error);
-        }];
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
 }
 
 + (void)sendStressMessage:(TSThread *)thread

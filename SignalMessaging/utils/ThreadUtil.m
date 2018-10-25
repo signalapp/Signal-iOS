@@ -51,30 +51,141 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ThreadUtil
 
-+ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
-                                  inThread:(TSThread *)thread
-                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             messageSender:(OWSMessageSender *)messageSender
+#pragma mark - Dependencies
+
++ (SSKMessageSenderJobQueue *)messageSenderJobQueue
 {
-    return [self sendMessageWithText:text
-        inThread:thread
-        quotedReplyModel:quotedReplyModel
-        messageSender:messageSender
-        success:^{
-            OWSLogInfo(@"Successfully sent message.");
-        }
-        failure:^(NSError *error) {
-            OWSLogWarn(@"Failed to deliver message with error: %@", error);
-        }];
+    return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
++ (YapDatabaseConnection *)dbConnection
+{
+    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+}
 
-+ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
-                                  inThread:(TSThread *)thread
-                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             messageSender:(OWSMessageSender *)messageSender
-                                   success:(void (^)(void))successHandler
-                                   failure:(void (^)(NSError *error))failureHandler
+#pragma mark - Durable Message Enqueue
+
++ (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
+                                     inThread:(TSThread *)thread
+                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId transaction:transaction];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread
+                                       messageBody:text
+                                      attachmentId:nil
+                                  expiresInSeconds:expiresInSeconds
+                                     quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
+
+    [message saveWithTransaction:transaction];
+
+    [self.messageSenderJobQueue addMessage:message transaction:transaction];
+
+    return message;
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
+                                           inThread:(TSThread *)thread
+                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+{
+    return [self enqueueMessageWithAttachment:attachment
+                                     inThread:thread
+                             quotedReplyModel:quotedReplyModel
+                                 ignoreErrors:NO];
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
+                                           inThread:(TSThread *)thread
+                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                       ignoreErrors:(BOOL)ignoreErrors
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(attachment);
+    OWSAssertDebug(!attachment.hasError);
+    OWSAssertDebug(attachment.mimeType.length > 0);
+    OWSAssertDebug(thread);
+
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:thread
+                                                        messageBody:attachment.captionText
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:expiresInSeconds
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:[attachment isVoiceMessage]
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
+                                                       contactShare:nil];
+
+    [self.messageSenderJobQueue addMediaMessage:message
+                                     dataSource:attachment.dataSource
+                                    contentType:attachment.mimeType
+                                 sourceFilename:attachment.filenameOrDefault
+                          isTemporaryAttachment:NO];
+
+    return message;
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(contactShare);
+    OWSAssertDebug(contactShare.ows_isValid);
+    OWSAssertDebug(thread);
+
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:thread
+                                                        messageBody:nil
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:expiresInSeconds
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                      quotedMessage:nil
+                                                       contactShare:contactShare];
+
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [message saveWithTransaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
+
+    return message;
+}
+
++ (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread
+{
+    OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
+
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
+
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
+}
+
+// MARK: Non-Durable Sending
+
++ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)text
+                                            inThread:(TSThread *)thread
+                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                       messageSender:(OWSMessageSender *)messageSender
+                                             success:(void (^)(void))successHandler
+                                             failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(text.length > 0);
@@ -91,35 +202,19 @@ NS_ASSUME_NONNULL_BEGIN
                                   expiresInSeconds:expiresInSeconds
                                      quotedMessage:[quotedReplyModel buildQuotedMessageForSending]];
 
-    [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
+    [messageSender sendMessage:message success:successHandler failure:failureHandler];
 
     return message;
 }
 
-+ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
-                                        inThread:(TSThread *)thread
-                                quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                   messageSender:(OWSMessageSender *)messageSender
-                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion
-{
-    return [self sendMessageWithAttachment:attachment
-                                  inThread:thread
-                          quotedReplyModel:quotedReplyModel
-                             messageSender:messageSender
-                              ignoreErrors:NO
-                                completion:completion];
-}
-
-+ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
-                                        inThread:(TSThread *)thread
-                                quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                   messageSender:(OWSMessageSender *)messageSender
-                                    ignoreErrors:(BOOL)ignoreErrors
-                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion
++ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachment:(SignalAttachment *)attachment
+                                                  inThread:(TSThread *)thread
+                                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                             messageSender:(OWSMessageSender *)messageSender
+                                                completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(attachment);
-    OWSAssertDebug(ignoreErrors || ![attachment hasError]);
     OWSAssertDebug([attachment mimeType].length > 0);
     OWSAssertDebug(thread);
     OWSAssertDebug(messageSender);
@@ -140,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil];
 
-    [messageSender enqueueAttachment:attachment.dataSource
+    [messageSender sendAttachment:attachment.dataSource
         contentType:attachment.mimeType
         sourceFilename:attachment.filenameOrDefault
         inMessage:message
@@ -164,10 +259,10 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
-+ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContact *)contactShare
-                                          inThread:(TSThread *)thread
-                                     messageSender:(OWSMessageSender *)messageSender
-                                        completion:(void (^_Nullable)(NSError *_Nullable error))completion
++ (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
+                                                    inThread:(TSThread *)thread
+                                               messageSender:(OWSMessageSender *)messageSender
+                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(contactShare);
@@ -191,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:contactShare];
 
-    [messageSender enqueueMessage:message
+    [messageSender sendMessage:message
         success:^{
             OWSLogDebug(@"Successfully sent contact share.");
             if (completion) {
@@ -210,47 +305,6 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 
     return message;
-}
-
-+ (void)sendLeaveGroupMessageInThread:(TSGroupThread *)thread
-             presentingViewController:(UIViewController *)presentingViewController
-                        messageSender:(OWSMessageSender *)messageSender
-                           completion:(void (^_Nullable)(NSError *_Nullable error))completion
-{
-    OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
-    OWSAssertDebug(presentingViewController);
-    OWSAssertDebug(messageSender);
-
-    NSString *groupName = thread.name.length > 0 ? thread.name : TSGroupThread.defaultGroupName;
-    NSString *title = [NSString
-        stringWithFormat:NSLocalizedString(@"GROUP_REMOVING", @"Modal text when removing a group"), groupName];
-    UIAlertController *removingFromGroup =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [presentingViewController presentViewController:removingFromGroup animated:YES completion:nil];
-
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
-    [messageSender enqueueMessage:message
-        success:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [presentingViewController dismissViewControllerAnimated:YES
-                                                             completion:^{
-                                                                 if (completion) {
-                                                                     completion(nil);
-                                                                 }
-                                                             }];
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [presentingViewController dismissViewControllerAnimated:YES
-                                                             completion:^{
-                                                                 if (completion) {
-                                                                     completion(error);
-                                                                 }
-                                                             }];
-            });
-        }];
 }
 
 #pragma mark - Dynamic Interactions

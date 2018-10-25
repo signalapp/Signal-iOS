@@ -387,11 +387,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSBlockedPhoneNumbersMessage *message =
         [[OWSBlockedPhoneNumbersMessage alloc] initWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
 
-    [self.messageSender enqueueMessage:message
+    [self.messageSender sendMessage:message
         success:^{
             OWSLogInfo(@"Successfully sent blocked phone numbers sync message");
 
-            // Record the last set of "blocked phone numbers" which we successfully synced.
+            // DURABLE CLEANUP - we could replace the custom durability logic in this class
+            // with a durable JobQueue.
             [self saveSyncedBlockListWithPhoneNumbers:blockedPhoneNumbers groupIds:blockedGroupIds];
         }
         failure:^(NSError *error) {

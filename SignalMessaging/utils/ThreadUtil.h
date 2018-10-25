@@ -38,44 +38,52 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContact;
 @class OWSQuotedReplyModel;
 @class TSOutgoingMessage;
+@class YapDatabaseReadWriteTransaction;
 
 @interface ThreadUtil : NSObject
 
-+ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
-                                  inThread:(TSThread *)thread
-                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             messageSender:(OWSMessageSender *)messageSender
-                                   success:(void (^)(void))successHandler
-                                   failure:(void (^)(NSError *error))failureHandler;
+#pragma mark - Durable Message Enqueue
 
-+ (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
-                                  inThread:(TSThread *)thread
-                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             messageSender:(OWSMessageSender *)messageSender;
++ (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)text
+                                     inThread:(TSThread *)thread
+                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
-                                        inThread:(TSThread *)thread
-                                quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                   messageSender:(OWSMessageSender *)messageSender
-                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion;
++ (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
+                                           inThread:(TSThread *)thread
+                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
 
-// We only should set ignoreErrors in debug or test code.
-+ (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
-                                        inThread:(TSThread *)thread
-                                quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                   messageSender:(OWSMessageSender *)messageSender
-                                    ignoreErrors:(BOOL)ignoreErrors
-                                      completion:(void (^_Nullable)(NSError *_Nullable error))completion;
++ (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
+                                           inThread:(TSThread *)thread
+                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                       ignoreErrors:(BOOL)ignoreErrors;
 
-+ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContact *)contactShare
-                                          inThread:(TSThread *)thread
-                                     messageSender:(OWSMessageSender *)messageSender
-                                        completion:(void (^_Nullable)(NSError *_Nullable error))completion;
++ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
++ (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
 
-+ (void)sendLeaveGroupMessageInThread:(TSGroupThread *)thread
-             presentingViewController:(UIViewController *)presentingViewController
-                        messageSender:(OWSMessageSender *)messageSender
-                           completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+#pragma mark - Non-Durable Sending
+
+// Used by SAE and "reply from lockscreen", otherwise we should use the durable `enqueue` counterpart
++ (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)text
+                                            inThread:(TSThread *)thread
+                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                       messageSender:(OWSMessageSender *)messageSender
+                                             success:(void (^)(void))successHandler
+                                             failure:(void (^)(NSError *error))failureHandler;
+
+// Used by SAE, otherwise we should use the durable `enqueue` counterpart
++ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachment:(SignalAttachment *)attachment
+                                                  inThread:(TSThread *)thread
+                                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                             messageSender:(OWSMessageSender *)messageSender
+                                                completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+
+// Used by SAE, otherwise we should use the durable `enqueue` counterpart
++ (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
+                                                    inThread:(TSThread *)thread
+                                               messageSender:(OWSMessageSender *)messageSender
+                                                  completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+
 
 #pragma mark - dynamic interactions
 

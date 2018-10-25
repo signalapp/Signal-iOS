@@ -91,6 +91,13 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     // Override in subclass if necessary
 }
 
+// Called zero or more times, retry may be possible
+- (void)didReportError:(NSError *)error
+{
+    // no-op
+    // Override in subclass if necessary
+}
+
 // Called at most one time, once retry is no longer possible.
 - (void)didFailWithError:(NSError *)error
 {
@@ -144,6 +151,8 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         error.isRetryable,
         (unsigned long)self.remainingRetries);
 
+    [self didReportError:error];
+
     if (error.isFatal) {
         [self failOperationWithError:error];
         return;
@@ -161,11 +170,15 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     self.remainingRetries--;
 
-    // TODO Do we want some kind of exponential backoff?
-    // I'm not sure that there is a one-size-fits all backoff approach
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, self.retryDelay), dispatch_get_main_queue(), ^{
         [self run];
     });
+}
+
+// Override in subclass if you want something more sophisticated, e.g. exponential backoff
+- (dispatch_time_t)retryDelay
+{
+    return (0.1 * NSEC_PER_SEC);
 }
 
 #pragma mark - Life Cycle

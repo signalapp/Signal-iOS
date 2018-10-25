@@ -114,7 +114,7 @@ class OutgoingMessageFactory: Factory {
 
     // MARK: Factory
 
-    func create(transaction: YapDatabaseReadWriteTransaction) -> TSOutgoingMessage {
+    func build(transaction: YapDatabaseReadWriteTransaction) -> TSOutgoingMessage {
         let item = TSOutgoingMessage(outgoingMessageWithTimestamp: timestampBuilder(),
                                      in: threadCreator(transaction),
                                      messageBody: messageBodyBuilder(),
@@ -125,6 +125,12 @@ class OutgoingMessageFactory: Factory {
                                      groupMetaMessage: .unspecified,
                                      quotedMessage: nil,
                                      contactShare: nil)
+
+        return item
+    }
+
+    func create(transaction: YapDatabaseReadWriteTransaction) -> TSOutgoingMessage {
+        let item = self.build(transaction: transaction)
         item.save(with: transaction)
 
         return item
@@ -144,6 +150,26 @@ class OutgoingMessageFactory: Factory {
 
     var messageBodyBuilder: () -> String = {
         return CommonGenerator.paragraph
+    }
+
+    // MARK: Delivery Receipts
+
+    func buildDeliveryReceipt() -> OWSReceiptsForSenderMessage {
+        var item: OWSReceiptsForSenderMessage!
+        self.readWrite { transaction in
+            item = self.buildDeliveryReceipt(transaction: transaction)
+        }
+        return item
+    }
+
+    func buildDeliveryReceipt(transaction: YapDatabaseReadWriteTransaction) -> OWSReceiptsForSenderMessage {
+        let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(with: threadCreator(transaction),
+                                                                                messageTimestamps: messageTimestampsBuilder())
+        return item
+    }
+
+    var messageTimestampsBuilder: () -> [NSNumber] = {
+        return [1]
     }
 }
 

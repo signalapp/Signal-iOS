@@ -3,6 +3,8 @@
 //
 
 // Anything used by Swift outside of the framework must be imported.
-#import "OWSFileSystem.h"
-#import "OWSOperation.h"
-#import "OWSSyncManagerProtocol.h"
+#import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/OWSOperation.h>
+#import <SignalServiceKit/OWSSyncManagerProtocol.h>
+#import <SignalServiceKit/SSKJobRecord.h>
+#import <SignalServiceKit/TSYapDatabaseObject.h>

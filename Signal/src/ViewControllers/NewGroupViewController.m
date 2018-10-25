@@ -490,13 +490,17 @@ NS_ASSUME_NONNULL_BEGIN
                               NSData *data = UIImagePNGRepresentation(model.groupImage);
                               DataSource *_Nullable dataSource =
                                   [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-                              [self.messageSender enqueueTemporaryAttachment:dataSource
-                                                                 contentType:OWSMimeTypeImagePng
-                                                                   inMessage:message
-                                                                     success:successHandler
-                                                                     failure:failureHandler];
+                              // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
+                              // an error in the thread if group creation fails
+                              [self.messageSender sendTemporaryAttachment:dataSource
+                                                              contentType:OWSMimeTypeImagePng
+                                                                inMessage:message
+                                                                  success:successHandler
+                                                                  failure:failureHandler];
                           } else {
-                              [self.messageSender enqueueMessage:message success:successHandler failure:failureHandler];
+                              // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
+                              // an error in the thread if group creation fails
+                              [self.messageSender sendMessage:message success:successHandler failure:failureHandler];
                           }
                       });
                   }];

@@ -575,23 +575,20 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithSendingError:(NSError *)error
+- (void)updateWithSendingError:(NSError *)error transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(error);
-
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(TSOutgoingMessage *message) {
-                                     // Mark any "sending" recipients as "failed."
-                                     for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
-                                              .allValues) {
-                                         if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
-                                             recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-                                         }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSOutgoingMessage *message) {
+                                 // Mark any "sending" recipients as "failed."
+                                 for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
+                                          .allValues) {
+                                     if (recipientState.state == OWSOutgoingMessageRecipientStateSending) {
+                                         recipientState.state = OWSOutgoingMessageRecipientStateFailed;
                                      }
-                                     [message setMostRecentFailureText:error.localizedDescription];
-                                 }];
-    }];
+                                 }
+                                 [message setMostRecentFailureText:error.localizedDescription];
+                             }];
 }
 
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction

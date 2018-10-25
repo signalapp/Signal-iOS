@@ -122,7 +122,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark - Dependencies
 
-- (TSAccountManager *)tsAccountManager {
+- (TSAccountManager *)tsAccountManager
+{
     return TSAccountManager.sharedInstance;
 }
 
@@ -136,17 +137,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return SSKEnvironment.shared.identityManager;
 }
 
-- (OWSMessageSender *)messageSender {
-    OWSAssertDebug(SSKEnvironment.shared.messageSender);
-
-    return SSKEnvironment.shared.messageSender;
+- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
-- (TSNetworkManager *)networkManager {
+- (TSNetworkManager *)networkManager
+{
     return SSKEnvironment.shared.networkManager;
 }
 
-- (OWSBlockingManager *)blockingManager {
+- (OWSBlockingManager *)blockingManager
+{
     return SSKEnvironment.shared.blockingManager;
 }
 
@@ -1407,43 +1409,32 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [alertController addAction:[UIAlertAction actionWithTitle:shareTitle
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self userAddedThreadToProfileWhitelist:thread
-                                                                                          success:successHandler];
+                                                          [self userAddedThreadToProfileWhitelist:thread];
+                                                          successHandler();
                                                       }]];
     [alertController addAction:[OWSAlerts cancelAction]];
 
     [fromViewController presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)userAddedThreadToProfileWhitelist:(TSThread *)thread success:(void (^)(void))successHandler
+- (void)userAddedThreadToProfileWhitelist:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
-
-    OWSProfileKeyMessage *message =
-        [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
 
     BOOL isFeatureEnabled = NO;
     if (!isFeatureEnabled) {
         OWSLogWarn(@"skipping sending profile-key message because the feature is not yet fully available.");
         [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-        successHandler();
         return;
     }
 
-    [self.messageSender enqueueMessage:message
-        success:^{
-            OWSLogInfo(@"Successfully sent profile key message to thread: %@", thread);
-            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    OWSProfileKeyMessage *message =
+        [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
-            dispatch_async(dispatch_get_main_queue(), ^{
-                successHandler();
-            });
-        }
-        failure:^(NSError *_Nonnull error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                OWSLogError(@"Failed to send profile key message to thread: %@", thread);
-            });
-        }];
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
 }
 
 #pragma mark - Notifications

@@ -201,7 +201,10 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
             NSString *replyText = responseInfo[UIUserNotificationActionResponseTypedTextKey];
 
             // In line with most apps, we send a normal outgoing messgae here - not a "quoted reply".
-            [ThreadUtil sendMessageWithText:replyText
+
+            // We use a non-durable send to delay calling the completion handler until sending completes
+            // in hopes our send will complete before the app gets suspended.
+            [ThreadUtil sendMessageNonDurablyWithText:replyText
                 inThread:thread
                 quotedReplyModel:nil
                 messageSender:self.messageSender

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Initialized object
  */
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

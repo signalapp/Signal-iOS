@@ -1108,6 +1108,11 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.messageReceiver handleAnyUnprocessedEnvelopesAsync];
     [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
 
+    // TODO
+    // - incorporate reachability check
+    [SSKEnvironment.shared.messageSenderJobQueue setup];
+    [AppEnvironment.shared.sessionResetJobQueue setup];
+
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.primaryStorage.newDatabaseConnection
             asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {

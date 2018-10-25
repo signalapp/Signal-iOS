@@ -236,13 +236,16 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
 
         __block TSOutgoingMessage *outgoingMessage = nil;
-        outgoingMessage = [ThreadUtil sendMessageWithAttachment:attachment
-                                                       inThread:self.thread
-                                               quotedReplyModel:nil
-                                                  messageSender:self.messageSender
-                                                     completion:^(NSError *_Nullable error) {
-                                                         sendCompletion(error, outgoingMessage);
-                                                     }];
+        // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
+        // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
+        // SAE runs as long as it needs.
+        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachment:attachment
+                                                                 inThread:self.thread
+                                                         quotedReplyModel:nil
+                                                            messageSender:self.messageSender
+                                                               completion:^(NSError *_Nullable error) {
+                                                                   sendCompletion(error, outgoingMessage);
+                                                               }];
 
         // This is necessary to show progress.
         self.outgoingMessage = outgoingMessage;
@@ -268,7 +271,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
 
         __block TSOutgoingMessage *outgoingMessage = nil;
-        outgoingMessage = [ThreadUtil sendMessageWithText:messageText
+        // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
+        // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
+        // SAE runs as long as it needs.
+        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
             inThread:self.thread
             quotedReplyModel:nil
             messageSender:self.messageSender
@@ -300,6 +306,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
+        // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
+        // preparation rather than duplicated here and in the SAE
         [self.editingDBConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             if (contactShare.avatarImage) {
                 [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
@@ -307,12 +315,12 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         }
             completionBlock:^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
-                outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare.dbRecord
-                                                                 inThread:self.thread
-                                                            messageSender:self.messageSender
-                                                               completion:^(NSError *_Nullable error) {
-                                                                   sendCompletion(error, outgoingMessage);
-                                                               }];
+                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
+                                                                           inThread:self.thread
+                                                                      messageSender:self.messageSender
+                                                                         completion:^(NSError *_Nullable error) {
+                                                                             sendCompletion(error, outgoingMessage);
+                                                                         }];
                 // This is necessary to show progress.
                 self.outgoingMessage = outgoingMessage;
             }];
@@ -537,7 +545,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         presentViewController:progressAlert
                      animated:YES
                    completion:^(void) {
-                       [self.messageSender enqueueMessage:message
+                       [self.messageSender sendMessage:message
                            success:^(void) {
                                OWSLogInfo(@"Resending attachment succeeded.");
                                dispatch_async(dispatch_get_main_queue(), ^(void) {

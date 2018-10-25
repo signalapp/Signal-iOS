@@ -283,6 +283,15 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     return self;
 }
 
+#pragma mark - Dependencies
+
+- (YapDatabaseConnection *)dbConnection
+{
+    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+}
+
+#pragma mark -
+
 + (void)submitLogs
 {
     [self submitLogsWithCompletion:nil];
@@ -565,17 +574,18 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         return;
     }
     NSString *recipientId = [TSAccountManager localNumber];
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
         }];
-        [ThreadUtil sendMessageWithText:url.absoluteString
-                               inThread:thread
-                       quotedReplyModel:nil
-                          messageSender:messageSender];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [ThreadUtil enqueueMessageWithText:url.absoluteString
+                                      inThread:thread
+                              quotedReplyModel:nil
+                                   transaction:transaction];
+        }];
     });
 
     // Also copy to pasteboard.
@@ -594,11 +604,12 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     }];
     DispatchMainThreadSafe(^{
         if (thread) {
-            OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-            [ThreadUtil sendMessageWithText:url.absoluteString
-                                   inThread:thread
-                           quotedReplyModel:nil
-                              messageSender:messageSender];
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [ThreadUtil enqueueMessageWithText:url.absoluteString
+                                          inThread:thread
+                                  quotedReplyModel:nil
+                                       transaction:transaction];
+            }];
         } else {
             [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
         }

@@ -230,7 +230,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
@@ -241,11 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil sendMessageWithAttachment:attachment
-                                 inThread:thread
-                         quotedReplyModel:nil
-                            messageSender:messageSender
-                               completion:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
 }
 
 + (void)sendUnencryptedDatabase:(TSThread *)thread
@@ -259,7 +254,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
@@ -268,11 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil sendMessageWithAttachment:attachment
-                                 inThread:thread
-                         quotedReplyModel:nil
-                            messageSender:messageSender
-                               completion:nil];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
 }
 
 @end
