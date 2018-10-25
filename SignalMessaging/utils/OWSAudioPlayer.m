@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.audioPlayer.numberOfLoops = -1;
         }
     }
-
+    [self.audioPlayer prepareToPlay];
     [self.audioPlayer play];
     [self.audioPlayerPoller invalidate];
     self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
