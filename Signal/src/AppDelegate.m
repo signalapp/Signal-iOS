@@ -49,7 +49,7 @@
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
-#import <sys/sysctl.h>
+#import <sys/utsname.h>
 
 @import WebRTC;
 @import Intents;
@@ -468,15 +468,20 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Language Code: %@", languageCode);
     }
 
-    size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
-    sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [NSString stringWithUTF8String:machine];
-    free(machine);
+    struct utsname systemInfo;
+    uname(&systemInfo);
 
-    OWSLogInfo(@"iPhone Version: %@", platform);
+    OWSLogInfo(@"Device Model: %@ (%@)",
+        UIDevice.currentDevice.model,
+        [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+
     OWSLogInfo(@"WebRTC Commit: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"WebRTCCommit"]);
+    OWSLogInfo(@"Build XCode Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildXCodeVersion"]);
+    OWSLogInfo(@"Build OS X Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildOSXVersion"]);
+    OWSLogInfo(
+        @"Build Cocoapods Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildCocoapodsVersion"]);
+    OWSLogInfo(
+        @"Build Carthage Version: %@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildCarthageVersion"]);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
