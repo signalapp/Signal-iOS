@@ -185,7 +185,8 @@ public class ProfileFetcherJob: NSObject {
                                 canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
         AssertIsOnMainThread()
 
-        let requestMaker = RequestMaker(requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
+        let requestMaker = RequestMaker(label: "Profile Fetch",
+                                        requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
             return OWSRequestFactory.getProfileRequest(recipientId: recipientId, udAccessKey: udAccessKeyForRequest)
         }, udAuthFailureBlock: {
             // Do nothing

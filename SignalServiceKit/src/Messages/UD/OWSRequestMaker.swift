@@ -37,10 +37,12 @@ public class RequestMakerResult: NSObject {
 // * Websocket-to-REST failover.
 @objc(OWSRequestMaker)
 public class RequestMaker: NSObject {
+
     public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest
     public typealias UDAuthFailureBlock = () -> Void
     public typealias WebsocketFailureBlock = () -> Void
 
+    private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
     private let udAuthFailureBlock: UDAuthFailureBlock
     private let websocketFailureBlock: WebsocketFailureBlock
@@ -49,12 +51,14 @@ public class RequestMaker: NSObject {
     private let canFailoverUDAuth: Bool
 
     @objc
-    public init(requestFactoryBlock : @escaping RequestFactoryBlock,
+    public init(label: String,
+                requestFactoryBlock : @escaping RequestFactoryBlock,
                 udAuthFailureBlock : @escaping UDAuthFailureBlock,
                 websocketFailureBlock : @escaping WebsocketFailureBlock,
                 recipientId: String,
                 udAccessKey: SMKUDAccessKey?,
                 canFailoverUDAuth: Bool) {
+        self.label = label
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
         self.websocketFailureBlock = websocketFailureBlock
@@ -112,6 +116,14 @@ public class RequestMaker: NSObject {
         if canMakeWebsocketRequests {
             return Promise { resolver in
                 socketManager.make(request, webSocketType: webSocketType, success: { (responseObject: Any?) in
+                    if self.udManager.isUDVerboseLoggingEnabled() {
+                        if isUDSend {
+                            Logger.debug("UD websocket request '\(self.label)' succeeded.")
+                        } else {
+                            Logger.debug("Non-UD websocket request '\(self.label)' succeeded.")
+                        }
+                    }
+
                     resolver.fulfill(RequestMakerResult(responseObject: responseObject, wasSentByUD: isUDSend))
                 }) { (statusCode: Int, responseData: Data?, error: Error) in
                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
@@ -125,10 +137,10 @@ public class RequestMaker: NSObject {
                             self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
                             self.udAuthFailureBlock()
                             if self.canFailoverUDAuth {
-                                Logger.info("UD websocket request auth failed; failing over to non-UD websocket request.")
+                                Logger.info("UD websocket request '\(self.label)' auth failed; failing over to non-UD websocket request.")
                                 return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
                             } else {
-                                Logger.info("UD websocket request auth failed; aborting.")
+                                Logger.info("UD websocket request '\(self.label)' auth failed; aborting.")
                                 throw RequestMakerUDAuthError.udAuthFailure
                             }
                         }
@@ -138,14 +150,22 @@ public class RequestMaker: NSObject {
                     }
 
                     self.websocketFailureBlock()
-                    Logger.info("Non-UD Web socket request failed; failing over to REST request: \(error).")
+                    Logger.info("Non-UD Web socket request '\(self.label)' failed; failing over to REST request: \(error).")
                     return self.makeRequestInternal(skipUD: skipUD, skipWebsocket: true)
                 }
         } else {
             return self.networkManager.makePromise(request: request)
                 .map { (networkManagerResult: TSNetworkManager.NetworkManagerResult) -> RequestMakerResult in
+                    if self.udManager.isUDVerboseLoggingEnabled() {
+                        if isUDSend {
+                            Logger.debug("UD REST request '\(self.label)' succeeded.")
+                        } else {
+                            Logger.debug("Non-UD REST request '\(self.label)' succeeded.")
+                        }
+                    }
+
                     // Unwrap the network manager promise into a request maker promise.
-                    RequestMakerResult(responseObject: networkManagerResult.responseObject, wasSentByUD: isUDSend)
+                    return RequestMakerResult(responseObject: networkManagerResult.responseObject, wasSentByUD: isUDSend)
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case NetworkManagerError.taskError(let task, _):
@@ -156,10 +176,10 @@ public class RequestMaker: NSObject {
                             self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
                             self.udAuthFailureBlock()
                             if self.canFailoverUDAuth {
-                                Logger.info("UD REST request auth failed; failing over to non-UD REST request.")
+                                Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
                                 return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
                             } else {
-                                Logger.info("UD REST request auth failed; aborting.")
+                                Logger.info("UD REST request '\(self.label)' auth failed; aborting.")
                                 throw RequestMakerUDAuthError.udAuthFailure
                             }
                         }
@@ -168,7 +188,7 @@ public class RequestMaker: NSObject {
                         break
                     }
 
-                    Logger.debug("Non-UD REST request failed: \(error).")
+                    Logger.debug("Non-UD REST request '\(self.label)' failed: \(error).")
                     throw error
                 }
         }

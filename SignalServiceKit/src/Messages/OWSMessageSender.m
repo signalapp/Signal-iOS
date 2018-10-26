@@ -1075,12 +1075,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    OWSLogVerbose(@"Sending message; ud? %d %d.", messageSend.isUDSend, messageSend.udAccessKey != nil);
-
     // NOTE: canFailoverUDAuth is NO because UD-auth and Non-UD-auth requests
     // use different device lists.
-    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
-        initWithRequestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
+    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
+        requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
             return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
                                                                messages:deviceMessages
                                                               timeStamp:message.timestamp
@@ -1575,8 +1573,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
-    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
-        initWithRequestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
+    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Prekey Fetch"
+        requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
             return [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
                                                                  deviceId:[deviceId stringValue]
                                                               udAccessKey:udAccessKey];
