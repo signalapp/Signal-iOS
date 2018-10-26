@@ -135,10 +135,24 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        // If we are in unknown mode, try using a random UD access key
-        // in case they support unrestricted access.
         switch self.udManager.unidentifiedAccessMode(forRecipientId: recipientId) {
-        case .unknown, .unrestricted:
+        case .unknown:
+            if let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId) {
+                // If we are in unknown mode and have a profile key,
+                // try using the profile key.
+                return self.requestProfile(recipientId: recipientId,
+                                           udAccessKey: udAccessKey,
+                                           canFailoverUDAuth: true)
+            } else {
+                // If we are in unknown mode and don't have a profile key,
+                // try using a random UD access key in case they support
+                // unrestricted access.
+                let randomUDAccessKey = self.udManager.randomUDAccessKey()
+                return requestProfile(recipientId: recipientId,
+                                      udAccessKey: randomUDAccessKey,
+                                      canFailoverUDAuth: true)
+            }
+        case .unrestricted:
             let randomUDAccessKey = self.udManager.randomUDAccessKey()
             return requestProfile(recipientId: recipientId,
                                   udAccessKey: randomUDAccessKey,
