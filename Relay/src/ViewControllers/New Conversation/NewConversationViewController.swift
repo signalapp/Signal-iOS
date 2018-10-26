@@ -81,11 +81,16 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         
         self.uiDBConnection.beginLongLivedReadTransaction()
         DispatchQueue.main.async {
-            self.uiDBConnection.read { transaction in
+            self.uiDBConnection.asyncRead({ (transaction) in
                 self.tagMappings?.update(with: transaction)
-            }
-            self.updateFilteredMappings()
+            }, completionBlock: {
+                self.updateFilteredMappings()
+            })
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(yapDatabaseModified),
@@ -509,11 +514,12 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
             }
             return false
         }
-        self.searchDBConnection.readWrite { transaction in
+        self.searchDBConnection.asyncReadWrite({ (transaction) in
             let filteredViewTransaction = transaction.ext(FLFilteredTagDatabaseViewExtensionName) as! YapDatabaseFilteredViewTransaction
             filteredViewTransaction.setFiltering(filtering, versionTag: filterString)
+        }) {
+            self.updateContactsView()
         }
-        self.updateContactsView()
     }
     
     private func removeSlug(slug: String) {
@@ -614,6 +620,7 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
     }
     
     private func changeMappingsGroup(groups: Array<String>) {
+        self.uiDBConnection.beginLongLivedReadTransaction()
         self.tagMappings = YapDatabaseViewMappings(groups: groups , view: FLFilteredTagDatabaseViewExtensionName)
         
         for group in groups {
@@ -621,10 +628,11 @@ class NewConversationViewController: UIViewController, UISearchBarDelegate, UITa
         }
         
         DispatchQueue.main.async {
-            self.uiDBConnection.read { transaction in
+            self.uiDBConnection.asyncRead({ (transaction) in
                 self.tagMappings?.update(with: transaction)
-            }
-            self.updateContactsView()
+            }, completionBlock: {
+                self.updateContactsView()
+            })
         }
     }
 }
