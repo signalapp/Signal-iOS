@@ -9,10 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class PhoneNumber;
 @class SignalAccount;
 @class UIImage;
+@class YapDatabaseReadTransaction;
 
 @protocol ContactsManagerProtocol <NSObject>
 
-- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)phoneNumber;
+- (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)recipientId;
+- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+                                transaction:(YapDatabaseReadTransaction *)transaction;
 - (NSArray<SignalAccount *> *)signalAccounts;
 
 - (BOOL)isSystemContact:(NSString *)recipientId;

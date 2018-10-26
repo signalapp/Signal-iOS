@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeContactsManager
 
-- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)phoneNumber
+- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)phoneNumber
 {
     return @"Fake name";
 }
