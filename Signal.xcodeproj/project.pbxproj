@@ -2594,12 +2594,12 @@
 				45AE48531E073428004D96C2 /* Swift Lint */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
+				34C239432180B01B00B6108F /* ShellScript */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
 				453518771FC635DD00210559 /* Embed App Extensions */,
 				4535189F1FC63DBF00210559 /* Embed Frameworks */,
-				34C239432180B01B00B6108F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2933,7 +2933,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Capture hash & comment from last WebRTC git commit.\ncd $PROJECT_DIR/ThirdParty/WebRTC/\n_git_commit=`git log --pretty=oneline | head -1`\ncd $PROJECT_DIR\n\n# Remove existing .plist entry, if any.\n/usr/libexec/PlistBuddy -c \"Delete BuildDetails\" Signal/Signal-Info.plist || true\n# Add new .plist entry.\n/usr/libexec/PlistBuddy -c \"add BuildDetails dict\" Signal/Signal-Info.plist\n\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:WebRTCCommit string '$_git_commit'\" Signal/Signal-Info.plist\n\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:XCodeVersion string '${XCODE_VERSION_MAJOR}.${XCODE_VERSION_MINOR}'\" Signal/Signal-Info.plist\n\n_osx_version=`defaults read loginwindow SystemVersionStampAsString`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:OSXVersion string '$_osx_version'\" Signal/Signal-Info.plist\n\n_cocoapods_version=`pod --version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CocoapodsVersion string '$_cocoapods_version'\" Signal/Signal-Info.plist\n\n_carthage_version=`carthage version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CarthageVersion string '$_carthage_version'\" Signal/Signal-Info.plist\n\n# Use UTC\n_build_datetime=`date -u`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:DateTime string '$_build_datetime'\" Signal/Signal-Info.plist\n";
+			shellScript = "# Capture hash & comment from last WebRTC git commit.\ncd $PROJECT_DIR/ThirdParty/WebRTC/\n_git_commit=`git log --pretty=oneline | head -1`\ncd $PROJECT_DIR\n\n# Remove existing .plist entry, if any.\n/usr/libexec/PlistBuddy -c \"Delete BuildDetails\" Signal/Signal-Info.plist || true\n# Add new .plist entry.\n/usr/libexec/PlistBuddy -c \"add BuildDetails dict\" Signal/Signal-Info.plist\n\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:WebRTCCommit string '$_git_commit'\" Signal/Signal-Info.plist\n\n_osx_version=`defaults read loginwindow SystemVersionStampAsString`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:OSXVersion string '$_osx_version'\" Signal/Signal-Info.plist\n\n_cocoapods_version=`pod --version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CocoapodsVersion string '$_cocoapods_version'\" Signal/Signal-Info.plist\n\n_carthage_version=`carthage version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CarthageVersion string '$_carthage_version'\" Signal/Signal-Info.plist\n\necho \"CONFIGURATION: ${CONFIGURATION}\"\nif [ \"${CONFIGURATION}\" = \"App Store Release\" ]; then\n    /usr/libexec/PlistBuddy -c \"add :BuildDetails:XCodeVersion string '${XCODE_VERSION_MAJOR}.${XCODE_VERSION_MINOR}'\" Signal/Signal-Info.plist\n\n    # Use UTC\n    _build_datetime=`date -u`\n    /usr/libexec/PlistBuddy -c \"add :BuildDetails:DateTime string '$_build_datetime'\" Signal/Signal-Info.plist\nfi\n";
 		};
 		451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

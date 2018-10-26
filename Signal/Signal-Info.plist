@@ -8,14 +8,10 @@
 		<string>0.31.0</string>
 		<key>CocoapodsVersion</key>
 		<string>1.5.3</string>
-		<key>DateTime</key>
-		<string>Thu Oct 25 20:07:42 UTC 2018</string>
 		<key>OSXVersion</key>
 		<string>10.13.6</string>
 		<key>WebRTCCommit</key>
 		<string>ca71024b4993ba95e3e6b8d0758004cffc54ddaf M70</string>
-		<key>XCodeVersion</key>
-		<string>0900.0940</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
