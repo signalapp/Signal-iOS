@@ -1139,7 +1139,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     SignalRecipient *recipient = messageSend.recipient;
 
-    OWSLogInfo(@"Message send succeeded.");
+    OWSLogInfo(@"Message send succeeded (wasSentByUD: %d).", wasSentByUD);
 
     if (messageSend.isLocalNumber && deviceMessages.count == 0) {
         OWSLogInfo(@"Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.");
