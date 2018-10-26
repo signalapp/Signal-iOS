@@ -240,7 +240,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 return nil
             }
         }
-        let accessMode = unidentifiedAccessMode(forRecipientId: localNumber)
+        let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
         if accessMode == .unrestricted {
             if isUDVerboseLoggingEnabled() {
                 Logger.info("UD Send enabled for \(recipientId) with random key.")
