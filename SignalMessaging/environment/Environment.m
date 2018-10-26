@@ -13,9 +13,10 @@ static Environment *sharedEnvironment = nil;
 
 @property (nonatomic) OWSAudioSession *audioSession;
 @property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) OWSPreferences *preferences;
-@property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) LockInteractionController *lockInteractionController;
+@property (nonatomic) OWSPreferences *preferences;
+@property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
+@property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) OWSWindowManager *windowManager;
 
 @end
@@ -49,9 +50,10 @@ static Environment *sharedEnvironment = nil;
 }
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
-                         preferences:(OWSPreferences *)preferences
-                              sounds:(OWSSounds *)sounds
            lockInteractionController:(LockInteractionController *)lockInteractionController
+                         preferences:(OWSPreferences *)preferences
+          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                              sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
 {
     self = [super init];
@@ -60,15 +62,17 @@ static Environment *sharedEnvironment = nil;
     }
 
     OWSAssertDebug(audioSession);
-    OWSAssertDebug(preferences);
-    OWSAssertDebug(sounds);
     OWSAssertDebug(lockInteractionController);
+    OWSAssertDebug(preferences);
+    OWSAssertDebug(proximityMonitoringManager);
+    OWSAssertDebug(sounds);
     OWSAssertDebug(windowManager);
 
     _audioSession = audioSession;
-    _preferences = preferences;
-    _sounds = sounds;
     _lockInteractionController = lockInteractionController;
+    _preferences = preferences;
+    _proximityMonitoringManager = proximityMonitoringManager;
+    _sounds = sounds;
     _windowManager = windowManager;
 
     OWSSingletonAssert();

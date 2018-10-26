@@ -11,6 +11,8 @@
 @class OWSSounds;
 @class OWSWindowManager;
 
+@protocol OWSProximityMonitoringManager;
+
 /**
  *
  * Environment is a data and data accessor class.
@@ -24,16 +26,18 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
-                         preferences:(OWSPreferences *)preferences
-                              sounds:(OWSSounds *)sounds
            lockInteractionController:(LockInteractionController *)lockInteractionController
+                         preferences:(OWSPreferences *)preferences
+          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                              sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) LockInteractionController *lockInteractionController;
+@property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;
-@property (nonatomic, readonly) LockInteractionController *lockInteractionController;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;
 
 @property (class, nonatomic) Environment *shared;

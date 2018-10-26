@@ -86,12 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
+        id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
-                                                             preferences:preferences
-                                                                  sounds:sounds
                                                lockInteractionController:lockInteractionController
+                                                             preferences:preferences
+                                              proximityMonitoringManager:proximityMonitoringManager
+                                                                  sounds:sounds
                                                            windowManager:windowManager]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
