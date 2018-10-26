@@ -54,7 +54,7 @@ public class OWSMessageSend: NSObject {
                 thread: TSThread?,
                 recipient: SignalRecipient,
                 senderCertificate: SMKSenderCertificate?,
-                udManager: OWSUDManager,
+                udAccessKey: SMKUDAccessKey?,
                 localNumber: String,
                 success: @escaping () -> Void,
                 failure: @escaping (Error) -> Void) {
@@ -63,17 +63,9 @@ public class OWSMessageSend: NSObject {
         self.recipient = recipient
         self.localNumber = localNumber
         self.senderCertificate = senderCertificate
+        self.udAccessKey = udAccessKey
 
         if let recipientId = recipient.uniqueId {
-            if senderCertificate != nil {
-                let accessMode = udManager.unidentifiedAccessMode(forRecipientId: recipientId)
-                if accessMode == .unrestricted {
-                    self.udAccessKey = udManager.randomUDAccessKey()
-                } else if accessMode == .unrestricted {
-                    self.udAccessKey = udManager.udAccessKey(forRecipientId: recipientId)
-                }
-            }
-
             self.isLocalNumber = localNumber == recipientId
         } else {
             owsFailDebug("SignalRecipient missing recipientId")
