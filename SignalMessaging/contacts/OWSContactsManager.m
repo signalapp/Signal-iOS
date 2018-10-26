@@ -749,7 +749,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self cachedContactNameForRecipientId:recipientId transaction:transaction];
 }
 
-- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
 {
     OWSAssertDebug(recipientId.length > 0);
 
@@ -767,8 +767,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return displayName;
 }
 
-- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
-                                        transaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+                                transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
@@ -973,7 +973,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "
-            @"Phone number should be masost prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
+            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
             @"with {{profile name}}");
 
         NSString *numberAndProfileName =

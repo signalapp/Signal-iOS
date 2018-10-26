@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ContactsManagerProtocol <NSObject>
 
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)recipientId;
-- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
-                                        transaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+                                transaction:(YapDatabaseReadTransaction *)transaction;
 - (NSArray<SignalAccount *> *)signalAccounts;
 
 - (BOOL)isSystemContact:(NSString *)recipientId;
