@@ -578,6 +578,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                  message:(TSOutgoingMessage *)message
                                   thread:(nullable TSThread *)thread
                        senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                         selfUDAccessKey:(nullable SMKUDAccessKey *)selfUDAccessKey
                               sendErrors:(NSMutableArray<NSError *> *)sendErrors
 {
     OWSAssertDebug(recipients.count > 0);
@@ -589,11 +590,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     for (SignalRecipient *recipient in recipients) {
         // Use chained promises to make the code more readable.
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            SMKUDAccessKey *_Nullable theirUDAccessKey;
+            if (senderCertificate != nil && selfUDAccessKey != nil) {
+                theirUDAccessKey = [self.udManager udSendAccessKeyForRecipientId:recipient.recipientId];
+            }
+
             OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
                 thread:thread
                 recipient:recipient
                 senderCertificate:senderCertificate
-                udManager:self.udManager
+                udAccessKey:theirUDAccessKey
                 localNumber:self.tsAccountManager.localNumber
                 success:^{
                     // The value doesn't matter, we just need any non-NSError value.
@@ -624,10 +630,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     AssertIsOnSendingQueue();
 
+    SMKUDAccessKey *_Nullable selfUDAccessKey;
+    if (senderCertificate) {
+        selfUDAccessKey = [self.udManager udSendAccessKeyForRecipientId:self.tsAccountManager.localNumber];
+    }
+
     void (^successHandler)(void) = ^() {
         dispatch_async([OWSDispatch sendingQueue], ^{
             [self handleMessageSentLocally:message
                 senderCertificate:senderCertificate
+                selfUDAccessKey:selfUDAccessKey
                 success:^{
                     successHandlerParam();
                 }
@@ -645,6 +657,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self handleMessageSentLocally:message
                     senderCertificate:senderCertificate
+                    selfUDAccessKey:selfUDAccessKey
                     success:^{
                         failureHandlerParam(error);
                     }
@@ -726,6 +739,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      message:message
                                                       thread:thread
                                            senderCertificate:senderCertificate
+                                             selfUDAccessKey:selfUDAccessKey
                                                   sendErrors:sendErrors]
                                   .then(^(id value) {
                                       successHandler();
@@ -1061,16 +1075,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    OWSLogVerbose(@"Sending message; ud? %d %d.", messageSend.isUDSend, messageSend.unidentifiedAccess != nil);
-
     // NOTE: canFailoverUDAuth is NO because UD-auth and Non-UD-auth requests
     // use different device lists.
-    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
-        initWithRequestFactoryBlock:^(SSKUnidentifiedAccess *_Nullable unidentifiedAccess) {
+    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
+        requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
             return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
                                                                messages:deviceMessages
                                                               timeStamp:message.timestamp
-                                                     unidentifiedAccess:unidentifiedAccess];
+                                                            udAccessKey:udAccessKey];
         }
         udAuthFailureBlock:^{
             [messageSend setHasUDAuthFailed];
@@ -1079,7 +1091,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             messageSend.hasWebsocketSendFailed = YES;
         }
         recipientId:recipient.recipientId
-        unidentifiedAccess:messageSend.unidentifiedAccess
+        udAccessKey:messageSend.udAccessKey
         canFailoverUDAuth:NO];
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
@@ -1328,6 +1340,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
                senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                 selfUDAccessKey:(nullable SMKUDAccessKey *)selfUDAccessKey
                          success:(void (^)(void))success
                          failure:(RetryableFailureHandler)failure
 {
@@ -1344,6 +1357,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self
         sendSyncTranscriptForMessage:message
                    senderCertificate:senderCertificate
+                     selfUDAccessKey:selfUDAccessKey
                              success:^{
                                  // TODO: We might send to a recipient, then to another recipient on retry.
                                  //       To ensure desktop receives all "delivery status" info, we might
@@ -1360,6 +1374,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
                    senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
+                     selfUDAccessKey:(nullable SMKUDAccessKey *)selfUDAccessKey
                              success:(void (^)(void))success
                              failure:(RetryableFailureHandler)failure
 {
@@ -1376,7 +1391,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:message.thread
         recipient:recipient
         senderCertificate:senderCertificate
-        udManager:self.udManager
+        udAccessKey:selfUDAccessKey
         localNumber:self.tsAccountManager.localNumber
         success:^{
             OWSLogInfo(@"Successfully sent sync transcript.");
@@ -1558,11 +1573,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
-    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc]
-        initWithRequestFactoryBlock:^(SSKUnidentifiedAccess *_Nullable unidentifiedAccess) {
+    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Prekey Fetch"
+        requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
             return [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientId
                                                                  deviceId:[deviceId stringValue]
-                                                       unidentifiedAccess:unidentifiedAccess];
+                                                              udAccessKey:udAccessKey];
         }
         udAuthFailureBlock:^{
             [messageSend setHasUDAuthFailed];
@@ -1571,7 +1586,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             messageSend.hasWebsocketSendFailed = YES;
         }
         recipientId:recipientId
-        unidentifiedAccess:messageSend.unidentifiedAccess
+        udAccessKey:messageSend.udAccessKey
         canFailoverUDAuth:YES];
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
@@ -1646,7 +1661,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         serializedMessage = [secretCipher encryptMessageWithRecipientId:recipientId
                                                                deviceId:deviceId.intValue
                                                         paddedPlaintext:[plainText paddedMessageBody]
-                                                      senderCertificate:messageSend.unidentifiedAccess.senderCertificate
+                                                      senderCertificate:messageSend.senderCertificate
                                                         protocolContext:transaction
                                                                   error:&error];
         messageType = TSUnidentifiedSenderMessageType;

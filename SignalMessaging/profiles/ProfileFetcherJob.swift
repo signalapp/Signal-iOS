@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 import SignalServiceKit
+import SignalMetadataKit
 
 @objc
 public class ProfileFetcherJob: NSObject {
@@ -134,16 +135,66 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        let unidentifiedAccess: SSKUnidentifiedAccess? = self.getUnidentifiedAccess(forRecipientId: recipientId)
-        let requestMaker = RequestMaker(requestFactoryBlock: { (unidentifiedAccessForRequest) -> TSRequest in
-            return OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccessForRequest)
+        switch self.udManager.unidentifiedAccessMode(forRecipientId: recipientId) {
+        case .unknown:
+            if let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId) {
+                // If we are in unknown mode and have a profile key,
+                // try using the profile key.
+                return self.requestProfile(recipientId: recipientId,
+                                           udAccessKey: udAccessKey,
+                                           canFailoverUDAuth: true)
+            } else {
+                // If we are in unknown mode and don't have a profile key,
+                // try using a random UD access key in case they support
+                // unrestricted access.
+                let randomUDAccessKey = self.udManager.randomUDAccessKey()
+                return requestProfile(recipientId: recipientId,
+                                      udAccessKey: randomUDAccessKey,
+                                      canFailoverUDAuth: true)
+            }
+        case .unrestricted:
+            let randomUDAccessKey = self.udManager.randomUDAccessKey()
+            return requestProfile(recipientId: recipientId,
+                                  udAccessKey: randomUDAccessKey,
+                                  canFailoverUDAuth: false)
+                .recover { (_: Error) -> Promise<SignalServiceProfile> in
+                    Logger.verbose("Failing over to non-random access.")
+                    let udAccessKey = self.udManager.udAccessKey(forRecipientId: recipientId)
+                    // This may fail over again to non-UD-auth.
+                    return self.requestProfile(recipientId: recipientId,
+                                               udAccessKey: udAccessKey,
+                                               canFailoverUDAuth: true)
+            }
+        case .disabled:
+            // This may fail over to non-UD-auth.
+            return requestProfile(recipientId: recipientId,
+                                  udAccessKey: nil,
+                                  canFailoverUDAuth: true)
+        case .enabled:
+            // This may be nil if we don't have a profile key for them.
+            let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId)
+            // This may fail over to non-UD-auth.
+            return requestProfile(recipientId: recipientId,
+                                  udAccessKey: udAccessKey,
+                                  canFailoverUDAuth: true)
+        }
+    }
+
+    private func requestProfile(recipientId: String,
+                                udAccessKey: SMKUDAccessKey?,
+                                canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
+        AssertIsOnMainThread()
+
+        let requestMaker = RequestMaker(label: "Profile Fetch",
+                                        requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
+            return OWSRequestFactory.getProfileRequest(recipientId: recipientId, udAccessKey: udAccessKeyForRequest)
         }, udAuthFailureBlock: {
             // Do nothing
         }, websocketFailureBlock: {
             // Do nothing
         }, recipientId: recipientId,
-           unidentifiedAccess: unidentifiedAccess,
-           canFailoverUDAuth: true)
+           udAccessKey: udAccessKey,
+           canFailoverUDAuth: canFailoverUDAuth)
         return requestMaker.makeRequest()
             .map { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
@@ -158,7 +209,9 @@ public class ProfileFetcherJob: NSObject {
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
-        updateUnidentifiedAccess(recipientId: recipientId, verifier: signalServiceProfile.unidentifiedAccessVerifier, hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+        updateUnidentifiedAccess(recipientId: recipientId,
+                                 verifier: signalServiceProfile.unidentifiedAccessVerifier,
+                                 hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
     }
 
     private func updateUnidentifiedAccess(recipientId: String, verifier: Data?, hasUnrestrictedAccess: Bool) {
@@ -174,7 +227,7 @@ public class ProfileFetcherJob: NSObject {
             return
         }
 
-        guard let udAccessKey = udManager.rawUDAccessKeyForRecipient(recipientId) else {
+        guard let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId) else {
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }
@@ -204,9 +257,5 @@ public class ProfileFetcherJob: NSObject {
                 // no change in identity.
             }
         }
-    }
-
-    private func getUnidentifiedAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccess? {
-        return self.udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
     }
 }

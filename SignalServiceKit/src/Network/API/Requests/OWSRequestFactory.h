@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ECKeyPair;
 @class OWSDevice;
 @class PreKeyRecord;
-@class SSKUnidentifiedAccess;
+@class SMKUDAccessKey;
 @class SignedPreKeyRecord;
 @class TSRequest;
 
@@ -37,8 +37,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)getMessagesRequest;
 
 + (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
-                             unidentifiedAccess:(nullable SSKUnidentifiedAccess *)unidentifiedAccess
-    NS_SWIFT_NAME(getProfileRequest(recipientId:unidentifiedAccess:));
+                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+    NS_SWIFT_NAME(getProfileRequest(recipientId:udAccessKey:));
 
 + (TSRequest *)turnServerInfoRequest;
 
@@ -62,7 +62,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
                                        timeStamp:(uint64_t)timeStamp
-                              unidentifiedAccess:(nullable SSKUnidentifiedAccess *)unidentifiedAccess;
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
                                            forNumber:(NSString *)phoneNumber
@@ -78,7 +78,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber
                                           deviceId:(NSString *)deviceId
-                                unidentifiedAccess:(nullable SSKUnidentifiedAccess *)unidentifiedAccess;
+                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
 
