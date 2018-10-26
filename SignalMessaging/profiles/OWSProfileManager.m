@@ -321,7 +321,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSData *data = [self processedImageDataForRawAvatar:avatar];
             OWSAssertDebug(data);
             if (data) {
-                NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
+                NSString *fileName = [self generateAvatarFilename];
                 NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
                 BOOL success = [data writeToFile:filePath atomically:YES];
                 OWSAssertDebug(success);
@@ -380,16 +380,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
         TSRequest *formRequest = [OWSRequestFactory profileAvatarUploadFormRequest];
 
-        // TODO: Since this form request causes the server to reset my avatar URL, if the update fails
-        // at some point from here on out, we want the user to understand they probably no longer have
-        // a profile avatar on the server.
-
         [self.networkManager makeRequest:formRequest
             success:^(NSURLSessionDataTask *task, id formResponseObject) {
-                clearLocalAvatar();
-
                 if (avatarData == nil) {
                     OWSLogDebug(@"successfully cleared avatar");
+                    clearLocalAvatar();
                     successBlock(nil);
                     return;
                 }
@@ -480,6 +475,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                     }
                     failure:^(NSURLSessionDataTask *_Nullable uploadTask, NSError *error) {
                         OWSLogError(@"uploading avatar failed with error: %@", error);
+                        clearLocalAvatar();
                         return failureBlock(error);
                     }];
             }
@@ -705,10 +701,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 [self uploadAvatarToService:oldAvatarData
                     success:^(NSString *_Nullable avatarUrlPath) {
                         OWSLogInfo(@"Update to profile avatar after profile key rotation succeeded.");
-                        // We need to update the local profile with the avatar state since
-                        // it is cleared during the "avatar update" process.
+                        // The profile manager deletes the underlying file when updating a profile URL
+                        // So we need to copy the underlying file to a new location.
+                        NSString *oldPath = [OWSUserProfile profileAvatarFilepathWithFilename:oldAvatarFileName];
+                        NSString *newAvatarFilename = [self generateAvatarFilename];
+                        NSString *newPath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFilename];
+                        NSError *error;
+                        [NSFileManager.defaultManager copyItemAtPath:oldPath toPath:newPath error:&error];
+                        OWSAssertDebug(!error);
+
                         [self.localUserProfile updateWithAvatarUrlPath:avatarUrlPath
-                                                        avatarFileName:oldAvatarFileName
+                                                        avatarFileName:newAvatarFilename
                                                           dbConnection:self.dbConnection
                                                             completion:^{
                                                                 // The value doesn't matter, we just need any
@@ -1076,6 +1079,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return nil;
 }
 
+- (NSString *)generateAvatarFilename
+{
+    return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
+}
+
 - (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile
 {
     OWSAssertDebug(userProfile);
@@ -1095,7 +1103,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
-        NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
+        NSString *fileName = [self generateAvatarFilename];
         NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
 
         @synchronized(self.currentAvatarDownloads)
