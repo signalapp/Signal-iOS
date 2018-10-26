@@ -934,7 +934,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
+    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
     OWSDisappearingConfigurationUpdateInfoMessage *message =
         [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                           thread:thread
@@ -1192,7 +1192,8 @@ NS_ASSUME_NONNULL_BEGIN
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
 
-                NSString *nameString = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
+                NSString *nameString =
+                    [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
                 [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]

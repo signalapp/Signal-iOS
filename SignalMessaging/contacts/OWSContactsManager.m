@@ -87,7 +87,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (void)setup {
     __block NSMutableArray<SignalAccount *> *signalAccounts;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
         OWSLogInfo(@"loading %lu signal accounts from cache.", (unsigned long)signalAccountCount);
 
@@ -480,7 +480,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
 
         NSMutableDictionary<NSString *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [SignalAccount
                 enumerateCollectionObjectsWithTransaction:transaction
                                                usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
@@ -586,9 +586,26 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
 {
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    return [self cachedContactNameForRecipientId:recipientId signalAccount:signalAccount];
+}
+
+- (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
+                                           transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+
+    SignalAccount *_Nullable signalAccount =
+        [self fetchSignalAccountForRecipientId:recipientId transaction:transaction];
+    return [self cachedContactNameForRecipientId:recipientId signalAccount:signalAccount];
+}
+
+- (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
+                                         signalAccount:(nullable SignalAccount *)signalAccount
+{
     OWSAssertDebug(recipientId.length > 0);
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
         OWSLogDebug(@"no signal account");
@@ -723,13 +740,44 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self cachedContactNameForRecipientId:recipientId];
 }
 
+- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId
+                                                transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+
+    return [self cachedContactNameForRecipientId:recipientId transaction:transaction];
+}
+
 - (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
 {
+    OWSAssertDebug(recipientId.length > 0);
+
     if (!recipientId) {
         return self.unknownContactName;
     }
 
     NSString *_Nullable displayName = [self nameFromSystemContactsForRecipientId:recipientId];
+
+    // Fall back to just using their recipientId
+    if (displayName.length < 1) {
+        displayName = recipientId;
+    }
+
+    return displayName;
+}
+
+- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+                                        transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+
+    if (!recipientId) {
+        return self.unknownContactName;
+    }
+
+    NSString *_Nullable displayName = [self nameFromSystemContactsForRecipientId:recipientId transaction:transaction];
 
     // Fall back to just using their recipientId
     if (displayName.length < 1) {
@@ -925,7 +973,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "
-            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
+            @"Phone number should be masost prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
             @"with {{profile name}}");
 
         NSString *numberAndProfileName =
@@ -947,9 +995,26 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction:transaction];
         }];
+    }
+
+    return signalAccount;
+}
+
+- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
+                                                 transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(transaction);
+
+    __block SignalAccount *signalAccount = self.signalAccountMap[recipientId];
+
+    // If contact intersection hasn't completed, it might exist on disk
+    // even if it doesn't exist in memory yet.
+    if (!signalAccount) {
+        signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction:transaction];
     }
 
     return signalAccount;
