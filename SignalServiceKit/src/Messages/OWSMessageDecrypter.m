@@ -26,6 +26,7 @@
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -378,7 +379,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 // plaintextData may be nil for some envelope types.
                 NSData *_Nullable plaintextData =
-                    [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
+                    [[cipher try_decrypt:cipherMessage protocolContext:transaction] removePadding];
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
                                                                                            source:envelope.source
@@ -448,13 +449,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             }
 
             SMKDecryptResult *_Nullable decryptResult =
-                [cipher decryptMessageWithCertificateValidator:certificateValidator
-                                                cipherTextData:encryptedData
-                                                     timestamp:serverTimestamp
-                                              localRecipientId:localRecipientId
-                                                 localDeviceId:localDeviceId
-                                               protocolContext:transaction
-                                                         error:&error];
+                [cipher trywrapped_decryptMessageWithCertificateValidator:certificateValidator
+                                                           cipherTextData:encryptedData
+                                                                timestamp:serverTimestamp
+                                                         localRecipientId:localRecipientId
+                                                            localDeviceId:localDeviceId
+                                                          protocolContext:transaction
+                                                                    error:&error];
+            SCKRaiseIfExceptionWrapperError(error);
+
             if (error || !decryptResult) {
                 if ([error.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
                     && error.code == SMKSecretSessionCipherErrorSelfSentMessage) {

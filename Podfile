@@ -5,7 +5,7 @@ use_frameworks!
 
 def shared_pods
   # OWS Pods
-  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
+  pod 'SignalCoreKit', git: 'git@github.com:signalapp/SignalCoreKit-Private.git', branch: 'mkirk/wrap-exceptions', testspecs: ["Tests"]
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
   # pod 'SQLCipher', path: '../sqlcipher2'
   pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
@@ -19,7 +19,7 @@ def shared_pods
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
   # TODO: Use public repo.
-  pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+  pod 'SignalMetadataKit', git: 'git@github.com:signalapp/SignalMetadataKit', branch: 'mkirk/wrap-exceptions', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
   pod 'GRKOpenSSLFramework', git: 'https://github.com/signalapp/GRKOpenSSLFramework'

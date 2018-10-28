@@ -192,10 +192,10 @@ DEPENDENCIES:
   - Mantle
   - PureLayout
   - Reachability
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
-  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
+  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit-Private.git`, branch `mkirk/wrap-exceptions`)"
+  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit-Private.git`, branch `mkirk/wrap-exceptions`)"
+  - "SignalMetadataKit (from `git@github.com:signalapp/SignalMetadataKit`, branch `mkirk/wrap-exceptions`)"
+  - "SignalMetadataKit/Tests (from `git@github.com:signalapp/SignalMetadataKit`, branch `mkirk/wrap-exceptions`)"
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SocketRocket (from `https://github.com/signalapp/SocketRocket.git`, branch `mkirk/handle-sec-err`)
@@ -229,9 +229,11 @@ EXTERNAL SOURCES:
   HKDFKit:
     :git: https://github.com/signalapp/HKDFKit.git
   SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :branch: mkirk/wrap-exceptions
+    :git: "git@github.com:signalapp/SignalCoreKit-Private.git"
   SignalMetadataKit:
-    :git: https://github.com/signalapp/SignalMetadataKit
+    :branch: mkirk/wrap-exceptions
+    :git: "git@github.com:signalapp/SignalMetadataKit"
   SignalServiceKit:
     :path: "."
   SocketRocket:
@@ -258,11 +260,11 @@ CHECKOUT OPTIONS:
     :commit: 8b8326cd50bc488663a3d3743f1a92b90f4d85b4
     :git: https://github.com/signalapp/HKDFKit.git
   SignalCoreKit:
-    :commit: ff0b95770520133b83a4bd7b26bc2c90b51abc4d
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :commit: df8d9528eb5e7e161ea04393a0d7972cd8539c14
+    :git: "git@github.com:signalapp/SignalCoreKit-Private.git"
   SignalMetadataKit:
-    :commit: 90f3dee7122ff13061770c496001135ba90b71e3
-    :git: https://github.com/signalapp/SignalMetadataKit
+    :commit: 07326a8ebb8e207bbe0e08fc6cd1d4979acc83d6
+    :git: "git@github.com:signalapp/SignalMetadataKit"
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
     :git: https://github.com/signalapp/SocketRocket.git
@@ -296,6 +298,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 820287bc7925d7c20e02a02923976c60b1f5386b
+PODFILE CHECKSUM: 794d0aeb047ca81b7c697f99e43b6f80ea4ce585
 
 COCOAPODS: 1.5.3

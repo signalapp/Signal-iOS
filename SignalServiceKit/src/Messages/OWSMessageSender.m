@@ -50,6 +50,7 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -1450,10 +1451,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
-                        messageDict = [self encryptedMessageForMessageSend:messageSend
-                                                                  deviceId:deviceId
-                                                                 plainText:plainText
-                                                               transaction:transaction];
+                        messageDict = [self try_encryptedMessageForMessageSend:messageSend
+                                                                      deviceId:deviceId
+                                                                     plainText:plainText
+                                                                   transaction:transaction];
                     } @catch (NSException *exception) {
                         encryptionException = exception;
                     }
@@ -1612,10 +1613,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 // NOTE: This method uses exceptions for control flow.
-- (NSDictionary *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                        deviceId:(NSNumber *)deviceId
-                                       plainText:(NSData *)plainText
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (NSDictionary *)try_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                            deviceId:(NSNumber *)deviceId
+                                           plainText:(NSData *)plainText
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1658,17 +1659,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
 
-        serializedMessage = [secretCipher encryptMessageWithRecipientId:recipientId
-                                                               deviceId:deviceId.intValue
-                                                        paddedPlaintext:[plainText paddedMessageBody]
-                                                      senderCertificate:messageSend.senderCertificate
-                                                        protocolContext:transaction
-                                                                  error:&error];
+        serializedMessage = [secretCipher trywrapped_encryptMessageWithRecipientId:recipientId
+                                                                          deviceId:deviceId.intValue
+                                                                   paddedPlaintext:[plainText paddedMessageBody]
+                                                                 senderCertificate:messageSend.senderCertificate
+                                                                   protocolContext:transaction
+                                                                             error:&error];
+        SCKRaiseIfExceptionWrapperError(error);
         messageType = TSUnidentifiedSenderMessageType;
     } else {
         // This may throw an exception.
         id<CipherMessage> encryptedMessage =
-            [cipher encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
+            [cipher try_encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
         serializedMessage = encryptedMessage.serialized;
         messageType = [self messageTypeForCipherMessage:encryptedMessage];
     }
@@ -1680,7 +1682,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                device:[deviceId intValue]
                                               content:serializedMessage
                                              isSilent:isSilent
-                                       registrationId:[cipher remoteRegistrationId:transaction]];
+                                       registrationId:[cipher try_remoteRegistrationId:transaction]];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
