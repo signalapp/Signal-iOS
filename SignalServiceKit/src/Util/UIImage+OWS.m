@@ -138,7 +138,8 @@
             break;
 
         default:
-            OWSRaiseException(NSInternalInconsistencyException, @"Invalid image orientation");
+            OWSFailDebug(@"Invalid image orientation");
+            return nil;
     }
 
     /////////////////////////////////////////////////////////////////////////////
