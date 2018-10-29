@@ -2960,8 +2960,8 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
+				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
+				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
