@@ -248,8 +248,12 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
         if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
             TSInvalidIdentityKeyReceivingErrorMessage *error = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
-            if ([[error newIdentityKey] isEqualToData:key]) {
-                [errorMessages addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)interaction];
+            @try {
+                if ([[error try_newIdentityKey] isEqualToData:key]) {
+                    [errorMessages addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)interaction];
+                }
+            } @catch (NSException *exception) {
+                OWSFailDebug(@"exception: %@", exception);
             }
         }
     }];

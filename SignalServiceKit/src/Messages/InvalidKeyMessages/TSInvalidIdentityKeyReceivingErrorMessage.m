@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     return _envelope;
 }
 
-- (void)acceptNewIdentityKey
+- (void)try_acceptNewIdentityKey
 {
     OWSAssertIsOnMainThread();
 
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSData *_Nullable newKey = [self newIdentityKey];
+    NSData *_Nullable newKey = [self try_newIdentityKey];
     if (!newKey) {
         OWSFailDebug(@"Couldn't extract identity key to accept");
         return;
@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] init_try_withData:pkwmData];
-    return [message.identityKey removeKeyType];
+    return [message.identityKey try_removeKeyType];
 }
 
 - (NSString *)theirSignalId

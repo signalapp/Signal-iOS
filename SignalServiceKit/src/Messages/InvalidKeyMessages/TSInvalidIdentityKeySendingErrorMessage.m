@@ -45,13 +45,13 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
     return self;
 }
 
-- (void)acceptNewIdentityKey
+- (void)try_acceptNewIdentityKey
 {
     // Shouldn't really get here, since we're no longer creating blocking SN changes.
     // But there may still be some old unaccepted SN errors in the wild that need to be accepted.
     OWSFailDebug(@"accepting new identity key is deprecated.");
 
-    NSData *_Nullable newIdentityKey = self.newIdentityKey;
+    NSData *_Nullable newIdentityKey = [self try_newIdentityKey];
     if (!newIdentityKey) {
         OWSFailDebug(@"newIdentityKey is unexpectedly nil. Bad Prekey bundle?: %@", self.preKeyBundle);
         return;
@@ -60,9 +60,9 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
     [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:self.recipientId];
 }
 
-- (nullable NSData *)newIdentityKey
+- (nullable NSData *)try_newIdentityKey
 {
-    return [self.preKeyBundle.identityKey removeKeyType];
+    return [self.preKeyBundle.identityKey try_removeKeyType];
 }
 
 - (NSString *)theirSignalId

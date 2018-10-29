@@ -631,13 +631,17 @@ NS_ASSUME_NONNULL_BEGIN
                 continue;
             }
 
-            NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
-            if (newIdentityKey == nil) {
-                OWSFailDebug(@"Safety number change was missing it's new identity key.");
-                continue;
-            }
+            @try {
+                NSData *_Nullable newIdentityKey = [safetyNumberChange try_newIdentityKey];
+                if (newIdentityKey == nil) {
+                    OWSFailDebug(@"Safety number change was missing it's new identity key.");
+                    continue;
+                }
 
-            [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
+                [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
+            } @catch (NSException *exception) {
+                OWSFailDebug(@"exception: %@", exception);
+            }
         }
 
         // Count the de-duplicated "blocking" safety number changes and all

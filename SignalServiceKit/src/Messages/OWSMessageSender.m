@@ -888,7 +888,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return nil;
             }
 
-            NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
+            NSData *newIdentityKey = [newIdentityKeyWithVersion try_removeKeyType];
             [self.identityManager saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
 
             return nil;
