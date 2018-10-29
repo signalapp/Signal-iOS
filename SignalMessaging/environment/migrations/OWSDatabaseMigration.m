@@ -40,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)migrationId
 {
-    OWSRaiseException(NSInternalInconsistencyException, @"Must override %@ in subclass", NSStringFromSelector(_cmd));
+    OWSAbstractMethod();
+    return @"";
 }
 
 + (NSString *)collection
@@ -51,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSRaiseException(NSInternalInconsistencyException, @"Must override %@ in subclass", NSStringFromSelector(_cmd));
+    OWSAbstractMethod();
 }
 
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion

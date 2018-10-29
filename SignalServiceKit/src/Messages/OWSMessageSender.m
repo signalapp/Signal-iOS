@@ -839,7 +839,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
-        deviceMessages = [self deviceMessagesForMessageSendUnsafe:messageSend];
+        deviceMessages = [self try_deviceMessagesForMessageSendUnsafe:messageSend];
     } @catch (NSException *exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
@@ -1407,8 +1407,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessageToRecipient:messageSend];
 }
 
-// NOTE: This method uses exceptions for control flow.
-- (NSArray<NSDictionary *> *)deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
+- (NSArray<NSDictionary *> *)try_deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend.message);
     OWSAssertDebug(messageSend.recipient);
@@ -1444,7 +1443,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
-            [self ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+            [self try_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
 
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
@@ -1486,9 +1485,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-// NOTE: This method uses exceptions for control flow.
-- (void)ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend
-                                       deviceId:(NSNumber *)deviceId
+- (void)try_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
