@@ -9,6 +9,9 @@ import XCTest
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class ConversationSearcherContactsManager: NSObject, ContactsManagerProtocol {
+    func displayName(forPhoneIdentifier recipientId: String?, transaction: YapDatabaseReadTransaction) -> String {
+        return self.displayName(forPhoneIdentifier: recipientId)
+    }
 
     func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
         if phoneNumber == aliceRecipientId {
