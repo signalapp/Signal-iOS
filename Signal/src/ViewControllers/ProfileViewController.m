@@ -85,6 +85,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     [self createViews];
     [self updateNavigationItem];
+
+    if (self.nameTextField.text.length > 0) {
+        self.hasUnsavedChanges = YES;
+    }
 }
 
 - (void)createViews
