@@ -1547,7 +1547,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       deviceId:[deviceId intValue]];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
-                [builder processPrekeyBundle:bundle protocolContext:transaction];
+                [builder try_processPrekeyBundle:bundle protocolContext:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
