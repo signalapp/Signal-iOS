@@ -406,9 +406,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    // Check whether we need to refresh our PreKeys every time we receive a Unidentified Sender Message.
-    [TSPreKeyManager checkPreKeys];
-
     // NOTE: We don't need to bother with `legacyMessage` for UD messages.
     NSData *encryptedData = envelope.content;
     if (!encryptedData) {
@@ -468,6 +465,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 OWSFailDebug(@"Could not decrypt UD message: %@", error);
                 error = EnsureDecryptError(error, @"Could not decrypt UD message");
                 return failureBlock(error);
+            }
+
+            if (decryptResult.messageType == SMKMessageTypePrekey) {
+                [TSPreKeyManager checkPreKeys];
             }
 
             NSString *source = decryptResult.senderRecipientId;
