@@ -143,6 +143,16 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
 #pragma mark -
 
+NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
+{
+    switch (type) {
+        case OWSWebSocketTypeDefault:
+            return @"Default";
+        case OWSWebSocketTypeUD:
+            return @"UD";
+    }
+}
+
 // OWSWebSocket's properties should only be accessed from the main thread.
 @interface OWSWebSocket () <SRWebSocketDelegate>
 
@@ -563,11 +573,12 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         [socketMessage didFailBeforeSending];
         return;
     }
-    OWSLogVerbose(@"message scheduled: %llu, %@, %@, %zd.",
+    OWSLogInfo(@"making request: %llu, %@: %@, jsonData.length: %zd, socketType: %@",
         socketMessage.requestId,
         request.HTTPMethod,
         requestPath,
-        jsonData.length);
+        jsonData.length,
+        NSStringFromOWSWebSocketType(self.webSocketType));
 
     const int64_t kSocketTimeoutSeconds = 10;
     __weak TSSocketMessage *weakSocketMessage = socketMessage;
@@ -592,7 +603,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 {
     OWSAssertDebug(message);
 
-    OWSLogInfo(@"received WebSocket response.");
+    OWSLogInfo(@"received WebSocket response requestId: %llu, status: %u", message.requestID, message.status);
 
     DispatchMainThreadSafe(^{
         [self requestSocketAliveForAtLeastSeconds:kMakeRequestKeepSocketAliveDurationSeconds];
