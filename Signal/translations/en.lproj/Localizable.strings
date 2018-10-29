@@ -1673,6 +1673,9 @@
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
 
+/* No comment provided by engineer. */
+"REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
+
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Failed to re-register for push notifications.";
 
