@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable NSData *)newIdentityKey
+- (nullable NSData *)try_newIdentityKey
 {
     if (!self.envelope) {
         OWSLogError(@"Error message had no envelope data to extract key from");
@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:pkwmData];
+    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] init_try_withData:pkwmData];
     return [message.identityKey removeKeyType];
 }
 

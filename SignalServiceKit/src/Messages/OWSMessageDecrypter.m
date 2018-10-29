@@ -229,7 +229,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
             case SSKProtoEnvelopeTypePrekeyBundle: {
-                [self decryptPreKeyBundle:envelope
+                [self try_decryptPreKeyBundle:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
                         OWSLogDebug(@"decrypted pre-key whisper message");
@@ -318,10 +318,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               failureBlock:failureBlock];
 }
 
-- (void)decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
-               envelopeData:(NSData *)envelopeData
-               successBlock:(DecryptSuccessBlock)successBlock
-               failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)try_decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
+                   envelopeData:(NSData *)envelopeData
+                   successBlock:(DecryptSuccessBlock)successBlock
+                   failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
@@ -335,7 +335,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               envelopeData:envelopeData
             cipherTypeName:@"PreKey Bundle"
         cipherMessageBlock:^(NSData *encryptedData) {
-            return [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
+            return [[PreKeyWhisperMessage alloc] init_try_withData:encryptedData];
         }
               successBlock:successBlock
               failureBlock:failureBlock];
