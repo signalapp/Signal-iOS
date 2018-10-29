@@ -263,19 +263,19 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                        recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY",
                                               @"alert body: cannot link - reached max linked devices")
                             fallbackError:networkError];
-              error.isRetryable = NO;
-              failureBlock(task, error);
+              customError.isRetryable = NO;
+              failureBlock(task, customError);
               break;
           }
           case 413: {
               OWSLogWarn(@"Rate limit exceeded: %@", request);
               NSError *customError = [self errorWithHTTPCode:statusCode
-                                                 description:NSLocalizedString(@"REGISTRATION_ERROR", nil)
+                                                 description:NSLocalizedString(@"REGISTER_RATE_LIMITING_ERROR", nil)
                                                failureReason:networkError.localizedFailureReason
                                           recoverySuggestion:NSLocalizedString(@"REGISTER_RATE_LIMITING_BODY", nil)
                                                fallbackError:networkError];
-              error.isRetryable = NO;
-              failureBlock(task, error);
+              customError.isRetryable = NO;
+              failureBlock(task, customError);
               break;
           }
           case 417: {
