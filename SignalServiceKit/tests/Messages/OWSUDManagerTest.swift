@@ -23,17 +23,31 @@ class MockCertificateValidator: NSObject, SMKCertificateValidator {
 
 class OWSUDManagerTest: SSKBaseTestSwift {
 
+    // MARK: - Singletons
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    private var udManager: OWSUDManagerImpl {
+        return SSKEnvironment.shared.udManager as! OWSUDManagerImpl
+    }
+
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
+    }
+
+    // MARK: registration
+
     override func setUp() {
         super.setUp()
 
         let aliceRecipientId = "+13213214321"
-        SSKEnvironment.shared.tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId)
+        tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId)
 
         // Configure UDManager
-        let profileManager = SSKEnvironment.shared.profileManager
         profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, forRecipientId: aliceRecipientId)
 
-        let udManager = SSKEnvironment.shared.udManager as! OWSUDManagerImpl
         udManager.certificateValidator = MockCertificateValidator()
 
         let serverCertificate = SMKServerCertificate(keyId: 1,
@@ -56,98 +70,97 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     func testMode_self() {
 
-        let udManager = SSKEnvironment.shared.udManager as! OWSUDManagerImpl
-
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(SSKEnvironment.shared.tsAccountManager.isRegistered())
-        XCTAssertNotNil(SSKEnvironment.shared.tsAccountManager.localNumber())
-        XCTAssert(SSKEnvironment.shared.tsAccountManager.localNumber()!.count > 0)
+        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssertNotNil(tsAccountManager.localNumber())
+        XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
         let aliceRecipientId = "+13213214321"
 
-        // Self should be enabled regardless of what we "set" our mode to.
-        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(recipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: aliceRecipientId))
+        XCTAssert(UnidentifiedAccessMode.unknown == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unknown, recipientId: aliceRecipientId)
-        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(recipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: aliceRecipientId))
+        XCTAssert(UnidentifiedAccessMode.unknown == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.disabled, recipientId: aliceRecipientId)
-        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(recipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: aliceRecipientId))
+        XCTAssert(UnidentifiedAccessMode.disabled == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.enabled, recipientId: aliceRecipientId)
-        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(recipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: aliceRecipientId))
+        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
+        XCTAssertNotNil(udManager.udSendAccessKey(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: aliceRecipientId)
-        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(recipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: aliceRecipientId))
+        XCTAssert(UnidentifiedAccessMode.unrestricted == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
+        XCTAssertNotNil(udManager.udSendAccessKey(forRecipientId: aliceRecipientId))
     }
 
     func testMode_noProfileKey() {
 
-        let udManager = SSKEnvironment.shared.udManager as! OWSUDManagerImpl
-
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(SSKEnvironment.shared.tsAccountManager.isRegistered())
-        XCTAssertNotNil(SSKEnvironment.shared.tsAccountManager.localNumber())
-        XCTAssert(SSKEnvironment.shared.tsAccountManager.localNumber()!.count > 0)
+        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssertNotNil(tsAccountManager.localNumber())
+        XCTAssert(tsAccountManager.localNumber()!.count > 0)
+
+        // Ensure UD is enabled by setting our own access level to enabled.
+        udManager.setUnidentifiedAccessMode(.enabled, recipientId: tsAccountManager.localNumber()!)
 
         let bobRecipientId = "+13213214322"
+        XCTAssertNotEqual(bobRecipientId, tsAccountManager.localNumber()!)
 
-        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unknown, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.disabled, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.enabled, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         // Bob should work in unrestricted mode, even if he doesn't have a profile key.
         udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNotNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
     }
 
     func testMode_withProfileKey() {
-
-        let udManager = SSKEnvironment.shared.udManager as! OWSUDManagerImpl
-
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(SSKEnvironment.shared.tsAccountManager.isRegistered())
-        XCTAssertNotNil(SSKEnvironment.shared.tsAccountManager.localNumber())
-        XCTAssert(SSKEnvironment.shared.tsAccountManager.localNumber()!.count > 0)
+        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssertNotNil(tsAccountManager.localNumber())
+        XCTAssert(tsAccountManager.localNumber()!.count > 0)
+
+        // Ensure UD is enabled by setting our own access level to enabled.
+        udManager.setUnidentifiedAccessMode(.enabled, recipientId: tsAccountManager.localNumber()!)
 
         let bobRecipientId = "+13213214322"
-        let profileManager = SSKEnvironment.shared.profileManager
+        XCTAssertNotEqual(bobRecipientId, tsAccountManager.localNumber()!)
         profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, forRecipientId: bobRecipientId)
 
-        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unknown, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.disabled, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.enabled, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNotNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(recipientId: bobRecipientId))
-        XCTAssertNotNil(udManager.getAccess(forRecipientId: bobRecipientId))
+        XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
+        XCTAssertNotNil(udManager.udSendAccessKey(forRecipientId: bobRecipientId))
     }
 }
