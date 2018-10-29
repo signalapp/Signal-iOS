@@ -56,6 +56,12 @@ class ValidationViewController: UITableViewController {
         self.submitButton.titleLabel?.text = NSLocalizedString("SUBMIT_BUTTON_LABEL", comment: "")
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.validationCode1TextField.becomeFirstResponder()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.validationCode1TextField.resignFirstResponder()

@@ -563,8 +563,8 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
 -(void)updateWithPayload:(NSDictionary *)payload
 {
     NSString *threadId = [payload objectForKey:FLThreadIDKey];
-    if (!threadId) {
-        DDLogDebug(@"%@ - Attempted to retrieve thread with payload without a UID.", self.logTag);
+    if (threadId.length == 0 || ![threadId.lowercaseString isEqualToString:self.uniqueId]) {
+        DDLogDebug(@"%@ - Attempted to update thread with invalid payload.", self.logTag);
         return;
     }
     NSString *threadExpression = [(NSDictionary *)[payload objectForKey:FLDistributionKey] objectForKey:FLExpressionKey];
@@ -573,7 +573,9 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
     self.title = ((threadTitle.length > 0) ? threadTitle : @"" );
     self.type = ((threadType.length > 0) ? threadType : nil );
     
-    if (![threadExpression isEqualToString:self.universalExpression]) {
+    if (![threadExpression isEqualToString:self.universalExpression] ||
+        self.participantIds.count == 0 ||
+        self.prettyExpression.length == 0) {
         self.universalExpression = threadExpression;
         [NSNotificationCenter.defaultCenter postNotificationName:TSThreadExpressionChangedNotification
                                                           object:self];
@@ -678,7 +680,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
     } else if (self.prettyExpression.length > 0) {
         return self.prettyExpression;
     } else {
-        return NSLocalizedString(@"Unnamed converstaion", @"");
+        return NSLocalizedString(@"Unnamed conversation", @"");
     }
 }
 
