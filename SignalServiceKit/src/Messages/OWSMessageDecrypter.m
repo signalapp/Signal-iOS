@@ -212,7 +212,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         switch (envelope.type) {
             case SSKProtoEnvelopeTypeCiphertext: {
-                [self decryptSecureMessage:envelope
+                [self try_decryptSecureMessage:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
                         OWSLogDebug(@"decrypted secure message.");
@@ -298,10 +298,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     failureBlock();
 }
 
-- (void)decryptSecureMessage:(SSKProtoEnvelope *)envelope
-                envelopeData:(NSData *)envelopeData
-                successBlock:(DecryptSuccessBlock)successBlock
-                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)try_decryptSecureMessage:(SSKProtoEnvelope *)envelope
+                    envelopeData:(NSData *)envelopeData
+                    successBlock:(DecryptSuccessBlock)successBlock
+                    failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
@@ -312,7 +312,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               envelopeData:envelopeData
             cipherTypeName:@"Secure Message"
         cipherMessageBlock:^(NSData *encryptedData) {
-            return [[WhisperMessage alloc] initWithData:encryptedData];
+            return [[WhisperMessage alloc] init_try_withData:encryptedData];
         }
               successBlock:successBlock
               failureBlock:failureBlock];
