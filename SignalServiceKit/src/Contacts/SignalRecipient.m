@@ -161,19 +161,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
-    
+    OWSLogDebug(@"adding devices: %@, to recipient: %@", devices, self);
+
+    [self reloadWithTransaction:transaction];
     [self addDevices:devices];
-
-    SignalRecipient *latest = [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId
-                                                                   transaction:transaction];
-
-    if ([devices isSubsetOfSet:latest.devices.set]) {
-        return;
-    }
-    OWSLogDebug(@"adding devices: %@, to recipient: %@", devices, latest.recipientId);
-
-    [latest addDevices:devices];
-    [latest saveWithTransaction_internal:transaction];
+    [self saveWithTransaction_internal:transaction];
 }
 
 - (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -181,23 +173,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
 
+    OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, self);
+    [self reloadWithTransaction:transaction];
     [self removeDevices:devices];
 
-    SignalRecipient *_Nullable latest =
-        [SignalRecipient registeredRecipientForRecipientId:self.recipientId transaction:transaction];
-
-    if (!latest) {
-        return;
-    }
-    if (![devices intersectsSet:latest.devices.set]) {
-        return;
-    }
-    OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, latest.recipientId);
-
-    [latest removeDevices:devices];
-
-    if (latest.devices.count > 0) {
-        [latest saveWithTransaction_internal:transaction];
+    if (self.devices.count > 0) {
+        [self saveWithTransaction_internal:transaction];
     } else {
         [SignalRecipient removeUnregisteredRecipient:self.recipientId transaction:transaction];
     }
