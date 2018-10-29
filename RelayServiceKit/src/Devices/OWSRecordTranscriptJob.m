@@ -72,9 +72,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
     DDLogDebug(@"%@ Recording transcript: %@", self.logTag, transcript);
     
+    __block NSDictionary *jsonPayload = [FLCCSMJSONService payloadDictionaryFromMessageBody:transcript.body];
+
     if (transcript.isEndSessionMessage) {
-        DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
-        [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
+        NSString *recipientId = [[jsonPayload objectForKey:@"sender"] objectForKey:@"userId"];
+        DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, recipientId);
+        [self.primaryStorage deleteAllSessionsForContact:recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
                                          inThread:transcript.thread
                                   infoMessageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
@@ -83,8 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    __block NSDictionary *jsonPayload = [FLCCSMJSONService payloadDictionaryFromMessageBody:transcript.body];
-    
     NSDictionary *dataBlob = [jsonPayload objectForKey:@"data"];
     if ([dataBlob allKeys].count == 0) {
         DDLogDebug(@"Received sync message contained no data object.");
@@ -92,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     NSString *threadId = [jsonPayload objectForKey:@"threadId"];
-    if (threadId.length == 0 || ![threadId isEqualToString:transcript.thread.uniqueId]) {
+    if (threadId.length == 0 || ![[threadId lowercaseString] isEqualToString:transcript.thread.uniqueId]) {
         DDLogDebug(@"Received sync message contained no invalid thread data.");
         return;
     }
