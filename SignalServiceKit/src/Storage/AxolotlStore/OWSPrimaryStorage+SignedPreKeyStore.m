@@ -36,7 +36,7 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
         generatedAt:[NSDate date]];
 }
 
-- (SignedPreKeyRecord *)loadSignedPrekey:(int)signedPreKeyId
+- (SignedPreKeyRecord *)try_loadSignedPrekey:(int)signedPreKeyId
 {
     SignedPreKeyRecord *preKeyRecord =
         [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]

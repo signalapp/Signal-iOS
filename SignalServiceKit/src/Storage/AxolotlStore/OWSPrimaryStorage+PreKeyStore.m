@@ -49,7 +49,7 @@
     }
 }
 
-- (PreKeyRecord *)loadPreKey:(int)preKeyId
+- (PreKeyRecord *)try_loadPreKey:(int)preKeyId
 {
     PreKeyRecord *preKeyRecord = [self.dbReadConnection preKeyRecordForKey:[self keyFromInt:preKeyId]
                                                               inCollection:OWSPrimaryStoragePreKeyStoreCollection];
