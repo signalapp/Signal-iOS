@@ -23,7 +23,6 @@ FOUNDATION_EXPORT const unsigned char RelayMessagingVersionString[];
 #import <RelayMessaging/OWSAudioPlayer.h>
 #import <RelayMessaging/OWSContactAvatarBuilder.h>
 #import <RelayMessaging/OWSContactOffersInteraction.h>
-//#import <RelayMessaging/OWSContactsManager.h>
 #import <RelayMessaging/OWSDatabaseMigration.h>
 #import <RelayMessaging/OWSFormat.h>
 #import <RelayMessaging/OWSGroupAvatarBuilder.h>
