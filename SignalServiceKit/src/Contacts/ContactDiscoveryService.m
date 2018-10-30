@@ -83,9 +83,9 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     NSData *ephemeralToStatic;
     @try {
         ephemeralToEphemeral =
-            [Curve25519 generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
+            [Curve25519 try_generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
         ephemeralToStatic =
-            [Curve25519 generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
+            [Curve25519 try_generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
     } @catch (NSException *exception) {
         OWSFailDebug(@"could not generate shared secrets: %@", exception);
         return NO;

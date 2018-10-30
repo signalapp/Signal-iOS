@@ -479,7 +479,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failure
 {
     [self.udManager
-        ensureSenderCertificateObjCWithSuccess:^(SMKSenderCertificate *senderCertificate) {
+        trywrapped_ensureSenderCertificateWithSuccess:^(SMKSenderCertificate *senderCertificate) {
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
             });
