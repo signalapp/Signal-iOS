@@ -246,22 +246,22 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: f43a65b456c43d1f5cad621ef108b4e18a70c17f
+    :commit: 66b38e23b4e980cbddc94980f5bd0d1211d9184a
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: 14effe344be35f5d9f5597a2fd56824f78a4067d
+    :commit: 9e5663baf4c2c7cb68ac4c0beb0423383c19a7fe
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
     :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
-    :commit: 8b8326cd50bc488663a3d3743f1a92b90f4d85b4
+    :commit: 3e0c2371d125f2d3db26daa498d5d436961b1795
     :git: https://github.com/signalapp/HKDFKit.git
   SignalCoreKit:
-    :commit: ff0b95770520133b83a4bd7b26bc2c90b51abc4d
+    :commit: b60dc7d58dfc93ca6eafbb3ea5300c6d67ebc69a
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 90f3dee7122ff13061770c496001135ba90b71e3
+    :commit: d6b0186cc5b15019e85c375bce3bf78e7a7fc162
     :git: https://github.com/signalapp/SignalMetadataKit
   SocketRocket:
     :commit: 9f9563a83cd8960503074aa8de72206f83fb7a69
@@ -277,7 +277,7 @@ SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: bb02741a93400b915df1be3365ad13d3768b0103
   CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
-  Curve25519Kit: 2b2e55cfa2a72f1152d2733a3058d94cc87f37c3
+  Curve25519Kit: b3e77b7152ebe95fee2b3fb6c955449492bc14f7
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
