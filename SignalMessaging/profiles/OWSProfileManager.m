@@ -155,6 +155,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return SSKEnvironment.shared.syncManager;
 }
 
+- (id<OWSUDManager>)udManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.udManager);
+
+    return SSKEnvironment.shared.udManager;
+}
+
 #pragma mark - User Profile Accessor
 
 - (void)ensureLocalProfileCached
@@ -1006,7 +1013,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [userProfile clearWithProfileKey:profileKey
                             dbConnection:self.dbConnection
                               completion:^{
-                                  dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                      [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                                                    recipientId:recipientId];
                                       [self fetchProfileForRecipientId:recipientId];
                                   });
                               }];

@@ -135,53 +135,15 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        switch self.udManager.unidentifiedAccessMode(forRecipientId: recipientId) {
-        case .unknown:
-            if let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId) {
-                // If we are in unknown mode and have a profile key,
-                // try using the profile key.
-                return self.requestProfile(recipientId: recipientId,
-                                           udAccessKey: udAccessKey,
-                                           canFailoverUDAuth: true)
-            } else {
-                // If we are in unknown mode and don't have a profile key,
-                // try using a random UD access key in case they support
-                // unrestricted access.
-                let randomUDAccessKey = self.udManager.randomUDAccessKey()
-                return requestProfile(recipientId: recipientId,
-                                      udAccessKey: randomUDAccessKey,
-                                      canFailoverUDAuth: true)
-            }
-        case .unrestricted:
-            let randomUDAccessKey = self.udManager.randomUDAccessKey()
-            return requestProfile(recipientId: recipientId,
-                                  udAccessKey: randomUDAccessKey,
-                                  canFailoverUDAuth: false)
-                .recover { (_: Error) -> Promise<SignalServiceProfile> in
-                    Logger.verbose("Failing over to non-random access.")
-                    let udAccessKey = self.udManager.udAccessKey(forRecipientId: recipientId)
-                    // This may fail over again to non-UD-auth.
-                    return self.requestProfile(recipientId: recipientId,
-                                               udAccessKey: udAccessKey,
-                                               canFailoverUDAuth: true)
-            }
-        case .disabled:
-            // This may fail over to non-UD-auth.
-            return requestProfile(recipientId: recipientId,
-                                  udAccessKey: nil,
-                                  canFailoverUDAuth: true)
-        case .enabled:
-            // This may be nil if we don't have a profile key for them.
-            let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId)
-            // This may fail over to non-UD-auth.
-            return requestProfile(recipientId: recipientId,
-                                  udAccessKey: udAccessKey,
-                                  canFailoverUDAuth: true)
-        }
+        let udAccess = udManager.udAccess(forRecipientId: recipientId,
+            requireSyncAccess: false)
+        return requestProfile(recipientId: recipientId,
+                              udAccess: udAccess,
+                              canFailoverUDAuth: true)
     }
 
     private func requestProfile(recipientId: String,
-                                udAccessKey: SMKUDAccessKey?,
+                                udAccess: OWSUDAccess?,
                                 canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
         AssertIsOnMainThread()
 
@@ -193,7 +155,7 @@ public class ProfileFetcherJob: NSObject {
         }, websocketFailureBlock: {
             // Do nothing
         }, recipientId: recipientId,
-           udAccessKey: udAccessKey,
+           udAccess: udAccess,
            canFailoverUDAuth: canFailoverUDAuth)
         return requestMaker.makeRequest()
             .map { (result: RequestMakerResult) -> SignalServiceProfile in
@@ -233,13 +195,13 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let dataToVerify = Data(count: 32)
-        guard let expectedVerfier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
+        guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
             owsFailDebug("could not compute verification")
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }
 
-        guard expectedVerfier == verifier else {
+        guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
             Logger.verbose("verifier mismatch, new profile key?")
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return

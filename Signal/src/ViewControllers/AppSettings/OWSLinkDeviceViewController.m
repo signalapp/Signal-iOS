@@ -193,9 +193,6 @@ NS_ASSUME_NONNULL_BEGIN
                 // so all sync message sends will fail on the socket until it is cycled.
                 [TSSocketManager.shared cycleSocket];
 
-                [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                              recipientId:self.tsAccountManager.localNumber];
-
                 // Fetch the local profile to determine if all
                 // linked devices support UD.
                 [self.profileManager fetchLocalUsersProfile];
