@@ -8,6 +8,8 @@
 
 #import <RelayMessaging/RelayMessaging-Swift.h>
 
+NSString *const FLRelayWipeAndReturnToRegistrationNotification = @"FLRelayWipeAndReturnToRegistrationNotification";
+
 @import RelayServiceKit;
 
 static Environment *sharedEnvironment = nil;

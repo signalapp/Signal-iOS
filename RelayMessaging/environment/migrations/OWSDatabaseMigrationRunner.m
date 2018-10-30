@@ -36,15 +36,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSPrimaryStorage *primaryStorage = OWSPrimaryStorage.sharedManager;
     return @[
-        [[OWS100RemoveTSRecipientsMigration alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS103EnableVideoCalling alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS104CreateRecipientIdentities alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS105AttachmentFilePaths alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS106EnsureProfileComplete alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS107LegacySounds alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS108CallLoggingPreference alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS109OutgoingMessageState alloc] initWithPrimaryStorage:primaryStorage]
+             
+             // Legacy Signal Migrations
+//        [[OWS100RemoveTSRecipientsMigration alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS103EnableVideoCalling alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS104CreateRecipientIdentities alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS105AttachmentFilePaths alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS106EnsureProfileComplete alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS107LegacySounds alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS108CallLoggingPreference alloc] initWithPrimaryStorage:primaryStorage],
+//        [[OWS109OutgoingMessageState alloc] initWithPrimaryStorage:primaryStorage]
     ];
 }
 

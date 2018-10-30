@@ -6,13 +6,15 @@
 #import "Environment.h"
 #import "Release.h"
 #import "VersionMigrations.h"
-#import <AxolotlKit/SessionCipher.h>
 #import <RelayMessaging/OWSDatabaseMigration.h>
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
 #import <RelayServiceKit/OWSBackgroundTask.h>
 #import <RelayServiceKit/OWSStorage.h>
 #import <RelayServiceKit/TextSecureKitEnv.h>
+
+@import RelayServiceKit;
+@import AxolotlKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -53,13 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             // Don't start database migrations until storage is ready.
-//            [VersionMigrations performUpdateCheckWithCompletion:^() {
+            [VersionMigrations performUpdateCheckWithCompletion:^() {
                 OWSAssertIsOnMainThread();
 
                 migrationCompletion();
 
                 backgroundTask = nil;
-//            }];
+            }];
         }];
     });
 }

@@ -13,6 +13,8 @@
  *
  **/
 
+extern NSString *const FLRelayWipeAndReturnToRegistrationNotification;
+
 @class ContactsUpdater;
 @class FLContactsManager;
 @class OWSMessageSender;
