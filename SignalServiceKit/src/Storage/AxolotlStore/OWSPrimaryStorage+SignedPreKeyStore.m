@@ -30,14 +30,15 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
     int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
     ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
     OWSAssert(identityKeyPair);
+
     @try {
-        return [[SignedPreKeyRecord alloc]
-             initWithId:preKeyId
-                keyPair:keyPair
-              signature:[Ed25519 throws_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair]
-            generatedAt:[NSDate date]];
+        NSData *signature = [Ed25519 throws_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair];
+        return [[SignedPreKeyRecord alloc] initWithId:preKeyId
+                                              keyPair:keyPair
+                                            signature:signature
+                                          generatedAt:[NSDate date]];
     } @catch (NSException *exception) {
-        // throws_sign only throws when the data to sign is empty or `keyPair`.
+        // throws_sign only throws when the data to sign is empty or `keyPair` is nil.
         // Neither of which should happen.
         OWSFail(@"exception: %@", exception);
         return nil;

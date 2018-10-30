@@ -1609,7 +1609,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }) retainUntilComplete];
 }
 
-// NOTE: This method uses exceptions for control flow.
 - (NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
                                                deviceId:(NSNumber *)deviceId
                                               plainText:(NSData *)plainText

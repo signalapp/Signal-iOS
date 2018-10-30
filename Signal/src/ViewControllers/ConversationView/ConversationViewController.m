@@ -1902,7 +1902,7 @@ typedef enum : NSUInteger {
                                    // as-of-yet-undecrypted messages
                                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
                                        // Deliberately crash if the user fails to explicitly accept the new identity
-                                       // key. In practice we haven't been creating these messags in over a year.
+                                       // key. In practice we haven't been creating these messages in over a year.
                                        [errorMessage throws_acceptNewIdentityKey];
                                    }
                                }];
