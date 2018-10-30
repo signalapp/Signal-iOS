@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>CarthageVersion</key>
-		<string>0.31.0</string>
+		<string>0.31.1</string>
 		<key>CocoapodsVersion</key>
 		<string>1.5.3</string>
 		<key>OSXVersion</key>
