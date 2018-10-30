@@ -1135,15 +1135,12 @@ static NSTimeInterval launchStartedAt;
 
     if ([TSAccountManager isRegistered]) {
         HomeViewController *homeView = [HomeViewController new];
-        SignalsNavigationController *navigationController =
-            [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+        SignalsNavigationController *navigationController = [[SignalsNavigationController alloc] initWithRootViewController:homeView];
         self.window.rootViewController = navigationController;
     } else {
         UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:[NSBundle mainBundle]];
         UIViewController *viewController = [storyboard instantiateInitialViewController];
-//        RegistrationViewController *viewController = [RegistrationViewController new];
-        OWSNavigationController *navigationController =
-            [[OWSNavigationController alloc] initWithRootViewController:viewController];
+        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:viewController];
         navigationController.navigationBarHidden = NO;
         self.window.rootViewController = navigationController;
     }
