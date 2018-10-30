@@ -449,13 +449,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             }
 
             SMKDecryptResult *_Nullable decryptResult =
-                [cipher trywrapped_decryptMessageWithCertificateValidator:certificateValidator
-                                                           cipherTextData:encryptedData
-                                                                timestamp:serverTimestamp
-                                                         localRecipientId:localRecipientId
-                                                            localDeviceId:localDeviceId
-                                                          protocolContext:transaction
-                                                                    error:&error];
+                [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
+                                                              cipherTextData:encryptedData
+                                                                   timestamp:serverTimestamp
+                                                            localRecipientId:localRecipientId
+                                                               localDeviceId:localDeviceId
+                                                             protocolContext:transaction
+                                                                       error:&error];
             SCKRaiseIfExceptionWrapperError(error);
 
             if (error || !decryptResult) {

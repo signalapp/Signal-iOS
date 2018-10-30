@@ -65,7 +65,7 @@ private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> S
     // We use completion handlers instead of a promise so that message sending
     // logic can access the strongly typed certificate data.
     @objc
-    func trywrapped_ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
+    func throwswrapped_ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
                                             failure:@escaping (Error) -> Void)
 
     // MARK: Unrestricted Access
@@ -111,7 +111,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             // Any error is silently ignored on startup.
-            self.trywrapped_ensureSenderCertificate().retainUntilComplete()
+            self.throwswrapped_ensureSenderCertificate().retainUntilComplete()
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
@@ -124,7 +124,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         AssertIsOnMainThread()
 
         // Any error is silently ignored
-        trywrapped_ensureSenderCertificate().retainUntilComplete()
+        throwswrapped_ensureSenderCertificate().retainUntilComplete()
     }
 
     // MARK: -
@@ -266,12 +266,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     #if DEBUG
     @objc
-    public func trywrapped_hasSenderCertificate() -> Bool {
-        return trywrapped_senderCertificate() != nil
+    public func throwswrapped_hasSenderCertificate() -> Bool {
+        return throwswrapped_senderCertificate() != nil
     }
     #endif
 
-    private func trywrapped_senderCertificate() -> SMKSenderCertificate? {
+    private func throwswrapped_senderCertificate() -> SMKSenderCertificate? {
         guard let certificateData = dbConnection.object(forKey: senderCertificateKey(), inCollection: kUDCollection) as? Data else {
             return nil
         }
@@ -279,7 +279,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         do {
             let certificate = try SMKSenderCertificate.parse(data: certificateData)
 
-            guard trywrapped_isValidCertificate(certificate) else {
+            guard throwswrapped_isValidCertificate(certificate) else {
                 Logger.warn("Current sender certificate is not valid.")
                 return nil
             }
@@ -300,10 +300,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func trywrapped_ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
+    public func throwswrapped_ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
                                                    failure:@escaping (Error) -> Void) {
         firstly {
-            trywrapped_ensureSenderCertificate()
+            throwswrapped_ensureSenderCertificate()
         }.map { certificate in
             success(certificate)
         }.catch { error in
@@ -311,15 +311,15 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }.retainUntilComplete()
     }
 
-    public func trywrapped_ensureSenderCertificate() -> Promise<SMKSenderCertificate> {
+    public func throwswrapped_ensureSenderCertificate() -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
-        if let certificate = trywrapped_senderCertificate() {
+        if let certificate = throwswrapped_senderCertificate() {
             return Promise.value(certificate)
         }
 
         // Try to obtain a new sender certificate.
         return firstly {
-            trywrapped_requestSenderCertificate()
+            throwswrapped_requestSenderCertificate()
         }.map { (certificateData: Data, certificate: SMKSenderCertificate) in
 
             // Cache the current sender certificate.
@@ -329,13 +329,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    private func trywrapped_requestSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
+    private func throwswrapped_requestSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
         return firstly {
             SignalServiceRestClient().requestUDSenderCertificate()
         }.map { certificateData -> (certificateData: Data, certificate: SMKSenderCertificate) in
             let certificate = try SMKSenderCertificate.parse(data: certificateData)
 
-            guard self.trywrapped_isValidCertificate(certificate) else {
+            guard self.throwswrapped_isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
@@ -343,7 +343,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 
-    private func trywrapped_isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
+    private func throwswrapped_isValidCertificate(_ certificate: SMKSenderCertificate) -> Bool {
         // Ensure that the certificate will not expire in the next hour.
         // We want a threshold long enough to ensure that any outgoing message
         // sends will complete before the expiration.
@@ -351,7 +351,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let anHourFromNowMs = nowMs + kHourInMs
 
         do {
-            try certificateValidator.trywrapped_validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
+            try certificateValidator.throwswrapped_validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {
             OWSLogger.error("Invalid certificate")

@@ -479,7 +479,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failure
 {
     [self.udManager
-        trywrapped_ensureSenderCertificateWithSuccess:^(SMKSenderCertificate *senderCertificate) {
+        throwswrapped_ensureSenderCertificateWithSuccess:^(SMKSenderCertificate *senderCertificate) {
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
             });
@@ -1656,12 +1656,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
 
-        serializedMessage = [secretCipher trywrapped_encryptMessageWithRecipientId:recipientId
-                                                                          deviceId:deviceId.intValue
-                                                                   paddedPlaintext:[plainText paddedMessageBody]
-                                                                 senderCertificate:messageSend.senderCertificate
-                                                                   protocolContext:transaction
-                                                                             error:&error];
+        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientId
+                                                                             deviceId:deviceId.intValue
+                                                                      paddedPlaintext:[plainText paddedMessageBody]
+                                                                    senderCertificate:messageSend.senderCertificate
+                                                                      protocolContext:transaction
+                                                                                error:&error];
         SCKRaiseIfExceptionWrapperError(error);
         messageType = TSUnidentifiedSenderMessageType;
     } else {
