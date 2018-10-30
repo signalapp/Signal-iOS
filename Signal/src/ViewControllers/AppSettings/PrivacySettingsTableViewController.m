@@ -17,6 +17,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-sender/";
+
 @implementation PrivacySettingsTableViewController
 
 - (void)viewDidLoad
@@ -255,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                     customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
-                        NSURL *url = [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"];
+                        NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
                         OWSAssertDebug(url);
                         [UIApplication.sharedApplication openURL:url];
                     }]];
@@ -280,8 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE",
                                                          @"Label for a link to more info about unidentified delivery.")
                                          actionBlock:^{
-                                             NSURL *url =
-                                                 [NSURL URLWithString:@"https://signal.org/blog/secret-sender/"];
+                                             NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
                                              OWSAssertDebug(url);
                                              [UIApplication.sharedApplication openURL:url];
                                          }]];
