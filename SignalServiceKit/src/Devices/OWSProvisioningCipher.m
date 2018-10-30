@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *infoData = [@"TextSecure Provisioning Message" dataUsingEncoding:NSASCIIStringEncoding];
     NSData *nullSalt = [[NSMutableData dataWithLength:32] copy];
-    NSData *derivedSecret = [HKDFKit deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
+    NSData *derivedSecret = [HKDFKit try_deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
     NSData *cipherKey = [derivedSecret subdataWithRange:NSMakeRange(0, 32)];
     NSData *macKey = [derivedSecret subdataWithRange:NSMakeRange(32, 32)];
     if (cipherKey.length != 32) {

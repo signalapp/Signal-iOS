@@ -101,7 +101,7 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     NSData *_Nullable derivedMaterial;
     @try {
         derivedMaterial =
-            [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
+            [HKDFKit try_deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
     } @catch (NSException *exception) {
         OWSFailDebug(@"could not derive service key: %@", exception);
         return NO;
