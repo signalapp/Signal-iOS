@@ -130,6 +130,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (nonatomic, readonly) BOOL isSilent;
 
+@property (nonatomic, readonly) BOOL isOnline;
+
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */

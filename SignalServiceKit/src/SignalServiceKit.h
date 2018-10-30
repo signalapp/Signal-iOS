@@ -8,4 +8,5 @@
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/SSKJobRecord.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>

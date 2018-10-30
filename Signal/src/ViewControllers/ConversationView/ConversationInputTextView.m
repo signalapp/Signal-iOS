@@ -65,6 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+#pragma mark -
+
 - (void)setFont:(UIFont *_Nullable)font
 {
     [super setFont:font];
@@ -176,10 +178,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+    OWSAssertDebug(self.inputTextViewDelegate);
     OWSAssertDebug(self.textViewToolbarDelegate);
 
     [self updatePlaceholderVisibility];
 
+    [self.inputTextViewDelegate textViewDidChange:self];
     [self.textViewToolbarDelegate textViewDidChange:self];
 }
 

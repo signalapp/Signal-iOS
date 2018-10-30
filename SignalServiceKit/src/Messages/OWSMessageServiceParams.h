@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -20,12 +20,14 @@
 @property (nonatomic, readonly) int destinationRegistrationId;
 @property (nonatomic, readonly) NSString *content;
 @property (nonatomic, readonly) BOOL silent;
+@property (nonatomic, readonly) BOOL online;
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
                  recipientId:(NSString *)destination
                       device:(int)deviceId
                      content:(NSData *)content
                     isSilent:(BOOL)isSilent
+                    isOnline:(BOOL)isOnline
               registrationId:(int)registrationId;
 
 @end

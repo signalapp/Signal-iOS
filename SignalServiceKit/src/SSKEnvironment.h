@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSUDManager;
 @protocol SSKReachabilityManager;
 @protocol OWSSyncManagerProtocol;
+@protocol OWSTypingIndicators;
 
 @interface SSKEnvironment : NSObject
 
@@ -58,7 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
-                            syncManager:(id<OWSSyncManagerProtocol>)syncManager NS_DESIGNATED_INITIALIZER;
+                            syncManager:(id<OWSSyncManagerProtocol>)syncManager
+                       typingIndicators:(id<OWSTypingIndicators>)typingIndicators NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -94,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSOutgoingReceiptManager *outgoingReceiptManager;
 @property (nonatomic, readonly) id<OWSSyncManagerProtocol> syncManager;
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
+@property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
     id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
+    id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -98,7 +99,9 @@ NS_ASSUME_NONNULL_BEGIN
                        readReceiptManager:readReceiptManager
                    outgoingReceiptManager:outgoingReceiptManager
                       reachabilityManager:reachabilityManager
-                              syncManager:syncManager];
+                              syncManager:syncManager
+                         typingIndicators:typingIndicators];
+
     if (!self) {
         return nil;
     }

@@ -34,6 +34,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
 @property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
+@property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 
 @end
 
@@ -71,6 +72,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<OWSSyncManagerProtocol>)syncManager
+                       typingIndicators:(id<OWSTypingIndicators>)typingIndicators
 {
     self = [super init];
     if (!self) {
@@ -100,6 +102,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(outgoingReceiptManager);
     OWSAssertDebug(syncManager);
     OWSAssertDebug(reachabilityManager);
+    OWSAssertDebug(typingIndicators);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -124,6 +127,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _outgoingReceiptManager = outgoingReceiptManager;
     _syncManager = syncManager;
     _reachabilityManager = reachabilityManager;
+    _typingIndicators = typingIndicators;
 
     return self;
 }

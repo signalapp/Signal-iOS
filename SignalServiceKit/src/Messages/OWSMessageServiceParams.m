@@ -18,6 +18,7 @@
                       device:(int)deviceId
                      content:(NSData *)content
                     isSilent:(BOOL)isSilent
+                    isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
 {
     self = [super init];
@@ -32,6 +33,7 @@
     _destinationRegistrationId = registrationId;
     _content = [content base64EncodedString];
     _silent = isSilent;
+    _online = isOnline;
 
     return self;
 }
