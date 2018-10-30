@@ -83,9 +83,9 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     NSData *ephemeralToStatic;
     @try {
         ephemeralToEphemeral =
-            [Curve25519 try_generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
+            [Curve25519 throws_generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
         ephemeralToStatic =
-            [Curve25519 try_generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
+            [Curve25519 throws_generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
     } @catch (NSException *exception) {
         OWSFailDebug(@"could not generate shared secrets: %@", exception);
         return NO;
@@ -101,7 +101,7 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     NSData *_Nullable derivedMaterial;
     @try {
         derivedMaterial =
-            [HKDFKit try_deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
+            [HKDFKit throws_deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
     } @catch (NSException *exception) {
         OWSFailDebug(@"could not derive service key: %@", exception);
         return NO;

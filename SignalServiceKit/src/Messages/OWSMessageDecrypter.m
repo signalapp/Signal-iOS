@@ -212,7 +212,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         switch (envelope.type) {
             case SSKProtoEnvelopeTypeCiphertext: {
-                [self try_decryptSecureMessage:envelope
+                [self throws_decryptSecureMessage:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
                         OWSLogDebug(@"decrypted secure message.");
@@ -229,7 +229,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
             case SSKProtoEnvelopeTypePrekeyBundle: {
-                [self try_decryptPreKeyBundle:envelope
+                [self throws_decryptPreKeyBundle:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
                         OWSLogDebug(@"decrypted pre-key whisper message");
@@ -298,10 +298,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     failureBlock();
 }
 
-- (void)try_decryptSecureMessage:(SSKProtoEnvelope *)envelope
-                    envelopeData:(NSData *)envelopeData
-                    successBlock:(DecryptSuccessBlock)successBlock
-                    failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)throws_decryptSecureMessage:(SSKProtoEnvelope *)envelope
+                       envelopeData:(NSData *)envelopeData
+                       successBlock:(DecryptSuccessBlock)successBlock
+                       failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
@@ -312,16 +312,16 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               envelopeData:envelopeData
             cipherTypeName:@"Secure Message"
         cipherMessageBlock:^(NSData *encryptedData) {
-            return [[WhisperMessage alloc] init_try_withData:encryptedData];
+            return [[WhisperMessage alloc] init_throws_withData:encryptedData];
         }
               successBlock:successBlock
               failureBlock:failureBlock];
 }
 
-- (void)try_decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
-                   envelopeData:(NSData *)envelopeData
-                   successBlock:(DecryptSuccessBlock)successBlock
-                   failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)throws_decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
+                      envelopeData:(NSData *)envelopeData
+                      successBlock:(DecryptSuccessBlock)successBlock
+                      failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
@@ -335,7 +335,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               envelopeData:envelopeData
             cipherTypeName:@"PreKey Bundle"
         cipherMessageBlock:^(NSData *encryptedData) {
-            return [[PreKeyWhisperMessage alloc] init_try_withData:encryptedData];
+            return [[PreKeyWhisperMessage alloc] init_throws_withData:encryptedData];
         }
               successBlock:successBlock
               failureBlock:failureBlock];
@@ -379,7 +379,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 // plaintextData may be nil for some envelope types.
                 NSData *_Nullable plaintextData =
-                    [[cipher try_decrypt:cipherMessage protocolContext:transaction] removePadding];
+                    [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
                                                                                            source:envelope.source

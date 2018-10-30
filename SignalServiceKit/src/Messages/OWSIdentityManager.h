@@ -60,8 +60,8 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
 // This method can be called from any thread.
-- (void)try_processIncomingSyncMessage:(SSKProtoVerified *)verified
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified
+                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
 

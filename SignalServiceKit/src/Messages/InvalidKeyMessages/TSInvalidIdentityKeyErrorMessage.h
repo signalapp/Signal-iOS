@@ -10,8 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSInvalidIdentityKeyErrorMessage : TSErrorMessage
 
-- (void)try_acceptNewIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
-- (nullable NSData *)try_newIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
+- (void)throws_acceptNewIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
+- (nullable NSData *)throws_newIdentityKey NS_SWIFT_UNAVAILABLE("throws objc exceptions");
 - (NSString *)theirSignalId;
 
 @end

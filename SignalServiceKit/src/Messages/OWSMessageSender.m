@@ -839,7 +839,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
-        deviceMessages = [self try_deviceMessagesForMessageSendUnsafe:messageSend];
+        deviceMessages = [self throws_deviceMessagesForMessageSendUnsafe:messageSend];
     } @catch (NSException *exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
@@ -888,7 +888,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return nil;
             }
 
-            NSData *newIdentityKey = [newIdentityKeyWithVersion try_removeKeyType];
+            NSData *newIdentityKey = [newIdentityKeyWithVersion throws_removeKeyType];
             [self.identityManager saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
 
             return nil;
@@ -1407,7 +1407,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessageToRecipient:messageSend];
 }
 
-- (NSArray<NSDictionary *> *)try_deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
+- (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend.message);
     OWSAssertDebug(messageSend.recipient);
@@ -1443,17 +1443,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
-            [self try_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+            [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
 
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
             [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
-                        messageDict = [self try_encryptedMessageForMessageSend:messageSend
-                                                                      deviceId:deviceId
-                                                                     plainText:plainText
-                                                                   transaction:transaction];
+                        messageDict = [self throws_encryptedMessageForMessageSend:messageSend
+                                                                         deviceId:deviceId
+                                                                        plainText:plainText
+                                                                      transaction:transaction];
                     } @catch (NSException *exception) {
                         encryptionException = exception;
                     }
@@ -1485,7 +1485,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-- (void)try_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
+- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1544,7 +1544,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       deviceId:[deviceId intValue]];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
-                [builder try_processPrekeyBundle:bundle protocolContext:transaction];
+                [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
@@ -1610,10 +1610,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 // NOTE: This method uses exceptions for control flow.
-- (NSDictionary *)try_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                            deviceId:(NSNumber *)deviceId
-                                           plainText:(NSData *)plainText
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                               deviceId:(NSNumber *)deviceId
+                                              plainText:(NSData *)plainText
+                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1667,7 +1667,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else {
         // This may throw an exception.
         id<CipherMessage> encryptedMessage =
-            [cipher try_encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
+            [cipher throws_encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
         serializedMessage = encryptedMessage.serialized;
         messageType = [self messageTypeForCipherMessage:encryptedMessage];
     }
@@ -1679,7 +1679,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                device:[deviceId intValue]
                                               content:serializedMessage
                                              isSilent:isSilent
-                                       registrationId:[cipher try_remoteRegistrationId:transaction]];
+                                       registrationId:[cipher throws_remoteRegistrationId:transaction]];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

@@ -1903,7 +1903,7 @@ typedef enum : NSUInteger {
                                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
                                        // Deliberately crash if the user fails to explicitly accept the new identity
                                        // key. In practice we haven't been creating these messags in over a year.
-                                       [errorMessage try_acceptNewIdentityKey];
+                                       [errorMessage throws_acceptNewIdentityKey];
                                    }
                                }];
     [actionSheetController addAction:acceptSafetyNumberAction];

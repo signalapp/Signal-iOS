@@ -249,7 +249,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         if ([interaction isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
             TSInvalidIdentityKeyReceivingErrorMessage *error = (TSInvalidIdentityKeyReceivingErrorMessage *)interaction;
             @try {
-                if ([[error try_newIdentityKey] isEqualToData:key]) {
+                if ([[error throws_newIdentityKey] isEqualToData:key]) {
                     [errorMessages addObject:(TSInvalidIdentityKeyReceivingErrorMessage *)interaction];
                 }
             } @catch (NSException *exception) {

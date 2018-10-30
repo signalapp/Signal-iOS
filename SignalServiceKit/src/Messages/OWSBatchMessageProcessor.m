@@ -403,9 +403,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 if (!envelope) {
                     reportFailure(transaction);
                 } else {
-                    [self.messageManager try_processEnvelope:envelope
-                                               plaintextData:job.plaintextData
-                                                 transaction:transaction];
+                    [self.messageManager throws_processEnvelope:envelope
+                                                  plaintextData:job.plaintextData
+                                                    transaction:transaction];
                 }
             } @catch (NSException *exception) {
                 OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);

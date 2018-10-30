@@ -35,10 +35,10 @@
     PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
-    XCTAssert([[[OWSPrimaryStorage sharedManager] try_loadPreKey:lastPreKeyRecord.Id].keyPair.publicKey
+    XCTAssert([[[OWSPrimaryStorage sharedManager] throws_loadPreKey:lastPreKeyRecord.Id].keyPair.publicKey
         isEqualToData:lastPreKeyRecord.keyPair.publicKey]);
 
-    XCTAssert([[[OWSPrimaryStorage sharedManager] try_loadPreKey:firstPreKeyRecord.Id].keyPair.publicKey
+    XCTAssert([[[OWSPrimaryStorage sharedManager] throws_loadPreKey:firstPreKeyRecord.Id].keyPair.publicKey
         isEqualToData:firstPreKeyRecord.keyPair.publicKey]);
 }
 
@@ -56,8 +56,8 @@
 
     [[OWSPrimaryStorage sharedManager] removePreKey:lastPreKeyRecord.Id];
 
-    XCTAssertThrows([[OWSPrimaryStorage sharedManager] try_loadPreKey:lastPreKeyRecord.Id]);
-    XCTAssertNoThrow([[OWSPrimaryStorage sharedManager] try_loadPreKey:firstPreKeyRecord.Id]);
+    XCTAssertThrows([[OWSPrimaryStorage sharedManager] throws_loadPreKey:lastPreKeyRecord.Id]);
+    XCTAssertNoThrow([[OWSPrimaryStorage sharedManager] throws_loadPreKey:firstPreKeyRecord.Id]);
 }
 
 @end

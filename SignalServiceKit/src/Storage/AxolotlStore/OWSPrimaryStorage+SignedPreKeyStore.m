@@ -34,17 +34,17 @@ NSString *const OWSPrimaryStorageKeyPrekeyCurrentSignedPrekeyId = @"currentSigne
         return [[SignedPreKeyRecord alloc]
              initWithId:preKeyId
                 keyPair:keyPair
-              signature:[Ed25519 try_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair]
+              signature:[Ed25519 throws_sign:keyPair.publicKey.prependKeyType withKeyPair:identityKeyPair]
             generatedAt:[NSDate date]];
     } @catch (NSException *exception) {
-        // try_sign only throws when the data to sign is empty or `keyPair`.
+        // throws_sign only throws when the data to sign is empty or `keyPair`.
         // Neither of which should happen.
         OWSFail(@"exception: %@", exception);
         return nil;
     }
 }
 
-- (SignedPreKeyRecord *)try_loadSignedPrekey:(int)signedPreKeyId
+- (SignedPreKeyRecord *)throws_loadSignedPrekey:(int)signedPreKeyId
 {
     SignedPreKeyRecord *preKeyRecord =
         [self.dbReadConnection signedPreKeyRecordForKey:[self keyFromInt:signedPreKeyId]

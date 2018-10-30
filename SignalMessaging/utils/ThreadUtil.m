@@ -632,7 +632,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             @try {
-                NSData *_Nullable newIdentityKey = [safetyNumberChange try_newIdentityKey];
+                NSData *_Nullable newIdentityKey = [safetyNumberChange throws_newIdentityKey];
                 if (newIdentityKey == nil) {
                     OWSFailDebug(@"Safety number change was missing it's new identity key.");
                     continue;

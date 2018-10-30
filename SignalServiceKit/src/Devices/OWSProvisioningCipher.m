@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)encrypt:(NSData *)dataToEncrypt
 {
     @try {
-        return [self try_encryptWithData:dataToEncrypt];
+        return [self throws_encryptWithData:dataToEncrypt];
     } @catch (NSException *exception) {
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
             exception.description,
@@ -65,14 +65,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable NSData *)try_encryptWithData:(NSData *)dataToEncrypt
+- (nullable NSData *)throws_encryptWithData:(NSData *)dataToEncrypt
 {
     NSData *sharedSecret =
-        [Curve25519 try_generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
+        [Curve25519 throws_generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
 
     NSData *infoData = [@"TextSecure Provisioning Message" dataUsingEncoding:NSASCIIStringEncoding];
     NSData *nullSalt = [[NSMutableData dataWithLength:32] copy];
-    NSData *derivedSecret = [HKDFKit try_deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
+    NSData *derivedSecret = [HKDFKit throws_deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
     NSData *cipherKey = [derivedSecret subdataWithRange:NSMakeRange(0, 32)];
     NSData *macKey = [derivedSecret subdataWithRange:NSMakeRange(32, 32)];
     if (cipherKey.length != 32) {

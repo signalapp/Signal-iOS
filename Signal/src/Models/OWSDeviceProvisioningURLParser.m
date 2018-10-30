@@ -27,7 +27,7 @@ NSString *const OWSQueryItemNameEncodedPublicKeyKey = @"pub_key";
         } else if ([queryItem.name isEqualToString:OWSQueryItemNameEncodedPublicKeyKey]) {
             NSString *encodedPublicKey = queryItem.value;
             @try {
-                _publicKey = [[NSData dataFromBase64String:encodedPublicKey] try_removeKeyType];
+                _publicKey = [[NSData dataFromBase64String:encodedPublicKey] throws_removeKeyType];
             } @catch (NSException *exception) {
                 OWSFailDebug(@"exception: %@", exception);
             }
