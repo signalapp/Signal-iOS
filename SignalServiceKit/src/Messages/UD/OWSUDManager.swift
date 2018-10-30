@@ -33,6 +33,27 @@ private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> S
     }
 }
 
+@objc
+public class OWSUDAccess: NSObject {
+    @objc
+    public let udAccessKey: SMKUDAccessKey
+
+    @objc
+    public let udAccessMode: UnidentifiedAccessMode
+
+    @objc
+    public let isRandomKey: Bool
+
+    @objc
+    public required init(udAccessKey: SMKUDAccessKey,
+                         udAccessMode: UnidentifiedAccessMode,
+                         isRandomKey: Bool) {
+        self.udAccessKey = udAccessKey
+        self.udAccessMode = udAccessMode
+        self.isRandomKey = isRandomKey
+    }
+}
+
 @objc public protocol OWSUDManager: class {
 
     @objc func setup()
@@ -58,7 +79,7 @@ private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> S
     func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey?
 
     @objc
-    func udSendAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey?
+    func udAccess(forRecipientId recipientId: RecipientIdentifier) -> OWSUDAccess?
 
     // MARK: Sender Certificate
 
@@ -220,7 +241,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key for sending to a given recipient.
     @objc
-    public func udSendAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+    public func udAccess(forRecipientId recipientId: RecipientIdentifier) -> OWSUDAccess? {
         // This check is currently redundant with the "send access key for local number"
         // check below, but behavior of isUDEnabled() may change.
         guard isUDEnabled() else {
@@ -236,7 +257,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
         if localNumber != recipientId {
-            guard udSendAccessKey(forRecipientId: localNumber) != nil else {
+            guard udAccess(forRecipientId: localNumber) != nil else {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD Send disabled for \(recipientId), UD disabled for sync messages.")
                 }
@@ -245,11 +266,20 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
         let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
         if accessMode == .unrestricted {
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD Send enabled for \(recipientId) with random key.")
+            if let udAccessKey = udAccessKey(forRecipientId: recipientId) {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD Send enabled for \(recipientId) with unverified key.")
+                }
+                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
+            } else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD Send enabled for \(recipientId) with random key.")
+                }
+                let udAccessKey = randomUDAccessKey()
+                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
             }
-            return randomUDAccessKey()
         }
+
         guard accessMode == .enabled else {
             if isUDVerboseLoggingEnabled() {
                 Logger.info("UD Send disabled for \(recipientId), UD not enabled for this recipient.")
@@ -259,7 +289,13 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         if isUDVerboseLoggingEnabled() {
             Logger.info("UD Send enabled for \(recipientId).")
         }
-        return udAccessKey(forRecipientId: recipientId)
+        guard let udAccessKey = udAccessKey(forRecipientId: recipientId) else {
+            if isUDVerboseLoggingEnabled() {
+                Logger.info("UD Send disabled for \(recipientId), no profile key for this recipient.")
+            }
+            return nil
+        }
+        return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
     }
 
     // MARK: - Sender Certificate

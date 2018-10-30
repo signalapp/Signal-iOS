@@ -156,6 +156,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
 #pragma mark -
 
 - (void)startObserving
@@ -562,11 +567,6 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             OWSLogError(@"Failed to send Request Group Info message with error: %@", error);
         }];
-}
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -1453,12 +1453,13 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    BOOL isRecipientDevice = YES;
     SignalRecipient *_Nullable recipient =
         [SignalRecipient registeredRecipientForRecipientId:localNumber transaction:transaction];
     if (!recipient) {
         OWSFailDebug(@"No local SignalRecipient.");
     } else {
-        BOOL isRecipientDevice = [recipient.devices containsObject:@(envelope.sourceDevice)];
+        isRecipientDevice = [recipient.devices containsObject:@(envelope.sourceDevice)];
         if (!isRecipientDevice) {
             OWSLogInfo(@"Message received from unknown linked device; adding to local SignalRecipient: %lu.",
                        (unsigned long) envelope.sourceDevice);
@@ -1479,6 +1480,10 @@ NS_ASSUME_NONNULL_BEGIN
                    (unsigned long) envelope.sourceDevice);
 
         [OWSDevicesService refreshDevices];
+    }
+
+    if (!isRecipientDevice || !isInDeviceList) {
+        [self.profileManager fetchLocalUsersProfile];
     }
 }
 

@@ -32,7 +32,7 @@ public class OWSMessageSend: NSObject {
     public var hasWebsocketSendFailed = false
 
     @objc
-    public var udAccessKey: SMKUDAccessKey?
+    public var udAccess: OWSUDAccess?
 
     @objc
     public var senderCertificate: SMKSenderCertificate?
@@ -54,7 +54,7 @@ public class OWSMessageSend: NSObject {
                 thread: TSThread?,
                 recipient: SignalRecipient,
                 senderCertificate: SMKSenderCertificate?,
-                udAccessKey: SMKUDAccessKey?,
+                udAccess: OWSUDAccess?,
                 localNumber: String,
                 success: @escaping () -> Void,
                 failure: @escaping (Error) -> Void) {
@@ -63,7 +63,7 @@ public class OWSMessageSend: NSObject {
         self.recipient = recipient
         self.localNumber = localNumber
         self.senderCertificate = senderCertificate
-        self.udAccessKey = udAccessKey
+        self.udAccess = udAccess
 
         if let recipientId = recipient.uniqueId {
             self.isLocalNumber = localNumber == recipientId
@@ -78,13 +78,13 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var isUDSend: Bool {
-        return udAccessKey != nil && senderCertificate != nil
+        return udAccess != nil && senderCertificate != nil
     }
 
     @objc
     public func disableUD() {
         Logger.verbose("\(recipient.recipientId)")
-        udAccessKey = nil
+        udAccess = nil
     }
 
     @objc

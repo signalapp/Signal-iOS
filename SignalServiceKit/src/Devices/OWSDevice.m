@@ -217,12 +217,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     if (didAddOrRemove) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // Device changes can affect the UD access mode for a recipient,
-            // so we need to:
-            //
-            // * Mark the UD access mode as "unknown".
-            // * Fetch the profile for this user to update UD access mode.
-            [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                          recipientId:self.tsAccountManager.localNumber];
+            // so we need to fetch the profile for this user to update UD access mode.
             [self.profileManager fetchLocalUsersProfile];
         });
         return YES;

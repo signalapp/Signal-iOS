@@ -148,11 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Device changes
     dispatch_async(dispatch_get_main_queue(), ^{
         // Device changes can affect the UD access mode for a recipient,
-        // so we need to:
-        //
-        // * Mark the UD access mode as "unknown".
-        // * Fetch the profile for this user to update UD access mode.
-        [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown recipientId:self.recipientId];
+        // so we need to fetch the profile for this user to update UD access mode.
         [self.profileManager fetchProfileForRecipientId:self.recipientId];
     });
 }
