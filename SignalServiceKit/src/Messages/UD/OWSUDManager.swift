@@ -274,6 +274,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
         if accessMode == .unrestricted {
+            // Unrestricted users should use a derived key if possible,
+            // and fall back to a random key otherwise.
             if let udAccessKey = udAccessKey(forRecipientId: recipientId) {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD Send enabled for \(recipientId) with unverified key.")
