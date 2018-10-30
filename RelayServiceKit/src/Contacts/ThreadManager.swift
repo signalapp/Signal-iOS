@@ -44,6 +44,10 @@ import Foundation
             //if lookupDict
             if let userIds:[String] = lookupDict["userids"] as? [String] {
                 thread.participantIds = userIds
+
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: FLRecipientsNeedRefreshNotification),
+                                                object: nil,
+                                                userInfo: [ "userIds" : userIds ])
             }
             if let pretty:String = lookupDict["pretty"] as? String {
                 thread.prettyExpression = pretty
