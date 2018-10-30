@@ -249,7 +249,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                          requireSyncAccess: Bool) -> OWSUDAccess? {
         guard isUDEnabled() else {
             if isUDVerboseLoggingEnabled() {
-                Logger.info("UD Send disabled for \(recipientId), UD disabled.")
+                Logger.info("UD disabled for \(recipientId), UD disabled.")
             }
             return nil
         }
@@ -257,7 +257,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         if requireSyncAccess {
             guard let localNumber = tsAccountManager.localNumber() else {
                 if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD Send disabled for \(recipientId), no local number.")
+                    Logger.info("UD disabled for \(recipientId), no local number.")
                 }
                 return nil
             }
@@ -265,7 +265,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 let selfAccessMode = unidentifiedAccessMode(forRecipientId: localNumber)
                 guard selfAccessMode != .disabled else {
                     if isUDVerboseLoggingEnabled() {
-                        Logger.info("UD Send disabled for \(recipientId), UD disabled for sync messages.")
+                        Logger.info("UD disabled for \(recipientId), UD disabled for sync messages.")
                     }
                     return nil
                 }
@@ -273,32 +273,46 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
-        if accessMode == .unrestricted {
-            // Unrestricted users should use a derived key if possible,
-            // and fall back to a random key otherwise.
+        switch accessMode {
+        case .unrestricted:
+            // Unrestricted users should use a random key.
             if isUDVerboseLoggingEnabled() {
-                Logger.info("UD Send enabled for \(recipientId) with random key.")
+                Logger.info("UD enabled for \(recipientId) with random key.")
             }
             let udAccessKey = randomUDAccessKey()
             return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
-        }
-
-        guard accessMode == .enabled else {
+        case .unknown:
+            // Unknown users should use a derived key if possible,
+            // and otherwise use a random key.
+            if let udAccessKey = udAccessKey(forRecipientId: recipientId) {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD unknown for \(recipientId); trying random key.")
+                }
+                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
+            } else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD unknown for \(recipientId); trying random key.")
+                }
+                let udAccessKey = randomUDAccessKey()
+                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
+            }
+        case .enabled:
+            guard let udAccessKey = udAccessKey(forRecipientId: recipientId) else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD disabled for \(recipientId), no profile key for this recipient.")
+                }
+                return nil
+            }
             if isUDVerboseLoggingEnabled() {
-                Logger.info("UD Send disabled for \(recipientId), UD not enabled for this recipient.")
+                Logger.info("UD enabled for \(recipientId).")
+            }
+            return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
+        case .disabled:
+            if isUDVerboseLoggingEnabled() {
+                Logger.info("UD disabled for \(recipientId), UD not enabled for this recipient.")
             }
             return nil
         }
-        if isUDVerboseLoggingEnabled() {
-            Logger.info("UD Send enabled for \(recipientId).")
-        }
-        guard let udAccessKey = udAccessKey(forRecipientId: recipientId) else {
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD Send disabled for \(recipientId), no profile key for this recipient.")
-            }
-            return nil
-        }
-        return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
     }
 
     // MARK: - Sender Certificate
