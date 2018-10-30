@@ -1453,6 +1453,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Consult the device list cache we use for message sending
+    // whether or not we know about this linked device.
     SignalRecipient *_Nullable recipient =
         [SignalRecipient registeredRecipientForRecipientId:localNumber transaction:transaction];
     if (!recipient) {
@@ -1469,6 +1471,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    // Consult the device list cache we use for the "linked device" UI
+    // whether or not we know about this linked device.
     NSMutableSet<NSNumber *> *deviceIdSet = [NSMutableSet new];
     for (OWSDevice *device in [OWSDevice currentDevicesWithTransaction:transaction]) {
         [deviceIdSet addObject:@(device.deviceId)];

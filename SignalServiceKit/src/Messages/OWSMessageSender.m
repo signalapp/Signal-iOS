@@ -1076,8 +1076,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSLogWarn(@"Sending a message with no device messages.");
     }
 
-    // NOTE: canFailoverUDAuth is NO because UD-auth and Non-UD-auth requests
-    // use different device lists.
+    // NOTE: canFailoverUDAuth depends on whether or not we're sending a
+    // sync message because sync messages use different device lists
+    // for UD-auth and Non-UD-auth requests.
+    //
+    // Therefore, for sync messages, we can't use OWSRequestMaker's
+    // retry/failover logic; we need to use the message sender's retry
+    // logic that will build a new set of device messages.
+    BOOL isSyncMessageSend = messageSend.isLocalNumber;
+    BOOL canFailoverUDAuth = !isSyncMessageSend;
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
         requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
             return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
@@ -1086,14 +1093,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                             udAccessKey:udAccessKey];
         }
         udAuthFailureBlock:^{
+            // Note the UD auth failure so subsequent retries
+            // to this recipient also use basic auth.
             [messageSend setHasUDAuthFailed];
         }
         websocketFailureBlock:^{
+            // Note the websocket failure so subsequent retries
+            // to this recipient also use REST.
             messageSend.hasWebsocketSendFailed = YES;
         }
         recipientId:recipient.recipientId
         udAccess:messageSend.udAccess
-        canFailoverUDAuth:NO];
+        canFailoverUDAuth:canFailoverUDAuth];
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
@@ -1578,9 +1589,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                               udAccessKey:udAccessKey];
         }
         udAuthFailureBlock:^{
+            // Note the UD auth failure so subsequent retries
+            // to this recipient also use basic auth.
             [messageSend setHasUDAuthFailed];
         }
         websocketFailureBlock:^{
+            // Note the websocket failure so subsequent retries
+            // to this recipient also use REST.
             messageSend.hasWebsocketSendFailed = YES;
         }
         recipientId:recipientId

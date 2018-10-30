@@ -112,8 +112,8 @@ public class RequestMaker: NSObject {
         if !skipUD {
             udAccessForRequest = udAccess
         }
-        let isUDRequest = udAccessForRequest != nil
-        let request = requestFactoryBlock(udAccessForRequest?.udAccessKey)
+        let isUDRequest: Bool = udAccessForRequest != nil
+        let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey)
         let webSocketType: OWSWebSocketType = (isUDRequest ? .UD : .default)
         let canMakeWebsocketRequests = (socketManager.canMakeRequests(of: webSocketType) && !skipWebsocket)
 
@@ -142,8 +142,8 @@ public class RequestMaker: NSObject {
                             // failure), mark recipient as _not_ in UD mode, then retry.
                             self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
                             self.profileManager.fetchProfile(forRecipientId: self.recipientId)
-
                             self.udAuthFailureBlock()
+
                             if self.canFailoverUDAuth {
                                 Logger.info("UD websocket request '\(self.label)' auth failed; failing over to non-UD websocket request.")
                                 return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
@@ -185,8 +185,8 @@ public class RequestMaker: NSObject {
                             // failure), mark recipient as _not_ in UD mode, then retry.
                             self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
                             self.profileManager.fetchProfile(forRecipientId: self.recipientId)
-
                             self.udAuthFailureBlock()
+
                             if self.canFailoverUDAuth {
                                 Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
                                 return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
@@ -207,9 +207,11 @@ public class RequestMaker: NSObject {
     }
 
     private func requestSucceeded(udAccess: OWSUDAccess?) {
+        // If this was a UD request...
         guard let udAccess = udAccess else {
             return
         }
+        // ...made for a user in "unknown" UD access mode...
         guard udAccess.udAccessMode == .unknown else {
             return
         }
@@ -217,12 +219,12 @@ public class RequestMaker: NSObject {
         if udAccess.isRandomKey {
             // If a UD request succeeds for an unknown user with a random key,
             // mark recipient as .unrestricted.
-            self.udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: self.recipientId)
+            udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: recipientId)
         } else {
             // If a UD request succeeds for an unknown user with a non-random key,
             // mark recipient as .enabled.
-            self.udManager.setUnidentifiedAccessMode(.enabled, recipientId: self.recipientId)
+            udManager.setUnidentifiedAccessMode(.enabled, recipientId: recipientId)
         }
-        self.profileManager.fetchProfile(forRecipientId: self.recipientId)
+        profileManager.fetchProfile(forRecipientId: recipientId)
     }
 }

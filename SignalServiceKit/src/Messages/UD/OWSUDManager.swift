@@ -60,17 +60,12 @@ public class OWSUDAccess: NSObject {
 
     @objc func trustRoot() -> ECPublicKey
 
-    @objc func isUDEnabled() -> Bool
-
     @objc func isUDVerboseLoggingEnabled() -> Bool
 
     // MARK: - Recipient State
 
     @objc
     func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
-
-    @objc
-    func randomUDAccessKey() -> SMKUDAccessKey
 
     @objc
     func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier) -> UnidentifiedAccessMode
@@ -152,11 +147,6 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: -
 
     @objc
-    public func isUDEnabled() -> Bool {
-        return true
-    }
-
-    @objc
     public func isUDVerboseLoggingEnabled() -> Bool {
         return true
     }
@@ -186,6 +176,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return defaultValue
         }
         guard let existingValue = UnidentifiedAccessMode(rawValue: existingRawValue) else {
+            owsFailDebug("Couldn't parse mode value.")
             return defaultValue
         }
         return existingValue
@@ -247,18 +238,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func udAccess(forRecipientId recipientId: RecipientIdentifier,
                          requireSyncAccess: Bool) -> OWSUDAccess? {
-        guard isUDEnabled() else {
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD disabled for \(recipientId), UD disabled.")
-            }
-            return nil
-        }
-
         if requireSyncAccess {
             guard let localNumber = tsAccountManager.localNumber() else {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD disabled for \(recipientId), no local number.")
                 }
+                owsFailDebug("Missing local number.")
                 return nil
             }
             if localNumber != recipientId {
@@ -286,7 +271,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             // and otherwise use a random key.
             if let udAccessKey = udAccessKey(forRecipientId: recipientId) {
                 if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD unknown for \(recipientId); trying random key.")
+                    Logger.info("UD unknown for \(recipientId); trying derived key.")
                 }
                 return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
             } else {
@@ -301,6 +286,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD disabled for \(recipientId), no profile key for this recipient.")
                 }
+                owsFailDebug("Couldn't find profile key for UD-enabled user.")
                 return nil
             }
             if isUDVerboseLoggingEnabled() {

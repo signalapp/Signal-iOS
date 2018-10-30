@@ -195,13 +195,13 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let dataToVerify = Data(count: 32)
-        guard let expectedVerfier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
+        guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
             owsFailDebug("could not compute verification")
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }
 
-        guard expectedVerfier == verifier else {
+        guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
             Logger.verbose("verifier mismatch, new profile key?")
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
