@@ -28,8 +28,6 @@ NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification = @"OWSU
 NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification = @"OWSUIDatabaseConnectionDidUpdateExternallyNotification";
 
 NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnectionNotificationsKey";
-NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
-    = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
 void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
@@ -252,8 +250,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     NSString *databaseDirPath = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"database"];
 
     if (![OWSFileSystem ensureDirectoryExists:databaseDirPath]) {
-        OWSRaiseException(
-            OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory, @"Could not create new database directory");
+        OWSFail(@"Could not create new database directory");
     }
     return databaseDirPath;
 }

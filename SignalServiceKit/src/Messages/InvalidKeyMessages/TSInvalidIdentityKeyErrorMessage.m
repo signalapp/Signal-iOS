@@ -8,12 +8,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInvalidIdentityKeyErrorMessage
 
-- (void)acceptNewIdentityKey
+- (void)throws_acceptNewIdentityKey
 {
     OWSAbstractMethod();
 }
 
-- (nullable NSData *)newIdentityKey
+- (nullable NSData *)throws_newIdentityKey
 {
     OWSAbstractMethod();
     return nil;

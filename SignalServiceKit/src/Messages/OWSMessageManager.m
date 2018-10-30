@@ -212,9 +212,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-- (void)processEnvelope:(SSKProtoEnvelope *)envelope
-          plaintextData:(NSData *_Nullable)plaintextData
-            transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
+                 plaintextData:(NSData *_Nullable)plaintextData
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;
             }
-            [self handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
+            [self throws_handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
             break;
         case SSKProtoEnvelopeTypeReceipt:
             OWSAssertDebug(!plaintextData);
@@ -345,9 +345,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleEnvelope:(SSKProtoEnvelope *)envelope
-         plaintextData:(NSData *)plaintextData
-           transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
+                plaintextData:(NSData *)plaintextData
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -395,7 +395,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
 
         if (contentProto.syncMessage) {
-            [self handleIncomingEnvelope:envelope withSyncMessage:contentProto.syncMessage transaction:transaction];
+            [self throws_handleIncomingEnvelope:envelope
+                                withSyncMessage:contentProto.syncMessage
+                                    transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
@@ -745,9 +747,9 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
-               withSyncMessage:(SSKProtoSyncMessage *)syncMessage
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+                      withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -862,7 +864,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:transaction];
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
-        [self.identityManager processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+        [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

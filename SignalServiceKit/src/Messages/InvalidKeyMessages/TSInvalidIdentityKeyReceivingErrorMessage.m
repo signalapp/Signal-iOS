@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     return _envelope;
 }
 
-- (void)acceptNewIdentityKey
+- (void)throws_acceptNewIdentityKey
 {
     OWSAssertIsOnMainThread();
 
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSData *_Nullable newKey = [self newIdentityKey];
+    NSData *_Nullable newKey = [self throws_newIdentityKey];
     if (!newKey) {
         OWSFailDebug(@"Couldn't extract identity key to accept");
         return;
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable NSData *)newIdentityKey
+- (nullable NSData *)throws_newIdentityKey
 {
     if (!self.envelope) {
         OWSLogError(@"Error message had no envelope data to extract key from");
@@ -130,8 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] initWithData:pkwmData];
-    return [message.identityKey removeKeyType];
+    PreKeyWhisperMessage *message = [[PreKeyWhisperMessage alloc] init_throws_withData:pkwmData];
+    return [message.identityKey throws_removeKeyType];
 }
 
 - (NSString *)theirSignalId

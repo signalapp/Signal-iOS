@@ -50,6 +50,7 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -478,7 +479,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failure
 {
     [self.udManager
-        ensureSenderCertificateObjCWithSuccess:^(SMKSenderCertificate *senderCertificate) {
+        ensureSenderCertificateWithSuccess:^(SMKSenderCertificate *senderCertificate) {
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
             });
@@ -838,7 +839,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
-        deviceMessages = [self deviceMessagesForMessageSendUnsafe:messageSend];
+        deviceMessages = [self throws_deviceMessagesForMessageSendUnsafe:messageSend];
     } @catch (NSException *exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
@@ -887,7 +888,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return nil;
             }
 
-            NSData *newIdentityKey = [newIdentityKeyWithVersion removeKeyType];
+            NSData *newIdentityKey = [newIdentityKeyWithVersion throws_removeKeyType];
             [self.identityManager saveRemoteIdentity:newIdentityKey recipientId:recipient.recipientId];
 
             return nil;
@@ -1406,8 +1407,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessageToRecipient:messageSend];
 }
 
-// NOTE: This method uses exceptions for control flow.
-- (NSArray<NSDictionary *> *)deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
+- (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend.message);
     OWSAssertDebug(messageSend.recipient);
@@ -1443,17 +1443,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         @try {
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
-            [self ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
+            [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
 
             __block NSDictionary *messageDict;
             __block NSException *encryptionException;
             [self.dbConnection
                 readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     @try {
-                        messageDict = [self encryptedMessageForMessageSend:messageSend
-                                                                  deviceId:deviceId
-                                                                 plainText:plainText
-                                                               transaction:transaction];
+                        messageDict = [self throws_encryptedMessageForMessageSend:messageSend
+                                                                         deviceId:deviceId
+                                                                        plainText:plainText
+                                                                      transaction:transaction];
                     } @catch (NSException *exception) {
                         encryptionException = exception;
                     }
@@ -1485,9 +1485,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-// NOTE: This method uses exceptions for control flow.
-- (void)ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend
-                                       deviceId:(NSNumber *)deviceId
+- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1546,7 +1544,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       deviceId:[deviceId intValue]];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
-                [builder processPrekeyBundle:bundle protocolContext:transaction];
+                [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
@@ -1611,11 +1609,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }) retainUntilComplete];
 }
 
-// NOTE: This method uses exceptions for control flow.
-- (NSDictionary *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                        deviceId:(NSNumber *)deviceId
-                                       plainText:(NSData *)plainText
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                               deviceId:(NSNumber *)deviceId
+                                              plainText:(NSData *)plainText
+                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1658,17 +1655,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
 
-        serializedMessage = [secretCipher encryptMessageWithRecipientId:recipientId
-                                                               deviceId:deviceId.intValue
-                                                        paddedPlaintext:[plainText paddedMessageBody]
-                                                      senderCertificate:messageSend.senderCertificate
-                                                        protocolContext:transaction
-                                                                  error:&error];
+        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientId
+                                                                             deviceId:deviceId.intValue
+                                                                      paddedPlaintext:[plainText paddedMessageBody]
+                                                                    senderCertificate:messageSend.senderCertificate
+                                                                      protocolContext:transaction
+                                                                                error:&error];
+        SCKRaiseIfExceptionWrapperError(error);
         messageType = TSUnidentifiedSenderMessageType;
     } else {
         // This may throw an exception.
         id<CipherMessage> encryptedMessage =
-            [cipher encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
+            [cipher throws_encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
         serializedMessage = encryptedMessage.serialized;
         messageType = [self messageTypeForCipherMessage:encryptedMessage];
     }
@@ -1680,7 +1678,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                device:[deviceId intValue]
                                               content:serializedMessage
                                              isSilent:isSilent
-                                       registrationId:[cipher remoteRegistrationId:transaction]];
+                                       registrationId:[cipher throws_remoteRegistrationId:transaction]];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

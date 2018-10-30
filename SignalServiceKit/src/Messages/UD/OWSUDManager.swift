@@ -65,8 +65,8 @@ private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> S
     // We use completion handlers instead of a promise so that message sending
     // logic can access the strongly typed certificate data.
     @objc
-    func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
-                                            failure:@escaping (Error) -> Void)
+    func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
+                                 failure:@escaping (Error) -> Void)
 
     // MARK: Unrestricted Access
 
@@ -109,6 +109,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             guard TSAccountManager.isRegistered() else {
                 return
             }
+
+            // Any error is silently ignored on startup.
             self.ensureSenderCertificate().retainUntilComplete()
         }
         NotificationCenter.default.addObserver(self,
@@ -121,6 +123,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
+        // Any error is silently ignored
         ensureSenderCertificate().retainUntilComplete()
     }
 
@@ -297,8 +300,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
-                                            failure:@escaping (Error) -> Void) {
+    public func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
+                                        failure:@escaping (Error) -> Void) {
         firstly {
             ensureSenderCertificate()
         }.map { certificate in
@@ -348,7 +351,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let anHourFromNowMs = nowMs + kHourInMs
 
         do {
-            try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
+            try certificateValidator.throwswrapped_validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {
             OWSLogger.error("Invalid certificate")

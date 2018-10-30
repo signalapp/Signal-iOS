@@ -213,8 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
         // We need to use an Intel certificate as the anchor for IAS verification.
         NSData *_Nullable anchorCertificate = [self certificateDataForService:@"ias-root"];
         if (!anchorCertificate) {
-            OWSFailDebug(@"could not load anchor certificate.");
-            OWSRaiseException(@"OWSSignalService_CouldNotLoadCertificate", @"%s", __PRETTY_FUNCTION__);
+            OWSFail(@"could not load anchor certificate.");
         } else {
             anchorCertificates = @[ anchorCertificate ];
         }

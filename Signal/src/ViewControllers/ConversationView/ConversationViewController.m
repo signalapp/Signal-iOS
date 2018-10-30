@@ -1901,7 +1901,9 @@ typedef enum : NSUInteger {
                                    // but there will be some legacy ones in the wild, behind which await
                                    // as-of-yet-undecrypted messages
                                    if ([errorMessage isKindOfClass:[TSInvalidIdentityKeyReceivingErrorMessage class]]) {
-                                       [errorMessage acceptNewIdentityKey];
+                                       // Deliberately crash if the user fails to explicitly accept the new identity
+                                       // key. In practice we haven't been creating these messages in over a year.
+                                       [errorMessage throws_acceptNewIdentityKey];
                                    }
                                }];
     [actionSheetController addAction:acceptSafetyNumberAction];
