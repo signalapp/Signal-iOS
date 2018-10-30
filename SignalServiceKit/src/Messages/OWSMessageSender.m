@@ -593,7 +593,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             OWSUDAccess *_Nullable theirUDAccess;
             if (senderCertificate != nil && selfUDAccess != nil) {
-                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId];
+                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
             }
 
             OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
@@ -633,7 +633,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     OWSUDAccess *_Nullable selfUDAccess;
     if (senderCertificate) {
-        selfUDAccess = [self.udManager udAccessForRecipientId:self.tsAccountManager.localNumber];
+        selfUDAccess = [self.udManager udAccessForRecipientId:self.tsAccountManager.localNumber requireSyncAccess:YES];
     }
 
     void (^successHandler)(void) = ^() {

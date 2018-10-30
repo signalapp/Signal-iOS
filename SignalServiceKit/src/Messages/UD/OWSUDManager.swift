@@ -79,7 +79,8 @@ public class OWSUDAccess: NSObject {
     func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey?
 
     @objc
-    func udAccess(forRecipientId recipientId: RecipientIdentifier) -> OWSUDAccess?
+    func udAccess(forRecipientId recipientId: RecipientIdentifier,
+                  requireSyncAccess: Bool) -> OWSUDAccess?
 
     // MARK: Sender Certificate
 
@@ -152,13 +153,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func isUDEnabled() -> Bool {
-        // Only enable UD if UD is supported by all linked devices,
-        // so that sync messages can also be sent via UD.
-        guard let localNumber = tsAccountManager.localNumber() else {
-            return false
-        }
-        let ourAccessMode = unidentifiedAccessMode(forRecipientId: localNumber)
-        return ourAccessMode == .enabled || ourAccessMode == .unrestricted
+        return true
     }
 
     @objc
@@ -184,35 +179,44 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier,
+                                        isLocalNumber: Bool,
                                         transaction: YapDatabaseReadTransaction) -> UnidentifiedAccessMode {
+        let defaultValue: UnidentifiedAccessMode =  isLocalNumber ? .enabled : .unknown
         guard let existingRawValue = transaction.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
-            return .unknown
+            return defaultValue
         }
         guard let existingValue = UnidentifiedAccessMode(rawValue: existingRawValue) else {
-            return .unknown
+            return defaultValue
         }
         return existingValue
     }
 
     @objc
     public func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
+        var isLocalNumber = false
+        if let localNumber = tsAccountManager.localNumber() {
+            isLocalNumber = recipientId == localNumber
+        }
+
         var mode: UnidentifiedAccessMode = .unknown
         dbConnection.read { (transaction) in
-            mode = self.unidentifiedAccessMode(forRecipientId: recipientId, transaction: transaction)
+            mode = self.unidentifiedAccessMode(forRecipientId: recipientId, isLocalNumber: isLocalNumber, transaction: transaction)
         }
         return mode
     }
 
     @objc
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String) {
+        var isLocalNumber = false
         if let localNumber = tsAccountManager.localNumber() {
             if recipientId == localNumber {
                 Logger.info("Setting local UD access mode: \(string(forUnidentifiedAccessMode: mode))")
+                isLocalNumber = true
             }
         }
 
         dbConnection.readWrite { (transaction) in
-            let oldMode = self.unidentifiedAccessMode(forRecipientId: recipientId, transaction: transaction)
+            let oldMode = self.unidentifiedAccessMode(forRecipientId: recipientId, isLocalNumber: isLocalNumber, transaction: transaction)
 
             transaction.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: self.kUnidentifiedAccessCollection)
 
@@ -241,29 +245,33 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key for sending to a given recipient.
     @objc
-    public func udAccess(forRecipientId recipientId: RecipientIdentifier) -> OWSUDAccess? {
-        // This check is currently redundant with the "send access key for local number"
-        // check below, but behavior of isUDEnabled() may change.
+    public func udAccess(forRecipientId recipientId: RecipientIdentifier,
+                         requireSyncAccess: Bool) -> OWSUDAccess? {
         guard isUDEnabled() else {
             if isUDVerboseLoggingEnabled() {
                 Logger.info("UD Send disabled for \(recipientId), UD disabled.")
             }
             return nil
         }
-        guard let localNumber = tsAccountManager.localNumber() else {
-            if isUDVerboseLoggingEnabled() {
-                Logger.info("UD Send disabled for \(recipientId), no local number.")
-            }
-            return nil
-        }
-        if localNumber != recipientId {
-            guard udAccess(forRecipientId: localNumber) != nil else {
+
+        if requireSyncAccess {
+            guard let localNumber = tsAccountManager.localNumber() else {
                 if isUDVerboseLoggingEnabled() {
-                    Logger.info("UD Send disabled for \(recipientId), UD disabled for sync messages.")
+                    Logger.info("UD Send disabled for \(recipientId), no local number.")
                 }
                 return nil
             }
+            if localNumber != recipientId {
+                let selfAccessMode = unidentifiedAccessMode(forRecipientId: localNumber)
+                guard selfAccessMode != .disabled else {
+                    if isUDVerboseLoggingEnabled() {
+                        Logger.info("UD Send disabled for \(recipientId), UD disabled for sync messages.")
+                    }
+                    return nil
+                }
+            }
         }
+
         let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
         if accessMode == .unrestricted {
             if let udAccessKey = udAccessKey(forRecipientId: recipientId) {
