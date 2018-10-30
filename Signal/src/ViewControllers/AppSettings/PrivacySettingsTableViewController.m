@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
                     }
                     customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
-                        NSURL *url = [NSURL URLWithString:@"https://signal.org/blog/secret-sender/"];
+                        NSURL *url = [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"];
                         OWSAssertDebug(url);
                         [UIApplication.sharedApplication openURL:url];
                     }]];
