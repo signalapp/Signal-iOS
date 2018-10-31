@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)inputTextViewSendMessagePressed;
 
+- (void)inputTextViewDidChangeText;
+
+- (void)textViewDidChange:(UITextView *)textView;
+
 @end
 
 #pragma mark -

@@ -495,6 +495,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return NO;
 }
 
+- (BOOL)isOnline
+{
+    return NO;
+}
+
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_OutgoingMessage;

@@ -76,6 +76,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
@@ -199,13 +200,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL peek;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) OutboundCallInitiator *outboundCallInitiator;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic) BOOL userHasScrolled;
@@ -274,13 +268,6 @@ typedef enum : NSUInteger {
 - (void)commonInit
 {
     _viewControllerCreatedAt = CACurrentMediaTime();
-    _contactsManager = Environment.shared.contactsManager;
-    _contactsUpdater = SSKEnvironment.shared.contactsUpdater;
-    _messageSender = SSKEnvironment.shared.messageSender;
-    _outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-    _primaryStorage = [OWSPrimaryStorage sharedManager];
-    _networkManager = [TSNetworkManager sharedManager];
-    _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
@@ -306,7 +293,47 @@ typedef enum : NSUInteger {
     return Environment.shared.audioSession;
 }
 
-#pragma mark
+- (OWSMessageSender *)messageSender
+{
+    return SSKEnvironment.shared.messageSender;
+}
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+- (ContactsUpdater *)contactsUpdater
+{
+    return SSKEnvironment.shared.contactsUpdater;
+}
+
+- (OWSBlockingManager *)blockingManager
+{
+    return [OWSBlockingManager sharedManager];
+}
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+- (TSNetworkManager *)networkManager
+{
+    return SSKEnvironment.shared.networkManager;
+}
+
+- (OutboundCallInitiator *)outboundCallInitiator
+{
+    return AppEnvironment.shared.outboundCallInitiator;
+}
+
+- (id<OWSTypingIndicators>)typingIndicators
+{
+    return SSKEnvironment.shared.typingIndicators;
+}
+
+#pragma mark -
 
 - (void)addNotificationListeners
 {
@@ -1108,7 +1135,7 @@ typedef enum : NSUInteger {
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     int blockedMemberCount = 0;
-    NSArray<NSString *> *blockedPhoneNumbers = [_blockingManager blockedPhoneNumbers];
+    NSArray<NSString *> *blockedPhoneNumbers = [self.blockingManager blockedPhoneNumbers];
     for (NSString *contactIdentifier in groupThread.groupModel.groupMemberIds) {
         if ([blockedPhoneNumbers containsObject:contactIdentifier]) {
             blockedMemberCount++;
@@ -2813,6 +2840,7 @@ typedef enum : NSUInteger {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
         AudioServicesPlaySystemSound(soundId);
     }
+    [self.typingIndicators didSendOutgoingMessageInThread:self.thread];
 }
 
 #pragma mark UIDocumentMenuDelegate
@@ -2885,7 +2913,7 @@ typedef enum : NSUInteger {
 
     [dataSource setSourceFilename:filename];
 
-    // Although we want to be able to send higher quality attachments throught the document picker
+    // Although we want to be able to send higher quality attachments through the document picker
     // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
     if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
         [self sendQualityAdjustedAttachmentForVideo:url filename:filename skipApprovalDialog:NO];
@@ -3745,6 +3773,7 @@ typedef enum : NSUInteger {
     [self stopRecording];
     self.audioRecorder = nil;
     self.voiceMessageUUID = nil;
+    [self.typingIndicators didStopTypingOutgoingInputInThread:self.thread];
 }
 
 - (void)setAudioRecorder:(nullable AVAudioRecorder *)audioRecorder
@@ -3854,6 +3883,7 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:true completion:nil];
+    [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
 }
 
 - (nullable NSIndexPath *)lastVisibleIndexPath
@@ -4104,6 +4134,15 @@ typedef enum : NSUInteger {
 #endif
 
 #pragma mark - ConversationInputTextViewDelegate
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    if (textView.text.length > 0) {
+        [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
+    } else {
+        [self.typingIndicators didStopTypingOutgoingInputInThread:self.thread];
+    }
+}
 
 - (void)inputTextViewSendMessagePressed
 {
@@ -4521,6 +4560,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar showVoiceMemoUI];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     [self requestRecordingVoiceMemo];
+    [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
 }
 
 - (void)voiceMemoGestureDidEnd

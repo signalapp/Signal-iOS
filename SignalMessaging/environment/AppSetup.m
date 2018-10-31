@@ -85,6 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
+        id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
+
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
@@ -120,7 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                readReceiptManager:readReceiptManager
                                                            outgoingReceiptManager:outgoingReceiptManager
                                                               reachabilityManager:reachabilityManager
-                                                                      syncManager:syncManager]];
+                                                                      syncManager:syncManager
+                                                                 typingIndicators:typingIndicators]];
 
         appSpecificSingletonBlock();
 

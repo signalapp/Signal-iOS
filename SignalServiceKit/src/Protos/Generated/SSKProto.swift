@@ -268,6 +268,156 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
 #endif
 
+// MARK: - SSKProtoTypingMessage
+
+@objc public class SSKProtoTypingMessage: NSObject {
+
+    // MARK: - SSKProtoTypingMessageAction
+
+    @objc public enum SSKProtoTypingMessageAction: Int32 {
+        case started = 0
+        case stopped = 1
+    }
+
+    private class func SSKProtoTypingMessageActionWrap(_ value: SignalServiceProtos_TypingMessage.Action) -> SSKProtoTypingMessageAction {
+        switch value {
+        case .started: return .started
+        case .stopped: return .stopped
+        }
+    }
+
+    private class func SSKProtoTypingMessageActionUnwrap(_ value: SSKProtoTypingMessageAction) -> SignalServiceProtos_TypingMessage.Action {
+        switch value {
+        case .started: return .started
+        case .stopped: return .stopped
+        }
+    }
+
+    // MARK: - SSKProtoTypingMessageBuilder
+
+    @objc public class func builder(timestamp: UInt64, action: SSKProtoTypingMessageAction) -> SSKProtoTypingMessageBuilder {
+        return SSKProtoTypingMessageBuilder(timestamp: timestamp, action: action)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoTypingMessageBuilder {
+        let builder = SSKProtoTypingMessageBuilder(timestamp: timestamp, action: action)
+        if let _value = groupID {
+            builder.setGroupID(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoTypingMessageBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_TypingMessage()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(timestamp: UInt64, action: SSKProtoTypingMessageAction) {
+            super.init()
+
+            setTimestamp(timestamp)
+            setAction(action)
+        }
+
+        @objc public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc public func setAction(_ valueParam: SSKProtoTypingMessageAction) {
+            proto.action = SSKProtoTypingMessageActionUnwrap(valueParam)
+        }
+
+        @objc public func setGroupID(_ valueParam: Data) {
+            proto.groupID = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoTypingMessage {
+            return try SSKProtoTypingMessage.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoTypingMessage.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_TypingMessage
+
+    @objc public let timestamp: UInt64
+
+    @objc public let action: SSKProtoTypingMessageAction
+
+    @objc public var groupID: Data? {
+        guard proto.hasGroupID else {
+            return nil
+        }
+        return proto.groupID
+    }
+    @objc public var hasGroupID: Bool {
+        return proto.hasGroupID
+    }
+
+    private init(proto: SignalServiceProtos_TypingMessage,
+                 timestamp: UInt64,
+                 action: SSKProtoTypingMessageAction) {
+        self.proto = proto
+        self.timestamp = timestamp
+        self.action = action
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoTypingMessage {
+        let proto = try SignalServiceProtos_TypingMessage(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_TypingMessage) throws -> SSKProtoTypingMessage {
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+        }
+        let timestamp = proto.timestamp
+
+        guard proto.hasAction else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: action")
+        }
+        let action = SSKProtoTypingMessageActionWrap(proto.action)
+
+        // MARK: - Begin Validation Logic for SSKProtoTypingMessage -
+
+        // MARK: - End Validation Logic for SSKProtoTypingMessage -
+
+        let result = SSKProtoTypingMessage(proto: proto,
+                                           timestamp: timestamp,
+                                           action: action)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoTypingMessage {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoTypingMessage? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoContent
 
 @objc public class SSKProtoContent: NSObject {
@@ -295,6 +445,9 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         }
         if let _value = receiptMessage {
             builder.setReceiptMessage(_value)
+        }
+        if let _value = typingMessage {
+            builder.setTypingMessage(_value)
         }
         return builder
     }
@@ -325,6 +478,10 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
             proto.receiptMessage = valueParam.proto
         }
 
+        @objc public func setTypingMessage(_ valueParam: SSKProtoTypingMessage) {
+            proto.typingMessage = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoContent {
             return try SSKProtoContent.parseProto(proto)
         }
@@ -346,18 +503,22 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
     @objc public let receiptMessage: SSKProtoReceiptMessage?
 
+    @objc public let typingMessage: SSKProtoTypingMessage?
+
     private init(proto: SignalServiceProtos_Content,
                  dataMessage: SSKProtoDataMessage?,
                  syncMessage: SSKProtoSyncMessage?,
                  callMessage: SSKProtoCallMessage?,
                  nullMessage: SSKProtoNullMessage?,
-                 receiptMessage: SSKProtoReceiptMessage?) {
+                 receiptMessage: SSKProtoReceiptMessage?,
+                 typingMessage: SSKProtoTypingMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.syncMessage = syncMessage
         self.callMessage = callMessage
         self.nullMessage = nullMessage
         self.receiptMessage = receiptMessage
+        self.typingMessage = typingMessage
     }
 
     @objc
@@ -396,6 +557,11 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
             receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
         }
 
+        var typingMessage: SSKProtoTypingMessage? = nil
+        if proto.hasTypingMessage {
+            typingMessage = try SSKProtoTypingMessage.parseProto(proto.typingMessage)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoContent -
 
         // MARK: - End Validation Logic for SSKProtoContent -
@@ -405,7 +571,8 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
                                      syncMessage: syncMessage,
                                      callMessage: callMessage,
                                      nullMessage: nullMessage,
-                                     receiptMessage: receiptMessage)
+                                     receiptMessage: receiptMessage,
+                                     typingMessage: typingMessage)
         return result
     }
 
