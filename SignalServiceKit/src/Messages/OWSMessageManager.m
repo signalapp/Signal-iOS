@@ -1505,7 +1505,9 @@ NS_ASSUME_NONNULL_BEGIN
                    (unsigned long) envelope.sourceDevice);
 
         [OWSDevicesService refreshDevices];
-        [self.profileManager fetchLocalUsersProfile];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.profileManager fetchLocalUsersProfile];
+        });
     }
 }
 

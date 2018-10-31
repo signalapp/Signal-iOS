@@ -225,6 +225,8 @@ public class RequestMaker: NSObject {
             // mark recipient as .enabled.
             udManager.setUnidentifiedAccessMode(.enabled, recipientId: recipientId)
         }
-        profileManager.fetchProfile(forRecipientId: recipientId)
+        DispatchQueue.main.async {
+            self.profileManager.fetchProfile(forRecipientId: self.recipientId)
+        }
     }
 }
