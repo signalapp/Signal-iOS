@@ -68,8 +68,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
-    private let headerView: UIView
-
     init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
@@ -79,29 +77,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let kSpacingBetweenItems: CGFloat = 20
 
-        self.headerView = UIView()
-        headerView.layoutMargins = UIEdgeInsets(top: 2, left: 8, bottom: 4, right: 8)
-
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
-
-        let headerStackView = UIStackView()
-        headerView.addSubview(headerStackView)
-
-        headerStackView.axis = .vertical
-        headerStackView.alignment = .center
-        headerStackView.spacing = 0
-        headerStackView.distribution = .fillProportionally
-        headerStackView.addArrangedSubview(headerNameLabel)
-        headerStackView.addArrangedSubview(headerDateLabel)
-
-        headerStackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
-        headerStackView.autoPinEdge(toSuperviewMargin: .right, relation: .greaterThanOrEqual)
-        headerStackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
-        headerStackView.autoPinEdge(toSuperviewMargin: .left, relation: .greaterThanOrEqual)
-        headerStackView.setContentHuggingHigh()
-        headerStackView.autoCenterInSuperview()
 
         self.dataSource = self
         self.delegate = self
@@ -138,7 +116,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
         self.navigationItem.leftBarButtonItem = backButton
 
-        self.navigationItem.titleView = headerView
+        self.navigationItem.titleView = portraitHeaderView
+
         self.updateTitle()
 
         if showAllMediaButton {
@@ -163,8 +142,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // e.g. when getting to media details via message details screen, there's only
         // one "Page" so the bounce doesn't make sense.
         pagerScrollView.isScrollEnabled = sliderEnabled
-
-        self.title = "Attachment"
 
         // Views
 
@@ -230,6 +207,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("")
 
         self.dismissSelf(animated: true)
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        let isLandscape = size.width > size.height
+        self.navigationItem.titleView = isLandscape ? nil : self.portraitHeaderView
     }
 
     private var shouldHideToolbars: Bool = false {
@@ -588,7 +571,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return formatter
     }()
 
-    lazy private var headerNameLabel: UILabel = {
+    lazy private var portraitHeaderNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.navbarTitleColor
         label.font = UIFont.ows_regularFont(withSize: 17)
@@ -599,7 +582,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return label
     }()
 
-    lazy private var headerDateLabel: UILabel = {
+    lazy private var portraitHeaderDateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.navbarTitleColor
         label.font = UIFont.ows_regularFont(withSize: 12)
@@ -608,6 +591,30 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         label.minimumScaleFactor = 0.8
 
         return label
+    }()
+
+    private lazy var portraitHeaderView: UIView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 0
+        stackView.distribution = .fillProportionally
+        stackView.addArrangedSubview(portraitHeaderNameLabel)
+        stackView.addArrangedSubview(portraitHeaderDateLabel)
+
+        let containerView = UIView()
+        containerView.layoutMargins = UIEdgeInsets(top: 2, left: 8, bottom: 4, right: 8)
+
+        containerView.addSubview(stackView)
+
+        stackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+        stackView.setContentHuggingHigh()
+        stackView.autoCenterInSuperview()
+
+        return containerView
     }()
 
     private func updateTitle() {
@@ -620,25 +627,30 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     private func updateTitle(item: MediaGalleryItem) {
         let name = senderName(message: item.message)
-        headerNameLabel.text = name
+        portraitHeaderNameLabel.text = name
 
         // use sent date
         let date = Date(timeIntervalSince1970: Double(item.message.timestamp) / 1000)
         let formattedDate = dateFormatter.string(from: date)
-        headerDateLabel.text = formattedDate
+        portraitHeaderDateLabel.text = formattedDate
+
+        let landscapeHeaderFormat = NSLocalizedString("MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT", comment: "embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29'")
+        let landscapeHeaderText = String(format: landscapeHeaderFormat, name, formattedDate)
+        self.title = landscapeHeaderText
+        self.navigationItem.title = landscapeHeaderText
 
         if #available(iOS 11, *) {
-            // Do nothing, on iOS11, autolayout grows the stack view as necessary.
+            // Do nothing, on iOS11+, autolayout grows the stack view as necessary.
         } else {
             // Size the titleView to be large enough to fit the widest label,
             // but no larger. If we go for a "full width" label, our title view
             // will not be centered (since the left and right bar buttons have different widths)            
-            headerNameLabel.sizeToFit()
-            headerDateLabel.sizeToFit()
-            let maxWidth = max(headerNameLabel.frame.width, headerDateLabel.frame.width)
+            portraitHeaderNameLabel.sizeToFit()
+            portraitHeaderDateLabel.sizeToFit()
+            let width = max(portraitHeaderNameLabel.frame.width, portraitHeaderDateLabel.frame.width)
 
-            let headerFrame: CGRect = CGRect(x: 0, y: 0, width: maxWidth, height: 44)
-            headerView.frame = headerFrame
+            let headerFrame: CGRect = CGRect(x: 0, y: 0, width: width, height: 44)
+            portraitHeaderView.frame = headerFrame
         }
     }
 }
