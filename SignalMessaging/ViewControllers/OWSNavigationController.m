@@ -24,14 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSNavigationController
 
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+- (instancetype)initWithOWSNavigationBar
 {
     self = [self initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     if (!self) {
         return self;
     }
-
-    [self pushViewController:rootViewController animated:NO];
 
     if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
         OWSFailDebug(@"navigationBar was unexpected class: %@", self.navigationBar);
@@ -46,6 +44,17 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(themeDidChange:)
                                                  name:ThemeDidChangeNotification
                                                object:nil];
+
+    return self;
+}
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+{
+    self = [self initWithOWSNavigationBar];
+    if (!self) {
+        return self;
+    }
+    [self pushViewController:rootViewController animated:NO];
 
     return self;
 }

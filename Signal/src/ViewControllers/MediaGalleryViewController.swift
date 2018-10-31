@@ -197,8 +197,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         self.options = options
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
-
-        super.init(nibName: nil, bundle: nil)
+        super.init(owsNavigationBar: ())
     }
 
     required init?(coder aDecoder: NSCoder) {
