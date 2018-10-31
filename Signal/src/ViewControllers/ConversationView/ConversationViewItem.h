@@ -121,7 +121,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 - (BOOL)canSaveMedia;
 
+// For view items that correspond to interactions, this is the interaction's unique id.
+// For other view views (like the typing indicator), this is a unique, stable string.
+- (NSString *)itemId;
+
 @end
+
+#pragma mark -
 
 @interface ConversationInteractionViewItem
     : NSObject <ConversationViewItem, ConversationViewLayoutItem, OWSAudioPlayerDelegate>

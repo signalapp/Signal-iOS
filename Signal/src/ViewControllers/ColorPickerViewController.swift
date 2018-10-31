@@ -344,6 +344,10 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         super.init()
     }
 
+    func itemId() -> String {
+        return interaction.uniqueId!
+    }
+
     func dequeueCell(for collectionView: UICollectionView, indexPath: IndexPath) -> ConversationViewCell {
         owsFailDebug("unexpected invocation")
         return ConversationViewCell(forAutoLayout: ())

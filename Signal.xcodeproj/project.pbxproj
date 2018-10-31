@@ -41,6 +41,7 @@
 		340FC8CA20517B84007AEB0F /* OWSBackupImportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C820517B84007AEB0F /* OWSBackupImportJob.m */; };
 		340FC8CD20518C77007AEB0F /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8CC20518C76007AEB0F /* OWSBackupJob.m */; };
 		340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */; };
+		341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 341341EE2187467900192D59 /* ConversationViewModel.m */; };
 		341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */ = {isa = PBXBuildFile; fileRef = 341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */; };
 		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
@@ -651,6 +652,8 @@
 		340FC8CC20518C76007AEB0F /* OWSBackupJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupJob.m; sourceTree = "<group>"; };
 		340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupIO.m; sourceTree = "<group>"; };
 		340FC8CF205BF2FA007AEB0F /* OWSBackupIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupIO.h; sourceTree = "<group>"; };
+		341341ED2187467900192D59 /* ConversationViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewModel.h; sourceTree = "<group>"; };
+		341341EE2187467900192D59 /* ConversationViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewModel.m; sourceTree = "<group>"; };
 		341458471FBE11C4005ABCF9 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = translations/fa.lproj/Localizable.strings; sourceTree = "<group>"; };
 		341F2C0D1F2B8AE700D07D6B /* DebugUIMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMisc.h; sourceTree = "<group>"; };
 		341F2C0E1F2B8AE700D07D6B /* DebugUIMisc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMisc.m; sourceTree = "<group>"; };
@@ -1566,6 +1569,8 @@
 				34D1F0701F8678AA0066283D /* ConversationViewItem.m */,
 				34D1F0711F8678AA0066283D /* ConversationViewLayout.h */,
 				34D1F0721F8678AA0066283D /* ConversationViewLayout.m */,
+				341341ED2187467900192D59 /* ConversationViewModel.h */,
+				341341EE2187467900192D59 /* ConversationViewModel.m */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -3367,6 +3372,7 @@
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
 				34D920E720E179C200D51158 /* OWSMessageFooterView.m in Sources */,
+				341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,

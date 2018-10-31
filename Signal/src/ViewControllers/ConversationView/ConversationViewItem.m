@@ -153,6 +153,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
 }
 
+- (NSString *)itemId
+{
+    return self.interaction.uniqueId;
+}
+
 - (BOOL)hasBodyText
 {
     return _displayableBodyText != nil;
