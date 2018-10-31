@@ -1058,7 +1058,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else {
         // This can happen for users who have unregistered.
         // We still want to try sending to them in case they have re-registered.
-        OWSLogWarn(deviceMessages.count > 0);
+        if (deviceMessages.count < 1) {
+            OWSLogWarn(@"Message send attempt with no device messages.");
+        }
     }
 
     if (deviceMessages.count == 0) {
