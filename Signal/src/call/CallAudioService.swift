@@ -110,8 +110,9 @@ protocol CallAudioServiceDelegate: class {
     private let pulseDuration = 0.2
 
     var audioSession: OWSAudioSession {
-        return OWSAudioSession.shared
+        return Environment.shared.audioSession
     }
+
     var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }
@@ -396,7 +397,7 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func play(sound: OWSSound) {
-        guard let newPlayer = OWSSounds.audioPlayer(for: sound) else {
+        guard let newPlayer = OWSSounds.audioPlayer(for: sound, audioBehavior: .call) else {
             owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(for: sound))")
             return
         }
@@ -406,7 +407,7 @@ protocol CallAudioServiceDelegate: class {
         // we're playing the same sound, since the player is memoized on the sound instance, we'd otherwise 
         // stop the sound we just started.
         self.currentPlayer?.stop()
-        newPlayer.playWithCurrentAudioCategory()
+        newPlayer.play()
         self.currentPlayer = newPlayer
     }
 

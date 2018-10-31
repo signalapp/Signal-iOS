@@ -43,7 +43,7 @@
     NSString *path = [bundle pathForResource:service ofType:@"cer"];
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        OWSRaiseException(@"Missing server certificate", @"Missing signing certificate for service %@", service);
+        OWSFail(@"Missing signing certificate for service %@", service);
     }
 
     NSData *certificateData = [NSData dataWithContentsOfFile:path];

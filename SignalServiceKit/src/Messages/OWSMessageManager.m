@@ -154,6 +154,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
 #pragma mark -
 
 - (void)startObserving
@@ -210,9 +215,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - message handling
 
-- (void)processEnvelope:(SSKProtoEnvelope *)envelope
-          plaintextData:(NSData *_Nullable)plaintextData
-            transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
+                 plaintextData:(NSData *_Nullable)plaintextData
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -254,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
                 return;
             }
-            [self handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
+            [self throws_handleEnvelope:envelope plaintextData:plaintextData transaction:transaction];
             break;
         case SSKProtoEnvelopeTypeReceipt:
             OWSAssertDebug(!plaintextData);
@@ -343,9 +348,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleEnvelope:(SSKProtoEnvelope *)envelope
-         plaintextData:(NSData *)plaintextData
-           transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
+                plaintextData:(NSData *)plaintextData
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -393,7 +398,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
 
         if (contentProto.syncMessage) {
-            [self handleIncomingEnvelope:envelope withSyncMessage:contentProto.syncMessage transaction:transaction];
+            [self throws_handleIncomingEnvelope:envelope
+                                withSyncMessage:contentProto.syncMessage
+                                    transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
@@ -553,11 +560,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
 
     [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
-}
-
-- (id<ProfileManagerProtocol>)profileManager
-{
-    return SSKEnvironment.shared.profileManager;
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -738,9 +740,9 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
-               withSyncMessage:(SSKProtoSyncMessage *)syncMessage
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+                      withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -851,7 +853,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      transaction:transaction];
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
-        [self.identityManager processIncomingSyncMessage:syncMessage.verified transaction:transaction];
+        [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -923,7 +925,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
+    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
     OWSDisappearingConfigurationUpdateInfoMessage *message =
         [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                           thread:thread
@@ -1154,7 +1156,8 @@ NS_ASSUME_NONNULL_BEGIN
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
 
-                NSString *nameString = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
+                NSString *nameString =
+                    [self.contactsManager displayNameForPhoneIdentifier:envelope.source transaction:transaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
                 [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -1412,6 +1415,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Consult the device list cache we use for message sending
+    // whether or not we know about this linked device.
     SignalRecipient *_Nullable recipient =
         [SignalRecipient registeredRecipientForRecipientId:localNumber transaction:transaction];
     if (!recipient) {
@@ -1428,6 +1433,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    // Consult the device list cache we use for the "linked device" UI
+    // whether or not we know about this linked device.
     NSMutableSet<NSNumber *> *deviceIdSet = [NSMutableSet new];
     for (OWSDevice *device in [OWSDevice currentDevicesWithTransaction:transaction]) {
         [deviceIdSet addObject:@(device.deviceId)];
@@ -1438,6 +1445,7 @@ NS_ASSUME_NONNULL_BEGIN
                    (unsigned long) envelope.sourceDevice);
 
         [OWSDevicesService refreshDevices];
+        [self.profileManager fetchLocalUsersProfile];
     }
 }
 

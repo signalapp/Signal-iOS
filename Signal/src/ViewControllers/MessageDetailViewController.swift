@@ -274,7 +274,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     } else {
                         cellView.accessoryMessage = shortStatusMessage
                     }
-                    cellView.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                    cellView.configure(withRecipientId: recipientId)
 
                     let wrapper = UIView()
                     wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
@@ -675,12 +675,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             self.audioAttachmentPlayer = nil
         }
 
-        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, delegate: viewItem)
+        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback, delegate: viewItem)
         self.audioAttachmentPlayer = audioAttachmentPlayer
 
         // Associate the player with this media adapter.
         audioAttachmentPlayer.owner = viewItem
-        audioAttachmentPlayer.playWithPlaybackAudioCategory()
+        audioAttachmentPlayer.play()
     }
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {

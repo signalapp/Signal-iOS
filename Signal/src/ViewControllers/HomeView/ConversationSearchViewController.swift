@@ -216,7 +216,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, isBlocked: isBlocked(thread: searchResult.thread))
+            cell.configure(withThread: searchResult.thread, isBlocked: isBlocked(thread: searchResult.thread))
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
@@ -228,7 +228,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withRecipientId: searchResult.signalAccount.recipientId, contactsManager: contactsManager)
+            cell.configure(withRecipientId: searchResult.signalAccount.recipientId)
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
@@ -265,7 +265,6 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
             }
 
             cell.configure(withThread: searchResult.thread,
-                           contactsManager: contactsManager,
                            isBlocked: isBlocked(thread: searchResult.thread),
                            overrideSnippet: overrideSnippet,
                            overrideDate: overrideDate)

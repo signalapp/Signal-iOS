@@ -159,7 +159,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
     if (!phoneNumber) {
-        OWSRaiseException(@"RegistrationFail", @"Internal Corrupted State");
+        OWSFail(@"phoneNumber was unexpectedly nil");
     }
 
     [self storeLocalNumber:phoneNumber];

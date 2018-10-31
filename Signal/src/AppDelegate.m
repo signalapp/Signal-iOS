@@ -49,7 +49,7 @@
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
-#import <sys/sysctl.h>
+#import <sys/utsname.h>
 
 @import WebRTC;
 @import Intents;
@@ -468,14 +468,21 @@ static NSTimeInterval launchStartedAt;
         OWSLogInfo(@"Language Code: %@", languageCode);
     }
 
-    size_t size;
-    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-    char *machine = malloc(size);
-    sysctlbyname("hw.machine", machine, &size, NULL, 0);
-    NSString *platform = [NSString stringWithUTF8String:machine];
-    free(machine);
+    struct utsname systemInfo;
+    uname(&systemInfo);
 
-    OWSLogInfo(@"iPhone Version: %@", platform);
+    OWSLogInfo(@"Device Model: %@ (%@)",
+        UIDevice.currentDevice.model,
+        [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding]);
+
+    NSDictionary<NSString *, NSString *> *buildDetails =
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
+    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
+    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
+    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
+    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
+    OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
+    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -1107,6 +1114,7 @@ static NSTimeInterval launchStartedAt;
     // If there were any messages in our local queue which we hadn't yet processed.
     [SSKEnvironment.shared.messageReceiver handleAnyUnprocessedEnvelopesAsync];
     [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
+    [Environment.shared.audioSession setup];
 
     [SSKEnvironment.shared.reachabilityManager setup];
     [SSKEnvironment.shared.messageSenderJobQueue setup];

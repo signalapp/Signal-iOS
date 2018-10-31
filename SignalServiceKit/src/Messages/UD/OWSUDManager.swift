@@ -20,13 +20,47 @@ public enum UnidentifiedAccessMode: Int {
     case unrestricted
 }
 
+private func string(forUnidentifiedAccessMode mode: UnidentifiedAccessMode) -> String {
+    switch mode {
+    case .unknown:
+        return "unknown"
+    case .enabled:
+        return "enabled"
+    case .disabled:
+        return "disabled"
+    case .unrestricted:
+        return "unrestricted"
+    }
+}
+
+@objc
+public class OWSUDAccess: NSObject {
+    @objc
+    public let udAccessKey: SMKUDAccessKey
+
+    @objc
+    public let udAccessMode: UnidentifiedAccessMode
+
+    @objc
+    public let isRandomKey: Bool
+
+    @objc
+    public required init(udAccessKey: SMKUDAccessKey,
+                         udAccessMode: UnidentifiedAccessMode,
+                         isRandomKey: Bool) {
+        self.udAccessKey = udAccessKey
+        self.udAccessMode = udAccessMode
+        self.isRandomKey = isRandomKey
+    }
+}
+
 @objc public protocol OWSUDManager: class {
 
     @objc func setup()
 
     @objc func trustRoot() -> ECPublicKey
 
-    @objc func isUDEnabled() -> Bool
+    @objc func isUDVerboseLoggingEnabled() -> Bool
 
     // MARK: - Recipient State
 
@@ -34,33 +68,29 @@ public enum UnidentifiedAccessMode: Int {
     func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String)
 
     @objc
-    func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair?
+    func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier) -> UnidentifiedAccessMode
 
-    // Returns the UD access key for a given recipient if:
-    //
-    // * UD is enabled.
-    // * Their UD mode is enabled or unrestricted.
-    // * We have a valid profile key for them.
-    @objc func enabledUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey?
+    @objc
+    func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey?
 
-    // Returns the UD access key for a given recipient if:
-    //
-    // * We have a valid profile key for them.
-    @objc func rawUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey?
-
-    // MARK: - Local State
+    @objc
+    func udAccess(forRecipientId recipientId: RecipientIdentifier,
+                  requireSyncAccess: Bool) -> OWSUDAccess?
 
     // MARK: Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
     // logic can access the strongly typed certificate data.
-    @objc func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
-                                            failure:@escaping (Error) -> Void)
+    @objc
+    func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
+                                 failure:@escaping (Error) -> Void)
 
     // MARK: Unrestricted Access
 
-    @objc func shouldAllowUnrestrictedAccessLocal() -> Bool
-    @objc func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
+    @objc
+    func shouldAllowUnrestrictedAccessLocal() -> Bool
+    @objc
+    func setShouldAllowUnrestrictedAccessLocal(_ value: Bool)
 }
 
 // MARK: -
@@ -96,6 +126,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             guard TSAccountManager.isRegistered() else {
                 return
             }
+
+            // Any error is silently ignored on startup.
             self.ensureSenderCertificate().retainUntilComplete()
         }
         NotificationCenter.default.addObserver(self,
@@ -108,7 +140,15 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
+        // Any error is silently ignored
         ensureSenderCertificate().retainUntilComplete()
+    }
+
+    // MARK: -
+
+    @objc
+    public func isUDVerboseLoggingEnabled() -> Bool {
+        return true
     }
 
     // MARK: - Dependencies
@@ -124,81 +164,63 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // MARK: - Recipient state
 
     @objc
-    public func getAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccessPair? {
-        let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
-        guard theirAccessMode == .enabled || theirAccessMode == .unrestricted else {
-            return nil
-        }
-
-        guard let theirAccessKey = enabledUDAccessKeyForRecipient(recipientId) else {
-            return nil
-        }
-
-        guard let ourSenderCertificate = senderCertificate() else {
-            return nil
-        }
-
-        guard let ourAccessKey: SMKUDAccessKey = {
-            if shouldAllowUnrestrictedAccessLocal() {
-                return SMKUDAccessKey(randomKeyData: ())
-            } else {
-                guard let localNumber = tsAccountManager.localNumber() else {
-                    owsFailDebug("localNumber was unexpectedly nil")
-                    return nil
-                }
-
-                return enabledUDAccessKeyForRecipient(localNumber)
-            }
-        }() else {
-            return nil
-        }
-
-        let targetUnidentifiedAccess = SSKUnidentifiedAccess(accessKey: theirAccessKey, senderCertificate: ourSenderCertificate)
-        let selfUnidentifiedAccess = SSKUnidentifiedAccess(accessKey: ourAccessKey, senderCertificate: ourSenderCertificate)
-        return SSKUnidentifiedAccessPair(targetUnidentifiedAccess: targetUnidentifiedAccess,
-                                         selfUnidentifiedAccess: selfUnidentifiedAccess)
+    public func randomUDAccessKey() -> SMKUDAccessKey {
+        return SMKUDAccessKey(randomKeyData: ())
     }
 
-    @objc
-    func unidentifiedAccessMode(recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
-        guard let existingRawValue = dbConnection.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
-            return .unknown
+    private func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier,
+                                        isLocalNumber: Bool,
+                                        transaction: YapDatabaseReadTransaction) -> UnidentifiedAccessMode {
+        let defaultValue: UnidentifiedAccessMode =  isLocalNumber ? .enabled : .unknown
+        guard let existingRawValue = transaction.object(forKey: recipientId, inCollection: kUnidentifiedAccessCollection) as? Int else {
+            return defaultValue
         }
         guard let existingValue = UnidentifiedAccessMode(rawValue: existingRawValue) else {
-            return .unknown
+            owsFailDebug("Couldn't parse mode value.")
+            return defaultValue
         }
         return existingValue
     }
 
     @objc
+    public func unidentifiedAccessMode(forRecipientId recipientId: RecipientIdentifier) -> UnidentifiedAccessMode {
+        var isLocalNumber = false
+        if let localNumber = tsAccountManager.localNumber() {
+            isLocalNumber = recipientId == localNumber
+        }
+
+        var mode: UnidentifiedAccessMode = .unknown
+        dbConnection.read { (transaction) in
+            mode = self.unidentifiedAccessMode(forRecipientId: recipientId, isLocalNumber: isLocalNumber, transaction: transaction)
+        }
+        return mode
+    }
+
+    @objc
     public func setUnidentifiedAccessMode(_ mode: UnidentifiedAccessMode, recipientId: String) {
+        var isLocalNumber = false
         if let localNumber = tsAccountManager.localNumber() {
             if recipientId == localNumber {
-                Logger.info("Setting local UD access mode: \(mode.rawValue)")
+                Logger.info("Setting local UD access mode: \(string(forUnidentifiedAccessMode: mode))")
+                isLocalNumber = true
             }
         }
 
-        dbConnection.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: kUnidentifiedAccessCollection)
+        dbConnection.readWrite { (transaction) in
+            let oldMode = self.unidentifiedAccessMode(forRecipientId: recipientId, isLocalNumber: isLocalNumber, transaction: transaction)
+
+            transaction.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: self.kUnidentifiedAccessCollection)
+
+            if mode != oldMode {
+                Logger.info("Setting UD access mode for \(recipientId): \(string(forUnidentifiedAccessMode: oldMode)) ->  \(string(forUnidentifiedAccessMode: mode))")
+            }
+        }
     }
 
     // Returns the UD access key for a given recipient
     // if we have a valid profile key for them.
     @objc
-    public func enabledUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
-        guard isUDEnabled() else {
-            return nil
-        }
-        let theirAccessMode = unidentifiedAccessMode(recipientId: recipientId)
-        if theirAccessMode == .unrestricted {
-            return SMKUDAccessKey(randomKeyData: ())
-        }
-        return rawUDAccessKeyForRecipient(recipientId)
-    }
-
-    // Returns the UD access key for a given recipient
-    // if we have a valid profile key for them.
-    @objc
-    public func rawUDAccessKeyForRecipient(_ recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
+    public func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
         guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
             // Mark as "not a UD recipient".
             return nil
@@ -208,6 +230,73 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return udAccessKey
         } catch {
             Logger.error("Could not determine udAccessKey: \(error)")
+            return nil
+        }
+    }
+
+    // Returns the UD access key for sending to a given recipient.
+    @objc
+    public func udAccess(forRecipientId recipientId: RecipientIdentifier,
+                         requireSyncAccess: Bool) -> OWSUDAccess? {
+        if requireSyncAccess {
+            guard let localNumber = tsAccountManager.localNumber() else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD disabled for \(recipientId), no local number.")
+                }
+                owsFailDebug("Missing local number.")
+                return nil
+            }
+            if localNumber != recipientId {
+                let selfAccessMode = unidentifiedAccessMode(forRecipientId: localNumber)
+                guard selfAccessMode != .disabled else {
+                    if isUDVerboseLoggingEnabled() {
+                        Logger.info("UD disabled for \(recipientId), UD disabled for sync messages.")
+                    }
+                    return nil
+                }
+            }
+        }
+
+        let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
+        switch accessMode {
+        case .unrestricted:
+            // Unrestricted users should use a random key.
+            if isUDVerboseLoggingEnabled() {
+                Logger.info("UD enabled for \(recipientId) with random key.")
+            }
+            let udAccessKey = randomUDAccessKey()
+            return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
+        case .unknown:
+            // Unknown users should use a derived key if possible,
+            // and otherwise use a random key.
+            if let udAccessKey = udAccessKey(forRecipientId: recipientId) {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD unknown for \(recipientId); trying derived key.")
+                }
+                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
+            } else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD unknown for \(recipientId); trying random key.")
+                }
+                let udAccessKey = randomUDAccessKey()
+                return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: true)
+            }
+        case .enabled:
+            guard let udAccessKey = udAccessKey(forRecipientId: recipientId) else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD disabled for \(recipientId), no profile key for this recipient.")
+                }
+                owsFailDebug("Couldn't find profile key for UD-enabled user.")
+                return nil
+            }
+            if isUDVerboseLoggingEnabled() {
+                Logger.info("UD enabled for \(recipientId).")
+            }
+            return OWSUDAccess(udAccessKey: udAccessKey, udAccessMode: accessMode, isRandomKey: false)
+        case .disabled:
+            if isUDVerboseLoggingEnabled() {
+                Logger.info("UD disabled for \(recipientId), UD not enabled for this recipient.")
+            }
             return nil
         }
     }
@@ -250,8 +339,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc
-    public func ensureSenderCertificateObjC(success:@escaping (SMKSenderCertificate) -> Void,
-                                            failure:@escaping (Error) -> Void) {
+    public func ensureSenderCertificate(success:@escaping (SMKSenderCertificate) -> Void,
+                                        failure:@escaping (Error) -> Void) {
         firstly {
             ensureSenderCertificate()
         }.map { certificate in
@@ -301,23 +390,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let anHourFromNowMs = nowMs + kHourInMs
 
         do {
-            try certificateValidator.validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
+            try certificateValidator.throwswrapped_validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
             return true
         } catch {
             OWSLogger.error("Invalid certificate")
             return false
         }
-    }
-
-    @objc
-    public func isUDEnabled() -> Bool {
-        // Only enable UD if UD is supported by all linked devices,
-        // so that sync messages can also be sent via UD.
-        guard let localNumber = tsAccountManager.localNumber() else {
-            return false
-        }
-        let ourAccessMode = unidentifiedAccessMode(recipientId: localNumber)
-        return ourAccessMode == .enabled || ourAccessMode == .unrestricted
     }
 
     @objc

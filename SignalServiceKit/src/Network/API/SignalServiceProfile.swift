@@ -32,8 +32,15 @@ public class SignalServiceProfile: NSObject {
         guard identityKeyWithType.count == kIdentityKeyLength else {
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }
-        // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
-        self.identityKey = (identityKeyWithType as NSData).removeKeyType() as Data
+        do {
+            // `removeKeyType` is an objc category method only on NSData, so temporarily cast.
+            self.identityKey = try (identityKeyWithType as NSData).removeKeyType() as Data
+        } catch {
+            // `removeKeyType` throws an SCKExceptionWrapperError, which, typically should
+            // be unwrapped by any objc code calling this method.
+            owsFailDebug("identify key had unexpected format")
+            throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with data: \(identityKeyWithType)")
+        }
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
 

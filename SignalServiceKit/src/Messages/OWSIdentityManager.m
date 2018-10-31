@@ -682,8 +682,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     [transaction removeObjectForKey:recipientId inCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
 }
 
-- (void)processIncomingSyncMessage:(SSKProtoVerified *)verified
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified
+                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(verified);
     OWSAssertDebug(transaction);
@@ -700,7 +700,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             rawIdentityKey);
         return;
     }
-    NSData *identityKey = [rawIdentityKey removeKeyType];
+    NSData *identityKey = [rawIdentityKey throws_removeKeyType];
 
     switch (verified.state) {
         case SSKProtoVerifiedStateDefault:

@@ -32,7 +32,10 @@ public class OWSMessageSend: NSObject {
     public var hasWebsocketSendFailed = false
 
     @objc
-    public var unidentifiedAccess: SSKUnidentifiedAccess?
+    public var udAccess: OWSUDAccess?
+
+    @objc
+    public var senderCertificate: SMKSenderCertificate?
 
     @objc
     public let localNumber: String
@@ -51,7 +54,7 @@ public class OWSMessageSend: NSObject {
                 thread: TSThread?,
                 recipient: SignalRecipient,
                 senderCertificate: SMKSenderCertificate?,
-                udManager: OWSUDManager,
+                udAccess: OWSUDAccess?,
                 localNumber: String,
                 success: @escaping () -> Void,
                 failure: @escaping (Error) -> Void) {
@@ -59,14 +62,14 @@ public class OWSMessageSend: NSObject {
         self.thread = thread
         self.recipient = recipient
         self.localNumber = localNumber
+        self.senderCertificate = senderCertificate
+        self.udAccess = udAccess
 
         if let recipientId = recipient.uniqueId {
-            self.unidentifiedAccess = udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
             self.isLocalNumber = localNumber == recipientId
         } else {
             owsFailDebug("SignalRecipient missing recipientId")
             self.isLocalNumber = false
-            self.unidentifiedAccess = nil
         }
 
         self.success = success
@@ -75,16 +78,18 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var isUDSend: Bool {
-        return self.unidentifiedAccess != nil
+        return udAccess != nil && senderCertificate != nil
     }
 
     @objc
     public func disableUD() {
-        unidentifiedAccess = nil
+        Logger.verbose("\(recipient.recipientId)")
+        udAccess = nil
     }
 
     @objc
     public func setHasUDAuthFailed() {
+        Logger.verbose("\(recipient.recipientId)")
         // We "fail over" to non-UD sends after auth errors sending via UD.
         disableUD()
     }

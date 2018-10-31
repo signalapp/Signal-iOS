@@ -2,6 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BuildDetails</key>
+	<dict>
+		<key>CarthageVersion</key>
+		<string>0.31.1</string>
+		<key>CocoapodsVersion</key>
+		<string>1.5.3</string>
+		<key>OSXVersion</key>
+		<string>10.13.6</string>
+		<key>WebRTCCommit</key>
+		<string>ca71024b4993ba95e3e6b8d0758004cffc54ddaf M70</string>
+	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -38,7 +49,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.31.0.11</string>
+	<string>2.31.0.25</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>

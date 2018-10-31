@@ -83,17 +83,20 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSOutgoingReceiptManager *outgoingReceiptManager =
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
-
         OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
+        OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
+        id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-
-        [Environment setShared:[[Environment alloc] initWithPreferences:preferences
-                                                                 sounds:sounds
-                                              lockInteractionController:lockInteractionController
-                                                          windowManager:windowManager]];
+        
+        [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
+                                               lockInteractionController:lockInteractionController
+                                                             preferences:preferences
+                                              proximityMonitoringManager:proximityMonitoringManager
+                                                                  sounds:sounds
+                                                           windowManager:windowManager]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                     messageSender:messageSender

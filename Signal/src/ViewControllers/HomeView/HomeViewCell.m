@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *unreadLabel;
 
 @property (nonatomic, nullable) ThreadViewModel *thread;
-@property (nonatomic, nullable) OWSContactsManager *contactsManager;
 
 @property (nonatomic, readonly) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
@@ -36,6 +35,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation HomeViewCell
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    OWSAssertDebug(Environment.shared.contactsManager);
+
+    return Environment.shared.contactsManager;
+}
+
+#pragma mark -
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
 {
@@ -167,30 +177,25 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
-            contactsManager:(OWSContactsManager *)contactsManager
                   isBlocked:(BOOL)isBlocked
 {
     [self configureWithThread:thread
-              contactsManager:contactsManager
                     isBlocked:isBlocked
               overrideSnippet:nil
                  overrideDate:nil];
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
-            contactsManager:(OWSContactsManager *)contactsManager
                   isBlocked:(BOOL)isBlocked
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
                overrideDate:(nullable NSDate *)overrideDate
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
-    OWSAssertDebug(contactsManager);
 
     [OWSTableItem configureCell:self];
 
     self.thread = thread;
-    self.contactsManager = contactsManager;
 
     BOOL hasUnreadMessages = thread.hasUnreadMessages;
 
@@ -321,13 +326,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAvatarView
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contactsManager should not be nil");
-        self.avatarView.image = nil;
-        return;
-    }
-
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {
         OWSFailDebug(@"thread should not be nil");
@@ -444,7 +442,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.viewConstraints removeAllObjects];
 
     self.thread = nil;
-    self.contactsManager = nil;
     self.avatarView.image = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -487,13 +484,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSContactsManager *contactsManager = self.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contacts manager should not be nil");
-        self.nameLabel.attributedText = nil;
-        return;
-    }
-
     NSAttributedString *name;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
@@ -502,9 +492,9 @@ NS_ASSUME_NONNULL_BEGIN
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }
     } else {
-        name = [contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-                                                                     primaryFont:self.nameFont
-                                                                   secondaryFont:self.nameSecondaryFont];
+        name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
+                                                                          primaryFont:self.nameFont
+                                                                        secondaryFont:self.nameSecondaryFont];
     }
 
     self.nameLabel.attributedText = name;

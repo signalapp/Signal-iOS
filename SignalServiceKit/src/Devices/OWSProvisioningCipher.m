@@ -54,11 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)encrypt:(NSData *)dataToEncrypt
 {
     @try {
-        // Exceptions can be thrown in a number of places in encryptUnsafe, e.g.:
-        //
-        // * Curve25519's generateSharedSecretFromPublicKey.
-        // * [HKDFKit deriveKey].
-        return [self encryptUnsafe:dataToEncrypt];
+        return [self throws_encryptWithData:dataToEncrypt];
     } @catch (NSException *exception) {
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
             exception.description,
@@ -69,14 +65,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable NSData *)encryptUnsafe:(NSData *)dataToEncrypt
+- (nullable NSData *)throws_encryptWithData:(NSData *)dataToEncrypt
 {
     NSData *sharedSecret =
-        [Curve25519 generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
+        [Curve25519 throws_generateSharedSecretFromPublicKey:self.theirPublicKey andKeyPair:self.ourKeyPair];
 
     NSData *infoData = [@"TextSecure Provisioning Message" dataUsingEncoding:NSASCIIStringEncoding];
     NSData *nullSalt = [[NSMutableData dataWithLength:32] copy];
-    NSData *derivedSecret = [HKDFKit deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
+    NSData *derivedSecret = [HKDFKit throws_deriveKey:sharedSecret info:infoData salt:nullSalt outputSize:64];
     NSData *cipherKey = [derivedSecret subdataWithRange:NSMakeRange(0, 32)];
     NSData *macKey = [derivedSecret subdataWithRange:NSMakeRange(32, 32)];
     if (cipherKey.length != 32) {

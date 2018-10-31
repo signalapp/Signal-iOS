@@ -13,8 +13,13 @@ import SignalMessaging
 class CallViewController: OWSViewController, CallObserver, CallServiceObserver, CallAudioServiceDelegate {
 
     // Dependencies
+
     var callUIAdapter: CallUIAdapter {
         return AppEnvironment.shared.callService.callUIAdapter
+    }
+
+    var proximityMonitoringManager: OWSProximityMonitoringManager {
+        return Environment.shared.proximityMonitoringManager
     }
 
     // Feature Flag
@@ -152,6 +157,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        self.proximityMonitoringManager.remove(lifetime: self)
     }
 
     @objc func didBecomeActive() {
@@ -165,15 +171,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        UIDevice.current.isProximityMonitoringEnabled = false
-
         callDurationTimer?.invalidate()
         callDurationTimer = nil
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        UIDevice.current.isProximityMonitoringEnabled = true
+        self.proximityMonitoringManager.add(lifetime: self)
+
         updateCallUI(callState: call.state)
 
         self.becomeFirstResponder()

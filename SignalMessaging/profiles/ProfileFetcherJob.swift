@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 import SignalServiceKit
+import SignalMetadataKit
 
 @objc
 public class ProfileFetcherJob: NSObject {
@@ -134,16 +135,28 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        let unidentifiedAccess: SSKUnidentifiedAccess? = self.getUnidentifiedAccess(forRecipientId: recipientId)
-        let requestMaker = RequestMaker(requestFactoryBlock: { (unidentifiedAccessForRequest) -> TSRequest in
-            return OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccessForRequest)
+        let udAccess = udManager.udAccess(forRecipientId: recipientId,
+            requireSyncAccess: false)
+        return requestProfile(recipientId: recipientId,
+                              udAccess: udAccess,
+                              canFailoverUDAuth: true)
+    }
+
+    private func requestProfile(recipientId: String,
+                                udAccess: OWSUDAccess?,
+                                canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
+        AssertIsOnMainThread()
+
+        let requestMaker = RequestMaker(label: "Profile Fetch",
+                                        requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
+            return OWSRequestFactory.getProfileRequest(recipientId: recipientId, udAccessKey: udAccessKeyForRequest)
         }, udAuthFailureBlock: {
             // Do nothing
         }, websocketFailureBlock: {
             // Do nothing
         }, recipientId: recipientId,
-           unidentifiedAccess: unidentifiedAccess,
-           canFailoverUDAuth: true)
+           udAccess: udAccess,
+           canFailoverUDAuth: canFailoverUDAuth)
         return requestMaker.makeRequest()
             .map { (result: RequestMakerResult) -> SignalServiceProfile in
                 try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
@@ -158,7 +171,9 @@ public class ProfileFetcherJob: NSObject {
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
-        updateUnidentifiedAccess(recipientId: recipientId, verifier: signalServiceProfile.unidentifiedAccessVerifier, hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
+        updateUnidentifiedAccess(recipientId: recipientId,
+                                 verifier: signalServiceProfile.unidentifiedAccessVerifier,
+                                 hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
     }
 
     private func updateUnidentifiedAccess(recipientId: String, verifier: Data?, hasUnrestrictedAccess: Bool) {
@@ -174,19 +189,19 @@ public class ProfileFetcherJob: NSObject {
             return
         }
 
-        guard let udAccessKey = udManager.rawUDAccessKeyForRecipient(recipientId) else {
+        guard let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId) else {
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }
 
         let dataToVerify = Data(count: 32)
-        guard let expectedVerfier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
+        guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
             owsFailDebug("could not compute verification")
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
         }
 
-        guard expectedVerfier == verifier else {
+        guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
             Logger.verbose("verifier mismatch, new profile key?")
             udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
             return
@@ -204,9 +219,5 @@ public class ProfileFetcherJob: NSObject {
                 // no change in identity.
             }
         }
-    }
-
-    private func getUnidentifiedAccess(forRecipientId recipientId: RecipientIdentifier) -> SSKUnidentifiedAccess? {
-        return self.udManager.getAccess(forRecipientId: recipientId)?.targetUnidentifiedAccess
     }
 }

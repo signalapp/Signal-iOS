@@ -76,7 +76,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (BOOL)isSystemContact:(NSString *)recipientId;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
 - (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId;
-- (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /**

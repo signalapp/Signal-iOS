@@ -26,7 +26,11 @@ NSString *const OWSQueryItemNameEncodedPublicKeyKey = @"pub_key";
             _ephemeralDeviceId = queryItem.value;
         } else if ([queryItem.name isEqualToString:OWSQueryItemNameEncodedPublicKeyKey]) {
             NSString *encodedPublicKey = queryItem.value;
-            _publicKey = [[NSData dataFromBase64String:encodedPublicKey] removeKeyType];
+            @try {
+                _publicKey = [[NSData dataFromBase64String:encodedPublicKey] throws_removeKeyType];
+            } @catch (NSException *exception) {
+                OWSFailDebug(@"exception: %@", exception);
+            }
         } else {
             OWSLogWarn(@"Unkown query item in provisioning string: %@", queryItem.name);
         }

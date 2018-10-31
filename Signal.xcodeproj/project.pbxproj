@@ -441,6 +441,7 @@
 		4CA5F793211E1F06008C2708 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA5F792211E1F06008C2708 /* Toast.swift */; };
 		4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
+		4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */; };
 		4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */; };
 		4CC1ECF9211A47CE00CC13BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */; };
@@ -1127,6 +1128,7 @@
 		4C9CA25C217E676900607C63 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = ThirdParty/Carthage/Build/iOS/ZXingObjC.framework; sourceTree = "<group>"; };
 		4CA5F792211E1F06008C2708 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		4CB5F26820F7D060004D1B42 /* MessageActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActions.swift; sourceTree = "<group>"; };
+		4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProximityMonitoringManager.swift; sourceTree = "<group>"; };
 		4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationConfigurationSyncOperation.swift; sourceTree = "<group>"; };
 		4CC1ECF8211A47CD00CC13BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateNag.swift; sourceTree = "<group>"; };
@@ -1520,6 +1522,7 @@
 				45F170D51E315310003FC1F2 /* Weak.swift */,
 				4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */,
 				4C948FF62146EB4800349F0D /* BlockListCache.swift */,
+				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -2599,6 +2602,7 @@
 				45AE48531E073428004D96C2 /* Swift Lint */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
+				34C239432180B01B00B6108F /* ShellScript */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
@@ -2926,6 +2930,19 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		34C239432180B01B00B6108F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Capture hash & comment from last WebRTC git commit.\ncd $PROJECT_DIR/ThirdParty/WebRTC/\n_git_commit=`git log --pretty=oneline | head -1`\ncd $PROJECT_DIR\n\n# Remove existing .plist entry, if any.\n/usr/libexec/PlistBuddy -c \"Delete BuildDetails\" Signal/Signal-Info.plist || true\n# Add new .plist entry.\n/usr/libexec/PlistBuddy -c \"add BuildDetails dict\" Signal/Signal-Info.plist\n\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:WebRTCCommit string '$_git_commit'\" Signal/Signal-Info.plist\n\n_osx_version=`defaults read loginwindow SystemVersionStampAsString`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:OSXVersion string '$_osx_version'\" Signal/Signal-Info.plist\n\n_cocoapods_version=`pod --version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CocoapodsVersion string '$_cocoapods_version'\" Signal/Signal-Info.plist\n\n_carthage_version=`carthage version`\n/usr/libexec/PlistBuddy -c \"add :BuildDetails:CarthageVersion string '$_carthage_version'\" Signal/Signal-Info.plist\n\necho \"CONFIGURATION: ${CONFIGURATION}\"\nif [ \"${CONFIGURATION}\" = \"App Store Release\" ]; then\n    /usr/libexec/PlistBuddy -c \"add :BuildDetails:XCodeVersion string '${XCODE_VERSION_MAJOR}.${XCODE_VERSION_MINOR}'\" Signal/Signal-Info.plist\n\n    # Use UTC\n    _build_datetime=`date -u`\n    /usr/libexec/PlistBuddy -c \"add :BuildDetails:DateTime string '$_build_datetime'\" Signal/Signal-Info.plist\nfi\n";
+		};
 		451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2948,8 +2965,8 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
+				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
+				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
@@ -3143,6 +3160,7 @@
 			files = (
 				45F59A0A2029140500E8D2B0 /* OWSVideoPlayer.swift in Sources */,
 				45194F951FD7216600333B2C /* TSUnreadIndicatorInteraction.m in Sources */,
+				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				34AC09E1211B39B100997B47 /* SelectThreadViewController.m in Sources */,
 				34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */,
 				346941A2215D2EE400B5BFAD /* OWSConversationColor.m in Sources */,

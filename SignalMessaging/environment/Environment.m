@@ -11,10 +11,12 @@ static Environment *sharedEnvironment = nil;
 
 @interface Environment ()
 
+@property (nonatomic) OWSAudioSession *audioSession;
 @property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) OWSPreferences *preferences;
-@property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) LockInteractionController *lockInteractionController;
+@property (nonatomic) OWSPreferences *preferences;
+@property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
+@property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) OWSWindowManager *windowManager;
 
 @end
@@ -47,23 +49,30 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = nil;
 }
 
-- (instancetype)initWithPreferences:(OWSPreferences *)preferences
-                             sounds:(OWSSounds *)sounds
-          lockInteractionController:(LockInteractionController *)lockInteractionController
-                      windowManager:(OWSWindowManager *)windowManager {
+- (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
+           lockInteractionController:(LockInteractionController *)lockInteractionController
+                         preferences:(OWSPreferences *)preferences
+          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                              sounds:(OWSSounds *)sounds
+                       windowManager:(OWSWindowManager *)windowManager
+{
     self = [super init];
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(preferences);
-    OWSAssertDebug(sounds);
+    OWSAssertDebug(audioSession);
     OWSAssertDebug(lockInteractionController);
+    OWSAssertDebug(preferences);
+    OWSAssertDebug(proximityMonitoringManager);
+    OWSAssertDebug(sounds);
     OWSAssertDebug(windowManager);
 
-    _preferences = preferences;
-    _sounds = sounds;
+    _audioSession = audioSession;
     _lockInteractionController = lockInteractionController;
+    _preferences = preferences;
+    _proximityMonitoringManager = proximityMonitoringManager;
+    _sounds = sounds;
     _windowManager = windowManager;
 
     OWSSingletonAssert();

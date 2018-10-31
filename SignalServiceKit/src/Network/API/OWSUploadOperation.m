@@ -168,7 +168,10 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                 return;
             }
 
-            OWSLogInfo(@"Uploaded attachment: %p.", attachmentStream.uniqueId);
+            OWSLogInfo(@"Uploaded attachment: %p serverId: %llu, byteCount: %u",
+                attachmentStream.uniqueId,
+                attachmentStream.serverId,
+                attachmentStream.byteCount);
             attachmentStream.serverId = serverId;
             attachmentStream.isUploaded = YES;
             [attachmentStream saveAsyncWithCompletionBlock:^{

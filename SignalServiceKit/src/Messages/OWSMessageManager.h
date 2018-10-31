@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 // processEnvelope: can be called from any thread.
-- (void)processEnvelope:(SSKProtoEnvelope *)envelope
-          plaintextData:(NSData *_Nullable)plaintextData
-            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
+                 plaintextData:(NSData *_Nullable)plaintextData
+                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This should be invoked by the main app when the app is ready.
 - (void)startObserving;

@@ -199,7 +199,8 @@ void AssertIsOnDisappearingMessagesQueue()
     NSString *remoteContactName = nil;
     if ([message isKindOfClass:[TSIncomingMessage class]]) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        remoteContactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
+        remoteContactName =
+            [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId transaction:transaction];
     }
 
     [self becomeConsistentWithDisappearingDuration:message.expiresInSeconds

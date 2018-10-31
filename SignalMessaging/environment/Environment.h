@@ -5,10 +5,13 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 
 @class LockInteractionController;
+@class OWSAudioSession;
 @class OWSContactsManager;
 @class OWSPreferences;
 @class OWSSounds;
 @class OWSWindowManager;
+
+@protocol OWSProximityMonitoringManager;
 
 /**
  *
@@ -17,20 +20,24 @@
  * It also handles network configuration for testing/deployment server configurations.
  *
  **/
-// TODO: Rename to AppEnvironment?
+// TODO: Rename to SMGEnvironment?
 @interface Environment : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPreferences:(OWSPreferences *)preferences
-                             sounds:(OWSSounds *)sounds
-          lockInteractionController:(LockInteractionController *)lockInteractionController
-                      windowManager:(OWSWindowManager *)windowManager;
+- (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
+           lockInteractionController:(LockInteractionController *)lockInteractionController
+                         preferences:(OWSPreferences *)preferences
+          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                              sounds:(OWSSounds *)sounds
+                       windowManager:(OWSWindowManager *)windowManager;
 
+@property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) LockInteractionController *lockInteractionController;
+@property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
 @property (nonatomic, readonly) OWSSounds *sounds;
-@property (nonatomic, readonly) LockInteractionController *lockInteractionController;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;
 
 @property (class, nonatomic) Environment *shared;

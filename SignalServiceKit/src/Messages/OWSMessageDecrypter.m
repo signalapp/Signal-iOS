@@ -26,6 +26,7 @@
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -211,7 +212,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         switch (envelope.type) {
             case SSKProtoEnvelopeTypeCiphertext: {
-                [self decryptSecureMessage:envelope
+                [self throws_decryptSecureMessage:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
                         OWSLogDebug(@"decrypted secure message.");
@@ -228,7 +229,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
             case SSKProtoEnvelopeTypePrekeyBundle: {
-                [self decryptPreKeyBundle:envelope
+                [self throws_decryptPreKeyBundle:envelope
                     envelopeData:envelopeData
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
                         OWSLogDebug(@"decrypted pre-key whisper message");
@@ -297,10 +298,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     failureBlock();
 }
 
-- (void)decryptSecureMessage:(SSKProtoEnvelope *)envelope
-                envelopeData:(NSData *)envelopeData
-                successBlock:(DecryptSuccessBlock)successBlock
-                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)throws_decryptSecureMessage:(SSKProtoEnvelope *)envelope
+                       envelopeData:(NSData *)envelopeData
+                       successBlock:(DecryptSuccessBlock)successBlock
+                       failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
@@ -311,16 +312,16 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               envelopeData:envelopeData
             cipherTypeName:@"Secure Message"
         cipherMessageBlock:^(NSData *encryptedData) {
-            return [[WhisperMessage alloc] initWithData:encryptedData];
+            return [[WhisperMessage alloc] init_throws_withData:encryptedData];
         }
               successBlock:successBlock
               failureBlock:failureBlock];
 }
 
-- (void)decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
-               envelopeData:(NSData *)envelopeData
-               successBlock:(DecryptSuccessBlock)successBlock
-               failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+- (void)throws_decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
+                      envelopeData:(NSData *)envelopeData
+                      successBlock:(DecryptSuccessBlock)successBlock
+                      failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
     OWSAssertDebug(envelope);
     OWSAssertDebug(envelopeData);
@@ -334,7 +335,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
               envelopeData:envelopeData
             cipherTypeName:@"PreKey Bundle"
         cipherMessageBlock:^(NSData *encryptedData) {
-            return [[PreKeyWhisperMessage alloc] initWithData:encryptedData];
+            return [[PreKeyWhisperMessage alloc] init_throws_withData:encryptedData];
         }
               successBlock:successBlock
               failureBlock:failureBlock];
@@ -378,7 +379,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 // plaintextData may be nil for some envelope types.
                 NSData *_Nullable plaintextData =
-                    [[cipher decrypt:cipherMessage protocolContext:transaction] removePadding];
+                    [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
                                                                                            source:envelope.source
@@ -405,9 +406,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(envelope);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
-
-    // Check whether we need to refresh our PreKeys every time we receive a Unidentified Sender Message.
-    [TSPreKeyManager checkPreKeys];
 
     // NOTE: We don't need to bother with `legacyMessage` for UD messages.
     NSData *encryptedData = envelope.content;
@@ -451,13 +449,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             }
 
             SMKDecryptResult *_Nullable decryptResult =
-                [cipher decryptMessageWithCertificateValidator:certificateValidator
-                                                cipherTextData:encryptedData
-                                                     timestamp:serverTimestamp
-                                              localRecipientId:localRecipientId
-                                                 localDeviceId:localDeviceId
-                                               protocolContext:transaction
-                                                         error:&error];
+                [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
+                                                              cipherTextData:encryptedData
+                                                                   timestamp:serverTimestamp
+                                                            localRecipientId:localRecipientId
+                                                               localDeviceId:localDeviceId
+                                                             protocolContext:transaction
+                                                                       error:&error];
+            SCKRaiseIfExceptionWrapperError(error);
+
             if (error || !decryptResult) {
                 if ([error.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
                     && error.code == SMKSecretSessionCipherErrorSelfSentMessage) {
@@ -468,6 +468,10 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 OWSFailDebug(@"Could not decrypt UD message: %@", error);
                 error = EnsureDecryptError(error, @"Could not decrypt UD message");
                 return failureBlock(error);
+            }
+
+            if (decryptResult.messageType == SMKMessageTypePrekey) {
+                [TSPreKeyManager checkPreKeys];
             }
 
             NSString *source = decryptResult.senderRecipientId;

@@ -152,13 +152,11 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
         NSError *error;
         NSData *certData = [self certificateDataWithName:certName error:&error];
         if (error) {
-            OWSLogError(@"reading data for certificate: %@ failed with error: %@", certName, error);
-            OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
+            OWSFail(@"reading data for certificate: %@ failed with error: %@", certName, error);
         }
 
         if (!certData) {
-            OWSLogError(@"No data for certificate: %@", certName);
-            OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
+            OWSFail(@"reading data for certificate: %@ failed with error: %@", certName, error);
         }
         [certificates addObject:certData];
     }

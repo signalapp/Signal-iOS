@@ -19,7 +19,6 @@ public protocol SignalServiceClient: SignalServiceClientObjC {
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate() -> Promise<Data>
     func updateAccountAttributes() -> Promise<Void>
-    func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -91,28 +90,5 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     public func updateAccountAttributes() -> Promise<Void> {
         let request = OWSRequestFactory.updateAttributesRequest()
         return networkManager.makePromise(request: request).asVoid()
-    }
-
-    public func retrieveProfile(recipientId: RecipientIdentifier, unidentifiedAccess: SSKUnidentifiedAccess?) -> Promise<SignalServiceProfile> {
-        let request = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: unidentifiedAccess)
-        return networkManager.makePromise(request: request)
-            .recover { (error: Error) -> Promise<(task: URLSessionDataTask, responseObject: Any?)> in
-                switch error {
-                case NetworkManagerError.taskError(let task, _):
-                    let statusCode = task.statusCode()
-                    if unidentifiedAccess != nil && (statusCode == 401 || statusCode == 403) {
-                        Logger.verbose("REST profile request failing over to non-UD auth.")
-
-                        self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
-
-                        let nonUDRequest = OWSRequestFactory.getProfileRequest(recipientId: recipientId, unidentifiedAccess: nil)
-                        return self.networkManager.makePromise(request: nonUDRequest)
-                    }
-                    default: break
-                }
-                throw error
-        }.map { _, responseObject in
-            return try SignalServiceProfile(recipientId: recipientId, responseObject: responseObject)
-        }
     }
 }

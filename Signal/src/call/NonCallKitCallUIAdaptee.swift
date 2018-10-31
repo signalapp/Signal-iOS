@@ -26,13 +26,22 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         super.init()
     }
 
+    // MARK: Dependencies
+
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
+    }
+
+    // MARK: 
+
     func startOutgoingCall(handle: String) -> SignalCall {
         AssertIsOnMainThread()
 
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
         // make sure we don't terminate audio session during call
-        OWSAudioSession.shared.startAudioActivity(call.audioActivity)
+        let success = self.audioSession.startAudioActivity(call.audioActivity)
+        assert(success)
 
         self.callService.handleOutgoingCall(call).retainUntilComplete()
 
@@ -84,7 +93,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        OWSAudioSession.shared.isRTCAudioEnabled = true
+        self.audioSession.isRTCAudioEnabled = true
         self.callService.handleAnswerCall(call)
     }
 
@@ -118,7 +127,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        OWSAudioSession.shared.isRTCAudioEnabled = true
+        self.audioSession.isRTCAudioEnabled = true
     }
 
     func localHangupCall(_ call: SignalCall) {

@@ -88,7 +88,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
 
-        self.audioActivity = AudioActivity(audioDescription: "[CallKitCallUIAdaptee]")
+        self.audioActivity = AudioActivity(audioDescription: "[CallKitCallUIAdaptee]", behavior: .call)
         self.showNamesOnCallScreen = showNamesOnCallScreen
 
         super.init()
@@ -96,6 +96,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
 
         self.provider.setDelegate(self, queue: nil)
+    }
+
+    // MARK: Dependencies
+
+    var audioSession: OWSAudioSession {
+        return Environment.shared.audioSession
     }
 
     // MARK: CallUIAdaptee
@@ -107,7 +113,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
         // make sure we don't terminate audio session during call
-        OWSAudioSession.shared.startAudioActivity(call.audioActivity)
+        self.audioSession.startAudioActivity(call.audioActivity)
 
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
@@ -379,16 +385,16 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.debug("Received")
 
-        OWSAudioSession.shared.startAudioActivity(self.audioActivity)
-        OWSAudioSession.shared.isRTCAudioEnabled = true
+        self.audioSession.startAudioActivity(self.audioActivity)
+        self.audioSession.isRTCAudioEnabled = true
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
         Logger.debug("Received")
-        OWSAudioSession.shared.isRTCAudioEnabled = false
-        OWSAudioSession.shared.endAudioActivity(self.audioActivity)
+        self.audioSession.isRTCAudioEnabled = false
+        self.audioSession.endAudioActivity(self.audioActivity)
     }
 
     // MARK: - Util

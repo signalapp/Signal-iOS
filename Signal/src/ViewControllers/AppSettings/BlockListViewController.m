@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+                                [cell configureWithRecipientId:phoneNumber];
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension

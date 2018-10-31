@@ -121,7 +121,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredRecipientId.length > 0) {
                 id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
-                NSString *recipientName = [contactsManager displayNameForPhoneIdentifier:self.unregisteredRecipientId];
+                NSString *recipientName = [contactsManager displayNameForPhoneIdentifier:self.unregisteredRecipientId
+                                                                             transaction:transaction];
                 return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
                                                       @"unregistered user's name or signal id}}."),
