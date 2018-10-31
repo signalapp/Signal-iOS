@@ -113,9 +113,9 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     return sharedInstance;
 }
 
-- (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
+- (void)setUidAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
 {
-    _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
+    _uidAwaitingVerification = phoneNumberAwaitingVerification;
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalUIDDidChange
                                                              object:nil
@@ -144,7 +144,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 {
     DDLogInfo(@"%@ didRegister", self.logTag);
     if (!self.isRegistered) {
-        NSString *phoneNumber = self.phoneNumberAwaitingVerification;
+        NSString *phoneNumber = self.uidAwaitingVerification;
         
         if (!phoneNumber) {
             OWSRaiseException(@"RegistrationFail", @"Internal Corrupted State");
@@ -209,7 +209,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 - (nullable NSString *)localUID
 {
-    NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
+    NSString *awaitingVerif = self.uidAwaitingVerification;
     if (awaitingVerif) {
         return awaitingVerif;
     }
@@ -262,7 +262,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
         [self.dbConnection removeObjectForKey:TSAccountManager_ReregisteringPhoneNumberKey
                                  inCollection:TSAccountManager_UserAccountCollection];
 
-        self.phoneNumberAwaitingVerification = nil;
+        self.uidAwaitingVerification = nil;
 
         self.cachedLocalUID = localUID;
     }
@@ -379,7 +379,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     // determine whether or not to use domain fronting, so it needs to be set _before_
     // we make our verification code request.
     TSAccountManager *manager = [self sharedInstance];
-    manager.phoneNumberAwaitingVerification = phoneNumber;
+    manager.uidAwaitingVerification = phoneNumber;
 
     TSRequest *request =
         [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
@@ -402,7 +402,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 + (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
 {
     TSAccountManager *manager = [self sharedInstance];
-    NSString *number          = manager.phoneNumberAwaitingVerification;
+    NSString *number          = manager.uidAwaitingVerification;
 
     OWSAssert(number);
 
@@ -412,7 +412,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 + (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock
 {
     TSAccountManager *manager = [self sharedInstance];
-    NSString *number          = manager.phoneNumberAwaitingVerification;
+    NSString *number          = manager.uidAwaitingVerification;
 
     OWSAssert(number);
 
@@ -441,7 +441,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 {
     NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
     NSString *signalingKey = [[self class] generateNewSignalingKeyToken];
-    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
+    NSString *phoneNumber = self.uidAwaitingVerification;
 
     OWSAssert(signalingKey);
     OWSAssert(authToken);
@@ -665,7 +665,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
         _isRegistered = NO;
         _cachedLocalUID = nil;
-        _phoneNumberAwaitingVerification = nil;
+        _uidAwaitingVerification = nil;
         _cachedIsDeregistered = nil;
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];

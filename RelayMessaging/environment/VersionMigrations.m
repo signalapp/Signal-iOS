@@ -4,16 +4,14 @@
 
 #import "VersionMigrations.h"
 #import "Environment.h"
+#import "SignalApp.h"
 #import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "SignalKeyingStorage.h"
-#import <RelayServiceKit/AppContext.h>
-#import <RelayServiceKit/AppVersion.h>
-#import <RelayServiceKit/NSUserDefaults+OWS.h>
-#import <RelayServiceKit/OWSRequestFactory.h>
-#import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSNetworkManager.h>
-#import <YapDatabase/YapDatabase.h>
+#import "OWSNavigationController.h"
+
+@import RelayServiceKit;
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -59,40 +57,30 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
-        DDLogError(@"Migrating from RedPhone no longer supported. Quitting.");
+    if (!previousVersion || [self isVersion:previousVersion lessThan:@"2.0.0"]) {
+        DDLogError(@"Migrating from version 1.x.x.  Wiping database");
         // Not translating these as so few are affected.
         UIAlertController *alertController = [UIAlertController
-            alertControllerWithTitle:@"You must reinstall Signal"
+            alertControllerWithTitle:nil
                              message:
-                                 @"Sorry, your installation is too old for us to update. You'll have to start fresh."
+                                 @"Sorry, your message database is too old for us to update."
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *_Nonnull action) {
-                                                               [DDLog flushLog];
-                                                               exit(0);
-                                                           }];
-        [alertController addAction:quitAction];
+        [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              // TODO: Post notification which trips the return to reg view
+                                                              [NSNotificationCenter.defaultCenter postNotificationName:FLRelayWipeAndReturnToRegistrationNotification object:nil];
+                                                          }]];
 
         [CurrentAppContext().frontmostViewController presentViewController:alertController animated:YES completion:nil];
+        return;
     }
-
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
-        [self clearVideoCache];
-        [self blockingAttributesUpdate];
-    }
-
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [TSAccountManager isRegistered]) {
-        [self clearBloomFilterCache];
-    }
-
-    // TODO: Migrations should not be necessary in our environment.  Consider leveraging this mechanism in the future.
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-//            runAllOutstandingWithCompletion:completion];
-//    });
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
+            runAllOutstandingWithCompletion:completion];
+    });
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString
@@ -111,6 +99,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isVersion:(NSString *)thisVersionString lessThan:(NSString *)thatVersionString
 {
     return [thisVersionString compare:thatVersionString options:NSNumericSearch] == NSOrderedAscending;
+}
+
+// MARK: - Forsta migrations
++(void)nukeAndPaveDBContents
+{
 }
 
 #pragma mark Upgrading to 2.1 - Removing video cache folder

@@ -23,7 +23,7 @@ class FailingTSAccountManager: TSAccountManager {
 
         super.init(networkManager: networkManager, primaryStorage: primaryStorage)
 
-        self.phoneNumberAwaitingVerification = "+13235555555"
+        self.uuidAwaitingVerification = "+13235555555"
     }
 
     override func verifyAccount(withCode: String,

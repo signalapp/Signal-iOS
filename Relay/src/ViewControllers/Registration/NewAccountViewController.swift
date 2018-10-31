@@ -177,23 +177,7 @@ class NewAccountViewController: UITableViewController, UITextFieldDelegate {
     }
     
     
-    // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "mainSegue" {
-            // Save the passwordAuth property
-//            Environment.preferences().passwordAuth = true;
-            
-            DispatchQueue.main.async {
-                let snc = segue.destination as! SignalsNavigationController
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.window!.rootViewController = snc
-                
-                // TODO: Validate this step is necessary
-                appDelegate.applicationDidBecomeActive(UIApplication.shared)
-            }
-        }
-    }
-    
+    // MARK: - Navigation    
     private func proceedToMain() {
         DispatchQueue.global(qos: .background).async {
             TSSocketManager.requestSocketOpen()

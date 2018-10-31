@@ -19,7 +19,7 @@ extern NSString *const kNSNotificationName_LocalUIDDidChange;
 
 @interface TSAccountManager : NSObject
 
-@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+@property (nonatomic, nullable) NSString *uidAwaitingVerification;
 
 #pragma mark - Initializers
 

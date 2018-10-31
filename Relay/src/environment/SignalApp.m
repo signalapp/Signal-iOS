@@ -6,11 +6,9 @@
 #import "ConversationViewController.h"
 #import "HomeViewController.h"
 #import "Relay-Swift.h"
-#import <RelayMessaging/DebugLogger.h>
-#import <RelayMessaging/Environment.h>
-#import <RelayServiceKit/OWSPrimaryStorage.h>
-#import <RelayServiceKit/TSThread.h>
-#import <RelayServiceKit/Threading.h>
+
+@import RelayServiceKit;
+@import RelayMessaging;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,8 +46,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSSingletonAssert();
-
+    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(resetAppDataReturnToRegistration)
+                                               name:FLRelayWipeAndReturnToRegistrationNotification
+                                             object:nil];
+    
     return self;
+}
+
+-(void)dealloc
+{
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - Singletons
@@ -272,6 +280,20 @@ NS_ASSUME_NONNULL_BEGIN
     // set the app badge number to zero after setting it to a non-zero value.
     [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+}
+
+-(void)resetAppDataReturnToRegistration
+{
+    DispatchSyncMainThreadSafe(^{
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Login" bundle:[NSBundle mainBundle]];
+        UIViewController *viewController = [storyboard instantiateInitialViewController];
+        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+        [UIApplication sharedApplication].delegate.window.rootViewController = navigationController;
+    });
+    [SignalApp clearAllNotifications];
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [transaction removeAllObjectsInAllCollections];
+    }];
 }
 
 @end
