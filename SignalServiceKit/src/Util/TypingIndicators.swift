@@ -27,13 +27,65 @@ public protocol TypingIndicators: class {
     // TODO: Use this method.
     @objc
     func areTypingIndicatorsVisible(inThread thread: TSThread, recipientId: String) -> Bool
+
+    @objc
+    func setTypingIndicatorsEnabled(value: Bool)
+
+    @objc
+    func areTypingIndicatorsEnabled() -> Bool
 }
 
 // MARK: -
 
 @objc(OWSTypingIndicatorsImpl)
 public class TypingIndicatorsImpl: NSObject, TypingIndicators {
+
     @objc public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
+
+    private let kDatabaseCollection = "TypingIndicators"
+    private let kDatabaseKey_TypingIndicatorsEnabled = "kDatabaseKey_TypingIndicatorsEnabled"
+
+    private var _areTypingIndicatorsEnabled = false
+
+    public override init() {
+        super.init()
+
+        AppReadiness.runNowOrWhenAppIsReady {
+            self.setup()
+        }
+    }
+
+    private func setup() {
+        AssertIsOnMainThread()
+
+        _areTypingIndicatorsEnabled = primaryStorage.dbReadConnection.bool(forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection, defaultValue: true)
+    }
+
+    // MARK: - Dependencies
+
+    private var primaryStorage: OWSPrimaryStorage {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
+    // MARK: -
+
+    @objc
+    public func setTypingIndicatorsEnabled(value: Bool) {
+        AssertIsOnMainThread()
+
+        _areTypingIndicatorsEnabled = value
+
+        primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
+    }
+
+    @objc
+    public func areTypingIndicatorsEnabled() -> Bool {
+        AssertIsOnMainThread()
+
+        return _areTypingIndicatorsEnabled
+    }
+
+    // MARK: -
 
     @objc
     public func didStartTypingOutgoingInput(inThread thread: TSThread) {
@@ -117,7 +169,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         if let outgoingIndicators = outgoingIndicatorsMap[threadId] {
             return outgoingIndicators
         }
-        let outgoingIndicators = OutgoingIndicators(thread: thread)
+        let outgoingIndicators = OutgoingIndicators(delegate: self, thread: thread)
         outgoingIndicatorsMap[threadId] = outgoingIndicators
         return outgoingIndicators
     }
@@ -127,11 +179,13 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     // A sendPause timer
     // A sendRefresh timer
     private class OutgoingIndicators {
+        private weak var delegate: TypingIndicators?
         private let thread: TSThread
         private var sendPauseTimer: Timer?
         private var sendRefreshTimer: Timer?
 
-        init(thread: TSThread) {
+        init(delegate: TypingIndicators, thread: TSThread) {
+            self.delegate = delegate
             self.thread = thread
         }
 
@@ -238,6 +292,14 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         private func sendTypingMessage(forThread thread: TSThread, action: TypingIndicatorAction) {
             Logger.verbose("\(TypingIndicatorMessage.string(forTypingIndicatorAction: action))")
 
+            guard let delegate = delegate else {
+                owsFailDebug("Missing delegate.")
+                return
+            }
+            guard delegate.areTypingIndicatorsEnabled() else {
+                return
+            }
+
             let message = TypingIndicatorMessage(thread: thread, action: action)
             messageSender.sendPromise(message: message).retainUntilComplete()
         }
@@ -257,12 +319,12 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
         let key = incomingIndicatorsKey(forThread: thread, recipientId: recipientId)
         guard let deviceMap = incomingIndicatorsMap[key] else {
-            let incomingIndicators = IncomingIndicators(recipientId: recipientId, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, recipientId: recipientId, deviceId: deviceId)
             incomingIndicatorsMap[key] = [deviceId: incomingIndicators]
             return incomingIndicators
         }
         guard let incomingIndicators = deviceMap[deviceId] else {
-            let incomingIndicators = IncomingIndicators(recipientId: recipientId, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, recipientId: recipientId, deviceId: deviceId)
             var deviceMapCopy = deviceMap
             deviceMapCopy[deviceId] = incomingIndicators
             incomingIndicatorsMap[key] = deviceMapCopy
@@ -273,6 +335,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     // The receiver maintains one timer for each (sender, device) in a chat:
     private class IncomingIndicators {
+        private weak var delegate: TypingIndicators?
         private let recipientId: String
         private let deviceId: UInt
         private var displayTypingTimer: Timer?
@@ -289,7 +352,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
         }
 
-        init(recipientId: String, deviceId: UInt) {
+        init(delegate: TypingIndicators, recipientId: String, deviceId: UInt) {
+            self.delegate = delegate
             self.recipientId = recipientId
             self.deviceId = deviceId
         }
@@ -350,6 +414,15 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
         private func notify() {
             Logger.verbose("")
+
+            guard let delegate = delegate else {
+                owsFailDebug("Missing delegate.")
+                return
+            }
+            guard delegate.areTypingIndicatorsEnabled() else {
+                return
+            }
+
             NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: recipientId)
         }
     }
