@@ -95,14 +95,17 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(recipientId.length > 0);
 
-    return [self fetchObjectWithUniqueID:recipientId transaction:transaction];
+    SignalRecipient *_Nullable signalRecipient = [self fetchObjectWithUniqueID:recipientId transaction:transaction];
+    if (signalRecipient.devices.count > 0) {
+        return signalRecipient;
+    }
+    return nil;
 }
 
 - (void)addDevices:(NSSet *)devices
