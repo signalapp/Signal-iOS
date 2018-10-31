@@ -85,7 +85,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Forsta Relay uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Forsta Relay&apos;s Screen Lock uses Face ID.</string>
+	<string>Forsta Relay's Screen Lock uses Face ID.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Forsta Relay needs access to your microphone to make and receive phone calls and record voice messages.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
