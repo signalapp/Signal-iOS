@@ -168,6 +168,7 @@ protocol MediaGalleryDataSourceDelegate: class {
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
+@objc
 class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
 
     private var pageViewController: MediaPageViewController?
@@ -197,7 +198,9 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         self.options = options
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
-        super.init(owsNavigationBar: ())
+        super.init(nibName: nil, bundle: nil)
+        self.setValue(OWSNavigationBar(), forKey: "navigationBar")
+        super.setupNavbar()
     }
 
     required init?(coder aDecoder: NSCoder) {

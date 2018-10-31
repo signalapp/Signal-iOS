@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 // unsaved changes.
 @interface OWSNavigationController : UINavigationController
 
-- (instancetype)initWithOWSNavigationBar;
+- (instancetype)init;
+- (void)setupNavbar;
 
 @end
 
