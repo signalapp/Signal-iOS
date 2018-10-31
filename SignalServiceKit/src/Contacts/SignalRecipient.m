@@ -175,7 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(devices.count > 0);
 
     OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, self);
-    [self reloadWithTransaction:transaction];
+    [self reloadWithTransaction:transaction ignoreMissing:YES];
     [self removeDevices:devices];
     [self saveWithTransaction_internal:transaction];
 }
