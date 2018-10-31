@@ -172,12 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"removing devices: %@, from registered recipient: %@", devices, self);
     [self reloadWithTransaction:transaction];
     [self removeDevices:devices];
-
-    if (self.devices.count > 0) {
-        [self saveWithTransaction_internal:transaction];
-    } else {
-        [SignalRecipient removeUnregisteredRecipient:self.recipientId transaction:transaction];
-    }
+    [self saveWithTransaction_internal:transaction];
 }
 
 - (NSString *)recipientId
@@ -190,6 +185,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.recipientId compare:other.recipientId];
 }
 
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSFailDebug(@"Don't call removeWithTransaction.");
+    
+    [super removeWithTransaction:transaction];
+}
+
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // We only want to mutate the persisted SignalRecipients in the database
@@ -199,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     // reflect "last known registration status".  Forcing our codebase to
     // use those methods helps ensure that we update the cache deliberately.
     OWSFailDebug(@"Don't call saveWithTransaction from outside this class.");
-
+    
     [self saveWithTransaction_internal:transaction];
 }
 
@@ -207,13 +209,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super saveWithTransaction:transaction];
 
-    OWSLogVerbose(@"saved signal recipient: %@", self.recipientId);
+    OWSLogVerbose(@"saved signal recipient: %@ (%lu)", self.recipientId, (unsigned long) self.devices.count);
 }
 
 + (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
 {
     SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
-    return instance != nil;
+    return instance.devices.count > 0;
 }
 
 + (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
@@ -254,12 +256,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
     OWSAssertDebug(recipientId.length > 0);
 
-    SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
-    if (!instance) {
-        return;
-    }
-    OWSLogDebug(@"removing recipient: %@", recipientId);
-    [instance removeWithTransaction:transaction];
+    SignalRecipient *instance = [self getOrBuildUnsavedRecipientForRecipientId:recipientId
+                                                                   transaction:transaction];
+    OWSLogDebug(@"Marking recipient as not registered: %@", recipientId);
+    [instance removeDevices:instance.devices.set];
+    [instance saveWithTransaction_internal:transaction];
 }
 
 @end
