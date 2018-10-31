@@ -6,13 +6,11 @@ import Foundation
 
 @objc(OWSTypingIndicators)
 public protocol TypingIndicators: class {
-    // TODO: Use this method.
     @objc
-    func didStartTypeOutgoingInput(inThread thread: TSThread)
+    func didStartTypingOutgoingInput(inThread thread: TSThread)
 
-    // TODO: Use this method.
     @objc
-    func didStopTypeOutgoingInput(inThread thread: TSThread)
+    func didStopTypingOutgoingInput(inThread thread: TSThread)
 
     @objc
     func didSendOutgoingMessage(inThread thread: TSThread)
@@ -38,23 +36,23 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     @objc public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
 
     @objc
-    public func didStartTypeOutgoingInput(inThread thread: TSThread) {
+    public func didStartTypingOutgoingInput(inThread thread: TSThread) {
         AssertIsOnMainThread()
         guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread) else {
             owsFailDebug("Could not locate outgoing indicators state")
             return
         }
-        outgoingIndicators.didStartTypeOutgoingInput()
+        outgoingIndicators.didStartTypingOutgoingInput()
     }
 
     @objc
-    public func didStopTypeOutgoingInput(inThread thread: TSThread) {
+    public func didStopTypingOutgoingInput(inThread thread: TSThread) {
         AssertIsOnMainThread()
         guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread) else {
             owsFailDebug("Could not locate outgoing indicators state")
             return
         }
-        outgoingIndicators.didStopTypeOutgoingInput()
+        outgoingIndicators.didStopTypingOutgoingInput()
     }
 
     @objc
@@ -145,7 +143,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
         // MARK: -
 
-        func didStartTypeOutgoingInput() {
+        func didStartTypingOutgoingInput() {
             AssertIsOnMainThread()
 
             if sendRefreshTimer == nil {
@@ -177,7 +175,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                                                       repeats: false)
         }
 
-        func didStopTypeOutgoingInput() {
+        func didStopTypingOutgoingInput() {
             AssertIsOnMainThread()
 
             // Send ACTION=STOPPED message.
@@ -241,12 +239,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             Logger.verbose("\(TypingIndicatorMessage.string(forTypingIndicatorAction: action))")
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
-            messageSender.sendPromise(message: message)
-                .done {
-                    Logger.info("Outgoing typing indicator message send succeeded.")
-                }.catch { error in
-                    Logger.error("Outgoing typing indicator message send failed: \(error).")
-                }.retainUntilComplete()
+            messageSender.sendPromise(message: message).retainUntilComplete()
         }
     }
 
