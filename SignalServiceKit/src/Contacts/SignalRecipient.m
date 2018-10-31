@@ -41,8 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(recipientId.length > 0);
-    
-    SignalRecipient *_Nullable recipient = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
+
+    SignalRecipient *_Nullable recipient =
+        [self registeredRecipientForRecipientId:recipientId mustHaveDevices:NO transaction:transaction];
     if (!recipient) {
         recipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
     }
@@ -96,16 +97,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
+                                           mustHaveDevices:(BOOL)mustHaveDevices
                                                transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(recipientId.length > 0);
 
     SignalRecipient *_Nullable signalRecipient = [self fetchObjectWithUniqueID:recipientId transaction:transaction];
-    if (signalRecipient.devices.count > 0) {
-        return signalRecipient;
+    if (mustHaveDevices && signalRecipient.devices.count < 1) {
+        return nil;
     }
-    return nil;
+    return signalRecipient;
 }
 
 - (void)addDevices:(NSSet *)devices
@@ -217,8 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
 {
-    SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
-    return instance.devices.count > 0;
+    return nil != [self registeredRecipientForRecipientId:recipientId mustHaveDevices:YES transaction:transaction];
 }
 
 + (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
@@ -227,7 +228,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
     OWSAssertDebug(recipientId.length > 0);
 
-    SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
+    SignalRecipient *_Nullable instance =
+        [self registeredRecipientForRecipientId:recipientId mustHaveDevices:YES transaction:transaction];
 
     if (!instance) {
         OWSLogDebug(@"creating recipient: %@", recipientId);
@@ -262,7 +264,9 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *instance = [self getOrBuildUnsavedRecipientForRecipientId:recipientId
                                                                    transaction:transaction];
     OWSLogDebug(@"Marking recipient as not registered: %@", recipientId);
-    [instance removeDevices:instance.devices.set];
+    if (instance.devices.count > 0) {
+        [instance removeDevices:instance.devices.set];
+    }
     [instance saveWithTransaction_internal:transaction];
 }
 
