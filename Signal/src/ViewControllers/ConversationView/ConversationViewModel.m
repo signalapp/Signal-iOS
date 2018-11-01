@@ -559,7 +559,6 @@ static const int kYapDatabaseRangeMinLength = 0;
         return;
     }
 
-    NSUInteger oldViewItemCount = self.viewItems.count;
     if (![self reloadViewItems]) {
         // These errors are rare.
         OWSFailDebug(@"could not reload view items; hard resetting message mappings.");
@@ -568,17 +567,15 @@ static const int kYapDatabaseRangeMinLength = 0;
         return;
     }
 
-    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
 
-    [self updateViewWitholdItemIdList:oldItemIdList
+    [self updateViewWithOldItemIdList:oldItemIdList
                        updatedItemSet:updatedItemSet
-                     oldViewItemCount:oldViewItemCount
                updatedNeighborItemSet:updatedNeighborItemSet];
 }
 
-- (void)updateViewWitholdItemIdList:(NSArray<NSString *> *)oldItemIdList
+- (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
                      updatedItemSet:(NSSet<NSString *> *)updatedItemSet
-                   oldViewItemCount:(NSUInteger)oldViewItemCount
              updatedNeighborItemSet:(nullable NSMutableSet<NSString *> *)updatedNeighborItemSet
 {
     OWSAssertDebug(oldItemIdList);
@@ -709,7 +706,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     }
 
     BOOL shouldAnimateUpdates = [self shouldAnimateUpdateItems:updateItems
-                                              oldViewItemCount:oldViewItemCount
+                                              oldViewItemCount:oldItemIdList.count
                                         updatedNeighborItemSet:updatedNeighborItemSet];
 
     return [self.delegate
@@ -775,7 +772,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     // Cells' appearance can depend on adjacent cells in both directions.
     //
     // TODO: We could do the same thing in our logic to generate "update items"
-    //       in updateViewWitholdItemIdList.
+    //       in updateViewWithOldItemIdList.
     [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
         @(-1),
         @(+1),
@@ -792,8 +789,8 @@ static const int kYapDatabaseRangeMinLength = 0;
 
 - (void)resetMappings
 {
-    // If we're entering "active" mode (e.g. view is visible and app is in foreground),
-    // reset all state updated by yapDatabaseModified:.
+    OWSAssertDebug(self.messageMappings);
+
     if (self.messageMappings != nil) {
         // Make sure our mapping and range state is up-to-date.
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
