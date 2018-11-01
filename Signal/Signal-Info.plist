@@ -71,14 +71,14 @@
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
-			<key>api.directory.signal.org</key>
+			<key>api-staging.directory.signal.org </key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
-			<key>api-staging.directory.signal.org </key>
+			<key>api.directory.signal.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
