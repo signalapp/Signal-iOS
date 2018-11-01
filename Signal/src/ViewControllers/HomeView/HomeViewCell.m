@@ -531,7 +531,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updatePreview
 {
-    if ([self.typingIndicators typingIndicatorsForThread:self.thread.threadRecord] != nil) {
+    if ([self.typingIndicators typingRecipientIdForThread:self.thread.threadRecord] != nil) {
         self.snippetLabel.hidden = YES;
         self.typingIndicatorView.hidden = NO;
         [self.typingIndicatorView startAnimation];

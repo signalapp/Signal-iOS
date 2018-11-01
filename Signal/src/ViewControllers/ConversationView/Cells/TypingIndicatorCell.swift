@@ -43,10 +43,6 @@ public class TypingIndicatorCell: ConversationViewCell {
         avatarView.autoSetDimension(.height, toSize: kAvatarSize)
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     @objc
     public override func loadForDisplay() {
         guard let conversationStyle = self.conversationStyle else {
@@ -99,7 +95,7 @@ public class TypingIndicatorCell: ConversationViewCell {
         }
         guard let authorAvatarImage =
             OWSContactAvatarBuilder(signalId: typingIndicators.recipientId,
-                                    colorName: ConversationColorNameForString(colorName),
+                                    colorName: ConversationColorName(rawValue: colorName),
                                     diameter: UInt(kAvatarSize)).build() else {
                                         owsFailDebug("Could build avatar image")
                                         return nil
@@ -148,7 +144,5 @@ public class TypingIndicatorCell: ConversationViewCell {
         avatarView.removeFromSuperview()
 
         typingIndicatorView.stopAnimation()
-
-        NotificationCenter.default.removeObserver(self)
     }
 }

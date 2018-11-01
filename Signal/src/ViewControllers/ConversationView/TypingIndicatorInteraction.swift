@@ -41,4 +41,9 @@ public class TypingIndicatorInteraction: TSInteraction {
         super.init(interactionWithUniqueId: TypingIndicatorInteraction.TypingIndicatorId,
             timestamp: timestamp, in: thread)
     }
+
+    @objc
+    public override func save(with transaction: YapDatabaseReadWriteTransaction!) {
+        owsFailDebug("The transient interaction should not be saved in the database.")
+    }
 }

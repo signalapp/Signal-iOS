@@ -143,7 +143,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic, nullable) NSDate *collapseCutoffDate;
-@property (nonatomic, nullable) NSString *typingIndicatorsRecipient;
+@property (nonatomic, nullable) NSString *typingIndicatorsSender;
 
 @end
 
@@ -250,7 +250,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
     self.lastRangeLength = 0;
-    self.typingIndicatorsRecipient = [self.typingIndicators typingIndicatorsForThread:self.thread];
+    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
 
     [self ensureDynamicInteractions];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
@@ -901,13 +901,13 @@ static const int kYapDatabaseRangeMinLength = 0;
             viewItemCache[interaction.uniqueId] = viewItem;
         }
 
-        if (self.typingIndicatorsRecipient) {
+        if (self.typingIndicatorsSender) {
             id<ConversationViewItem> _Nullable lastViewItem = viewItems.lastObject;
             uint64_t typingIndicatorTimestamp = (lastViewItem ? lastViewItem.interaction.timestamp + 1 : 1);
             TSInteraction *interaction =
                 [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
                                                             timestamp:typingIndicatorTimestamp
-                                                          recipientId:self.typingIndicatorsRecipient];
+                                                          recipientId:self.typingIndicatorsSender];
             id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
             if (!viewItem) {
                 viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
@@ -1337,16 +1337,16 @@ static const int kYapDatabaseRangeMinLength = 0;
 {
     OWSAssertIsOnMainThread();
 
-    self.typingIndicatorsRecipient = [self.typingIndicators typingIndicatorsForThread:self.thread];
+    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
 }
 
-- (void)setTypingIndicatorsRecipient:(nullable NSString *)typingIndicatorsRecipient
+- (void)setTypingIndicatorsSender:(nullable NSString *)typingIndicatorsSender
 {
     OWSAssertIsOnMainThread();
 
-    BOOL didChange = ![NSObject isNullableObject:typingIndicatorsRecipient equalTo:_typingIndicatorsRecipient];
+    BOOL didChange = ![NSObject isNullableObject:typingIndicatorsSender equalTo:_typingIndicatorsSender];
 
-    _typingIndicatorsRecipient = typingIndicatorsRecipient;
+    _typingIndicatorsSender = typingIndicatorsSender;
 
     // Update the view items if necessary.
     // We don't have to do this if they haven't been configured yet.

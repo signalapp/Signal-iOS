@@ -31,7 +31,7 @@ public protocol TypingIndicators: class {
     //
     // TODO: Use this method.
     @objc
-    func typingIndicators(forThread thread: TSThread) -> String?
+    func typingRecipientId(forThread thread: TSThread) -> String?
 
     @objc
     func setTypingIndicatorsEnabled(value: Bool)
@@ -86,7 +86,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         _areTypingIndicatorsEnabled = value
 
         primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
-        
+
         syncManager.sendConfigurationSyncMessage()
     }
 
@@ -151,7 +151,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
-    public func typingIndicators(forThread thread: TSThread) -> String? {
+    public func typingRecipientId(forThread thread: TSThread) -> String? {
         AssertIsOnMainThread()
 
         var firstRecipientId: String?
