@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithReadReceiptsEnabled:(BOOL)areReadReceiptsEnabled
          showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
-         showTypingIndicators:(BOOL)showTypingIndicators {
+                       showTypingIndicators:(BOOL)showTypingIndicators {
     self = [super init];
     if (!self) {
         return nil;
