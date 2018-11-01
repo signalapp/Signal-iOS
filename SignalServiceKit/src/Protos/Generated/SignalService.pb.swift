@@ -1741,12 +1741,22 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `unidentifiedDeliveryIndicators`. Subsequent reads from it will return its default value.
     mutating func clearUnidentifiedDeliveryIndicators() {self._unidentifiedDeliveryIndicators = nil}
 
+    var typingIndicators: Bool {
+      get {return _typingIndicators ?? false}
+      set {_typingIndicators = newValue}
+    }
+    /// Returns true if `typingIndicators` has been explicitly set.
+    var hasTypingIndicators: Bool {return self._typingIndicators != nil}
+    /// Clears the value of `typingIndicators`. Subsequent reads from it will return its default value.
+    mutating func clearTypingIndicators() {self._typingIndicators = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _readReceipts: Bool? = nil
     fileprivate var _unidentifiedDeliveryIndicators: Bool? = nil
+    fileprivate var _typingIndicators: Bool? = nil
   }
 
   init() {}
@@ -4048,6 +4058,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "readReceipts"),
     2: .same(proto: "unidentifiedDeliveryIndicators"),
+    3: .same(proto: "typingIndicators"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4055,6 +4066,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
       switch fieldNumber {
       case 1: try decoder.decodeSingularBoolField(value: &self._readReceipts)
       case 2: try decoder.decodeSingularBoolField(value: &self._unidentifiedDeliveryIndicators)
+      case 3: try decoder.decodeSingularBoolField(value: &self._typingIndicators)
       default: break
       }
     }
@@ -4067,12 +4079,16 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
     if let v = self._unidentifiedDeliveryIndicators {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
     }
+    if let v = self._typingIndicators {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Configuration, rhs: SignalServiceProtos_SyncMessage.Configuration) -> Bool {
     if lhs._readReceipts != rhs._readReceipts {return false}
     if lhs._unidentifiedDeliveryIndicators != rhs._unidentifiedDeliveryIndicators {return false}
+    if lhs._typingIndicators != rhs._typingIndicators {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
