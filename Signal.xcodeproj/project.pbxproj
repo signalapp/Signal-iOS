@@ -1116,6 +1116,7 @@
 		4C1D233C218B96A000A0598F /* typing-animation.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = "typing-animation.gif"; path = "../../../../../Downloads/typing-animation.gif"; sourceTree = "<group>"; };
 		4C1D2333218B692800A0598F /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = translations/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C1D2334218B6A1100A0598F /* az */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = az; path = translations/az.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4C1D2335218B6A7600A0598F /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = translations/el.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
 		4C23A5F1215C4ADE00534937 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
@@ -1192,7 +1193,6 @@
 		B660F6B41C29868000687D6E /* UtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilTest.m; sourceTree = "<group>"; };
 		B66DBF4919D5BBC8006EA940 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B676BCEF1AA544E7009637B8 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = translations/de.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B676BCF01AA544F5009637B8 /* el_GR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el_GR; path = translations/el_GR.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B676BCF11AA5451E009637B8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
 		B68CB7D81AA546C30065AC3F /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = translations/lv.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2770,6 +2770,7 @@
 				zh_TW,
 				ko,
 				az,
+				el,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -3533,7 +3534,6 @@
 				B69C2D1B1AA5448300A640C2 /* cs */,
 				B6BC3D0C1AA544B100C2907F /* da */,
 				B676BCEF1AA544E7009637B8 /* de */,
-				B676BCF01AA544F5009637B8 /* el_GR */,
 				B676BCF11AA5451E009637B8 /* es */,
 				B63FBC9E1AA545CB00548746 /* fi */,
 				B646D10E1AA5461A004133BA /* fr */,
@@ -3571,6 +3571,7 @@
 				3478505C1FD99A1F007B8332 /* zh_TW */,
 				4C1D2333218B692800A0598F /* ko */,
 				4C1D2334218B6A1100A0598F /* az */,
+				4C1D2335218B6A7600A0598F /* el */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
