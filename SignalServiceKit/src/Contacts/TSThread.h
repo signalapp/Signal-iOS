@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
 typedef NSString *ConversationColorName NS_STRING_ENUM;
+
+ConversationColorName ConversationColorNameForString(NSString *value);
+
 extern ConversationColorName const ConversationColorNameCrimson;
 extern ConversationColorName const ConversationColorNameVermilion;
 extern ConversationColorName const ConversationColorNameBurlap;

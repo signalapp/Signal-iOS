@@ -193,6 +193,11 @@ CG_INLINE CGSize CGSizeScale(CGSize size, CGFloat factor)
     return CGSizeMake(size.width * factor, size.height * factor);
 }
 
+CG_INLINE CGSize CGSizeAdd(CGSize left, CGSize right)
+{
+    return CGSizeMake(left.width + right.width, left.height + right.height);
+}
+
 CGFloat CGHairlineWidth(void);
 
 NS_ASSUME_NONNULL_END

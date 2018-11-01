@@ -273,6 +273,11 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     return (kOWSMessageCellCornerRadius_Large * 2);
 }
 
+- (CGFloat)minHeight
+{
+    return (kOWSMessageCellCornerRadius_Large * 2);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

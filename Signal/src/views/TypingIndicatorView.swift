@@ -16,12 +16,6 @@
     private let dot2 = DotView(dotType: .dotType2)
     private let dot3 = DotView(dotType: .dotType3)
 
-    override public var isHidden: Bool {
-        didSet {
-            Logger.verbose("\(oldValue) -> \(isHidden)")
-        }
-    }
-
     @available(*, unavailable, message:"use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
         notImplemented()
@@ -44,6 +38,11 @@
         self.axis = .horizontal
         self.spacing = kDotMaxHSpacing
         self.alignment = .center
+    }
+
+    @objc
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        return CGSize(width: TypingIndicatorView.kMaxRadiusPt * 3 + kDotMaxHSpacing * 2, height: TypingIndicatorView.kMaxRadiusPt)
     }
 
     @objc
@@ -86,9 +85,6 @@
             self.layer.addSublayer(shapeLayer)
 
             updateLayer()
-//            self.text = text
-//
-//            setupSubviews()
         }
 
         private func updateLayer() {

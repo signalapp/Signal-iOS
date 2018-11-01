@@ -143,14 +143,24 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssertDebug(transaction);
 
-    if (self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        _authorConversationColorName = nil;
-        return;
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_TypingIndicator: {
+            OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
+            _authorConversationColorName =
+                [TSContactThread conversationColorNameForRecipientId:typingIndicator.recipientId
+                                                         transaction:transaction];
+            break;
+        }
+        case OWSInteractionType_IncomingMessage: {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+            _authorConversationColorName =
+                [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
+            break;
+        }
+        default:
+            _authorConversationColorName = nil;
+            break;
     }
-
-    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-    _authorConversationColorName =
-        [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
 }
 
 - (NSString *)itemId

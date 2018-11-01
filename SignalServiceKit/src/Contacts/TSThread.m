@@ -19,6 +19,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+ConversationColorName ConversationColorNameForString(NSString *value)
+{
+    return value;
+}
+
 ConversationColorName const ConversationColorNameCrimson = @"red";
 ConversationColorName const ConversationColorNameVermilion = @"orange";
 ConversationColorName const ConversationColorNameBurlap = @"brown";
