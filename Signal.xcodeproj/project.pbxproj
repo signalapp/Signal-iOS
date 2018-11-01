@@ -219,6 +219,7 @@
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
 		34B6A907218B5241007C4606 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A906218B5240007C4606 /* TypingIndicatorCell.swift */; };
+		34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */; };
 		34B6D27420F664C900765BE2 /* OWSUnreadIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = 34B6D27220F664C800765BE2 /* OWSUnreadIndicator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34B6D27520F664C900765BE2 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
@@ -872,6 +873,7 @@
 		34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorInteraction.swift; sourceTree = "<group>"; };
 		34B6A906218B5240007C4606 /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
+		34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS112TypingIndicatorsMigration.swift; sourceTree = "<group>"; };
 		34B6D27220F664C800765BE2 /* OWSUnreadIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUnreadIndicator.h; sourceTree = "<group>"; };
 		34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUnreadIndicator.m; sourceTree = "<group>"; };
 		34BECE291F74C12700D7438D /* DebugUIStress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIStress.h; sourceTree = "<group>"; };
@@ -1628,6 +1630,7 @@
 				34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */,
 				34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */,
 				349EA07B2162AEA700F7B17F /* OWS111UDAttributesMigration.swift */,
+				34B6A908218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift */,
 				346129931FD1E30000532771 /* OWSDatabaseMigration.h */,
 				346129941FD1E30000532771 /* OWSDatabaseMigration.m */,
 				346129E51FD5C0C600532771 /* OWSDatabaseMigrationRunner.h */,
@@ -3189,6 +3192,7 @@
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				34AC09DF211B39B100997B47 /* OWSNavigationController.m in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
+				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
 				452EC6E1205FF5DC000E787C /* Bench.swift in Sources */,
