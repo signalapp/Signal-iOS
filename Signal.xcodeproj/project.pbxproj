@@ -1113,6 +1113,8 @@
 		4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HapticFeedback.swift; path = UserInterface/HapticFeedback.swift; sourceTree = "<group>"; };
 		4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStatusView.swift; sourceTree = "<group>"; };
 		4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
+		4C1D233C218B96A000A0598F /* typing-animation.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = "typing-animation.gif"; path = "../../../../../Downloads/typing-animation.gif"; sourceTree = "<group>"; };
+		4C1D2333218B692800A0598F /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = translations/ko.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
 		4C23A5F1215C4ADE00534937 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
@@ -1192,7 +1194,6 @@
 		B676BCF01AA544F5009637B8 /* el_GR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el_GR; path = translations/el_GR.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B676BCF11AA5451E009637B8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B67EBF5C19194AC60084CCFD /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = SettingsBundle/Settings.bundle; sourceTree = SOURCE_ROOT; };
-		B68CB7D71AA546B80065AC3F /* ko_KR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko_KR; path = translations/ko_KR.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7D81AA546C30065AC3F /* lv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lv; path = translations/lv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7D91AA546CE0065AC3F /* nb_NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb_NO; path = translations/nb_NO.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B68CB7DA1AA546F50065AC3F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = translations/nl.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2767,6 +2768,7 @@
 				fa,
 				et,
 				zh_TW,
+				ko,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -3539,7 +3541,6 @@
 				B646D1141AA54674004133BA /* hu */,
 				B646D1151AA5467E004133BA /* it_IT */,
 				B60341CD1AA5469800A01E42 /* ja_JP */,
-				B68CB7D71AA546B80065AC3F /* ko_KR */,
 				B68CB7D81AA546C30065AC3F /* lv */,
 				B68CB7D91AA546CE0065AC3F /* nb_NO */,
 				B68CB7DA1AA546F50065AC3F /* nl */,
@@ -3568,6 +3569,7 @@
 				341458471FBE11C4005ABCF9 /* fa */,
 				3478505A1FD999D5007B8332 /* et */,
 				3478505C1FD99A1F007B8332 /* zh_TW */,
+				4C1D2333218B692800A0598F /* ko */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
