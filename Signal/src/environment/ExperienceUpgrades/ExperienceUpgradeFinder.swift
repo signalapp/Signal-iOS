@@ -10,7 +10,8 @@ enum ExperienceUpgradeId: String {
     callKit = "002",
     introducingProfiles = "003",
     introducingReadReceipts = "004",
-    introducingCustomNotificationAudio = "005"
+    introducingCustomNotificationAudio = "005",
+    introducingTypingIndicators = "006"
 }
 
 @objc public class ExperienceUpgradeFinder: NSObject {
@@ -61,6 +62,13 @@ enum ExperienceUpgradeId: String {
                                  image: #imageLiteral(resourceName: "introductory_splash_custom_audio"))
     }
 
+    var typingIndicators: ExperienceUpgrade {
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingTypingIndicators.rawValue,
+                                 title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE", comment: "Header for upgrading users"),
+                                 body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION", comment: "Body text for upgrading users"),
+                                 image: #imageLiteral(resourceName: "introductory_splash_custom_audio"))
+    }
+
     // Keep these ordered by increasing uniqueId.
     @objc
     public var allExperienceUpgrades: [ExperienceUpgrade] {
@@ -73,7 +81,8 @@ enum ExperienceUpgradeId: String {
             // (UIDevice.current.supportsCallKit ? callKit : nil),
             // introducingProfiles,
             // introducingReadReceipts,
-            configurableNotificationAudio
+            // configurableNotificationAudio
+            typingIndicators
         ].compactMap { $0 }
     }
 
