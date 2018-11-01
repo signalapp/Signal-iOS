@@ -24,19 +24,27 @@ public class OWS112TypingIndicatorsMigration: OWSDatabaseMigration {
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
         Logger.debug("")
-        Bench(title: "Typing Indicators Migration") {
-            self.doMigration()
+        BenchAsync(title: "Typing Indicators Migration") { (benchCompletion) in
+            self.doMigrationAsync(completion:{
+                benchCompletion()
+                completion()
+            })
         }
-        completion()
     }
 
-    private func doMigration() {
-        // Typing indicators should be disabled by default for
-        // legacy users.
-        typingIndicators.setTypingIndicatorsEnabled(value: false)
-
-        self.dbReadWriteConnection().readWrite { transaction in
-            self.save(with: transaction)
+    private func doMigrationAsync(completion : @escaping OWSDatabaseMigrationCompletion) {
+        DispatchQueue.main.async {
+            // Typing indicators should be disabled by default for
+            // legacy users.
+            self.typingIndicators.setTypingIndicatorsEnabled(value: false)
+            
+            DispatchQueue.global().async {
+                self.dbReadWriteConnection().readWrite { transaction in
+                    self.save(with: transaction)
+                }
+                
+                completion()
+            }
         }
     }
 }
