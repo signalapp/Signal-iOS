@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
                         [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
                     [recipients addObject:recipient];
                 } else {
-                    [SignalRecipient removeUnregisteredRecipient:recipientId transaction:transaction];
+                    [SignalRecipient markRecipientAsUnregistered:recipientId transaction:transaction];
                 }
             }
         }];

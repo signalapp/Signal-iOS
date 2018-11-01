@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
 
     // Add before we remove, since removeDevicesFromRecipient:...
-    // can removeUnregisteredRecipient:... if the recipient has
+    // can markRecipientAsUnregistered:... if the recipient has
     // no devices left.
     if (devicesToAdd.count > 0) {
         [self addDevicesToRegisteredRecipient:[NSSet setWithArray:devicesToAdd] transaction:transaction];
@@ -192,6 +192,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // We need to distinguish between "users we know to be unregistered" and
+    // "users whose registration status is unknown".  The former correspond to
+    // instances of SignalRecipient with no devices.  The latter do not
+    // correspond to an instance of SignalRecipient in the database (although
+    // they may correspond to an "unsaved" instance of SignalRecipient built
+    // by getOrBuildUnsavedRecipientForRecipientId.
     OWSFailDebug(@"Don't call removeWithTransaction.");
     
     [super removeWithTransaction:transaction];
@@ -256,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)removeUnregisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(recipientId.length > 0);

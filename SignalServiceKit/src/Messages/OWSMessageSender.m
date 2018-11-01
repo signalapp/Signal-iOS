@@ -817,7 +817,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        [SignalRecipient removeUnregisteredRecipient:recipient.recipientId transaction:transaction];
+        [SignalRecipient markRecipientAsUnregistered:recipient.recipientId transaction:transaction];
 
         [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
             saveWithTransaction:transaction];
