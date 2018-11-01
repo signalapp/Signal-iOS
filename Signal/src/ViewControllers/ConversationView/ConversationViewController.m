@@ -596,6 +596,8 @@ typedef enum : NSUInteger {
 {
     [self.collectionView registerClass:[OWSSystemMessageCell class]
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSTypingIndicatorCell class]
+            forCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSContactOffersCell class]
             forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSMessageCell class]

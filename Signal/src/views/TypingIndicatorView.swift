@@ -3,7 +3,9 @@
 //
 
 @objc class TypingIndicatorView: UIStackView {
-    private let kDotMaxHSpacing: CGFloat = 8
+    // This represents the spacing between the dots
+    // _at their max size_.
+    private let kDotMaxHSpacing: CGFloat = 3
 
     @objc
     public static let kMinRadiusPt: CGFloat = 6

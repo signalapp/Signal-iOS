@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Call,
     OWSInteractionType_Info,
     OWSInteractionType_Offer,
+    OWSInteractionType_TypingIndicator,
 };
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
@@ -28,6 +29,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @interface TSInteraction : TSYapDatabaseObject
 
+- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+                                  timestamp:(uint64_t)timestamp
+                                   inThread:(TSThread *)thread;
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;

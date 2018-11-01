@@ -302,6 +302,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             case OWSInteractionType_Offer:
                 measurementCell = [OWSContactOffersCell new];
                 break;
+            case OWSInteractionType_TypingIndicator:
+                measurementCell = [OWSTypingIndicatorCell new];
+                break;
         }
 
         OWSAssertDebug(measurementCell);
@@ -318,6 +321,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (self.hasCellHeader) {
         return OWSMessageHeaderViewDateHeaderVMargin;
     }
+
+    // TODO:
 
     // "Bubble Collapse".  Adjacent messages with the same author should be close together.
     if (self.interaction.interactionType == OWSInteractionType_IncomingMessage
@@ -358,6 +363,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                                              forIndexPath:indexPath];
         case OWSInteractionType_Offer:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
+                                                             forIndexPath:indexPath];
+
+        case OWSInteractionType_TypingIndicator:
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
     }
 }
@@ -480,6 +489,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.interaction.interactionType) {
         case OWSInteractionType_Unknown:
         case OWSInteractionType_Offer:
+        case OWSInteractionType_TypingIndicator:
             return;
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
