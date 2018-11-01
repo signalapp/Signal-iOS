@@ -98,6 +98,9 @@
         fileprivate func startAnimation() {
             stopAnimation()
 
+            let baseColor = (Theme.isDarkThemeEnabled
+            ? UIColor(rgbHex: 0xBBBDBE)
+            : UIColor(rgbHex: 0x636467))
             let timeIncrement: CFTimeInterval = 0.15
             var colorValues = [CGColor]()
             var pathValues = [CGPath]()
@@ -105,7 +108,7 @@
             var animationDuration: CFTimeInterval = 0
 
             let addDotKeyFrame = { (keyFrameTime: CFTimeInterval, progress: CGFloat) in
-                let dotColor = UIColor(rgbHex: 0x636467).withAlphaComponent(CGFloatLerp(0.4, 1.0, progress))
+                let dotColor = baseColor.withAlphaComponent(CGFloatLerp(0.4, 1.0, progress))
                 colorValues.append(dotColor.cgColor)
                 let radius = CGFloatLerp(TypingIndicatorView.kMinRadiusPt, TypingIndicatorView.kMaxRadiusPt, progress)
                 let margin = (TypingIndicatorView.kMaxRadiusPt - radius) * 0.5
