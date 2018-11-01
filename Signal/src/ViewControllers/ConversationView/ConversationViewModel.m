@@ -1336,6 +1336,12 @@ static const int kYapDatabaseRangeMinLength = 0;
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug([notification.object isKindOfClass:[NSString class]]);
+    OWSAssertDebug(self.thread);
+
+    if (![notification.object isEqual:self.thread.uniqueId]) {
+        return;
+    }
 
     self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
 }
