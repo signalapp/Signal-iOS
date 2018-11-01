@@ -1118,6 +1118,7 @@
 		4C1D2334218B6A1100A0598F /* az */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = az; path = translations/az.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C1D2335218B6A7600A0598F /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = translations/el.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C1D2337218B6BA000A0598F /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = translations/it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4C1D2338218B6BF100A0598F /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = translations/ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
 		4C23A5F1215C4ADE00534937 /* SheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetViewController.swift; sourceTree = "<group>"; };
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
@@ -1168,7 +1169,6 @@
 		B10C9B5C1A7049EC00ECA2BF /* pause_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pause_icon@2x.png"; sourceTree = "<group>"; };
 		B10C9B5D1A7049EC00ECA2BF /* play_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_icon.png; sourceTree = "<group>"; };
 		B10C9B5E1A7049EC00ECA2BF /* play_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "play_icon@2x.png"; sourceTree = "<group>"; };
-		B60341CD1AA5469800A01E42 /* ja_JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja_JP; path = translations/ja_JP.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B60EDE031A05A01700D73516 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B633C5041A1D190B0059AC12 /* call@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "call@2x.png"; sourceTree = "<group>"; };
 		B633C50B1A1D190B0059AC12 /* contact_default_feed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = contact_default_feed.png; sourceTree = "<group>"; };
@@ -2772,6 +2772,7 @@
 				az,
 				el,
 				it,
+				ja,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -3540,7 +3541,6 @@
 				B646D10E1AA5461A004133BA /* fr */,
 				B646D10F1AA54626004133BA /* fil */,
 				B646D1141AA54674004133BA /* hu */,
-				B60341CD1AA5469800A01E42 /* ja_JP */,
 				B68CB7D81AA546C30065AC3F /* lv */,
 				B68CB7D91AA546CE0065AC3F /* nb_NO */,
 				B68CB7DA1AA546F50065AC3F /* nl */,
@@ -3573,6 +3573,7 @@
 				4C1D2334218B6A1100A0598F /* az */,
 				4C1D2335218B6A7600A0598F /* el */,
 				4C1D2337218B6BA000A0598F /* it */,
+				4C1D2338218B6BF100A0598F /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
