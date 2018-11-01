@@ -24,28 +24,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSNavigationController
 
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+- (instancetype)init
 {
-    self = [self initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
+    self = [super initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     if (!self) {
         return self;
     }
+    [self setupNavbar];
 
-    [self pushViewController:rootViewController animated:NO];
+    return self;
+}
 
-    if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-        OWSFailDebug(@"navigationBar was unexpected class: %@", self.navigationBar);
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+{
+    self = [self init];
+    if (!self) {
         return self;
     }
-
-    OWSNavigationBar *navbar = (OWSNavigationBar *)self.navigationBar;
-    navbar.navBarLayoutDelegate = self;
-    [self updateLayoutForNavbar:navbar];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
+    [self pushViewController:rootViewController animated:NO];
 
     return self;
 }
@@ -54,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark -
 
 - (void)themeDidChange:(NSNotification *)notification
 {
@@ -72,6 +70,22 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - UINavigationBarDelegate
+
+- (void)setupNavbar
+{
+    if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
+        OWSFailDebug(@"navigationBar was unexpected class: %@", self.navigationBar);
+        return;
+    }
+    OWSNavigationBar *navbar = (OWSNavigationBar *)self.navigationBar;
+    navbar.navBarLayoutDelegate = self;
+    [self updateLayoutForNavbar:navbar];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:ThemeDidChangeNotification
+                                               object:nil];
+}
 
 // All OWSNavigationController serve as the UINavigationBarDelegate for their navbar.
 // We override shouldPopItem: in order to cancel some back button presses - for example,

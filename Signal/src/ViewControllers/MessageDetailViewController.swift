@@ -615,17 +615,17 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MARK: OWSMessageBubbleViewDelegate
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+        let mediaGallery = MediaGallery(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
 
-        mediaGalleryViewController.addDataSourceDelegate(self)
-        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
+        mediaGallery.addDataSourceDelegate(self)
+        mediaGallery.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+        let mediaGallery = MediaGallery(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
 
-        mediaGalleryViewController.addDataSourceDelegate(self)
-        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
+        mediaGallery.addDataSourceDelegate(self)
+        mediaGallery.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
