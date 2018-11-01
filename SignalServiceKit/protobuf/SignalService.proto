@@ -296,8 +296,9 @@ message SyncMessage {
   }
 
   message Configuration {
-    optional bool readReceipts = 1;
-    optional bool unidentifiedDeliveryIndicators = 2;
+      optional bool readReceipts = 1;
+      optional bool unidentifiedDeliveryIndicators = 2;
+      optional bool typingIndicators = 3;
   }
 
   optional Sent          sent          = 1;
