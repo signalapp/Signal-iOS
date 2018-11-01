@@ -212,8 +212,9 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSMutableArray *result = [NSMutableArray array];
 
     for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
-        SignalRecipient *_Nullable signalRecipient =
-            [SignalRecipient registeredRecipientForRecipientId:number.toE164 transaction:transaction];
+        SignalRecipient *_Nullable signalRecipient = [SignalRecipient registeredRecipientForRecipientId:number.toE164
+                                                                                        mustHaveDevices:YES
+                                                                                            transaction:transaction];
         if (signalRecipient) {
             [result addObject:signalRecipient];
         }
