@@ -261,7 +261,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ はブロックされています。";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ユーザはブロックされました";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ユーザがブロックされました";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "グループがブロックされました";
@@ -1962,7 +1962,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "検索結果なし";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "ブロックリスト";
+"SETTINGS_BLOCK_LIST_TITLE" = "ブロック リスト";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "IPアドレスを隠す";
