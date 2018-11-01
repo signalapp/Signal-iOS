@@ -64,6 +64,16 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     return Environment.shared.preferences;
 }
 
+- (OWSReadReceiptManager *)readReceiptManager
+{
+    return OWSReadReceiptManager.sharedManager;
+}
+
+- (id<OWSTypingIndicators>)typingIndicators
+{
+    return SSKEnvironment.shared.typingIndicators;
+}
+
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -88,13 +98,23 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         = NSLocalizedString(@"SETTINGS_READ_RECEIPT", @"Label for the 'read receipts' setting.");
     readReceiptsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
-    [readReceiptsSection
-        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_READ_RECEIPT",
-                                                     @"Label for the 'read receipts' setting.")
-                                            isOn:[OWSReadReceiptManager.sharedManager areReadReceiptsEnabled]
-                                          target:weakSelf
-                                        selector:@selector(didToggleReadReceiptsSwitch:)]];
+    [readReceiptsSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_READ_RECEIPT",
+                                                                      @"Label for the 'read receipts' setting.")
+                                                             isOn:[self.readReceiptManager areReadReceiptsEnabled]
+                                                           target:weakSelf
+                                                         selector:@selector(didToggleReadReceiptsSwitch:)]];
     [contents addSection:readReceiptsSection];
+
+    OWSTableSection *typingIndicatorsSection = [OWSTableSection new];
+    typingIndicatorsSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_TYPING_INDICATORS", @"Label for the 'typing indicators' setting.");
+    // TODO: Should we have a footer?
+    [typingIndicatorsSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_TYPING_INDICATORS",
+                                                                          @"Label for the 'typing indicators' setting.")
+                                                                 isOn:[self.typingIndicators areTypingIndicatorsEnabled]
+                                                               target:weakSelf
+                                                             selector:@selector(didToggleTypingIndicatorsSwitch:)]];
+    [contents addSection:typingIndicatorsSection];
 
     OWSTableSection *screenLockSection = [OWSTableSection new];
     screenLockSection.headerTitle = NSLocalizedString(
@@ -337,7 +357,14 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areReadReceiptsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:enabled];
+    [self.readReceiptManager setAreReadReceiptsEnabled:enabled];
+}
+
+- (void)didToggleTypingIndicatorsSwitch:(UISwitch *)sender
+{
+    BOOL enabled = sender.isOn;
+    OWSLogInfo(@"toggled areTypingIndicatorsEnabled: %@", enabled ? @"ON" : @"OFF");
+    [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
 }
 
 - (void)didToggleCallsHideIPAddressSwitch:(UISwitch *)sender
