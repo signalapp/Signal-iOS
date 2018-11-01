@@ -204,7 +204,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 // If the user types a character into the compose box, and the sendRefresh timer isn’t running:
 
                 // Send a ACTION=TYPING message.
-                sendTypingMessage(forThread: thread, action: .started)
+                sendTypingMessageIfNecessary(forThread: thread, action: .started)
                 // Start the sendRefresh timer for 10 seconds
                 sendRefreshTimer?.invalidate()
                 sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
@@ -233,7 +233,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             AssertIsOnMainThread()
 
             // Send ACTION=STOPPED message.
-            sendTypingMessage(forThread: thread, action: .stopped)
+            sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
             // Cancel the sendRefresh timer
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
@@ -249,7 +249,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // If the sendPause timer fires:
 
             // Send ACTION=STOPPED message.
-            sendTypingMessage(forThread: thread, action: .stopped)
+            sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
             // Cancel the sendRefresh timer
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
@@ -265,7 +265,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // If the sendRefresh timer fires:
 
             // Send ACTION=TYPING message
-            sendTypingMessage(forThread: thread, action: .started)
+            sendTypingMessageIfNecessary(forThread: thread, action: .started)
             // Cancel the sendRefresh timer
             sendRefreshTimer?.invalidate()
             // Start the sendRefresh timer for 10 seconds again
@@ -289,13 +289,16 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             sendPauseTimer = nil
         }
 
-        private func sendTypingMessage(forThread thread: TSThread, action: TypingIndicatorAction) {
+        private func sendTypingMessageIfNecessary(forThread thread: TSThread, action: TypingIndicatorAction) {
             Logger.verbose("\(TypingIndicatorMessage.string(forTypingIndicatorAction: action))")
 
             guard let delegate = delegate else {
                 owsFailDebug("Missing delegate.")
                 return
             }
+            // `areTypingIndicatorsEnabled` reflects the user-facing setting in the app preferences.
+            // If it's disabled we don't want to emit "typing indicator" messages
+            // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
@@ -347,7 +350,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 if didChange {
                     Logger.debug("isTyping changed: \(oldValue) -> \(self.isTyping)")
 
-                    notify()
+                    notifyIfNecessary()
                 }
             }
         }
@@ -412,13 +415,16 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             isTyping = false
         }
 
-        private func notify() {
+        private func notifyIfNecessary() {
             Logger.verbose("")
 
             guard let delegate = delegate else {
                 owsFailDebug("Missing delegate.")
                 return
             }
+            // `areTypingIndicatorsEnabled` reflects the user-facing setting in the app preferences.
+            // If it's disabled we don't want to emit "typing indicator" messages
+            // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
