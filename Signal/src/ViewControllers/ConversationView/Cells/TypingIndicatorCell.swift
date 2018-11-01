@@ -56,7 +56,6 @@ public class TypingIndicatorCell: ConversationViewCell {
 
         bubbleView.bubbleColor = conversationStyle.bubbleColor(isIncoming: true)
         typingIndicatorView.startAnimation()
-        typingIndicatorView.addBackgroundView(withBackgroundColor: UIColor.red)
 
         viewConstraints.append(contentsOf: [
             bubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: conversationStyle.gutterLeading),
