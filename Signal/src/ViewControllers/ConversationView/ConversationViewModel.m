@@ -585,7 +585,7 @@ static const int kYapDatabaseRangeMinLength = 0;
                updatedNeighborItemSet:updatedNeighborItemSet];
 }
 
-// A simpler version of the update logic we call when
+// A simpler version of the update logic we use when
 // only transient items have changed.
 - (void)updateForTransientItems
 {
@@ -598,7 +598,6 @@ static const int kYapDatabaseRangeMinLength = 0;
         [oldItemIdList addObject:viewItem.itemId];
     }
 
-    NSUInteger oldViewItemCount = self.viewItems.count;
     if (![self reloadViewItems]) {
         // These errors are rare.
         OWSFailDebug(@"could not reload view items; hard resetting message mappings.");
@@ -607,12 +606,9 @@ static const int kYapDatabaseRangeMinLength = 0;
         return;
     }
 
-    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldViewItemCount, self.viewItems.count);
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
 
-    [self updateViewWitholdItemIdList:oldItemIdList
-                       updatedItemSet:[NSSet set]
-                     oldViewItemCount:oldViewItemCount
-               updatedNeighborItemSet:nil];
+    [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set] updatedNeighborItemSet:nil];
 }
 
 - (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
