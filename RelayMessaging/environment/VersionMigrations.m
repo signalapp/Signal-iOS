@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (!previousVersion || [self isVersion:previousVersion lessThan:@"2.0.0"]) {
+    if ([self isVersion:previousVersion lessThan:@"2.0.0"]) {
         DDLogError(@"Migrating from version 1.x.x.  Wiping database");
         // Not translating these as so few are affected.
         UIAlertController *alertController = [UIAlertController
