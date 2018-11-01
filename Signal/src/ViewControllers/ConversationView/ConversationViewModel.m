@@ -143,6 +143,7 @@ static const int kYapDatabaseRangeMinLength = 0;
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic, nullable) NSDate *collapseCutoffDate;
+@property (nonatomic, nullable) NSString *typingIndicatorsSender;
 
 @end
 
@@ -200,6 +201,11 @@ static const int kYapDatabaseRangeMinLength = 0;
     return OWSBlockingManager.sharedManager;
 }
 
+- (id<OWSTypingIndicators>)typingIndicators
+{
+    return SSKEnvironment.shared.typingIndicators;
+}
+
 #pragma mark
 
 - (void)addNotificationListeners
@@ -224,6 +230,10 @@ static const int kYapDatabaseRangeMinLength = 0;
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(typingIndicatorStateDidChange:)
+                                                 name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
+                                               object:nil];
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
@@ -240,6 +250,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
     self.lastRangeLength = 0;
+    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
 
     [self ensureDynamicInteractions];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
@@ -574,6 +585,32 @@ static const int kYapDatabaseRangeMinLength = 0;
                updatedNeighborItemSet:updatedNeighborItemSet];
 }
 
+// A simpler version of the update logic we use when
+// only transient items have changed.
+- (void)updateForTransientItems
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogVerbose(@"");
+
+    NSMutableArray<NSString *> *oldItemIdList = [NSMutableArray new];
+    for (id<ConversationViewItem> viewItem in self.viewItems) {
+        [oldItemIdList addObject:viewItem.itemId];
+    }
+
+    if (![self reloadViewItems]) {
+        // These errors are rare.
+        OWSFailDebug(@"could not reload view items; hard resetting message mappings.");
+        // resetMappings will call delegate.conversationViewModelDidUpdate.
+        [self resetMappings];
+        return;
+    }
+
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewItems.count);
+
+    [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set] updatedNeighborItemSet:nil];
+}
+
 - (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
                      updatedItemSet:(NSSet<NSString *> *)updatedItemSet
              updatedNeighborItemSet:(nullable NSMutableSet<NSString *> *)updatedNeighborItemSet
@@ -863,6 +900,25 @@ static const int kYapDatabaseRangeMinLength = 0;
             OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
             viewItemCache[interaction.uniqueId] = viewItem;
         }
+
+        if (self.typingIndicatorsSender) {
+            id<ConversationViewItem> _Nullable lastViewItem = viewItems.lastObject;
+            uint64_t typingIndicatorTimestamp = (lastViewItem ? lastViewItem.interaction.timestamp + 1 : 1);
+            TSInteraction *interaction =
+                [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
+                                                            timestamp:typingIndicatorTimestamp
+                                                          recipientId:self.typingIndicatorsSender];
+            id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
+            if (!viewItem) {
+                viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
+                                                                          isGroupThread:isGroupThread
+                                                                            transaction:transaction
+                                                                      conversationStyle:conversationStyle];
+            }
+            [viewItems addObject:viewItem];
+            OWSAssertDebug(!viewItemCache[interaction.uniqueId]);
+            viewItemCache[interaction.uniqueId] = viewItem;
+        }
     }];
 
     // Flag to ensure that we only increment once per launch.
@@ -883,6 +939,7 @@ static const int kYapDatabaseRangeMinLength = 0;
         switch (viewItem.interaction.interactionType) {
             case OWSInteractionType_Unknown:
             case OWSInteractionType_Offer:
+            case OWSInteractionType_TypingIndicator:
                 canShowDate = NO;
                 break;
             case OWSInteractionType_IncomingMessage:
@@ -1274,6 +1331,34 @@ static const int kYapDatabaseRangeMinLength = 0;
         return nil;
     }
     return @(groupIndex);
+}
+
+- (void)typingIndicatorStateDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug([notification.object isKindOfClass:[NSString class]]);
+    OWSAssertDebug(self.thread);
+
+    if (![notification.object isEqual:self.thread.uniqueId]) {
+        return;
+    }
+
+    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
+}
+
+- (void)setTypingIndicatorsSender:(nullable NSString *)typingIndicatorsSender
+{
+    OWSAssertIsOnMainThread();
+
+    BOOL didChange = ![NSObject isNullableObject:typingIndicatorsSender equalTo:_typingIndicatorsSender];
+
+    _typingIndicatorsSender = typingIndicatorsSender;
+
+    // Update the view items if necessary.
+    // We don't have to do this if they haven't been configured yet.
+    if (didChange && self.viewItems != nil) {
+        [self updateForTransientItems];
+    }
 }
 
 @end

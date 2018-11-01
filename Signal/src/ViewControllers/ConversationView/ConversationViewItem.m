@@ -143,14 +143,24 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssertDebug(transaction);
 
-    if (self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        _authorConversationColorName = nil;
-        return;
+    switch (self.interaction.interactionType) {
+        case OWSInteractionType_TypingIndicator: {
+            OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
+            _authorConversationColorName =
+                [TSContactThread conversationColorNameForRecipientId:typingIndicator.recipientId
+                                                         transaction:transaction];
+            break;
+        }
+        case OWSInteractionType_IncomingMessage: {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+            _authorConversationColorName =
+                [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
+            break;
+        }
+        default:
+            _authorConversationColorName = nil;
+            break;
     }
-
-    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-    _authorConversationColorName =
-        [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
 }
 
 - (NSString *)itemId
@@ -302,6 +312,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             case OWSInteractionType_Offer:
                 measurementCell = [OWSContactOffersCell new];
                 break;
+            case OWSInteractionType_TypingIndicator:
+                measurementCell = [OWSTypingIndicatorCell new];
+                break;
         }
 
         OWSAssertDebug(measurementCell);
@@ -358,6 +371,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                                              forIndexPath:indexPath];
         case OWSInteractionType_Offer:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
+                                                             forIndexPath:indexPath];
+
+        case OWSInteractionType_TypingIndicator:
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
     }
 }
@@ -480,6 +497,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.interaction.interactionType) {
         case OWSInteractionType_Unknown:
         case OWSInteractionType_Offer:
+        case OWSInteractionType_TypingIndicator:
             return;
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:

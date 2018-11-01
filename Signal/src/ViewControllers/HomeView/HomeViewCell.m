@@ -22,11 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
 @property (nonatomic) MessageStatusView *messageStatusView;
+@property (nonatomic) TypingIndicatorView *typingIndicatorView;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
 @property (nonatomic, nullable) ThreadViewModel *thread;
+@property (nonatomic, nullable) NSAttributedString *overrideSnippet;
+@property (nonatomic) BOOL isBlocked;
 
 @property (nonatomic, readonly) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
@@ -43,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(Environment.shared.contactsManager);
 
     return Environment.shared.contactsManager;
+}
+
+- (id<OWSTypingIndicators>)typingIndicators
+{
+    return SSKEnvironment.shared.typingIndicators;
 }
 
 #pragma mark -
@@ -114,10 +122,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
+    self.typingIndicatorView = [TypingIndicatorView new];
+    [self.contentView addSubview:self.typingIndicatorView];
+
     UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.snippetLabel,
         self.messageStatusView,
     ]];
+
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
     bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
     bottomRowView.spacing = 6.f;
@@ -154,6 +166,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.contentView addSubview:self.unreadBadge];
     [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
+
+    [self.typingIndicatorView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:self.snippetLabel];
+    [self.typingIndicatorView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.snippetLabel];
 }
 
 - (void)dealloc
@@ -196,12 +211,18 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSTableItem configureCell:self];
 
     self.thread = thread;
+    self.overrideSnippet = overrideSnippet;
+    self.isBlocked = isBlocked;
 
     BOOL hasUnreadMessages = thread.hasUnreadMessages;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(typingIndicatorStateDidChange:)
+                                                 name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
                                                object:nil];
     [self updateNameLabel];
     [self updateAvatarView];
@@ -210,11 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = [self snippetFont];
 
-    if (overrideSnippet) {
-        self.snippetLabel.attributedText = overrideSnippet;
-    } else {
-        self.snippetLabel.attributedText = [self attributedSnippetForThread:thread isBlocked:isBlocked];
-    }
+    [self updatePreview];
 
     self.dateTimeLabel.text
         = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
@@ -442,6 +459,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.viewConstraints removeAllObjects];
 
     self.thread = nil;
+    self.overrideSnippet = nil;
     self.avatarView.image = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -498,6 +516,43 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.nameLabel.attributedText = name;
+}
+
+#pragma mark - Typing Indicators
+
+- (void)updatePreview
+{
+    if ([self.typingIndicators typingRecipientIdForThread:self.thread.threadRecord] != nil) {
+        // If we hide snippetLabel, our layout will break since UIStackView will remove
+        // it from the layout.  Wrapping the preview views (the snippet label and the
+        // typing indicator) in a UIStackView proved non-trivial since we're using
+        // UIStackViewAlignmentLastBaseline.  Therefore we hide the _contents_ of the
+        // snippet label using an empty string.
+        self.snippetLabel.text = @" ";
+        self.typingIndicatorView.hidden = NO;
+        [self.typingIndicatorView startAnimation];
+    } else {
+        if (self.overrideSnippet) {
+            self.snippetLabel.attributedText = self.overrideSnippet;
+        } else {
+            self.snippetLabel.attributedText = [self attributedSnippetForThread:self.thread isBlocked:self.isBlocked];
+        }
+        self.typingIndicatorView.hidden = YES;
+        [self.typingIndicatorView stopAnimation];
+    }
+}
+
+- (void)typingIndicatorStateDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug([notification.object isKindOfClass:[NSString class]]);
+    OWSAssertDebug(self.thread);
+
+    if (![notification.object isEqual:self.thread.threadRecord.uniqueId]) {
+        return;
+    }
+
+    [self updatePreview];
 }
 
 @end

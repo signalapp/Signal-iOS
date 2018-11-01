@@ -27,6 +27,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_Info";
         case OWSInteractionType_Offer:
             return @"OWSInteractionType_Offer";
+        case OWSInteractionType_TypingIndicator:
+            return @"OWSInteractionType_TypingIndicator";
     }
 }
 
@@ -72,6 +74,24 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 + (NSString *)collection {
     return @"TSInteraction";
+}
+
+- (instancetype)initInteractionWithUniqueId:(NSString *)uniqueId
+                                  timestamp:(uint64_t)timestamp
+                                   inThread:(TSThread *)thread
+{
+    OWSAssertDebug(timestamp > 0);
+
+    self = [super initWithUniqueId:uniqueId];
+
+    if (!self) {
+        return self;
+    }
+
+    _timestamp = timestamp;
+    _uniqueThreadId = thread.uniqueId;
+
+    return self;
 }
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread

@@ -53,6 +53,8 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
 
 - (CGFloat)minWidth;
 
+- (CGFloat)minHeight;
+
 @end
 
 NS_ASSUME_NONNULL_END
