@@ -1478,7 +1478,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Consult the device list cache we use for message sending
     // whether or not we know about this linked device.
     SignalRecipient *_Nullable recipient =
-        [SignalRecipient registeredRecipientForRecipientId:localNumber transaction:transaction];
+        [SignalRecipient registeredRecipientForRecipientId:localNumber mustHaveDevices:NO transaction:transaction];
     if (!recipient) {
         OWSFailDebug(@"No local SignalRecipient.");
     } else {

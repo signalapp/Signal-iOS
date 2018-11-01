@@ -787,7 +787,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        [SignalRecipient removeUnregisteredRecipient:recipient.recipientId transaction:transaction];
+        [SignalRecipient markRecipientAsUnregistered:recipient.recipientId transaction:transaction];
 
         [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
             saveWithTransaction:transaction];
@@ -1016,7 +1016,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSFailDebug(@"sync message has device messages for unknown secondary devices.");
         }
     } else {
-        OWSAssertDebug(deviceMessages.count > 0);
+        // This can happen for users who have unregistered.
+        // We still want to try sending to them in case they have re-registered.
+        if (deviceMessages.count < 1) {
+            OWSLogWarn(@"Message send attempt with no device messages.");
+        }
     }
 
     if (deviceMessages.count == 0) {
