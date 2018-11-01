@@ -19,6 +19,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }
         return mediaGalleryDataSource.sections
     }
+
     private var galleryDates: [GalleryDate] {
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
@@ -44,23 +45,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
 
-        // Layout Setup
-
-        let screenWidth = UIScreen.main.bounds.size.width
-        let kItemsPerRow = 4
-        let kInterItemSpacing: CGFloat = 2
-
-        let availableWidth = screenWidth - CGFloat(kItemsPerRow + 1) * kInterItemSpacing
-        let kItemWidth = floor(availableWidth / CGFloat(kItemsPerRow))
-
-        let layout: MediaTileViewLayout = MediaTileViewLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: kItemWidth, height: kItemWidth)
-        layout.minimumInteritemSpacing = kInterItemSpacing
-        layout.minimumLineSpacing = kInterItemSpacing
-        layout.sectionHeadersPinToVisibleBounds = true
+        let layout: MediaTileViewLayout = type(of: self).buildLayout()
         self.mediaTileViewLayout = layout
-
         super.init(collectionViewLayout: layout)
     }
 
@@ -110,6 +96,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
 
         updateSelectButton()
+        self.mediaTileViewLayout.invalidateLayout()
     }
 
     private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
@@ -139,6 +126,22 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.view.layoutIfNeeded()
         self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
         self.autoLoadMoreIfNecessary()
+    }
+
+    override public func viewWillTransition(to size: CGSize,
+                                            with coordinator: UIViewControllerTransitionCoordinator) {
+        self.mediaTileViewLayout.invalidateLayout()
+    }
+
+    public override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        self.updateLayout()
+    }
+
+    // MARK: Orientation
+
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
     }
 
     // MARK: UICollectionViewDelegate
@@ -387,6 +390,45 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     }
 
     // MARK: UICollectionViewDelegateFlowLayout
+
+    static let kInterItemSpacing: CGFloat = 2
+    private class func buildLayout() -> MediaTileViewLayout {
+        let layout = MediaTileViewLayout()
+
+        if #available(iOS 11, *) {
+            layout.sectionInsetReference = .fromSafeArea
+        }
+        layout.minimumInteritemSpacing = kInterItemSpacing
+        layout.minimumLineSpacing = kInterItemSpacing
+        layout.sectionHeadersPinToVisibleBounds = true
+
+        return layout
+    }
+
+    func updateLayout() {
+        let containerWidth: CGFloat
+        if #available(iOS 11.0, *) {
+            containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
+        } else {
+            containerWidth = self.view.frame.size.width
+        }
+
+        let kItemsPerPortraitRow = 4
+        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
+
+        let itemCount = round(containerWidth / approxItemWidth)
+        let spaceWidth = (itemCount + 1) * type(of: self).kInterItemSpacing
+        let availableWidth = containerWidth - spaceWidth
+
+        let itemWidth = floor(availableWidth / CGFloat(itemCount))
+        let newItemSize = CGSize(width: itemWidth, height: itemWidth)
+
+        if (newItemSize != mediaTileViewLayout.itemSize) {
+            mediaTileViewLayout.itemSize = newItemSize
+            mediaTileViewLayout.invalidateLayout()
+        }
+    }
 
     public func collectionView(_ collectionView: UICollectionView,
                                layout collectionViewLayout: UICollectionViewLayout,
@@ -716,7 +758,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
 // MARK: - Private Helper Classes
 
-// Accomodates remaining scrolled to the same "apparent" position when new content is insterted
+// Accomodates remaining scrolled to the same "apparent" position when new content is inserted
 // into the top of a collectionView. There are multiple ways to solve this problem, but this
 // is the only one which avoided a perceptible flicker.
 private class MediaTileViewLayout: UICollectionViewFlowLayout {
@@ -784,8 +826,8 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
         self.addSubview(label)
 
         blurEffectView.autoPinEdgesToSuperviewEdges()
-        label.autoPinEdge(toSuperviewEdge: .trailing)
-        label.autoPinEdge(toSuperviewEdge: .leading, withInset: 10)
+        label.autoPinEdge(toSuperviewMargin: .trailing)
+        label.autoPinEdge(toSuperviewMargin: .leading)
         label.autoVCenterInSuperview()
     }
 

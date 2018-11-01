@@ -77,4 +77,11 @@ public class ReturnToCallViewController: UIViewController {
 
         super.viewDidLayoutSubviews()
     }
+
+    // MARK: Orientation
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+
 }

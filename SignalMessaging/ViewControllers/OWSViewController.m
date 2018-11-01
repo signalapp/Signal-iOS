@@ -177,6 +177,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bottomLayoutView.superview layoutIfNeeded];
 }
 
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

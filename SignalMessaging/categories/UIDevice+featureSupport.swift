@@ -53,4 +53,16 @@ public extension UIDevice {
 
         return isNativeIPad || isCompatabilityModeIPad
     }
+
+    public func ows_setOrientation(_ orientation: UIInterfaceOrientation) {
+        // XXX - This is not officially supported, but there's no other way to programmatically rotate
+        // the interface.
+        let orientationKey = "orientation"
+        self.setValue(orientation.rawValue, forKey: orientationKey)
+
+        // Not strictly necessary for the orientation to appear as changed
+        // but allegedly helps ensure related rotation delegate methods are called.
+        // https://stackoverflow.com/questions/20987249/how-do-i-programmatically-set-device-orientation-in-ios7
+        UINavigationController.attemptRotationToDeviceOrientation()
+    }
 }

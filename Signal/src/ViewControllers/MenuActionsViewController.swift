@@ -90,6 +90,12 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
         ensureDelegateIsInformedThatDisappearenceCompleted()
     }
 
+    // MARK: Orientation
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+
     // MARK: Present / Dismiss animations
 
     var presentationFocusOffset: CGFloat?

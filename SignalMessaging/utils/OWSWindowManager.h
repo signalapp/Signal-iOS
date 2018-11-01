@@ -26,6 +26,8 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow;
 
+@property (nonatomic, readonly) UIWindow *rootWindow;
+
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive;
 
 #pragma mark - Message Actions
