@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
 @property (nonatomic) MessageStatusView *messageStatusView;
+@property (nonatomic) TypingIndicatorView *typingIndicatorView;
+@property (nonatomic) UIStackView *previewStackView;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
@@ -43,6 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(Environment.shared.contactsManager);
 
     return Environment.shared.contactsManager;
+}
+
+- (id<OWSTypingIndicators>)typingIndicators
+{
+    return SSKEnvironment.shared.typingIndicators;
 }
 
 #pragma mark -
@@ -111,15 +118,25 @@ NS_ASSUME_NONNULL_BEGIN
     self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.numberOfLines = 1;
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [self.snippetLabel setContentHuggingHorizontalLow];
-    [self.snippetLabel setCompressionResistanceHorizontalLow];
+
+    self.typingIndicatorView = [TypingIndicatorView new];
+
+    self.previewStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.snippetLabel,
+        self.typingIndicatorView,
+    ]];
+    self.previewStackView.axis = UILayoutConstraintAxisVertical;
+    self.previewStackView.alignment = UIStackViewAlignmentLeading;
+    [self.previewStackView setContentHuggingHorizontalLow];
+    [self.previewStackView setCompressionResistanceHorizontalLow];
 
     UIStackView *bottomRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.snippetLabel,
+        self.previewStackView,
         self.messageStatusView,
     ]];
+    
     bottomRowView.axis = UILayoutConstraintAxisHorizontal;
-    bottomRowView.alignment = UIStackViewAlignmentLastBaseline;
+    bottomRowView.alignment = UIStackViewAlignmentCenter;
     bottomRowView.spacing = 6.f;
 
     UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -203,6 +220,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationName_OtherUsersProfileDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(typingIndicatorStateDidChange:)
+                                                 name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
+                                               object:nil];
     [self updateNameLabel];
     [self updateAvatarView];
 
@@ -215,7 +236,13 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         self.snippetLabel.attributedText = [self attributedSnippetForThread:thread isBlocked:isBlocked];
     }
-
+    [self updatePreview];
+    CGFloat previewHeight = MAX(self.snippetLabel.font.lineHeight,
+                                TypingIndicatorView.kMaxRadiusPt);
+    [self.viewConstraints addObjectsFromArray:@[
+                                                [self.previewStackView autoSetDimension:ALDimensionHeight
+                                                                            toSize:previewHeight],
+                                                ]];
     self.dateTimeLabel.text
         = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
 
@@ -498,6 +525,28 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.nameLabel.attributedText = name;
+}
+
+#pragma mark - Typing Indicators
+
+- (void)updatePreview
+{
+    if ([self.typingIndicators typingIndicatorsForThread:self.thread.threadRecord] != nil) {
+        self.snippetLabel.hidden = YES;
+        self.typingIndicatorView.hidden = NO;
+        [self.typingIndicatorView startAnimation];
+    } else {
+        self.snippetLabel.hidden = NO;
+        self.typingIndicatorView.hidden = YES;
+        [self.typingIndicatorView stopAnimation];
+    }
+}
+
+- (void)typingIndicatorStateDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updatePreview];
 }
 
 @end

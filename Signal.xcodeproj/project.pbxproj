@@ -216,6 +216,7 @@
 		34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
+		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6D27420F664C900765BE2 /* OWSUnreadIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = 34B6D27220F664C800765BE2 /* OWSUnreadIndicator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34B6D27520F664C900765BE2 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
@@ -866,6 +867,7 @@
 		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34B3F86D1E8DF1700035BE1A /* SignalsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsNavigationController.h; sourceTree = "<group>"; };
 		34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
+		34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicatorView.swift; sourceTree = "<group>"; };
 		34B6D27220F664C800765BE2 /* OWSUnreadIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUnreadIndicator.h; sourceTree = "<group>"; };
 		34B6D27320F664C800765BE2 /* OWSUnreadIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUnreadIndicator.m; sourceTree = "<group>"; };
 		34BECE291F74C12700D7438D /* DebugUIStress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIStress.h; sourceTree = "<group>"; };
@@ -2215,10 +2217,11 @@
 			isa = PBXGroup;
 			children = (
 				452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */,
-				4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */,
 				34E3E5671EC4B19400495BAC /* AudioProgressView.swift */,
+				4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */,
+				4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */,
 				45A663C41F92EC760027B59E /* GroupTableViewCell.swift */,
 				45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */,
 				34386A53207D271C009F5D9C /* NeverClearView.swift */,
@@ -2234,8 +2237,8 @@
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				450D19111F85236600970622 /* RemoteVideoView.h */,
 				450D19121F85236600970622 /* RemoteVideoView.m */,
-				4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */,
 				4CA5F792211E1F06008C2708 /* Toast.swift */,
+				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 			);
 			name = Views;
 			path = views;
@@ -3382,6 +3385,7 @@
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
+				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
 				340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */,
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,

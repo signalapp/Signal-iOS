@@ -31,7 +31,7 @@ public protocol TypingIndicators: class {
     //
     // TODO: Use this method.
     @objc
-    func typingIndicators(forThread thread: TSThread, recipientId: String) -> String?
+    func typingIndicators(forThread thread: TSThread) -> String?
 
     @objc
     func setTypingIndicatorsEnabled(value: Bool)
@@ -45,7 +45,8 @@ public protocol TypingIndicators: class {
 @objc(OWSTypingIndicatorsImpl)
 public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
-    @objc public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
+    @objc
+    public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
 
     private let kDatabaseCollection = "TypingIndicators"
     private let kDatabaseKey_TypingIndicatorsEnabled = "kDatabaseKey_TypingIndicatorsEnabled"
@@ -150,7 +151,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
-    public func typingIndicators(forThread thread: TSThread, recipientId: String) -> String? {
+    public func typingIndicators(forThread thread: TSThread) -> String? {
         AssertIsOnMainThread()
 
         var firstRecipientId: String?
