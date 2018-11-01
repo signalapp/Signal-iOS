@@ -332,8 +332,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         return OWSMessageHeaderViewDateHeaderVMargin;
     }
 
-    // TODO:
-
     // "Bubble Collapse".  Adjacent messages with the same author should be close together.
     if (self.interaction.interactionType == OWSInteractionType_IncomingMessage
         && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
