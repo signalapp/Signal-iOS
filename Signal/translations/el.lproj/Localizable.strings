@@ -207,7 +207,7 @@
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Δεν ήταν δυνατή η εισαγωγή του αντιγράφου ασφαλείας.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Διαμόρφωση αντιγράφου ασφαλείας";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Διαμόρφωση Αντιγράφου Ασφαλείας";
 
 /* Indicates that the backup import data is being downloaded. */
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Λήψη Δεδομένων Αντιγράφου Ασφαλείας";
@@ -685,7 +685,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Ένα Ακόμα Βήμα";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Δεν ήταν δυνατή η πρόσβαση στην εφαρμογή Email.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Ο σύνδεσμος gist αντιγράφτηκε στο πρόχειρό σας. Πρόκειται να ανακατευθυνθείτε στην λίστα θεμάτων του GitHub.";
@@ -1674,7 +1674,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "Έχετε δοκιμάσει πάρα πολλές φορές. Παρακαλώ περιμένετε ένα λεπτο πριν προσπαθήσετε ξανά.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_ERROR" = "Έχετε δοκιμάσει πάρα πολλές φορές. Παρακαλώ περιμένετε ένα λεπτό πριν προσπαθήσετε ξανά.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Αποτυχία επανεγγραφής για λήψη ειδοποιήσεων.";
@@ -2094,22 +2094,22 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Κλείδωμα Εγγραφής";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Learn More";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Μάθετε περισσότερα";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Προστατευμένος Αποστολέας";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Δείκτες Οθόνης";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Εμφάνιση εικονιδίου κατάστασης όταν επιλέξετε \"Περισσότερες πληροφορίες\" σε μηνύματα που έχουν παραδοθεί με προστατευμένο αποστολέα.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Επιτρέψτε σε οποιονδήποτε";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Ενεργοποιήστε τον προστατευμένο αποστολέα για εισερχόμενα μηνύματα από άτομα που δεν βρίσκονται στις επαφές σας και άτομα με τα οποία δεν έχετε μοιραστεί το προφίλ σας.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Έκδοση";
