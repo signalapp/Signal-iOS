@@ -168,44 +168,7 @@ protocol MediaGalleryDataSourceDelegate: class {
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
-@objc
-class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
-
-    private var pageViewController: MediaPageViewController?
-
-    private let uiDatabaseConnection: YapDatabaseConnection
-    private let editingDatabaseConnection: YapDatabaseConnection
-    private let mediaGalleryFinder: OWSMediaGalleryFinder
-
-    private var initialDetailItem: MediaGalleryItem?
-    private let thread: TSThread
-    private let options: MediaGalleryOption
-
-    // we start with a small range size for quick loading.
-    private let fetchRangeSize: UInt = 10
-
-    deinit {
-        Logger.debug("deinit")
-    }
-
-    @objc
-    init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption = []) {
-        self.thread = thread
-        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
-        self.uiDatabaseConnection = uiDatabaseConnection
-
-        self.editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-
-        self.options = options
-        self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
-        super.init(nibName: nil, bundle: nil)
-        self.setValue(OWSNavigationBar(), forKey: "navigationBar")
-        super.setupNavbar()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
+class MediaGalleryNavigationController: OWSNavigationController {
 
     // MARK: View LifeCycle
 
@@ -214,6 +177,9 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         // If the user's device is already rotated, try to respect that by rotating to landscape now
         UIViewController.attemptRotationToDeviceOrientation()
     }
+
+    var presentationView: UIImageView!
+    var retainUntilDismissed: MediaGallery?
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
     // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
@@ -256,6 +222,52 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         presentationView.contentMode = .scaleAspectFit
     }
 
+    // MARK: Orientation
+
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
+    }
+}
+
+@objc
+class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDelegate {
+
+    @objc
+    weak public var navigationController: MediaGalleryNavigationController!
+
+    private var pageViewController: MediaPageViewController?
+
+    private let uiDatabaseConnection: YapDatabaseConnection
+    private let editingDatabaseConnection: YapDatabaseConnection
+    private let mediaGalleryFinder: OWSMediaGalleryFinder
+
+    private var initialDetailItem: MediaGalleryItem?
+    private let thread: TSThread
+    private let options: MediaGalleryOption
+
+    // we start with a small range size for quick loading.
+    private let fetchRangeSize: UInt = 10
+
+    deinit {
+        Logger.debug("")
+    }
+
+    @objc
+    init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption = []) {
+        self.thread = thread
+        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
+        self.uiDatabaseConnection = uiDatabaseConnection
+
+        self.editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+
+        self.options = options
+        self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
+        let navController = MediaGalleryNavigationController()
+        self.navigationController = navController
+        super.init()
+        navController.retainUntilDismissed = self
+    }
+
     // MARK: Present/Dismiss
 
     private var currentItem: MediaGalleryItem {
@@ -263,7 +275,6 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     }
 
     private var replacingView: UIView?
-    private var presentationView: UIImageView!
     private var presentationViewConstraints: [NSLayoutConstraint] = []
 
     // TODO rename to replacingOriginRect
@@ -294,7 +305,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         self.addDataSourceDelegate(pageViewController)
 
         self.pageViewController = pageViewController
-        self.setViewControllers([pageViewController], animated: false)
+        navigationController.setViewControllers([pageViewController], animated: false)
 
         self.replacingView = replacingView
 
@@ -302,13 +313,13 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         self.originRect = convertedRect
 
         // loadView hasn't necessarily been called yet.
-        self.loadViewIfNeeded()
+        navigationController.loadViewIfNeeded()
 
-        self.presentationView.image = initialDetailItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
+        navigationController.presentationView.image = initialDetailItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
             guard let strongSelf = self else {
                 return
             }
-            strongSelf.presentationView.image = image
+            strongSelf.navigationController.presentationView.image = image
             }, failure: {
                 Logger.warn("Could not load presentation image.")
         })
@@ -316,8 +327,8 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         self.applyInitialMediaViewConstraints()
 
         // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
-        self.setNavigationBarHidden(false, animated: false)
-        self.presentationView.alpha = 1
+        navigationController.setNavigationBarHidden(false, animated: false)
+        navigationController.presentationView.alpha = 1
 
         // We want to animate the tapped media from it's position in the previous VC
         // to it's resting place in the center of this view controller.
@@ -330,7 +341,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         // 2. For Video views, the AVPlayerLayer content does not scale with the presentation animation. So you instead get a full scale
         //    video, wherein only the cropping is animated.
         // Using a simple image view allows us to address both these problems relatively easily.
-        self.view.alpha = 0.0
+        navigationController.view.alpha = 0.0
 
         guard let detailView = pageViewController.view else {
             owsFailDebug("detailView was unexpectedly nil")
@@ -339,23 +350,23 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
         // At this point our media view should be overlayed perfectly
         // by our presentationView. Swapping them out should be imperceptible.
-        self.presentationView.isHidden = false
+        navigationController.presentationView.isHidden = false
         // We don't hide the pageViewController entirely - e.g. we want the toolbars to fade in.
         pageViewController.currentViewController.view.isHidden = true
         detailView.backgroundColor = .clear
-        self.view.backgroundColor = .clear
+        navigationController.view.backgroundColor = .clear
 
-        self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
+        navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
 
-        fromViewController.present(self, animated: false) {
+        fromViewController.present(navigationController, animated: false) {
 
             // 1. Fade in the entire view.
             UIView.animate(withDuration: 0.1) {
                 self.replacingView?.alpha = 0.0
-                self.view.alpha = 1.0
+                self.navigationController.view.alpha = 1.0
             }
 
-            self.presentationView.superview?.layoutIfNeeded()
+            self.navigationController.presentationView.superview?.layoutIfNeeded()
             self.applyFinalMediaViewConstraints()
 
             // 2. Animate imageView from it's initial position, which should match where it was
@@ -366,20 +377,20 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                            options: .curveEaseOut,
                            animations: {
 
-                            self.presentationView.layer.cornerRadius = 0
-                            self.presentationView.superview?.layoutIfNeeded()
+                            self.navigationController.presentationView.layer.cornerRadius = 0
+                            self.navigationController.presentationView.superview?.layoutIfNeeded()
 
                             // fade out content behind the pageViewController
                             // and behind the presentation view
-                            self.view.backgroundColor = Theme.backgroundColor
+                            self.navigationController.view.backgroundColor = Theme.backgroundColor
             },
                            completion: { (_: Bool) in
                             // At this point our presentation view should be overlayed perfectly
                             // with our media view. Swapping them out should be imperceptible.
                             pageViewController.currentViewController.view.isHidden = false
-                            self.presentationView.isHidden = true
+                            self.navigationController.presentationView.isHidden = true
 
-                            self.view.isUserInteractionEnabled = true
+                            self.navigationController.view.isUserInteractionEnabled = true
 
                             pageViewController.wasPresented()
 
@@ -390,7 +401,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                             //
                             // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
                             // presenting directly from ConversationVC.
-                            _ = self.becomeFirstResponder()
+                            _ = self.navigationController.becomeFirstResponder()
             })
         }
     }
@@ -426,7 +437,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         } else {
             // If from conversation view
             mediaTileViewController.focusedItem = focusedItem
-            self.pushViewController(mediaTileViewController, animated: true)
+            navigationController.pushViewController(mediaTileViewController, animated: true)
         }
     }
 
@@ -459,7 +470,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
             guard let pageViewController = self.pageViewController else {
                 owsFailDebug("pageViewController was unexpectedly nil")
-                self.dismiss(animated: true)
+                self.navigationController.dismiss(animated: true)
 
                 return
             }
@@ -468,32 +479,32 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
             pageViewController.willBePresentedAgain()
 
             // TODO fancy zoom animation
-            self.popViewController(animated: true)
+            self.navigationController.popViewController(animated: true)
         }
     }
 
     public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
-        self.view.isUserInteractionEnabled = false
+        navigationController.view.isUserInteractionEnabled = false
         UIApplication.shared.isStatusBarHidden = false
 
         guard let detailView = mediaPageViewController.view else {
             owsFailDebug("detailView was unexpectedly nil")
-            self.presentingViewController?.dismiss(animated: false, completion: completion)
+            self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
             return
         }
 
         mediaPageViewController.currentViewController.view.isHidden = true
-        self.presentationView.isHidden = false
+        navigationController.presentationView.isHidden = false
 
         // Move the presentationView back to it's initial position, i.e. where
         // it sits on the screen in the conversation view.
         let changedItems = currentItem != self.initialDetailItem
         if changedItems {
-            self.presentationView.image = currentItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
+            navigationController.presentationView.image = currentItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
                 guard let strongSelf = self else {
                     return
                 }
-                strongSelf.presentationView.image = image
+                strongSelf.navigationController.presentationView.image = image
                 }, failure: {
                     Logger.warn("Could not load presentation image.")
             })
@@ -508,14 +519,14 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                            options: .curveEaseOut,
                            animations: {
                             // Move back over it's original location
-                            self.presentationView.superview?.layoutIfNeeded()
+                            self.navigationController.presentationView.superview?.layoutIfNeeded()
 
                             detailView.alpha = 0
 
                             if changedItems {
-                                self.presentationView.alpha = 0
+                                self.navigationController.presentationView.alpha = 0
                             } else {
-                                self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
+                                self.navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
                             }
             },
                            completion: { (_: Bool) in
@@ -532,24 +543,24 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                            animations: {
                             guard let replacingView = self.replacingView else {
                                 owsFailDebug("replacingView was unexpectedly nil")
-                                self.presentingViewController?.dismiss(animated: false, completion: completion)
+                                self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
                                 return
                             }
                             // fade out content and toolbars
-                            self.view.alpha = 0.0
+                            self.navigationController.view.alpha = 0.0
                             replacingView.alpha = 1.0
             },
                            completion: { (_: Bool) in
-                            self.presentingViewController?.dismiss(animated: false, completion: completion)
+                            self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
             })
         } else {
             guard let replacingView = self.replacingView else {
                 owsFailDebug("replacingView was unexpectedly nil")
-                self.presentingViewController?.dismiss(animated: false, completion: completion)
+                navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
                 return
             }
             replacingView.alpha = 1.0
-            self.presentingViewController?.dismiss(animated: false, completion: completion)
+            navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
         }
     }
 
@@ -564,17 +575,17 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
             return
         }
 
-        guard let presentationSuperview = self.presentationView.superview else {
+        guard let presentationSuperview = navigationController.presentationView.superview else {
             owsFailDebug("presentationView.superview was unexpectedly nil")
             return
         }
 
         let convertedRect: CGRect = presentationSuperview.convert(originRect, from: UIApplication.shared.keyWindow)
 
-        self.presentationViewConstraints += self.presentationView.autoSetDimensions(to: convertedRect.size)
+        self.presentationViewConstraints += navigationController.presentationView.autoSetDimensions(to: convertedRect.size)
         self.presentationViewConstraints += [
-            self.presentationView.autoPinEdge(toSuperviewEdge: .top, withInset: convertedRect.origin.y),
-            self.presentationView.autoPinEdge(toSuperviewEdge: .left, withInset: convertedRect.origin.x)
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .top, withInset: convertedRect.origin.y),
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .left, withInset: convertedRect.origin.x)
         ]
     }
 
@@ -585,10 +596,10 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         }
 
         self.presentationViewConstraints = [
-            self.presentationView.autoPinEdge(toSuperviewEdge: .leading),
-            self.presentationView.autoPinEdge(toSuperviewEdge: .top),
-            self.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
-            self.presentationView.autoPinEdge(toSuperviewEdge: .bottom)
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .leading),
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .top),
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .bottom)
         ]
     }
 
@@ -599,9 +610,9 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         }
 
         self.presentationViewConstraints += [
-            self.presentationView.autoPinEdge(toSuperviewEdge: .leading),
-            self.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
-            self.presentationView.autoPinEdge(.top, to: .bottom, of: self.view)
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .leading),
+            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
+            navigationController.presentationView.autoPinEdge(.top, to: .bottom, of: self.navigationController.view)
         ]
     }
 
@@ -917,11 +928,5 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
             count = self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
         return Int(count) - deletedMessages.count
-    }
-
-    // MARK: Orientation
-
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
     }
 }

@@ -54,7 +54,7 @@ const CGFloat kIconViewLength = 24;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-@property (nullable, nonatomic) MediaGalleryViewController *mediaGalleryViewController;
+@property (nullable, nonatomic) MediaGalleryNavigationController *mediaGalleryViewController;
 @property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -1273,19 +1273,18 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showMediaGallery
 {
-    OWSLogDebug(@"in showMediaGallery");
+    OWSLogDebug(@"");
 
-    MediaGalleryViewController *vc =
-        [[MediaGalleryViewController alloc] initWithThread:self.thread
-                                      uiDatabaseConnection:self.uiDatabaseConnection
-                                                   options:MediaGalleryOptionSliderEnabled];
+    MediaGallery *mediaGallery = [[MediaGallery alloc] initWithThread:self.thread
+                                                 uiDatabaseConnection:self.uiDatabaseConnection
+                                                              options:MediaGalleryOptionSliderEnabled];
 
     // although we don't present the mediaGalleryViewController directly, we need to maintain a strong
     // reference to it until we're dismissed.
-    self.mediaGalleryViewController = vc;
+    self.mediaGalleryViewController = mediaGallery.navigationController;
 
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
-    [vc pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
+    [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
 }
 #pragma mark - Notifications
 
