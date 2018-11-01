@@ -67,6 +67,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         return SSKEnvironment.shared.primaryStorage
     }
 
+    private var syncManager: OWSSyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
     // MARK: -
 
     @objc
@@ -76,6 +80,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         _areTypingIndicatorsEnabled = value
 
         primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
+        
+        syncManager.sendConfigurationSyncMessage()
     }
 
     @objc

@@ -106,6 +106,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return TSAccountManager.sharedInstance;
 }
 
+- (id<OWSTypingIndicators>)typingIndicators
+{
+    return SSKEnvironment.shared.typingIndicators;
+}
+
 #pragma mark - Notifications
 
 - (void)signalAccountsDidChange:(id)notification {
@@ -219,10 +224,12 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
+    BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
 
     OWSSyncConfigurationMessage *syncConfigurationMessage =
         [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled
-                                      showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators];
+                                      showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
+                                                    showTypingIndicators:showTypingIndicators];
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
