@@ -69,8 +69,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 - (void)conversationViewModelDidLoadPrevPage;
 - (void)conversationViewModelRangeDidChange;
 
-// TODO: It'd be nice to remove this.
-- (BOOL)shouldObserveDBModifications;
+- (BOOL)isObservingVMUpdates;
 
 - (ConversationStyle *)conversationStyle;
 

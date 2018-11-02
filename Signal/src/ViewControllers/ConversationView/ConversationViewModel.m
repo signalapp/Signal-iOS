@@ -211,18 +211,6 @@ static const int kYapDatabaseRangeMinLength = 0;
 - (void)addNotificationListeners
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                 name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                               object:self.primaryStorage.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseWillUpdate:)
-                                                 name:OWSUIDatabaseConnectionWillUpdateNotification
-                                               object:self.primaryStorage.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(uiDatabaseDidUpdate:)
-                                                 name:OWSUIDatabaseConnectionDidUpdateNotification
-                                               object:self.primaryStorage.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
@@ -259,6 +247,19 @@ static const int kYapDatabaseRangeMinLength = 0;
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in configureForThread.");
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(uiDatabaseDidUpdateExternally:)
+                                                 name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
+                                               object:self.primaryStorage.dbNotificationObject];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(uiDatabaseWillUpdate:)
+                                                 name:OWSUIDatabaseConnectionWillUpdateNotification
+                                               object:self.primaryStorage.dbNotificationObject];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(uiDatabaseDidUpdate:)
+                                                 name:OWSUIDatabaseConnectionDidUpdateNotification
+                                               object:self.primaryStorage.dbNotificationObject];
 }
 
 - (void)viewDidLoad
@@ -458,19 +459,24 @@ static const int kYapDatabaseRangeMinLength = 0;
 
     OWSLogVerbose(@"");
 
-    if (self.delegate.shouldObserveDBModifications) {
-        // External database modifications can't be converted into incremental updates,
-        // so rebuild everything.  This is expensive and usually isn't necessary, but
-        // there's no alternative.
-        //
-        // We don't need to do this if we're not observing db modifications since we'll
-        // do it when we resume.
-        [self resetMappings];
+    if (!self.delegate.isObservingVMUpdates) {
+        return;
     }
+
+    // External database modifications can't be converted into incremental updates,
+    // so rebuild everything.  This is expensive and usually isn't necessary, but
+    // there's no alternative.
+    //
+    // We don't need to do this if we're not observing db modifications since we'll
+    // do it when we resume.
+    [self resetMappings];
 }
 
 - (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
+    if (!self.delegate.isObservingVMUpdates) {
+        return;
+    }
     [self.delegate conversationViewModelWillUpdate];
 }
 
@@ -617,6 +623,13 @@ static const int kYapDatabaseRangeMinLength = 0;
 {
     OWSAssertDebug(oldItemIdList);
     OWSAssertDebug(updatedItemSet);
+
+    if (!self.delegate.isObservingVMUpdates) {
+        OWSFailDebug(@"Skipping VM update.");
+        // We fire this event, but it will be ignored.
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
+        return;
+    }
 
     if (oldItemIdList.count != [NSSet setWithArray:oldItemIdList].count) {
         OWSFailDebug(@"Old view item list has duplicates.");
