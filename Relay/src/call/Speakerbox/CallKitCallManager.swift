@@ -20,7 +20,7 @@ final class CallKitCallManager: NSObject {
     let callController = CXCallController()
     let showNamesOnCallScreen: Bool
 
-//    @objc static let kAnonymousCallHandlePrefix = "Relay:"
+//    @objc static let kAnonymousCallHandlePrefix = "Forsta:"
     @objc static let kAnonymousCallHandlePrefix = ""
 
     required init(showNamesOnCallScreen: Bool) {

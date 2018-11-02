@@ -1483,7 +1483,7 @@
 		76EB052E18170B33006006FC /* ContactTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactTableViewCell.h; sourceTree = "<group>"; };
 		76EB052F18170B33006006FC /* ContactTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewCell.m; sourceTree = "<group>"; };
 		7D1A107C216C043700A45F19 /* NewAccountViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewAccountViewController.swift; sourceTree = "<group>"; };
-		7D2CD666214C3C9C004E957A /* RelayDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RelayDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D2CD666214C3C9C004E957A /* Forsta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Forsta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D2CD668214C3DE4004E957A /* RelayDev.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDev.entitlements; sourceTree = "<group>"; };
 		7D2CD681214C46BC004E957A /* RelayDevShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RelayDevShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D2CD683214C491B004E957A /* RelayDevShareExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = RelayDevShareExtension.entitlements; sourceTree = "<group>"; };
@@ -1618,7 +1618,7 @@
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D21E3F6D942DA212DC7752EA /* Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Common-RelayDev-RelayDevShareExtension/Pods-Common-RelayDev-RelayDevShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
-		D221A089169C9E5E00537ABF /* Relay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Relay.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D221A089169C9E5E00537ABF /* Forsta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Forsta.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D221A08D169C9E5E00537ABF /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		D221A08F169C9E5E00537ABF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D221A091169C9E5E00537ABF /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -2915,11 +2915,11 @@
 		D221A08A169C9E5E00537ABF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D221A089169C9E5E00537ABF /* Relay.app */,
+				D221A089169C9E5E00537ABF /* Forsta.app */,
 				D221A0AA169C9E5F00537ABF /* RelayTests.xctest */,
 				453518681FC635DD00210559 /* RelayShareExtension.appex */,
 				453518921FC63DBF00210559 /* RelayMessaging.framework */,
-				7D2CD666214C3C9C004E957A /* RelayDev.app */,
+				7D2CD666214C3C9C004E957A /* Forsta.app */,
 				7D2CD681214C46BC004E957A /* RelayDevShareExtension.appex */,
 			);
 			name = Products;
@@ -3164,7 +3164,7 @@
 			);
 			name = RelayDev;
 			productName = RedPhone;
-			productReference = 7D2CD666214C3C9C004E957A /* RelayDev.app */;
+			productReference = 7D2CD666214C3C9C004E957A /* Forsta.app */;
 			productType = "com.apple.product-type.application";
 		};
 		7D2CD669214C46BC004E957A /* RelayDevShareExtension */ = {
@@ -3207,7 +3207,7 @@
 			);
 			name = Relay;
 			productName = RedPhone;
-			productReference = D221A089169C9E5E00537ABF /* Relay.app */;
+			productReference = D221A089169C9E5E00537ABF /* Forsta.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D221A0A9169C9E5F00537ABF /* RelayTests */ = {
@@ -4920,7 +4920,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relayDev;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Forsta;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -4987,7 +4987,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relayDev;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Forsta;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -5331,7 +5331,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relay;
-				PRODUCT_NAME = Relay;
+				PRODUCT_NAME = Forsta;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -5396,7 +5396,7 @@
 				LLVM_LTO = NO;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.forsta.relay;
-				PRODUCT_NAME = Relay;
+				PRODUCT_NAME = Forsta;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
