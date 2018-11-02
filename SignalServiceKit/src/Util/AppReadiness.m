@@ -64,8 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(block);
 
     if (CurrentAppContext().isRunningTests) {
-        // We don't need to an any "on app ready" work
-        // in the tests.
+        // We don't need to do any "on app ready" work in the tests.
         return;
     }
 
@@ -90,8 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(block);
 
     if (CurrentAppContext().isRunningTests) {
-        // We don't need to an any "on app ready" work
-        // in the tests.
+        // We don't need to do any "on app ready" work in the tests.
         return;
     }
 

@@ -25,6 +25,15 @@ import Foundation
 @objc(SSKMessageSenderJobQueue)
 public class MessageSenderJobQueue: NSObject, JobQueue {
 
+    @objc
+    public override init() {
+        super.init()
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.setup()
+        }
+    }
+
     // MARK: 
 
     @objc(addMessage:transaction:)

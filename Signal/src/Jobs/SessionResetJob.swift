@@ -24,6 +24,15 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     public var runningOperations: [SessionResetOperation] = []
 
     @objc
+    public override init() {
+        super.init()
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.setup()
+        }
+    }
+
+    @objc
     public func setup() {
         defaultSetup()
     }

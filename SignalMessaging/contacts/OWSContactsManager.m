@@ -82,6 +82,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     OWSSingletonAssert();
 
+    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
+        [self setup];
+    }];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        [self startObserving];
+    }];
+
     return self;
 }
 

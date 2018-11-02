@@ -262,9 +262,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
 
-        Environment.shared.contactsManager.setup()
-        Environment.shared.contactsManager.startObserving()
-
         ensureRootViewController()
 
         // We don't need to use OWSMessageReceiver in the SAE.

@@ -1130,17 +1130,9 @@ static NSTimeInterval launchStartedAt;
 
     [AppVersion.sharedInstance mainAppLaunchDidComplete];
 
-    [Environment.shared.contactsManager setup];
-    [Environment.shared.contactsManager startObserving];
-
-    // If there were any messages in our local queue which we hadn't yet processed.
-    [SSKEnvironment.shared.messageReceiver handleAnyUnprocessedEnvelopesAsync];
-    [SSKEnvironment.shared.batchMessageProcessor handleAnyUnprocessedEnvelopesAsync];
     [Environment.shared.audioSession setup];
 
     [SSKEnvironment.shared.reachabilityManager setup];
-    [SSKEnvironment.shared.messageSenderJobQueue setup];
-    [AppEnvironment.shared.sessionResetJobQueue setup];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.primaryStorage.newDatabaseConnection
