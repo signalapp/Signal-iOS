@@ -93,35 +93,36 @@ NS_ASSUME_NONNULL_BEGIN
                                            inThread:(TSThread *)thread
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
 {
-    return [self enqueueMessageWithAttachment:attachment
-                                     inThread:thread
-                             quotedReplyModel:quotedReplyModel
-                                 ignoreErrors:NO];
+    return [self enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:quotedReplyModel];
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
-                                           inThread:(TSThread *)thread
-                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                       ignoreErrors:(BOOL)ignoreErrors
++ (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
+                                            inThread:(TSThread *)thread
+                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(attachment);
-    OWSAssertDebug(!attachment.hasError);
-    OWSAssertDebug(attachment.mimeType.length > 0);
+    OWSAssertDebug(attachments.count > 0);
     OWSAssertDebug(thread);
+    for (SignalAttachment *attachment in attachments) {
+        OWSAssertDebug(!attachment.hasError);
+        OWSAssertDebug(attachment.mimeType.length > 0);
+    }
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    BOOL isVoiceMessage = (attachments.count == 1 && attachments.lastObject.isVoiceMessage);
+    // TODO: Support multi-image captions.
+    NSString *_Nullable messageBody = attachments.lastObject.captionText;
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
-                                                        messageBody:attachment.captionText
+                                                        messageBody:messageBody
                                                       attachmentIds:[NSMutableArray new]
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
-                                                     isVoiceMessage:[attachment isVoiceMessage]
+                                                     isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil];
