@@ -398,6 +398,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     private func fetchAttachment(transaction: YapDatabaseReadTransaction) -> TSAttachment? {
+        // TODO: Support multi-image messages.
         guard let attachmentId = message.attachmentIds.firstObject as? String else {
             return nil
         }

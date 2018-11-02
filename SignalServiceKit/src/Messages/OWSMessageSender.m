@@ -376,11 +376,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      success:successHandler
                                                      failure:failureHandler];
 
-        // TODO de-dupe attachment enque logic.
-        if (message.hasAttachments) {
+        // TODO: de-dupe attachment enqueue logic.
+        for (NSString *attachmentId in message.attachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
-                [[OWSUploadOperation alloc] initWithAttachmentId:message.attachmentIds.firstObject
-                                                    dbConnection:self.dbConnection];
+                [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId dbConnection:self.dbConnection];
             [sendMessageOperation addDependency:uploadAttachmentOperation];
             [sendingQueue addOperation:uploadAttachmentOperation];
         }

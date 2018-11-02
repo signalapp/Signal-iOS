@@ -579,6 +579,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         return;
     }
 
+    // TODO: Support multi-image messages.
     NSString *_Nullable attachmentRecordId = self.outgoingMessage.attachmentIds.firstObject;
     if (!attachmentRecordId) {
         OWSLogDebug(@"Ignoring upload progress until outgoing message has an attachment record id");
