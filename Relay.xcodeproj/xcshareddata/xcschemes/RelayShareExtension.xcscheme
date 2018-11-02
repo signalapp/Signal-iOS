@@ -30,7 +30,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-               BuildableName = "Forsta Messenger.app"
+               BuildableName = "Forsta.app"
                BlueprintName = "Relay"
                ReferencedContainer = "container:Relay.xcodeproj">
             </BuildableReference>
@@ -72,7 +72,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-            BuildableName = "Forsta Messenger.app"
+            BuildableName = "Forsta.app"
             BlueprintName = "Relay"
             ReferencedContainer = "container:Relay.xcodeproj">
          </BuildableReference>
@@ -92,7 +92,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-            BuildableName = "Forsta Messenger.app"
+            BuildableName = "Forsta.app"
             BlueprintName = "Relay"
             ReferencedContainer = "container:Relay.xcodeproj">
          </BuildableReference>
