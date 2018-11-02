@@ -194,17 +194,10 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
-        if let body = message.body, body.count > 0 {
-            return body
-        }
-        if let oversizeText = oversizeText(forMessage: message, transaction: transaction) {
-            return oversizeText
+        if let bodyText = message.bodyText(with: transaction) {
+            return bodyText
         }
         return ""
-    }
-
-    private static func oversizeText(forMessage message: TSMessage, transaction: YapDatabaseReadTransaction) -> String? {
-        return message.oversizeText(with: transaction)
     }
 
     private class func indexContent(object: Any, transaction: YapDatabaseReadTransaction) -> String? {

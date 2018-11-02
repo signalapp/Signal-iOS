@@ -93,7 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
                                            inThread:(TSThread *)thread
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
 {
-    return [self enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:quotedReplyModel];
+    return [self enqueueMessageWithAttachments:@[
+        attachment,
+    ]
+                                      inThread:thread
+                              quotedReplyModel:quotedReplyModel];
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
