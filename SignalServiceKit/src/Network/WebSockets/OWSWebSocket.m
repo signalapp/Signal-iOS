@@ -1048,7 +1048,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
     if (!AppReadiness.isAppReady) {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            [AppReadiness runNowOrWhenAppIsReady:^{
+            [AppReadiness runNowOrWhenAppDidBecomeReady:^{
                 [self applyDesiredSocketState];
             }];
         });

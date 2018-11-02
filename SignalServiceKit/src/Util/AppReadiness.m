@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic) BOOL isAppReady;
 
-@property (nonatomic) NSMutableArray<AppReadyBlock> *appReadyBlocks;
+@property (nonatomic) NSMutableArray<AppReadyBlock> *appWillBecomeReadyBlocks;
+@property (nonatomic) NSMutableArray<AppReadyBlock> *appDidBecomeReadyBlocks;
 
 @end
 
@@ -39,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
-    self.appReadyBlocks = [NSMutableArray new];
+    self.appWillBecomeReadyBlocks = [NSMutableArray new];
+    self.appDidBecomeReadyBlocks = [NSMutableArray new];
 
     return self;
 }
@@ -49,14 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.sharedManager isAppReady];
 }
 
-+ (void)runNowOrWhenAppIsReady:(AppReadyBlock)block
++ (void)runNowOrWhenAppWillBecomeReady:(AppReadyBlock)block
 {
     DispatchMainThreadSafe(^{
-        [self.sharedManager runNowOrWhenAppIsReady:block];
+        [self.sharedManager runNowOrWhenAppWillBecomeReady:block];
     });
 }
 
-- (void)runNowOrWhenAppIsReady:(AppReadyBlock)block
+- (void)runNowOrWhenAppWillBecomeReady:(AppReadyBlock)block
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(block);
@@ -72,7 +74,33 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self.appReadyBlocks addObject:block];
+    [self.appWillBecomeReadyBlocks addObject:block];
+}
+
++ (void)runNowOrWhenAppDidBecomeReady:(AppReadyBlock)block
+{
+    DispatchMainThreadSafe(^{
+        [self.sharedManager runNowOrWhenAppDidBecomeReady:block];
+    });
+}
+
+- (void)runNowOrWhenAppDidBecomeReady:(AppReadyBlock)block
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(block);
+
+    if (CurrentAppContext().isRunningTests) {
+        // We don't need to an any "on app ready" work
+        // in the tests.
+        return;
+    }
+
+    if (self.isAppReady) {
+        block();
+        return;
+    }
+
+    [self.appDidBecomeReadyBlocks addObject:block];
 }
 
 + (void)setAppIsReady
@@ -97,10 +125,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.isAppReady);
 
-    NSArray<AppReadyBlock> *appReadyBlocks = [self.appReadyBlocks copy];
-    [self.appReadyBlocks removeAllObjects];
+    NSArray<AppReadyBlock> *appWillBecomeReadyBlocks = [self.appWillBecomeReadyBlocks copy];
+    [self.appWillBecomeReadyBlocks removeAllObjects];
+    NSArray<AppReadyBlock> *appDidBecomeReadyBlocks = [self.appDidBecomeReadyBlocks copy];
+    [self.appDidBecomeReadyBlocks removeAllObjects];
 
-    for (AppReadyBlock block in appReadyBlocks) {
+    // We invoke the _will become_ blocks before the _did become_ blocks.
+    for (AppReadyBlock block in appWillBecomeReadyBlocks) {
+        block();
+    }
+    for (AppReadyBlock block in appDidBecomeReadyBlocks) {
         block();
     }
 }

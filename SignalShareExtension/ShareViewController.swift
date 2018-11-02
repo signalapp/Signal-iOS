@@ -402,7 +402,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         Logger.debug("")
 
         if isReadyForAppExtensions {
-            AppReadiness.runNowOrWhenAppIsReady { [weak self] in
+            AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
                 AssertIsOnMainThread()
                 guard let strongSelf = self else { return }
                 strongSelf.activate()

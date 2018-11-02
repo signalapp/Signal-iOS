@@ -105,13 +105,13 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 {
     OWSLogInfo(@"received remote notification");
 
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self.messageFetcherJob run];
     }];
 }
 
 - (void)applicationDidBecomeActive {
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self.messageFetcherJob run];
     }];
 }
@@ -130,7 +130,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     // If we want to re-introduce silent pushes we can remove this assert.
     OWSFailDebug(@"Unexpected content-available push.");
 
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             completionHandler(UIBackgroundFetchResultNewData);
         });

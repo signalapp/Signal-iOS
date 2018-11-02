@@ -550,7 +550,7 @@ static NSTimeInterval launchStartedAt;
 
     if (!AppReadiness.isAppReady) {
         OWSLogWarn(@"Ignoring openURL: app not ready.");
-        // We don't need to use [AppReadiness runNowOrWhenAppIsReady:];
+        // We don't need to use [AppReadiness runNowOrWhenAppDidBecomeReady:];
         // the only URLs we handle in Signal iOS at the moment are used
         // for resuming the verification step of the registration flow.
         return NO;
@@ -596,7 +596,7 @@ static NSTimeInterval launchStartedAt;
 
     [self ensureRootViewController];
 
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
     }];
 
@@ -616,7 +616,7 @@ static NSTimeInterval launchStartedAt;
 
 - (void)enableBackgroundRefreshIfNecessary
 {
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (OWS2FAManager.sharedManager.is2FAEnabled && [self.tsAccountManager isRegistered]) {
             // Ping server once a day to keep-alive 2FA clients.
             const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
@@ -732,7 +732,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertIsOnMainThread();
 
     [SignalApp clearAllNotifications];
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
     }];
 }
@@ -747,7 +747,7 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (![self.tsAccountManager isRegistered]) {
             UIAlertController *controller =
                 [UIAlertController alertControllerWithTitle:NSLocalizedString(@"REGISTER_CONTACTS_WELCOME", nil)
@@ -818,7 +818,7 @@ static NSTimeInterval launchStartedAt;
             return NO;
         }
 
-        [AppReadiness runNowOrWhenAppIsReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
@@ -875,7 +875,7 @@ static NSTimeInterval launchStartedAt;
             return NO;
         }
 
-        [AppReadiness runNowOrWhenAppIsReady:^{
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
             NSString *_Nullable phoneNumber = handle;
             if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
                 phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
@@ -980,7 +980,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSLogInfo(@"%@", notification);
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [[PushManager sharedManager] application:application didReceiveLocalNotification:notification];
     }];
 }
@@ -1003,7 +1003,7 @@ static NSTimeInterval launchStartedAt;
     // later, after this method returns.
     //
     // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [[PushManager sharedManager] application:application
                       handleActionWithIdentifier:identifier
                             forLocalNotification:notification
@@ -1032,7 +1032,7 @@ static NSTimeInterval launchStartedAt;
     // later, after this method returns.
     //
     // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623068-application?language=objc
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [[PushManager sharedManager] application:application
                       handleActionWithIdentifier:identifier
                             forLocalNotification:notification
@@ -1045,7 +1045,7 @@ static NSTimeInterval launchStartedAt;
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
     OWSLogInfo(@"performing background fetch");
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
             // HACK: Call completion handler after n seconds.
             //
