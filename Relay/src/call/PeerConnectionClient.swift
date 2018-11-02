@@ -782,6 +782,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool) {
+        Logger.debug("Ignoring obsolete data channel send: \(description)")
+        return;
+        /*
         SwiftAssertIsOnMainThread(#function)
         let proxyCopy = self.proxy
         PeerConnectionClient.signalingQueue.async {
@@ -813,6 +816,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.warn("\(strongSelf.logTag) sendDataChannelMessage failed: \(description)")
             }
         }
+        */
     }
 
     // MARK: RTCDataChannelDelegate
@@ -824,6 +828,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** The data channel successfully received a data buffer. */
     internal func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
+        Logger.debug("Ignoring obsolete data channel event in terminated client")
+        return;
+        /*
         let proxyCopy = self.proxy
         let completion: (OWSWebRTCProtosData) -> Void = { (dataChannelMessage) in
             SwiftAssertIsOnMainThread(#function)
@@ -850,6 +857,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 completion(dataChannelMessage)
             }
         }
+        */
     }
 
     /** The data channel's |bufferedAmount| changed. */
