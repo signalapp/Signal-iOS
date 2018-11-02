@@ -353,9 +353,9 @@
                     notification.userInfo =
                     @{Signal_Thread_UserInfo_Key : thread.uniqueId, Signal_Message_UserInfo_Key : message.uniqueId};
                     if ([senderName isEqualToString:thread.displayName]) {
-                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, message.description];
+                        notification.alertBody = [NSString stringWithFormat:@"%@: %@", senderName, messageText];
                     } else {
-                        notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), senderName, thread.displayName, message.description];
+                        notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"APN_MESSAGE_IN_GROUP_DETAILED", nil), senderName, thread.displayName, messageText];
                     }
 
                     break;
