@@ -8,6 +8,7 @@
 
 import UIKit
 import CocoaLumberjack
+import PromiseKit
 
 enum AuthType: Int {
     case sms = 1
@@ -124,6 +125,7 @@ class ValidationViewController: UITableViewController {
     // MARK: - Navigation
     private func proceedToMain() {
         DispatchQueue.global(qos: .background).async {
+            let _: Promise = SyncPushTokensJob.run(accountManager: SignalApp.shared().accountManager, preferences: Environment.preferences())
             TSSocketManager.requestSocketOpen()
             CCSMCommManager.refreshCCSMData()
         }
