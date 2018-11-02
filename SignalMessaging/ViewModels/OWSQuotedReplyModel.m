@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL hasText = quotedText.length > 0;
     BOOL hasAttachment = NO;
 
-    TSAttachment *_Nullable attachment = [message attachmentWithTransaction:transaction];
+    TSAttachment *_Nullable attachment = [message attachmentsWithTransaction:transaction].firstObject;
     TSAttachmentStream *quotedAttachment;
     if (attachment && [attachment isKindOfClass:[TSAttachmentStream class]]) {
 

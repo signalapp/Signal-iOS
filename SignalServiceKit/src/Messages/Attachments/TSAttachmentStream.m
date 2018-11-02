@@ -630,27 +630,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
 }
 
-- (BOOL)isOversizeText
-{
-    return [self.contentType isEqualToString:OWSMimeTypeOversizeTextMessage];
-}
-
-- (nullable NSString *)readOversizeText
-{
-    if (!self.isOversizeText) {
-        OWSFailDebug(@"oversize text attachment has unexpected content type.");
-        return nil;
-    }
-    NSError *error;
-    NSData *_Nullable data = [self readDataFromFileWithError:&error];
-    if (error || !data) {
-        OWSFailDebug(@"could not read oversize text attachment: %@.", error);
-        return nil;
-    }
-    NSString *_Nullable string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    return string;
-}
-
 #pragma mark - Thumbnails
 
 - (nullable UIImage *)thumbnailImageWithSizeHint:(CGSize)sizeHint

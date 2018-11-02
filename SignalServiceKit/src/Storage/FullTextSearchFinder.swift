@@ -204,29 +204,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static func oversizeText(forMessage message: TSMessage, transaction: YapDatabaseReadTransaction) -> String? {
-        guard message.hasAttachments() else {
-            return nil
-        }
-
-        guard let attachment = message.attachment(with: transaction) else {
-            owsFailDebug("attachment was unexpectedly nil")
-            return nil
-        }
-
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
-            return nil
-        }
-
-        guard attachmentStream.isOversizeText() else {
-            return nil
-        }
-
-        guard let text = attachmentStream.readOversizeText() else {
-            owsFailDebug("Could not load oversize text attachment")
-            return nil
-        }
-
-        return text
+        return message.oversizeText(with: transaction)
     }
 
     private class func indexContent(object: Any, transaction: YapDatabaseReadTransaction) -> String? {

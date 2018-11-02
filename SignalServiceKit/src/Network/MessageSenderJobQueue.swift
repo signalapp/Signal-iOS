@@ -34,20 +34,25 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:isTemporaryAttachment:)
     public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, isTemporaryAttachment: Bool) {
-        OutgoingMessagePreparer.prepareAttachment(with: dataSource,
-                                                       contentType: contentType,
-                                                       sourceFilename: sourceFilename,
-                                                       in: mediaMessage) { error in
-                                                        if let error = error {
-                                                            self.dbConnection.readWrite { transaction in
-                                                                mediaMessage.update(sendingError: error, transaction: transaction)
-                                                            }
-                                                        } else {
-                                                            self.dbConnection.readWrite { transaction in
-                                                                self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
-                                                            }
+        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename)
+        add(mediaMessage: mediaMessage, attachmentInfos: [attachmentInfo], isTemporaryAttachment: isTemporaryAttachment)
+    }
+
+    @objc(addMediaMessage:attachmentInfos:isTemporaryAttachment:)
+    public func add(mediaMessage: TSOutgoingMessage, attachmentInfos: [OutgoingAttachmentInfo], isTemporaryAttachment: Bool) {
+        OutgoingMessagePreparer.prepareAttachments(attachmentInfos,
+                                                  inMessage: mediaMessage,
+                                                  completionHandler: { error in
+                                                    if let error = error {
+                                                        self.dbConnection.readWrite { transaction in
+                                                            mediaMessage.update(sendingError: error, transaction: transaction)
                                                         }
-        }
+                                                    } else {
+                                                        self.dbConnection.readWrite { transaction in
+                                                            self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
+                                                        }
+                                                    }
+        })
     }
 
     private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: YapDatabaseReadWriteTransaction) {

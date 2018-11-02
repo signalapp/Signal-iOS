@@ -634,7 +634,8 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     var hasFetchedMostRecent = false
 
     func buildGalleryItem(message: TSMessage, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
-        guard let attachmentStream = message.attachment(with: transaction) as? TSAttachmentStream else {
+        // TODO: Support multi-image messages.
+        guard let attachmentStream = message.attachments(with: transaction).first as? TSAttachmentStream else {
             owsFailDebug("attachment was unexpectedly empty")
             return nil
         }

@@ -60,9 +60,6 @@ typedef void (^OWSThumbnailFailure)(void);
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
 - (BOOL)writeDataSource:(DataSource *)dataSource;
 
-- (BOOL)isOversizeText;
-- (nullable NSString *)readOversizeText;
-
 + (void)deleteAttachments;
 
 + (NSString *)attachmentsFolder;

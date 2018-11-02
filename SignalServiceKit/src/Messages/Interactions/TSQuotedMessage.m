@@ -253,7 +253,8 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSAttachment *attachment = [quotedMessage attachmentWithTransaction:transaction];
+    // We quote _the first_ attachment, if any.
+    TSAttachment *_Nullable attachment = [quotedMessage attachmentsWithTransaction:transaction].firstObject;
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
         return nil;
     }

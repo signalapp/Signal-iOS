@@ -240,6 +240,11 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
+    public var outgoingAttachmentInfo: OutgoingAttachmentInfo {
+        return OutgoingAttachmentInfo(dataSource: dataSource, contentType: mimeType, sourceFilename: filenameOrDefault)
+    }
+    
+    @objc
     public func image() -> UIImage? {
         if let cachedImage = cachedImage {
             return cachedImage

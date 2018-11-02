@@ -81,6 +81,28 @@ void AssertIsOnSendingQueue()
 
 #pragma mark -
 
+@implementation OWSOutgoingAttachmentInfo
+
+- (instancetype)initWithDataSource:(DataSource *)dataSource
+                       contentType:(NSString *)contentType
+                    sourceFilename:(nullable NSString *)sourceFilename
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _dataSource = dataSource;
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+
+    return self;
+}
+
+@end
+
+#pragma mark -
+
 /**
  * OWSSendMessageOperation encapsulates all the work associated with sending a message, e.g. uploading attachments,
  * getting proper keys, and retrying upon failure.
@@ -156,13 +178,14 @@ void AssertIsOnSendingQueue()
 
     // Sanity check preconditions
     if (self.message.hasAttachments) {
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * transaction) {
-            TSAttachmentStream *attachmentStream
-                = (TSAttachmentStream *)[self.message attachmentWithTransaction:transaction];
-            OWSAssertDebug(attachmentStream);
-            OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-            OWSAssertDebug(attachmentStream.serverId);
-            OWSAssertDebug(attachmentStream.isUploaded);
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            for (TSAttachment *attachment in [self.message attachmentsWithTransaction:transaction]) {
+                OWSAssertDebug([attachment isKindOfClass:[TSAttachmentStream class]]);
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                OWSAssertDebug(attachmentStream);
+                OWSAssertDebug(attachmentStream.serverId);
+                OWSAssertDebug(attachmentStream.isUploaded);
+            }
         }];
     }
 
@@ -431,17 +454,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(dataSource);
-    [OutgoingMessagePreparer prepareAttachmentWithDataSource:dataSource
-                                                 contentType:contentType
-                                              sourceFilename:sourceFilename
-                                                   inMessage:message
-                                           completionHandler:^(NSError *_Nullable error) {
-                                               if (error) {
-                                                   failureHandler(error);
-                                                   return;
-                                               }
-                                               [self sendMessage:message success:successHandler failure:failureHandler];
-                                           }];
+    OWSOutgoingAttachmentInfo *attachmentInfo = [[OWSOutgoingAttachmentInfo alloc] initWithDataSource:dataSource
+                                                                                          contentType:contentType
+                                                                                       sourceFilename:sourceFilename];
+    [OutgoingMessagePreparer prepareAttachments:@[ attachmentInfo ]
+                                      inMessage:message
+                              completionHandler:^(NSError *_Nullable error) {
+                                  if (error) {
+                                      failureHandler(error);
+                                      return;
+                                  }
+                                  [self sendMessage:message success:successHandler failure:failureHandler];
+                              }];
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
@@ -1768,35 +1792,42 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
 }
 
-+ (void)prepareAttachmentWithDataSource:(DataSource *)dataSource
-                            contentType:(NSString *)contentType
-                         sourceFilename:(nullable NSString *)sourceFilename
-                              inMessage:(TSOutgoingMessage *)outgoingMessage
-                      completionHandler:(void (^)(NSError *_Nullable error))completionHandler
++ (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+                 inMessage:(TSOutgoingMessage *)outgoingMessage
+         completionHandler:(void (^)(NSError *_Nullable error))completionHandler
 {
-    OWSAssertDebug(dataSource);
+    OWSAssertDebug(attachmentInfos.count > 0);
+    OWSAssertDebug(outgoingMessage);
 
     dispatch_async([OWSDispatch attachmentsQueue], ^{
-        TSAttachmentStream *attachmentStream =
-            [[TSAttachmentStream alloc] initWithContentType:contentType
-                                                  byteCount:(UInt32)dataSource.dataLength
-                                             sourceFilename:sourceFilename];
-        if (outgoingMessage.isVoiceMessage) {
-            attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
-        }
+        NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
+        for (OWSOutgoingAttachmentInfo *attachmentInfo in attachmentInfos) {
+            TSAttachmentStream *attachmentStream =
+                [[TSAttachmentStream alloc] initWithContentType:attachmentInfo.contentType
+                                                      byteCount:(UInt32)attachmentInfo.dataSource.dataLength
+                                                 sourceFilename:attachmentInfo.sourceFilename];
+            if (outgoingMessage.isVoiceMessage) {
+                attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
+            }
 
-        if (![attachmentStream writeDataSource:dataSource]) {
-            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
-            NSError *error = OWSErrorMakeWriteAttachmentDataError();
-            completionHandler(error);
+            if (![attachmentStream writeDataSource:attachmentInfo.dataSource]) {
+                OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
+                NSError *error = OWSErrorMakeWriteAttachmentDataError();
+                completionHandler(error);
+                return;
+            }
+
+            [attachmentStreams addObject:attachmentStream];
         }
 
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [attachmentStream saveWithTransaction:transaction];
+            for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+                [attachmentStream saveWithTransaction:transaction];
 
-            [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
-            if (sourceFilename) {
-                outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = sourceFilename;
+                [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
+                if (attachmentStream.sourceFilename) {
+                    outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = attachmentStream.sourceFilename;
+                }
             }
             [outgoingMessage saveWithTransaction:transaction];
         }];

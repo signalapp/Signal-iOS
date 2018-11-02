@@ -147,17 +147,20 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
             return nil;
         }
         TSMessage *message = (TSMessage *)object;
-        
-        OWSAssertDebug(message.attachmentIds.count <= 1);
-        NSString *attachmentId = message.attachmentIds.firstObject;
-        if (attachmentId.length == 0) {
-            return nil;
+
+        BOOL allAttachmentsAreMedia = message.attachmentIds.count > 0;
+        for (NSString *attachmentId in message.attachmentIds) {
+            OWSAssertDebug(attachmentId.length > 0);
+            if (![self attachmentIdShouldAppearInMediaGallery:attachmentId transaction:transaction]) {
+                allAttachmentsAreMedia = NO;
+                break;
+            }
         }
-        
-        if ([self attachmentIdShouldAppearInMediaGallery:attachmentId transaction:transaction]) {
+
+        if (allAttachmentsAreMedia) {
             return [self mediaGroupWithThreadId:message.uniqueThreadId];
         }
-        
+
         return nil;
     }];
     

@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"Send multi-image messages"
+        [OWSTableItem itemWithTitle:@"Send Multi-Image Message"
                         actionBlock:^{
                             [DebugUIMessages sendMultiImageMessageInThread:thread];
                         }],

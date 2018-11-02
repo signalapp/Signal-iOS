@@ -127,11 +127,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil];
 
-    [self.messageSenderJobQueue addMediaMessage:message
-                                     dataSource:attachment.dataSource
-                                    contentType:attachment.mimeType
-                                 sourceFilename:attachment.filenameOrDefault
-                          isTemporaryAttachment:NO];
+    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
+    for (SignalAttachment *attachment in attachments) {
+        [attachmentInfos addObject:attachment.outgoingAttachmentInfo];
+    }
+    [self.messageSenderJobQueue addMediaMessage:message attachmentInfos:attachmentInfos isTemporaryAttachment:NO];
 
     return message;
 }
