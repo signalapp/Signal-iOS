@@ -2303,6 +2303,15 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "既読確認を導入";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "安全なビデオ電話が可能になりました。普通に通話を始めてから，カメラのマークを押してください。";
 

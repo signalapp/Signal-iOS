@@ -2303,6 +2303,15 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Введение в отчеты о прочтении";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Теперь Signal поддерживает приватные видеозвонки. Просто начните вызов как обычно и нажмите кнопку с изображением камеры на экране.";
 

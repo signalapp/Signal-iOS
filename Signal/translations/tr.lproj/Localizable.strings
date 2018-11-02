@@ -2303,6 +2303,15 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Okundu İletileriyle Tanışın";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal artık güvenli görüntülü aramaları destekliyor. Her zamanki gibi bir arama başlatın, kamera tuşuna basın, ve selam verin.";
 

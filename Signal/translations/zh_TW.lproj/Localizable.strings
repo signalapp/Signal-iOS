@@ -2303,6 +2303,15 @@
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "啟用已讀回執功能";
 
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "Enable typing indicators in your privacy settings.";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Now you can optionally see and share when messages are being typed.";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducing Typing Indicators";
+
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal 已支援安全的視訊通話。正常的開始通話，接通後點擊攝影機圖示按鈕，雙方即可看到對方。";
 
