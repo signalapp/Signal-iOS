@@ -481,6 +481,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (message.attachmentIds.count == 0) {
         return nil;
     }
+    // TODO: Support multi-image messages.
     NSString *_Nullable attachmentId = message.attachmentIds.firstObject;
     if (attachmentId.length == 0) {
         return nil;

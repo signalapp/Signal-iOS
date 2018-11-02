@@ -731,7 +731,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [attachmentsProcessor fetchAttachmentsForMessage:nil
         transaction:transaction
-        success:^(TSAttachmentStream *attachmentStream) {
+        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+            OWSAssertDebug(attachmentStreams.count == 1);
+            TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
             [groupThread updateAvatarWithAttachmentStream:attachmentStream];
         }
         failure:^(NSError *error) {
@@ -786,8 +788,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [attachmentsProcessor fetchAttachmentsForMessage:createdMessage
         transaction:transaction
-        success:^(TSAttachmentStream *attachmentStream) {
-            OWSLogDebug(@"successfully fetched attachment: %@ for message: %@", attachmentStream, createdMessage);
+        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+            OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
+                (unsigned long)attachmentStreams.count,
+                createdMessage);
         }
         failure:^(NSError *error) {
             OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", createdMessage, error);
@@ -843,23 +847,27 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if ([self isDataMessageGroupAvatarUpdate:syncMessage.sent.message]) {
-            [recordJob runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    TSGroupThread *_Nullable groupThread =
-                        [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
-                    if (!groupThread) {
-                        OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
-                        return;
-                    }
+            [recordJob
+                runWithAttachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    OWSAssertDebug(attachmentStreams.count == 1);
+                    TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        TSGroupThread *_Nullable groupThread =
+                            [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
+                        if (!groupThread) {
+                            OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
+                            return;
+                        }
 
-                    [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
-                }];
-            }
-                                    transaction:transaction];
+                        [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
+                    }];
+                }
+                             transaction:transaction];
         } else {
             [recordJob
-                runWithAttachmentHandler:^(TSAttachmentStream *attachmentStream) {
-                    OWSLogDebug(@"successfully fetched transcript attachment: %@", attachmentStream);
+                runWithAttachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    OWSLogDebug(
+                        @"successfully fetched transcript attachments: %lu", (unsigned long)attachmentStreams.count);
                 }
                              transaction:transaction];
         }
@@ -1350,7 +1358,9 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogDebug(@"downloading thumbnail for message: %lu", (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
                 transaction:transaction
-                success:^(TSAttachmentStream *attachmentStream) {
+                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    OWSAssertDebug(attachmentStreams.count == 1);
+                    TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
                     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                         [incomingMessage saveWithTransaction:transaction];
@@ -1379,7 +1389,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogDebug(@"downloading contact avatar for message: %lu", (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
                 transaction:transaction
-                success:^(TSAttachmentStream *attachmentStream) {
+                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [incomingMessage touchWithTransaction:transaction];
                     }];

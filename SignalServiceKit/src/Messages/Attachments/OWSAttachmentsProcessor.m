@@ -20,6 +20,7 @@
 #import "TSMessage.h"
 #import "TSNetworkManager.h"
 #import "TSThread.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -93,7 +94,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 // PERF: Remove this and use a pre-existing dbConnection
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                           success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
                            failure:(void (^)(NSError *error))failureHandler
 {
     [[primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -106,18 +107,53 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
-                           success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
                            failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(transaction);
+    OWSAssertDebug(self.attachmentPointers.count > 0);
+
+    NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
+    NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray array];
 
     for (TSAttachmentPointer *attachmentPointer in self.attachmentPointers) {
-        [self retrieveAttachment:attachmentPointer
-                         message:message
-                     transaction:transaction
-                         success:successHandler
-                         failure:failureHandler];
+        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self retrieveAttachment:attachmentPointer
+                message:message
+                transaction:transaction
+                success:^(TSAttachmentStream *attachmentStream) {
+                    OWSLogVerbose(@"Attachment download succeeded.");
+                    @synchronized(attachmentStreams) {
+                        [attachmentStreams addObject:attachmentStream];
+                    }
+                    resolve(@(1));
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"Attachment download failed with error: %@", error);
+                    resolve(error);
+                }];
+        }];
+        [promises addObject:promise];
     }
+
+    // We use PMKJoin(), not PMKWhen(), because we don't want the
+    // completion promise to execute until _all_ promises
+    // have either succeeded or failed. PMKWhen() executes as
+    // soon as any of its input promises fail.
+    AnyPromise *completionPromise
+        = PMKJoin(promises)
+              .then(^(id value) {
+                  NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
+                  @synchronized(attachmentStreams) {
+                      attachmentStreamsCopy = [attachmentStreams copy];
+                  }
+                  OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
+                  successHandler(attachmentStreamsCopy);
+              })
+              .catch(^(NSError *error) {
+                  failureHandler(error);
+              });
+    [completionPromise retainUntilComplete];
 }
 
 - (void)retrieveAttachment:(TSAttachmentPointer *)attachment

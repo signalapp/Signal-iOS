@@ -41,9 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)hasAttachments;
-- (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (nullable NSString *)bodyTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;

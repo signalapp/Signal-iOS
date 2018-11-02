@@ -53,10 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
                                            inThread:(TSThread *)thread
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
 
-+ (TSOutgoingMessage *)enqueueMessageWithAttachment:(SignalAttachment *)attachment
-                                           inThread:(TSThread *)thread
-                                   quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                       ignoreErrors:(BOOL)ignoreErrors;
++ (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
+                                            inThread:(TSThread *)thread
+                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;

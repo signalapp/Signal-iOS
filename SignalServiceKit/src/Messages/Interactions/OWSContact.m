@@ -489,7 +489,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
 }
 
-
 - (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSData *imageData = UIImageJPEGRepresentation(image, (CGFloat)0.9);

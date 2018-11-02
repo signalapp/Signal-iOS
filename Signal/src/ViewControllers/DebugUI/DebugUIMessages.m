@@ -127,6 +127,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Send Multi-Image Message"
+                        actionBlock:^{
+                            [DebugUIMessages sendMultiImageMessageInThread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"Select Fake"
                         actionBlock:^{
                             [DebugUIMessages selectFakeAction:thread];
@@ -246,7 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
                   [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                       [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
                   }];
-                  
               }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
                         actionBlock:^{
@@ -3357,7 +3360,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         // style them indistinguishably from a separate text message.
         attachment.captionText = [self randomCaptionText];
     }
-    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil ignoreErrors:YES];
+    [ThreadUtil enqueueMessageWithAttachment:attachment inThread:thread quotedReplyModel:nil];
 }
 
 + (SSKProtoEnvelope *)createEnvelopeForThread:(TSThread *)thread
@@ -4629,6 +4632,41 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         [attachmentPointer saveWithTransaction:transaction];
         return attachmentPointer;
     }
+}
+
++ (void)sendMultiImageMessageInThread:(TSThread *)thread
+{
+    OWSLogInfo(@"");
+
+    const uint32_t kMinImageCount = 2;
+    const uint32_t kMaxImageCount = 10;
+    uint32_t imageCount = kMinImageCount + arc4random_uniform(kMaxImageCount - kMinImageCount);
+
+    NSMutableArray<SignalAttachment *> *attachments = [NSMutableArray new];
+    for (uint32_t i = 0; i < imageCount; i++) {
+        UIColor *imageColor = [UIColor colorWithRed:arc4random_uniform(256) / 255.f
+                                              green:arc4random_uniform(256) / 255.f
+                                               blue:arc4random_uniform(256) / 255.f
+                                              alpha:1.f];
+        UIImage *image = [UIImage imageWithColor:imageColor size:CGSizeMake(10.f, 10.f)];
+        OWSAssertDebug(image);
+        NSData *pngData = UIImagePNGRepresentation(image);
+        OWSAssertDebug(pngData);
+        NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
+        [pngData writeToFile:filePath atomically:YES];
+        OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+        DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                          dataUTI:(NSString *)kUTTypePNG
+                                                                     imageQuality:TSImageQualityOriginal];
+        [attachments addObject:attachment];
+    }
+
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSOutgoingMessage *message =
+            [ThreadUtil enqueueMessageWithAttachments:attachments inThread:thread quotedReplyModel:nil];
+        OWSLogError(@"timestamp: %llu.", message.timestamp);
+    }];
 }
 
 #endif

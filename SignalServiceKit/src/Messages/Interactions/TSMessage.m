@@ -199,14 +199,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.attachmentIds ? (self.attachmentIds.count > 0) : NO;
 }
 
-- (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    if (!self.hasAttachments) {
-        return nil;
+    NSMutableArray<TSAttachment *> *attachments = [NSMutableArray new];
+    for (NSString *attachmentId in self.attachmentIds) {
+        TSAttachment *_Nullable attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        if (attachment) {
+            [attachments addObject:attachment];
+        } else {
+            OWSFailDebug(@"Missing attachment for: %@.", attachmentId);
+        }
     }
-
-    OWSAssertDebug(self.attachmentIds.count == 1);
-    return [TSAttachment fetchObjectWithUniqueID:self.attachmentIds.firstObject transaction:transaction];
+    return [attachments copy];
 }
 
 - (NSString *)debugDescription
@@ -223,23 +228,40 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+- (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if (self.attachmentIds.count != 1) {
+        return nil;
+    }
+
+    TSAttachment *_Nullable attachment = [self attachmentsWithTransaction:transaction].firstObject;
+    OWSAssertDebug(attachment);
+
+    if (![OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]
+        || ![attachment isKindOfClass:TSAttachmentStream.class]) {
+        return nil;
+    }
+
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
+    if (!data) {
+        OWSFailDebug(@"Can't load oversize text data.");
+        return nil;
+    }
+    NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (!text) {
+        OWSFailDebug(@"Can't parse oversize text data.");
+        return nil;
+    }
+    return text.filterStringForDisplay;
+}
+
 - (nullable NSString *)bodyTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    if (self.hasAttachments) {
-        TSAttachment *_Nullable attachment = [self attachmentWithTransaction:transaction];
-
-        if ([OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType] &&
-            [attachment isKindOfClass:TSAttachmentStream.class]) {
-            TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-
-            NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.originalFilePath];
-            if (data) {
-                NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                if (text) {
-                    return text.filterStringForDisplay;
-                }
-            }
-        }
+    NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
+    if (oversizeText) {
+        return oversizeText;
     }
 
     if (self.body.length > 0) {

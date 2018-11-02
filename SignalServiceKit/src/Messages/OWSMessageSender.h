@@ -33,6 +33,23 @@ typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
 
 #pragma mark -
 
+NS_SWIFT_NAME(OutgoingAttachmentInfo)
+@interface OWSOutgoingAttachmentInfo : NSObject
+
+@property (nonatomic, readonly) DataSource *dataSource;
+@property (nonatomic, readonly) NSString *contentType;
+@property (nonatomic, readonly, nullable) NSString *sourceFilename;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithDataSource:(DataSource *)dataSource
+                       contentType:(NSString *)contentType
+                    sourceFilename:(nullable NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
+
+@end
+
+#pragma mark -
+
 NS_SWIFT_NAME(MessageSender)
 @interface OWSMessageSender : NSObject
 
@@ -71,6 +88,8 @@ NS_SWIFT_NAME(MessageSender)
 
 @end
 
+#pragma mark -
+
 @interface OutgoingMessagePreparer : NSObject
 
 /// Persists all necessary data to disk before sending, e.g. generate thumbnails
@@ -80,11 +99,10 @@ NS_SWIFT_NAME(MessageSender)
                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /// Writes attachment to disk and applies original filename to message attributes
-+ (void)prepareAttachmentWithDataSource:(DataSource *)dataSource
-                            contentType:(NSString *)contentType
-                         sourceFilename:(nullable NSString *)sourceFilename
-                              inMessage:(TSOutgoingMessage *)outgoingMessage
-                      completionHandler:(void (^)(NSError *_Nullable error))completionHandler;
++ (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+                 inMessage:(TSOutgoingMessage *)outgoingMessage
+         completionHandler:(void (^)(NSError *_Nullable error))completionHandler
+    NS_SWIFT_NAME(prepareAttachments(_:inMessage:completionHandler:));
 
 @end
 

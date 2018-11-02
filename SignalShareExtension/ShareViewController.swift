@@ -609,6 +609,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // Prefer a URL provider if available
+        // TODO: Support multi-image messages.
         if let preferredAttachment = attachments.first(where: { (attachment: Any) -> Bool in
             guard let itemProvider = attachment as? NSItemProvider else {
                 return false

@@ -41,11 +41,11 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                           success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
-                           success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
 @end
 
