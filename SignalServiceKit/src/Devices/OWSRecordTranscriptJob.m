@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler
+- (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -112,7 +112,9 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogDebug(@"downloading thumbnail for transcript: %lu", (unsigned long)transcript.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:outgoingMessage
                 transaction:transaction
-                success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                    OWSAssertDebug(attachmentStreams.count == 1);
+                    TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
                     [self.primaryStorage.newDatabaseConnection
                         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                             [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];

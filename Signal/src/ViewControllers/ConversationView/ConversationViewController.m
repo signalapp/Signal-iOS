@@ -1650,7 +1650,7 @@ typedef enum : NSUInteger {
                                                     networkManager:self.networkManager];
     [processor fetchAttachmentsForMessage:message
         primaryStorage:self.primaryStorage
-        success:^(TSAttachmentStream *attachmentStream) {
+        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
         }
         failure:^(NSError *error) {
@@ -2208,7 +2208,9 @@ typedef enum : NSUInteger {
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [processor fetchAttachmentsForMessage:nil
             transaction:transaction
-            success:^(TSAttachmentStream *attachmentStream) {
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSAssertDebug(attachmentStreams.count == 1);
+                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
                 [self.editingDatabaseConnection
                     asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];

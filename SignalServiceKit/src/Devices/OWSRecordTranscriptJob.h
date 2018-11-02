@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
     NS_DESIGNATED_INITIALIZER;
 
-- (void)runWithAttachmentHandler:(void (^)(TSAttachmentStream *attachmentStream))attachmentHandler
+- (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
