@@ -14,6 +14,7 @@
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -41,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (YapDatabaseConnection *)dbConnection
 {
     return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+}
+
++ (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
 }
 
 #pragma mark - Factory Methods
@@ -457,6 +463,11 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
     }
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Make group w. unregistered users"
+                                     actionBlock:^{
+                                         [DebugUIStress makeUnregisteredGroup];
+                                     }]];
+
 #endif
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -526,6 +537,33 @@ NS_ASSUME_NONNULL_BEGIN
                                             groupId:[Randomness generateRandomBytes:kGroupIdLength]];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
+    OWSAssertDebug(thread);
+
+    [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
+}
+
++ (void)makeUnregisteredGroup
+{
+    NSMutableArray<NSString *> *recipientIds = [NSMutableArray new];
+    for (int i = 0; i < 3; i++) {
+        NSMutableString *recipientId = [@"+1999" mutableCopy];
+        for (int j = 0; j < 3; j++) {
+            uint32_t digit = arc4random_uniform(10);
+            [recipientId appendFormat:@"%d", (int)digit];
+        }
+        [recipientIds addObject:recipientId];
+    }
+    [recipientIds addObject:self.tsAccountManager.localNumber];
+
+    __block TSGroupThread *thread;
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
+                                                             memberIds:recipientIds
+                                                                 image:nil
+                                                               groupId:[Randomness generateRandomBytes:kGroupIdLength]];
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+    }];
     OWSAssertDebug(thread);
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
