@@ -5,16 +5,8 @@
 #import "OWSQuotedReplyModel.h"
 #import "ConversationViewItem.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayServiceKit/MIMETypeUtil.h>
-#import <RelayServiceKit/OWSMessageSender.h>
-#import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSAttachmentPointer.h>
-#import <RelayServiceKit/TSAttachmentStream.h>
-#import <RelayServiceKit/TSIncomingMessage.h>
-#import <RelayServiceKit/TSMessage.h>
-#import <RelayServiceKit/TSOutgoingMessage.h>
-#import <RelayServiceKit/TSQuotedMessage.h>
-#import <RelayServiceKit/TSThread.h>
+
+@import RelayServiceKit;
 
 // View Model which has already fetched any thumbnail attachment.
 @implementation OWSQuotedReplyModel
@@ -174,7 +166,7 @@
         
     }
 
-    NSString *_Nullable quotedText = message.body;
+    NSString *_Nullable quotedText = message.plainTextBody;
     BOOL hasText = quotedText.length > 0;
     BOOL hasAttachment = NO;
 
