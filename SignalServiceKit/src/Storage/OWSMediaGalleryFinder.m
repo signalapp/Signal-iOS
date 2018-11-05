@@ -180,19 +180,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
         return NO;
     }
 
-    if (attachment.isImage && attachment.isValidImage) {
-        return YES;
-    }
-
-    if (attachment.isVideo && attachment.isValidVideo) {
-        return YES;
-    }
-
-    if (attachment.isAnimated && attachment.isValidImage) {
-        return YES;
-    }
-
-    return NO;
+    return attachment.isValidMedia;
 }
 
 @end

@@ -195,6 +195,26 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     }
 }
 
+- (BOOL)isImage
+{
+    return [MIMETypeUtil isImage:self.contentType];
+}
+
+- (BOOL)isVideo
+{
+    return [MIMETypeUtil isVideo:self.contentType];
+}
+
+- (BOOL)isAudio
+{
+    return [MIMETypeUtil isAudio:self.contentType];
+}
+
+- (BOOL)isAnimated
+{
+    return [MIMETypeUtil isAnimated:self.contentType];
+}
+
 - (BOOL)isVoiceMessage
 {
     return self.attachmentType == TSAttachmentTypeVoiceMessage;

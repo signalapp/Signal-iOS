@@ -41,6 +41,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_Unknown";
         case OWSMessageCellType_ContactShare:
             return @"OWSMessageCellType_ContactShare";
+        case OWSMessageCellType_MediaGallery:
+            return @"OWSMessageCellType_MediaGallery";
     }
 }
 
