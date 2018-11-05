@@ -242,15 +242,63 @@ public class MediaGalleryCellView: UIView {
                 return
             }
             if attachmentStream.isAnimated {
-
-            } else if attachmentStream.isVideo {
+                configureForAnimatedImage(attachmentStream: attachmentStream)
             } else if attachmentStream.isImage {
-                loadStillImage(attachmentStream: attachmentStream)
+                configureForStillImage(attachmentStream: attachmentStream)
+            } else if attachmentStream.isVideo {
+                configureForVideo(attachmentStream: attachmentStream)
             }
         }
 
-        private func loadStillImage(attachmentStream: TSAttachmentStream) {
-            Logger.verbose("loadStillImage")
+        private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
+            guard let cacheKey = attachmentStream.uniqueId else {
+                owsFailDebug("Attachment stream missing unique ID.")
+                return
+            }
+            let animatedImageView = YYAnimatedImageView()
+            // We need to specify a contentMode since the size of the image
+            // might not match the aspect ratio of the view.
+            animatedImageView.contentMode = .scaleAspectFill
+            // Use trilinear filters for better scaling quality at
+            // some performance cost.
+            animatedImageView.layer.minificationFilter = kCAFilterTrilinear
+            animatedImageView.layer.magnificationFilter = kCAFilterTrilinear
+            animatedImageView.backgroundColor = .white
+            addSubview(animatedImageView)
+            animatedImageView.autoPinEdgesToSuperviewEdges()
+            //            [self addAttachmentUploadViewIfNecessary];
+            loadBlock = { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                guard let strongDelegate = strongSelf.delegate else {
+                    return
+                }
+                if animatedImageView.image != nil {
+                    return
+                }
+                let cachedValue = strongDelegate.tryToLoadCellMedia(loadCellMediaBlock: { () -> Any? in
+                    guard let filePath = attachmentStream.originalFilePath else {
+                        owsFailDebug("Attachment stream missing original file path.")
+                        return nil
+                    }
+                    let animatedImage = YYImage(contentsOfFile: filePath)
+                    return animatedImage
+                },
+                                                                    mediaView: animatedImageView,
+                                                                    cacheKey: cacheKey,
+                                                                    canLoadAsync: true)
+                guard let image = cachedValue as? YYImage else {
+                    return
+                }
+                animatedImageView.image = image
+            }
+            unloadBlock = {
+                animatedImageView.image = nil
+            }
+        }
+
+        private func configureForStillImage(attachmentStream: TSAttachmentStream) {
             guard let cacheKey = attachmentStream.uniqueId else {
                 owsFailDebug("Attachment stream missing unique ID.")
                 return
@@ -266,7 +314,7 @@ public class MediaGalleryCellView: UIView {
             stillImageView.backgroundColor = .white
             addSubview(stillImageView)
             stillImageView.autoPinEdgesToSuperviewEdges()
-//            [self addAttachmentUploadViewIfNecessary];
+            //            [self addAttachmentUploadViewIfNecessary];
             loadBlock = { [weak self] in
                 guard let strongSelf = self else {
                     return
@@ -285,10 +333,64 @@ public class MediaGalleryCellView: UIView {
                         Logger.verbose("Could not load thumbnail")
                     })
                 },
-                                                  mediaView: stillImageView,
-                   cacheKey: cacheKey,
-                   canLoadAsync: true)
-                Logger.verbose("cachedValue: \(cachedValue)")
+                                                                    mediaView: stillImageView,
+                                                                    cacheKey: cacheKey,
+                                                                    canLoadAsync: true)
+                guard let image = cachedValue as? UIImage else {
+                    return
+                }
+                stillImageView.image = image
+            }
+            unloadBlock = {
+                stillImageView.image = nil
+            }
+        }
+
+        private func configureForVideo(attachmentStream: TSAttachmentStream) {
+            guard let cacheKey = attachmentStream.uniqueId else {
+                owsFailDebug("Attachment stream missing unique ID.")
+                return
+            }
+            let stillImageView = UIImageView()
+            // We need to specify a contentMode since the size of the image
+            // might not match the aspect ratio of the view.
+            stillImageView.contentMode = .scaleAspectFill
+            // Use trilinear filters for better scaling quality at
+            // some performance cost.
+            stillImageView.layer.minificationFilter = kCAFilterTrilinear
+            stillImageView.layer.magnificationFilter = kCAFilterTrilinear
+            stillImageView.backgroundColor = .white
+            addSubview(stillImageView)
+            stillImageView.autoPinEdgesToSuperviewEdges()
+
+            // TODO: Hide during upload/download.
+            let videoPlayIcon = UIImage(named: "play_button")
+            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            stillImageView.addSubview(videoPlayButton)
+            videoPlayButton.autoCenterInSuperview()
+
+            //            [self addAttachmentUploadViewIfNecessary];
+            loadBlock = { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                guard let strongDelegate = strongSelf.delegate else {
+                    return
+                }
+                if stillImageView.image != nil {
+                    return
+                }
+                let cachedValue = strongDelegate.tryToLoadCellMedia(loadCellMediaBlock: { () -> Any? in
+                    return attachmentStream.thumbnailImageMedium(success: { (image) in
+                        Logger.verbose("Loaded thumbnail")
+                        stillImageView.image = image
+                    }, failure: {
+                        Logger.verbose("Could not load thumbnail")
+                    })
+                },
+                                                                    mediaView: stillImageView,
+                                                                    cacheKey: cacheKey,
+                                                                    canLoadAsync: true)
                 guard let image = cachedValue as? UIImage else {
                     return
                 }
