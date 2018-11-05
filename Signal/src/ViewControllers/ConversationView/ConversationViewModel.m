@@ -654,13 +654,13 @@ static const int kYapDatabaseRangeMinLength = 0;
     NSSet<NSString *> *newItemIdSet = [NSSet setWithArray:newItemIdList];
 
     // We use sets and dictionaries here to ensure perf.
-    NSMutableSet<NSString *> *deletedItemIdSet = [oldItemIdSet mutableCopy];
+    // We use NSMutableOrderedSet to preserve item ordering.
+    NSMutableOrderedSet<NSString *> *deletedItemIdSet = [NSMutableOrderedSet orderedSetWithArray:oldItemIdList];
     [deletedItemIdSet minusSet:newItemIdSet];
-    NSMutableSet<NSString *> *insertedItemIdSet = [newItemIdSet mutableCopy];
+    NSMutableOrderedSet<NSString *> *insertedItemIdSet = [NSMutableOrderedSet orderedSetWithArray:newItemIdList];
     [insertedItemIdSet minusSet:oldItemIdSet];
-    NSArray<NSString *> *deletedItemIdList = [deletedItemIdSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
-    NSArray<NSString *> *insertedItemIdList =
-        [insertedItemIdSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
+    NSArray<NSString *> *deletedItemIdList = [deletedItemIdSet.array copy];
+    NSArray<NSString *> *insertedItemIdList = [insertedItemIdSet.array copy];
 
     // Try to generate a series of "update items" that safely transform
     // the "old item list" into the "new item list".
