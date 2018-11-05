@@ -21,7 +21,15 @@ typedef void (^AppReadyBlock)(void);
 //
 // This method should only be called on the main thread.
 // The block will always be called on the main thread.
-+ (void)runNowOrWhenAppIsReady:(AppReadyBlock)block NS_SWIFT_NAME(runNowOrWhenAppIsReady(_:));
+//
+// * The "will become ready" blocks are called before the "did become ready" blocks.
+// * The "will become ready" blocks should be used for internal setup of components
+//   so that they are ready to interact with other components of the system.
+// * The "did become ready" blocks should be used for any work that should be done
+//   on app launch, especially work that uses other components.
+// * We should usually use "did become ready" blocks since they are safer.
++ (void)runNowOrWhenAppWillBecomeReady:(AppReadyBlock)block NS_SWIFT_NAME(runNowOrWhenAppWillBecomeReady(_:));
++ (void)runNowOrWhenAppDidBecomeReady:(AppReadyBlock)block NS_SWIFT_NAME(runNowOrWhenAppDidBecomeReady(_:));
 
 @end
 

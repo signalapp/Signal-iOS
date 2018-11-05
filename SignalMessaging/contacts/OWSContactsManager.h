@@ -25,8 +25,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 - (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
-- (void)startObserving;
-
 #pragma mark - Accessors
 
 @property (nonnull, readonly) ImageCache *avatarCache;
@@ -43,8 +41,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
 - (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
-
-- (void)setup;
 
 #pragma mark - System Contact Fetching
 

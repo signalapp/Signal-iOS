@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
               plaintextData:(NSData *_Nullable)plaintextData
                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)handleAnyUnprocessedEnvelopesAsync;
-
 @end
 
 NS_ASSUME_NONNULL_END

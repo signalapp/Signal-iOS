@@ -269,8 +269,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                                object:nil];
 
     // Start processing.
-    [AppReadiness runNowOrWhenAppIsReady:^{
-        [self drainQueue];
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (CurrentAppContext().isMainApp) {
+            [self drainQueue];
+        }
     }];
 
     return self;
@@ -458,6 +460,12 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     _processingQueue = processingQueue;
 
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if (CurrentAppContext().isMainApp) {
+            [self.processingQueue drainQueue];
+        }
+    }];
+
     return self;
 }
 
@@ -474,11 +482,6 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 }
 
 #pragma mark - instance methods
-
-- (void)handleAnyUnprocessedEnvelopesAsync
-{
-    [self.processingQueue drainQueue];
-}
 
 - (void)enqueueEnvelopeData:(NSData *)envelopeData
               plaintextData:(NSData *_Nullable)plaintextData

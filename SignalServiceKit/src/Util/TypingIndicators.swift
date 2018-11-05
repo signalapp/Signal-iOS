@@ -56,7 +56,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppIsReady {
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.setup()
         }
     }

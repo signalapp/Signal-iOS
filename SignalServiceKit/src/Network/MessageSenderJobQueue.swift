@@ -25,6 +25,15 @@ import Foundation
 @objc(SSKMessageSenderJobQueue)
 public class MessageSenderJobQueue: NSObject, JobQueue {
 
+    @objc
+    public override init() {
+        super.init()
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.setup()
+        }
+    }
+
     // MARK: 
 
     @objc(addMessage:transaction:)
@@ -56,6 +65,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: YapDatabaseReadWriteTransaction) {
+        assert(AppReadiness.isAppReady())
+
         let jobRecord: SSKMessageSenderJobRecord
         do {
             jobRecord = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: self.jobRecordLabel)

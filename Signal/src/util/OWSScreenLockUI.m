@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // It's not safe to access OWSScreenLock.isScreenLockEnabled
     // until the app is ready.
-    [AppReadiness runNowOrWhenAppIsReady:^{
+    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
         self.isScreenLockLocked = OWSScreenLock.sharedManager.isScreenLockEnabled;
         
         [self ensureUI];
@@ -251,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     if (!AppReadiness.isAppReady) {
-        [AppReadiness runNowOrWhenAppIsReady:^{
+        [AppReadiness runNowOrWhenAppWillBecomeReady:^{
             [self ensureUI];
         }];
         return;

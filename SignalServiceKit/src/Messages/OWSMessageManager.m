@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            [AppReadiness runNowOrWhenAppIsReady:^{
+            [AppReadiness runNowOrWhenAppDidBecomeReady:^{
                 [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
             }];
         });

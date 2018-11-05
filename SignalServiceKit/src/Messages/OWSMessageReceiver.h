@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
 - (void)handleReceivedEnvelopeData:(NSData *)envelopeData;
-- (void)handleAnyUnprocessedEnvelopesAsync;
 
 @end
 
