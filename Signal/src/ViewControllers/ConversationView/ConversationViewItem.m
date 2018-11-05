@@ -48,6 +48,30 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark -
 
+@implementation ConversationMediaGalleryItem
+
+- (instancetype)initWithAttachment:(TSAttachment *)attachment
+                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+                         mediaSize:(CGSize)mediaSize
+{
+    OWSAssertDebug(attachment);
+
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    _attachment = attachment;
+    _attachmentStream = attachmentStream;
+    _mediaSize = mediaSize;
+
+    return self;
+}
+@end
+
+#pragma mark -
+
 @interface ConversationInteractionViewItem ()
 
 @property (nonatomic, nullable) NSValue *cachedCellSize;
@@ -69,6 +93,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
 @property (nonatomic) CGSize mediaSize;
+@property (nonatomic, nullable) NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems;
 @property (nonatomic, nullable) NSString *systemMessageText;
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
 @property (nonatomic, nullable) NSString *authorConversationColorName;
@@ -475,22 +500,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark - View State
 
-- (nullable TSAttachment *)firstAttachmentIfAnyOfMessage:(TSMessage *)message
-                                             transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (message.attachmentIds.count == 0) {
-        return nil;
-    }
-    // TODO: Support multi-image messages.
-    NSString *_Nullable attachmentId = message.attachmentIds.firstObject;
-    if (attachmentId.length == 0) {
-        return nil;
-    }
-    return [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-}
-
 - (void)ensureViewState:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
@@ -528,7 +537,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.messageCellType = OWSMessageCellType_ContactShare;
         return;
     }
-    TSAttachment *_Nullable attachment = [self firstAttachmentIfAnyOfMessage:message transaction:transaction];
+
+    NSArray<TSAttachment *> *attachments = [message attachmentsWithTransaction:transaction];
+    if ([message isMediaGalleryWithTransaction:transaction]) {
+        OWSAssertDebug(attachments.count > 0);
+        // TODO: Handle captions.
+        self.mediaGalleryItems = [self mediaGalleryItemsForAttachments:attachments];
+        self.messageCellType = OWSMessageCellType_MediaGallery;
+        return;
+    }
+    // Only media galleries should have more than one attachment.
+    OWSAssertDebug(attachments.count <= 1);
+
+    TSAttachment *_Nullable attachment = attachments.firstObject;
     if (attachment) {
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             self.attachmentStream = (TSAttachmentStream *)attachment;
@@ -624,6 +645,45 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
         }
     }
+}
+
+- (NSArray<ConversationMediaGalleryItem *> *)mediaGalleryItemsForAttachments:(NSArray<TSAttachment *> *)attachments
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(attachments.count > 0);
+
+    NSMutableArray<ConversationMediaGalleryItem *> *mediaGalleryItems = [NSMutableArray new];
+    for (TSAttachment *attachment in attachments) {
+        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+            [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
+                                                                                 attachmentStream:nil
+                                                                                        mediaSize:CGSizeZero]];
+            continue;
+        }
+        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+        if (![attachmentStream isValidVisualMedia]) {
+            OWSLogWarn(@"Filtering invalid media.");
+            [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
+                                                                                 attachmentStream:nil
+                                                                                        mediaSize:CGSizeZero]];
+            continue;
+        }
+        CGSize mediaSize = [self.attachmentStream imageSize];
+        if (self.mediaSize.width <= 0 || self.mediaSize.height <= 0) {
+            OWSLogWarn(@"Filtering media with invalid size.");
+            [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
+                                                                                 attachmentStream:nil
+                                                                                        mediaSize:CGSizeZero]];
+            continue;
+        }
+
+        ConversationMediaGalleryItem *mediaGalleryItem =
+            [[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
+                                                    attachmentStream:attachmentStream
+                                                           mediaSize:mediaSize];
+        [mediaGalleryItems addObject:mediaGalleryItem];
+    }
+    return mediaGalleryItems;
 }
 
 - (NSString *)systemMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -751,6 +811,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
+        case OWSMessageCellType_MediaGallery:
         case OWSMessageCellType_GenericAttachment: {
             OWSAssertDebug(self.displayableBodyText);
             [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullText];
@@ -804,6 +865,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             break;
         }
+        case OWSMessageCellType_MediaGallery: {
+            // AFAIK UIPasteboard only supports "multiple representations
+            // of a single item", not "multiple different items".
+            //
+            // TODO: Should we copy the first valid item?
+            OWSFailDebug(@"Can't copy media galleries");
+            break;
+        }
     }
 }
 
@@ -833,6 +902,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"share contact not implemented.");
             break;
         }
+        case OWSMessageCellType_MediaGallery: {
+            // TODO: Handle media gallery captions.
+            OWSFailDebug(@"share contact not implemented.");
+            break;
+        }
     }
 }
 
@@ -856,6 +930,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             break;
         }
+        case OWSMessageCellType_MediaGallery: {
+            // TODO: We need a "canShareMediaAction" method.
+            OWSAssertDebug(self.mediaGalleryItems.count > 0);
+            NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
+            for (ConversationMediaGalleryItem *mediaGalleryItem in self.mediaGalleryItems) {
+                if (mediaGalleryItem.attachmentStream) {
+                    [attachmentStreams addObject:mediaGalleryItem.attachmentStream];
+                }
+            }
+            if (attachmentStreams.count < 1) {
+                OWSFailDebug(@"Can't share media gallery; no valid items.");
+                return;
+            }
+            [AttachmentSharing showShareUIForAttachments:attachmentStreams completion:nil];
+            break;
+        }
     }
 }
 
@@ -877,6 +967,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_GenericAttachment:
             return NO;
         case OWSMessageCellType_DownloadingAttachment: {
+            return NO;
+        }
+        case OWSMessageCellType_MediaGallery: {
+            for (ConversationMediaGalleryItem *mediaGalleryItem in self.mediaGalleryItems) {
+                if (!mediaGalleryItem.attachmentStream) {
+                    continue;
+                }
+                if (mediaGalleryItem.attachmentStream.isImage || mediaGalleryItem.attachmentStream.isAnimated) {
+                    return YES;
+                }
+                if (mediaGalleryItem.attachmentStream.isVideo) {
+                    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.originalFilePath)) {
+                        return YES;
+                    }
+                }
+            }
             return NO;
         }
     }
@@ -925,6 +1031,36 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFailDebug(@"Can't save not-yet-downloaded attachment");
             break;
         }
+        case OWSMessageCellType_MediaGallery: {
+            // TODO: Use PHPhotoLibrary.
+            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+            for (ConversationMediaGalleryItem *mediaGalleryItem in self.mediaGalleryItems) {
+                if (!mediaGalleryItem.attachmentStream) {
+                    continue;
+                }
+                if (mediaGalleryItem.attachmentStream.isImage || mediaGalleryItem.attachmentStream.isAnimated) {
+                    NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream originalMediaURL]];
+                    if (!data) {
+                        OWSFailDebug(@"Could not load image data");
+                        continue;
+                    }
+                    [library writeImageDataToSavedPhotosAlbum:data
+                                                     metadata:nil
+                                              completionBlock:^(NSURL *assetURL, NSError *error) {
+                                                  if (error) {
+                                                      OWSLogWarn(@"Error saving image to photo album: %@", error);
+                                                  }
+                                              }];
+                }
+                if (mediaGalleryItem.attachmentStream.isVideo) {
+                    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(
+                            mediaGalleryItem.attachmentStream.originalFilePath)) {
+                        UISaveVideoAtPathToSavedPhotosAlbum(
+                            mediaGalleryItem.attachmentStream.originalFilePath, self, nil, nil);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -955,6 +1091,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_DownloadingAttachment: {
             return NO;
         }
+        case OWSMessageCellType_MediaGallery:
+            // TODO: I suspect we need separate "can save media", "can share media", etc. methods.
+            return NO;
     }
 }
 

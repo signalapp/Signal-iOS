@@ -64,6 +64,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (nonatomic, readonly) BOOL isVideo;
 @property (nonatomic, readonly) BOOL isAudio;
 @property (nonatomic, readonly) BOOL isVoiceMessage;
+@property (nonatomic, readonly) BOOL isVisualMedia;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
 

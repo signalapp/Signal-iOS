@@ -339,6 +339,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var authorConversationColorName: String?
     var hasBodyTextActionContent: Bool = false
     var hasMediaActionContent: Bool = false
+    var mediaGalleryItems: [ConversationMediaGalleryItem]?
 
     override init() {
         super.init()

@@ -220,6 +220,23 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     return self.attachmentType == TSAttachmentTypeVoiceMessage;
 }
 
+- (BOOL)isVisualMedia
+{
+    if (self.isImage) {
+        return YES;
+    }
+
+    if (self.isVideo) {
+        return YES;
+    }
+
+    if (self.isAnimated) {
+        return YES;
+    }
+
+    return NO;
+}
+
 - (nullable NSString *)sourceFilename
 {
     return _sourceFilename.filterFilename;

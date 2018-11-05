@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasAttachments;
 - (NSArray<TSAttachment *> *)attachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
+- (BOOL)isMediaGalleryWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction;

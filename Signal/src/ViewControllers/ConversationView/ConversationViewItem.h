@@ -31,11 +31,26 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class OWSAudioMessageView;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
+@class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
 @class TSThread;
 @class YapDatabaseReadTransaction;
+
+@interface ConversationMediaGalleryItem : NSObject
+
+@property (nonatomic, readonly) TSAttachment *attachment;
+
+// This property will only be set if the attachment is downloaded.
+@property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
+
+// This property will be non-zero if the attachment is valid.
+@property (nonatomic, readonly) CGSize mediaSize;
+
+@end
+
+#pragma mark -
 
 // This is a ViewModel for cells in the conversation view.
 //
@@ -92,6 +107,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, readonly) CGSize mediaSize;
+@property (nonatomic, readonly, nullable) NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems;
 
 @property (nonatomic, readonly, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;

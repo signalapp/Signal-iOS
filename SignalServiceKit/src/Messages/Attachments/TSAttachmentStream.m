@@ -329,7 +329,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [self removeFileWithTransaction:transaction];
 }
 
-- (BOOL)isValidMedia
+- (BOOL)isValidVisualMedia
 {
     if (self.isImage && self.isValidImage) {
         return YES;

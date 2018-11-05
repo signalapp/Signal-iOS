@@ -93,7 +93,7 @@ typedef void (^OWSThumbnailFailure)(void);
 
 @property (nonatomic, readonly) BOOL isValidImage;
 @property (nonatomic, readonly) BOOL isValidVideo;
-@property (nonatomic, readonly) BOOL isValidMedia;
+@property (nonatomic, readonly) BOOL isValidVisualMedia;
 
 #pragma mark - Update With... Methods
 
