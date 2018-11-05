@@ -240,6 +240,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             return self.hasBodyText;
         case OWSMessageCellType_ContactShare:
             return NO;
+        case OWSMessageCellType_MediaGallery:
+            // TODO: How will media gallery captions work?
+            return NO;
     }
 }
 
@@ -326,6 +329,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             break;
         case OWSMessageCellType_ContactShare:
             bodyMediaView = [self loadViewForContactShare];
+            break;
+        case OWSMessageCellType_MediaGallery:
+            // TODO:
+            bodyMediaView = [self loadViewForGenericAttachment];
             break;
     }
 
@@ -612,6 +619,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
+            return NO;
+        case OWSMessageCellType_MediaGallery:
+            // TODO:
             return NO;
     }
 }
@@ -1207,6 +1217,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
             result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
+        case OWSMessageCellType_MediaGallery:
+            // Always use a "max size square".
+            result = CGSizeMake(maxMessageWidth, maxMessageWidth);
+            break;
     }
 
     OWSAssertDebug(result.width <= maxMessageWidth);
@@ -1423,6 +1437,10 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         // TODO: Handle this case.
         return NO;
     }
+    if (self.cellType == OWSMessageCellType_MediaGallery) {
+        // TODO:
+        return NO;
+    }
     if (!self.attachmentStream) {
         return NO;
     }
@@ -1590,6 +1608,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         }
         case OWSMessageCellType_ContactShare:
             [self.delegate didTapContactShareViewItem:self.viewItem];
+            break;
+        case OWSMessageCellType_MediaGallery:
+            // TODO:
             break;
     }
 }
