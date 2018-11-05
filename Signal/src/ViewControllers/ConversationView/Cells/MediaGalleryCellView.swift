@@ -28,7 +28,6 @@ public class MediaGalleryCellView: UIView {
                          maxMessageWidth: CGFloat) {
         self.delegate = delegate
         self.items = items
-        Logger.verbose("items: \(items.count)")
         self.itemViews = MediaGalleryCellView.itemsToDisplay(forItems: items).map {
             MediaItemView(delegate: delegate,
                           item: $0)
@@ -42,7 +41,6 @@ public class MediaGalleryCellView: UIView {
     }
 
     private func createContents(maxMessageWidth: CGFloat) {
-        Logger.verbose("itemViews: \(itemViews.count)")
         switch itemViews.count {
         case 0:
             return
@@ -171,9 +169,7 @@ public class MediaGalleryCellView: UIView {
             $0.attachmentStream != nil
             }
 
-        Logger.verbose("validItems: \(validItems.count)")
         guard validItems.count < kMaxItems else {
-            Logger.verbose("validItems MAX: \(validItems.count)")
             return Array(validItems[0..<kMaxItems])
         }
         return validItems
@@ -327,10 +323,9 @@ public class MediaGalleryCellView: UIView {
                 }
                 let cachedValue = strongDelegate.tryToLoadCellMedia(loadCellMediaBlock: { () -> Any? in
                     return attachmentStream.thumbnailImageMedium(success: { (image) in
-                        Logger.verbose("Loaded thumbnail")
                         stillImageView.image = image
                     }, failure: {
-                        Logger.verbose("Could not load thumbnail")
+                        Logger.error("Could not load thumbnail")
                     })
                 },
                                                                     mediaView: stillImageView,
@@ -382,10 +377,9 @@ public class MediaGalleryCellView: UIView {
                 }
                 let cachedValue = strongDelegate.tryToLoadCellMedia(loadCellMediaBlock: { () -> Any? in
                     return attachmentStream.thumbnailImageMedium(success: { (image) in
-                        Logger.verbose("Loaded thumbnail")
                         stillImageView.image = image
                     }, failure: {
-                        Logger.verbose("Could not load thumbnail")
+                        Logger.error("Could not load thumbnail")
                     })
                 },
                                                                     mediaView: stillImageView,
