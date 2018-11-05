@@ -4346,6 +4346,11 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewModelDelegate
 
+- (BOOL)isObservingVMUpdates
+{
+    return self.shouldObserveVMUpdates;
+}
+
 - (void)conversationViewModelWillUpdate
 {
     OWSAssertIsOnMainThread();
