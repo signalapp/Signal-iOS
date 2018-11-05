@@ -542,7 +542,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if ([message isMediaGalleryWithTransaction:transaction]) {
         OWSAssertDebug(attachments.count > 0);
         // TODO: Handle captions.
-        self.mediaGalleryItems = [self mediaGalleryItemsForAttachments:attachments];
+        NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems = [self mediaGalleryItemsForAttachments:attachments];
+        self.mediaGalleryItems = mediaGalleryItems;
         self.messageCellType = OWSMessageCellType_MediaGallery;
         return;
     }
@@ -668,8 +669,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                                                                         mediaSize:CGSizeZero]];
             continue;
         }
-        CGSize mediaSize = [self.attachmentStream imageSize];
-        if (self.mediaSize.width <= 0 || self.mediaSize.height <= 0) {
+        CGSize mediaSize = [attachmentStream imageSize];
+        if (mediaSize.width <= 0 || mediaSize.height <= 0) {
             OWSLogWarn(@"Filtering media with invalid size.");
             [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
                                                                                  attachmentStream:nil
@@ -932,7 +933,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_MediaGallery: {
             // TODO: We need a "canShareMediaAction" method.
-            OWSAssertDebug(self.mediaGalleryItems.count > 0);
+            OWSAssertDebug(self.mediaGalleryItems);
             NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
             for (ConversationMediaGalleryItem *mediaGalleryItem in self.mediaGalleryItems) {
                 if (mediaGalleryItem.attachmentStream) {

@@ -24,7 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     = UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent;
 
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
+typedef _Nullable id (^LoadCellMediaBlock)(void);
+
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate,
+    OWSContactShareButtonsViewDelegate,
+    OWSMediaGalleryCellViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -331,8 +335,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             bodyMediaView = [self loadViewForContactShare];
             break;
         case OWSMessageCellType_MediaGallery:
-            // TODO:
-            bodyMediaView = [self loadViewForGenericAttachment];
+            bodyMediaView = [self loadViewForMediaGallery];
             break;
     }
 
@@ -621,8 +624,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_MediaGallery:
-            // TODO:
-            return NO;
+            return YES;
     }
 }
 
@@ -664,12 +666,17 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 // but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
 // this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
 // state. The didCellMediaFailToLoad reflects media load fails.
-- (nullable id)tryToLoadCellMedia:(nullable id (^)(void))loadCellMediaBlock
+- (nullable id)tryToLoadCellMedia:(LoadCellMediaBlock)loadCellMediaBlock
                         mediaView:(UIView *)mediaView
                          cacheKey:(NSString *)cacheKey
                      canLoadAsync:(BOOL)canLoadAsync
 {
-    OWSAssertDebug(self.attachmentStream);
+    OWSAssertIsOnMainThread();
+    if (self.cellType == OWSMessageCellType_MediaGallery) {
+        OWSAssertDebug(self.viewItem.mediaGalleryItems);
+    } else {
+        OWSAssertDebug(self.attachmentStream);
+    }
     OWSAssertDebug(mediaView);
     OWSAssertDebug(cacheKey);
     OWSAssertDebug(self.cellMediaCache);
@@ -829,6 +836,25 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     tapForMoreLabel.textAlignment = [tapForMoreLabel textAlignmentUnnatural];
 
     return tapForMoreLabel;
+}
+
+- (UIView *)loadViewForMediaGallery
+{
+    OWSAssertDebug(self.viewItem.mediaGalleryItems);
+
+    OWSLogVerbose(@"self.viewItem.mediaGalleryItems: %lu", (unsigned long)self.viewItem.mediaGalleryItems.count);
+    OWSMediaGalleryCellView *galleryView =
+        [[OWSMediaGalleryCellView alloc] initWithDelegate:self
+                                                    items:self.viewItem.mediaGalleryItems
+                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
+    self.loadCellContentBlock = ^{
+        [galleryView loadMedia];
+    };
+    self.unloadCellContentBlock = ^{
+        [galleryView unloadMedia];
+    };
+
+    return galleryView;
 }
 
 - (UIView *)loadViewForStillImage
@@ -1218,8 +1244,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
         case OWSMessageCellType_MediaGallery:
-            // Always use a "max size square".
-            result = CGSizeMake(maxMessageWidth, maxMessageWidth);
+            result = [OWSMediaGalleryCellView layoutSizeForMaxMessageWidth:maxMessageWidth
+                                                                     items:self.viewItem.mediaGalleryItems];
             break;
     }
 
