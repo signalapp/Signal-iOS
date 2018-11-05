@@ -654,6 +654,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     NSSet<NSString *> *newItemIdSet = [NSSet setWithArray:newItemIdList];
 
     // We use sets and dictionaries here to ensure perf.
+    // We use NSMutableOrderedSet to preserve item ordering.
     NSMutableOrderedSet<NSString *> *deletedItemIdSet = [NSMutableOrderedSet orderedSetWithArray:oldItemIdList];
     [deletedItemIdSet minusSet:newItemIdSet];
     NSMutableOrderedSet<NSString *> *insertedItemIdSet = [NSMutableOrderedSet orderedSetWithArray:newItemIdList];
