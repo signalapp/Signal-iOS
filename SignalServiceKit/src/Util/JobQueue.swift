@@ -106,6 +106,7 @@ public extension JobQueue {
 
     func add(jobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
         assert(jobRecord.status == .ready)
+
         jobRecord.save(with: transaction)
 
         transaction.addCompletionQueue(.global()) {

@@ -270,7 +270,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     // Start processing.
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self drainQueue];
+        if (CurrentAppContext().isMainApp) {
+            [self drainQueue];
+        }
     }];
 
     return self;

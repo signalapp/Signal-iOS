@@ -84,8 +84,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     [AppReadiness runNowOrWhenAppWillBecomeReady:^{
         [self setup];
-    }];
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+
         [self startObserving];
     }];
 
@@ -409,10 +408,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssertDebug(recipientId.length > 0);
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+        OWSAssertDebug(recipientId.length > 0);
 
-    [self.avatarCache removeAllImagesForKey:recipientId];
+        [self.avatarCache removeAllImagesForKey:recipientId];
+    }];
 }
 
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts

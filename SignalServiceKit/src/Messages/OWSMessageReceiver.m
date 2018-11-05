@@ -249,7 +249,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     _isDrainingQueue = NO;
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [self drainQueue];
+        if (CurrentAppContext().isMainApp) {
+            [self drainQueue];
+        }
     }];
 
     return self;
