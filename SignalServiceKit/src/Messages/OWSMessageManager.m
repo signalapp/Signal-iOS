@@ -663,6 +663,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing typingMessage.");
         return;
     }
+    if (typingMessage.timestamp != envelope.timestamp) {
+        OWSFailDebug(@"typingMessage has invalid timestamp.");
+        return;
+    }
 
     TSThread *_Nullable thread;
     if (typingMessage.hasGroupID) {

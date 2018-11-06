@@ -125,11 +125,11 @@ public class TypingIndicatorCell: ConversationViewCell {
         let bubbleSize = CGSizeAdd(insetsSize, typingIndicatorSize)
 
         if shouldShowAvatar() {
-            let avatarSize = CGSize(width: kAvatarSize, height: kAvatarSize)
-            return CGSizeCeil(CGSize(width: avatarSize.width + kAvatarHSpacing + bubbleSize.width,
-                                     height: max(avatarSize.height, bubbleSize.height)))
+            return CGSizeCeil(CGSize(width: kAvatarSize + kAvatarHSpacing + bubbleSize.width,
+                                     height: max(kAvatarSize, bubbleSize.height)))
         } else {
-            return bubbleSize
+            return CGSizeCeil(CGSize(width: bubbleSize.width,
+                                     height: max(kAvatarSize, bubbleSize.height)))
         }
     }
 
