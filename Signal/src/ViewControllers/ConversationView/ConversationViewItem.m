@@ -158,6 +158,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.displayableQuotedText = nil;
     self.quotedReply = nil;
     self.systemMessageText = nil;
+    self.mediaGalleryItems = nil;
 
     [self updateAuthorConversationColorNameWithTransaction:transaction];
 
@@ -545,6 +546,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems = [self mediaGalleryItemsForAttachments:attachments];
         self.mediaGalleryItems = mediaGalleryItems;
         self.messageCellType = OWSMessageCellType_MediaGallery;
+        NSString *_Nullable galleryTitle = [message bodyTextWithTransaction:transaction];
+        if (galleryTitle) {
+            self.displayableBodyText = [self displayableBodyTextForText:galleryTitle interactionId:message.uniqueId];
+        }
         return;
     }
     // Only media galleries should have more than one attachment.

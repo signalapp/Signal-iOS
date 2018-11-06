@@ -241,8 +241,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_MediaGallery:
-            // TODO: How will media gallery captions work?
-            return NO;
+            // Is there a gallery title?
+            return self.hasBodyText;
     }
 }
 
@@ -1250,29 +1250,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return [self.conversationStyle bubbleTextColorWithMessage:message];
 }
 
-- (BOOL)isMediaBeingSent
-{
-    if (self.isIncoming) {
-        return NO;
-    }
-    if (self.cellType == OWSMessageCellType_DownloadingAttachment) {
-        return NO;
-    }
-    if (self.cellType == OWSMessageCellType_ContactShare) {
-        // TODO: Handle this case.
-        return NO;
-    }
-    if (self.cellType == OWSMessageCellType_MediaGallery) {
-        // TODO:
-        return NO;
-    }
-    if (!self.attachmentStream) {
-        return NO;
-    }
-    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateSending;
-}
-
 - (void)prepareForReuse
 {
     [NSLayoutConstraint deactivateConstraints:self.viewConstraints];
@@ -1381,8 +1358,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 {
     OWSAssertDebug(self.delegate);
 
-    TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
-
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
@@ -1390,37 +1365,37 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             break;
         case OWSMessageCellType_StillImage:
             OWSAssertDebug(self.bodyMediaView);
-            OWSAssertDebug(attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
 
             [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:attachmentStream
+                              attachmentStream:self.viewItem.attachmentStream
                                      imageView:self.bodyMediaView];
             break;
         case OWSMessageCellType_AnimatedImage:
             OWSAssertDebug(self.bodyMediaView);
-            OWSAssertDebug(attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
 
             [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:attachmentStream
+                              attachmentStream:self.viewItem.attachmentStream
                                      imageView:self.bodyMediaView];
             break;
         case OWSMessageCellType_Audio:
-            OWSAssertDebug(attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
 
-            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
+            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
             return;
         case OWSMessageCellType_Video:
             OWSAssertDebug(self.bodyMediaView);
-            OWSAssertDebug(attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
 
             [self.delegate didTapVideoViewItem:self.viewItem
-                              attachmentStream:attachmentStream
+                              attachmentStream:self.viewItem.attachmentStream
                                      imageView:self.bodyMediaView];
             return;
         case OWSMessageCellType_GenericAttachment:
-            OWSAssertDebug(attachmentStream);
+            OWSAssertDebug(self.viewItem.attachmentStream);
 
-            [AttachmentSharing showShareUIForAttachment:attachmentStream];
+            [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
             break;
         case OWSMessageCellType_DownloadingAttachment: {
             TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
@@ -1435,7 +1410,25 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             [self.delegate didTapContactShareViewItem:self.viewItem];
             break;
         case OWSMessageCellType_MediaGallery:
-            // TODO:
+            OWSAssertDebug(self.bodyMediaView);
+            OWSAssertDebug(self.viewItem.mediaGalleryItems.count > 0);
+
+            // For now, use first valid attachment.
+            TSAttachmentStream *_Nullable attachmentStream = nil;
+            for (ConversationMediaGalleryItem *mediaGalleryItem in self.viewItem.mediaGalleryItems) {
+                if (mediaGalleryItem.attachmentStream && mediaGalleryItem.attachmentStream.isValidVisualMedia) {
+                    attachmentStream = mediaGalleryItem.attachmentStream;
+                    break;
+                }
+            }
+            if (!attachmentStream) {
+                OWSLogInfo(@"Ignoring tap on gallery without any valid attachments.");
+                return;
+            }
+
+            [self.delegate didTapImageViewItem:self.viewItem
+                              attachmentStream:attachmentStream
+                                     imageView:self.bodyMediaView];
             break;
     }
 }

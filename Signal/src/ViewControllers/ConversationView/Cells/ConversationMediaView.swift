@@ -76,6 +76,10 @@ public class ConversationMediaView: UIView {
                 return
             }
             let cachedValue = strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+                guard attachmentStream.isValidImage else {
+                    owsFailDebug("Ignoring invalid attachment.")
+                    return nil
+                }
                 guard let filePath = attachmentStream.originalFilePath else {
                     owsFailDebug("Attachment stream missing original file path.")
                     return nil
@@ -120,6 +124,10 @@ public class ConversationMediaView: UIView {
                 return
             }
             let cachedValue = strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+                guard attachmentStream.isValidImage else {
+                    owsFailDebug("Ignoring invalid attachment.")
+                    return nil
+                }
                 return attachmentStream.thumbnailImageMedium(success: { (image) in
                     stillImageView.image = image
                 }, failure: {
@@ -170,6 +178,10 @@ public class ConversationMediaView: UIView {
                 return
             }
             let cachedValue = strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
+                guard attachmentStream.isValidVideo else {
+                    owsFailDebug("Ignoring invalid attachment.")
+                    return nil
+                }
                 return attachmentStream.thumbnailImageMedium(success: { (image) in
                     stillImageView.image = image
                 }, failure: {
