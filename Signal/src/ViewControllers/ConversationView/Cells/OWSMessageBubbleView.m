@@ -24,11 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     = UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent;
 
-typedef _Nullable id (^LoadCellMediaBlock)(void);
-
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate,
-    OWSContactShareButtonsViewDelegate,
-    OWSMediaGalleryCellViewDelegate>
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -310,16 +306,10 @@ typedef _Nullable id (^LoadCellMediaBlock)(void);
         case OWSMessageCellType_OversizeTextMessage:
             break;
         case OWSMessageCellType_StillImage:
-            OWSAssertDebug(self.viewItem.attachmentStream);
-            bodyMediaView = [self loadViewForStillImage];
-            break;
         case OWSMessageCellType_AnimatedImage:
-            OWSAssertDebug(self.viewItem.attachmentStream);
-            bodyMediaView = [self loadViewForAnimatedImage];
-            break;
         case OWSMessageCellType_Video:
             OWSAssertDebug(self.viewItem.attachmentStream);
-            bodyMediaView = [self loadViewForVideo];
+            bodyMediaView = [self loadViewForMedia];
             break;
         case OWSMessageCellType_Audio:
             OWSAssertDebug(self.viewItem.attachmentStream);
@@ -662,46 +652,6 @@ typedef _Nullable id (^LoadCellMediaBlock)(void);
     return YES;
 }
 
-// We now eagerly create our view hierarchy (to do this exactly once per cell usage)
-// but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
-// this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
-// state. The didCellMediaFailToLoad reflects media load fails.
-- (nullable id)tryToLoadCellMedia:(LoadCellMediaBlock)loadCellMediaBlock
-                        mediaView:(UIView *)mediaView
-                         cacheKey:(NSString *)cacheKey
-                     canLoadAsync:(BOOL)canLoadAsync
-{
-    OWSAssertIsOnMainThread();
-    if (self.cellType == OWSMessageCellType_MediaGallery) {
-        OWSAssertDebug(self.viewItem.mediaGalleryItems);
-    } else {
-        OWSAssertDebug(self.attachmentStream);
-    }
-    OWSAssertDebug(mediaView);
-    OWSAssertDebug(cacheKey);
-    OWSAssertDebug(self.cellMediaCache);
-
-    if (self.viewItem.didCellMediaFailToLoad) {
-        return nil;
-    }
-
-    id _Nullable cellMedia = [self.cellMediaCache objectForKey:cacheKey];
-    if (cellMedia) {
-        OWSLogVerbose(@"cell media cache hit");
-        return cellMedia;
-    }
-    cellMedia = loadCellMediaBlock();
-    if (cellMedia) {
-        OWSLogVerbose(@"cell media cache miss");
-        [self.cellMediaCache setObject:cellMedia forKey:cacheKey];
-    } else if (!canLoadAsync) {
-        OWSLogError(@"Failed to load cell media: %@", self.attachmentStream.originalMediaURL);
-        self.viewItem.didCellMediaFailToLoad = YES;
-        [self showAttachmentErrorViewWithMediaView:mediaView];
-    }
-    return cellMedia;
-}
-
 - (CGFloat)textViewVSpacing
 {
     return 2.f;
@@ -842,11 +792,10 @@ typedef _Nullable id (^LoadCellMediaBlock)(void);
 {
     OWSAssertDebug(self.viewItem.mediaGalleryItems);
 
-    OWSLogVerbose(@"self.viewItem.mediaGalleryItems: %lu", (unsigned long)self.viewItem.mediaGalleryItems.count);
     OWSMediaGalleryCellView *galleryView =
-        [[OWSMediaGalleryCellView alloc] initWithDelegate:self
-                                                    items:self.viewItem.mediaGalleryItems
-                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
+        [[OWSMediaGalleryCellView alloc] initWithMediaCache:self.cellMediaCache
+                                                      items:self.viewItem.mediaGalleryItems
+                                            maxMessageWidth:self.conversationStyle.maxMessageWidth];
     self.loadCellContentBlock = ^{
         [galleryView loadMedia];
     };
@@ -857,110 +806,22 @@ typedef _Nullable id (^LoadCellMediaBlock)(void);
     return galleryView;
 }
 
-- (UIView *)loadViewForStillImage
+- (UIView *)loadViewForMedia
 {
     OWSAssertDebug(self.attachmentStream);
     OWSAssertDebug([self.attachmentStream isImage]);
 
-    UIImageView *stillImageView = [UIImageView new];
-    // We need to specify a contentMode since the size of the image
-    // might not match the aspect ratio of the view.
-    stillImageView.contentMode = UIViewContentModeScaleAspectFill;
-    // Use trilinear filters for better scaling quality at
-    // some performance cost.
-    stillImageView.layer.minificationFilter = kCAFilterTrilinear;
-    stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    stillImageView.backgroundColor = [UIColor whiteColor];
-    [self addAttachmentUploadViewIfNecessary];
-
-    __weak OWSMessageBubbleView *weakSelf = self;
-    __weak UIImageView *weakImageView = stillImageView;
+    ConversationMediaView *mediaView =
+        [[ConversationMediaView alloc] initWithMediaCache:self.cellMediaCache attachment:self.attachmentStream];
     self.loadCellContentBlock = ^{
-        OWSMessageBubbleView *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
-        if (stillImageView.image) {
-            return;
-        }
-        stillImageView.image = [strongSelf
-            tryToLoadCellMedia:^{
-                OWSCAssertDebug([strongSelf.attachmentStream isImage]);
-                OWSCAssertDebug([strongSelf.attachmentStream isValidImage]);
-
-                return [strongSelf.attachmentStream
-                    thumbnailImageMediumWithSuccess:^(UIImage *image) {
-                        weakImageView.image = image;
-                    }
-                    failure:^{
-                        OWSLogError(@"Could not load thumbnail.");
-                    }];
-            }
-                     mediaView:stillImageView
-                      cacheKey:strongSelf.attachmentStream.uniqueId
-                  canLoadAsync:YES];
+        [mediaView loadMedia];
     };
     self.unloadCellContentBlock = ^{
-        OWSMessageBubbleView *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
-        stillImageView.image = nil;
+        [mediaView unloadMedia];
     };
-
-    return stillImageView;
-}
-
-- (UIView *)loadViewForAnimatedImage
-{
-    OWSAssertDebug(self.attachmentStream);
-    OWSAssertDebug([self.attachmentStream isAnimated]);
-
-    YYAnimatedImageView *animatedImageView = [[YYAnimatedImageView alloc] init];
-    // We need to specify a contentMode since the size of the image
-    // might not match the aspect ratio of the view.
-    animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
-    animatedImageView.backgroundColor = [UIColor whiteColor];
     [self addAttachmentUploadViewIfNecessary];
 
-    __weak OWSMessageBubbleView *weakSelf = self;
-    self.loadCellContentBlock = ^{
-        OWSMessageBubbleView *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        OWSCAssertDebug(strongSelf.bodyMediaView == animatedImageView);
-        if (animatedImageView.image) {
-            return;
-        }
-        animatedImageView.image = [strongSelf
-            tryToLoadCellMedia:^{
-                OWSCAssertDebug([strongSelf.attachmentStream isAnimated]);
-                OWSCAssertDebug([strongSelf.attachmentStream isValidImage]);
-
-                NSString *_Nullable filePath = [strongSelf.attachmentStream originalFilePath];
-                YYImage *_Nullable animatedImage = nil;
-                if (strongSelf.attachmentStream.isValidImage && filePath) {
-                    animatedImage = [YYImage imageWithContentsOfFile:filePath];
-                }
-                return animatedImage;
-            }
-                     mediaView:animatedImageView
-                      cacheKey:strongSelf.attachmentStream.uniqueId
-                  canLoadAsync:NO];
-    };
-    self.unloadCellContentBlock = ^{
-        OWSMessageBubbleView *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        OWSCAssertDebug(strongSelf.bodyMediaView == animatedImageView);
-        animatedImageView.image = nil;
-    };
-
-    return animatedImageView;
+    return mediaView;
 }
 
 - (UIView *)loadViewForAudio
@@ -984,68 +845,6 @@ typedef _Nullable id (^LoadCellMediaBlock)(void);
     };
 
     return audioMessageView;
-}
-
-- (UIView *)loadViewForVideo
-{
-    OWSAssertDebug(self.attachmentStream);
-    OWSAssertDebug([self.attachmentStream isVideo]);
-
-    UIImageView *stillImageView = [UIImageView new];
-    // We need to specify a contentMode since the size of the image
-    // might not match the aspect ratio of the view.
-    stillImageView.contentMode = UIViewContentModeScaleAspectFill;
-    // Use trilinear filters for better scaling quality at
-    // some performance cost.
-    stillImageView.layer.minificationFilter = kCAFilterTrilinear;
-    stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
-
-    UIImage *videoPlayIcon = [UIImage imageNamed:@"play_button"];
-    UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:videoPlayIcon];
-    [stillImageView addSubview:videoPlayButton];
-    [videoPlayButton autoCenterInSuperview];
-    [self addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:^(BOOL isAttachmentReady) {
-        videoPlayButton.hidden = !isAttachmentReady;
-    }];
-
-    __weak OWSMessageBubbleView *weakSelf = self;
-    __weak UIImageView *weakImageView = stillImageView;
-    self.loadCellContentBlock = ^{
-        OWSMessageBubbleView *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
-        if (stillImageView.image) {
-            return;
-        }
-        stillImageView.image = [strongSelf
-            tryToLoadCellMedia:^{
-                OWSCAssertDebug([strongSelf.attachmentStream isVideo]);
-                OWSCAssertDebug([strongSelf.attachmentStream isValidVideo]);
-
-                return [strongSelf.attachmentStream
-                    thumbnailImageMediumWithSuccess:^(UIImage *image) {
-                        weakImageView.image = image;
-                    }
-                    failure:^{
-                        OWSLogError(@"Could not load thumbnail.");
-                    }];
-            }
-                     mediaView:stillImageView
-                      cacheKey:strongSelf.attachmentStream.uniqueId
-                  canLoadAsync:YES];
-    };
-    self.unloadCellContentBlock = ^{
-        OWSMessageBubbleView *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        OWSCAssertDebug(strongSelf.bodyMediaView == stillImageView);
-        stillImageView.image = nil;
-    };
-
-    return stillImageView;
 }
 
 - (UIView *)loadViewForGenericAttachment
