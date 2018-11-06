@@ -442,6 +442,8 @@ private class SignalCallData: NSObject {
             Logger.info(self.call == call
                 ? "\(self.logTag) outgoing call connected: \(call.identifiersForLogs)."
                 : "\(self.logTag) obsolete outgoing call connected: \(call.identifiersForLogs).")
+        }.then {
+            self.setHasLocalVideo(hasLocalVideo: true)
         }.catch { error in
             Logger.error("\(self.logTag) placing call \(call.identifiersForLogs) failed with error: \(error)")
 
@@ -744,6 +746,8 @@ private class SignalCallData: NSObject {
             Logger.info(self.call == newCall
                 ? "\(self.logTag) incoming call connected: \(newCall.identifiersForLogs)."
                 : "\(self.logTag) obsolete incoming call connected: \(newCall.identifiersForLogs).")
+        }.then {
+            self.setHasLocalVideo(hasLocalVideo: true)
         }.catch { error in
             guard self.call == newCall else {
                 Logger.debug("\(self.logTag) ignoring error: \(error)  for obsolete call: \(newCall.identifiersForLogs).")
