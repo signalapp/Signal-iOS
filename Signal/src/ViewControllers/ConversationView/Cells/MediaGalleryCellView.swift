@@ -32,30 +32,16 @@ public class MediaGalleryCellView: UIStackView {
     private func createContents(maxMessageWidth: CGFloat) {
         switch itemViews.count {
         case 0:
+            owsFailDebug("No item views.")
             return
         case 1:
+            // X
             guard let itemView = itemViews.first else {
                 owsFailDebug("Missing item view.")
                 return
             }
             addSubview(itemView)
             itemView.autoPinEdgesToSuperviewEdges()
-        case 4:
-            // Square
-            let imageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts) / 2
-
-            let topViews = Array(itemViews[0..<2])
-            addArrangedSubview(newRow(rowViews: topViews,
-                                      axis: .horizontal,
-                                      viewSize: imageSize))
-
-            let bottomViews = Array(itemViews[2..<4])
-            addArrangedSubview(newRow(rowViews: bottomViews,
-                                      axis: .horizontal,
-                                      viewSize: imageSize))
-
-            self.axis = .vertical
-            self.spacing = MediaGalleryCellView.kSpacingPts
         case 2:
             // X X
             // side-by-side.
@@ -68,8 +54,7 @@ public class MediaGalleryCellView: UIStackView {
             self.spacing = MediaGalleryCellView.kSpacingPts
         case 3:
             //   x
-            // X
-            //   x
+            // X x
             // Big on left, 2 small on right.
             let smallImageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts * 2) / 3
             let bigImageSize = smallImageSize * 2 + MediaGalleryCellView.kSpacingPts
@@ -86,6 +71,24 @@ public class MediaGalleryCellView: UIStackView {
                                       axis: .vertical,
                                       viewSize: smallImageSize))
             self.axis = .horizontal
+            self.spacing = MediaGalleryCellView.kSpacingPts
+        case 4:
+            // X X
+            // X X
+            // Square
+            let imageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts) / 2
+
+            let topViews = Array(itemViews[0..<2])
+            addArrangedSubview(newRow(rowViews: topViews,
+                                      axis: .horizontal,
+                                      viewSize: imageSize))
+
+            let bottomViews = Array(itemViews[2..<4])
+            addArrangedSubview(newRow(rowViews: bottomViews,
+                                      axis: .horizontal,
+                                      viewSize: imageSize))
+
+            self.axis = .vertical
             self.spacing = MediaGalleryCellView.kSpacingPts
         default:
             // X X
@@ -192,6 +195,12 @@ public class MediaGalleryCellView: UIStackView {
         let itemCount = itemsToDisplay(forItems: items).count
         switch itemCount {
         case 0, 1, 4:
+            // X
+            //
+            // or
+            //
+            // XX
+            // XX
             // Square
             return CGSize(width: maxMessageWidth, height: maxMessageWidth)
         case 2:
@@ -201,8 +210,7 @@ public class MediaGalleryCellView: UIStackView {
             return CGSize(width: maxMessageWidth, height: imageSize)
         case 3:
             //   x
-            // X
-            //   x
+            // X x
             // Big on left, 2 small on right.
             let smallImageSize = (maxMessageWidth - kSpacingPts * 2) / 3
             let bigImageSize = smallImageSize * 2 + kSpacingPts

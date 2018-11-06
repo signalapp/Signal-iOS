@@ -67,7 +67,6 @@ public class ConversationMediaView: UIView {
         animatedImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
-        //            [self addAttachmentUploadViewIfNecessary];
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -115,7 +114,6 @@ public class ConversationMediaView: UIView {
         stillImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
-        //            [self addAttachmentUploadViewIfNecessary];
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -169,7 +167,6 @@ public class ConversationMediaView: UIView {
         stillImageView.addSubview(videoPlayButton)
         videoPlayButton.autoCenterInSuperview()
 
-        //            [self addAttachmentUploadViewIfNecessary];
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
