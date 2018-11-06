@@ -43,7 +43,6 @@
 #import "TextSecureKitEnv.h"
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 #import "FLCCSMJSONService.h"
-//#import <YapDatabase/YapDatabase.h>
 
 @import YapDatabase;
 

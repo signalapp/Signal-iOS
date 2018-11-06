@@ -13,11 +13,13 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(NSString *_Nullable)body
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
 {
     return [self initWithTimestamp:timestamp
                           authorId:authorId
+                         messageId:messageId
                               body:body
                     thumbnailImage:attachmentStream.thumbnailImage
                        contentType:attachmentStream.contentType
@@ -29,11 +31,13 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(NSString *_Nullable)body
                    thumbnailImage:(nullable UIImage *)thumbnailImage;
 {
     return [self initWithTimestamp:timestamp
                           authorId:authorId
+                         messageId:messageId
                               body:body
                     thumbnailImage:thumbnailImage
                        contentType:nil
@@ -76,6 +80,7 @@
 
     return [self initWithTimestamp:quotedMessage.timestamp
                           authorId:quotedMessage.authorId
+                         messageId:quotedMessage.messageId
                               body:quotedMessage.body
                     thumbnailImage:thumbnailImage
                        contentType:attachmentInfo.contentType
@@ -87,6 +92,7 @@
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(nullable NSString *)body
                    thumbnailImage:(nullable UIImage *)thumbnailImage
                       contentType:(nullable NSString *)contentType
@@ -102,6 +108,7 @@
 
     _timestamp = timestamp;
     _authorId = authorId;
+    _messageId = messageId;
     _body = body;
     _thumbnailImage = thumbnailImage;
     _contentType = contentType;
@@ -119,6 +126,7 @@
 
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
                                              authorId:self.authorId
+                                            messageId:self.messageId
                                                  body:self.body
                           quotedAttachmentsForSending:attachments];
 }
@@ -135,6 +143,8 @@
         return nil;
     }
 
+    NSString *messageId = message.uniqueId;
+    
     TSThread *thread = [message threadWithTransaction:transaction];
     OWSAssert(thread);
 
@@ -161,6 +171,7 @@
         // contactShare avatar in the quoted reply.
         return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp
                                                      authorId:authorId
+                                                    messageId:messageId
                                                          body:[@"👤 " stringByAppendingString:contactShare.displayName]
                                                thumbnailImage:nil];
         
@@ -228,6 +239,7 @@
 
     return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp
                                                  authorId:authorId
+                                                messageId:messageId
                                                      body:quotedText
                                          attachmentStream:quotedAttachment];
 }

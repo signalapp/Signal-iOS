@@ -7,12 +7,9 @@
 #import "Environment.h"
 #import "OWSBubbleView.h"
 #import "Relay-Swift.h"
-//#import <RelayMessaging/OWSContactsManager.h>
-#import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayMessaging/UIView+OWS.h>
-#import <RelayServiceKit/TSAttachmentStream.h>
-#import <RelayServiceKit/TSMessage.h>
-#import <RelayServiceKit/TSQuotedMessage.h>
+
+@import RelayServiceKit;
+@import RelayMessaging;
 
 NS_ASSUME_NONNULL_BEGIN
 

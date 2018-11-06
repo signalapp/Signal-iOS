@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) NSString *messageId;
 
 // This property should be set IFF we are quoting a text message
 // or attachment with caption.
@@ -79,19 +80,21 @@ NS_ASSUME_NONNULL_BEGIN
 // used when receiving quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(NSString *_Nullable)body
     receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
 
 // used when sending quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(NSString *_Nullable)body
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 
 
-+ (nullable instancetype)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                              thread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+//+ (nullable instancetype)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+//                                              thread:(TSThread *)thread
+//                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 
