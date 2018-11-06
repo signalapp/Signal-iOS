@@ -20,7 +20,8 @@ public class ConversationMediaView: UIView {
 
         super.init(frame: .zero)
 
-        self.backgroundColor = .white
+        backgroundColor = Theme.offBackgroundColor
+        clipsToBounds = true
 
         createContents()
     }
@@ -63,7 +64,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         animatedImageView.layer.minificationFilter = kCAFilterTrilinear
         animatedImageView.layer.magnificationFilter = kCAFilterTrilinear
-        animatedImageView.backgroundColor = .white
+        animatedImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         //            [self addAttachmentUploadViewIfNecessary];
@@ -107,7 +108,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = kCAFilterTrilinear
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
-        stillImageView.backgroundColor = .white
+        stillImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         //            [self addAttachmentUploadViewIfNecessary];
@@ -150,7 +151,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = kCAFilterTrilinear
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
-        stillImageView.backgroundColor = .white
+        stillImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
 

@@ -24,7 +24,7 @@ public class MediaGalleryCellView: UIStackView {
 
         super.init(frame: .zero)
 
-        self.backgroundColor = .white
+        backgroundColor = Theme.offBackgroundColor
 
         createContents(maxMessageWidth: maxMessageWidth)
     }
