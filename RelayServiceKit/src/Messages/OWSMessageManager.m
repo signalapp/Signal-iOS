@@ -1046,6 +1046,21 @@ NS_ASSUME_NONNULL_BEGIN
     TSIncomingMessage *incomingMessage = [TSIncomingMessage fetchObjectWithUniqueID:[jsonPayload objectForKey:@"messageId"] transaction:transaction];
     
     if (incomingMessage == nil) {
+        
+        // Quoted/Replay message handling
+        NSString *messageRefString = [jsonPayload objectForKey:@"messageRef"];
+        TSQuotedMessage *quotedMessage = nil;
+        if (messageRefString.length > 0) {
+            TSMessage *parentMessage = [TSMessage fetchObjectWithUniqueID:messageRefString transaction:transaction];
+            
+            quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:envelope.timestamp
+                                                              authorId:envelope.source
+                                                             messageId:messageRefString
+                                                                  body:parentMessage.plainTextBody
+                                         receivedQuotedAttachmentInfos:nil];
+        }
+        
+        // Build the message
         incomingMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:envelope.timestamp
                                                                              inThread:thread
                                                                              authorId:envelope.source
@@ -1053,7 +1068,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           messageBody:dataMessage.body
                                                                         attachmentIds:attachmentIds
                                                                      expiresInSeconds:dataMessage.expireTimer
-                                                                        quotedMessage:nil
+                                                                        quotedMessage:quotedMessage
                                                                          contactShare:nil];
         
         incomingMessage.uniqueId = [jsonPayload objectForKey:@"messageId"];
@@ -1061,22 +1076,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     incomingMessage.forstaPayload = [jsonPayload mutableCopy];
     
-    // This SHOULD no longer be necessary
-    // Android & web client allow attachments to be sent with body.
-    //    if (attachmentIds.count > 0 && incomingMessage.plainTextBody.length > 0) {
-    //        incomingMessage.hasAnnotation = YES;
-    //        // We want the text to be displayed under the attachment
-    //        uint64_t textMessageTimestamp = envelope.timestamp + 1;
-    //        TSIncomingMessage *textMessage = [[TSIncomingMessage alloc] initWithTimestamp:textMessageTimestamp
-    //                                                                             inThread:thread
-    //                                                                             authorId:envelope.source
-    //                                                                          messageBody:@""];
-    //        textMessage.plainTextBody = incomingMessage.plainTextBody;
-    //        textMessage.attributedTextBody = incomingMessage.attributedTextBody;
-    //        textMessage.expiresInSeconds = dataMessage.expireTimer;
-    //        textMessage.messageType = @"content";
-    //        [textMessage save];
-    //    }
+
+
+    
     [incomingMessage saveWithTransaction:transaction];
     
     if (incomingMessage && thread) {

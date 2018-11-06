@@ -3240,7 +3240,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
 				LastTestingUpgradeCheck = 0600;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Open Whisper Systems";
 				TargetAttributes = {
 					453518671FC635DD00210559 = {
