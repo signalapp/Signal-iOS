@@ -135,6 +135,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)saveMediaAction;
 - (void)deleteAction;
 
+- (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;
 
 // For view items that correspond to interactions, this is the interaction's unique id.

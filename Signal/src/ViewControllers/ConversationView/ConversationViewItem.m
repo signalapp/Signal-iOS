@@ -877,15 +877,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             break;
         }
         case OWSMessageCellType_MediaGallery: {
-            // AFAIK UIPasteboard only supports "multiple representations
-            // of a single item", not "multiple different items".
-            TSAttachmentStream *_Nullable firstAttachment = self.firstValidGalleryAttachment;
-            if (!firstAttachment) {
-                OWSLogWarn(@"Ignoring copy for gallery without any valid attachments.");
-                return;
-            }
-            //
-            [self copyAttachmentToPasteboard:firstAttachment];
+            OWSFailDebug(@"Can't copy media gallery");
             break;
         }
     }
@@ -947,6 +939,28 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+- (BOOL)canCopyMedia
+{
+    switch (self.messageCellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_ContactShare:
+            return NO;
+        case OWSMessageCellType_StillImage:
+        case OWSMessageCellType_AnimatedImage:
+            return YES;
+        case OWSMessageCellType_Audio:
+            return NO;
+        case OWSMessageCellType_Video:
+            return UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.originalFilePath);
+        case OWSMessageCellType_GenericAttachment:
+        case OWSMessageCellType_DownloadingAttachment:
+        case OWSMessageCellType_MediaGallery:
+            return NO;
+    }
+}
+
 - (BOOL)canSaveMedia
 {
     switch (self.messageCellType) {
@@ -963,10 +977,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Video:
             return UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.originalFilePath);
         case OWSMessageCellType_GenericAttachment:
+        case OWSMessageCellType_DownloadingAttachment:
             return NO;
-        case OWSMessageCellType_DownloadingAttachment: {
-            return NO;
-        }
         case OWSMessageCellType_MediaGallery: {
             for (ConversationMediaGalleryItem *mediaGalleryItem in self.mediaGalleryItems) {
                 if (!mediaGalleryItem.attachmentStream) {

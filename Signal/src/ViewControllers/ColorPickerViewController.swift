@@ -394,6 +394,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
+    func canCopyMedia() -> Bool {
+        owsFailDebug("unexpected invocation")
+        return false
+    }
+
     func canSaveMedia() -> Bool {
         owsFailDebug("unexpected invocation")
         return false
