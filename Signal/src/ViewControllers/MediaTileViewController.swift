@@ -68,7 +68,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
         collectionView.backgroundColor = Theme.backgroundColor
 
-        collectionView.register(MediaGalleryCell.self, forCellWithReuseIdentifier: MediaGalleryCell.reuseIdentifier)
+        collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
         collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
         collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
@@ -209,12 +209,12 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     override public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Logger.debug("")
 
-        guard let galleryCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? MediaGalleryCell else {
+        guard let gridCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? PhotoGridViewCell else {
             owsFailDebug("galleryCell was unexpectedly nil")
             return
         }
 
-        guard let galleryItem = galleryCell.item else {
+        guard let galleryItem = (gridCell.item as? GalleryGridCellItem)?.galleryItem else {
             owsFailDebug("galleryItem was unexpectedly nil")
             return
         }
@@ -223,7 +223,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
             updateDeleteButton()
         } else {
             collectionView.deselectItem(at: indexPath, animated: true)
-            self.delegate?.mediaTileViewController(self, didTapView: galleryCell.imageView, mediaGalleryItem: galleryItem)
+            self.delegate?.mediaTileViewController(self, didTapView: gridCell.imageView, mediaGalleryItem: galleryItem)
         }
     }
 
@@ -359,12 +359,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
                 return defaultCell
             }
 
-            guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: MediaGalleryCell.reuseIdentifier, for: indexPath) as? MediaGalleryCell else {
+            guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
                 owsFailDebug("unexpected cell for indexPath: \(indexPath)")
                 return defaultCell
             }
 
-            cell.configure(item: galleryItem)
+            let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
+            cell.configure(item: gridCellItem)
 
             return cell
         }
@@ -878,130 +879,24 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
     }
 }
 
-private class MediaGalleryCell: UICollectionViewCell {
+class GalleryGridCellItem: PhotoGridItem {
+    let galleryItem: MediaGalleryItem
 
-    static let reuseIdentifier = "MediaGalleryCell"
-
-    public let imageView: UIImageView
-
-    private let contentTypeBadgeView: UIImageView
-    private let selectedBadgeView: UIImageView
-
-    private let highlightedView: UIView
-    private let selectedView: UIView
-
-    fileprivate var item: MediaGalleryItem?
-
-    static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
-    static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
-    static let selectedBadgeImage = #imageLiteral(resourceName: "selected_blue_circle")
-
-    override var isSelected: Bool {
-        didSet {
-            self.selectedBadgeView.isHidden = !self.isSelected
-            self.selectedView.isHidden = !self.isSelected
-        }
+    init(galleryItem: MediaGalleryItem) {
+        self.galleryItem = galleryItem
     }
 
-    override var isHighlighted: Bool {
-        didSet {
-            self.highlightedView.isHidden = !self.isHighlighted
-        }
-    }
-
-    override init(frame: CGRect) {
-        self.imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-
-        self.contentTypeBadgeView = UIImageView()
-        contentTypeBadgeView.isHidden = true
-
-        self.selectedBadgeView = UIImageView()
-        selectedBadgeView.image = MediaGalleryCell.selectedBadgeImage
-        selectedBadgeView.isHidden = true
-
-        self.highlightedView = UIView()
-        highlightedView.alpha = 0.2
-        highlightedView.backgroundColor = Theme.primaryColor
-        highlightedView.isHidden = true
-
-        self.selectedView = UIView()
-        selectedView.alpha = 0.3
-        selectedView.backgroundColor = Theme.backgroundColor
-        selectedView.isHidden = true
-
-        super.init(frame: frame)
-
-        self.clipsToBounds = true
-
-        self.contentView.addSubview(imageView)
-        self.contentView.addSubview(contentTypeBadgeView)
-        self.contentView.addSubview(highlightedView)
-        self.contentView.addSubview(selectedView)
-        self.contentView.addSubview(selectedBadgeView)
-
-        imageView.autoPinEdgesToSuperviewEdges()
-        highlightedView.autoPinEdgesToSuperviewEdges()
-        selectedView.autoPinEdgesToSuperviewEdges()
-
-        // Note assets were rendered to match exactly. We don't want to re-size with
-        // content mode lest they become less legible.
-        let kContentTypeBadgeSize = CGSize(width: 18, height: 12)
-        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
-        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        contentTypeBadgeView.autoSetDimensions(to: kContentTypeBadgeSize)
-
-        let kSelectedBadgeSize = CGSize(width: 31, height: 31)
-        selectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
-        selectedBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
-        selectedBadgeView.autoSetDimensions(to: kSelectedBadgeSize)
-    }
-
-    @available(*, unavailable, message: "Unimplemented")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    public func configure(item: MediaGalleryItem) {
-        self.item = item
-        if let image = item.thumbnailImage(async: {
-            [weak self] (image) in
-            guard let strongSelf = self else {
-                return
-            }
-            guard strongSelf.item == item else {
-                return
-            }
-            strongSelf.imageView.image = image
-            strongSelf.imageView.backgroundColor = UIColor.clear
-        }) {
-            self.imageView.image = image
-            self.imageView.backgroundColor = UIColor.clear
+    var type: PhotoGridItemType {
+        if galleryItem.isVideo {
+            return .video
+        } else if galleryItem.isAnimated {
+            return .animated
         } else {
-            // TODO: Show a placeholder?
-            self.imageView.backgroundColor = Theme.offBackgroundColor
-        }
-
-        if item.isVideo {
-            self.contentTypeBadgeView.isHidden = false
-            self.contentTypeBadgeView.image = MediaGalleryCell.videoBadgeImage
-        } else if item.isAnimated {
-            self.contentTypeBadgeView.isHidden = false
-            self.contentTypeBadgeView.image = MediaGalleryCell.animatedBadgeImage
-        } else {
-            assert(item.isImage)
-            self.contentTypeBadgeView.isHidden = true
+            return .photo
         }
     }
 
-    override public func prepareForReuse() {
-        super.prepareForReuse()
-
-        self.item = nil
-        self.imageView.image = nil
-        self.contentTypeBadgeView.isHidden = true
-        self.highlightedView.isHidden = true
-        self.selectedView.isHidden = true
-        self.selectedBadgeView.isHidden = true
+    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
+        return galleryItem.thumbnailImage(async: completion)
     }
 }

@@ -243,7 +243,7 @@ public class SignalAttachment: NSObject {
     public var outgoingAttachmentInfo: OutgoingAttachmentInfo {
         return OutgoingAttachmentInfo(dataSource: dataSource, contentType: mimeType, sourceFilename: filenameOrDefault)
     }
-    
+
     @objc
     public func image() -> UIImage? {
         if let cachedImage = cachedImage {
@@ -1106,7 +1106,7 @@ public class SignalAttachment: NSObject {
 
     // MARK: Attachments
 
-    // Factory method for attachments of any kind.
+    // Factory method for non-image Attachments.
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.

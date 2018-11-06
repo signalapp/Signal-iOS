@@ -1502,6 +1502,9 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Work Fax";
 
+/* navbar title when viewing the default photo album, which includes all photos */
+"PHOTO_PICKER_DEFAULT_ALBUM" = "All Photos";
+
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
 
