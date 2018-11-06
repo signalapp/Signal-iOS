@@ -423,6 +423,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         owsFailDebug("unexpected invocation")
         return 2
     }
+
+    func firstValidGalleryAttachment() -> TSAttachmentStream? {
+        owsFailDebug("unexpected invocation")
+        return nil
+    }
 }
 
 private class MockIncomingMessage: TSIncomingMessage {

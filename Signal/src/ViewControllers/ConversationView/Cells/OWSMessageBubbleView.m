@@ -1414,13 +1414,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             OWSAssertDebug(self.viewItem.mediaGalleryItems.count > 0);
 
             // For now, use first valid attachment.
-            TSAttachmentStream *_Nullable attachmentStream = nil;
-            for (ConversationMediaGalleryItem *mediaGalleryItem in self.viewItem.mediaGalleryItems) {
-                if (mediaGalleryItem.attachmentStream && mediaGalleryItem.attachmentStream.isValidVisualMedia) {
-                    attachmentStream = mediaGalleryItem.attachmentStream;
-                    break;
-                }
-            }
+            TSAttachmentStream *_Nullable attachmentStream = self.viewItem.firstValidGalleryAttachment;
             if (!attachmentStream) {
                 OWSLogInfo(@"Ignoring tap on gallery without any valid attachments.");
                 return;

@@ -132,7 +132,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)copyMediaAction;
 - (void)copyTextAction;
 - (void)shareMediaAction;
-- (void)shareTextAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
 
@@ -141,6 +140,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // For view items that correspond to interactions, this is the interaction's unique id.
 // For other view views (like the typing indicator), this is a unique, stable string.
 - (NSString *)itemId;
+
+- (nullable TSAttachmentStream *)firstValidGalleryAttachment;
 
 @end
 

@@ -407,6 +407,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+- (nullable TSAttachmentStream *)firstValidGalleryAttachment
+{
+    OWSAssertDebug(self.mediaGalleryItems.count > 0);
+
+    // For now, use first valid attachment.
+    TSAttachmentStream *_Nullable attachmentStream = nil;
+    for (ConversationMediaGalleryItem *mediaGalleryItem in self.mediaGalleryItems) {
+        if (mediaGalleryItem.attachmentStream && mediaGalleryItem.attachmentStream.isValidVisualMedia) {
+            attachmentStream = mediaGalleryItem.attachmentStream;
+            break;
+        }
+    }
+    return attachmentStream;
+}
+
 #pragma mark - OWSAudioPlayerDelegate
 
 - (void)setAudioPlaybackState:(AudioPlaybackState)audioPlaybackState
@@ -542,7 +557,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     NSArray<TSAttachment *> *attachments = [message attachmentsWithTransaction:transaction];
     if ([message isMediaGalleryWithTransaction:transaction]) {
         OWSAssertDebug(attachments.count > 0);
-        // TODO: Handle captions.
+        // TODO: Handle captions?
         NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems = [self mediaGalleryItemsForAttachments:attachments];
         self.mediaGalleryItems = mediaGalleryItems;
         self.messageCellType = OWSMessageCellType_MediaGallery;
@@ -854,17 +869,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
         case OWSMessageCellType_GenericAttachment: {
-            NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:self.attachmentStream.contentType];
-            if (!utiType) {
-                OWSFailDebug(@"Unknown MIME type: %@", self.attachmentStream.contentType);
-                utiType = (NSString *)kUTTypeGIF;
-            }
-            NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream originalMediaURL]];
-            if (!data) {
-                OWSFailDebug(@"Could not load attachment data");
-                return;
-            }
-            [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
+            [self copyAttachmentToPasteboard:self.attachmentStream];
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
@@ -874,46 +879,33 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_MediaGallery: {
             // AFAIK UIPasteboard only supports "multiple representations
             // of a single item", not "multiple different items".
+            TSAttachmentStream *_Nullable firstAttachment = self.firstValidGalleryAttachment;
+            if (!firstAttachment) {
+                OWSLogWarn(@"Ignoring copy for gallery without any valid attachments.");
+                return;
+            }
             //
-            // TODO: Should we copy the first valid item?
-            OWSFailDebug(@"Can't copy media galleries");
+            [self copyAttachmentToPasteboard:firstAttachment];
             break;
         }
     }
 }
 
-- (void)shareTextAction
+- (void)copyAttachmentToPasteboard:(TSAttachmentStream *)attachment
 {
-    switch (self.messageCellType) {
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-        case OWSMessageCellType_StillImage:
-        case OWSMessageCellType_AnimatedImage:
-        case OWSMessageCellType_Audio:
-        case OWSMessageCellType_Video:
-        case OWSMessageCellType_GenericAttachment: {
-            OWSAssertDebug(self.displayableBodyText);
-            [AttachmentSharing showShareUIForText:self.displayableBodyText.fullText];
-            break;
-        }
-        case OWSMessageCellType_DownloadingAttachment: {
-            OWSFailDebug(@"Can't share not-yet-downloaded attachment");
-            break;
-        }
-        case OWSMessageCellType_Unknown: {
-            OWSFailDebug(@"No text to share");
-            break;
-        }
-        case OWSMessageCellType_ContactShare: {
-            OWSFailDebug(@"share contact not implemented.");
-            break;
-        }
-        case OWSMessageCellType_MediaGallery: {
-            // TODO: Handle media gallery captions.
-            OWSFailDebug(@"share contact not implemented.");
-            break;
-        }
+    OWSAssertDebug(attachment);
+
+    NSString *utiType = [MIMETypeUtil utiTypeForMIMEType:attachment.contentType];
+    if (!utiType) {
+        OWSFailDebug(@"Unknown MIME type: %@", attachment.contentType);
+        utiType = (NSString *)kUTTypeGIF;
     }
+    NSData *data = [NSData dataWithContentsOfURL:[attachment originalMediaURL]];
+    if (!data) {
+        OWSFailDebug(@"Could not load attachment data");
+        return;
+    }
+    [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
 }
 
 - (void)shareMediaAction
@@ -984,7 +976,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     return YES;
                 }
                 if (mediaGalleryItem.attachmentStream.isVideo) {
-                    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(self.attachmentStream.originalFilePath)) {
+                    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(
+                            mediaGalleryItem.attachmentStream.originalFilePath)) {
                         return YES;
                     }
                 }
@@ -1045,7 +1038,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                     continue;
                 }
                 if (mediaGalleryItem.attachmentStream.isImage || mediaGalleryItem.attachmentStream.isAnimated) {
-                    NSData *data = [NSData dataWithContentsOfURL:[self.attachmentStream originalMediaURL]];
+                    NSData *data = [NSData dataWithContentsOfURL:[mediaGalleryItem.attachmentStream originalMediaURL]];
                     if (!data) {
                         OWSFailDebug(@"Could not load image data");
                         continue;
@@ -1099,7 +1092,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_MediaGallery:
             // TODO: I suspect we need separate "can save media", "can share media", etc. methods.
-            return NO;
+            return self.firstValidGalleryAttachment != nil;
     }
 }
 
