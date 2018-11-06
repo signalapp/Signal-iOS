@@ -24,7 +24,7 @@ public class MediaGalleryCellView: UIStackView {
 
         super.init(frame: .zero)
 
-        backgroundColor = Theme.offBackgroundColor
+        backgroundColor = Theme.backgroundColor
 
         createContents(maxMessageWidth: maxMessageWidth)
     }
@@ -106,6 +106,30 @@ public class MediaGalleryCellView: UIStackView {
 
             self.axis = .vertical
             self.spacing = MediaGalleryCellView.kSpacingPts
+
+            if items.count > MediaGalleryCellView.kMaxItems {
+                guard let lastView = bottomViews.last else {
+                    owsFailDebug("Missing lastView")
+                    return
+                }
+
+                let tintView = UIView()
+                tintView.backgroundColor = UIColor(white: 0, alpha: 0.4)
+                lastView.addSubview(tintView)
+                tintView.autoPinEdgesToSuperviewEdges()
+
+                let moreCount = max(1, items.count - MediaGalleryCellView.kMaxItems)
+                let moreCountText = OWSFormat.formatInt(Int32(moreCount))
+                let moreText = String(format: NSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
+                                                                comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}."), moreCountText)
+                let moreLabel = UILabel()
+                moreLabel.text = moreText
+                moreLabel.textColor = UIColor.ows_white
+                // We don't want to use dynamic text here.
+                moreLabel.font = UIFont.systemFont(ofSize: 24)
+                lastView.addSubview(moreLabel)
+                moreLabel.autoCenterInSuperview()
+            }
         }
     }
 
@@ -152,10 +176,10 @@ public class MediaGalleryCellView: UIStackView {
     }
 
     private class func itemsToDisplay(forItems items: [ConversationMediaGalleryItem]) -> [ConversationMediaGalleryItem] {
-        let validItems = items.filter {
-            $0.attachmentStream != nil
-            }
-
+        // TODO: Unless design changes, we want to display
+        //       items which are still downloading and invalid
+        //       items.
+        let validItems = items
         guard validItems.count < kMaxItems else {
             return Array(validItems[0..<kMaxItems])
         }
