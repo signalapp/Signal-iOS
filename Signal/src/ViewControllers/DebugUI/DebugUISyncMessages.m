@@ -118,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      dataSource:dataSource
                                     contentType:OWSMimeTypeApplicationOctetStream
                                  sourceFilename:nil
+                                        caption:nil
                           isTemporaryAttachment:YES];
 }
 

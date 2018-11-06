@@ -48,6 +48,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // This property will be non-zero if the attachment is valid.
 @property (nonatomic, readonly) CGSize mediaSize;
 
+@property (nonatomic, readonly, nullable) NSString *caption;
+
 @end
 
 #pragma mark -
