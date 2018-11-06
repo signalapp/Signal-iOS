@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
+                                         messageBody:(nullable NSString *)messageBody
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel;
 

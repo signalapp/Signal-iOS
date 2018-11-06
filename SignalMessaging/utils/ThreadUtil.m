@@ -96,11 +96,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [self enqueueMessageWithAttachments:@[
         attachment,
     ]
+                                   messageBody:attachment.captionText
                                       inThread:thread
                               quotedReplyModel:quotedReplyModel];
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithAttachments:(NSArray<SignalAttachment *> *)attachments
+                                         messageBody:(nullable NSString *)messageBody
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
 {
@@ -117,8 +119,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
     BOOL isVoiceMessage = (attachments.count == 1 && attachments.lastObject.isVoiceMessage);
-    // TODO: Support multi-image captions.
-    NSString *_Nullable messageBody = attachments.lastObject.captionText;
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread

@@ -7,10 +7,17 @@ import Foundation
 @objc(OWSMediaGalleryCellView)
 public class MediaGalleryCellView: UIStackView {
     private let items: [ConversationMediaGalleryItem]
-    private let itemViews: [ConversationMediaView]
+
+    @objc
+    public let itemViews: [ConversationMediaView]
 
     private static let kSpacingPts: CGFloat = 2
     private static let kMaxItems = 5
+
+    @available(*, unavailable, message: "use other init() instead.")
+    required public init(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
 
     @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
@@ -24,7 +31,8 @@ public class MediaGalleryCellView: UIStackView {
 
         super.init(frame: .zero)
 
-        backgroundColor = Theme.backgroundColor
+        // UIStackView's backgroundColor property has no effect.
+        addBackgroundView(withBackgroundColor: Theme.backgroundColor)
 
         createContents(maxMessageWidth: maxMessageWidth)
     }
@@ -171,11 +179,6 @@ public class MediaGalleryCellView: UIStackView {
         for itemView in itemViews {
             itemView.unloadMedia()
         }
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init(coder aDecoder: NSCoder) {
-        notImplemented()
     }
 
     private class func itemsToDisplay(forItems items: [ConversationMediaGalleryItem]) -> [ConversationMediaGalleryItem] {

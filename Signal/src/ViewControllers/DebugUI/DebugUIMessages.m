@@ -4645,50 +4645,83 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     const uint32_t kMinImageCount = 2;
     const uint32_t kMaxImageCount = 10;
     uint32_t imageCount = kMinImageCount + arc4random_uniform(kMaxImageCount - kMinImageCount);
-    [self sendMediaGalleryInThread:thread imageCount:imageCount];
+    NSString *_Nullable messageBody = (arc4random_uniform(2) > 0 ? @"This is the media gallery title..." : nil);
+    [self sendMediaGalleryInThread:thread imageCount:imageCount messageBody:messageBody];
 }
 
 + (void)sendExemplaryMediaGalleriesInThread:(TSThread *)thread
 {
     OWSLogInfo(@"");
 
-    [self sendMediaGalleryInThread:thread imageCount:2];
-    [self sendMediaGalleryInThread:thread imageCount:3];
-    [self sendMediaGalleryInThread:thread imageCount:4];
-    [self sendMediaGalleryInThread:thread imageCount:5];
-    [self sendMediaGalleryInThread:thread imageCount:6];
+    [self sendMediaGalleryInThread:thread imageCount:2 messageBody:nil];
+    [self sendMediaGalleryInThread:thread imageCount:3 messageBody:nil];
+    [self sendMediaGalleryInThread:thread imageCount:4 messageBody:nil];
+    [self sendMediaGalleryInThread:thread imageCount:5 messageBody:nil];
+    [self sendMediaGalleryInThread:thread imageCount:6 messageBody:nil];
+    [self sendMediaGalleryInThread:thread imageCount:7 messageBody:nil];
+    NSString *messageBody = @"This is the media gallery title...";
+    [self sendMediaGalleryInThread:thread imageCount:2 messageBody:messageBody];
+    [self sendMediaGalleryInThread:thread imageCount:3 messageBody:messageBody];
+    [self sendMediaGalleryInThread:thread imageCount:4 messageBody:messageBody];
+    [self sendMediaGalleryInThread:thread imageCount:5 messageBody:messageBody];
+    [self sendMediaGalleryInThread:thread imageCount:6 messageBody:messageBody];
+    [self sendMediaGalleryInThread:thread imageCount:7 messageBody:messageBody];
 }
 
-+ (void)sendMediaGalleryInThread:(TSThread *)thread imageCount:(uint32_t)imageCount
++ (void)sendMediaGalleryInThread:(TSThread *)thread
+                      imageCount:(uint32_t)imageCount
+                     messageBody:(nullable NSString *)messageBody
+                fakeAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)fakeAssetLoaders
 {
     OWSAssertDebug(imageCount > 0);
     OWSLogInfo(@"");
 
     NSMutableArray<SignalAttachment *> *attachments = [NSMutableArray new];
     for (uint32_t i = 0; i < imageCount; i++) {
-        UIColor *imageColor = [UIColor colorWithRed:arc4random_uniform(256) / 255.f
-                                              green:arc4random_uniform(256) / 255.f
-                                               blue:arc4random_uniform(256) / 255.f
-                                              alpha:1.f];
-        UIImage *image = [UIImage imageWithColor:imageColor size:CGSizeMake(10.f, 10.f)];
-        OWSAssertDebug(image);
-        NSData *pngData = UIImagePNGRepresentation(image);
-        OWSAssertDebug(pngData);
-        NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
-        [pngData writeToFile:filePath atomically:YES];
-        OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-        DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
-        SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                          dataUTI:(NSString *)kUTTypePNG
-                                                                     imageQuality:TSImageQualityOriginal];
+        DebugUIMessagesAssetLoader *fakeAssetLoader
+            = fakeAssetLoaders[arc4random_uniform((uint32_t)fakeAssetLoaders.count)];
+        OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:fakeAssetLoader.filePath]);
+        DataSource *dataSource =
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
+        SignalAttachment *attachment =
+            [SignalAttachment attachmentWithDataSource:dataSource
+                                               dataUTI:[MIMETypeUtil utiTypeForMIMEType:fakeAssetLoader.mimeType]
+                                          imageQuality:TSImageQualityOriginal];
         [attachments addObject:attachment];
     }
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSOutgoingMessage *message =
-            [ThreadUtil enqueueMessageWithAttachments:attachments inThread:thread quotedReplyModel:nil];
+        TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithAttachments:attachments
+                                                                   messageBody:messageBody
+                                                                      inThread:thread
+                                                              quotedReplyModel:nil];
         OWSLogError(@"timestamp: %llu.", message.timestamp);
     }];
+}
+
++ (void)sendMediaGalleryInThread:(TSThread *)thread
+                      imageCount:(uint32_t)imageCount
+                     messageBody:(nullable NSString *)messageBody
+{
+    OWSAssertDebug(thread);
+
+    NSArray<DebugUIMessagesAssetLoader *> *fakeAssetLoaders = @[
+        [DebugUIMessagesAssetLoader jpegInstance],
+        [DebugUIMessagesAssetLoader largePngInstance],
+        [DebugUIMessagesAssetLoader tinyPngInstance],
+        [DebugUIMessagesAssetLoader gifInstance],
+        [DebugUIMessagesAssetLoader mp4Instance],
+    ];
+    [DebugUIMessagesAssetLoader prepareAssetLoaders:fakeAssetLoaders
+        success:^{
+            [self sendMediaGalleryInThread:thread
+                                imageCount:imageCount
+                               messageBody:messageBody
+                          fakeAssetLoaders:fakeAssetLoaders];
+        }
+        failure:^{
+            OWSLogError(@"Could not prepare fake asset loaders.");
+        }];
 }
 
 #endif

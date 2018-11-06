@@ -41,6 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)oversizeTextInstance;
 + (instancetype)oversizeTextInstanceWithText:(NSString *)text;
 
+#pragma mark -
+
++ (void)prepareAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
+                    success:(dispatch_block_t)success
+                    failure:(dispatch_block_t)failure;
+
 @end
 
 NS_ASSUME_NONNULL_END

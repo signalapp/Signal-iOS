@@ -51,6 +51,12 @@ public class ConversationMediaView: UIView {
         }
     }
 
+    private func addMediaSubview(_ subview: UIView) {
+        addSubview(subview)
+        subview.autoPinEdgesToSuperviewEdges()
+        // TODO: Possibly add upload/download indicator here.
+    }
+
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
         guard let cacheKey = attachmentStream.uniqueId else {
             owsFailDebug("Attachment stream missing unique ID.")
@@ -65,8 +71,7 @@ public class ConversationMediaView: UIView {
         animatedImageView.layer.minificationFilter = kCAFilterTrilinear
         animatedImageView.layer.magnificationFilter = kCAFilterTrilinear
         animatedImageView.backgroundColor = Theme.offBackgroundColor
-        addSubview(animatedImageView)
-        animatedImageView.autoPinEdgesToSuperviewEdges()
+        addMediaSubview(animatedImageView)
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -112,8 +117,7 @@ public class ConversationMediaView: UIView {
         stillImageView.layer.minificationFilter = kCAFilterTrilinear
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
-        addSubview(stillImageView)
-        stillImageView.autoPinEdgesToSuperviewEdges()
+        addMediaSubview(stillImageView)
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -158,8 +162,7 @@ public class ConversationMediaView: UIView {
         stillImageView.layer.minificationFilter = kCAFilterTrilinear
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
-        addSubview(stillImageView)
-        stillImageView.autoPinEdgesToSuperviewEdges()
+        addMediaSubview(stillImageView)
 
         // TODO: Hide during upload/download.
         let videoPlayIcon = UIImage(named: "play_button")

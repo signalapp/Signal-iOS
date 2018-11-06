@@ -351,15 +351,6 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
             if (self.hasBodyMediaWithThumbnail) {
                 [self.stackView addArrangedSubview:bodyMediaView];
-
-                OWSBubbleShapeView *innerShadowView = [[OWSBubbleShapeView alloc]
-                    initInnerShadowWithColor:(Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor
-                                                                       : UIColor.ows_blackColor)
-                                      radius:0.5f
-                                     opacity:0.15f];
-                [bodyMediaView addSubview:innerShadowView];
-                [self.bubbleView addPartnerView:innerShadowView];
-                [self.viewConstraints addObjectsFromArray:[innerShadowView ows_autoPinToSuperviewEdges]];
             } else {
                 OWSAssertDebug(self.cellType == OWSMessageCellType_ContactShare);
 
@@ -620,7 +611,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
 - (BOOL)hasFullWidthMediaView
 {
-    return (self.hasBodyMediaWithThumbnail || self.cellType == OWSMessageCellType_ContactShare);
+    return (self.hasBodyMediaWithThumbnail || self.cellType == OWSMessageCellType_ContactShare
+        || self.cellType == OWSMessageCellType_MediaGallery);
 }
 
 - (BOOL)canFooterOverlayMedia
@@ -802,6 +794,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     self.unloadCellContentBlock = ^{
         [galleryView unloadMedia];
     };
+    for (UIView *itemView in galleryView.itemViews) {
+        OWSBubbleShapeView *strokeView = [[OWSBubbleShapeView alloc] initDraw];
+        strokeView.strokeColor = [UIColor colorWithWhite:0.5f alpha:0.4f];
+        strokeView.strokeThickness = 1.f;
+        [itemView addSubview:strokeView];
+        [self.bubbleView addPartnerView:strokeView];
+        [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];
+    }
 
     return galleryView;
 }
@@ -820,6 +820,14 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         [mediaView unloadMedia];
     };
     [self addAttachmentUploadViewIfNecessary];
+
+    OWSBubbleShapeView *innerShadowView = [[OWSBubbleShapeView alloc]
+        initInnerShadowWithColor:(Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor)
+                          radius:0.5f
+                         opacity:0.15f];
+    [mediaView addSubview:innerShadowView];
+    [self.bubbleView addPartnerView:innerShadowView];
+    [self.viewConstraints addObjectsFromArray:[innerShadowView ows_autoPinToSuperviewEdges]];
 
     return mediaView;
 }
