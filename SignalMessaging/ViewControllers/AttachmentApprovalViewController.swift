@@ -8,31 +8,22 @@ import MediaPlayer
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachment attachment: SignalAttachment)
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachment attachment: SignalAttachment)
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment])
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
+}
+
+struct SignalAttachmentItem: Hashable {
+    let attachment: SignalAttachment
 }
 
 @objc
-public class AttachmentApprovalViewController: OWSViewController, CaptioningToolbarDelegate, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
-
-    weak var delegate: AttachmentApprovalViewControllerDelegate?
-
-    // We sometimes shrink the attachment view so that it remains somewhat visible
-    // when the keyboard is presented.
-    enum AttachmentViewScale {
-        case fullsize, compact
-    }
+public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, CaptioningToolbarDelegate {
 
     // MARK: Properties
 
-    let attachment: SignalAttachment
-    private var videoPlayer: OWSVideoPlayer?
+    weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
-    private(set) var bottomToolbar: UIView!
-    private(set) var mediaMessageView: MediaMessageView!
-    private(set) var scrollView: UIScrollView!
-    private(set) var contentContainer: UIView!
-    private(set) var playVideoButton: UIView?
+    private(set) var captioningToolbar: CaptioningToolbar!
 
     // MARK: Initializers
 
@@ -41,29 +32,23 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         notImplemented()
     }
 
+    let kSpacingBetweenItems: CGFloat = 20
+
     @objc
-    required public init(attachment: SignalAttachment, delegate: AttachmentApprovalViewControllerDelegate) {
-        assert(!attachment.hasError)
-        self.attachment = attachment
-        self.delegate = delegate
-
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    // MARK: View Lifecycle
-
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-        self.navigationItem.title = nil
-
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
-        cancelButton.tintColor = .white
-        self.navigationItem.leftBarButtonItem = cancelButton
+    required public init(attachments: [SignalAttachment]) {
+        assert(attachments.count > 0)
+        self.attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
+        super.init(transitionStyle: .scroll,
+                   navigationOrientation: .horizontal,
+                   options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
+        self.dataSource = self
+        self.delegate = self
     }
 
     @objc
-    public class func wrappedInNavController(attachment: SignalAttachment, delegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
-        let vc = AttachmentApprovalViewController(attachment: attachment, delegate: delegate)
+    public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
+        let vc = AttachmentApprovalViewController(attachments: attachments)
+        vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
 
         guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
@@ -75,12 +60,35 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         return navController
     }
 
-    override public func viewWillLayoutSubviews() {
-        Logger.debug("")
-        super.viewWillLayoutSubviews()
+    // MARK: View Lifecycle
 
-        // e.g. if flipping to/from landscape
-        updateMinZoomScaleForSize(view.bounds.size)
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.view.backgroundColor = .black
+
+        disablePagingIfNecessary()
+
+        // Bottom Toolbar
+
+        let captioningToolbar = CaptioningToolbar()
+        captioningToolbar.captioningToolbarDelegate = self
+        self.captioningToolbar = captioningToolbar
+
+        // Navigation
+
+        self.navigationItem.title = nil
+
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
+        cancelButton.tintColor = .white
+        self.navigationItem.leftBarButtonItem = cancelButton
+
+        guard let firstItem = attachmentItems.first else {
+            owsFailDebug("firstItem was unexpectedly nil")
+            return
+        }
+
+        self.setCurrentItem(firstItem, direction: .forward, animated: false)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -105,10 +113,277 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         CurrentAppContext().setStatusBarHidden(false, animated: false)
     }
 
-    // MARK: - Create Views
+    override public var inputAccessoryView: UIView? {
+        self.captioningToolbar.layoutIfNeeded()
+        return self.captioningToolbar
+    }
 
-    public override func loadView() {
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
 
+    // MARK: - View Helpers
+
+    var pagerScrollView: UIScrollView?
+    // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
+    // we traverse the view hierarchy until we find it, then disable scrolling if there's only one
+    // item. This avoids an unpleasant "bounce" which doesn't make sense in the context of a single item.
+    fileprivate func disablePagingIfNecessary() {
+        for view in self.view.subviews {
+            if let pagerScrollView = view as? UIScrollView {
+                self.pagerScrollView = pagerScrollView
+                break
+            }
+        }
+
+        guard let pagerScrollView = self.pagerScrollView else {
+            owsFailDebug("pagerScrollView was unexpectedly nil")
+            return
+        }
+
+        pagerScrollView.isScrollEnabled = attachmentItems.count > 1
+    }
+
+    private func makeClearToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+
+        toolbar.backgroundColor = UIColor.clear
+
+        // Making a toolbar transparent requires setting an empty uiimage
+        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+
+        // hide 1px top-border
+        toolbar.clipsToBounds = true
+
+        return toolbar
+    }
+
+    // MARK: UIPageViewControllerDelegate
+
+    public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        Logger.debug("")
+
+        assert(pendingViewControllers.count == 1)
+        pendingViewControllers.forEach { viewController in
+            guard let pendingPage = viewController as? AttachmentPrepViewController else {
+                owsFailDebug("unexpected viewController: \(viewController)")
+                return
+            }
+
+            // use compact scale when keyboard is popped.
+            let scale: AttachmentPrepViewController.AttachmentViewScale = self.isFirstResponder ? .fullsize : .compact
+            pendingPage.setAttachmentViewScale(scale, animated: false)
+        }
+    }
+
+    public func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted: Bool) {
+        Logger.debug("")
+
+        assert(previousViewControllers.count == 1)
+        previousViewControllers.forEach { viewController in
+            guard let previousPage = viewController as? AttachmentPrepViewController else {
+                owsFailDebug("unexpected viewController: \(viewController)")
+                return
+            }
+
+            if transitionCompleted {
+                UIView.transition(with: self.captioningToolbar,
+                                  duration: 0.1,
+                                  options: .transitionCrossDissolve,
+                                  animations: {
+                                    self.captioningToolbar.captionText = self.currentViewController.attachment.captionText
+                },
+                                  completion: nil)
+                previousPage.zoomOut(animated: false)
+            }
+        }
+    }
+
+    // MARK: UIPageViewControllerDataSource
+
+    public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard let currentViewController = viewController as? AttachmentPrepViewController else {
+            owsFailDebug("unexpected viewController: \(viewController)")
+            return nil
+        }
+
+        let currentItem = currentViewController.attachmentItem
+        guard let previousItem = attachmentItem(before: currentItem) else {
+            return nil
+        }
+
+        guard let previousPage: AttachmentPrepViewController = buildPage(item: previousItem) else {
+            return nil
+        }
+
+        return previousPage
+    }
+
+    public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        Logger.debug("")
+
+        guard let currentViewController = viewController as? AttachmentPrepViewController else {
+            owsFailDebug("unexpected viewController: \(viewController)")
+            return nil
+        }
+
+        let currentItem = currentViewController.attachmentItem
+        guard let nextItem = attachmentItem(after: currentItem) else {
+            return nil
+        }
+
+        guard let nextPage: AttachmentPrepViewController = buildPage(item: nextItem) else {
+            return nil
+        }
+
+        return nextPage
+    }
+
+    public var currentViewController: AttachmentPrepViewController {
+        return viewControllers!.first as! AttachmentPrepViewController
+    }
+
+    var currentItem: SignalAttachmentItem! {
+        get {
+            return currentViewController.attachmentItem
+        }
+        set {
+            setCurrentItem(newValue, direction: .forward, animated: false)
+        }
+    }
+
+    private var cachedPages: [SignalAttachmentItem: AttachmentPrepViewController] = [:]
+    private func buildPage(item: SignalAttachmentItem) -> AttachmentPrepViewController? {
+
+        if let cachedPage = cachedPages[item] {
+            Logger.debug("cache hit.")
+            return cachedPage
+        }
+
+        Logger.debug("cache miss.")
+        let viewController = AttachmentPrepViewController(attachmentItem: item)
+        cachedPages[item] = viewController
+
+        return viewController
+    }
+
+    private func setCurrentItem(_ item: SignalAttachmentItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+        guard let page = self.buildPage(item: item) else {
+            owsFailDebug("unexpetedly unable to build new page")
+            return
+        }
+
+        self.setViewControllers([page], direction: direction, animated: isAnimated, completion: nil)
+        // TODO update rail
+    }
+
+    let attachmentItems: [SignalAttachmentItem]
+    var attachments: [SignalAttachment] {
+        return attachmentItems.map { $0.attachment }
+    }
+
+    func attachmentItem(before currentItem: SignalAttachmentItem) -> SignalAttachmentItem? {
+        guard let currentIndex = attachmentItems.index(of: currentItem) else {
+            owsFailDebug("currentIndex was unexpectedly nil")
+            return nil
+        }
+
+        let index: Int = attachmentItems.index(before: currentIndex)
+        guard let previousItem = attachmentItems[safe: index] else {
+            // already at first item
+            return nil
+        }
+
+        return previousItem
+    }
+
+    func attachmentItem(after currentItem: SignalAttachmentItem) -> SignalAttachmentItem? {
+        guard let currentIndex = attachmentItems.index(of: currentItem) else {
+            owsFailDebug("currentIndex was unexpectedly nil")
+            return nil
+        }
+
+        let index: Int = attachmentItems.index(after: currentIndex)
+        guard let nextItem = attachmentItems[safe: index] else {
+            // already at last item
+            return nil
+        }
+
+        return nextItem
+    }
+
+    // MARK: - Event Handlers
+
+    @objc func cancelPressed(sender: UIButton) {
+        self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
+    }
+
+    // MARK: CaptioningToolbarDelegate
+
+    var currentPageController: AttachmentPrepViewController {
+        return viewControllers!.first as! AttachmentPrepViewController
+    }
+
+    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
+        currentPageController.setAttachmentViewScale(.compact, animated: true)
+    }
+
+    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
+        currentPageController.setAttachmentViewScale(.fullsize, animated: true)
+    }
+
+    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar) {
+        // Toolbar flickers in and out if there are errors
+        // and remains visible momentarily after share extension is dismissed.
+        // It's easiest to just hide it at this point since we're done with it.
+        currentViewController.shouldAllowAttachmentViewResizing = false
+        captioningToolbar.isUserInteractionEnabled = false
+        captioningToolbar.isHidden = true
+
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments)
+    }
+
+    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange textView: UITextView) {
+        currentItem.attachment.captionText = textView.text
+    }
+}
+
+public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
+    // We sometimes shrink the attachment view so that it remains somewhat visible
+    // when the keyboard is presented.
+    enum AttachmentViewScale {
+        case fullsize, compact
+    }
+
+    // MARK: Properties
+
+    let attachmentItem: SignalAttachmentItem
+    var attachment: SignalAttachment {
+        return attachmentItem.attachment
+    }
+
+    private var videoPlayer: OWSVideoPlayer?
+
+    private(set) var mediaMessageView: MediaMessageView!
+    private(set) var scrollView: UIScrollView!
+    private(set) var contentContainer: UIView!
+    private(set) var playVideoButton: UIView?
+
+    // MARK: Initializers
+
+    init(attachmentItem: SignalAttachmentItem) {
+        self.attachmentItem = attachmentItem
+        super.init(nibName: nil, bundle: nil)
+        assert(!attachment.hasError)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: View Lifecycle
+
+    override public func loadView() {
         self.view = UIView()
 
         self.mediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
@@ -160,11 +435,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
         }
 
-        // Bottom Toolbar
-        let captioningToolbar = CaptioningToolbar()
-        captioningToolbar.captioningToolbarDelegate = self
-        self.bottomToolbar = captioningToolbar
-
         // Hide the play button embedded in the MediaView and replace it with our own.
         // This allows us to zoom in on the media view without zooming in on the button
         if attachment.isVideo {
@@ -215,32 +485,21 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         }
     }
 
+    override public func viewWillLayoutSubviews() {
+        Logger.debug("")
+        super.viewWillLayoutSubviews()
+
+        // e.g. if flipping to/from landscape
+        updateMinZoomScaleForSize(view.bounds.size)
+
+        ensureAttachmentViewScale(animated: false)
+    }
+
+    // MARK: 
+
     @objc public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
         assert(self.videoPlayer != nil)
         self.pauseVideo()
-    }
-
-    override public var inputAccessoryView: UIView? {
-        self.bottomToolbar.layoutIfNeeded()
-        return self.bottomToolbar
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
-    private func makeClearToolbar() -> UIToolbar {
-        let toolbar = UIToolbar()
-
-        toolbar.backgroundColor = UIColor.clear
-
-        // Making a toolbar transparent requires setting an empty uiimage
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-
-        // hide 1px top-border
-        toolbar.clipsToBounds = true
-
-        return toolbar
     }
 
     // MARK: - Event Handlers
@@ -248,24 +507,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     @objc
     public func playButtonTapped() {
         self.playVideo()
-    }
-
-    @objc func cancelPressed(sender: UIButton) {
-        self.delegate?.attachmentApproval(self, didCancelAttachment: attachment)
-    }
-
-    // MARK: CaptioningToolbarDelegate
-
-    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
-        self.scaleAttachmentView(.compact)
-    }
-
-    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
-        self.scaleAttachmentView(.fullsize)
-    }
-
-    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?) {
-        self.approveAttachment(captionText: captionText)
     }
 
     // MARK: Video
@@ -351,39 +592,46 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         return attachment.isImage || attachment.isVideo
     }
 
-    private func approveAttachment(captionText: String?) {
-        // Toolbar flickers in and out if there are errors
-        // and remains visible momentarily after share extension is dismissed.
-        // It's easiest to just hide it at this point since we're done with it.
-        shouldAllowAttachmentViewResizing = false
-        bottomToolbar.isUserInteractionEnabled = false
-        bottomToolbar.isHidden = true
-
-        attachment.captionText = captionText
-        delegate?.attachmentApproval(self, didApproveAttachment: attachment)
+    func zoomOut(animated: Bool) {
+        if self.scrollView.zoomScale != self.scrollView.minimumZoomScale {
+            self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated: animated)
+        }
     }
 
     // When the keyboard is popped, it can obscure the attachment view.
     // so we sometimes allow resizing the attachment.
-    private var shouldAllowAttachmentViewResizing: Bool = true
+    var shouldAllowAttachmentViewResizing: Bool = true
 
-    private func scaleAttachmentView(_ fit: AttachmentViewScale) {
+    var attachmentViewScale: AttachmentViewScale = .fullsize
+    fileprivate func setAttachmentViewScale(_ attachmentViewScale: AttachmentViewScale, animated: Bool) {
+        self.attachmentViewScale = attachmentViewScale
+        ensureAttachmentViewScale(animated: animated)
+    }
+
+    func ensureAttachmentViewScale(animated: Bool) {
+        let animationDuration = animated ? 0.2 : 0
         guard shouldAllowAttachmentViewResizing else {
             if self.contentContainer.transform != CGAffineTransform.identity {
-                UIView.animate(withDuration: 0.2) {
+                UIView.animate(withDuration: animationDuration) {
                     self.contentContainer.transform = CGAffineTransform.identity
                 }
             }
             return
         }
 
-        switch fit {
+        switch attachmentViewScale {
         case .fullsize:
-            UIView.animate(withDuration: 0.2) {
+            guard self.contentContainer.transform != .identity else {
+                return
+            }
+            UIView.animate(withDuration: animationDuration) {
                 self.contentContainer.transform = CGAffineTransform.identity
             }
         case .compact:
-            UIView.animate(withDuration: 0.2) {
+            guard self.contentContainer.transform == .identity else {
+                return
+            }
+            UIView.animate(withDuration: animationDuration) {
                 let kScaleFactor: CGFloat = 0.7
                 let scale = CGAffineTransform(scaleX: kScaleFactor, y: kScaleFactor)
 
@@ -400,7 +648,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 }
 
-extension AttachmentApprovalViewController: UIScrollViewDelegate {
+extension AttachmentPrepViewController: UIScrollViewDelegate {
 
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         if isZoomable {
@@ -469,9 +717,10 @@ extension AttachmentApprovalViewController: UIScrollViewDelegate {
 }
 
 protocol CaptioningToolbarDelegate: class {
-    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar, captionText: String?)
+    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar)
     func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
     func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
+    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange: UITextView)
 }
 
 class CaptioningToolbar: UIView, UITextViewDelegate {
@@ -479,6 +728,12 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
     private let sendButton: UIButton
     private let textView: UITextView
+
+    var captionText: String? {
+        get { return self.textView.text }
+        set { self.textView.text = newValue }
+    }
+
     private let bottomGradient: GradientView
     private let lengthLimitLabel: UILabel
 
@@ -492,10 +747,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     }
     var textViewHeightConstraint: NSLayoutConstraint!
     var textViewHeight: CGFloat
-
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
 
     class MessageTextView: UITextView {
         // When creating new lines, contentOffset is animated, but because because
@@ -514,6 +765,8 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
             return CGSize.zero
         }
     }
+
+    // MARK: Initializers
 
     init() {
         self.sendButton = UIButton(type: .system)
@@ -626,14 +879,21 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
     }
 
+    required init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    // MARK: 
+
     @objc func didTapSend() {
-        self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self, captionText: self.textView.text)
+        self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self)
     }
 
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
         updateHeight(textView: textView)
+        self.captioningToolbarDelegate?.captioningToolbar(self, textViewDidChange: textView)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {

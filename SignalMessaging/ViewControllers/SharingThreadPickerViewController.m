@@ -163,8 +163,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
         [self.navigationController pushViewController:approvalVC animated:YES];
     } else {
+        // TODO ALBUMS - send album via SAE
         OWSNavigationController *approvalModal =
-            [AttachmentApprovalViewController wrappedInNavControllerWithAttachment:self.attachment delegate:self];
+            [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:@[ self.attachment ]
+                                                                   approvalDelegate:self];
         [self presentViewController:approvalModal animated:YES completion:nil];
     }
 }
@@ -229,7 +231,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 #pragma mark - AttachmentApprovalViewControllerDelegate
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)approvalViewController
-      didApproveAttachment:(SignalAttachment *)attachment
+     didApproveAttachments:(NSArray<SignalAttachment *> *)attachments
 {
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
@@ -239,7 +241,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // DURABLE CLEANUP - SAE uses non-durable sending to make sure the app is running long enough to complete
         // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
         // SAE runs as long as it needs.
-        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachment:attachment
+        // TODO ALBUMS - send album via SAE
+        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachment:attachments.firstObject
                                                                  inThread:self.thread
                                                          quotedReplyModel:nil
                                                             messageSender:self.messageSender
@@ -254,7 +257,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval
-       didCancelAttachment:(SignalAttachment *)attachment
+      didCancelAttachments:(NSArray<SignalAttachment *> *)attachment
 {
     [self cancelShareExperience];
 }
