@@ -43,11 +43,6 @@ typedef void (^OWSThumbnailFailure)(void);
 - (nullable NSData *)validStillImageData;
 #endif
 
-@property (nonatomic, readonly) BOOL isAnimated;
-@property (nonatomic, readonly) BOOL isImage;
-@property (nonatomic, readonly) BOOL isVideo;
-@property (nonatomic, readonly) BOOL isAudio;
-
 @property (nonatomic, readonly, nullable) UIImage *originalImage;
 @property (nonatomic, readonly, nullable) NSString *originalFilePath;
 @property (nonatomic, readonly, nullable) NSURL *originalMediaURL;
@@ -96,8 +91,9 @@ typedef void (^OWSThumbnailFailure)(void);
 
 #pragma mark - Validation
 
-- (BOOL)isValidImage;
-- (BOOL)isValidVideo;
+@property (nonatomic, readonly) BOOL isValidImage;
+@property (nonatomic, readonly) BOOL isValidVideo;
+@property (nonatomic, readonly) BOOL isValidVisualMedia;
 
 #pragma mark - Update With... Methods
 

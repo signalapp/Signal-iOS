@@ -12,6 +12,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AttachmentSharing
 
++ (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachmentStreams
+                       completion:(nullable AttachmentSharingCompletion)completion
+{
+    OWSAssertDebug(attachmentStreams.count > 0);
+
+    NSMutableArray<NSURL *> *urls = [NSMutableArray new];
+    for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+        [urls addObject:attachmentStream.originalMediaURL];
+    }
+
+    [AttachmentSharing showShareUIForActivityItems:urls completion:completion];
+}
+
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream
 {
     OWSAssertDebug(stream);

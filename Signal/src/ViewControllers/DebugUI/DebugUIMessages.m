@@ -127,9 +127,13 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"Send Multi-Image Message"
+        [OWSTableItem itemWithTitle:@"Send Media Gallery"
                         actionBlock:^{
-                            [DebugUIMessages sendMultiImageMessageInThread:thread];
+                            [DebugUIMessages sendMediaGalleryInThread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send Exemplary Media Galleries"
+                        actionBlock:^{
+                            [DebugUIMessages sendExemplaryMediaGalleriesInThread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Select Fake"
                         actionBlock:^{
@@ -4634,13 +4638,31 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     }
 }
 
-+ (void)sendMultiImageMessageInThread:(TSThread *)thread
++ (void)sendMediaGalleryInThread:(TSThread *)thread
 {
     OWSLogInfo(@"");
 
     const uint32_t kMinImageCount = 2;
     const uint32_t kMaxImageCount = 10;
     uint32_t imageCount = kMinImageCount + arc4random_uniform(kMaxImageCount - kMinImageCount);
+    [self sendMediaGalleryInThread:thread imageCount:imageCount];
+}
+
++ (void)sendExemplaryMediaGalleriesInThread:(TSThread *)thread
+{
+    OWSLogInfo(@"");
+
+    [self sendMediaGalleryInThread:thread imageCount:2];
+    [self sendMediaGalleryInThread:thread imageCount:3];
+    [self sendMediaGalleryInThread:thread imageCount:4];
+    [self sendMediaGalleryInThread:thread imageCount:5];
+    [self sendMediaGalleryInThread:thread imageCount:6];
+}
+
++ (void)sendMediaGalleryInThread:(TSThread *)thread imageCount:(uint32_t)imageCount
+{
+    OWSAssertDebug(imageCount > 0);
+    OWSLogInfo(@"");
 
     NSMutableArray<SignalAttachment *> *attachments = [NSMutableArray new];
     for (uint32_t i = 0; i < imageCount; i++) {

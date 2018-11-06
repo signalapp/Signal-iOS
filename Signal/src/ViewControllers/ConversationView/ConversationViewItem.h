@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,
     OWSMessageCellType_ContactShare,
+    OWSMessageCellType_MediaGallery,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -30,11 +31,26 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class OWSAudioMessageView;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
+@class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
 @class TSThread;
 @class YapDatabaseReadTransaction;
+
+@interface ConversationMediaGalleryItem : NSObject
+
+@property (nonatomic, readonly) TSAttachment *attachment;
+
+// This property will only be set if the attachment is downloaded.
+@property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
+
+// This property will be non-zero if the attachment is valid.
+@property (nonatomic, readonly) CGSize mediaSize;
+
+@end
+
+#pragma mark -
 
 // This is a ViewModel for cells in the conversation view.
 //
@@ -91,6 +107,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, readonly) CGSize mediaSize;
+@property (nonatomic, readonly, nullable) NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems;
 
 @property (nonatomic, readonly, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
@@ -115,15 +132,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)copyMediaAction;
 - (void)copyTextAction;
 - (void)shareMediaAction;
-- (void)shareTextAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
 
+- (BOOL)canCopyMedia;
 - (BOOL)canSaveMedia;
 
 // For view items that correspond to interactions, this is the interaction's unique id.
 // For other view views (like the typing indicator), this is a unique, stable string.
 - (NSString *)itemId;
+
+- (nullable TSAttachmentStream *)firstValidGalleryAttachment;
 
 @end
 

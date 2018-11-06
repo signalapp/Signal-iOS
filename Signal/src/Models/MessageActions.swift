@@ -99,8 +99,10 @@ class ConversationViewItemActions: NSObject {
         actions.append(replyAction)
 
         if conversationViewItem.hasMediaActionContent {
-            let copyMediaAction = MessageActionBuilder.copyMedia(conversationViewItem: conversationViewItem, delegate: delegate)
-            actions.append(copyMediaAction)
+            if conversationViewItem.canCopyMedia() {
+                let copyMediaAction = MessageActionBuilder.copyMedia(conversationViewItem: conversationViewItem, delegate: delegate)
+                actions.append(copyMediaAction)
+            }
             if conversationViewItem.canSaveMedia() {
                 let saveMediaAction = MessageActionBuilder.saveMedia(conversationViewItem: conversationViewItem, delegate: delegate)
                 actions.append(saveMediaAction)

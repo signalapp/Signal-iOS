@@ -59,7 +59,12 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
-- (BOOL)isVoiceMessage;
+@property (nonatomic, readonly) BOOL isAnimated;
+@property (nonatomic, readonly) BOOL isImage;
+@property (nonatomic, readonly) BOOL isVideo;
+@property (nonatomic, readonly) BOOL isAudio;
+@property (nonatomic, readonly) BOOL isVoiceMessage;
+@property (nonatomic, readonly) BOOL isVisualMedia;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;
 

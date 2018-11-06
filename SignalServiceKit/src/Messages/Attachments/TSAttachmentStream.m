@@ -329,20 +329,21 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [self removeFileWithTransaction:transaction];
 }
 
-- (BOOL)isAnimated {
-    return [MIMETypeUtil isAnimated:self.contentType];
-}
+- (BOOL)isValidVisualMedia
+{
+    if (self.isImage && self.isValidImage) {
+        return YES;
+    }
 
-- (BOOL)isImage {
-    return [MIMETypeUtil isImage:self.contentType];
-}
+    if (self.isVideo && self.isValidVideo) {
+        return YES;
+    }
 
-- (BOOL)isVideo {
-    return [MIMETypeUtil isVideo:self.contentType];
-}
+    if (self.isAnimated && self.isValidImage) {
+        return YES;
+    }
 
-- (BOOL)isAudio {
-    return [MIMETypeUtil isAudio:self.contentType];
+    return NO;
 }
 
 #pragma mark - Image Validation

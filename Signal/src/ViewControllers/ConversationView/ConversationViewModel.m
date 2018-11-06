@@ -625,7 +625,7 @@ static const int kYapDatabaseRangeMinLength = 0;
     OWSAssertDebug(updatedItemSet);
 
     if (!self.delegate.isObservingVMUpdates) {
-        OWSFailDebug(@"Skipping VM update.");
+        OWSLogVerbose(@"Skipping VM update.");
         // We fire this event, but it will be ignored.
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate];
         return;

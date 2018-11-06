@@ -339,6 +339,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var authorConversationColorName: String?
     var hasBodyTextActionContent: Bool = false
     var hasMediaActionContent: Bool = false
+    var mediaGalleryItems: [ConversationMediaGalleryItem]?
 
     override init() {
         super.init()
@@ -393,6 +394,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return
     }
 
+    func canCopyMedia() -> Bool {
+        owsFailDebug("unexpected invocation")
+        return false
+    }
+
     func canSaveMedia() -> Bool {
         owsFailDebug("unexpected invocation")
         return false
@@ -421,6 +427,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     func vSpacing(withPreviousLayoutItem previousLayoutItem: ConversationViewLayoutItem) -> CGFloat {
         owsFailDebug("unexpected invocation")
         return 2
+    }
+
+    func firstValidGalleryAttachment() -> TSAttachmentStream? {
+        owsFailDebug("unexpected invocation")
+        return nil
     }
 }
 
