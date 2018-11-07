@@ -32,13 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
                   attachmentType:(TSAttachmentType)attachmentType
 {
     self = [super initWithServerId:serverId
                      encryptionKey:key
                          byteCount:byteCount
                        contentType:contentType
-                    sourceFilename:sourceFilename];
+                    sourceFilename:sourceFilename
+                           caption:caption];
     if (!self) {
         return self;
     }
@@ -76,13 +78,17 @@ NS_ASSUME_NONNULL_BEGIN
             attachmentType = TSAttachmentTypeVoiceMessage;
         }
     }
-
+    NSString *_Nullable caption;
+    if (attachmentProto.hasCaption) {
+        caption = attachmentProto.caption;
+    }
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                              key:attachmentProto.key
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
                                                                      contentType:attachmentProto.contentType
                                                                   sourceFilename:attachmentProto.fileName
+                                                                         caption:caption
                                                                   attachmentType:attachmentType];
     return pointer;
 }

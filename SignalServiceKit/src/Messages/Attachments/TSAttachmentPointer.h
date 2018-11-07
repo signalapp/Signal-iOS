@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto;

@@ -1860,6 +1860,15 @@ struct SignalServiceProtos_AttachmentPointer {
   /// Clears the value of `height`. Subsequent reads from it will return its default value.
   mutating func clearHeight() {self._height = nil}
 
+  var caption: String {
+    get {return _caption ?? String()}
+    set {_caption = newValue}
+  }
+  /// Returns true if `caption` has been explicitly set.
+  var hasCaption: Bool {return self._caption != nil}
+  /// Clears the value of `caption`. Subsequent reads from it will return its default value.
+  mutating func clearCaption() {self._caption = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -1897,6 +1906,7 @@ struct SignalServiceProtos_AttachmentPointer {
   fileprivate var _flags: UInt32? = nil
   fileprivate var _width: UInt32? = nil
   fileprivate var _height: UInt32? = nil
+  fileprivate var _caption: String? = nil
 }
 
 #if swift(>=4.2)
@@ -4107,6 +4117,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     8: .same(proto: "flags"),
     9: .same(proto: "width"),
     10: .same(proto: "height"),
+    11: .same(proto: "caption"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4122,6 +4133,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
       case 8: try decoder.decodeSingularUInt32Field(value: &self._flags)
       case 9: try decoder.decodeSingularUInt32Field(value: &self._width)
       case 10: try decoder.decodeSingularUInt32Field(value: &self._height)
+      case 11: try decoder.decodeSingularStringField(value: &self._caption)
       default: break
       }
     }
@@ -4158,6 +4170,9 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     if let v = self._height {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 10)
     }
+    if let v = self._caption {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4172,6 +4187,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     if lhs._flags != rhs._flags {return false}
     if lhs._width != rhs._width {return false}
     if lhs._height != rhs._height {return false}
+    if lhs._caption != rhs._caption {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

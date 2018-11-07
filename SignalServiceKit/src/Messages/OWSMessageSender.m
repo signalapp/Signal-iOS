@@ -86,6 +86,7 @@ void AssertIsOnSendingQueue()
 - (instancetype)initWithDataSource:(DataSource *)dataSource
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
+                           caption:(nullable NSString *)caption
 {
     self = [super init];
     if (!self) {
@@ -95,6 +96,7 @@ void AssertIsOnSendingQueue()
     _dataSource = dataSource;
     _contentType = contentType;
     _sourceFilename = sourceFilename;
+    _caption = caption;
 
     return self;
 }
@@ -455,7 +457,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(dataSource);
     OWSOutgoingAttachmentInfo *attachmentInfo = [[OWSOutgoingAttachmentInfo alloc] initWithDataSource:dataSource
                                                                                           contentType:contentType
-                                                                                       sourceFilename:sourceFilename];
+                                                                                       sourceFilename:sourceFilename
+                                                                                              caption:nil];
     [OutgoingMessagePreparer prepareAttachments:@[ attachmentInfo ]
                                       inMessage:message
                               completionHandler:^(NSError *_Nullable error) {
@@ -1804,7 +1807,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             TSAttachmentStream *attachmentStream =
                 [[TSAttachmentStream alloc] initWithContentType:attachmentInfo.contentType
                                                       byteCount:(UInt32)attachmentInfo.dataSource.dataLength
-                                                 sourceFilename:attachmentInfo.sourceFilename];
+                                                 sourceFilename:attachmentInfo.sourceFilename
+                                                        caption:attachmentInfo.caption];
             if (outgoingMessage.isVoiceMessage) {
                 attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
             }

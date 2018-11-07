@@ -19,6 +19,8 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 @property (nonatomic) NSString *contentType;
 
+@property (nonatomic, nullable) NSString *caption;
+
 @end
 
 @implementation TSAttachment
@@ -30,6 +32,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
 {
     OWSAssertDebug(serverId > 0);
     OWSAssertDebug(encryptionKey.length > 0);
@@ -54,6 +57,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _byteCount = byteCount;
     _contentType = contentType;
     _sourceFilename = sourceFilename;
+    _caption = caption;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -65,6 +69,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
+                            caption:(nullable NSString *)caption
 {
     if (contentType.length < 1) {
         OWSLogWarn(@"outgoing attachment has invalid content type");
@@ -82,6 +87,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _contentType = contentType;
     _byteCount = byteCount;
     _sourceFilename = sourceFilename;
+    _caption = caption;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -117,6 +123,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
         contentType = OWSMimeTypeApplicationOctetStream;
     }
     _contentType = contentType;
+    _caption = pointer.caption;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 

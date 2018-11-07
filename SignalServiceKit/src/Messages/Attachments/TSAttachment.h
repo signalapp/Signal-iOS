@@ -37,19 +37,24 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // not the filename on disk.
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 
+// Currently only applies to albums.
+@property (nonatomic, readonly, nullable) NSString *caption;
+
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
-                  sourceFilename:(nullable NSString *)sourceFilename;
+                  sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
-                     sourceFilename:(nullable NSString *)sourceFilename;
+                     sourceFilename:(nullable NSString *)sourceFilename
+                            caption:(nullable NSString *)caption;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.

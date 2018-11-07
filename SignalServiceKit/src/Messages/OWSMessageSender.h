@@ -39,12 +39,14 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @property (nonatomic, readonly) DataSource *dataSource;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
+@property (nonatomic, readonly, nullable) NSString *caption;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDataSource:(DataSource *)dataSource
                        contentType:(NSString *)contentType
-                    sourceFilename:(nullable NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
+                    sourceFilename:(nullable NSString *)sourceFilename
+                           caption:(nullable NSString *)caption NS_DESIGNATED_INITIALIZER;
 
 @end
 

@@ -898,6 +898,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              dataSource:dataSource
                                             contentType:OWSMimeTypeApplicationOctetStream
                                          sourceFilename:nil
+                                                caption:nil
                                   isTemporaryAttachment:YES];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
@@ -1119,6 +1120,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          dataSource:dataSource
                                         contentType:OWSMimeTypeImagePng
                                      sourceFilename:nil
+                                            caption:nil
                               isTemporaryAttachment:YES];
 
     } else {

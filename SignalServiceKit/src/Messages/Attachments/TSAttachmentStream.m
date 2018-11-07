@@ -54,8 +54,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
+                            caption:(nullable NSString *)caption
 {
-    self = [super initWithContentType:contentType byteCount:byteCount sourceFilename:sourceFilename];
+    self = [super initWithContentType:contentType byteCount:byteCount sourceFilename:sourceFilename caption:caption];
     if (!self) {
         return self;
     }
@@ -854,7 +855,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     TSAttachmentStream *thumbnailAttachment =
         [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
                                               byteCount:(uint32_t)thumbnailData.length
-                                         sourceFilename:thumbnailName];
+                                         sourceFilename:thumbnailName
+                                                caption:nil];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
@@ -894,7 +896,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.contentType = self.contentType;
 
     OWSLogVerbose(@"Sending attachment with filename: '%@'", self.sourceFilename);
-    builder.fileName = self.sourceFilename;
+    if (self.sourceFilename.length > 0) {
+        builder.fileName = self.sourceFilename;
+    }
+    if (self.caption.length > 0) {
+        builder.caption = self.caption;
+    }
 
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;

@@ -4544,6 +4544,9 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
         if hasHeight {
             builder.setHeight(height)
         }
+        if let _value = caption {
+            builder.setCaption(_value)
+        }
         return builder
     }
 
@@ -4597,6 +4600,10 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
 
         @objc public func setHeight(_ valueParam: UInt32) {
             proto.height = valueParam
+        }
+
+        @objc public func setCaption(_ valueParam: String) {
+            proto.caption = valueParam
         }
 
         @objc public func build() throws -> SSKProtoAttachmentPointer {
@@ -4688,6 +4695,16 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
     }
     @objc public var hasHeight: Bool {
         return proto.hasHeight
+    }
+
+    @objc public var caption: String? {
+        guard proto.hasCaption else {
+            return nil
+        }
+        return proto.caption
+    }
+    @objc public var hasCaption: Bool {
+        return proto.hasCaption
     }
 
     private init(proto: SignalServiceProtos_AttachmentPointer,
