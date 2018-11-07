@@ -45,6 +45,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
 - (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
+// `migrateAlbumMessageId` is only used in the migration to the new multi-attachment message scheme,
+// and shouldn't be used as a general purpose setter. Instead, `albumMessageId` should be passed as
+// an initializer param.
+- (void)migrateAlbumMessageId:(NSString *)albumMesssageId;
+
 #pragma mark -
 
 // This constructor is used for new instances of TSAttachmentPointer,
