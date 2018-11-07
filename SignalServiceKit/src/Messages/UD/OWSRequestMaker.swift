@@ -158,7 +158,11 @@ public class RequestMaker: NSObject {
                     }
 
                     self.websocketFailureBlock()
-                    Logger.info("Non-UD Web socket request '\(self.label)' failed; failing over to REST request: \(error).")
+                    if isUDRequest {
+                        Logger.info("UD Web socket request '\(self.label)' failed; failing over to REST request: \(error).")
+                    } else {
+                        Logger.info("Non-UD Web socket request '\(self.label)' failed; failing over to REST request: \(error).")
+                    }
                     return self.makeRequestInternal(skipUD: skipUD, skipWebsocket: true)
                 }
         } else {
@@ -200,7 +204,11 @@ public class RequestMaker: NSObject {
                         break
                     }
 
-                    Logger.debug("Non-UD REST request '\(self.label)' failed: \(error).")
+                    if isUDRequest {
+                        Logger.debug("UD REST request '\(self.label)' failed: \(error).")
+                    } else {
+                        Logger.debug("Non-UD REST request '\(self.label)' failed: \(error).")
+                    }
                     throw error
                 }
         }
