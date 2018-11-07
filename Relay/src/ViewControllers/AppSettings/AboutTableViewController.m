@@ -47,7 +47,7 @@
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
                                                   accessoryText:[[[NSBundle mainBundle] infoDictionary]
-                                                                    objectForKey:@"CFBundleVersion"]]];
+                                                                    objectForKey:@"CFBundleShortVersionString"]]];
 
 #ifdef SHOW_LEGAL_TERMS_LINK
     [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
