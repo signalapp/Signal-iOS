@@ -654,6 +654,9 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
                 [self.tsAccountManager setIsDeregistered:YES];
+            } else if ((responseStatus == 401 || responseStatus == 403) && self.webSocketType == OWSWebSocketTypeUD) {
+                // Cycle the socket every time we get a UD auth error.
+                [self cycleSocket];
             }
 
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
