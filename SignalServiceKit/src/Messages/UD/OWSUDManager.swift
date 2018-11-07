@@ -74,7 +74,8 @@ public class OWSUDAccess: NSObject {
     func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey?
 
     @objc
-    func udAccess(forRecipientId recipientId: RecipientIdentifier) -> OWSUDAccess?
+    func udAccess(forRecipientId recipientId: RecipientIdentifier,
+                  requireSyncAccess: Bool) -> OWSUDAccess?
 
     // MARK: Sender Certificate
 
@@ -235,7 +236,27 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // Returns the UD access key for sending to a given recipient.
     @objc
-    public func udAccess(forRecipientId recipientId: RecipientIdentifier) -> OWSUDAccess? {
+    public func udAccess(forRecipientId recipientId: RecipientIdentifier,
+                         requireSyncAccess: Bool) -> OWSUDAccess? {
+        if requireSyncAccess {
+            guard let localNumber = tsAccountManager.localNumber() else {
+                if isUDVerboseLoggingEnabled() {
+                    Logger.info("UD disabled for \(recipientId), no local number.")
+                }
+                owsFailDebug("Missing local number.")
+                return nil
+            }
+            if localNumber != recipientId {
+                let selfAccessMode = unidentifiedAccessMode(forRecipientId: localNumber)
+                guard selfAccessMode == .enabled || selfAccessMode == .unrestricted else {
+                    if isUDVerboseLoggingEnabled() {
+                        Logger.info("UD disabled for \(recipientId), UD disabled for sync messages.")
+                    }
+                    return nil
+                }
+            }
+        }
+
         let accessMode = unidentifiedAccessMode(forRecipientId: recipientId)
         switch accessMode {
         case .unrestricted:

@@ -593,7 +593,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSString *localNumber = self.tsAccountManager.localNumber;
             OWSUDAccess *_Nullable theirUDAccess;
             if (senderCertificate != nil && ![recipient.recipientId isEqualToString:localNumber]) {
-                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId];
+                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
             }
 
             OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
