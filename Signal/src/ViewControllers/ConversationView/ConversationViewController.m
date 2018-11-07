@@ -2772,8 +2772,6 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
     for (SignalAttachment *attachment in attachments) {
-        // TODO: Should we assume non-nil or should we check for non-nil?
-        OWSAssertDebug(attachment != nil);
         OWSAssertDebug(![attachment hasError]);
         OWSAssertDebug([attachment mimeType].length > 0);
     }
