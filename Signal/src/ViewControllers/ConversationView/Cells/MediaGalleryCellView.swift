@@ -26,7 +26,7 @@ public class MediaGalleryCellView: UIStackView {
         self.items = items
         self.itemViews = MediaGalleryCellView.itemsToDisplay(forItems: items).map {
             ConversationMediaView(mediaCache: mediaCache,
-                          attachment: $0.attachment)
+                                  attachment: $0.attachment)
         }
 
         super.init(frame: .zero)
@@ -38,6 +38,8 @@ public class MediaGalleryCellView: UIStackView {
     }
 
     private func createContents(maxMessageWidth: CGFloat) {
+        var moreItemViews = [ConversationMediaView]()
+
         switch itemViews.count {
         case 0:
             owsFailDebug("No item views.")
@@ -124,6 +126,8 @@ public class MediaGalleryCellView: UIStackView {
                     return
                 }
 
+                moreItemViews.append(lastView)
+
                 let tintView = UIView()
                 tintView.backgroundColor = UIColor(white: 0, alpha: 0.4)
                 lastView.addSubview(tintView)
@@ -142,11 +146,39 @@ public class MediaGalleryCellView: UIStackView {
                 moreLabel.autoCenterInSuperview()
             }
         }
+
+        for itemView in itemViews {
+            guard !moreItemViews.contains(itemView) else {
+                // Don't display the caption indicator on
+                // the "more" item, if any.
+                continue
+            }
+            guard let index = itemViews.index(of: itemView) else {
+                owsFailDebug("Couldn't determine index of item view.")
+                continue
+            }
+            let item = items[index]
+            guard let caption = item.caption else {
+                continue
+            }
+            guard caption.count > 0 else {
+                continue
+            }
+            guard let icon = UIImage(named: "media_album_caption") else {
+                owsFailDebug("Couldn't load icon.")
+                continue
+            }
+            let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
+            iconView.tintColor = .ows_white
+            itemView.addSubview(iconView)
+            itemView.layoutMargins = .zero
+            iconView.autoPinTopToSuperviewMargin(withInset: 6)
+            iconView.autoPinLeadingToSuperviewMargin(withInset: 6)
+        }
     }
 
     private func autoSet(viewSize: CGFloat,
-                         ofViews views: [ConversationMediaView]
-                        ) {
+                         ofViews views: [ConversationMediaView]) {
         for itemView in views {
             itemView.autoSetDimensions(to: CGSize(width: viewSize, height: viewSize))
         }

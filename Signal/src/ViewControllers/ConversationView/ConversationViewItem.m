@@ -52,6 +52,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (instancetype)initWithAttachment:(TSAttachment *)attachment
                   attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+                           caption:(nullable NSString *)caption
                          mediaSize:(CGSize)mediaSize
 {
     OWSAssertDebug(attachment);
@@ -64,6 +65,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _attachment = attachment;
     _attachmentStream = attachmentStream;
+    _caption = caption;
     _mediaSize = mediaSize;
 
     return self;
@@ -500,6 +502,19 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                   }];
 }
 
+- (DisplayableText *)displayableCaptionForText:(NSString *)text attachmentId:(NSString *)attachmentId
+{
+    OWSAssertDebug(text);
+    OWSAssertDebug(attachmentId.length > 0);
+
+    NSString *displayableTextCacheKey = [@"attachment-caption-" stringByAppendingString:attachmentId];
+
+    return [self displayableTextForCacheKey:displayableTextCacheKey
+                                  textBlock:^{
+                                      return text;
+                                  }];
+}
+
 - (DisplayableText *)displayableTextForCacheKey:(NSString *)displayableTextCacheKey
                                       textBlock:(NSString * (^_Nonnull)(void))textBlock
 {
@@ -557,7 +572,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     NSArray<TSAttachment *> *attachments = [message attachmentsWithTransaction:transaction];
     if ([message isMediaGalleryWithTransaction:transaction]) {
         OWSAssertDebug(attachments.count > 0);
-        // TODO: Handle captions?
         NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems = [self mediaGalleryItemsForAttachments:attachments];
         self.mediaGalleryItems = mediaGalleryItems;
         self.messageCellType = OWSMessageCellType_MediaGallery;
@@ -675,9 +689,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     NSMutableArray<ConversationMediaGalleryItem *> *mediaGalleryItems = [NSMutableArray new];
     for (TSAttachment *attachment in attachments) {
+        NSString *_Nullable caption = (attachment.caption
+                ? [self displayableCaptionForText:attachment.caption attachmentId:attachment.uniqueId].displayText
+                : nil);
+
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
             [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
                                                                                  attachmentStream:nil
+                                                                                          caption:caption
                                                                                         mediaSize:CGSizeZero]];
             continue;
         }
@@ -686,6 +705,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSLogWarn(@"Filtering invalid media.");
             [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
                                                                                  attachmentStream:nil
+                                                                                          caption:caption
                                                                                         mediaSize:CGSizeZero]];
             continue;
         }
@@ -694,6 +714,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSLogWarn(@"Filtering media with invalid size.");
             [mediaGalleryItems addObject:[[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
                                                                                  attachmentStream:nil
+                                                                                          caption:caption
                                                                                         mediaSize:CGSizeZero]];
             continue;
         }
@@ -701,6 +722,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         ConversationMediaGalleryItem *mediaGalleryItem =
             [[ConversationMediaGalleryItem alloc] initWithAttachment:attachment
                                                     attachmentStream:attachmentStream
+                                                             caption:caption
                                                            mediaSize:mediaSize];
         [mediaGalleryItems addObject:mediaGalleryItem];
     }
