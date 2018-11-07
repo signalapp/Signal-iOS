@@ -17,6 +17,7 @@
 #import "TSAttachmentStream.h"
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "TSAccountManager.h"
+#import "TSQuotedMessage.h"
 
 #import <RelayServiceKit/RelayServiceKit-Swift.h>
 
@@ -116,6 +117,12 @@
                               @"value": message.plainTextBody }
                            ]
                  forKey:@"body"];
+    }
+    
+    // Quoted/Reply message handler
+    if (message.quotedMessage.messageId != nil) {
+        NSString *quotedMessageId = message.quotedMessage.messageId;
+        [tmpDict setObject:quotedMessageId forKey:@"messageRef"];
     }
     
     // Attachment Handler

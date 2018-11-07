@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) NSString *messageId;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *thumbnailAttachmentPointer;
 @property (nonatomic, readonly) BOOL thumbnailDownloadFailed;
@@ -36,12 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
 // Convenience initializer for building an outgoing quoted reply preview, before it's sent
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(NSString *_Nullable)body
                  attachmentStream:(nullable TSAttachmentStream *)attachment; //TODO quotedAttachmentStream?
 
 // Convenience initializer for building an outgoing quoted reply preview, before it's sent
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
+                        messageId:(NSString *)messageId
                              body:(NSString *_Nullable)body
                    thumbnailImage:(nullable UIImage *)thumbnailImage;
 

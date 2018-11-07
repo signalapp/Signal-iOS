@@ -40,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
         _thread = [TSThread getOrCreateThreadWithId:_recipientId transaction:transaction];
 //    }
 
-    _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
-    _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
+//    _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
+//    _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
     return self;
 }
