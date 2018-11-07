@@ -147,6 +147,8 @@ OWSNavigationView>
     }
     // Only perform these actions the first time the view appears.
     self.mode = UpdateGroupMode_Default;
+    
+    [self.groupNameTextField becomeFirstResponder];
 }
 
 - (UIView *)firstSectionHeader
