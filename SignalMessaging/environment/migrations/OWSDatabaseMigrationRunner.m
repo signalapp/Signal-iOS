@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS109OutgoingMessageState alloc] initWithPrimaryStorage:primaryStorage],
         [[OWS111UDAttributesMigration alloc] initWithPrimaryStorage:primaryStorage],
         [[OWS112TypingIndicatorsMigration alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS113MultiAttachmentMediaMessages alloc] initWithPrimaryStorage:primaryStorage],
     ];
 }
 

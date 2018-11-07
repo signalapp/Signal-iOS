@@ -640,7 +640,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
 
         guard let message = attachmentStream.fetchAlbumMessage(with: transaction) else {
-            owsFailDebug("attachment was unexpectedly empty")
+            owsFailDebug("message was unexpectedly nil")
             return nil
         }
 
