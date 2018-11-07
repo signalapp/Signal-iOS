@@ -794,7 +794,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     self.unloadCellContentBlock = ^{
         [albumView unloadMedia];
     };
-    for (UIView *itemView in galleryView.itemViews) {
+    for (UIView *itemView in albumView.itemViews) {
         OWSBubbleShapeView *strokeView = [[OWSBubbleShapeView alloc] initDraw];
         strokeView.strokeColor = [UIColor colorWithWhite:0.5f alpha:0.4f];
         strokeView.strokeThickness = 1.f;
