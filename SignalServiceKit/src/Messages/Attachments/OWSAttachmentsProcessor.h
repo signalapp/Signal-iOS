@@ -23,26 +23,16 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
  */
 @interface OWSAttachmentsProcessor : NSObject
 
-@property (nonatomic, readonly) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *attachmentPointers;
-@property (nonatomic, readonly) BOOL hasSupportedAttachments;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithAttachmentProtos:(NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
-                          networkManager:(TSNetworkManager *)networkManager
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /*
  * Retry fetching failed attachment download
  */
-- (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                           networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAttachmentPointers:(NSArray<TSAttachmentPointer *> *)attachmentPointers
+    NS_DESIGNATED_INITIALIZER;
 
-- (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
-                    primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
-                           failure:(void (^)(NSError *error))failureHandler;
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
                            success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler

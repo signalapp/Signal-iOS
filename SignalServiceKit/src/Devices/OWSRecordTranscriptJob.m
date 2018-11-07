@@ -78,24 +78,26 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
-                                                   networkManager:self.networkManager
-                                                      transaction:transaction];
-
-
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
                                                            inThread:transcript.thread
                                                         messageBody:transcript.body
-                                                      attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
+                                                      attachmentIds:[NSMutableArray new]
                                                    expiresInSeconds:transcript.expirationDuration
                                                     expireStartedAt:transcript.expirationStartedAt
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact];
+
+    NSArray<TSAttachmentPointer *> *attachmentPointers =
+        [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
+                                             albumMessage:outgoingMessage];
+    for (TSAttachmentPointer *pointer in attachmentPointers) {
+        [pointer saveWithTransaction:transaction];
+        [outgoingMessage.attachmentIds addObject:pointer.uniqueId];
+    }
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
@@ -106,8 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
             OWSAttachmentsProcessor *attachmentProcessor =
-                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                            networkManager:self.networkManager];
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
 
             OWSLogDebug(@"downloading thumbnail for transcript: %lu", (unsigned long)transcript.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:outgoingMessage
@@ -160,6 +161,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
 
+    OWSAttachmentsProcessor *attachmentsProcessor =
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:attachmentPointers];
     [attachmentsProcessor
         fetchAttachmentsForMessage:outgoingMessage
                        transaction:transaction

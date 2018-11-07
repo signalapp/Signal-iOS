@@ -1647,16 +1647,18 @@ typedef enum : NSUInteger {
                         attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAttachmentsProcessor *processor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                    networkManager:self.networkManager];
-    [processor fetchAttachmentsForMessage:message
-        primaryStorage:self.primaryStorage
-        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-            OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
-        }
-        failure:^(NSError *error) {
-            OWSLogWarn(@"Failed to redownload message with error: %@", error);
-        }];
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [processor fetchAttachmentsForMessage:message
+            transaction:transaction
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
+            }
+            failure:^(NSError *error) {
+                OWSLogWarn(@"Failed to redownload message with error: %@", error);
+            }];
+    }];
 }
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
@@ -2191,8 +2193,7 @@ typedef enum : NSUInteger {
     }
 
     OWSAttachmentsProcessor *processor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                    networkManager:self.networkManager];
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
 
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [processor fetchAttachmentsForMessage:nil

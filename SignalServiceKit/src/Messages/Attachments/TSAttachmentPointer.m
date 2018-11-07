@@ -55,9 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
-                                                     message:(TSMessage *)message
+                                                albumMessage:(nullable TSMessage *)albumMessage
 {
     if (attachmentProto.id < 1) {
         OWSFailDebug(@"Invalid attachment id.");
@@ -86,10 +85,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (attachmentProto.hasCaption) {
         caption = attachmentProto.caption;
     }
+
     NSString *_Nullable albumMessageId;
-    if ([MIMETypeUtil isVisualMedia:attachmentProto.contentType]) {
-        OWSAssertDebug(message.uniqueId);
-        albumMessageId = message.uniqueId;
+    if (albumMessage != nil) {
+        albumMessageId = albumMessage.uniqueId;
     }
 
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
@@ -102,6 +101,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType];
     return pointer;
+}
+
++ (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:
+                                        (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
+                                                    albumMessage:(TSMessage *)albumMessage
+{
+    NSMutableArray *attachmentPointers = [NSMutableArray new];
+    for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
+        TSAttachmentPointer *_Nullable attachmentPointer =
+            [self attachmentPointerFromProto:attachmentProto albumMessage:albumMessage];
+        if (attachmentPointer) {
+            [attachmentPointers addObject:attachmentPointer];
+        }
+    }
+    return [attachmentPointers copy];
 }
 
 - (BOOL)isDecimalNumberText:(NSString *)text
