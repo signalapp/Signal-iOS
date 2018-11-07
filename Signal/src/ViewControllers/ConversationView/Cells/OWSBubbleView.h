@@ -21,7 +21,7 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
 
 - (void)updateLayers;
 
-- (void)setBubbleView:(OWSBubbleView *)bubbleView;
+- (void)setBubbleView:(nullable OWSBubbleView *)bubbleView;
 
 @end
 
