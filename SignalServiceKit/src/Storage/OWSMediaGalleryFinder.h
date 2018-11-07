@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSStorage;
-@class TSMessage;
+@class TSAttachment;
 @class TSThread;
 @class YapDatabaseReadTransaction;
 
@@ -18,15 +18,20 @@ NS_ASSUME_NONNULL_BEGIN
 // How many media items a thread has
 - (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaCount(transaction:));
 
-// The ordinal position of a message within a thread's media gallery
-- (NSUInteger)mediaIndexForMessage:(TSMessage *)message transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaIndex(message:transaction:));
+// The ordinal position of an attachment within a thread's media gallery
+- (NSUInteger)mediaIndexForAttachment:(TSAttachment *)attachment
+                          transaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(mediaIndex(attachment:transaction:));
 
-- (nullable TSMessage *)oldestMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(oldestMediaMessage(transaction:));
-- (nullable TSMessage *)mostRecentMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mostRecentMediaMessage(transaction:));
+- (nullable TSAttachment *)oldestMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(oldestMediaAttachment(transaction:));
+- (nullable TSAttachment *)mostRecentMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(mostRecentMediaAttachment(transaction:));
 
-- (void)enumerateMediaMessagesWithRange:(NSRange)range
-                            transaction:(YapDatabaseReadTransaction *)transaction
-                                  block:(void (^)(TSMessage *))messageBlock NS_SWIFT_NAME(enumerateMediaMessages(range:transaction:block:));
+- (void)enumerateMediaAttachmentsWithRange:(NSRange)range
+                               transaction:(YapDatabaseReadTransaction *)transaction
+                                     block:(void (^)(TSAttachment *))attachmentBlock
+    NS_SWIFT_NAME(enumerateMediaAttachments(range:transaction:block:));
 
 #pragma mark - Extension registration
 

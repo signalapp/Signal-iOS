@@ -2048,18 +2048,12 @@ typedef enum : NSUInteger {
         [self becomeFirstResponder];
     }
 
-    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"Unexpected viewItem.interaction");
-        return;
-    }
-    TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
-
     MediaGallery *mediaGallery =
         [[MediaGallery alloc] initWithThread:self.thread
                         uiDatabaseConnection:self.uiDatabaseConnection
                                      options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
-    [mediaGallery presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
+    [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
 }
 
 - (void)didTapVideoViewItem:(id<ConversationViewItem>)viewItem
@@ -2077,18 +2071,12 @@ typedef enum : NSUInteger {
         [self becomeFirstResponder];
     }
 
-    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"Unexpected viewItem.interaction");
-        return;
-    }
-    TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
-
     MediaGallery *mediaGallery =
         [[MediaGallery alloc] initWithThread:self.thread
                         uiDatabaseConnection:self.uiDatabaseConnection
                                      options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
-    [mediaGallery presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
+    [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
