@@ -214,7 +214,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [attachments copy];
 }
 
-- (BOOL)isMediaGalleryWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];
     if (attachments.count < 2) {

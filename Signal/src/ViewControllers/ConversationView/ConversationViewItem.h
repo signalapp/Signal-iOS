@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,
     OWSMessageCellType_ContactShare,
-    OWSMessageCellType_MediaGallery,
+    OWSMessageCellType_MediaAlbum,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -38,7 +38,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class TSThread;
 @class YapDatabaseReadTransaction;
 
-@interface ConversationMediaGalleryItem : NSObject
+@interface ConversationMediaAlbumItem : NSObject
 
 @property (nonatomic, readonly) TSAttachment *attachment;
 
@@ -109,7 +109,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, readonly) CGSize mediaSize;
-@property (nonatomic, readonly, nullable) NSArray<ConversationMediaGalleryItem *> *mediaGalleryItems;
+@property (nonatomic, readonly, nullable) NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems;
 
 @property (nonatomic, readonly, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
