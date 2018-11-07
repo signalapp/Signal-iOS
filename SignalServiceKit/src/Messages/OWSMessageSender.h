@@ -40,13 +40,15 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) NSString *caption;
+@property (nonatomic, readonly, nullable) NSString *albumMessageId;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDataSource:(DataSource *)dataSource
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
-                           caption:(nullable NSString *)caption NS_DESIGNATED_INITIALIZER;
+                           caption:(nullable NSString *)caption
+                    albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 @end
 

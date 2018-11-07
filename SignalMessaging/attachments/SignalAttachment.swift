@@ -240,8 +240,13 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public var outgoingAttachmentInfo: OutgoingAttachmentInfo {
-        return OutgoingAttachmentInfo(dataSource: dataSource, contentType: mimeType, sourceFilename: filenameOrDefault, caption: captionText)
+    public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
+        OWSAssertDebug(message.uniqueId)
+        return OutgoingAttachmentInfo(dataSource: dataSource,
+                                      contentType: mimeType,
+                                      sourceFilename: filenameOrDefault,
+                                      caption: captionText,
+                                      albumMessageId: message.uniqueId)
     }
 
     @objc
