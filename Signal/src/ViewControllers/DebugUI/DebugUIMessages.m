@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
                         }],
         [OWSTableItem itemWithTitle:@"Send Media Gallery"
                         actionBlock:^{
-                            [DebugUIMessages sendMediaGalleryInThread:thread];
+                            [DebugUIMessages sendMediaAlbumInThread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Send Exemplary Media Galleries"
                         actionBlock:^{
@@ -4642,7 +4642,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     }
 }
 
-+ (void)sendMediaGalleryInThread:(TSThread *)thread
++ (void)sendMediaAlbumInThread:(TSThread *)thread
 {
     OWSLogInfo(@"");
 
@@ -4650,32 +4650,32 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     const uint32_t kMaxImageCount = 10;
     uint32_t imageCount = kMinImageCount + arc4random_uniform(kMaxImageCount - kMinImageCount);
     NSString *_Nullable messageBody = (arc4random_uniform(2) > 0 ? @"This is the media gallery title..." : nil);
-    [self sendMediaGalleryInThread:thread imageCount:imageCount messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:imageCount messageBody:messageBody];
 }
 
 + (void)sendExemplaryMediaGalleriesInThread:(TSThread *)thread
 {
     OWSLogInfo(@"");
 
-    [self sendMediaGalleryInThread:thread imageCount:2 messageBody:nil];
-    [self sendMediaGalleryInThread:thread imageCount:3 messageBody:nil];
-    [self sendMediaGalleryInThread:thread imageCount:4 messageBody:nil];
-    [self sendMediaGalleryInThread:thread imageCount:5 messageBody:nil];
-    [self sendMediaGalleryInThread:thread imageCount:6 messageBody:nil];
-    [self sendMediaGalleryInThread:thread imageCount:7 messageBody:nil];
+    [self sendMediaAlbumInThread:thread imageCount:2 messageBody:nil];
+    [self sendMediaAlbumInThread:thread imageCount:3 messageBody:nil];
+    [self sendMediaAlbumInThread:thread imageCount:4 messageBody:nil];
+    [self sendMediaAlbumInThread:thread imageCount:5 messageBody:nil];
+    [self sendMediaAlbumInThread:thread imageCount:6 messageBody:nil];
+    [self sendMediaAlbumInThread:thread imageCount:7 messageBody:nil];
     NSString *messageBody = @"This is the media gallery title...";
-    [self sendMediaGalleryInThread:thread imageCount:2 messageBody:messageBody];
-    [self sendMediaGalleryInThread:thread imageCount:3 messageBody:messageBody];
-    [self sendMediaGalleryInThread:thread imageCount:4 messageBody:messageBody];
-    [self sendMediaGalleryInThread:thread imageCount:5 messageBody:messageBody];
-    [self sendMediaGalleryInThread:thread imageCount:6 messageBody:messageBody];
-    [self sendMediaGalleryInThread:thread imageCount:7 messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:2 messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:3 messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:4 messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:5 messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:6 messageBody:messageBody];
+    [self sendMediaAlbumInThread:thread imageCount:7 messageBody:messageBody];
 }
 
-+ (void)sendMediaGalleryInThread:(TSThread *)thread
-                      imageCount:(uint32_t)imageCount
-                     messageBody:(nullable NSString *)messageBody
-                fakeAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)fakeAssetLoaders
++ (void)sendMediaAlbumInThread:(TSThread *)thread
+                    imageCount:(uint32_t)imageCount
+                   messageBody:(nullable NSString *)messageBody
+              fakeAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)fakeAssetLoaders
 {
     OWSAssertDebug(imageCount > 0);
     OWSLogInfo(@"");
@@ -4706,9 +4706,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     }];
 }
 
-+ (void)sendMediaGalleryInThread:(TSThread *)thread
-                      imageCount:(uint32_t)imageCount
-                     messageBody:(nullable NSString *)messageBody
++ (void)sendMediaAlbumInThread:(TSThread *)thread
+                    imageCount:(uint32_t)imageCount
+                   messageBody:(nullable NSString *)messageBody
 {
     OWSAssertDebug(thread);
 
@@ -4721,10 +4721,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     ];
     [DebugUIMessagesAssetLoader prepareAssetLoaders:fakeAssetLoaders
         success:^{
-            [self sendMediaGalleryInThread:thread
-                                imageCount:imageCount
-                               messageBody:messageBody
-                          fakeAssetLoaders:fakeAssetLoaders];
+            [self sendMediaAlbumInThread:thread
+                              imageCount:imageCount
+                             messageBody:messageBody
+                        fakeAssetLoaders:fakeAssetLoaders];
         }
         failure:^{
             OWSLogError(@"Could not prepare fake asset loaders.");

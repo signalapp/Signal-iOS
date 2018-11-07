@@ -4,9 +4,9 @@
 
 import Foundation
 
-@objc(OWSMediaGalleryCellView)
-public class MediaGalleryCellView: UIStackView {
-    private let items: [ConversationMediaGalleryItem]
+@objc(OWSMediaAlbumCellView)
+public class MediaAlbumCellView: UIStackView {
+    private let items: [ConversationMediaAlbumItem]
 
     @objc
     public let itemViews: [ConversationMediaView]
@@ -21,10 +21,10 @@ public class MediaGalleryCellView: UIStackView {
 
     @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
-                         items: [ConversationMediaGalleryItem],
+                         items: [ConversationMediaAlbumItem],
                          maxMessageWidth: CGFloat) {
         self.items = items
-        self.itemViews = MediaGalleryCellView.itemsToDisplay(forItems: items).map {
+        self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
             ConversationMediaView(mediaCache: mediaCache,
                                   attachment: $0.attachment)
         }
@@ -55,19 +55,19 @@ public class MediaGalleryCellView: UIStackView {
         case 2:
             // X X
             // side-by-side.
-            let imageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts) / 2
+            let imageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts) / 2
             autoSet(viewSize: imageSize, ofViews: itemViews)
             for itemView in itemViews {
                 addArrangedSubview(itemView)
             }
             self.axis = .horizontal
-            self.spacing = MediaGalleryCellView.kSpacingPts
+            self.spacing = MediaAlbumCellView.kSpacingPts
         case 3:
             //   x
             // X x
             // Big on left, 2 small on right.
-            let smallImageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts * 2) / 3
-            let bigImageSize = smallImageSize * 2 + MediaGalleryCellView.kSpacingPts
+            let smallImageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts * 2) / 3
+            let bigImageSize = smallImageSize * 2 + MediaAlbumCellView.kSpacingPts
 
             guard let leftItemView = itemViews.first else {
                 owsFailDebug("Missing view")
@@ -81,12 +81,12 @@ public class MediaGalleryCellView: UIStackView {
                                       axis: .vertical,
                                       viewSize: smallImageSize))
             self.axis = .horizontal
-            self.spacing = MediaGalleryCellView.kSpacingPts
+            self.spacing = MediaAlbumCellView.kSpacingPts
         case 4:
             // X X
             // X X
             // Square
-            let imageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts) / 2
+            let imageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts) / 2
 
             let topViews = Array(itemViews[0..<2])
             addArrangedSubview(newRow(rowViews: topViews,
@@ -99,13 +99,13 @@ public class MediaGalleryCellView: UIStackView {
                                       viewSize: imageSize))
 
             self.axis = .vertical
-            self.spacing = MediaGalleryCellView.kSpacingPts
+            self.spacing = MediaAlbumCellView.kSpacingPts
         default:
             // X X
             // xxx
             // 2 big on top, 3 small on bottom.
-            let bigImageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts) / 2
-            let smallImageSize = (maxMessageWidth - MediaGalleryCellView.kSpacingPts * 2) / 3
+            let bigImageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts) / 2
+            let smallImageSize = (maxMessageWidth - MediaAlbumCellView.kSpacingPts * 2) / 3
 
             let topViews = Array(itemViews[0..<2])
             addArrangedSubview(newRow(rowViews: topViews,
@@ -118,9 +118,9 @@ public class MediaGalleryCellView: UIStackView {
                                       viewSize: smallImageSize))
 
             self.axis = .vertical
-            self.spacing = MediaGalleryCellView.kSpacingPts
+            self.spacing = MediaAlbumCellView.kSpacingPts
 
-            if items.count > MediaGalleryCellView.kMaxItems {
+            if items.count > MediaAlbumCellView.kMaxItems {
                 guard let lastView = bottomViews.last else {
                     owsFailDebug("Missing lastView")
                     return
@@ -133,7 +133,7 @@ public class MediaGalleryCellView: UIStackView {
                 lastView.addSubview(tintView)
                 tintView.autoPinEdgesToSuperviewEdges()
 
-                let moreCount = max(1, items.count - MediaGalleryCellView.kMaxItems)
+                let moreCount = max(1, items.count - MediaAlbumCellView.kMaxItems)
                 let moreCountText = OWSFormat.formatInt(Int32(moreCount))
                 let moreText = String(format: NSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
                                                                 comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}."), moreCountText)
@@ -195,7 +195,7 @@ public class MediaGalleryCellView: UIStackView {
                         axis: UILayoutConstraintAxis) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: rowViews)
         stackView.axis = axis
-        stackView.spacing = MediaGalleryCellView.kSpacingPts
+        stackView.spacing = MediaAlbumCellView.kSpacingPts
         return stackView
     }
 
@@ -213,7 +213,7 @@ public class MediaGalleryCellView: UIStackView {
         }
     }
 
-    private class func itemsToDisplay(forItems items: [ConversationMediaGalleryItem]) -> [ConversationMediaGalleryItem] {
+    private class func itemsToDisplay(forItems items: [ConversationMediaAlbumItem]) -> [ConversationMediaAlbumItem] {
         // TODO: Unless design changes, we want to display
         //       items which are still downloading and invalid
         //       items.
@@ -226,7 +226,7 @@ public class MediaGalleryCellView: UIStackView {
 
     @objc
     public class func layoutSize(forMaxMessageWidth maxMessageWidth: CGFloat,
-                                 items: [ConversationMediaGalleryItem]) -> CGSize {
+                                 items: [ConversationMediaAlbumItem]) -> CGSize {
         let itemCount = itemsToDisplay(forItems: items).count
         switch itemCount {
         case 0, 1, 4:

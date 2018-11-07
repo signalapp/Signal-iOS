@@ -240,7 +240,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             return self.hasBodyText;
         case OWSMessageCellType_ContactShare:
             return NO;
-        case OWSMessageCellType_MediaGallery:
+        case OWSMessageCellType_MediaAlbum:
             // Is there a gallery title?
             return self.hasBodyText;
     }
@@ -324,8 +324,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_ContactShare:
             bodyMediaView = [self loadViewForContactShare];
             break;
-        case OWSMessageCellType_MediaGallery:
-            bodyMediaView = [self loadViewForMediaGallery];
+        case OWSMessageCellType_MediaAlbum:
+            bodyMediaView = [self loadViewForMediaAlbum];
             break;
     }
 
@@ -604,7 +604,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_DownloadingAttachment:
         case OWSMessageCellType_ContactShare:
             return NO;
-        case OWSMessageCellType_MediaGallery:
+        case OWSMessageCellType_MediaAlbum:
             return YES;
     }
 }
@@ -612,7 +612,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 - (BOOL)hasFullWidthMediaView
 {
     return (self.hasBodyMediaWithThumbnail || self.cellType == OWSMessageCellType_ContactShare
-        || self.cellType == OWSMessageCellType_MediaGallery);
+        || self.cellType == OWSMessageCellType_MediaAlbum);
 }
 
 - (BOOL)canFooterOverlayMedia
@@ -780,19 +780,19 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     return tapForMoreLabel;
 }
 
-- (UIView *)loadViewForMediaGallery
+- (UIView *)loadViewForMediaAlbum
 {
-    OWSAssertDebug(self.viewItem.mediaGalleryItems);
+    OWSAssertDebug(self.viewItem.mediaAlbumItems);
 
-    OWSMediaGalleryCellView *galleryView =
-        [[OWSMediaGalleryCellView alloc] initWithMediaCache:self.cellMediaCache
-                                                      items:self.viewItem.mediaGalleryItems
-                                            maxMessageWidth:self.conversationStyle.maxMessageWidth];
+    OWSMediaAlbumCellView *albumView =
+        [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
+                                                    items:self.viewItem.mediaAlbumItems
+                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
     self.loadCellContentBlock = ^{
-        [galleryView loadMedia];
+        [albumView loadMedia];
     };
     self.unloadCellContentBlock = ^{
-        [galleryView unloadMedia];
+        [albumView unloadMedia];
     };
     for (UIView *itemView in galleryView.itemViews) {
         OWSBubbleShapeView *strokeView = [[OWSBubbleShapeView alloc] initDraw];
@@ -803,7 +803,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];
     }
 
-    return galleryView;
+    return albumView;
 }
 
 - (UIView *)loadViewForMedia
@@ -1050,9 +1050,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 
             result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
-        case OWSMessageCellType_MediaGallery:
-            result = [OWSMediaGalleryCellView layoutSizeForMaxMessageWidth:maxMessageWidth
-                                                                     items:self.viewItem.mediaGalleryItems];
+        case OWSMessageCellType_MediaAlbum:
+            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMessageWidth
+                                                                   items:self.viewItem.mediaAlbumItems];
             break;
     }
 
@@ -1417,9 +1417,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_ContactShare:
             [self.delegate didTapContactShareViewItem:self.viewItem];
             break;
-        case OWSMessageCellType_MediaGallery:
+        case OWSMessageCellType_MediaAlbum:
             OWSAssertDebug(self.bodyMediaView);
-            OWSAssertDebug(self.viewItem.mediaGalleryItems.count > 0);
+            OWSAssertDebug(self.viewItem.mediaAlbumItems.count > 0);
 
             // For now, use first valid attachment.
             TSAttachmentStream *_Nullable attachmentStream = self.viewItem.firstValidGalleryAttachment;
