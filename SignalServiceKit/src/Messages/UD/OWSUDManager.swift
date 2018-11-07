@@ -248,7 +248,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
             if localNumber != recipientId {
                 let selfAccessMode = unidentifiedAccessMode(forRecipientId: localNumber)
-                guard selfAccessMode == .enabled || selfAccessMode == .unrestricted else {
+                guard selfAccessMode != .disabled else {
                     if isUDVerboseLoggingEnabled() {
                         Logger.info("UD disabled for \(recipientId), UD disabled for sync messages.")
                     }
