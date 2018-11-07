@@ -667,6 +667,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"typingMessage has invalid timestamp.");
         return;
     }
+    NSString *localNumber = self.tsAccountManager.localNumber;
+    if ([localNumber isEqualToString:envelope.source]) {
+        OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
+    }
 
     TSThread *_Nullable thread;
     if (typingMessage.hasGroupID) {
