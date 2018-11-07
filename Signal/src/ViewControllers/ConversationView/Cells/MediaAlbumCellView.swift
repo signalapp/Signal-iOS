@@ -22,11 +22,13 @@ public class MediaAlbumCellView: UIStackView {
     @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          items: [ConversationMediaAlbumItem],
+                         isOutgoing: Bool,
                          maxMessageWidth: CGFloat) {
         self.items = items
         self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
             ConversationMediaView(mediaCache: mediaCache,
-                                  attachment: $0.attachment)
+                                  attachment: $0.attachment,
+                                  isOutgoing: isOutgoing)
         }
 
         super.init(frame: .zero)

@@ -787,6 +787,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSMediaAlbumCellView *albumView =
         [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
                                                     items:self.viewItem.mediaAlbumItems
+                                               isOutgoing:self.isOutgoing
                                           maxMessageWidth:self.conversationStyle.maxMessageWidth];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
@@ -803,8 +804,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSAssertDebug(self.attachmentStream);
     OWSAssertDebug([self.attachmentStream isVisualMedia]);
 
-    ConversationMediaView *mediaView =
-        [[ConversationMediaView alloc] initWithMediaCache:self.cellMediaCache attachment:self.attachmentStream];
+    ConversationMediaView *mediaView = [[ConversationMediaView alloc] initWithMediaCache:self.cellMediaCache
+                                                                              attachment:self.attachmentStream
+                                                                              isOutgoing:self.isOutgoing];
     self.loadCellContentBlock = ^{
         [mediaView loadMedia];
     };

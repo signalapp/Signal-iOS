@@ -8,15 +8,18 @@ import Foundation
 public class ConversationMediaView: UIView {
     private let mediaCache: NSCache<NSString, AnyObject>
     private let attachment: TSAttachment
+    private let isOutgoing: Bool
     private var loadBlock : (() -> Void)?
     private var unloadBlock : (() -> Void)?
     private var didFailToLoad = false
 
     @objc
     public required init(mediaCache: NSCache<NSString, AnyObject>,
-                         attachment: TSAttachment) {
+                         attachment: TSAttachment,
+                         isOutgoing: Bool) {
         self.mediaCache = mediaCache
         self.attachment = attachment
+        self.isOutgoing = isOutgoing
 
         super.init(frame: .zero)
 
@@ -35,8 +38,6 @@ public class ConversationMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let attachmentStream = attachment as? TSAttachmentStream else {
-            // TODO: Handle this case.
-            owsFailDebug("Missing attachment stream.")
             return
         }
         if attachmentStream.isAnimated {
@@ -51,10 +52,21 @@ public class ConversationMediaView: UIView {
         }
     }
 
-    private func addMediaSubview(_ subview: UIView) {
-        addSubview(subview)
-        subview.autoPinEdgesToSuperviewEdges()
-        // TODO: Possibly add upload/download indicator here.
+    private func addAttachmentUploadViewIfNecessary(_ subview: UIView,
+                                                    completion: @escaping (Bool) -> Void) {
+        guard isOutgoing else {
+            return
+        }
+        guard let attachmentStream = attachment as? TSAttachmentStream else {
+            return
+        }
+        guard !attachmentStream.isUploaded else {
+            return
+        }
+        let uploadView = AttachmentUploadView(attachment: attachmentStream) { (_) in
+        }
+        subview.addSubview(uploadView)
+        uploadView.autoPinEdgesToSuperviewEdges()
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
@@ -71,7 +83,10 @@ public class ConversationMediaView: UIView {
         animatedImageView.layer.minificationFilter = kCAFilterTrilinear
         animatedImageView.layer.magnificationFilter = kCAFilterTrilinear
         animatedImageView.backgroundColor = Theme.offBackgroundColor
-        addMediaSubview(animatedImageView)
+        addSubview(animatedImageView)
+        animatedImageView.autoPinEdgesToSuperviewEdges()
+        addAttachmentUploadViewIfNecessary(animatedImageView) { (_) in
+        }
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -117,7 +132,10 @@ public class ConversationMediaView: UIView {
         stillImageView.layer.minificationFilter = kCAFilterTrilinear
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
-        addMediaSubview(stillImageView)
+        addSubview(stillImageView)
+        stillImageView.autoPinEdgesToSuperviewEdges()
+        addAttachmentUploadViewIfNecessary(stillImageView) { (_) in
+        }
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -162,13 +180,17 @@ public class ConversationMediaView: UIView {
         stillImageView.layer.minificationFilter = kCAFilterTrilinear
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
-        addMediaSubview(stillImageView)
 
-        // TODO: Hide during upload/download.
         let videoPlayIcon = UIImage(named: "play_button")
         let videoPlayButton = UIImageView(image: videoPlayIcon)
         stillImageView.addSubview(videoPlayButton)
         videoPlayButton.autoCenterInSuperview()
+
+        addSubview(stillImageView)
+        stillImageView.autoPinEdgesToSuperviewEdges()
+        addAttachmentUploadViewIfNecessary(stillImageView) { (isAttachmentReady) in
+            videoPlayButton.isHidden = !isAttachmentReady
+        }
 
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
