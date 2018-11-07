@@ -784,15 +784,15 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
 {
     OWSAssertDebug(self.viewItem.mediaAlbumItems);
 
-    OWSMediaAlbumGalleryCellView *galleryView =
-        [[OWSMediaAlbumGalleryCellView alloc] initWithMediaCache:self.cellMediaCache
-                                                           items:self.viewItem.mediaAlbumItems
-                                                 maxMessageWidth:self.conversationStyle.maxMessageWidth];
+    OWSMediaAlbumCellView *albumView =
+        [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
+                                                    items:self.viewItem.mediaAlbumItems
+                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
     self.loadCellContentBlock = ^{
-        [galleryView loadMedia];
+        [albumView loadMedia];
     };
     self.unloadCellContentBlock = ^{
-        [galleryView unloadMedia];
+        [albumView unloadMedia];
     };
     for (UIView *itemView in galleryView.itemViews) {
         OWSBubbleShapeView *strokeView = [[OWSBubbleShapeView alloc] initDraw];
@@ -803,7 +803,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];
     }
 
-    return galleryView;
+    return albumView;
 }
 
 - (UIView *)loadViewForMedia
@@ -1051,8 +1051,8 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
         case OWSMessageCellType_MediaAlbum:
-            result = [OWSMediaAlbumGalleryCellView layoutSizeForMaxMessageWidth:maxMessageWidth
-                                                                          items:self.viewItem.mediaAlbumItems];
+            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMessageWidth
+                                                                   items:self.viewItem.mediaAlbumItems];
             break;
     }
 
