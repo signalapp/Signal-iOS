@@ -5,6 +5,7 @@
 #import "MockSSKEnvironment.h"
 #import "ContactDiscoveryService.h"
 #import "OWS2FAManager.h"
+#import "OWSAttachmentDownloads.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -76,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
     id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
+    OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
 
     self = [super initWithContactsManager:contactsManager
                             messageSender:messageSender
@@ -100,7 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
                    outgoingReceiptManager:outgoingReceiptManager
                       reachabilityManager:reachabilityManager
                               syncManager:syncManager
-                         typingIndicators:typingIndicators];
+                         typingIndicators:typingIndicators
+                      attachmentDownloads:attachmentDownloads];
 
     if (!self) {
         return nil;

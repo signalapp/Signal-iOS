@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ContactDiscoveryService;
 @class ContactsUpdater;
 @class OWS2FAManager;
+@class OWSAttachmentDownloads;
 @class OWSBatchMessageProcessor;
 @class OWSBlockingManager;
 @class OWSDisappearingMessagesJob;
@@ -60,7 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<OWSSyncManagerProtocol>)syncManager
-                       typingIndicators:(id<OWSTypingIndicators>)typingIndicators NS_DESIGNATED_INITIALIZER;
+                       typingIndicators:(id<OWSTypingIndicators>)typingIndicators
+                    attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -97,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<OWSSyncManagerProtocol> syncManager;
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
+@property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

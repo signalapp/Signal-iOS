@@ -1402,7 +1402,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             OWSAssertDebug(attachmentPointer);
 
             if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem];
             }
             break;
         }

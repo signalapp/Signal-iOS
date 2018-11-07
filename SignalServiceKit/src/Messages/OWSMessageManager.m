@@ -9,7 +9,7 @@
 #import "MimeTypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NotificationsProtocol.h"
-#import "OWSAttachmentsProcessor.h"
+#import "OWSAttachmentDownloads.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
@@ -162,6 +162,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<OWSTypingIndicators>)typingIndicators
 {
     return SSKEnvironment.shared.typingIndicators;
+}
+
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
 }
 
 #pragma mark -
@@ -729,13 +734,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSAttachmentPointer *avatarPointer =
+    TSAttachmentPointer *_Nullable avatarPointer =
         [TSAttachmentPointer attachmentPointerFromProto:dataMessage.group.avatar albumMessage:nil];
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ avatarPointer ]];
 
-    [attachmentsProcessor fetchAttachmentsForMessage:nil
-        transaction:transaction
+    if (!avatarPointer) {
+        OWSLogWarn(@"received unsupported group avatar envelope");
+        return;
+    }
+    [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -771,35 +777,26 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSIncomingMessage *_Nullable createdMessage = [self handleReceivedEnvelope:envelope
-                                                               withDataMessage:dataMessage
-                                                                   transaction:transaction];
-    if (!createdMessage) {
+    TSIncomingMessage *_Nullable message =
+        [self handleReceivedEnvelope:envelope withDataMessage:dataMessage transaction:transaction];
+
+    if (!message) {
         return;
     }
 
-    NSArray<TSAttachmentPointer *> *attachmentPointers =
-        [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:createdMessage];
-    for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer saveWithTransaction:transaction];
-        [createdMessage.attachmentIds addObject:pointer.uniqueId];
-    }
-    [createdMessage saveWithTransaction:transaction];
+    [message saveWithTransaction:transaction];
 
-    OWSLogDebug(@"incoming attachment message: %@", createdMessage.debugDescription);
+    OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:attachmentPointers];
-
-    [attachmentsProcessor fetchAttachmentsForMessage:createdMessage
+    [self.attachmentDownloads downloadAttachmentsForMessage:message
         transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
                 (unsigned long)attachmentStreams.count,
-                createdMessage);
+                message);
         }
         failure:^(NSError *error) {
-            OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", createdMessage, error);
+            OWSLogError(@"failed to fetch attachments for message: %@ with error: %@", message, error);
         }];
 }
 
@@ -1264,6 +1261,22 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
 
+                NSArray<TSAttachmentPointer *> *attachmentPointers =
+                    [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
+                                                         albumMessage:incomingMessage];
+                for (TSAttachmentPointer *pointer in attachmentPointers) {
+                    [pointer saveWithTransaction:transaction];
+                    [incomingMessage.attachmentIds addObject:pointer.uniqueId];
+                }
+
+                if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
+                    OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
+                        envelopeAddress(envelope),
+                        groupId,
+                        (unsigned long)timestamp);
+                    return nil;
+                }
+
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
                                      envelope:envelope
@@ -1297,6 +1310,20 @@ NS_ASSUME_NONNULL_BEGIN
                                                            contactShare:contact
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
+
+        NSArray<TSAttachmentPointer *> *attachmentPointers =
+            [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
+        for (TSAttachmentPointer *pointer in attachmentPointers) {
+            [pointer saveWithTransaction:transaction];
+            [incomingMessage.attachmentIds addObject:pointer.uniqueId];
+        }
+
+        if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
+            OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
+                envelopeAddress(envelope),
+                (unsigned long)timestamp);
+            return nil;
+        }
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
@@ -1344,16 +1371,12 @@ NS_ASSUME_NONNULL_BEGIN
                                              transaction:transaction];
 
         if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSAttachmentsProcessor *attachmentProcessor =
-                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
-
             OWSLogDebug(@"downloading thumbnail for message: %lu", (unsigned long)incomingMessage.timestamp);
-            [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
-                transaction:transaction
+            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                         [incomingMessage saveWithTransaction:transaction];
                     }];
@@ -1374,14 +1397,11 @@ NS_ASSUME_NONNULL_BEGIN
         if (![attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
             OWSFailDebug(@"avatar attachmentPointer was unexpectedly nil");
         } else {
-            OWSAttachmentsProcessor *attachmentProcessor =
-                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
-
             OWSLogDebug(@"downloading contact avatar for message: %lu", (unsigned long)incomingMessage.timestamp);
-            [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
-                transaction:transaction
+
+            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [incomingMessage touchWithTransaction:transaction];
                     }];
                 }

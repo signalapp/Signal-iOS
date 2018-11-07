@@ -67,7 +67,7 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSAttachmentsProcessor.h>
+#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
@@ -295,6 +295,11 @@ typedef enum : NSUInteger {
 - (id<OWSTypingIndicators>)typingIndicators
 {
     return SSKEnvironment.shared.typingIndicators;
+}
+
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
 }
 
 #pragma mark -
@@ -1644,13 +1649,11 @@ typedef enum : NSUInteger {
 #pragma mark Bubble User Actions
 
 - (void)handleFailedDownloadTapForMessage:(TSMessage *)message
-                        attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
-    OWSAttachmentsProcessor *processor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
+    OWSAssert(message);
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [processor fetchAttachmentsForMessage:message
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.attachmentDownloads downloadAttachmentsForMessage:message
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
@@ -2159,15 +2162,13 @@ typedef enum : NSUInteger {
 }
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
-                     attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
-    OWSAssertDebug(attachmentPointer);
 
     // Restart failed downloads
     TSMessage *message = (TSMessage *)viewItem.interaction;
-    [self handleFailedDownloadTapForMessage:message attachmentPointer:attachmentPointer];
+    [self handleFailedDownloadTapForMessage:message];
 }
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message
@@ -2192,17 +2193,13 @@ typedef enum : NSUInteger {
         return;
     }
 
-    OWSAttachmentsProcessor *processor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
-
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [processor fetchAttachmentsForMessage:nil
-            transaction:transaction
+    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
                 [self.editingDatabaseConnection
-                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                         [message saveWithTransaction:postSuccessTransaction];
                     }];
@@ -2210,8 +2207,8 @@ typedef enum : NSUInteger {
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
                 [self.editingDatabaseConnection
-                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                        [message touchWithTransaction:transaction];
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
+                        [message touchWithTransaction:postSuccessTransaction];
                     }];
             }];
     }];
