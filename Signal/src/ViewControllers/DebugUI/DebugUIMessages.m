@@ -4691,6 +4691,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [SignalAttachment attachmentWithDataSource:dataSource
                                                dataUTI:[MIMETypeUtil utiTypeForMIMEType:fakeAssetLoader.mimeType]
                                           imageQuality:TSImageQualityOriginal];
+        if (arc4random_uniform(2) == 0) {
+            attachment.captionText = [self randomText];
+        }
         [attachments addObject:attachment];
     }
 
