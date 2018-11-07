@@ -299,7 +299,7 @@ class PhotoLibraryAlbum {
     var thumbnailSize: CGSize = .zero
 
     enum PhotoLibraryError: Error {
-        case assertionError(_ description: String)
+        case assertionError(description: String)
         case unsupportedMediaType
 
     }
@@ -332,19 +332,19 @@ class PhotoLibraryAlbum {
 
     private func requestImageDataSource(for asset: PHAsset) -> Promise<(dataSource: DataSource, dataUTI: String)> {
         return Promise { resolver in
-            _ = imageManager.requestImageData(for: asset, options: nil) { imageData, dataUTI, orientation, info in
+            _ = imageManager.requestImageData(for: asset, options: nil) { imageData, dataUTI, _, _ in
                 guard let imageData = imageData else {
-                    resolver.reject(PhotoLibraryError.assertionError("imageData was unexpectedly nil"))
+                    resolver.reject(PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))
                     return
                 }
 
                 guard let dataUTI = dataUTI else {
-                    resolver.reject(PhotoLibraryError.assertionError("dataUTI was unexpectedly nil"))
+                    resolver.reject(PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil"))
                     return
                 }
 
                 guard let dataSource = DataSourceValue.dataSource(with: imageData, utiType: dataUTI) else {
-                    resolver.reject(PhotoLibraryError.assertionError("dataSource was unexpectedly nil"))
+                    resolver.reject(PhotoLibraryError.assertionError(description: "dataSource was unexpectedly nil"))
                     return
                 }
 
@@ -356,10 +356,10 @@ class PhotoLibraryAlbum {
     private func requestVideoDataSource(for asset: PHAsset) -> Promise<(dataSource: DataSource, dataUTI: String)> {
         return Promise { resolver in
 
-            _ = imageManager.requestExportSession(forVideo: asset, options: nil, exportPreset: AVAssetExportPresetMediumQuality) { exportSession, info in
+            _ = imageManager.requestExportSession(forVideo: asset, options: nil, exportPreset: AVAssetExportPresetMediumQuality) { exportSession, _ in
 
                 guard let exportSession = exportSession else {
-                    resolver.reject(PhotoLibraryError.assertionError("exportSession was unexpectedly nil"))
+                    resolver.reject(PhotoLibraryError.assertionError(description: "exportSession was unexpectedly nil"))
                     return
                 }
 
@@ -375,7 +375,7 @@ class PhotoLibraryAlbum {
                     Logger.debug("Completed video export")
 
                     guard let dataSource = DataSourcePath.dataSource(with: exportURL, shouldDeleteOnDeallocation: true) else {
-                        resolver.reject(PhotoLibraryError.assertionError("Failed to build data source for exported video URL"))
+                        resolver.reject(PhotoLibraryError.assertionError(description: "Failed to build data source for exported video URL"))
                         return
                     }
 

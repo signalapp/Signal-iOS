@@ -145,14 +145,14 @@ public class MediaGalleryCellView: UIStackView {
     }
 
     private func newRow(rowViews: [ConversationMediaView],
-                        axis: NSLayoutConstraint.Axis,
+                        axis: UILayoutConstraintAxis,
                         viewSize: CGFloat) -> UIStackView {
         autoSet(viewSize: viewSize, ofViews: rowViews)
         return newRow(rowViews: rowViews, axis: axis)
     }
 
     private func newRow(rowViews: [ConversationMediaView],
-                        axis: NSLayoutConstraint.Axis) -> UIStackView {
+                        axis: UILayoutConstraintAxis) -> UIStackView {
         let stackView = UIStackView(arrangedSubviews: rowViews)
         stackView.axis = axis
         stackView.spacing = MediaGalleryCellView.kSpacingPts
