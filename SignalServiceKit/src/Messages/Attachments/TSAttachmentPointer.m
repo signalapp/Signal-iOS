@@ -3,6 +3,7 @@
 //
 
 #import "TSAttachmentPointer.h"
+#import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
 {
     self = [super initWithServerId:serverId
@@ -40,7 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
                          byteCount:byteCount
                        contentType:contentType
                     sourceFilename:sourceFilename
-                           caption:caption];
+                           caption:caption
+                    albumMessageId:albumMessageId];
     if (!self) {
         return self;
     }
@@ -54,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
+                                                     message:(TSMessage *)message
 {
     if (attachmentProto.id < 1) {
         OWSFailDebug(@"Invalid attachment id.");
@@ -82,6 +86,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (attachmentProto.hasCaption) {
         caption = attachmentProto.caption;
     }
+    NSString *_Nullable albumMessageId;
+    if ([MIMETypeUtil isVisualMedia:attachmentProto.contentType]) {
+        OWSAssertDebug(message.uniqueId);
+        albumMessageId = message.uniqueId;
+    }
+
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                              key:attachmentProto.key
                                                                           digest:digest
@@ -89,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      contentType:attachmentProto.contentType
                                                                   sourceFilename:attachmentProto.fileName
                                                                          caption:caption
+                                                                  albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType];
     return pointer;
 }

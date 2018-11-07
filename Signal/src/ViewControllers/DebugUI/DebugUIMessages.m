@@ -3760,6 +3760,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                       contentType:@"audio/mp3"
                                                    sourceFilename:@"test.mp3"
                                                           caption:nil
+                                                   albumMessageId:nil
                                                    attachmentType:TSAttachmentTypeDefault];
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer saveWithTransaction:transaction];
@@ -3787,7 +3788,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                 TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"audio/mp3"
                                                                                              byteCount:filesize
                                                                                         sourceFilename:filename
-                                                                                               caption:nil];
+                                                                                               caption:nil
+                                                                                        albumMessageId:nil];
 
                 NSError *error;
                 BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:filesize] error:&error];
@@ -4619,7 +4621,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
                                                                                      byteCount:nominalDataLength
                                                                                 sourceFilename:filename
-                                                                                       caption:nil];
+                                                                                       caption:nil
+                                                                                albumMessageId:nil];
         NSError *error;
         BOOL success = [attachmentStream writeData:dataSource.data error:&error];
         OWSAssertDebug(success && !error);
@@ -4635,6 +4638,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               contentType:fakeAssetLoader.mimeType
                                            sourceFilename:fakeAssetLoader.filename
                                                   caption:nil
+                                           albumMessageId:nil
                                            attachmentType:TSAttachmentTypeDefault];
         attachmentPointer.state = TSAttachmentPointerStateFailed;
         [attachmentPointer saveWithTransaction:transaction];

@@ -496,7 +496,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
                                                                                  byteCount:(UInt32)imageData.length
                                                                             sourceFilename:nil
-                                                                                   caption:nil];
+                                                                                   caption:nil
+                                                                            albumMessageId:nil];
 
     NSError *error;
     BOOL success = [attachmentStream writeData:imageData error:&error];

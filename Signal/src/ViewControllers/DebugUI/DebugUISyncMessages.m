@@ -119,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     contentType:OWSMimeTypeApplicationOctetStream
                                  sourceFilename:nil
                                         caption:nil
+                                 albumMessageId:nil
                           isTemporaryAttachment:YES];
 }
 
