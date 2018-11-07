@@ -670,6 +670,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *localNumber = self.tsAccountManager.localNumber;
     if ([localNumber isEqualToString:envelope.source]) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
+        return;
     }
 
     TSThread *_Nullable thread;
