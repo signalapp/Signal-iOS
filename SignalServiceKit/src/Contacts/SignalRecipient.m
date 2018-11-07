@@ -7,6 +7,7 @@
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
+#import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -34,6 +35,20 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.udManager;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (TSSocketManager *)socketManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.socketManager);
+    
+    return SSKEnvironment.shared.socketManager;
+}
+
 #pragma mark -
 
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
@@ -57,8 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssertDebug([TSAccountManager localNumber].length > 0);
-    if ([[TSAccountManager localNumber] isEqualToString:textSecureIdentifier]) {
+    OWSAssertDebug(self.tsAccountManager.localNumber.length > 0);
+    if ([self.tsAccountManager.localNumber isEqualToString:textSecureIdentifier]) {
         // Default to no devices.
         //
         // This instance represents our own account and is used for sending
@@ -88,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
         _devices = [NSOrderedSet new];
     }
 
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] &&
+    if ([self.uniqueId isEqual:self.tsAccountManager.localNumber] &&
         [self.devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
         OWSFailDebug(@"self as recipient device");
     }
@@ -114,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(devices.count > 0);
 
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] &&
+    if ([self.uniqueId isEqual:self.tsAccountManager.localNumber] &&
         [devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
         OWSFailDebug(@"adding self as recipient device");
         return;
@@ -155,6 +170,10 @@ NS_ASSUME_NONNULL_BEGIN
         // Device changes can affect the UD access mode for a recipient,
         // so we need to fetch the profile for this user to update UD access mode.
         [self.profileManager fetchProfileForRecipientId:self.recipientId];
+        
+        if ([self.recipientId isEqualToString:self.tsAccountManager.localNumber]) {
+            [self.socketManager cycleSocket];
+        }
     });
 }
 
