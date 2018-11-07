@@ -579,7 +579,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                  message:(TSOutgoingMessage *)message
                                   thread:(nullable TSThread *)thread
                        senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
-                            selfUDAccess:(nullable OWSUDAccess *)selfUDAccess
                               sendErrors:(NSMutableArray<NSError *> *)sendErrors
 {
     OWSAssertDebug(recipients.count > 0);
@@ -591,8 +590,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     for (SignalRecipient *recipient in recipients) {
         // Use chained promises to make the code more readable.
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            NSString *localNumber = self.tsAccountManager.localNumber;
             OWSUDAccess *_Nullable theirUDAccess;
-            if (senderCertificate != nil && selfUDAccess != nil) {
+            if (senderCertificate != nil && ![recipient.recipientId isEqualToString:localNumber]) {
                 theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
             }
 
@@ -631,16 +631,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     AssertIsOnSendingQueue();
 
-    OWSUDAccess *_Nullable selfUDAccess;
-    if (senderCertificate) {
-        selfUDAccess = [self.udManager udAccessForRecipientId:self.tsAccountManager.localNumber requireSyncAccess:YES];
-    }
-
     void (^successHandler)(void) = ^() {
         dispatch_async([OWSDispatch sendingQueue], ^{
             [self handleMessageSentLocally:message
-                senderCertificate:senderCertificate
-                selfUDAccess:selfUDAccess
                 success:^{
                     successHandlerParam();
                 }
@@ -657,8 +650,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (message.wasSentToAnyRecipient) {
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self handleMessageSentLocally:message
-                    senderCertificate:senderCertificate
-                    selfUDAccess:selfUDAccess
                     success:^{
                         failureHandlerParam(error);
                     }
@@ -740,7 +731,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      message:message
                                                       thread:thread
                                            senderCertificate:senderCertificate
-                                                selfUDAccess:selfUDAccess
                                                   sendErrors:sendErrors]
                                   .then(^(id value) {
                                       successHandler();
@@ -1355,8 +1345,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
-               senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
-                    selfUDAccess:(nullable OWSUDAccess *)selfUDAccess
                          success:(void (^)(void))success
                          failure:(RetryableFailureHandler)failure
 {
@@ -1372,8 +1360,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     [self
         sendSyncTranscriptForMessage:message
-                   senderCertificate:senderCertificate
-                        selfUDAccess:selfUDAccess
                              success:^{
                                  // TODO: We might send to a recipient, then to another recipient on retry.
                                  //       To ensure desktop receives all "delivery status" info, we might
@@ -1389,8 +1375,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
-                   senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
-                        selfUDAccess:(nullable OWSUDAccess *)selfUDAccess
                              success:(void (^)(void))success
                              failure:(RetryableFailureHandler)failure
 {
@@ -1406,8 +1390,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
         thread:message.thread
         recipient:recipient
-        senderCertificate:senderCertificate
-        udAccess:selfUDAccess
+        senderCertificate:nil
+        udAccess:nil
         localNumber:self.tsAccountManager.localNumber
         success:^{
             OWSLogInfo(@"Successfully sent sync transcript.");
