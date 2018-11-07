@@ -43,15 +43,15 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     return [[self galleryExtensionWithTransaction:transaction] numberOfItemsInGroup:self.mediaGroup];
 }
 
-- (NSUInteger)mediaIndexForMessage:(TSMessage *)message transaction:(YapDatabaseReadTransaction *)transaction
+- (NSUInteger)mediaIndexForAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadTransaction *)transaction
 {
     NSString *groupId;
     NSUInteger index;
 
     BOOL wasFound = [[self galleryExtensionWithTransaction:transaction] getGroup:&groupId
                                                                            index:&index
-                                                                          forKey:message.uniqueId
-                                                                    inCollection:[TSMessage collection]];
+                                                                          forKey:attachment.uniqueId
+                                                                    inCollection:[TSAttachment collection]];
 
     OWSAssertDebug(wasFound);
     OWSAssertDebug([self.mediaGroup isEqual:groupId]);
@@ -59,19 +59,19 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     return index;
 }
 
-- (nullable TSMessage *)oldestMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSAttachment *)oldestMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     return [[self galleryExtensionWithTransaction:transaction] firstObjectInGroup:self.mediaGroup];
 }
 
-- (nullable TSMessage *)mostRecentMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSAttachment *)mostRecentMediaAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     return [[self galleryExtensionWithTransaction:transaction] lastObjectInGroup:self.mediaGroup];
 }
 
-- (void)enumerateMediaMessagesWithRange:(NSRange)range
-                            transaction:(YapDatabaseReadTransaction *)transaction
-                                  block:(void (^)(TSMessage *))messageBlock
+- (void)enumerateMediaAttachmentsWithRange:(NSRange)range
+                               transaction:(YapDatabaseReadTransaction *)transaction
+                                     block:(void (^)(TSAttachment *))attachmentBlock
 {
 
     [[self galleryExtensionWithTransaction:transaction]
@@ -83,9 +83,8 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                                 id _Nonnull object,
                                 NSUInteger index,
                                 BOOL *_Nonnull stop) {
-
-                                OWSAssertDebug([object isKindOfClass:[TSMessage class]]);
-                                messageBlock((TSMessage *)object);
+                                OWSAssertDebug([object isKindOfClass:[TSAttachment class]]);
+                                attachmentBlock((TSAttachment *)object);
                             }];
 }
 
@@ -124,63 +123,81 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 
 + (YapDatabaseAutoView *)mediaGalleryDatabaseExtension
 {
-    YapDatabaseViewSorting *sorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction * _Nonnull transaction, NSString * _Nonnull group, NSString * _Nonnull collection1, NSString * _Nonnull key1, id  _Nonnull object1, NSString * _Nonnull collection2, NSString * _Nonnull key2, id  _Nonnull object2) {
-        
-        if (![object1 isKindOfClass:[TSMessage class]]) {
-            OWSFailDebug(@"Unexpected object while sorting: %@", [object1 class]);
-            return NSOrderedSame;
-        }
-        TSMessage *message1 = (TSMessage *)object1;
-        
-        if (![object2 isKindOfClass:[TSMessage class]]) {
-            OWSFailDebug(@"Unexpected object while sorting: %@", [object2 class]);
-            return NSOrderedSame;
-        }
-        TSMessage *message2 = (TSMessage *)object2;
-        
-        return [@(message1.timestampForSorting) compare:@(message2.timestampForSorting)];
-    }];
-    
-    YapDatabaseViewGrouping *grouping = [YapDatabaseViewGrouping withObjectBlock:^NSString * _Nullable(YapDatabaseReadTransaction * _Nonnull transaction, NSString * _Nonnull collection, NSString * _Nonnull key, id  _Nonnull object) {
-        
-        if (![object isKindOfClass:[TSMessage class]]) {
-            return nil;
-        }
-        TSMessage *message = (TSMessage *)object;
-
-        BOOL allAttachmentsAreMedia = message.attachmentIds.count > 0;
-        for (NSString *attachmentId in message.attachmentIds) {
-            OWSAssertDebug(attachmentId.length > 0);
-            if (![self attachmentIdShouldAppearInMediaGallery:attachmentId transaction:transaction]) {
-                allAttachmentsAreMedia = NO;
-                break;
+    YapDatabaseViewSorting *sorting =
+        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *_Nonnull transaction,
+            NSString *_Nonnull group,
+            NSString *_Nonnull collection1,
+            NSString *_Nonnull key1,
+            id _Nonnull object1,
+            NSString *_Nonnull collection2,
+            NSString *_Nonnull key2,
+            id _Nonnull object2) {
+            if (![object1 isKindOfClass:[TSAttachment class]]) {
+                OWSFailDebug(@"Unexpected object while sorting: %@", [object1 class]);
+                return NSOrderedSame;
             }
-        }
+            TSAttachment *attachment1 = (TSAttachment *)object1;
 
-        if (allAttachmentsAreMedia) {
+            if (![object2 isKindOfClass:[TSAttachment class]]) {
+                OWSFailDebug(@"Unexpected object while sorting: %@", [object2 class]);
+                return NSOrderedSame;
+            }
+            TSAttachment *attachment2 = (TSAttachment *)object2;
+
+            TSMessage *_Nullable message1 = [attachment1 fetchAlbumMessageWithTransaction:transaction];
+            TSMessage *_Nullable message2 = [attachment2 fetchAlbumMessageWithTransaction:transaction];
+            if (message1 == nil || message2 == nil) {
+                OWSFailDebug(@"couldn't find albumMessage");
+                return NSOrderedSame;
+            }
+
+            if ([message1.uniqueId isEqualToString:message2.uniqueId]) {
+                NSUInteger index1 = [message1.attachmentIds indexOfObject:attachment1.uniqueId];
+                NSUInteger index2 = [message1.attachmentIds indexOfObject:attachment2.uniqueId];
+
+                if (index1 == NSNotFound || index2 == NSNotFound) {
+                    OWSFailDebug(@"couldn't find attachmentId in it's albumMessage");
+                    return NSOrderedSame;
+                }
+                return [@(index1) compare:@(index2)];
+            } else {
+                return [@(message1.timestampForSorting) compare:@(message2.timestampForSorting)];
+            }
+        }];
+
+    YapDatabaseViewGrouping *grouping =
+        [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(YapDatabaseReadTransaction *_Nonnull transaction,
+            NSString *_Nonnull collection,
+            NSString *_Nonnull key,
+            id _Nonnull object) {
+            // Don't include nil or not yet downloaded attachments.
+            if (![object isKindOfClass:[TSAttachmentStream class]]) {
+                return nil;
+            }
+
+            TSAttachmentStream *attachment = (TSAttachmentStream *)object;
+            if (attachment.albumMessageId == nil) {
+                return nil;
+            }
+
+            if (!attachment.isValidVisualMedia) {
+                return nil;
+            }
+
+            TSMessage *message = [attachment fetchAlbumMessageWithTransaction:transaction];
+            if (message == nil) {
+                OWSFailDebug(@"message was unexpectedly nil");
+                return nil;
+            }
+
             return [self mediaGroupWithThreadId:message.uniqueThreadId];
-        }
+        }];
 
-        return nil;
-    }];
-    
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
-    options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:TSMessage.collection]];
+    options.allowedCollections =
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:TSAttachment.collection]];
 
-    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"3" options:options];
-}
-
-+ (BOOL)attachmentIdShouldAppearInMediaGallery:(NSString *)attachmentId transaction:(YapDatabaseReadTransaction *)transaction
-{
-    TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId
-                                                                     transaction:transaction];
-
-    // Don't include nil or not yet downloaded attachments.
-    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        return NO;
-    }
-
-    return attachment.isValidVisualMedia;
+    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"4" options:options];
 }
 
 @end

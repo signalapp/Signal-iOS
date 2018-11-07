@@ -39,13 +39,13 @@ public class MediaGalleryItem: Equatable, Hashable {
     // MARK: Equatable
 
     public static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
-        return lhs.message.uniqueId == rhs.message.uniqueId
+        return lhs.attachmentStream.uniqueId == rhs.attachmentStream.uniqueId
     }
 
     // MARK: Hashable
 
     public var hashValue: Int {
-        return message.hashValue
+        return attachmentStream.hashValue
     }
 }
 
@@ -281,10 +281,10 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     private var originRect: CGRect?
 
     @objc
-    public func presentDetailView(fromViewController: UIViewController, mediaMessage: TSMessage, replacingView: UIView) {
+    public func presentDetailView(fromViewController: UIViewController, mediaAttachment: TSAttachment, replacingView: UIView) {
         var galleryItem: MediaGalleryItem?
         uiDatabaseConnection.read { transaction in
-            galleryItem = self.buildGalleryItem(message: mediaMessage, transaction: transaction)!
+            galleryItem = self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)!
         }
 
         guard let initialDetailItem = galleryItem else {
@@ -414,8 +414,8 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     func pushTileView(fromNavController: OWSNavigationController) {
         var mostRecentItem: MediaGalleryItem?
         self.uiDatabaseConnection.read { transaction in
-            if let message = self.mediaGalleryFinder.mostRecentMediaMessage(transaction: transaction) {
-                mostRecentItem = self.buildGalleryItem(message: message, transaction: transaction)
+            if let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction) {
+                mostRecentItem = self.buildGalleryItem(attachment: attachment, transaction: transaction)
             }
         }
 
@@ -633,9 +633,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     var hasFetchedOldest = false
     var hasFetchedMostRecent = false
 
-    func buildGalleryItem(message: TSMessage, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
-        // TODO: Support multi-image messages.
-        guard let attachmentStream = message.attachments(with: transaction).first as? TSAttachmentStream else {
+    func buildGalleryItem(attachment: TSAttachment, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
+        guard let attachmentStream = attachment as? TSAttachmentStream else {
+            owsFailDebug("gallery doesn't yet support showing undownloaded attachments")
+            return nil
+        }
+
+        guard let message = attachmentStream.fetchAlbumMessage(with: transaction) else {
             owsFailDebug("attachment was unexpectedly empty")
             return nil
         }
@@ -662,7 +666,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         Bench(title: "fetching gallery items") {
             self.uiDatabaseConnection.read { transaction in
 
-                let initialIndex: Int = Int(self.mediaGalleryFinder.mediaIndex(message: item.message, transaction: transaction))
+                let initialIndex: Int = Int(self.mediaGalleryFinder.mediaIndex(attachment: item.attachmentStream, transaction: transaction))
                 let mediaCount: Int = Int(self.mediaGalleryFinder.mediaCount(transaction: transaction))
 
                 let requestRange: Range<Int> = { () -> Range<Int> in
@@ -711,14 +715,14 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
                 Logger.debug("fetching set: \(unfetchedSet)")
                 let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
-                self.mediaGalleryFinder.enumerateMediaMessages(range: nsRange, transaction: transaction) { (message: TSMessage) in
+                self.mediaGalleryFinder.enumerateMediaAttachments(range: nsRange, transaction: transaction) { (attachment: TSAttachment) in
 
-                    guard !self.deletedMessages.contains(message) else {
-                        Logger.debug("skipping \(message) which has been deleted.")
+                    guard !self.deletedAttachments.contains(attachment) else {
+                        Logger.debug("skipping \(attachment) which has been deleted.")
                         return
                     }
 
-                    guard let item: MediaGalleryItem = self.buildGalleryItem(message: message, transaction: transaction) else {
+                    guard let item: MediaGalleryItem = self.buildGalleryItem(attachment: attachment, transaction: transaction) else {
                         owsFailDebug("unexpectedly failed to buildGalleryItem")
                         return
                     }
@@ -792,7 +796,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         dataSourceDelegates.append(Weak(value: dataSourceDelegate))
     }
 
-    var deletedMessages: Set<TSMessage> = Set()
+    var deletedAttachments: Set<TSAttachment> = Set()
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
     func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
@@ -806,8 +810,9 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         self.editingDatabaseConnection.asyncReadWrite { transaction in
             for item in items {
                 let message = item.message
-                message.remove(with: transaction)
-                self.deletedMessages.insert(message)
+                let attachment = item.attachmentStream
+                message.removeAttachment(attachment, transaction: transaction)
+                self.deletedAttachments.insert(attachment)
             }
         }
 
@@ -928,6 +933,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         self.uiDatabaseConnection.read { (transaction: YapDatabaseReadTransaction) in
             count = self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
-        return Int(count) - deletedMessages.count
+        return Int(count) - deletedAttachments.count
     }
 }

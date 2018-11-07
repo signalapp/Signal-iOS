@@ -214,6 +214,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [attachments copy];
 }
 
+- (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction;
+{
+    OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
+    [attachment removeWithTransaction:transaction];
+
+    [self.attachmentIds removeObject:attachment.uniqueId];
+
+    // TODO - Should we delete self if we delete the last attachment?
+    // Or should that depend on whether message.body == nil
+
+    [self saveWithTransaction:transaction];
+}
+
 - (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSArray<TSAttachment *> *attachments = [self attachmentsWithTransaction:transaction];

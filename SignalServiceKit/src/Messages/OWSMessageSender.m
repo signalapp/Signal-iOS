@@ -87,6 +87,7 @@ void AssertIsOnSendingQueue()
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
+                    albumMessageId:(nullable NSString *)albumMessageId
 {
     self = [super init];
     if (!self) {
@@ -97,6 +98,7 @@ void AssertIsOnSendingQueue()
     _contentType = contentType;
     _sourceFilename = sourceFilename;
     _caption = caption;
+    _albumMessageId = albumMessageId;
 
     return self;
 }
@@ -455,10 +457,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(dataSource);
+
+    NSString *albumMessageId = message.uniqueId;
     OWSOutgoingAttachmentInfo *attachmentInfo = [[OWSOutgoingAttachmentInfo alloc] initWithDataSource:dataSource
                                                                                           contentType:contentType
                                                                                        sourceFilename:sourceFilename
-                                                                                              caption:nil];
+                                                                                              caption:nil
+                                                                                       albumMessageId:albumMessageId];
     [OutgoingMessagePreparer prepareAttachments:@[ attachmentInfo ]
                                       inMessage:message
                               completionHandler:^(NSError *_Nullable error) {
@@ -1826,14 +1831,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                [attachmentStream saveWithTransaction:transaction];
-
                 [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
                 if (attachmentStream.sourceFilename) {
                     outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = attachmentStream.sourceFilename;
                 }
             }
             [outgoingMessage saveWithTransaction:transaction];
+            for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+                [attachmentStream saveWithTransaction:transaction];
+            }
         }];
 
         completionHandler(nil);

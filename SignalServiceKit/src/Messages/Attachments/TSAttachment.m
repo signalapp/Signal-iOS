@@ -4,6 +4,7 @@
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
+#import "TSMessage.h"
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/iOSVersions.h>
 
@@ -241,6 +242,16 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (NSString *)contentType
 {
     return _contentType.filterFilename;
+}
+
+#pragma mark - Relationships
+
+- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if (self.albumMessageId == nil) {
+        return nil;
+    }
+    return [TSMessage fetchObjectWithUniqueID:self.albumMessageId transaction:transaction];
 }
 
 @end
