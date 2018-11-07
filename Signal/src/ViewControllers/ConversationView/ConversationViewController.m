@@ -3057,7 +3057,6 @@ typedef enum : NSUInteger {
     [self stopRecording];
     self.audioRecorder = nil;
     self.voiceMessageUUID = nil;
-    [self.typingIndicators didStopTypingOutgoingInputInThread:self.thread];
 }
 
 - (void)setAudioRecorder:(nullable AVAudioRecorder *)audioRecorder
@@ -3167,7 +3166,6 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:true completion:nil];
-    [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
 }
 
 - (nullable NSIndexPath *)lastVisibleIndexPath
@@ -3423,8 +3421,6 @@ typedef enum : NSUInteger {
 {
     if (textView.text.length > 0) {
         [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
-    } else {
-        [self.typingIndicators didStopTypingOutgoingInputInThread:self.thread];
     }
 }
 
@@ -3873,7 +3869,6 @@ typedef enum : NSUInteger {
     [self.inputToolbar showVoiceMemoUI];
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     [self requestRecordingVoiceMemo];
-    [self.typingIndicators didStartTypingOutgoingInputInThread:self.thread];
 }
 
 - (void)voiceMemoGestureDidEnd
