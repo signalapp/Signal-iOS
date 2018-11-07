@@ -1000,7 +1000,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             SSKProtoAttachmentPointer *avatarAttachment = avatarInfo.avatar;
 
             TSAttachmentPointer *_Nullable attachmentPointer =
-                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment];
+                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment albumMessage:nil];
             if (attachmentPointer) {
                 [attachmentPointer saveWithTransaction:transaction];
                 contact.avatarAttachmentId = attachmentPointer.uniqueId;

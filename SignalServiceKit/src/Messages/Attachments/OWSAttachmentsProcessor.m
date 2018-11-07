@@ -12,6 +12,7 @@
 #import "OWSFileSystem.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
+#import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSGroupModel.h"
@@ -43,67 +44,26 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 @implementation OWSAttachmentsProcessor
 
-- (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                           networkManager:(TSNetworkManager *)networkManager
+- (instancetype)initWithAttachmentPointers:(NSArray<TSAttachmentPointer *> *)attachmentPointers
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _networkManager = networkManager;
-
-    _attachmentPointers = @[ attachmentPointer ];
-    _attachmentIds = @[ attachmentPointer.uniqueId ];
+    _attachmentPointers = attachmentPointers;
 
     return self;
 }
 
-- (instancetype)initWithAttachmentProtos:(NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
-                          networkManager:(TSNetworkManager *)networkManager
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction
+#pragma mark - Dependencies
+
+- (TSNetworkManager *)networkManager
 {
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _networkManager = networkManager;
-
-    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
-
-    for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
-        TSAttachmentPointer *_Nullable pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto];
-        if (!pointer) {
-            OWSFailDebug(@"Invalid attachment.");
-            continue;
-        }
-
-        [attachmentIds addObject:pointer.uniqueId];
-        [pointer saveWithTransaction:transaction];
-        [attachmentPointers addObject:pointer];
-    }
-
-    _attachmentIds = [attachmentIds copy];
-    _attachmentPointers = [attachmentPointers copy];
-
-    return self;
+    return SSKEnvironment.shared.networkManager;
 }
 
-// PERF: Remove this and use a pre-existing dbConnection
-- (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
-                    primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))successHandler
-                           failure:(void (^)(NSError *error))failureHandler
-{
-    [[primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self fetchAttachmentsForMessage:message
-                             transaction:transaction
-                                 success:successHandler
-                                 failure:failureHandler];
-    }];
-}
+#pragma mark
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                        transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -514,11 +474,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     if (message) {
         [message touch];
     }
-}
-
-- (BOOL)hasSupportedAttachments
-{
-    return self.attachmentPointers.count > 0;
 }
 
 @end
