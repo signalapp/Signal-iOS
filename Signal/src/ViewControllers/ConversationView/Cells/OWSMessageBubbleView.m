@@ -241,7 +241,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
         case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_MediaAlbum:
-            // Is there a gallery title?
+            // Is there an album title?
             return self.hasBodyText;
     }
 }
@@ -1414,9 +1414,9 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             OWSAssertDebug(self.viewItem.mediaAlbumItems.count > 0);
 
             // For now, use first valid attachment.
-            TSAttachmentStream *_Nullable attachmentStream = self.viewItem.firstValidGalleryAttachment;
+            TSAttachmentStream *_Nullable attachmentStream = self.viewItem.firstValidAlbumAttachment;
             if (!attachmentStream) {
-                OWSLogInfo(@"Ignoring tap on gallery without any valid attachments.");
+                OWSLogInfo(@"Ignoring tap on album without any valid attachments.");
                 return;
             }
 

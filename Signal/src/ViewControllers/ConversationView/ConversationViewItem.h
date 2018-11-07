@@ -144,7 +144,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // For other view views (like the typing indicator), this is a unique, stable string.
 - (NSString *)itemId;
 
-- (nullable TSAttachmentStream *)firstValidGalleryAttachment;
+- (nullable TSAttachmentStream *)firstValidAlbumAttachment;
 
 @end
 
