@@ -135,8 +135,7 @@ public class ProfileFetcherJob: NSObject {
 
         Logger.error("getProfile: \(recipientId)")
 
-        let udAccess = udManager.udAccess(forRecipientId: recipientId,
-            requireSyncAccess: false)
+        let udAccess = udManager.udAccess(forRecipientId: recipientId)
         return requestProfile(recipientId: recipientId,
                               udAccess: udAccess,
                               canFailoverUDAuth: true)

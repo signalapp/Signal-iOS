@@ -78,23 +78,23 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let aliceRecipientId = "+13213214321"
 
         XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false))
+        XCTAssertNotNil(udManager.udAccess(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unknown, recipientId: aliceRecipientId)
         XCTAssert(UnidentifiedAccessMode.unknown == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.disabled, recipientId: aliceRecipientId)
         XCTAssert(UnidentifiedAccessMode.disabled == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.enabled, recipientId: aliceRecipientId)
         XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false))
+        XCTAssertNotNil(udManager.udAccess(forRecipientId: aliceRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: aliceRecipientId)
         XCTAssert(UnidentifiedAccessMode.unrestricted == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        XCTAssertNotNil(udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false))
+        XCTAssertNotNil(udManager.udAccess(forRecipientId: aliceRecipientId))
     }
 
     func testMode_noProfileKey() {
@@ -111,24 +111,24 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         XCTAssertNotEqual(bobRecipientId, tsAccountManager.localNumber()!)
 
         XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unknown, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.disabled, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.enabled, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         // Bob should work in unrestricted mode, even if he doesn't have a profile key.
         udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNotNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNotNil(udManager.udAccess(forRecipientId: bobRecipientId))
     }
 
     func testMode_withProfileKey() {
@@ -145,22 +145,22 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, forRecipientId: bobRecipientId)
 
         XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unknown, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.disabled, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.enabled, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNotNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNotNil(udManager.udAccess(forRecipientId: bobRecipientId))
 
         udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: bobRecipientId)
         XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNotNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        XCTAssertNotNil(udManager.udAccess(forRecipientId: bobRecipientId))
     }
 }

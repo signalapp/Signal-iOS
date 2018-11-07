@@ -592,8 +592,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Use chained promises to make the code more readable.
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             OWSUDAccess *_Nullable theirUDAccess;
-            if (senderCertificate != nil && selfUDAccess != nil) {
-                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
+            if (senderCertificate != nil) {
+                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId];
             }
 
             OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
@@ -633,7 +633,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     OWSUDAccess *_Nullable selfUDAccess;
     if (senderCertificate) {
-        selfUDAccess = [self.udManager udAccessForRecipientId:self.tsAccountManager.localNumber requireSyncAccess:YES];
+        selfUDAccess = [self.udManager udAccessForRecipientId:self.tsAccountManager.localNumber];
     }
 
     void (^successHandler)(void) = ^() {
