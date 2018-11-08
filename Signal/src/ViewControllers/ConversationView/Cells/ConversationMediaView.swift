@@ -265,10 +265,33 @@ public class ConversationMediaView: UIView {
         }
     }
 
+    private func isFailedDownload() -> Bool {
+        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
+            return false
+        }
+        return attachmentPointer.state == .failed
+    }
+
     private func configureForMissingOrInvalid() {
-        // TODO: Get final value from design.
-        backgroundColor = UIColor.ows_gray45
-        // TODO: Add error icon.
+        backgroundColor = UIColor.ows_gray05
+        let icon: UIImage
+        if isFailedDownload() {
+            guard let asset = UIImage(named: "media_retry") else {
+                owsFailDebug("Missing image")
+                return
+            }
+            icon = asset
+        } else {
+            guard let asset = UIImage(named: "media_invalid") else {
+                owsFailDebug("Missing image")
+                return
+            }
+            icon = asset
+        }
+        let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
+        iconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
+        self.addSubview(iconView)
+        iconView.autoCenterInSuperview()
     }
 
     private func tryToLoadMedia(loadMediaBlock: @escaping () -> AnyObject?,
