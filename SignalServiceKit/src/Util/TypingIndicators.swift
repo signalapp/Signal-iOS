@@ -231,26 +231,20 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             if sendRefreshTimer == nil {
                 // If the user types a character into the compose box, and the sendRefresh timer isn’t running:
 
-                // Send a ACTION=TYPING message.
                 sendTypingMessageIfNecessary(forThread: thread, action: .started)
-                // Start the sendRefresh timer for 10 seconds
+
                 sendRefreshTimer?.invalidate()
                 sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
                                                             target: self,
                                                             selector: #selector(OutgoingIndicators.sendRefreshTimerDidFire),
                                                             userInfo: nil,
                                                             repeats: false)
-                // Start the sendPause timer for 5 seconds
             } else {
                 // If the user types a character into the compose box, and the sendRefresh timer is running:
-
-                // Send nothing
-                // Cancel the sendPause timer
-                // Start the sendPause timer for 5 seconds again
             }
 
             sendPauseTimer?.invalidate()
-            sendPauseTimer = Timer.weakScheduledTimer(withTimeInterval: 5,
+            sendPauseTimer = Timer.weakScheduledTimer(withTimeInterval: 3,
                                                       target: self,
                                                       selector: #selector(OutgoingIndicators.sendPauseTimerDidFire),
                                                       userInfo: nil,
@@ -260,12 +254,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func didStopTypingOutgoingInput() {
             AssertIsOnMainThread()
 
-            // Send ACTION=STOPPED message.
             sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
-            // Cancel the sendRefresh timer
+
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
-            // Cancel the sendPause timer
+
             sendPauseTimer?.invalidate()
             sendPauseTimer = nil
         }
@@ -274,14 +267,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func sendPauseTimerDidFire() {
             AssertIsOnMainThread()
 
-            // If the sendPause timer fires:
-
-            // Send ACTION=STOPPED message.
             sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
-            // Cancel the sendRefresh timer
+
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
-            // Cancel the sendPause timer
+
             sendPauseTimer?.invalidate()
             sendPauseTimer = nil
         }
@@ -290,13 +280,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func sendRefreshTimerDidFire() {
             AssertIsOnMainThread()
 
-            // If the sendRefresh timer fires:
-
-            // Send ACTION=TYPING message
             sendTypingMessageIfNecessary(forThread: thread, action: .started)
-            // Cancel the sendRefresh timer
+
             sendRefreshTimer?.invalidate()
-            // Start the sendRefresh timer for 10 seconds again
             sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
                                                         target: self,
                                                         selector: #selector(sendRefreshTimerDidFire),
@@ -307,12 +293,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func didSendOutgoingMessage() {
             AssertIsOnMainThread()
 
-            // If the user sends the message:
-
-            // Cancel the sendRefresh timer
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
-            // Cancel the sendPause timer
+
             sendPauseTimer?.invalidate()
             sendPauseTimer = nil
         }
@@ -402,11 +385,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func didReceiveTypingStartedMessage() {
             AssertIsOnMainThread()
 
-            // If the client receives a ACTION=TYPING message:
-            //
-            // Cancel the displayTyping timer for that (sender, device)
-            // Display the typing indicator for that (sender, device)
-            // Set the displayTyping timer for 15 seconds
             displayTypingTimer?.invalidate()
             displayTypingTimer = Timer.weakScheduledTimer(withTimeInterval: 15,
                                                           target: self,
