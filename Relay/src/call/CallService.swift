@@ -212,6 +212,9 @@ private class SignalCallData: NSObject {
     // MARK: - Properties
 
     var observers = [Weak<CallServiceObserver>]()
+    
+    private var pendingIceCandidates = NSMutableSet()
+    private var iceTimer: Timer?
 
     // MARK: Dependencies
 
@@ -814,7 +817,7 @@ private class SignalCallData: NSObject {
      * Local client (could be caller or callee) generated some connectivity information that we should send to the 
      * remote client.
      */
-    private func handleLocalAddedIceCandidate(_ iceCandidate: RTCIceCandidate) {
+    @objc private func handleLocalAddedIceCandidates() {
         SwiftAssertIsOnMainThread(#function)
 
         guard let callData = self.callData else {
@@ -822,6 +825,9 @@ private class SignalCallData: NSObject {
             return
         }
         let call = callData.call
+        
+        let iceToSendSet = self.pendingIceCandidates.copy()
+        self.pendingIceCandidates.removeAllObjects()
 
         // Wait until we've sent the CallOffer before sending any ice updates for the call to ensure
         // intuitive message ordering for other clients.
@@ -837,20 +843,32 @@ private class SignalCallData: NSObject {
                 self.handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring local ice candidate, since call is now idle."))
                 return
             }
-
-            let sdp = iceCandidate.sdp
-            let sdpMLineIndex = iceCandidate.sdpMLineIndex
-            let sdpMid = iceCandidate.sdpMid
-
             
-            let iceCandidate = [ "candidate" : sdp,
-                               "sdpMLineIndex" : sdpMLineIndex,
-                               "sdpMid" : sdpMid!,
-                               ] as NSDictionary
+            var payloadCandidates = [NSDictionary]()
+            for candidate in iceToSendSet as! Set<RTCIceCandidate> {
+                
+                let sdp = candidate.sdp
+                let sdpMLineIndex = candidate.sdpMLineIndex
+                let sdpMid = candidate.sdpMid
+                
+                
+                let iceCandidate = [ "candidate" : sdp,
+                                     "sdpMLineIndex" : sdpMLineIndex,
+                                     "sdpMid" : sdpMid!,
+                                     ] as NSDictionary
+                
+                payloadCandidates.append(iceCandidate)
+                self.pendingIceCandidates.remove(candidate)
+            }
+
+            guard payloadCandidates.count > 0 else {
+                Logger.debug("Attempt to build ice candidate message with no ice candidates.")
+                return
+            }
             
             let allTheData = [ "callId": call.callId ,
                                "peerId": call.peerId,
-                               "icecandidates" : [ iceCandidate ]
+                               "icecandidates" : payloadCandidates
                             ] as NSMutableDictionary
 
             let iceControlMessage = OutgoingControlMessage(thread: call.thread, controlType: FLControlMessageCallICECandidatesKey, moreData: allTheData)
@@ -1450,7 +1468,37 @@ private class SignalCallData: NSObject {
             return
         }
 
-        self.handleLocalAddedIceCandidate(iceCandidate)
+        // Refactor to add iceCandidate to a set
+        // Set a timer
+        // Send however many candidates we've collected when timer expires
+        
+        self.pendingIceCandidates.add(iceCandidate)
+        
+        // check to see if its time to send ice candidate bundle
+        if self.pendingIceCandidates.count > 24 {
+            if self.iceTimer != nil {
+                self.iceTimer?.invalidate()
+                self.iceTimer = nil
+            }
+            self.handleLocalAddedIceCandidates()
+        } else if self.pendingIceCandidates.count > 0 {
+            if self.iceTimer !=  nil {
+                self.iceTimer?.invalidate()
+                self.iceTimer = nil
+            }
+            self.iceTimer = Timer.scheduledTimer(timeInterval: 0.1,
+                                                 target: self,
+                                                 selector: #selector(self.handleLocalAddedIceCandidates),
+                                                 userInfo: nil,
+                                                 repeats: false)
+        } else {
+            if self.iceTimer !=  nil {
+                self.iceTimer?.invalidate()
+            }
+            self.iceTimer = nil
+        }
+        
+//        self.handleLocalAddedIceCandidate(iceCandidate)
     }
 
     /**
