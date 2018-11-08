@@ -409,7 +409,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-- (nullable TSAttachmentStream *)firstValidGalleryAttachment
+- (nullable TSAttachmentStream *)firstValidAlbumAttachment
 {
     OWSAssertDebug(self.mediaAlbumItems.count > 0);
 
@@ -575,9 +575,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self mediaAlbumItemsForAttachments:attachments];
         self.mediaAlbumItems = mediaAlbumItems;
         self.messageCellType = OWSMessageCellType_MediaAlbum;
-        NSString *_Nullable galleryTitle = [message bodyTextWithTransaction:transaction];
-        if (galleryTitle) {
-            self.displayableBodyText = [self displayableBodyTextForText:galleryTitle interactionId:message.uniqueId];
+        NSString *_Nullable albumTitle = [message bodyTextWithTransaction:transaction];
+        if (albumTitle) {
+            self.displayableBodyText = [self displayableBodyTextForText:albumTitle interactionId:message.uniqueId];
         }
         return;
     }
@@ -899,7 +899,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             break;
         }
         case OWSMessageCellType_MediaAlbum: {
-            OWSFailDebug(@"Can't copy media gallery");
+            OWSFailDebug(@"Can't copy media album");
             break;
         }
     }
@@ -952,7 +952,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 }
             }
             if (attachmentStreams.count < 1) {
-                OWSFailDebug(@"Can't share media gallery; no valid items.");
+                OWSFailDebug(@"Can't share media album; no valid items.");
                 return;
             }
             [AttachmentSharing showShareUIForAttachments:attachmentStreams completion:nil];
@@ -1126,7 +1126,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_MediaAlbum:
             // TODO: I suspect we need separate "can save media", "can share media", etc. methods.
-            return self.firstValidGalleryAttachment != nil;
+            return self.firstValidAlbumAttachment != nil;
     }
 }
 

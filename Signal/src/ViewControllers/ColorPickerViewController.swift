@@ -429,7 +429,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return 2
     }
 
-    func firstValidGalleryAttachment() -> TSAttachmentStream? {
+    func firstValidAlbumAttachment() -> TSAttachmentStream? {
         owsFailDebug("unexpected invocation")
         return nil
     }

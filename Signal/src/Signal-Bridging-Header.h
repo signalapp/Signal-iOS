@@ -7,6 +7,7 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppSettingsViewController.h"
+#import "AttachmentUploadView.h"
 #import "ContactCellView.h"
 #import "ContactTableViewCell.h"
 #import "ConversationViewCell.h"
