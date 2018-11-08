@@ -284,7 +284,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     public func presentDetailView(fromViewController: UIViewController, mediaAttachment: TSAttachment, replacingView: UIView) {
         var galleryItem: MediaGalleryItem?
         uiDatabaseConnection.read { transaction in
-            galleryItem = self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)!
+            galleryItem = self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)
         }
 
         guard let initialDetailItem = galleryItem else {
@@ -807,12 +807,19 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         deletedGalleryItems.formUnion(items)
         dataSourceDelegates.forEach { $0.value?.mediaGalleryDataSource(self, willDelete: items, initiatedBy: initiatedBy) }
 
+        for item in items {
+            self.deletedAttachments.insert(item.attachmentStream)
+        }
+
         self.editingDatabaseConnection.asyncReadWrite { transaction in
             for item in items {
                 let message = item.message
                 let attachment = item.attachmentStream
                 message.removeAttachment(attachment, transaction: transaction)
-                self.deletedAttachments.insert(attachment)
+                if message.attachmentIds.count == 0 {
+                    Logger.debug("removing message after removing last media attachment")
+                    message.remove(with: transaction)
+                }
             }
         }
 

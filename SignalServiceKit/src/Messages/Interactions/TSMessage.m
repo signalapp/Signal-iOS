@@ -207,8 +207,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
             [attachments addObject:attachment];
-        } else {
-            OWSFailDebug(@"Missing attachment for: %@.", attachmentId);
         }
     }
     return [attachments copy];
@@ -220,9 +218,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [attachment removeWithTransaction:transaction];
 
     [self.attachmentIds removeObject:attachment.uniqueId];
-
-    // TODO - Should we delete self if we delete the last attachment?
-    // Or should that depend on whether message.body == nil
 
     [self saveWithTransaction:transaction];
 }
@@ -262,8 +257,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     TSAttachment *_Nullable attachment = [self attachmentsWithTransaction:transaction].firstObject;
-    OWSAssertDebug(attachment);
-
     if (![OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]
         || ![attachment isKindOfClass:TSAttachmentStream.class]) {
         return nil;

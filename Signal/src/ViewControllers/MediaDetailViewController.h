@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class GalleryItemBox;
 @class MediaDetailViewController;
+@class TSAttachment;
 
 typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
     MediaGalleryOptionSliderEnabled = 1 << 0,
@@ -19,7 +20,7 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 @protocol MediaDetailViewControllerDelegate <NSObject>
 
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
-    requestDeleteConversationViewItem:(id<ConversationViewItem>)conversationViewItem;
+          requestDeleteAttachment:(TSAttachment *)attachment;
 
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
                    isPlayingVideo:(BOOL)isPlayingVideo;

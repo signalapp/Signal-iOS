@@ -277,7 +277,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             owsFailDebug("currentViewController was unexpectedly nil")
             return
         }
-        currentViewController.didPressShare(sender)
+
+        let attachmentStream = currentViewController.galleryItem.attachmentStream
+
+        AttachmentSharing.showShareUI(forAttachment: attachmentStream)
     }
 
     @objc
@@ -508,7 +511,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.shouldHideToolbars = !self.shouldHideToolbars
     }
 
-    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete conversationViewItem: ConversationViewItem) {
+    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete attachment: TSAttachment) {
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: true)
@@ -516,15 +519,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        guard let message = conversationViewItem.interaction as? TSMessage else {
-            owsFailDebug("unexpected interaction: \(type(of: conversationViewItem))")
-            self.presentingViewController?.dismiss(animated: true)
-
-            return
-        }
-
-        guard let galleryItem = self.mediaGalleryDataSource?.galleryItems.first(where: { $0.message == message }) else {
-            owsFailDebug("unexpected interaction: \(type(of: conversationViewItem))")
+        guard let galleryItem = self.mediaGalleryDataSource?.galleryItems.first(where: { $0.attachmentStream == attachment }) else {
+            owsFailDebug("galleryItem was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: true)
 
             return
