@@ -108,7 +108,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     OWSTableSection *typingIndicatorsSection = [OWSTableSection new];
     typingIndicatorsSection.headerTitle
         = NSLocalizedString(@"SETTINGS_TYPING_INDICATORS", @"Label for the 'typing indicators' setting.");
-    // TODO: Should we have a footer?
+    typingIndicatorsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_TYPING_INDICATORS_FOOTER", @"An explanation of the 'typing indicators' setting.");
     [typingIndicatorsSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_TYPING_INDICATORS",
                                                                           @"Label for the 'typing indicators' setting.")
                                                                  isOn:[self.typingIndicators areTypingIndicatorsEnabled]
