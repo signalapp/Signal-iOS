@@ -24,6 +24,8 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
  */
 @interface OWSAttachmentDownloads : NSObject
 
+- (nullable NSNumber *)downloadProgressForAttachmentId:(NSString *)attachmentId;
+
 // This will try to download all un-downloaded attachments for a given message.
 // Any attachments for the message which are already downloaded are skipped BUT
 // they are included in the success callback.

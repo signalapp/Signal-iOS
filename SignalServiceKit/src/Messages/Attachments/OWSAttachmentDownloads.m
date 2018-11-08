@@ -45,6 +45,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 @property (nonatomic, readonly, nullable) TSMessage *message;
 @property (nonatomic, readonly) AttachmentDownloadSuccess success;
 @property (nonatomic, readonly) AttachmentDownloadFailure failure;
+@property (atomic) CGFloat progress;
 
 @end
 
@@ -77,7 +78,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 @interface OWSAttachmentDownloads ()
 
 // This property should only be accessed while synchronized on this class.
-@property (nonatomic, readonly) NSMutableSet<NSString *> *downloadingAttachmentIdSet;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSAttachmentDownloadJob *> *downloadingJobMap;
 // This property should only be accessed while synchronized on this class.
 @property (nonatomic, readonly) NSMutableArray<OWSAttachmentDownloadJob *> *attachmentDownloadJobQueue;
 
@@ -109,13 +110,25 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         return self;
     }
 
-    _downloadingAttachmentIdSet = [NSMutableSet new];
+    _downloadingJobMap = [NSMutableDictionary new];
     _attachmentDownloadJobQueue = [NSMutableArray new];
 
     return self;
 }
 
 #pragma mark -
+
+- (nullable NSNumber *)downloadProgressForAttachmentId:(NSString *)attachmentId
+{
+
+    @synchronized(self) {
+        OWSAttachmentDownloadJob *_Nullable job = self.downloadingJobMap[attachmentId];
+        if (!job) {
+            return nil;
+        }
+        return @(job.progress);
+    }
+}
 
 - (void)downloadAttachmentsForMessage:(TSMessage *)message
                           transaction:(YapDatabaseReadTransaction *)transaction
@@ -253,20 +266,20 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
         @synchronized(self) {
             const NSUInteger kMaxSimultaneousDownloads = 4;
-            if (self.downloadingAttachmentIdSet.count >= kMaxSimultaneousDownloads) {
+            if (self.downloadingJobMap.count >= kMaxSimultaneousDownloads) {
                 return;
             }
             job = self.attachmentDownloadJobQueue.firstObject;
             if (!job) {
                 return;
             }
-            if ([self.downloadingAttachmentIdSet containsObject:job.attachmentPointer.uniqueId]) {
+            if (self.downloadingJobMap[job.attachmentPointer.uniqueId] != nil) {
                 // Ensure we only have one download in flight at a time for a given attachment.
                 OWSLogWarn(@"Ignoring duplicate download.");
                 return;
             }
             [self.attachmentDownloadJobQueue removeObjectAtIndex:0];
-            [self.downloadingAttachmentIdSet addObject:job.attachmentPointer.uniqueId];
+            self.downloadingJobMap[job.attachmentPointer.uniqueId] = job;
         }
 
         [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -278,7 +291,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             }
         }];
 
-        [self retrieveAttachment:job.attachmentPointer
+        [self retrieveAttachmentForJob:job
             success:^(TSAttachmentStream *attachmentStream) {
                 OWSLogVerbose(@"Attachment download succeeded.");
 
@@ -294,7 +307,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 job.success(attachmentStream);
 
                 @synchronized(self) {
-                    [self.downloadingAttachmentIdSet removeObject:job.attachmentPointer.uniqueId];
+                    [self.downloadingJobMap removeObjectForKey:job.attachmentPointer.uniqueId];
                 }
 
                 [self startDownloadIfPossible];
@@ -314,7 +327,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     }];
 
                 @synchronized(self) {
-                    [self.downloadingAttachmentIdSet removeObject:job.attachmentPointer.uniqueId];
+                    [self.downloadingJobMap removeObjectForKey:job.attachmentPointer.uniqueId];
                 }
 
                 job.failure(error);
@@ -326,11 +339,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
 #pragma mark -
 
-- (void)retrieveAttachment:(TSAttachmentPointer *)attachment
-                   success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
-                   failure:(void (^)(NSError *error))failureHandler
+- (void)retrieveAttachmentForJob:(OWSAttachmentDownloadJob *)job
+                         success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
+                         failure:(void (^)(NSError *error))failureHandler
 {
-    OWSAssertDebug(attachment);
+    OWSAssertDebug(job);
+    TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
 
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -353,10 +367,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         });
     };
 
-    if (attachment.serverId < 100) {
-        OWSLogError(@"Suspicious attachment id: %llu", (unsigned long long)attachment.serverId);
+    if (attachmentPointer.serverId < 100) {
+        OWSLogError(@"Suspicious attachment id: %llu", (unsigned long long)attachmentPointer.serverId);
     }
-    TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachment.serverId];
+    TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachmentPointer.serverId];
 
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
@@ -374,22 +388,22 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
             dispatch_async([OWSDispatch attachmentsQueue], ^{
                 [self downloadFromLocation:location
-                    pointer:attachment
+                    job:job
                     success:^(NSString *encryptedDataFilePath) {
                         [self decryptAttachmentPath:encryptedDataFilePath
-                                            pointer:attachment
+                                  attachmentPointer:attachmentPointer
                                             success:markAndHandleSuccess
                                             failure:markAndHandleFailure];
                     }
                     failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
-                        if (attachment.serverId < 100) {
+                        if (attachmentPointer.serverId < 100) {
                             // This looks like the symptom of the "frequent 404
                             // downloading attachments with low server ids".
                             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                             NSInteger statusCode = [httpResponse statusCode];
                             OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
                                 (int)statusCode,
-                                (unsigned long long)attachment.serverId,
+                                (unsigned long long)attachmentPointer.serverId,
                                 error);
                         }
                         markAndHandleFailure(error);
@@ -401,14 +415,14 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 OWSProdError([OWSAnalyticsEvents errorAttachmentRequestFailed]);
             }
             OWSLogError(@"Failed retrieval of attachment with error: %@", error);
-            if (attachment.serverId < 100) {
+            if (attachmentPointer.serverId < 100) {
                 // This _shouldn't_ be the symptom of the "frequent 404
                 // downloading attachments with low server ids".
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
                 NSInteger statusCode = [httpResponse statusCode];
                 OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
                     (int)statusCode,
-                    (unsigned long long)attachment.serverId,
+                    (unsigned long long)attachmentPointer.serverId,
                     error);
             }
             return markAndHandleFailure(error);
@@ -416,12 +430,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)decryptAttachmentPath:(NSString *)encryptedDataFilePath
-                      pointer:(TSAttachmentPointer *)attachment
+            attachmentPointer:(TSAttachmentPointer *)attachmentPointer
                       success:(void (^)(TSAttachmentStream *attachmentStream))success
                       failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(encryptedDataFilePath.length > 0);
-    OWSAssertDebug(attachment);
+    OWSAssertDebug(attachmentPointer);
 
     // Use attachmentDecryptSerialQueue to ensure that we only load into memory
     // & decrypt a single attachment at a time.
@@ -435,7 +449,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 return failure(error);
             }
 
-            [self decryptAttachmentData:encryptedData pointer:attachment success:success failure:failure];
+            [self decryptAttachmentData:encryptedData
+                      attachmentPointer:attachmentPointer
+                                success:success
+                                failure:failure];
 
             if (![OWSFileSystem deleteFile:encryptedDataFilePath]) {
                 OWSLogError(@"Could not delete temporary file.");
@@ -445,15 +462,17 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)decryptAttachmentData:(NSData *)cipherText
-                      pointer:(TSAttachmentPointer *)attachment
+            attachmentPointer:(TSAttachmentPointer *)attachmentPointer
                       success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                       failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssertDebug(attachmentPointer);
+
     NSError *decryptError;
     NSData *_Nullable plaintext = [Cryptography decryptAttachment:cipherText
-                                                          withKey:attachment.encryptionKey
-                                                           digest:attachment.digest
-                                                     unpaddedSize:attachment.byteCount
+                                                          withKey:attachmentPointer.encryptionKey
+                                                           digest:attachmentPointer.digest
+                                                     unpaddedSize:attachmentPointer.byteCount
                                                             error:&decryptError];
 
     if (decryptError) {
@@ -469,7 +488,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         return;
     }
 
-    TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachment];
+    TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer];
 
     NSError *writeError;
     [stream writeData:plaintext error:&writeError];
@@ -494,10 +513,13 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadFromLocation:(NSString *)location
-                     pointer:(TSAttachmentPointer *)pointer
+                         job:(OWSAttachmentDownloadJob *)job
                      success:(void (^)(NSString *encryptedDataPath))successHandler
                      failure:(void (^)(NSURLSessionTask *_Nullable task, NSError *error))failureHandlerParam
 {
+    OWSAssertDebug(job);
+    TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
+
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
     [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
@@ -560,8 +582,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 return;
             }
 
+            job.progress = progress.fractionCompleted;
+
             [self fireProgressNotification:MAX(kAttachmentDownloadProgressTheta, progress.fractionCompleted)
-                              attachmentId:pointer.uniqueId];
+                              attachmentId:attachmentPointer.uniqueId];
 
             // We only need to check the content length header once.
             if (hasCheckedContentLength) {

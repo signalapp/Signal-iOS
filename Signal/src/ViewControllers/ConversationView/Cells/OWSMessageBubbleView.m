@@ -804,9 +804,11 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     OWSAssertDebug(self.attachmentStream);
     OWSAssertDebug([self.attachmentStream isVisualMedia]);
 
-    ConversationMediaView *mediaView = [[ConversationMediaView alloc] initWithMediaCache:self.cellMediaCache
-                                                                              attachment:self.attachmentStream
-                                                                              isOutgoing:self.isOutgoing];
+    ConversationMediaView *mediaView =
+        [[ConversationMediaView alloc] initWithMediaCache:self.cellMediaCache
+                                               attachment:self.attachmentStream
+                                               isOutgoing:self.isOutgoing
+                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
     self.loadCellContentBlock = ^{
         [mediaView loadMedia];
     };

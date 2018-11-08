@@ -28,7 +28,8 @@ public class MediaAlbumCellView: UIStackView {
         self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
             ConversationMediaView(mediaCache: mediaCache,
                                   attachment: $0.attachment,
-                                  isOutgoing: isOutgoing)
+                                  isOutgoing: isOutgoing,
+                                  maxMessageWidth: maxMessageWidth)
         }
 
         super.init(frame: .zero)
