@@ -1647,16 +1647,18 @@ typedef enum : NSUInteger {
                         attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAttachmentsProcessor *processor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                    networkManager:self.networkManager];
-    [processor fetchAttachmentsForMessage:message
-        primaryStorage:self.primaryStorage
-        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-            OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
-        }
-        failure:^(NSError *error) {
-            OWSLogWarn(@"Failed to redownload message with error: %@", error);
-        }];
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [processor fetchAttachmentsForMessage:message
+            transaction:transaction
+            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
+            }
+            failure:^(NSError *error) {
+                OWSLogWarn(@"Failed to redownload message with error: %@", error);
+            }];
+    }];
 }
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
@@ -2048,18 +2050,12 @@ typedef enum : NSUInteger {
         [self becomeFirstResponder];
     }
 
-    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"Unexpected viewItem.interaction");
-        return;
-    }
-    TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
-
     MediaGallery *mediaGallery =
         [[MediaGallery alloc] initWithThread:self.thread
                         uiDatabaseConnection:self.uiDatabaseConnection
                                      options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
-    [mediaGallery presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
+    [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
 }
 
 - (void)didTapVideoViewItem:(id<ConversationViewItem>)viewItem
@@ -2077,18 +2073,12 @@ typedef enum : NSUInteger {
         [self becomeFirstResponder];
     }
 
-    if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"Unexpected viewItem.interaction");
-        return;
-    }
-    TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
-
     MediaGallery *mediaGallery =
         [[MediaGallery alloc] initWithThread:self.thread
                         uiDatabaseConnection:self.uiDatabaseConnection
                                      options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
-    [mediaGallery presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
+    [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
@@ -2203,8 +2193,7 @@ typedef enum : NSUInteger {
     }
 
     OWSAttachmentsProcessor *processor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                    networkManager:self.networkManager];
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
 
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [processor fetchAttachmentsForMessage:nil

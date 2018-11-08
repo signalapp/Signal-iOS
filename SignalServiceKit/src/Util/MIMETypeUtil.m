@@ -279,6 +279,23 @@ NSString *const kSyncMessageFileExtension = @"bin";
     return [MIMETypeUtil isSupportedAudioMIMEType:contentType];
 }
 
++ (BOOL)isVisualMedia:(NSString *)contentType
+{
+    if ([self isImage:contentType]) {
+        return YES;
+    }
+
+    if ([self isVideo:contentType]) {
+        return YES;
+    }
+
+    if ([self isAnimated:contentType]) {
+        return YES;
+    }
+
+    return NO;
+}
+
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId
                                   ofMIMEType:(NSString *)contentType
                               sourceFilename:(nullable NSString *)sourceFilename

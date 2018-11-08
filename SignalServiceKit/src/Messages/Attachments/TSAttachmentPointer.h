@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoAttachmentPointer;
+@class TSMessage;
 
 typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,
@@ -28,9 +29,15 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
-+ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto;
++ (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
+                                                albumMessage:(nullable TSMessage *)message;
+
++ (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:
+                                        (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
+                                                    albumMessage:(TSMessage *)message;
 
 @property (atomic) TSAttachmentPointerState state;
 @property (nullable, atomic) NSString *mostRecentFailureLocalizedText;

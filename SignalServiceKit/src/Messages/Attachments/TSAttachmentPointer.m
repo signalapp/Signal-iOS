@@ -3,6 +3,7 @@
 //
 
 #import "TSAttachmentPointer.h"
+#import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId
                   attachmentType:(TSAttachmentType)attachmentType
 {
     self = [super initWithServerId:serverId
@@ -40,7 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
                          byteCount:byteCount
                        contentType:contentType
                     sourceFilename:sourceFilename
-                           caption:caption];
+                           caption:caption
+                    albumMessageId:albumMessageId];
     if (!self) {
         return self;
     }
@@ -52,8 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
+                                                albumMessage:(nullable TSMessage *)albumMessage
 {
     if (attachmentProto.id < 1) {
         OWSFailDebug(@"Invalid attachment id.");
@@ -82,6 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
     if (attachmentProto.hasCaption) {
         caption = attachmentProto.caption;
     }
+
+    NSString *_Nullable albumMessageId;
+    if (albumMessage != nil) {
+        albumMessageId = albumMessage.uniqueId;
+    }
+
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
                                                                              key:attachmentProto.key
                                                                           digest:digest
@@ -89,8 +98,24 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      contentType:attachmentProto.contentType
                                                                   sourceFilename:attachmentProto.fileName
                                                                          caption:caption
+                                                                  albumMessageId:albumMessageId
                                                                   attachmentType:attachmentType];
     return pointer;
+}
+
++ (NSArray<TSAttachmentPointer *> *)attachmentPointersFromProtos:
+                                        (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
+                                                    albumMessage:(TSMessage *)albumMessage
+{
+    NSMutableArray *attachmentPointers = [NSMutableArray new];
+    for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
+        TSAttachmentPointer *_Nullable attachmentPointer =
+            [self attachmentPointerFromProto:attachmentProto albumMessage:albumMessage];
+        if (attachmentPointer) {
+            [attachmentPointers addObject:attachmentPointer];
+        }
+    }
+    return [attachmentPointers copy];
 }
 
 - (BOOL)isDecimalNumberText:(NSString *)text

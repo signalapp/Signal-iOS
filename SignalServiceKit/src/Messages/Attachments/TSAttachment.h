@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSMessage;
+
 typedef NS_ENUM(NSUInteger, TSAttachmentType) {
     TSAttachmentTypeDefault = 0,
     TSAttachmentTypeVoiceMessage = 1,
@@ -37,8 +39,18 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // not the filename on disk.
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 
-// Currently only applies to albums.
+#pragma mark - Media Album
+
 @property (nonatomic, readonly, nullable) NSString *caption;
+@property (nonatomic, readonly, nullable) NSString *albumMessageId;
+- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+// `migrateAlbumMessageId` is only used in the migration to the new multi-attachment message scheme,
+// and shouldn't be used as a general purpose setter. Instead, `albumMessageId` should be passed as
+// an initializer param.
+- (void)migrateAlbumMessageId:(NSString *)albumMesssageId;
+
+#pragma mark -
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
@@ -47,14 +59,16 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
-                         caption:(nullable NSString *)caption;
+                         caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
-                            caption:(nullable NSString *)caption;
+                            caption:(nullable NSString *)caption
+                     albumMessageId:(nullable NSString *)albumMessageId;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.

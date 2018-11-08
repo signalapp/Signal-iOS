@@ -4,6 +4,7 @@
 
 #import "TSAttachment.h"
 #import "MIMETypeUtil.h"
+#import "TSMessage.h"
 #import <SignalCoreKit/NSString+SSK.h>
 #import <SignalCoreKit/iOSVersions.h>
 
@@ -19,8 +20,6 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 @property (nonatomic) NSString *contentType;
 
-@property (nonatomic, nullable) NSString *caption;
-
 @end
 
 @implementation TSAttachment
@@ -33,6 +32,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId
 {
     OWSAssertDebug(serverId > 0);
     OWSAssertDebug(encryptionKey.length > 0);
@@ -70,6 +70,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
+                     albumMessageId:(nullable NSString *)albumMessageId
 {
     if (contentType.length < 1) {
         OWSLogWarn(@"outgoing attachment has invalid content type");
@@ -88,6 +89,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _byteCount = byteCount;
     _sourceFilename = sourceFilename;
     _caption = caption;
+    _albumMessageId = albumMessageId;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -229,19 +231,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 - (BOOL)isVisualMedia
 {
-    if (self.isImage) {
-        return YES;
-    }
-
-    if (self.isVideo) {
-        return YES;
-    }
-
-    if (self.isAnimated) {
-        return YES;
-    }
-
-    return NO;
+    return [MIMETypeUtil isVisualMedia:self.contentType];
 }
 
 - (nullable NSString *)sourceFilename
@@ -252,6 +242,21 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (NSString *)contentType
 {
     return _contentType.filterFilename;
+}
+
+#pragma mark - Relationships
+
+- (nullable TSMessage *)fetchAlbumMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if (self.albumMessageId == nil) {
+        return nil;
+    }
+    return [TSMessage fetchObjectWithUniqueID:self.albumMessageId transaction:transaction];
+}
+
+- (void)migrateAlbumMessageId:(NSString *)albumMesssageId
+{
+    _albumMessageId = albumMesssageId;
 }
 
 @end

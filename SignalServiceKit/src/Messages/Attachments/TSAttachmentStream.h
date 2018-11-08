@@ -26,7 +26,8 @@ typedef void (^OWSThumbnailFailure)(void);
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
-                            caption:(nullable NSString *)caption NS_DESIGNATED_INITIALIZER;
+                            caption:(nullable NSString *)caption
+                     albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

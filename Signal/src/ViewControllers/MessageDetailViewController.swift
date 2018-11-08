@@ -619,14 +619,14 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         let mediaGallery = MediaGallery(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
 
         mediaGallery.addDataSourceDelegate(self)
-        mediaGallery.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
+        mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
         let mediaGallery = MediaGallery(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
 
         mediaGallery.addDataSourceDelegate(self)
-        mediaGallery.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
+        mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {

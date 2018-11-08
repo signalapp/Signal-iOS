@@ -729,15 +729,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    TSAttachmentPointer *avatarPointer =
+        [TSAttachmentPointer attachmentPointerFromProto:dataMessage.group.avatar albumMessage:nil];
     OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
-                                                   networkManager:self.networkManager
-                                                      transaction:transaction];
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ avatarPointer ]];
 
-    if (!attachmentsProcessor.hasSupportedAttachments) {
-        OWSLogWarn(@"received unsupported group avatar envelope");
-        return;
-    }
     [attachmentsProcessor fetchAttachmentsForMessage:nil
         transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
@@ -775,25 +771,25 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
-                                                   networkManager:self.networkManager
-                                                      transaction:transaction];
-    if (!attachmentsProcessor.hasSupportedAttachments) {
-        OWSLogWarn(@"received unsupported media envelope");
-        return;
-    }
-
     TSIncomingMessage *_Nullable createdMessage = [self handleReceivedEnvelope:envelope
                                                                withDataMessage:dataMessage
-                                                                 attachmentIds:attachmentsProcessor.attachmentIds
                                                                    transaction:transaction];
-
     if (!createdMessage) {
         return;
     }
 
+    NSArray<TSAttachmentPointer *> *attachmentPointers =
+        [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:createdMessage];
+    for (TSAttachmentPointer *pointer in attachmentPointers) {
+        [pointer saveWithTransaction:transaction];
+        [createdMessage.attachmentIds addObject:pointer.uniqueId];
+    }
+    [createdMessage saveWithTransaction:transaction];
+
     OWSLogDebug(@"incoming attachment message: %@", createdMessage.debugDescription);
+
+    OWSAttachmentsProcessor *attachmentsProcessor =
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:attachmentPointers];
 
     [attachmentsProcessor fetchAttachmentsForMessage:createdMessage
         transaction:transaction
@@ -904,6 +900,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             contentType:OWSMimeTypeApplicationOctetStream
                                          sourceFilename:nil
                                                 caption:nil
+                                         albumMessageId:nil
                                   isTemporaryAttachment:YES];
         } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
@@ -1053,7 +1050,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self handleReceivedEnvelope:envelope withDataMessage:dataMessage attachmentIds:@[] transaction:transaction];
+    [self handleReceivedEnvelope:envelope withDataMessage:dataMessage transaction:transaction];
 }
 
 - (void)handleGroupInfoRequest:(SSKProtoEnvelope *)envelope
@@ -1126,6 +1123,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         contentType:OWSMimeTypeImagePng
                                      sourceFilename:nil
                                             caption:nil
+                                     albumMessageId:nil
                               isTemporaryAttachment:YES];
 
     } else {
@@ -1135,7 +1133,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope
                                        withDataMessage:(SSKProtoDataMessage *)dataMessage
-                                         attachmentIds:(NSArray<NSString *> *)attachmentIds
                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1245,14 +1242,6 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                if (body.length == 0 && attachmentIds.count < 1 && !contact) {
-                    OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
-                        envelopeAddress(envelope),
-                        groupId,
-                        (unsigned long)timestamp);
-                    return nil;
-                }
-
                 TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                                  thread:oldGroupThread
                                                                                             transaction:transaction];
@@ -1268,7 +1257,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        authorId:envelope.source
                                                                  sourceDeviceId:envelope.sourceDevice
                                                                     messageBody:body
-                                                                  attachmentIds:attachmentIds
+                                                                  attachmentIds:@[]
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
                                                                    contactShare:contact
@@ -1287,13 +1276,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
-        if (body.length == 0 && attachmentIds.count < 1 && !contact) {
-            OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
-                envelopeAddress(envelope),
-                (unsigned long)timestamp);
-            return nil;
-        }
-
         OWSLogDebug(
             @"incoming message from: %@ with timestamp: %lu", envelopeAddress(envelope), (unsigned long)timestamp);
         TSContactThread *thread =
@@ -1309,7 +1291,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                authorId:[thread contactIdentifier]
                                                          sourceDeviceId:envelope.sourceDevice
                                                             messageBody:body
-                                                          attachmentIds:attachmentIds
+                                                          attachmentIds:@[]
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
                                                            contactShare:contact
@@ -1363,8 +1345,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
             OWSAttachmentsProcessor *attachmentProcessor =
-                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                            networkManager:self.networkManager];
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
 
             OWSLogDebug(@"downloading thumbnail for message: %lu", (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
@@ -1394,8 +1375,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"avatar attachmentPointer was unexpectedly nil");
         } else {
             OWSAttachmentsProcessor *attachmentProcessor =
-                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                            networkManager:self.networkManager];
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
 
             OWSLogDebug(@"downloading contact avatar for message: %lu", (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage

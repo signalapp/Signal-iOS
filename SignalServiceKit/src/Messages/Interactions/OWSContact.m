@@ -496,7 +496,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
                                                                                  byteCount:(UInt32)imageData.length
                                                                             sourceFilename:nil
-                                                                                   caption:nil];
+                                                                                   caption:nil
+                                                                            albumMessageId:nil];
 
     NSError *error;
     BOOL success = [attachmentStream writeData:imageData error:&error];
@@ -999,7 +1000,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             SSKProtoAttachmentPointer *avatarAttachment = avatarInfo.avatar;
 
             TSAttachmentPointer *_Nullable attachmentPointer =
-                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment];
+                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment albumMessage:nil];
             if (attachmentPointer) {
                 [attachmentPointer saveWithTransaction:transaction];
                 contact.avatarAttachmentId = attachmentPointer.uniqueId;

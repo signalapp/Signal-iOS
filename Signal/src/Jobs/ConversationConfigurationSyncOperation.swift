@@ -89,6 +89,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
                                        contentType: OWSMimeTypeApplicationOctetStream,
                                        sourceFilename: nil,
                                        caption: nil,
+                                       albumMessageId: nil,
                                        isTemporaryAttachment: true)
         self.reportSuccess()
     }

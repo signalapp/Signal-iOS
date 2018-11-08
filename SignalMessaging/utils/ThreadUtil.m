@@ -133,7 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SignalAttachment *attachment in attachments) {
-        [attachmentInfos addObject:attachment.outgoingAttachmentInfo];
+        OWSOutgoingAttachmentInfo *attachmentInfo = [attachment buildOutgoingAttachmentInfoWithMessage:message];
+        [attachmentInfos addObject:attachmentInfo];
     }
     [self.messageSenderJobQueue addMediaMessage:message attachmentInfos:attachmentInfos isTemporaryAttachment:NO];
 

@@ -188,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *_Nullable thumbnailPointer =
-                [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto];
+                [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto albumMessage:nil];
             if (thumbnailPointer) {
                 [thumbnailPointer saveWithTransaction:transaction];
 

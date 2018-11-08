@@ -207,11 +207,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
             [attachments addObject:attachment];
-        } else {
-            OWSFailDebug(@"Missing attachment for: %@.", attachmentId);
         }
     }
     return [attachments copy];
+}
+
+- (void)removeAttachment:(TSAttachment *)attachment transaction:(YapDatabaseReadWriteTransaction *)transaction;
+{
+    OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
+    [attachment removeWithTransaction:transaction];
+
+    [self.attachmentIds removeObject:attachment.uniqueId];
+
+    [self saveWithTransaction:transaction];
 }
 
 - (BOOL)isMediaAlbumWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -249,8 +257,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     TSAttachment *_Nullable attachment = [self attachmentsWithTransaction:transaction].firstObject;
-    OWSAssertDebug(attachment);
-
     if (![OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]
         || ![attachment isKindOfClass:TSAttachmentStream.class]) {
         return nil;

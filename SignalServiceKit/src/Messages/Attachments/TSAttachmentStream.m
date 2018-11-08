@@ -55,8 +55,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
+                     albumMessageId:(nullable NSString *)albumMessageId
 {
-    self = [super initWithContentType:contentType byteCount:byteCount sourceFilename:sourceFilename caption:caption];
+    self = [super initWithContentType:contentType
+                            byteCount:byteCount
+                       sourceFilename:sourceFilename
+                              caption:caption
+                       albumMessageId:albumMessageId];
     if (!self) {
         return self;
     }
@@ -856,7 +861,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
-                                                caption:nil];
+                                                caption:nil
+                                         albumMessageId:nil];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];

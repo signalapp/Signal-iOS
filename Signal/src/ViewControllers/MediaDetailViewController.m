@@ -348,28 +348,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)didPressShare:(id)sender
-{
-    OWSLogInfo(@"didPressShare");
-    if (!self.viewItem) {
-        OWSFailDebug(@"share should only be available when a viewItem is present");
-        return;
-    }
-
-    [self.viewItem shareMediaAction];
-}
-
-- (void)didPressDelete:(id)sender
-{
-    OWSLogInfo(@"didPressDelete");
-    if (!self.viewItem) {
-        OWSFailDebug(@"delete should only be available when a viewItem is present");
-        return;
-    }
-
-    [self.delegate mediaDetailViewController:self requestDeleteConversationViewItem:self.viewItem];
-}
-
 - (void)didPressPlayBarButton:(id)sender
 {
     OWSAssertDebug(self.isVideo);
