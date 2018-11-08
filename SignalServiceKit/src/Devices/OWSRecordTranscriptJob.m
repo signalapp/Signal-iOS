@@ -3,7 +3,7 @@
 //
 
 #import "OWSRecordTranscriptJob.h"
-#import "OWSAttachmentsProcessor.h"
+#import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSPrimaryStorage+SessionStore.h"
@@ -19,31 +19,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSRecordTranscriptJob ()
 
-@property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
-@property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
-
 @property (nonatomic, readonly) OWSIncomingSentMessageTranscript *incomingSentMessageTranscript;
 
 @end
 
+#pragma mark -
+
 @implementation OWSRecordTranscriptJob
 
 - (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-{
-    return [self initWithIncomingSentMessageTranscript:incomingSentMessageTranscript
-                                        networkManager:TSNetworkManager.sharedManager
-                                        primaryStorage:OWSPrimaryStorage.sharedManager
-                                    readReceiptManager:OWSReadReceiptManager.sharedManager
-                                       contactsManager:SSKEnvironment.shared.contactsManager];
-}
-
-- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
-                                       networkManager:(TSNetworkManager *)networkManager
-                                       primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                                   readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
-                                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
     self = [super init];
     if (!self) {
@@ -51,13 +35,46 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _incomingSentMessageTranscript = incomingSentMessageTranscript;
-    _networkManager = networkManager;
-    _primaryStorage = primaryStorage;
-    _readReceiptManager = readReceiptManager;
-    _contactsManager = contactsManager;
 
     return self;
 }
+
+#pragma mark - Dependencies
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+- (TSNetworkManager *)networkManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.networkManager);
+
+    return SSKEnvironment.shared.networkManager;
+}
+
+- (OWSReadReceiptManager *)readReceiptManager
+{
+    OWSAssert(SSKEnvironment.shared.readReceiptManager);
+
+    return SSKEnvironment.shared.readReceiptManager;
+}
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.contactsManager);
+
+    return SSKEnvironment.shared.contactsManager;
+}
+
+- (OWSAttachmentDownloads *)attachmentDownloads
+{
+    return SSKEnvironment.shared.attachmentDownloads;
+}
+
+#pragma mark -
 
 - (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
                      transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -107,22 +124,19 @@ NS_ASSUME_NONNULL_BEGIN
                                              transaction:transaction];
 
         if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
-            OWSAttachmentsProcessor *attachmentProcessor =
-                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:@[ attachmentPointer ]];
+            OWSLogDebug(@"downloading attachments for transcript: %lu", (unsigned long)transcript.timestamp);
 
-            OWSLogDebug(@"downloading thumbnail for transcript: %lu", (unsigned long)transcript.timestamp);
-            [attachmentProcessor fetchAttachmentsForMessage:outgoingMessage
-                transaction:transaction
+            [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
                     [self.primaryStorage.newDatabaseConnection
-                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                             [outgoingMessage saveWithTransaction:transaction];
                         }];
                 }
-                failure:^(NSError *_Nonnull error) {
+                failure:^(NSError *error) {
                     OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",
                         (unsigned long)transcript.timestamp,
                         error);
@@ -161,15 +175,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
 
-    OWSAttachmentsProcessor *attachmentsProcessor =
-        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointers:attachmentPointers];
-    [attachmentsProcessor
-        fetchAttachmentsForMessage:outgoingMessage
-                       transaction:transaction
-                           success:attachmentHandler
-                           failure:^(NSError *_Nonnull error) {
-                               OWSLogError(@"failed to fetch transcripts attachments for message: %@", outgoingMessage);
-                           }];
+    [self.attachmentDownloads
+        downloadAttachmentsForMessage:outgoingMessage
+                          transaction:transaction
+                              success:attachmentHandler
+                              failure:^(NSError *error) {
+                                  OWSLogError(
+                                      @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
+                              }];
 }
 
 @end

@@ -694,7 +694,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         navigationController.pushViewController(viewController, animated: true)
     }
 
-    func didTapFailedIncomingAttachment(_ viewItem: ConversationViewItem, attachmentPointer: TSAttachmentPointer) {
+    func didTapFailedIncomingAttachment(_ viewItem: ConversationViewItem) {
         // no - op
     }
 

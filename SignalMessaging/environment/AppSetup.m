@@ -11,6 +11,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/ContactDiscoveryService.h>
 #import <SignalServiceKit/OWS2FAManager.h>
+#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -86,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
+        OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -123,7 +125,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                            outgoingReceiptManager:outgoingReceiptManager
                                                               reachabilityManager:reachabilityManager
                                                                       syncManager:syncManager
-                                                                 typingIndicators:typingIndicators]];
+                                                                 typingIndicators:typingIndicators
+                                                              attachmentDownloads:attachmentDownloads]];
 
         appSpecificSingletonBlock();
 

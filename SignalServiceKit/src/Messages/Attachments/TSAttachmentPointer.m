@@ -107,6 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
                                         (NSArray<SSKProtoAttachmentPointer *> *)attachmentProtos
                                                     albumMessage:(TSMessage *)albumMessage
 {
+    OWSAssertDebug(attachmentProtos);
+    OWSAssertDebug(albumMessage);
+
     NSMutableArray *attachmentPointers = [NSMutableArray new];
     for (SSKProtoAttachmentPointer *attachmentProto in attachmentProtos) {
         TSAttachmentPointer *_Nullable attachmentPointer =

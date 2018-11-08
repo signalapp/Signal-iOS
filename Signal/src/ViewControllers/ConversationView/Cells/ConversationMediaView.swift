@@ -234,7 +234,6 @@ public class ConversationMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let loadBlock = loadBlock else {
-            owsFailDebug("Missing loadBlock")
             return
         }
         loadBlock()
@@ -245,7 +244,6 @@ public class ConversationMediaView: UIView {
         AssertIsOnMainThread()
 
         guard let unloadBlock = unloadBlock else {
-            owsFailDebug("Missing unloadBlock")
             return
         }
         unloadBlock()

@@ -35,6 +35,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
+@property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 
 @end
 
@@ -73,6 +74,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<OWSSyncManagerProtocol>)syncManager
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
+                    attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
 {
     self = [super init];
     if (!self) {
@@ -103,6 +105,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(syncManager);
     OWSAssertDebug(reachabilityManager);
     OWSAssertDebug(typingIndicators);
+    OWSAssertDebug(attachmentDownloads);
 
     _contactsManager = contactsManager;
     _messageSender = messageSender;
@@ -128,6 +131,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _syncManager = syncManager;
     _reachabilityManager = reachabilityManager;
     _typingIndicators = typingIndicators;
+    _attachmentDownloads = attachmentDownloads;
 
     return self;
 }
