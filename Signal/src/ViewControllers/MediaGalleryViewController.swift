@@ -45,7 +45,7 @@ public class MediaGalleryItem: Equatable, Hashable {
     // MARK: Hashable
 
     public var hashValue: Int {
-        return attachmentStream.hashValue
+        return attachmentStream.uniqueId?.hashValue ?? attachmentStream.hashValue
     }
 }
 

@@ -172,8 +172,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssertDebug(self.uniqueId);
     if (!self.uniqueId) {
+        OWSFailDebug(self.uniqueId);
         self.uniqueId = [OWSPrimaryStorage getAndIncrementMessageIdWithTransaction:transaction];
     }
 
