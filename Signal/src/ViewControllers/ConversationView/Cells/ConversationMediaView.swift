@@ -67,8 +67,6 @@ public class ConversationMediaView: UIView {
     }
 
     //
-    typealias ProgressCallback = (Bool) -> Void
-
     private func addDownloadProgressIfNecessary() {
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             owsFailDebug("Attachment has unexpected type.")
@@ -76,11 +74,10 @@ public class ConversationMediaView: UIView {
             return
         }
         guard let attachmentId = attachmentPointer.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
+            owsFailDebug("Attachment missing unique ID.")
             configureForMissingOrInvalid()
             return
         }
-
         guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             // Not being downloaded.
             configureForMissingOrInvalid()
@@ -88,29 +85,30 @@ public class ConversationMediaView: UIView {
         }
 
         backgroundColor = UIColor.ows_gray05
-        let progressView = AttachmentDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        let progressView = MediaDownloadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
         self.addSubview(progressView)
         progressView.autoPinEdgesToSuperviewEdges()
     }
 
-    private func addUploadProgressIfNecessary(_ subview: UIView,
-                                              progressCallback: ProgressCallback? = nil) {
+    private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
         guard isOutgoing else {
-            return
+            return false
         }
         guard let attachmentStream = attachment as? TSAttachmentStream else {
-            return
+            return false
+        }
+        guard let attachmentId = attachmentStream.uniqueId else {
+            owsFailDebug("Attachment missing unique ID.")
+            configureForMissingOrInvalid()
+            return false
         }
         guard !attachmentStream.isUploaded else {
-            return
+            return false
         }
-        let uploadView = AttachmentUploadView(attachment: attachmentStream) { (isAttachmentReady) in
-            if let progressCallback = progressCallback {
-                progressCallback(isAttachmentReady)
-            }
-        }
-        subview.addSubview(uploadView)
-        uploadView.autoPinEdgesToSuperviewEdges()
+        let progressView = MediaUploadView(attachmentId: attachmentId, radius: maxMessageWidth * 0.1)
+        self.addSubview(progressView)
+        progressView.autoPinEdgesToSuperviewEdges()
+        return true
     }
 
     private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
@@ -224,15 +222,14 @@ public class ConversationMediaView: UIView {
         stillImageView.layer.magnificationFilter = kCAFilterTrilinear
         stillImageView.backgroundColor = Theme.offBackgroundColor
 
-        let videoPlayIcon = UIImage(named: "play_button")
-        let videoPlayButton = UIImageView(image: videoPlayIcon)
-        stillImageView.addSubview(videoPlayButton)
-        videoPlayButton.autoCenterInSuperview()
-
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
-        addUploadProgressIfNecessary(stillImageView) { (isAttachmentReady) in
-            videoPlayButton.isHidden = !isAttachmentReady
+
+        if !addUploadProgressIfNecessary(stillImageView) {
+            let videoPlayIcon = UIImage(named: "play_button")
+            let videoPlayButton = UIImageView(image: videoPlayIcon)
+            stillImageView.addSubview(videoPlayButton)
+            videoPlayButton.autoCenterInSuperview()
         }
 
         loadBlock = { [weak self] in
