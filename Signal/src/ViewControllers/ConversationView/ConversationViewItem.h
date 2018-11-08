@@ -11,10 +11,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown,
     OWSMessageCellType_TextMessage,
     OWSMessageCellType_OversizeTextMessage,
-    OWSMessageCellType_StillImage,
-    OWSMessageCellType_AnimatedImage,
     OWSMessageCellType_Audio,
-    OWSMessageCellType_Video,
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,
     OWSMessageCellType_ContactShare,
@@ -108,7 +105,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *attachmentPointer;
-@property (nonatomic, readonly) CGSize mediaSize;
 @property (nonatomic, readonly, nullable) NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems;
 
 @property (nonatomic, readonly, nullable) DisplayableText *displayableQuotedText;
@@ -145,6 +141,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (NSString *)itemId;
 
 - (nullable TSAttachmentStream *)firstValidAlbumAttachment;
+
+- (BOOL)mediaAlbumHasFailedAttachment;
 
 @end
 
