@@ -81,7 +81,7 @@ public class ConversationMediaView: UIView {
             return
         }
 
-        guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
+        guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             // Not being downloaded.
             configureForMissingOrInvalid()
             return
@@ -94,7 +94,7 @@ public class ConversationMediaView: UIView {
     }
 
     private func addUploadProgressIfNecessary(_ subview: UIView,
-                                                    progressCallback: @escaping ProgressCallback) {
+                                              progressCallback: ProgressCallback? = nil) {
         guard isOutgoing else {
             return
         }
@@ -105,7 +105,9 @@ public class ConversationMediaView: UIView {
             return
         }
         let uploadView = AttachmentUploadView(attachment: attachmentStream) { (isAttachmentReady) in
-            progressCallback(isAttachmentReady)
+            if let progressCallback = progressCallback {
+                progressCallback(isAttachmentReady)
+            }
         }
         subview.addSubview(uploadView)
         uploadView.autoPinEdgesToSuperviewEdges()
@@ -127,8 +129,8 @@ public class ConversationMediaView: UIView {
         animatedImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
-        addUploadProgressIfNecessary(animatedImageView) { (_) in
-        }
+        addUploadProgressIfNecessary(animatedImageView)
+
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -148,8 +150,8 @@ public class ConversationMediaView: UIView {
                 let animatedImage = YYImage(contentsOfFile: filePath)
                 return animatedImage
             },
-                                                                cacheKey: cacheKey,
-                                                                canLoadAsync: true)
+                                                        cacheKey: cacheKey,
+                                                        canLoadAsync: true)
             guard let image = cachedValue as? YYImage else {
                 return
             }
@@ -176,8 +178,7 @@ public class ConversationMediaView: UIView {
         stillImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
-        addUploadProgressIfNecessary(stillImageView) { (_) in
-        }
+        addUploadProgressIfNecessary(stillImageView)
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return
@@ -196,8 +197,8 @@ public class ConversationMediaView: UIView {
                     Logger.error("Could not load thumbnail")
                 })
             },
-                                                                cacheKey: cacheKey,
-                                                                canLoadAsync: true)
+                                                        cacheKey: cacheKey,
+                                                        canLoadAsync: true)
             guard let image = cachedValue as? UIImage else {
                 return
             }
