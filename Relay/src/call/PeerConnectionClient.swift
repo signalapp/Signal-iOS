@@ -1029,7 +1029,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
             Logger.info("\(strongSelf.logTag) didOpen dataChannel:\(dataChannel)")
             if strongSelf.dataChannel != nil {
-                owsFail("\(strongSelf.logTag) in \(#function) dataChannel unexpectedly set twice.")
+                Logger.info("\(strongSelf.logTag) weird..setting dataChannel twice:\(dataChannel)")
             }
             strongSelf.dataChannel = dataChannel
             dataChannel.delegate = strongSelf.proxy

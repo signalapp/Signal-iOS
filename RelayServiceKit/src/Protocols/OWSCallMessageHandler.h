@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol OWSCallMessageHandler <NSObject>
 
 -(void)receivedOfferWithThreadId:(NSString *)threadId
+                          callId:(NSString *)callId
                     originatorId:(NSString *)originatorId
                           peerId:(NSString *)peerId
               sessionDescription:(NSString *)sessionDescription;

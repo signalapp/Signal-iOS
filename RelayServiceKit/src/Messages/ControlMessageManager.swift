@@ -95,6 +95,7 @@ class ControlMessageManager : NSObject
         
         
         let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary
+        let threadId = message.forstaPayload.object(forKey: "threadId") as? String
         
         guard dataBlob != nil else {
             Logger.info("Received callOffer message with no data object.")
@@ -108,7 +109,7 @@ class ControlMessageManager : NSObject
         let offer = dataBlob?.object(forKey: "offer") as? NSDictionary
         
         
-        guard callId != nil && members != nil && originator != nil && peerId != nil && offer != nil else {
+        guard threadId != nil && callId != nil && members != nil && originator != nil && peerId != nil && offer != nil else {
             Logger.debug("Received callOffer message missing required objects.")
             return
         }
@@ -121,7 +122,7 @@ class ControlMessageManager : NSObject
         }
         
         DispatchQueue.main.async {
-            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: callId!, originatorId: message.authorId, peerId: peerId!, sessionDescription: sdpString!)
+            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: threadId!, callId: callId!, originatorId: message.authorId, peerId: peerId!, sessionDescription: sdpString!)
         }
     }
     
