@@ -1307,7 +1307,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
             [self.delegate didTapTruncatedTextMessage:self.viewItem];
             return;
         case OWSMessageGestureLocation_Media:
-            [self handleMediaTapGesture];
+            [self handleMediaTapGesture:locationInMessageBubble];
             break;
         case OWSMessageGestureLocation_QuotedReply:
             if (self.viewItem.quotedReply) {
@@ -1319,7 +1319,7 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
     }
 }
 
-- (void)handleMediaTapGesture
+- (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble
 {
     OWSAssertDebug(self.delegate);
 
@@ -1358,35 +1358,25 @@ const UIDataDetectorTypes kOWSAllowedDataDetectorTypes
                 [self.delegate didTapFailedIncomingAttachment:self.viewItem];
                 return;
             }
-
-            // TODO: We might be able to get rid of this.
-            if (self.viewItem.mediaAlbumItems.count == 1) {
-                ConversationMediaAlbumItem *mediaAlbumItem = self.viewItem.mediaAlbumItems.firstObject;
-                if (!mediaAlbumItem.attachmentStream.isValidVisualMedia) {
-                    // Do nothing.
-                } else if (mediaAlbumItem.attachmentStream.isAnimated || mediaAlbumItem.attachmentStream.isImage) {
-                    [self.delegate didTapImageViewItem:self.viewItem
-                                      attachmentStream:mediaAlbumItem.attachmentStream
-                                             imageView:self.bodyMediaView];
-                    return;
-                } else if (mediaAlbumItem.attachmentStream.isVideo) {
-                    [self.delegate didTapVideoViewItem:self.viewItem
-                                      attachmentStream:mediaAlbumItem.attachmentStream
-                                             imageView:self.bodyMediaView];
-                    return;
-                }
+            if (![self.bodyMediaView isKindOfClass:[OWSMediaAlbumCellView class]]) {
+                OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
+                return;
             }
-
-            // For now, use first valid attachment.
-            TSAttachmentStream *_Nullable attachmentStream = self.viewItem.firstValidAlbumAttachment;
-            if (!attachmentStream) {
-                OWSLogInfo(@"Ignoring tap on album without any valid attachments.");
+            OWSMediaAlbumCellView *_Nullable mediaAlbumCellView = (OWSMediaAlbumCellView *)self.bodyMediaView;
+            CGPoint location = [self convertPoint:locationInMessageBubble toView:self.bodyMediaView];
+            OWSConversationMediaView *_Nullable mediaView = [mediaAlbumCellView mediaViewForLocation:location];
+            if (!mediaView) {
+                OWSFailDebug(@"Missing media view.");
                 return;
             }
 
-            [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:attachmentStream
-                                     imageView:self.bodyMediaView];
+            TSAttachment *attachment = mediaView.attachment;
+            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                OWSLogWarn(@"Media attachment not yet downloaded.");
+                return;
+            }
+            TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+            [self.delegate didTapImageViewItem:self.viewItem attachmentStream:attachmentStream imageView:mediaView];
             break;
         }
     }
