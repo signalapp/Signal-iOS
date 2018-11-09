@@ -44,21 +44,17 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     public var currentItem: MediaGalleryItem! {
-        get {
-            return currentViewController.galleryItemBox.value
-        }
-        set {
-            setCurrentItem(newValue, direction: .forward, animated: false)
-        }
+        return currentViewController.galleryItemBox.value
     }
 
-    private func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
         guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
             owsFailDebug("unexpetedly unable to build new gallery page")
             return
         }
 
         self.updateTitle(item: item)
+        self.updateCaption(item: item)
         self.setViewControllers([galleryPage], direction: direction, animated: isAnimated)
         self.updateFooterBarButtonItems(isPlayingVideo: false)
     }
@@ -224,13 +220,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     func updatePagerTransition(ratioComplete: CGFloat) {
-        if currentCaptionView.text != nil {
+        if let currentCaptionText = currentCaptionView.text, currentCaptionText.count > 0 {
             currentCaptionView.alpha = 1 - ratioComplete
         } else {
             currentCaptionView.alpha = 0
         }
 
-        if pendingCaptionView.text != nil {
+        if let pendingCaptionText = pendingCaptionView.text, pendingCaptionText.count > 0 {
             pendingCaptionView.alpha = ratioComplete
         } else {
             pendingCaptionView.alpha = 0
@@ -717,6 +713,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         updateTitle(item: currentItem)
     }
 
+    private func updateCaption(item: MediaGalleryItem) {
+        self.currentCaptionView.text = item.captionForDisplay
+    }
+
     private func updateTitle(item: MediaGalleryItem) {
         let name = senderName(message: item.message)
         portraitHeaderNameLabel.text = name
@@ -764,6 +764,8 @@ class CaptionView: UIView {
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = .white
         textView.backgroundColor = .clear
+        textView.isEditable = false
+        textView.isSelectable = false
 
         return textView
     }()
@@ -801,7 +803,7 @@ class CaptionView: UIView {
 
     class CaptionTextView: UITextView {
 
-        var kMaxHeight: CGFloat = ScaleFromIPhone5(100)
+        var kMaxHeight: CGFloat = ScaleFromIPhone5(200)
 
         override var text: String! {
             didSet {

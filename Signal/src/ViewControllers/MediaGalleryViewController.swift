@@ -477,7 +477,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                 return
             }
 
-            pageViewController.currentItem = mediaGalleryItem
+            pageViewController.setCurrentItem(mediaGalleryItem, direction: .forward, animated: false)
             pageViewController.willBePresentedAgain()
 
             // TODO fancy zoom animation
