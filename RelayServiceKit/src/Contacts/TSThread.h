@@ -164,7 +164,7 @@ extern NSString *const TSThread_NotificationKey_UniqueId;
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction;
 
 // MARK: Forsta additions
-@property (nonnull) NSArray<NSString *> *participantIds;
+@property (nonnull, nonatomic) NSArray<NSString *> *participantIds;
 @property (nullable) NSString *universalExpression;
 @property (nullable) NSString *prettyExpression;
 @property (nonnull) NSCountedSet *monitorIds;

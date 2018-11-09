@@ -508,6 +508,8 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
         for (NSString *uid in leavingMemberIds) {
             [tmpArray removeObject:uid];
         }
+        
+        self.participantIds = [NSArray arrayWithArray:tmpArray];
 
         [self saveWithTransaction:transaction];
     }
@@ -631,19 +633,6 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
 //    }
 //}
 
-//-(void)setParticipantIds:(NSArray<NSString *> *)value
-//{
-//    if (![_participantIds isEqual:value]) {
-//        _participantIds = value;
-//
-//        if (_participantIds.count > 0) {
-//        [NSNotificationCenter.defaultCenter postNotificationName:FLRecipientsNeedRefreshNotification
-//                                                          object:nil
-//                                                        userInfo:@{ @"userIds" : _participantIds }];
-//        }
-//    }
-//}
-
 -(NSArray<NSString *>*)participantIds
 {
     if (_participantIds == nil) {
@@ -680,7 +669,7 @@ NSString *const TSThread_NotificationKey_UniqueId = @"TSThread_NotificationKey_U
     } else if (self.prettyExpression.length > 0) {
         return self.prettyExpression;
     } else {
-        return NSLocalizedString(@"Unnamed conversation", @"");
+        return NSLocalizedString(@"New conversation", @"");
     }
 }
 

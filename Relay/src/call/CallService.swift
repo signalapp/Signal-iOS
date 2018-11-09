@@ -594,7 +594,7 @@ private class SignalCallData: NSObject {
         guard untrustedIdentity == nil else {
             Logger.warn("\(self.logTag) missed a call due to untrusted identity: \(newCall.identifiersForLogs)")
 
-            let callerName = self.contactsManager.displayName(forRecipientId: thread.uniqueId)
+            let callerName = self.contactsManager.displayName(forRecipientId: originatorId)
 
             switch untrustedIdentity!.verificationState {
             case .verified:
@@ -707,6 +707,20 @@ private class SignalCallData: NSObject {
 
             guard self.call == newCall else {
                 throw CallError.obsoleteCall(description: "negotiateSessionDescription() response for obsolete call")
+            }
+            
+            // Thread sanity...in the event we're working with a new thread
+            if thread.participantIds.count == 0 {
+                thread.participantIds = [ TSAccountManager.localUID()!, originatorId ]
+                thread.save()
+            }
+            
+             if thread.universalExpression?.count == 0 || thread.universalExpression == nil {
+                thread.universalExpression = "<\(TSAccountManager.localUID()!)> + <\(originatorId)>"
+                thread.save()
+                NotificationCenter.default.post(name: NSNotification.Name.TSThreadExpressionChanged,
+                                                object: thread,
+                                                userInfo: nil)
             }
 
             let callId = self.call?.callId

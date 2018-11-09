@@ -13,6 +13,7 @@ class ControlMessageManager : NSObject
 {
     @objc static func processIncomingControlMessage(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
+        Logger.debug("Received control message type: \(message.controlMessageType)")
         switch message.controlMessageType {
         case FLControlMessageSyncRequestKey:
             self.handleMessageSyncRequest(message: message, transaction: transaction)
@@ -73,16 +74,6 @@ class ControlMessageManager : NSObject
                     }
                 }
             }
-            
-//            if let members = dataBlob.object(forKey: "members") {
-//                Logger.info("members: \(members)")
-//            }
-//            if let originator = dataBlob.object(forKey: "originator") {
-//                Logger.info("originator: \(originator)")
-//            }
-//            if let peerId = dataBlob.object(forKey: "peerId") {
-//                Logger.info("peerId: \(peerId)")
-//            }
         }
     }
     
@@ -120,7 +111,7 @@ class ControlMessageManager : NSObject
             return
         }
         
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe {
             TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: callId!, originatorId: message.authorId, peerId: peerId!, sessionDescription: sdpString!)
         }
     }
