@@ -9,11 +9,10 @@ import SignalServiceKit
 @objc(OWSMessageFetcherJob)
 public class MessageFetcherJob: NSObject {
 
-    private var timer : Timer?
-    
+    private var timer: Timer?
+
     @objc
-    public override init()
-    {
+    public override init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -30,8 +29,7 @@ public class MessageFetcherJob: NSObject {
     }
 
 private
-    var signalService : OWSSignalService
-    {
+    var signalService: OWSSignalService {
         return OWSSignalService.sharedInstance()
     }
 
@@ -139,24 +137,20 @@ private
                 throw ParamParser.ParseError.invalidFormat("type")
             }
 
-            guard let source: String = try params.required(key: "source") else {
-                Logger.error("`source` was invalid: \(typeInt)")
-                throw ParamParser.ParseError.invalidFormat("source")
-            }
-
             guard let timestamp: UInt64 = try params.required(key: "timestamp") else {
                 Logger.error("`timestamp` was invalid: \(typeInt)")
                 throw ParamParser.ParseError.invalidFormat("timestamp")
             }
 
-            guard let sourceDevice: UInt32 = try params.required(key: "sourceDevice") else {
-                Logger.error("`sourceDevice` was invalid: \(typeInt)")
-                throw ParamParser.ParseError.invalidFormat("sourceDevice")
+            let builder = SSKProtoEnvelope.builder(type: type, timestamp: timestamp)
+
+            if let source: String = try params.optional(key: "source") {
+                builder.setSource(source)
             }
 
-            let builder = SSKProtoEnvelope.builder(type: type, timestamp: timestamp)
-            builder.setSource(source)
-            builder.setSourceDevice(sourceDevice)
+            if let sourceDevice: UInt32 = try params.optional(key: "sourceDevice") {
+                builder.setSourceDevice(sourceDevice)
+            }
 
             if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
                 builder.setLegacyMessage(legacyMessage)
