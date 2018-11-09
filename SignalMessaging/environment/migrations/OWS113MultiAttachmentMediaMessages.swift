@@ -15,7 +15,9 @@ public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
     // Increment a similar constant for each migration.
     @objc
     class func migrationId() -> String {
-        return "113"
+        // NOTE: that we use .1 since there was a bug in the logic to
+        //       set albumMessageId.
+        return "113.1"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
