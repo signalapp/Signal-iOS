@@ -58,6 +58,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     _contentType = contentType;
     _sourceFilename = sourceFilename;
     _caption = caption;
+    _albumMessageId = albumMessageId;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -126,6 +127,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     }
     _contentType = contentType;
     _caption = pointer.caption;
+    _albumMessageId = pointer.albumMessageId;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
