@@ -171,8 +171,7 @@ public class MediaAlbumCellView: UIStackView {
                 owsFailDebug("Couldn't load icon.")
                 continue
             }
-            let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-            iconView.tintColor = .ows_white
+            let iconView = UIImageView(image: icon)
             itemView.addSubview(iconView)
             itemView.layoutMargins = .zero
             iconView.autoPinTopToSuperviewMargin(withInset: 6)
