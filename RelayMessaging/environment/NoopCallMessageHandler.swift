@@ -18,7 +18,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFail("\(self.logTag) in \(#function).")
     }
     
-    public func receivedOffer(withThreadId threadId: String, originatorId: String, peerId: String, sessionDescription: String) {
+    public func receivedOffer(withThreadId threadId: String, callId: String, originatorId: String, peerId: String, sessionDescription: String) {
         owsFail("\(self.logTag) in \(#function).")
     }
     

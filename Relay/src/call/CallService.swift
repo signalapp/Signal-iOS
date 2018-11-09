@@ -582,10 +582,10 @@ private class SignalCallData: NSObject {
      * Received an incoming call offer. We still have to complete setting up the Signaling channel before we notify
      * the user of an incoming call.
      */
-    public func handleReceivedOffer(thread: TSThread, originatorId: String, peerId: String, sessionDescription callerSessionDescription: String) {
+    public func handleReceivedOffer(thread: TSThread, callId: String, originatorId: String, peerId: String, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
-        let newCall = RelayCall.incomingCall(localId: UUID(), originatorId: originatorId, callId: thread.uniqueId, peerId: peerId)
+        let newCall = RelayCall.incomingCall(localId: UUID(), thread: thread, originatorId: originatorId, callId: callId, peerId: peerId)
 
         Logger.info("\(self.logTag) receivedCallOffer: \(newCall.identifiersForLogs)")
 
@@ -607,7 +607,7 @@ private class SignalCallData: NSObject {
             }
 
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                    withCallNumber: thread.uniqueId,
+                                    withCallNumber: callId,
                                     callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)

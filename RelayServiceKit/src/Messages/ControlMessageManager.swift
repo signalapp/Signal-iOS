@@ -52,7 +52,12 @@ class ControlMessageManager : NSObject
         
         if let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary {
             
-            guard let callId: String = dataBlob.object(forKey: "callId") as? String else {
+            guard let threadId = message.forstaPayload.object(forKey: "threadId") as? String else {
+                Logger.debug("Received callICECandidates message with no threadId.")
+                return
+            }
+
+            guard let _: String = dataBlob.object(forKey: "callId") as? String else {
                 Logger.debug("Received callICECandidates message with no callId.")
                 return
             }
@@ -65,7 +70,7 @@ class ControlMessageManager : NSObject
                             let sdp: String = candidateDictiontary["candidate"] as? String {
                             
                             DispatchQueue.main.async {
-                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: callId,
+                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: threadId,
                                                                                                sessionDescription: sdp,
                                                                                                sdpMid: sdpMid,
                                                                                                sdpMLineIndex: sdpMLineIndex)
@@ -84,8 +89,8 @@ class ControlMessageManager : NSObject
             return
         }
         
-        
         let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary
+        let threadId = message.forstaPayload.object(forKey: "threadId") as? String
         
         guard dataBlob != nil else {
             Logger.info("Received callOffer message with no data object.")
@@ -99,7 +104,7 @@ class ControlMessageManager : NSObject
         let offer = dataBlob?.object(forKey: "offer") as? NSDictionary
         
         
-        guard callId != nil && members != nil && originator != nil && peerId != nil && offer != nil else {
+        guard threadId != nil && callId != nil && members != nil && originator != nil && peerId != nil && offer != nil else {
             Logger.debug("Received callOffer message missing required objects.")
             return
         }
@@ -112,7 +117,11 @@ class ControlMessageManager : NSObject
         }
         
         DispatchMainThreadSafe {
-            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: callId!, originatorId: message.authorId, peerId: peerId!, sessionDescription: sdpString!)
+            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: threadId!,
+                                                                       callId: callId!,
+                                                                       originatorId: message.authorId,
+                                                                       peerId: peerId!,
+                                                                       sessionDescription: sdpString!)
         }
     }
     

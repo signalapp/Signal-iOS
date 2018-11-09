@@ -32,12 +32,12 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     // MARK: - Call Handlers
-    public func receivedOffer(withThreadId threadId: String, originatorId: String, peerId: String, sessionDescription: String) {
+    public func receivedOffer(withThreadId threadId: String, callId: String, originatorId: String, peerId: String, sessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
         
         let thread = TSThread.getOrCreateThread(withId: threadId)
         
-        self.callService.handleReceivedOffer(thread: thread, originatorId: originatorId, peerId: peerId, sessionDescription: sessionDescription)
+        self.callService.handleReceivedOffer(thread: thread, callId: callId, originatorId: originatorId, peerId: peerId, sessionDescription: sessionDescription)
     }
     
 //    public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
