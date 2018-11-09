@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class AttachmentDownloadView: UIView {
+public class MediaDownloadView: UIView {
 
     // MARK: - Dependencies
 
@@ -27,11 +27,26 @@ public class AttachmentDownloadView: UIView {
         super.init(frame: .zero)
 
         layer.addSublayer(shapeLayer)
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.attachmentDownloadProgress, object: nil, queue: nil) { [weak self] notification in
+            guard let strongSelf = self else { return }
+            guard let notificationAttachmentId = notification.userInfo?[kAttachmentDownloadAttachmentIDKey] as? String else {
+                return
+            }
+            guard notificationAttachmentId == strongSelf.attachmentId else {
+                return
+            }
+            strongSelf.updateLayers()
+        }
     }
 
     @available(*, unavailable, message: "use other init() instead.")
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     @objc public override var bounds: CGRect {
@@ -53,7 +68,7 @@ public class AttachmentDownloadView: UIView {
     internal func updateLayers() {
         AssertIsOnMainThread()
 
-        self.shapeLayer.frame = self.bounds
+        shapeLayer.frame = self.bounds
 
         guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             Logger.warn("No progress for attachment.")
