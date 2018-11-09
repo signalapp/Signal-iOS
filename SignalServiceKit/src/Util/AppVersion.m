@@ -68,11 +68,16 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
     [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_LastAppVersion];
     [[NSUserDefaults appUserDefaults] synchronize];
 
+    // The long version string looks like an IPv4 address.
+    // To prevent the log scrubber from scrubbing it,
+    // we replace . with _.
+    NSString *longVersionString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
+        stringByReplacingOccurrencesOfString:@"."
+                                  withString:@"_"];
+
     OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
     OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
-    OWSLogInfo(@"currentAppVersion: %@ (%@)",
-        self.currentAppVersion,
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
+    OWSLogInfo(@"currentAppVersion: %@ (%@)", self.currentAppVersion, longVersionString);
 
     OWSLogInfo(@"lastCompletedLaunchAppVersion: %@", self.lastCompletedLaunchAppVersion);
     OWSLogInfo(@"lastCompletedLaunchMainAppVersion: %@", self.lastCompletedLaunchMainAppVersion);
