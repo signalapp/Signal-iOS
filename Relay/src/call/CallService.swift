@@ -872,7 +872,6 @@ private class SignalCallData: NSObject {
                                      ] as NSDictionary
                 
                 payloadCandidates.append(iceCandidate)
-                self.pendingIceCandidates.remove(candidate)
             }
 
             guard payloadCandidates.count > 0 else {
