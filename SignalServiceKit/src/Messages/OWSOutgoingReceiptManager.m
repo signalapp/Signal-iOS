@@ -4,6 +4,7 @@
 
 #import "OWSOutgoingReceiptManager.h"
 #import "AppReadiness.h"
+#import "OWSError.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReceiptsForSenderMessage.h"
@@ -203,6 +204,11 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
                 }
                 failure:^(NSError *error) {
                     OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
+
+                    if (error.domain == OWSSignalServiceKitErrorDomain
+                        && error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                        [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestamps receiptType:receiptType];
+                    }
 
                     resolve(error);
                 }];

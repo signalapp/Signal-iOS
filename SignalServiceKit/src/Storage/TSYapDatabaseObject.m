@@ -227,9 +227,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    [self reloadWithTransaction:transaction ignoreMissing:NO];
+}
+
+- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
+{
     TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
     if (!latest) {
-        OWSFailDebug(@"`latest` was unexpectedly nil");
+        if (!ignoreMissing) {
+            OWSFailDebug(@"`latest` was unexpectedly nil");
+        }
         return;
     }
 
