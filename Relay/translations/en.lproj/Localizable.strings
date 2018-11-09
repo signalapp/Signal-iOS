@@ -501,7 +501,7 @@
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "New Contact";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Conversation Settings";

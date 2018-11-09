@@ -156,14 +156,14 @@ protocol CallObserver: class {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, peerId: String, originatorId: String, state: CallState, callId: String) {
+    init(direction: CallDirection, thread: TSThread, localId: UUID, peerId: String, originatorId: String, state: CallState, callId: String) {
         self.direction = direction
         self.orginatorId = originatorId
         self.localId = localId
         self.peerId = peerId
         self.state = state
         self.callId = callId
-        self.thread = TSThread.getOrCreateThread(withId: callId)
+        self.thread = thread
         self.audioActivity = AudioActivity(audioDescription: "[RelayCall] with \(callId)")
     }
 
@@ -173,11 +173,12 @@ protocol CallObserver: class {
     }
 
     class func outgoingCall(localId: UUID, callId: String) -> RelayCall {
-        return RelayCall(direction: .outgoing, localId: localId, peerId: newCallSignalingId(), originatorId: TSAccountManager.localUID()!, state: .dialing, callId: callId)
+        let thread = TSThread.getOrCreateThread(withId: callId)
+        return RelayCall(direction: .outgoing, thread: thread, localId: localId, peerId: newCallSignalingId(), originatorId: TSAccountManager.localUID()!, state: .dialing, callId: callId)
     }
 
-    class func incomingCall(localId: UUID, originatorId: String, callId: String, peerId: String) -> RelayCall {
-        return RelayCall(direction: .incoming, localId: localId, peerId: peerId, originatorId: originatorId, state: .answering, callId: callId)
+    class func incomingCall(localId: UUID, thread: TSThread, originatorId: String, callId: String, peerId: String) -> RelayCall {
+        return RelayCall(direction: .incoming, thread: thread, localId: localId, peerId: peerId, originatorId: originatorId, state: .answering, callId: callId)
     }
 
     // -

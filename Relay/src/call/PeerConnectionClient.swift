@@ -995,7 +995,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             Logger.info("\(strongSelf.logTag) adding local ICE candidate:\(candidate.sdp)")
-            DispatchQueue.main.async {
+            DispatchMainThreadSafe {
                 completion(candidate)
             }
         }

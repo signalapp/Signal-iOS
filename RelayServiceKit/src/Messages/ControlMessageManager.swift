@@ -13,6 +13,7 @@ class ControlMessageManager : NSObject
 {
     @objc static func processIncomingControlMessage(message: IncomingControlMessage, transaction: YapDatabaseReadWriteTransaction)
     {
+        Logger.debug("Received control message type: \(message.controlMessageType)")
         switch message.controlMessageType {
         case FLControlMessageSyncRequestKey:
             self.handleMessageSyncRequest(message: message, transaction: transaction)
@@ -51,7 +52,12 @@ class ControlMessageManager : NSObject
         
         if let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary {
             
-            guard let callId: String = dataBlob.object(forKey: "callId") as? String else {
+            guard let threadId = message.forstaPayload.object(forKey: "threadId") as? String else {
+                Logger.debug("Received callICECandidates message with no threadId.")
+                return
+            }
+
+            guard let _: String = dataBlob.object(forKey: "callId") as? String else {
                 Logger.debug("Received callICECandidates message with no callId.")
                 return
             }
@@ -64,7 +70,7 @@ class ControlMessageManager : NSObject
                             let sdp: String = candidateDictiontary["candidate"] as? String {
                             
                             DispatchQueue.main.async {
-                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: callId,
+                                TextSecureKitEnv.shared().callMessageHandler.receivedIceUpdate(withThreadId: threadId,
                                                                                                sessionDescription: sdp,
                                                                                                sdpMid: sdpMid,
                                                                                                sdpMLineIndex: sdpMLineIndex)
@@ -73,16 +79,6 @@ class ControlMessageManager : NSObject
                     }
                 }
             }
-            
-//            if let members = dataBlob.object(forKey: "members") {
-//                Logger.info("members: \(members)")
-//            }
-//            if let originator = dataBlob.object(forKey: "originator") {
-//                Logger.info("originator: \(originator)")
-//            }
-//            if let peerId = dataBlob.object(forKey: "peerId") {
-//                Logger.info("peerId: \(peerId)")
-//            }
         }
     }
     
@@ -92,7 +88,6 @@ class ControlMessageManager : NSObject
             Logger.info("\(self.tag): Ignoring callOffer controler message due to iOS version.")
             return
         }
-        
         
         let dataBlob = message.forstaPayload.object(forKey: "data") as? NSDictionary
         let threadId = message.forstaPayload.object(forKey: "threadId") as? String
@@ -121,8 +116,12 @@ class ControlMessageManager : NSObject
             return
         }
         
-        DispatchQueue.main.async {
-            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: threadId!, callId: callId!, originatorId: message.authorId, peerId: peerId!, sessionDescription: sdpString!)
+        DispatchMainThreadSafe {
+            TextSecureKitEnv.shared().callMessageHandler.receivedOffer(withThreadId: threadId!,
+                                                                       callId: callId!,
+                                                                       originatorId: message.authorId,
+                                                                       peerId: peerId!,
+                                                                       sessionDescription: sdpString!)
         }
     }
     
