@@ -803,7 +803,7 @@ class CaptionView: UIView {
 
     class CaptionTextView: UITextView {
 
-        var kMaxHeight: CGFloat = ScaleFromIPhone5(100)
+        var kMaxHeight: CGFloat = ScaleFromIPhone5(200)
 
         override var text: String! {
             didSet {
