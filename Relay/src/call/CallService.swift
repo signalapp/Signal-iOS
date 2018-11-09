@@ -585,7 +585,7 @@ private class SignalCallData: NSObject {
     public func handleReceivedOffer(thread: TSThread, callId: String, originatorId: String, peerId: String, sessionDescription callerSessionDescription: String) {
         SwiftAssertIsOnMainThread(#function)
 
-        let newCall = RelayCall.incomingCall(localId: UUID(), thread: thread, originatorId: originatorId, callId: callId, peerId: peerId)
+        let newCall = RelayCall.incomingCall(thread: thread, originatorId: originatorId, callId: callId, peerId: peerId)
 
         Logger.info("\(self.logTag) receivedCallOffer: \(newCall.identifiersForLogs)")
 

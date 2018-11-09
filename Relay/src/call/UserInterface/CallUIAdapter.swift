@@ -14,7 +14,7 @@ protocol CallUIAdaptee {
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
-    func startOutgoingCall(handle: String) -> RelayCall
+    func startOutgoingCall(threadId: String) -> RelayCall
     func reportIncomingCall(_ call: RelayCall, callerName: String)
     func reportMissedCall(_ call: RelayCall, callerName: String)
     func answerCall(localId: UUID)
@@ -71,7 +71,7 @@ extension CallUIAdaptee {
             return
         }
 
-        let call = self.startOutgoingCall(handle: recipientId)
+        let call = self.startOutgoingCall(threadId: recipientId)
         call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
@@ -150,7 +150,7 @@ extension CallUIAdaptee {
     internal func startOutgoingCall(handle: String) -> RelayCall {
         SwiftAssertIsOnMainThread(#function)
 
-        let call = adaptee.startOutgoingCall(handle: handle)
+        let call = adaptee.startOutgoingCall(threadId: handle)
         return call
     }
 

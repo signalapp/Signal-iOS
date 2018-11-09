@@ -156,10 +156,10 @@ protocol CallObserver: class {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, thread: TSThread, localId: UUID, peerId: String, originatorId: String, state: CallState, callId: String) {
+    init(direction: CallDirection, thread: TSThread, peerId: String, originatorId: String, state: CallState, callId: String) {
         self.direction = direction
         self.orginatorId = originatorId
-        self.localId = localId
+        self.localId = UUID(uuidString: callId)!
         self.peerId = peerId
         self.state = state
         self.callId = callId
@@ -172,13 +172,13 @@ protocol CallObserver: class {
         return "{\(callId), \(localId), \(peerId)}"
     }
 
-    class func outgoingCall(localId: UUID, callId: String) -> RelayCall {
-        let thread = TSThread.getOrCreateThread(withId: callId)
-        return RelayCall(direction: .outgoing, thread: thread, localId: localId, peerId: newCallSignalingId(), originatorId: TSAccountManager.localUID()!, state: .dialing, callId: callId)
+    class func outgoingCall(threadId: String, callId: String) -> RelayCall {
+        let thread = TSThread.getOrCreateThread(withId: threadId)
+        return RelayCall(direction: .outgoing, thread: thread, peerId: newCallSignalingId(), originatorId: TSAccountManager.localUID()!, state: .dialing, callId: callId)
     }
 
-    class func incomingCall(localId: UUID, thread: TSThread, originatorId: String, callId: String, peerId: String) -> RelayCall {
-        return RelayCall(direction: .incoming, thread: thread, localId: localId, peerId: peerId, originatorId: originatorId, state: .answering, callId: callId)
+    class func incomingCall(thread: TSThread, originatorId: String, callId: String, peerId: String) -> RelayCall {
+        return RelayCall(direction: .incoming, thread: thread, peerId: peerId, originatorId: originatorId, state: .answering, callId: callId)
     }
 
     // -
