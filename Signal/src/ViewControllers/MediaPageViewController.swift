@@ -224,13 +224,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     func updatePagerTransition(ratioComplete: CGFloat) {
-        if currentCaptionView.text != nil {
+        if let currentCaptionText = currentCaptionView.text, currentCaptionText.count > 0 {
             currentCaptionView.alpha = 1 - ratioComplete
         } else {
             currentCaptionView.alpha = 0
         }
 
-        if pendingCaptionView.text != nil {
+        if let pendingCaptionText = pendingCaptionView.text, pendingCaptionText.count > 0 {
             pendingCaptionView.alpha = ratioComplete
         } else {
             pendingCaptionView.alpha = 0
