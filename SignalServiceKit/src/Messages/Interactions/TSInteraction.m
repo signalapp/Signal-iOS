@@ -3,7 +3,6 @@
 //
 
 #import "TSInteraction.h"
-#import "OWSPrimaryStorage+messageIDs.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>

@@ -9,7 +9,6 @@
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage+keyFromIntLong.h"
-#import "OWSPrimaryStorage+messageIDs.h"
 #import "OWSPrimaryStorage.h"
 
 #endif
