@@ -512,9 +512,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                          action:@selector(settingsButtonPressed:)]];
         settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarView];
-        settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     } else {
-        // iOS 9 has a bug around layout of custom views in UIBarButtonItem,
+        // iOS 9 and 10 have a bug around layout of custom views in UIBarButtonItem,
         // so we just use a simple icon.
         UIImage *image = [UIImage imageNamed:@"button_settings_white"];
         settingsButton = [[UIBarButtonItem alloc] initWithImage:image
@@ -522,6 +521,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                          target:self
                                                          action:@selector(settingsButtonPressed:)];
     }
+    settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
 
     self.navigationItem.rightBarButtonItem =
