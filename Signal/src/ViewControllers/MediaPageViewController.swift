@@ -44,21 +44,17 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     public var currentItem: MediaGalleryItem! {
-        get {
-            return currentViewController.galleryItemBox.value
-        }
-        set {
-            setCurrentItem(newValue, direction: .forward, animated: false)
-        }
+        return currentViewController.galleryItemBox.value
     }
 
-    private func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+    public func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
         guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
             owsFailDebug("unexpetedly unable to build new gallery page")
             return
         }
 
         self.updateTitle(item: item)
+        self.updateCaption(item: item)
         self.setViewControllers([galleryPage], direction: direction, animated: isAnimated)
         self.updateFooterBarButtonItems(isPlayingVideo: false)
     }
@@ -715,6 +711,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         updateTitle(item: currentItem)
+    }
+
+    private func updateCaption(item: MediaGalleryItem) {
+        self.currentCaptionView.text = item.captionForDisplay
     }
 
     private func updateTitle(item: MediaGalleryItem) {
