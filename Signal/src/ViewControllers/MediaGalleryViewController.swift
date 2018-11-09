@@ -12,10 +12,12 @@ public class MediaGalleryItem: Equatable, Hashable {
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate
+    let captionForDisplay: String?
 
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
         self.message = message
         self.attachmentStream = attachmentStream
+        self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
     }
 

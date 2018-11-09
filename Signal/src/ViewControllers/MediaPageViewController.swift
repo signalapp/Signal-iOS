@@ -101,10 +101,16 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("deinit")
     }
 
+    var bottomContainer: UIView!
     var footerBar: UIToolbar!
     var videoPlayBarButton: UIBarButtonItem!
     var videoPauseBarButton: UIBarButtonItem!
     var pagerScrollView: UIScrollView!
+
+    // MARK: Caption
+
+    var currentCaptionView: CaptionView!
+    var pendingCaptionView: CaptionView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -142,6 +148,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // e.g. when getting to media details via message details screen, there's only
         // one "Page" so the bounce doesn't make sense.
         pagerScrollView.isScrollEnabled = sliderEnabled
+        pagerScrollViewContentOffsetObservation = pagerScrollView.observe(\.contentOffset, options: [.new]) { [weak self] object, change in
+            guard let strongSelf = self else { return }
+            strongSelf.pagerScrollView(strongSelf.pagerScrollView, contentOffsetDidChange: change)
+        }
 
         // Views
 
@@ -152,12 +162,39 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let footerBar = UIToolbar()
         self.footerBar = footerBar
 
+        let captionViewsContainer = UIView()
+
+        captionViewsContainer.setContentHuggingHigh()
+        captionViewsContainer.setCompressionResistanceHigh()
+
+        let currentCaptionView = CaptionView()
+        self.currentCaptionView = currentCaptionView
+        captionViewsContainer.addSubview(currentCaptionView)
+        currentCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        currentCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        currentCaptionView.text = currentItem.captionForDisplay
+
+        let pendingCaptionView = CaptionView()
+        self.pendingCaptionView = pendingCaptionView
+        pendingCaptionView.alpha = 0
+        captionViewsContainer.addSubview(pendingCaptionView)
+        pendingCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        pendingCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+
+        let bottomContainer = UIView()
+        self.bottomContainer = bottomContainer
+        let bottomStack = UIStackView(arrangedSubviews: [captionViewsContainer, footerBar])
+        bottomStack.axis = .vertical
+        bottomContainer.addSubview(bottomStack)
+        bottomStack.autoPinEdgesToSuperviewEdges()
+
         self.videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
         self.videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(didPressPauseBarButton))
 
         self.updateFooterBarButtonItems(isPlayingVideo: true)
-        self.view.addSubview(footerBar)
-        footerBar.autoPinWidthToSuperview()
+        self.view.addSubview(bottomContainer)
+        bottomContainer.autoPinWidthToSuperview()
+        bottomContainer.autoPinEdge(toSuperviewEdge: .bottom)
         footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
         footerBar.autoSetDimension(.height, toSize: kFooterHeight)
 
@@ -166,6 +203,44 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
+    }
+
+    // MARK: KVO
+
+    var pagerScrollViewContentOffsetObservation: NSKeyValueObservation?
+    func pagerScrollView(_ pagerScrollView: UIScrollView, contentOffsetDidChange change: NSKeyValueObservedChange<CGPoint>) {
+        guard let newValue = change.newValue else {
+            owsFailDebug("newValue was unexpectedly nil")
+            return
+        }
+
+        let width = pagerScrollView.frame.size.width
+        guard width > 0 else {
+            return
+        }
+
+        let ratioComplete = abs((newValue.x - width) / width)
+        updatePagerTransition(ratioComplete: ratioComplete)
+    }
+
+    func updatePagerTransition(ratioComplete: CGFloat) {
+        if currentCaptionView.text != nil {
+            currentCaptionView.alpha = 1 - ratioComplete
+        } else {
+            currentCaptionView.alpha = 0
+        }
+
+        if pendingCaptionView.text != nil {
+            pendingCaptionView.alpha = ratioComplete
+        } else {
+            pendingCaptionView.alpha = 0
+        }
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        let isLandscape = size.width > size.height
+        self.navigationItem.titleView = isLandscape ? nil : self.portraitHeaderView
     }
 
     override func didReceiveMemoryWarning() {
@@ -189,32 +264,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
     }
 
-    @objc
-    public func didPressAllMediaButton(sender: Any) {
-        Logger.debug("")
-
-        currentViewController.stopAnyVideo()
-
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
-            return
-        }
-        mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
-    }
-
-    @objc
-    public func didSwipeView(sender: Any) {
-        Logger.debug("")
-
-        self.dismissSelf(animated: true)
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        let isLandscape = size.width > size.height
-        self.navigationItem.titleView = isLandscape ? nil : self.portraitHeaderView
-    }
-
     private var shouldHideToolbars: Bool = false {
         didSet {
             if (oldValue == shouldHideToolbars) {
@@ -232,7 +281,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             UIView.animate(withDuration: 0.1) {
                 self.currentViewController.setShouldHideToolbars(self.shouldHideToolbars)
-                self.footerBar.isHidden = self.shouldHideToolbars
+                self.bottomContainer.isHidden = self.shouldHideToolbars
             }
         }
     }
@@ -265,6 +314,26 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     // MARK: Actions
+
+    @objc
+    public func didPressAllMediaButton(sender: Any) {
+        Logger.debug("")
+
+        currentViewController.stopAnyVideo()
+
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
+            return
+        }
+        mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
+    }
+
+    @objc
+    public func didSwipeView(sender: Any) {
+        Logger.debug("")
+
+        self.dismissSelf(animated: true)
+    }
 
     @objc
     public func didPressDismissButton(_ sender: Any) {
@@ -364,18 +433,31 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: UIPageViewControllerDelegate
 
+    var pendingViewController: MediaDetailViewController?
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         Logger.debug("")
 
         assert(pendingViewControllers.count == 1)
         pendingViewControllers.forEach { viewController in
-            guard let pendingPage = viewController as? MediaDetailViewController else {
+            guard let pendingViewController = viewController as? MediaDetailViewController else {
                 owsFailDebug("unexpected mediaDetailViewController: \(viewController)")
                 return
             }
+            self.pendingViewController = pendingViewController
+
+            CATransaction.begin()
+            CATransaction.disableActions()
+            if let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay, pendingCaptionText.count > 0 {
+                self.pendingCaptionView.text = pendingCaptionText
+            } else {
+                self.pendingCaptionView.text = nil
+            }
+            self.pendingCaptionView.sizeToFit()
+            self.pendingCaptionView.superview?.layoutIfNeeded()
+            CATransaction.commit()
 
             // Ensure upcoming page respects current toolbar status
-            pendingPage.setShouldHideToolbars(self.shouldHideToolbars)
+            pendingViewController.setShouldHideToolbars(self.shouldHideToolbars)
         }
     }
 
@@ -391,6 +473,20 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             // Do any cleanup for the no-longer visible view controller
             if transitionCompleted {
+                pendingViewController = nil
+
+                // This can happen when trying to page past the last (or first) view controller
+                // In that case, we don't want to change the captionView.
+                if (previousPage != currentViewController) {
+                    updatePagerTransition(ratioComplete: 1)
+
+                    // promote "pending" to "current" caption view.
+                    let oldCaptionView = self.currentCaptionView
+                    self.currentCaptionView = self.pendingCaptionView
+                    self.pendingCaptionView = oldCaptionView
+                    self.pendingCaptionView.text = nil
+                }
+
                 updateTitle()
                 previousPage.zoomOut(animated: false)
                 previousPage.stopAnyVideo()
@@ -647,6 +743,105 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             let headerFrame: CGRect = CGRect(x: 0, y: 0, width: width, height: 44)
             portraitHeaderView.frame = headerFrame
+        }
+    }
+}
+
+class CaptionView: UIView {
+
+    var text: String? {
+        get { return textView.text }
+        set { textView.text = newValue }
+    }
+
+    // MARK: Subviews
+
+    let backgroundGradientView = GradientView(from: .clear, to: .black)
+
+    let textView: CaptionTextView = {
+        let textView = CaptionTextView()
+
+        textView.font = UIFont.ows_dynamicTypeBody
+        textView.textColor = .white
+        textView.backgroundColor = .clear
+
+        return textView
+    }()
+
+    let scrollFadeView = GradientView(from: .clear, to: .black)
+
+    // MARK: Initializers
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        addSubview(backgroundGradientView)
+        backgroundGradientView.autoPinEdgesToSuperviewEdges()
+
+        addSubview(textView)
+        textView.autoPinEdgesToSuperviewMargins()
+
+        addSubview(scrollFadeView)
+        scrollFadeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        scrollFadeView.autoSetDimension(.height, toSize: 20)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: UIView overrides
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        scrollFadeView.isHidden = !textView.doesContentNeedScroll
+    }
+
+    // MARK: -
+
+    class CaptionTextView: UITextView {
+
+        var kMaxHeight: CGFloat = ScaleFromIPhone5(100)
+
+        override var text: String! {
+            didSet {
+                invalidateIntrinsicContentSize()
+            }
+        }
+
+        override var font: UIFont? {
+            didSet {
+                invalidateIntrinsicContentSize()
+            }
+        }
+
+        var doesContentNeedScroll: Bool {
+            return self.bounds.height == kMaxHeight
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+
+            // Enable/disable scrolling depending on wether we've clipped
+            // content in `intrinsicContentSize`
+            if doesContentNeedScroll {
+                if !isScrollEnabled {
+                    isScrollEnabled = true
+                }
+            } else if isScrollEnabled {
+                isScrollEnabled = false
+            }
+        }
+
+        override var intrinsicContentSize: CGSize {
+            var size = super.intrinsicContentSize
+
+            if size.height == UIViewNoIntrinsicMetric {
+                size.height = layoutManager.usedRect(for: textContainer).height + textContainerInset.top + textContainerInset.bottom
+            }
+            size.height = min(kMaxHeight, size.height)
+
+            return size
         }
     }
 }
