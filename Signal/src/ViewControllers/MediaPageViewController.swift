@@ -764,6 +764,8 @@ class CaptionView: UIView {
         textView.font = UIFont.ows_dynamicTypeBody
         textView.textColor = .white
         textView.backgroundColor = .clear
+        textView.isEditable = false
+        textView.isSelectable = false
 
         return textView
     }()
