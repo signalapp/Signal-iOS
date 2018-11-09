@@ -172,7 +172,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         captionViewsContainer.addSubview(currentCaptionView)
         currentCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         currentCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        currentCaptionView.text = currentItem.caption
+        currentCaptionView.text = currentItem.captionForDisplay
 
         let pendingCaptionView = CaptionView()
         self.pendingCaptionView = pendingCaptionView
@@ -447,7 +447,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             CATransaction.begin()
             CATransaction.disableActions()
-            if let pendingCaptionText = pendingViewController.galleryItem.caption, pendingCaptionText.count > 0 {
+            if let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay, pendingCaptionText.count > 0 {
                 self.pendingCaptionView.text = pendingCaptionText
             } else {
                 self.pendingCaptionView.text = nil

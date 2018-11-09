@@ -4,6 +4,12 @@
 
 import Foundation
 
+extension String {
+    var filterForDisplay: String? {
+        return (self as NSString).filterStringForDisplay()
+    }
+}
+
 public enum GalleryDirection {
     case before, after, around
 }
@@ -12,10 +18,12 @@ public class MediaGalleryItem: Equatable, Hashable {
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate
+    let captionForDisplay: String?
 
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
         self.message = message
         self.attachmentStream = attachmentStream
+        self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
     }
 
@@ -29,10 +37,6 @@ public class MediaGalleryItem: Equatable, Hashable {
 
     var isImage: Bool {
         return attachmentStream.isImage
-    }
-
-    var caption: String? {
-        return attachmentStream.caption
     }
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
