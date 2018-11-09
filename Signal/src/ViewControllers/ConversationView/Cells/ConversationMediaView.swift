@@ -262,7 +262,7 @@ public class ConversationMediaView: UIView {
         }
     }
 
-    private func isFailedDownload() -> Bool {
+    private var isFailedDownload: Bool {
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             return false
         }
@@ -272,7 +272,7 @@ public class ConversationMediaView: UIView {
     private func configureForMissingOrInvalid() {
         backgroundColor = UIColor.ows_gray05
         let icon: UIImage
-        if isFailedDownload() {
+        if isFailedDownload {
             guard let asset = UIImage(named: "media_retry") else {
                 owsFailDebug("Missing image")
                 return
