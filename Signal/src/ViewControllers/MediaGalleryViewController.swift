@@ -4,12 +4,6 @@
 
 import Foundation
 
-extension String {
-    var filterForDisplay: String? {
-        return (self as NSString).filterStringForDisplay()
-    }
-}
-
 public enum GalleryDirection {
     case before, after, around
 }
