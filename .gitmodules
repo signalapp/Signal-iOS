@@ -6,4 +6,4 @@
 	url = https://github.com/signalapp/Signal-Pods.git
 [submodule "ThirdParty/WebRTC"]
 	path = ThirdParty/WebRTC
-	url = git@github.com:signalapp/signal-webrtc-ios-artifacts
+	url = https://github.com/signalapp/signal-webrtc-ios-artifacts
