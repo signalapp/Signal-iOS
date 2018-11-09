@@ -163,8 +163,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.footerBar = footerBar
 
         let captionViewsContainer = UIView()
-        let kMaxCaptionHeight: CGFloat = ScaleFromIPhone5(300)
-        captionViewsContainer.autoSetDimension(.height, toSize: kMaxCaptionHeight, relation: .lessThanOrEqual)
+
         captionViewsContainer.setContentHuggingHigh()
         captionViewsContainer.setCompressionResistanceHigh()
 
@@ -173,8 +172,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         captionViewsContainer.addSubview(currentCaptionView)
         currentCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         currentCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        currentCaptionView.setContentHuggingHigh()
-        currentCaptionView.setCompressionResistanceHigh()
         currentCaptionView.text = currentItem.caption
 
         let pendingCaptionView = CaptionView()
@@ -183,8 +180,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         captionViewsContainer.addSubview(pendingCaptionView)
         pendingCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         pendingCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        pendingCaptionView.setContentHuggingHigh()
-        pendingCaptionView.setCompressionResistanceHigh()
 
         let bottomContainer = UIView()
         self.bottomContainer = bottomContainer
@@ -753,36 +748,100 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 }
 
 class CaptionView: UIView {
-    var label: UILabel = UILabel()
 
     var text: String? {
-        get { return label.text }
-        set { label.text = newValue }
+        get { return textView.text }
+        set { textView.text = newValue }
     }
+
+    // MARK: Subviews
+
+    let backgroundGradientView = GradientView(from: .clear, to: .black)
+
+    let textView: CaptionTextView = {
+        let textView = CaptionTextView()
+
+        textView.font = UIFont.ows_dynamicTypeBody
+        textView.textColor = .white
+        textView.backgroundColor = .clear
+
+        return textView
+    }()
+
+    let scrollFadeView = GradientView(from: .clear, to: .black)
+
+    // MARK: Initializers
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        let gradientView = GradientView(from: .clear, to: .black)
-        addSubview(gradientView)
-        gradientView.autoPinEdgesToSuperviewEdges()
+        addSubview(backgroundGradientView)
+        backgroundGradientView.autoPinEdgesToSuperviewEdges()
 
-        addSubview(label)
-        label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = .white
+        addSubview(textView)
+        textView.autoPinEdgesToSuperviewMargins()
 
-        // Usually captions are short, but they can be as long as 2k.
-        // We don't have UI for viewing infinitely large captions, so
-        // we do some not-ideal things to broaden the lenght of the
-        // captions we can support.
-        label.numberOfLines = 0
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
-        label.lineBreakMode = .byTruncatingTail
-        label.autoPinEdgesToSuperviewMargins()
+        addSubview(scrollFadeView)
+        scrollFadeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        scrollFadeView.autoSetDimension(.height, toSize: 20)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: UIView overrides
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        scrollFadeView.isHidden = !textView.doesContentNeedScroll
+    }
+
+    // MARK: -
+
+    class CaptionTextView: UITextView {
+
+        var kMaxHeight: CGFloat = ScaleFromIPhone5(100)
+
+        override var text: String! {
+            didSet {
+                invalidateIntrinsicContentSize()
+            }
+        }
+
+        override var font: UIFont? {
+            didSet {
+                invalidateIntrinsicContentSize()
+            }
+        }
+
+        var doesContentNeedScroll: Bool {
+            return self.bounds.height == kMaxHeight
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+
+            // Enable/disable scrolling depending on wether we've clipped
+            // content in `intrinsicContentSize`
+            if doesContentNeedScroll {
+                if !isScrollEnabled {
+                    isScrollEnabled = true
+                }
+            } else if isScrollEnabled {
+                isScrollEnabled = false
+            }
+        }
+
+        override var intrinsicContentSize: CGSize {
+            var size = super.intrinsicContentSize
+
+            if size.height == UIViewNoIntrinsicMetric {
+                size.height = layoutManager.usedRect(for: textContainer).height + textContainerInset.top + textContainerInset.bottom
+            }
+            size.height = min(kMaxHeight, size.height)
+
+            return size
+        }
     }
 }
