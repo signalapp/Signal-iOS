@@ -4,6 +4,7 @@
 
 // Anything used by Swift outside of the framework must be imported.
 #import <Reachability/Reachability.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
