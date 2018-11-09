@@ -188,6 +188,12 @@ CG_INLINE CGPoint CGPointScale(CGPoint point, CGFloat factor)
     return CGPointMake(point.x * factor, point.y * factor);
 }
 
+CG_INLINE CGFloat CGPointDistance(CGPoint left, CGPoint right)
+{
+    CGPoint delta = CGPointSubtract(left, right);
+    return sqrt(delta.x * delta.x + delta.y * delta.y);
+}
+
 CG_INLINE CGSize CGSizeScale(CGSize size, CGFloat factor)
 {
     return CGSizeMake(size.width * factor, size.height * factor);

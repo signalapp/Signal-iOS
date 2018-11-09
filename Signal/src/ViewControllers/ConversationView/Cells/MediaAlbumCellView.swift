@@ -261,4 +261,20 @@ public class MediaAlbumCellView: UIStackView {
             return CGSize(width: maxMessageWidth, height: bigImageSize + smallImageSize + kSpacingPts)
         }
     }
+
+    @objc
+    public func mediaView(forLocation location: CGPoint) -> ConversationMediaView? {
+        var bestMediaView: ConversationMediaView?
+        var bestDistance: CGFloat = 0
+        for itemView in itemViews {
+            let itemCenter = convert(itemView.center, from: itemView.superview)
+            let distance = CGPointDistance(location, itemCenter)
+            if bestMediaView != nil && distance > bestDistance {
+                continue
+            }
+            bestMediaView = itemView
+            bestDistance = distance
+        }
+        return bestMediaView
+    }
 }

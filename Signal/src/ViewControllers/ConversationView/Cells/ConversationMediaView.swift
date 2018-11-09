@@ -4,7 +4,7 @@
 
 import Foundation
 
-@objc
+@objc(OWSConversationMediaView)
 public class ConversationMediaView: UIView {
 
     // MARK: - Dependencies
@@ -16,7 +16,8 @@ public class ConversationMediaView: UIView {
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>
-    private let attachment: TSAttachment
+    @objc
+    public let attachment: TSAttachment
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
     private var loadBlock : (() -> Void)?

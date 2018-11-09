@@ -264,10 +264,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         self.options = options
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
-        let navController = MediaGalleryNavigationController()
-        self.navigationController = navController
         super.init()
-        navController.retainUntilDismissed = self
     }
 
     // MARK: Present/Dismiss
@@ -307,6 +304,11 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         self.addDataSourceDelegate(pageViewController)
 
         self.pageViewController = pageViewController
+
+        let navController = MediaGalleryNavigationController()
+        self.navigationController = navController
+        navController.retainUntilDismissed = self
+
         navigationController.setViewControllers([pageViewController], animated: false)
 
         self.replacingView = replacingView
