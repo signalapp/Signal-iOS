@@ -119,7 +119,7 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func delayedNotificationDispatchWithFakeCall(thread: TSThread, callBlock: @escaping (RelayCall) -> Void) {
-        let call = RelayCall.incomingCall(localId: UUID(), thread: thread, originatorId: UUID().uuidString, callId: thread.uniqueId, peerId: "0")
+        let call = RelayCall.incomingCall(thread: thread, originatorId: UUID().uuidString, callId: thread.uniqueId, peerId: "0")
 
         delayedNotificationDispatch {
             callBlock(call)
