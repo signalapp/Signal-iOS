@@ -110,10 +110,21 @@ public extension JobQueue {
         jobRecord.save(with: transaction)
 
         transaction.addCompletionQueue(.global()) {
-            AppReadiness.runNowOrWhenAppDidBecomeReady {
-                DispatchQueue.global().async {
-                    self.workStep()
-                }
+            self.startWorkWhenAppIsReady()
+        }
+    }
+
+    func startWorkWhenAppIsReady() {
+        guard !CurrentAppContext().isRunningTests else {
+            DispatchQueue.global().async {
+                self.workStep()
+            }
+            return
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            DispatchQueue.global().async {
+                self.workStep()
             }
         }
     }
@@ -220,9 +231,7 @@ public extension JobQueue {
 
         self.isSetup = true
 
-        DispatchQueue.global().async {
-            self.workStep()
-        }
+        self.startWorkWhenAppIsReady()
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {

@@ -37,7 +37,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         self.wait(for: [expectation], timeout: 0.1)
     }
 
-    func test_waitsForReady() {
+    func test_waitsForSetup() {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let sentBeforeReadyExpectation = sentExpectation(message: message)

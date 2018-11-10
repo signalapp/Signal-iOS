@@ -65,7 +65,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: YapDatabaseReadWriteTransaction) {
-        assert(AppReadiness.isAppReady())
+        assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
 
         let jobRecord: SSKMessageSenderJobRecord
         do {
