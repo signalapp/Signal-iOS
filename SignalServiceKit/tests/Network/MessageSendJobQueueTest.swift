@@ -143,6 +143,16 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let retryCount: UInt = MessageSenderJobQueue.maxRetries
         (1..<retryCount).forEach { _ in
             let expectedResend = sentExpectation(message: message)
+            // Manually kick queue restart.
+            //
+            // OWSOperation uses an NSTimer backed retry mechanism, but NSTimer's are not fired
+            // during `self.wait(for:,timeout:` unless the timer was scheduled on the
+            // `RunLoop.main`.
+            //
+            // We could move the timer to fire on the main RunLoop (and have the selector dispatch
+            // back to a background queue), but the production code is simpler if we just manually
+            // kick every retry in the test case.            
+            XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
             self.wait(for: [expectedResend], timeout: 0.1)
         }
 
@@ -155,6 +165,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         // Verify final send fails permanently
         let expectedFinalResend = sentExpectation(message: message)
+        XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
         self.wait(for: [expectedFinalResend], timeout: 0.1)
 
         self.readWrite { transaction in
@@ -163,6 +174,9 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         XCTAssertEqual(retryCount + 1, jobRecord.failureCount)
         XCTAssertEqual(.permanentlyFailed, jobRecord.status)
+
+        // No remaining retries
+        XCTAssertNil(jobQueue.runAnyQueuedRetry())
     }
 
     func test_permanentFailure() {
