@@ -11,7 +11,6 @@ XCODE_BUILD = xcrun xcodebuild -workspace $(SCHEME).xcworkspace -scheme $(SCHEME
 default: test
 
 ci: dependencies test
-	cd SignalServiceKit && make ci
 
 update_dependencies:
 	bundle exec pod update
@@ -29,7 +28,6 @@ build: dependencies
 
 test:
 	bundle exec fastlane scan
-	cd SignalServiceKit && make test
 
 clean: clean_carthage
 	cd $(WORKING_DIR) && \
