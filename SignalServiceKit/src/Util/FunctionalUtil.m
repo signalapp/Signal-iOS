@@ -46,15 +46,6 @@
     }
     return true;
 }
-- (id)firstMatchingElseNil:(int (^)(id item))predicate {
-    tskit_require(predicate != nil);
-    for (id e in self) {
-        if (predicate(e)) {
-            return e;
-        }
-    }
-    return nil;
-}
 - (NSArray *)map:(id (^)(id item))projection {
     tskit_require(projection != nil);
 
@@ -76,18 +67,6 @@
     return r;
 }
 
-- (NSDictionary *)keyedBy:(id (^)(id value))keySelector {
-    tskit_require(keySelector != nil);
-
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-
-    for (id value in self) {
-        result[keySelector(value)] = value;
-    }
-    tskit_require(result.count == self.count);
-
-    return result;
-}
 - (NSDictionary *)groupBy:(id (^)(id value))keySelector {
     tskit_require(keySelector != nil);
 

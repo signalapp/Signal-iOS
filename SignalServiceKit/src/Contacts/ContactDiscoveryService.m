@@ -509,7 +509,14 @@ NSErrorDomain const ContactDiscoveryServiceErrorDomain = @"SignalServiceKit.Cont
     OWSAssertDebug(signature.length > 0);
     OWSAssertDebug(quoteData);
 
-    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:certificates];
+    NSError *error;
+    CDSSigningCertificate *_Nullable certificate =
+        [CDSSigningCertificate parseCertificateFromPem:certificates error:&error];
+    if (error) {
+        OWSFailDebug(@"error when parsing signing certificate. %@", error.localizedDescription);
+        return NO;
+    }
+
     if (!certificate) {
         OWSFailDebug(@"could not parse signing certificate.");
         return NO;
