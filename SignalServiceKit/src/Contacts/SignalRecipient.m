@@ -71,23 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-
-    OWSAssertDebug(self.tsAccountManager.localNumber.length > 0);
-    if ([self.tsAccountManager.localNumber isEqualToString:textSecureIdentifier]) {
-        // Default to no devices.
-        //
-        // This instance represents our own account and is used for sending
-        // sync message to linked devices.  We shouldn't have any linked devices
-        // yet when we create the "self" SignalRecipient, and we don't need to
-        // send sync messages to the primary - we ARE the primary.
-        _devices = [NSOrderedSet new];
-    } else {
-        // Default to sending to just primary device.
-        //
-        // OWSMessageSender will correct this if it is wrong the next time
-        // we send a message to this recipient.
-        _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
-    }
+   
+    _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
 
     return self;
 }
@@ -101,11 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (_devices == nil) {
         _devices = [NSOrderedSet new];
-    }
-
-    if ([self.uniqueId isEqual:self.tsAccountManager.localNumber] &&
-        [self.devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
-        OWSFailDebug(@"self as recipient device");
     }
 
     return self;
@@ -128,12 +108,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addDevices:(NSSet *)devices
 {
     OWSAssertDebug(devices.count > 0);
-
-    if ([self.uniqueId isEqual:self.tsAccountManager.localNumber] &&
-        [devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
-        OWSFailDebug(@"adding self as recipient device");
-        return;
-    }
 
     NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
     [updatedDevices unionSet:devices];
