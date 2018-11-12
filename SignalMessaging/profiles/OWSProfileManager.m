@@ -627,13 +627,24 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
                 [whitelistedGroupIds addObject:groupId];
 
-                TSGroupThread *_Nullable thread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
-                if (!thread) {
-                    OWSLogInfo(@"Could not find whitelisted thread: %@", groupId.hexadecimalString);
-                    continue;
-                }
-
-                [whitelistedRecipientIds addObjectsFromArray:thread.recipientIdentifiers];
+                // Note we don't add `group.recipientIds` to the `whitelistedRecipientIds`.
+                //
+                // Whenever we message a contact, be it in a 1:1 thread or in a group thread,
+                // we add them to the contact whitelist, so there's no reason to redundnatly
+                // add them here.
+                //
+                // Furthermore, doing so would cause the following problem:
+                // - Alice is in group Book Club
+                // - Add Book Club to your profile white list
+                // - Message Book Club, which also adds Alice to your profile whitelist.
+                // - Block Alice, but not Book Club
+                //
+                // Now, at this point we'd want to rotate our profile key once, since Alice has
+                // it via BookClub.
+                //
+                // However, after we did. The next time we check if we should rotate our profile
+                // key, adding all `group.recipientIds` to `whitelistedRecipientIds` here, would
+                // include Alice, and we'd rotate our profile key every time this method is called.
             }
         }];
 
