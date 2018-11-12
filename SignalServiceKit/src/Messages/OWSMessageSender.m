@@ -444,6 +444,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendAttachment:dataSource
              contentType:contentType
           sourceFilename:nil
+          albumMessageId:nil
                inMessage:message
                  success:successWithDeleteHandler
                  failure:failureWithDeleteHandler];
@@ -452,26 +453,41 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)sendAttachment:(DataSource *)dataSource
            contentType:(NSString *)contentType
         sourceFilename:(nullable NSString *)sourceFilename
+        albumMessageId:(nullable NSString *)albumMessageId
              inMessage:(TSOutgoingMessage *)message
-               success:(void (^)(void))successHandler
-               failure:(void (^)(NSError *error))failureHandler
+               success:(void (^)(void))success
+               failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(dataSource);
 
-    NSString *albumMessageId = message.uniqueId;
     OWSOutgoingAttachmentInfo *attachmentInfo = [[OWSOutgoingAttachmentInfo alloc] initWithDataSource:dataSource
                                                                                           contentType:contentType
                                                                                        sourceFilename:sourceFilename
                                                                                               caption:nil
                                                                                        albumMessageId:albumMessageId];
-    [OutgoingMessagePreparer prepareAttachments:@[ attachmentInfo ]
+    [self sendAttachments:@[
+        attachmentInfo,
+    ]
+                inMessage:message
+                  success:success
+                  failure:failure];
+}
+
+- (void)sendAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+              inMessage:(TSOutgoingMessage *)message
+                success:(void (^)(void))success
+                failure:(void (^)(NSError *error))failure
+{
+    OWSAssertDebug(attachmentInfos.count > 0);
+
+    [OutgoingMessagePreparer prepareAttachments:attachmentInfos
                                       inMessage:message
                               completionHandler:^(NSError *_Nullable error) {
                                   if (error) {
-                                      failureHandler(error);
+                                      failure(error);
                                       return;
                                   }
-                                  [self sendMessage:message success:successHandler failure:failureHandler];
+                                  [self sendMessage:message success:success failure:failure];
                               }];
 }
 
