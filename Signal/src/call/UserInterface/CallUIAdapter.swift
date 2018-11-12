@@ -141,7 +141,7 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         // make sure we don't terminate audio session during call
-        audioSession.startAudioActivity(call.audioActivity)
+        _ = audioSession.startAudioActivity(call.audioActivity)
 
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportIncomingCall(call, callerName: callerName)

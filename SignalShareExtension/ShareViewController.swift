@@ -172,7 +172,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
-                guard let strongSelf = self else { return }
+                guard let _ = self else { return }
                 Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
@@ -191,7 +191,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         if TSAccountManager.isRegistered() {
             DispatchQueue.main.async { [weak self] in
-                guard let strongSelf = self else { return }
+                guard let _ = self else { return }
                 Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
 
                 // We don't need to use the TSSocketManager in the SAE.
@@ -694,7 +694,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         let loadCompletion: NSItemProvider.CompletionHandler = { [weak self]
             (value, error) in
 
-            guard let strongSelf = self else { return }
+            guard let _ = self else { return }
 
             guard error == nil else {
                 resolver.reject(error!)

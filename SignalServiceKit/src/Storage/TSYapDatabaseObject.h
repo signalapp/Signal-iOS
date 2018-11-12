@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSYapDatabaseObject : MTLModel
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 /**
  *  Initializes a new database object with a unique identifier
  *
@@ -20,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Initialized object
  */
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_DESIGNATED_INITIALIZER;
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 /**
