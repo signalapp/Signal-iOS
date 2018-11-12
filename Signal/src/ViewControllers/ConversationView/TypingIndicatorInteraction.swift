@@ -43,7 +43,7 @@ public class TypingIndicatorInteraction: TSInteraction {
     }
 
     @objc
-    public override func save(with transaction: YapDatabaseReadWriteTransaction!) {
+    public override func save(with transaction: YapDatabaseReadWriteTransaction) {
         owsFailDebug("The transient interaction should not be saved in the database.")
     }
 }
