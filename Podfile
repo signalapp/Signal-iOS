@@ -7,18 +7,16 @@ def shared_pods
   # OWS Pods
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
-  # pod 'SQLCipher', path: '../sqlcipher2'
+  # pod 'SQLCipher', path: '../sqlcipher'
   pod 'SQLCipher', :git => 'https://github.com/sqlcipher/sqlcipher.git', :commit => 'd5c2bec'
   # pod 'YapDatabase/SQLCipher', path: '../YapDatabase'
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
-  # TODO: Integrate tests.
-  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master'
+  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
   # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
   pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
   # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
-  # TODO: Use public repo.
   pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
