@@ -2109,7 +2109,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir cualquiera";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Activa la opción de remitente sellado para usuarios de Signal que no están entre tus contactos y con los que no has compartido tu perfil.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Al activar la opción, usuarios de Signal que no estén entre tus contactos y con los que no has compartido tu perfil pueden enviarte mensajes con remitente sellado.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versión";
