@@ -82,11 +82,8 @@
     // Sanity check
     XCTAssertEqual(0, [thread numberOfInteractions]);
 
-    NSError *error;
     TSAttachmentStream *incomingAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
-    [incomingAttachment writeData:[NSData new] error:&error];
-    [incomingAttachment save];
+        [AttachmentStreamFactory createWithContentType:@"image/jpeg" dataSource:DataSourceValue.emptyDataSource];
 
     // Sanity check
     BOOL incomingFileWasCreated =
@@ -108,9 +105,7 @@
     [incomingMessage save];
 
     TSAttachmentStream *outgoingAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
-    [outgoingAttachment writeData:[NSData new] error:&error];
-    [outgoingAttachment save];
+        [AttachmentStreamFactory createWithContentType:@"image/jpeg" dataSource:DataSourceValue.emptyDataSource];
 
     // Sanity check
     BOOL outgoingFileWasCreated =

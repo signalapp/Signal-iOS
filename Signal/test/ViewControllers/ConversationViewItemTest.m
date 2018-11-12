@@ -7,6 +7,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -64,12 +65,8 @@
     OWSAssertDebug([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 
     DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
-    TSAttachmentStream *attachment = [[TSAttachmentStream alloc] initWithContentType:mimeType
-                                                                           byteCount:(UInt32)dataSource.dataLength
-                                                                      sourceFilename:nil];
-    BOOL success = [attachment writeDataSource:dataSource];
-    OWSAssertDebug(success);
-    [attachment save];
+    TSAttachmentStream *attachment = [AttachmentStreamFactory createWithContentType:mimeType dataSource:dataSource];
+
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:nil attachmentId:attachment.uniqueId];
     [message save];

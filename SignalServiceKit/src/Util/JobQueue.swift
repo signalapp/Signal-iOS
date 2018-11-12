@@ -26,6 +26,23 @@ public extension Error {
     }
 }
 
+extension SSKJobRecordStatus: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .ready:
+            return "ready"
+        case .unknown:
+            return "unknown"
+        case .running:
+            return "running"
+        case .permanentlyFailed:
+            return "permanentlyFailed"
+        case .obsolete:
+            return "obsolete"
+        }
+    }
+}
+
 public enum JobError: Error {
     case assertionFailure(description: String)
     case obsolete(description: String)
@@ -110,10 +127,21 @@ public extension JobQueue {
         jobRecord.save(with: transaction)
 
         transaction.addCompletionQueue(.global()) {
-            AppReadiness.runNowOrWhenAppDidBecomeReady {
-                DispatchQueue.global().async {
-                    self.workStep()
-                }
+            self.startWorkWhenAppIsReady()
+        }
+    }
+
+    func startWorkWhenAppIsReady() {
+        guard !CurrentAppContext().isRunningTests else {
+            DispatchQueue.global().async {
+                self.workStep()
+            }
+            return
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            DispatchQueue.global().async {
+                self.workStep()
             }
         }
     }
@@ -220,9 +248,7 @@ public extension JobQueue {
 
         self.isSetup = true
 
-        DispatchQueue.global().async {
-            self.workStep()
-        }
+        self.startWorkWhenAppIsReady()
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {
@@ -242,7 +268,16 @@ public extension JobQueue {
             return
         }
 
-        self.runningOperations.first?.operation.runAnyQueuedRetry()
+        _ = self.runAnyQueuedRetry()
+    }
+
+    func runAnyQueuedRetry() -> DurableOperationType? {
+        guard let runningDurableOperation = self.runningOperations.first else {
+            return nil
+        }
+        runningDurableOperation.operation.runAnyQueuedRetry()
+
+        return runningDurableOperation
     }
 
     // MARK: DurableOperationDelegate

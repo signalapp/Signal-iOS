@@ -6,7 +6,6 @@
 #import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
-#import "OWSFakeContactsManager.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"

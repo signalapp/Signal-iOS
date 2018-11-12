@@ -6,7 +6,6 @@
 #import "ContactsUpdater.h"
 #import "MockSSKEnvironment.h"
 #import "OWSFakeCallMessageHandler.h"
-#import "OWSFakeContactsManager.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSIdentityManager.h"

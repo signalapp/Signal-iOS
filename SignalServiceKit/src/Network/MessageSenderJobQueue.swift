@@ -65,7 +65,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: YapDatabaseReadWriteTransaction) {
-        assert(AppReadiness.isAppReady())
+        assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
 
         let jobRecord: SSKMessageSenderJobRecord
         do {
@@ -202,10 +202,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func retryInterval() -> TimeInterval {
-        guard !CurrentAppContext().isRunningTests else {
-            return 0
-        }
-
         // Arbitrary backoff factor...
         // With backOffFactor of 1.9
         // try  1 delay:  0.00s

@@ -286,7 +286,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD disabled for \(recipientId), no profile key for this recipient.")
                 }
-                owsFailDebug("Couldn't find profile key for UD-enabled user.")
+                if (!CurrentAppContext().isRunningTests) {
+                    owsFailDebug("Couldn't find profile key for UD-enabled user.")
+                }
                 return nil
             }
             if isUDVerboseLoggingEnabled() {

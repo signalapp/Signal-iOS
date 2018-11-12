@@ -10,7 +10,6 @@
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeCallMessageHandler.h"
-#import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"

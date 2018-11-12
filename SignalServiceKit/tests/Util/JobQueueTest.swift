@@ -13,21 +13,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class TestJobRecord: SSKJobRecord {
-//    override init(label: String) {
-//        super.init(label: label)
-//    }
-//
-//    override init(uniqueId: String?) {
-//        super.init(uniqueId: uniqueId)
-//    }
-//
-//    required init?(coder: NSCoder) {
-//        super.init(coder: coder)
-//    }
-//
-//    required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
-//        try! super.init(dictionary: dictionaryValue)
-//    }
+
 }
 
 let kJobRecordLabel = "TestJobRecord"
@@ -38,6 +24,8 @@ class TestJobQueue: JobQueue {
     typealias DurableOperationType = TestDurableOperation
     var jobRecordLabel: String = kJobRecordLabel
     static var maxRetries: UInt = 1
+    var runningOperations: [TestDurableOperation] = []
+    var requiresInternet: Bool = false
 
     func setup() {
         defaultSetup()
@@ -65,18 +53,16 @@ class TestJobQueue: JobQueue {
     init() { }
 }
 
-class TestDurableOperation: DurableOperation {
+class TestDurableOperation: OWSOperation, DurableOperation {
 
     // MARK: DurableOperation
 
     var jobRecord: TestJobRecord
 
-    var remainingRetries: UInt = 0
-
     weak var durableOperationDelegate: TestJobQueue?
 
-    var operation: Operation {
-        return BlockOperation { self.jobBlock(self.jobRecord) }
+    var operation: OWSOperation {
+        return self
     }
 
     // MARK: 
@@ -86,6 +72,11 @@ class TestDurableOperation: DurableOperation {
     init(jobRecord: TestJobRecord, jobBlock: @escaping (TestJobRecord) -> Void) {
         self.jobRecord = jobRecord
         self.jobBlock = jobBlock
+    }
+
+    override func run() {
+        jobBlock(jobRecord)
+        self.reportSuccess()
     }
 }
 

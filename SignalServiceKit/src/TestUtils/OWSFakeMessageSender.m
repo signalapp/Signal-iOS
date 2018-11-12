@@ -14,14 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
-    if (self.sendMessageWasCalledBlock) {
-        self.sendMessageWasCalledBlock(message);
-    }
-
     if (self.stubbedFailingError) {
         failureHandler(self.stubbedFailingError);
     } else {
         successHandler();
+    }
+    if (self.sendMessageWasCalledBlock) {
+        self.sendMessageWasCalledBlock(message);
     }
 }
 
@@ -32,14 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
                success:(void (^)(void))successHandler
                failure:(void (^)(NSError *error))failureHandler
 {
-    if (self.sendAttachmentWasCalledBlock) {
-        self.sendAttachmentWasCalledBlock(outgoingMessage);
-    }
-
     if (self.stubbedFailingError) {
         failureHandler(self.stubbedFailingError);
     } else {
         successHandler();
+    }
+    if (self.sendAttachmentWasCalledBlock) {
+        self.sendAttachmentWasCalledBlock(outgoingMessage);
     }
 }
 
@@ -49,14 +47,13 @@ NS_ASSUME_NONNULL_BEGIN
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler
 {
-    if (self.sendTemporaryAttachmentWasCalledBlock) {
-        self.sendTemporaryAttachmentWasCalledBlock(outgoingMessage);
-    }
-
     if (self.stubbedFailingError) {
         failureHandler(self.stubbedFailingError);
     } else {
         successHandler();
+    }
+    if (self.sendTemporaryAttachmentWasCalledBlock) {
+        self.sendTemporaryAttachmentWasCalledBlock(outgoingMessage);
     }
 }
 

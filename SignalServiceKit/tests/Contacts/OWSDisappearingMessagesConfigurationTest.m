@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:@"fake-thread-id"
                                                                enabled:YES
                                                        durationSeconds:10];
-    XCTAssertTrue(configuration.dictionaryValueDidChange);
+    XCTAssertFalse(configuration.dictionaryValueDidChange);
 
     [configuration save];
     XCTAssertFalse(configuration.dictionaryValueDidChange);

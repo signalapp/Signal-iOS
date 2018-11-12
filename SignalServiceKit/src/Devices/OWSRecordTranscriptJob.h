@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSRecordTranscriptJob : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript;
+- (instancetype)initWithIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)incomingSentMessageTranscript
     NS_DESIGNATED_INITIALIZER;
 
 - (void)runWithAttachmentHandler:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler

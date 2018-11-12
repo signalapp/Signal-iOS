@@ -22,6 +22,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         self.readWrite { transaction in
             message = OutgoingMessageFactory().build(transaction: transaction)
         }
+        message.uniqueId = nil
 
         do {
             _ = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: MessageSenderJobQueue.jobRecordLabel)
