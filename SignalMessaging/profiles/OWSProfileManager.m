@@ -859,6 +859,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             if (oldValue && oldValue.boolValue) {
                 continue;
             }
+
+            // Normally we add all system contacts to the whitelist, but we don't want to do that for
+            // blocked contacts.
+            if ([self.blockingManager isRecipientIdBlocked:recipientId]) {
+                continue;
+            }
+
             [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
             [newRecipientIds addObject:recipientId];
         }
