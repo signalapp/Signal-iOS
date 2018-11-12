@@ -26,7 +26,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
 
-    let shareViewNavigationController: OWSNavigationController = OWSNavigationController()
+    private var shareViewNavigationController: OWSNavigationController?
 
     override open func loadView() {
         super.loadView()
@@ -69,6 +69,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             showNotReadyView()
             return
         }
+
+        let shareViewNavigationController = OWSNavigationController()
+        self.shareViewNavigationController = shareViewNavigationController
 
         let loadViewController = SAELoadViewController(delegate: self)
         self.loadViewController = loadViewController
@@ -452,6 +455,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // If user is registered, do nothing.
             return
         }
+        guard let shareViewNavigationController = shareViewNavigationController else {
+            owsFailDebug("Missing shareViewNavigationController")
+            return
+        }
         guard let firstViewController = shareViewNavigationController.viewControllers.first else {
             // If no view has been presented yet, do nothing.
             return
@@ -513,6 +520,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func showPrimaryViewController(_ viewController: UIViewController) {
         AssertIsOnMainThread()
 
+        guard let shareViewNavigationController = shareViewNavigationController else {
+            owsFailDebug("Missing shareViewNavigationController")
+            return
+        }
         shareViewNavigationController.setViewControllers([viewController], animated: false)
         if self.presentedViewController == nil {
             Logger.debug("presenting modally: \(viewController)")
