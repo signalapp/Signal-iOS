@@ -128,7 +128,7 @@ public class ConversationMediaView: UIView {
         animatedImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
-        addUploadProgressIfNecessary(animatedImageView)
+        _ = addUploadProgressIfNecessary(animatedImageView)
 
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
@@ -177,7 +177,7 @@ public class ConversationMediaView: UIView {
         stillImageView.backgroundColor = Theme.offBackgroundColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
-        addUploadProgressIfNecessary(stillImageView)
+        _ = addUploadProgressIfNecessary(stillImageView)
         loadBlock = { [weak self] in
             guard let strongSelf = self else {
                 return

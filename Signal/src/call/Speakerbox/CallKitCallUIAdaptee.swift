@@ -113,7 +113,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
 
         // make sure we don't terminate audio session during call
-        self.audioSession.startAudioActivity(call.audioActivity)
+        _ = self.audioSession.startAudioActivity(call.audioActivity)
 
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
@@ -385,7 +385,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         Logger.debug("Received")
 
-        self.audioSession.startAudioActivity(self.audioActivity)
+        _ = self.audioSession.startAudioActivity(self.audioActivity)
         self.audioSession.isRTCAudioEnabled = true
     }
 
