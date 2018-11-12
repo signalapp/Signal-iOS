@@ -244,6 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
     [messageSender sendAttachment:attachment.dataSource
         contentType:attachment.mimeType
         sourceFilename:attachment.filenameOrDefault
+        albumMessageId:message.uniqueId
         inMessage:message
         success:^{
             OWSLogDebug(@"Successfully sent message attachment.");
