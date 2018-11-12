@@ -86,7 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
 
     OWSSingletonAssert();
-    OWSAssertDebug(CurrentAppContext().isMainApp);
 
     return self;
 }
