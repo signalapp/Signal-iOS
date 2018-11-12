@@ -1163,7 +1163,7 @@ class HardenedRTCSessionDescription {
                 options: .caseInsensitive)
             return regex.stringByReplacingMatches(in: sdp, options: [], range: NSRange(location: 0, length: sdp.count), withTemplate: "[ REDACTED_IPV6_ADDRESS ]")
         } catch {
-            owsFail("Could not redact IPv6 addresses.")
+            owsFailDebug("Could not redact IPv6 addresses.")
             return "[Could not redact IPv6 addresses.]"
         }
         #endif
