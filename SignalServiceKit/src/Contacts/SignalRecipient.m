@@ -88,6 +88,15 @@ NS_ASSUME_NONNULL_BEGIN
         _devices = [NSOrderedSet new];
     }
 
+    // Since we use device count to determine whether a user is registered or not,
+    // ensure the local user always has at least *this* device.
+    if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
+        if ([self.uniqueId isEqualToString:self.tsAccountManager.localNumber]) {
+            DDLogInfo(@"Adding primary device to self recipient.");
+            [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
+        }
+    }
+
     return self;
 }
 
