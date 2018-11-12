@@ -19,11 +19,19 @@ public class ProfileFetcherJob: NSObject {
 
     @objc
     public class func run(thread: TSThread) {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
         ProfileFetcherJob().run(recipientIds: thread.recipientIdentifiers)
     }
 
     @objc
     public class func run(recipientId: String, ignoreThrottling: Bool) {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
         ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(recipientIds: [recipientId])
     }
 
@@ -67,6 +75,13 @@ public class ProfileFetcherJob: NSObject {
     public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
 
+        guard CurrentAppContext().isMainApp else {
+            // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
+            // in the AppExtension for our users who choose not to verify contacts.
+            owsFailDebug("Should only fetch profiles in the main app")
+            return
+        }
+
         backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
             AssertIsOnMainThread()
 
@@ -78,13 +93,6 @@ public class ProfileFetcherJob: NSObject {
             }
             Logger.error("background task time ran out before profile fetch completed.")
         })
-
-        if (!CurrentAppContext().isMainApp) {
-            // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
-            // in the AppExtension for our users who choose not to verify contacts.
-            owsFailDebug("Should only fetch profiles in the main app")
-            return
-        }
 
         DispatchQueue.main.async {
             for recipientId in recipientIds {
