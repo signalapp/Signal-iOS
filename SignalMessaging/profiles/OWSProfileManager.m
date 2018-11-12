@@ -1180,13 +1180,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                         [self downloadAvatarForUserProfile:latestUserProfile];
                     }
                 } else if (error) {
-                    OWSLogError(@"avatar download failed: %@", error);
+                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.recipientId, error);
                 } else if (!encryptedData) {
-                    OWSLogError(@"avatar encrypted data could not be read.");
+                    OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
                 } else if (!decryptedData) {
-                    OWSLogError(@"avatar data could not be decrypted.");
+                    OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
                 } else if (!image) {
-                    OWSLogError(@"avatar image could not be loaded: %@", error);
+                    OWSLogError(
+                        @"avatar image for %@ could not be loaded with error: %@", userProfile.recipientId, error);
                 } else {
                     [self updateProfileAvatarCache:image filename:fileName];
 
