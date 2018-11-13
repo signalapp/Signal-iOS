@@ -1250,6 +1250,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSUserProfile *userProfile =
             [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
 
+        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
+        // If we're updating the profile that corresponds to our local number,
+        // make sure we're using the latest key.
+        if (localNumber && [localNumber isEqualToString:recipientId]) {
+            [userProfile updateWithProfileKey:self.localUserProfile.profileKey
+                                 dbConnection:self.dbConnection
+                                   completion:nil];
+        }
+
         if (!userProfile.profileKey) {
             return;
         }
@@ -1264,7 +1273,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
-        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
         if (localNumber && [localNumber isEqualToString:recipientId]) {
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssertDebug(localUserProfile);
