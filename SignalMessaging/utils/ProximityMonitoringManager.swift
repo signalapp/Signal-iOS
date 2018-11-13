@@ -15,9 +15,7 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
     public override init() {
         super.init()
 
-        // TODO: change to `runNowOrWhenAppWillBecomeReady` when
-        // reverse integrating
-        AppReadiness.runNowOrWhenAppIsReady {
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.setup()
         }
     }
