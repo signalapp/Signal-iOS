@@ -685,7 +685,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Un altro passaggio";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Non è stato possibile aprire l'app Email.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Il link gist è stato copiato negli appunti. Ora verrai ridiretto nella lista delle segnalazioni in GitHub.";
@@ -1186,7 +1186,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Verrà eliminato solo da questo dispositivo.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "Altre informazioni";
+"MESSAGE_ACTION_DETAILS" = "Ulteriori informazioni";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Rispondi a questo messaggio";
@@ -1300,7 +1300,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Più di un membro di questo gruppo non è più segnato come verificato. Tocca per le opzioni.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tocca qui per impostazioni";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tocca qui per le impostazioni";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nuovi messaggi";
@@ -1518,7 +1518,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ è verificato.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Maggiori informazioni";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Scopri di più";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tocca per scansionare";
@@ -1587,7 +1587,7 @@
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Il tuo profilo Signal sarà visibile ai tuoi contatti quando inizi una nuova conversazione e quando lo condividi con altri utenti e gruppi.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tocca qui per maggiori informazioni.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tocca qui per scoprire di più.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Nome profilo";
@@ -1674,7 +1674,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "Ha effettuato troppi tentativi. Attendi un minuto prima di riprovare.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_ERROR" = "Hai provato troppe volte. Attendi un minuto prima di ritentare.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Errore in fase di ri-registrazione delle notifiche push.";
@@ -2004,7 +2004,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "Puoi contattarmi usando Signal @signalapp, scaricala ora: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suono Messaggio";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suono messaggio";
 
 /* table cell label */
 "SETTINGS_LEGAL_TERMS_CELL" = "Politica e termini sulla privacy";
@@ -2094,22 +2094,22 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blocco registrazione";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Learn More";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Scopri di più";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Mittente sigillato";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostra indicatori";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Mostra un'icona di stato quando selezioni \"Ulteriori informazioni\" sui messaggi che sono stati consegnati usando il mittente sigillato.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Abilita da chiunque";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Abilita il mittente sigillato per i messaggi in arrivo da non-contatti e persone con cui non hai condiviso il tuo profilo.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versione";
@@ -2271,7 +2271,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Rispondere alle chiamate dalla schermata di blocco è semplice con l'integrazione chiamate iOS. Il chiamante sarà reso anonimo e quindi privato di default.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Maggiori informazioni sulla privacy.";
+"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Scopri di più nelle impostazioni privacy.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Scorri per rispondere";
