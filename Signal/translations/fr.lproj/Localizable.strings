@@ -42,7 +42,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec cet utilisateur ?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Annuler";
+"ALERT_DISCARD_BUTTON" = "Abandonner";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ne pas enregistrer";
@@ -1159,7 +1159,7 @@
 "MEDIA_FROM_DOCUMENT_PICKER_BUTTON" = "Document";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Phototèque";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Photothèque";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Supprimer %d messages";
@@ -1395,7 +1395,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autres utilisateurs";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous supprimer ces changements ?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous abandonner ces changements ?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
@@ -2061,7 +2061,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Activer la sécurité de l’écran";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les aperçus de Signal d’apparaître dans le changeur d’applis.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Empêcher les aperçus de Signal d’apparaître dans le sélecteur d’applis.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "L’intégration des appels dans iOS affiche les appels Signal sur votre écran de verrouillage et dans l’historique des appels du système. Une option vous permet d’afficher les nom et numéro de votre contact. Si iCloud est activé, cet historique des appels sera partagé avec Apple.";
@@ -2214,7 +2214,7 @@
 "TIME_AMOUNT_WEEKS" = "%@ semaines";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ sem";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Annuler";

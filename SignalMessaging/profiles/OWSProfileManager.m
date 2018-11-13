@@ -629,13 +629,24 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
                 [whitelistedGroupIds addObject:groupId];
 
-                TSGroupThread *_Nullable thread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
-                if (!thread) {
-                    OWSLogInfo(@"Could not find whitelisted thread: %@", groupId.hexadecimalString);
-                    continue;
-                }
-
-                [whitelistedRecipientIds addObjectsFromArray:thread.recipientIdentifiers];
+                // Note we don't add `group.recipientIds` to the `whitelistedRecipientIds`.
+                //
+                // Whenever we message a contact, be it in a 1:1 thread or in a group thread,
+                // we add them to the contact whitelist, so there's no reason to redundnatly
+                // add them here.
+                //
+                // Furthermore, doing so would cause the following problem:
+                // - Alice is in group Book Club
+                // - Add Book Club to your profile white list
+                // - Message Book Club, which also adds Alice to your profile whitelist.
+                // - Block Alice, but not Book Club
+                //
+                // Now, at this point we'd want to rotate our profile key once, since Alice has
+                // it via BookClub.
+                //
+                // However, after we did. The next time we check if we should rotate our profile
+                // key, adding all `group.recipientIds` to `whitelistedRecipientIds` here, would
+                // include Alice, and we'd rotate our profile key every time this method is called.
             }
         }];
 
@@ -861,6 +872,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             if (oldValue && oldValue.boolValue) {
                 continue;
             }
+
+            // Normally we add all system contacts to the whitelist, but we don't want to do that for
+            // blocked contacts.
+            if ([self.blockingManager isRecipientIdBlocked:recipientId]) {
+                continue;
+            }
+
             [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
             [newRecipientIds addObject:recipientId];
         }
@@ -1175,13 +1193,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                         [self downloadAvatarForUserProfile:latestUserProfile];
                     }
                 } else if (error) {
-                    OWSLogError(@"avatar download failed: %@", error);
+                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.recipientId, error);
                 } else if (!encryptedData) {
-                    OWSLogError(@"avatar encrypted data could not be read.");
+                    OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
                 } else if (!decryptedData) {
-                    OWSLogError(@"avatar data could not be decrypted.");
+                    OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
                 } else if (!image) {
-                    OWSLogError(@"avatar image could not be loaded: %@", error);
+                    OWSLogError(
+                        @"avatar image for %@ could not be loaded with error: %@", userProfile.recipientId, error);
                 } else {
                     [self updateProfileAvatarCache:image filename:fileName];
 
@@ -1233,6 +1252,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSUserProfile *userProfile =
             [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
 
+        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
+        // If we're updating the profile that corresponds to our local number,
+        // make sure we're using the latest key.
+        if (localNumber && [localNumber isEqualToString:recipientId]) {
+            [userProfile updateWithProfileKey:self.localUserProfile.profileKey
+                                 dbConnection:self.dbConnection
+                                   completion:nil];
+        }
+
         if (!userProfile.profileKey) {
             return;
         }
@@ -1247,7 +1275,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
-        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
         if (localNumber && [localNumber isEqualToString:recipientId]) {
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssertDebug(localUserProfile);
