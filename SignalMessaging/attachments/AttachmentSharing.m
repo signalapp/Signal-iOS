@@ -40,10 +40,18 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)showShareUIForURL:(NSURL *)url completion:(nullable AttachmentSharingCompletion)completion
 {
     OWSAssertDebug(url);
-
+    
     [AttachmentSharing showShareUIForActivityItems:@[
-        url,
-    ]
+                                                     url,
+                                                     ]
+                                        completion:completion];
+}
+
++ (void)showShareUIForURLs:(NSArray<NSURL *> *)urls completion:(nullable AttachmentSharingCompletion)completion
+{
+    OWSAssertDebug(urls.count > 0);
+    
+    [AttachmentSharing showShareUIForActivityItems:urls
                                         completion:completion];
 }
 

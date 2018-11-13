@@ -72,11 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
                                              failure:(void (^)(NSError *error))failureHandler;
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachment:(SignalAttachment *)attachment
-                                                  inThread:(TSThread *)thread
-                                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                             messageSender:(OWSMessageSender *)messageSender
-                                                completion:(void (^_Nullable)(NSError *_Nullable error))completion;
++ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachments:(NSArray<SignalAttachment *> *)attachments
+                                                   inThread:(TSThread *)thread
+                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                              messageSender:(OWSMessageSender *)messageSender
+                                                 completion:(void (^_Nullable)(NSError *_Nullable error))completion;
 
 // Used by SAE, otherwise we should use the durable `enqueue` counterpart
 + (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare

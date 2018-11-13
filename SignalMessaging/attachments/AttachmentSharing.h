@@ -19,6 +19,8 @@ typedef void (^AttachmentSharingCompletion)(void);
 
 + (void)showShareUIForURL:(NSURL *)url completion:(nullable AttachmentSharingCompletion)completion;
 
++ (void)showShareUIForURLs:(NSArray<NSURL *> *)urls completion:(nullable AttachmentSharingCompletion)completion;
+
 + (void)showShareUIForText:(NSString *)text;
 
 + (void)showShareUIForText:(NSString *)text completion:(nullable AttachmentSharingCompletion)completion;

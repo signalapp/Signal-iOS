@@ -213,15 +213,14 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachment:(SignalAttachment *)attachment
-                                                  inThread:(TSThread *)thread
-                                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                             messageSender:(OWSMessageSender *)messageSender
-                                                completion:(void (^_Nullable)(NSError *_Nullable error))completion
++ (TSOutgoingMessage *)sendMessageNonDurablyWithAttachments:(NSArray<SignalAttachment *> *)attachments
+                                                   inThread:(TSThread *)thread
+                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                              messageSender:(OWSMessageSender *)messageSender
+                                                 completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(attachment);
-    OWSAssertDebug([attachment mimeType].length > 0);
+    OWSAssertDebug(attachments.count > 0);
     OWSAssertDebug(thread);
     OWSAssertDebug(messageSender);
 
@@ -229,21 +228,28 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    BOOL isVoiceMessage = (attachments.count == 1 && attachments.firstObject.isVoiceMessage);
+    NSString *_Nullable messageBody = (attachments.count == 1 ? attachments.firstObject.captionText : nil);
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
-                                                        messageBody:attachment.captionText
+                                                        messageBody:messageBody
                                                       attachmentIds:[NSMutableArray new]
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
-                                                     isVoiceMessage:[attachment isVoiceMessage]
+                                                     isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil];
 
-    [messageSender sendAttachment:attachment.dataSource
-        contentType:attachment.mimeType
-        sourceFilename:attachment.filenameOrDefault
+    NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
+    for (SignalAttachment *attachment in attachments) {
+        OWSAssertDebug([attachment mimeType].length > 0);
+
+        [attachmentInfos addObject:[attachment buildOutgoingAttachmentInfoWithMessage:message]];
+    }
+
+    [messageSender sendAttachments:attachmentInfos
         inMessage:message
         success:^{
             OWSLogDebug(@"Successfully sent message attachment.");

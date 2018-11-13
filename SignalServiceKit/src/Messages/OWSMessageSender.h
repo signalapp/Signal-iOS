@@ -76,9 +76,15 @@ NS_SWIFT_NAME(MessageSender)
 - (void)sendAttachment:(DataSource *)dataSource
            contentType:(NSString *)contentType
         sourceFilename:(nullable NSString *)sourceFilename
+        albumMessageId:(nullable NSString *)albumMessageId
              inMessage:(TSOutgoingMessage *)outgoingMessage
                success:(void (^)(void))successHandler
                failure:(void (^)(NSError *error))failureHandler;
+
+- (void)sendAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+              inMessage:(TSOutgoingMessage *)message
+                success:(void (^)(void))successHandler
+                failure:(void (^)(NSError *error))failureHandler;
 
 /**
  * Same as `sendAttachment:`, but deletes the local copy of the attachment after sending.

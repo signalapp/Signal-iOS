@@ -127,13 +127,18 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (nullable NSString *)convertAttachmentToMessageTextIfPossible
 {
-    if (!self.attachment.isConvertibleToTextMessage) {
+    if (self.attachments.count > 1) {
         return nil;
     }
-    if (self.attachment.dataLength >= kOversizeTextMessageSizeThreshold) {
+    OWSAssertDebug(self.attachments.count == 1);
+    SignalAttachment *attachment = self.attachments.firstObject;
+    if (!attachment.isConvertibleToTextMessage) {
         return nil;
     }
-    NSData *data = self.attachment.data;
+    if (attachment.dataLength >= kOversizeTextMessageSizeThreshold) {
+        return nil;
+    }
+    NSData *data = attachment.data;
     OWSAssertDebug(data.length < kOversizeTextMessageSizeThreshold);
     NSString *_Nullable messageText = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     OWSLogVerbose(@"messageTextForAttachment: %@", messageText);
@@ -142,42 +147,67 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)threadWasSelected:(TSThread *)thread
 {
-    OWSAssertDebug(self.attachment);
+    OWSAssertDebug(self.attachments.count > 0);
     OWSAssertDebug(thread);
 
     self.thread = thread;
 
-    if (self.attachment.isConvertibleToContactShare) {
-        [self showContactShareApproval];
+    if ([self tryToShareAsMessageText]) {
         return;
     }
 
-    NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
-
-    if (messageText) {
-        MessageApprovalViewController *approvalVC =
-            [[MessageApprovalViewController alloc] initWithMessageText:messageText
-                                                                thread:thread
-                                                       contactsManager:self.contactsManager
-                                                              delegate:self];
-
-        [self.navigationController pushViewController:approvalVC animated:YES];
-    } else {
-        // TODO ALBUMS - send album via SAE
-        OWSNavigationController *approvalModal =
-            [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:@[ self.attachment ]
-                                                                   approvalDelegate:self];
-        [self presentViewController:approvalModal animated:YES completion:nil];
+    if ([self tryToShareAsContactShare]) {
+        return;
     }
+
+    OWSNavigationController *approvalModal =
+        [AttachmentApprovalViewController wrappedInNavControllerWithAttachments:self.attachments approvalDelegate:self];
+    [self presentViewController:approvalModal animated:YES completion:nil];
 }
 
-- (void)showContactShareApproval
+- (BOOL)tryToShareAsMessageText
 {
-    OWSAssertDebug(self.attachment);
-    OWSAssertDebug(self.thread);
-    OWSAssertDebug(self.attachment.isConvertibleToContactShare);
+    OWSAssertDebug(self.attachments.count > 0);
 
-    NSData *data = self.attachment.data;
+    NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
+    if (!messageText) {
+        return NO;
+    }
+
+    MessageApprovalViewController *approvalVC =
+        [[MessageApprovalViewController alloc] initWithMessageText:messageText
+                                                            thread:self.thread
+                                                   contactsManager:self.contactsManager
+                                                          delegate:self];
+
+    [self.navigationController pushViewController:approvalVC animated:YES];
+    return YES;
+}
+
+- (BOOL)tryToShareAsContactShare
+{
+    OWSAssertDebug(self.attachments.count > 0);
+
+    if (self.attachments.count > 1) {
+        return NO;
+    }
+    OWSAssertDebug(self.attachments.count == 1);
+    SignalAttachment *attachment = self.attachments.firstObject;
+    if (!attachment.isConvertibleToContactShare) {
+        return NO;
+    }
+
+    [self showContactShareApproval:attachment];
+    return YES;
+}
+
+- (void)showContactShareApproval:(SignalAttachment *)attachment
+{
+    OWSAssertDebug(attachment);
+    OWSAssertDebug(self.thread);
+    OWSAssertDebug(attachment.isConvertibleToContactShare);
+
+    NSData *data = attachment.data;
 
     CNContact *_Nullable cnContact = [Contact cnContactWithVCardData:data];
     Contact *_Nullable contact = [[Contact alloc] initWithSystemContact:cnContact];
@@ -242,13 +272,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // the sending operation. Alternatively, we could use a durable send, but do more to make sure the
         // SAE runs as long as it needs.
         // TODO ALBUMS - send album via SAE
-        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachment:attachments.firstObject
-                                                                 inThread:self.thread
-                                                         quotedReplyModel:nil
-                                                            messageSender:self.messageSender
-                                                               completion:^(NSError *_Nullable error) {
-                                                                   sendCompletion(error, outgoingMessage);
-                                                               }];
+        outgoingMessage = [ThreadUtil sendMessageNonDurablyWithAttachments:attachments
+                                                                  inThread:self.thread
+                                                          quotedReplyModel:nil
+                                                             messageSender:self.messageSender
+                                                                completion:^(NSError *_Nullable error) {
+                                                                    sendCompletion(error, outgoingMessage);
+                                                                }];
 
         // This is necessary to show progress.
         self.outgoingMessage = outgoingMessage;
