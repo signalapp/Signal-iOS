@@ -501,6 +501,19 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
     OWSAssertDebug(request.HTTPMethod.length > 0);
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
+    
+    // Randomly fail half of all websocket requests.
+    if (arc4random_uniform(2) == 0) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSInteger statusCode = 0;
+            NSData *_Nullable responseData = nil;
+            NSError *error = [NSError errorWithDomain:OWSSignalServiceKitErrorDomain
+                                                 code:99999
+                                             userInfo:@{ NSLocalizedDescriptionKey: @"Random failure." }];
+            failure(statusCode, responseData, error);
+        });
+        return;
+    }
 
     TSSocketMessage *socketMessage = [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64]
                                                                         success:success
