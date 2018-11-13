@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 // that we're not cleaning up.
 //#define LOG_ALL_FILE_PATHS
 
-//#define ENABLE_ORPHAN_DATA_CLEANER
+#define ENABLE_ORPHAN_DATA_CLEANER
 
 NSString *const OWSOrphanDataCleaner_Collection = @"OWSOrphanDataCleaner_Collection";
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
