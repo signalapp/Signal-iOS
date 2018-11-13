@@ -90,6 +90,8 @@
 
 @import Photos;
 
+//#define FEATURE_FLAG_ALBUM_SEND_ENABLED;
+
 NS_ASSUME_NONNULL_BEGIN
 
 static const CGFloat kLoadMoreHeaderHeight = 60.f;
@@ -2638,10 +2640,17 @@ typedef enum : NSUInteger {
             return;
         }
 
+#ifdef FEATURE_FLAG_ALBUM_SEND_ENABLED
         OWSImagePickerGridController *picker = [OWSImagePickerGridController new];
         picker.delegate = self;
 
         OWSNavigationController *pickerModal = [[OWSNavigationController alloc] initWithRootViewController:picker];
+#else
+        UIImagePickerController *pickerModal = [UIImagePickerController new];
+        pickerModal.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        pickerModal.delegate = self;
+        pickerModal.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
+#endif
 
         [self dismissKeyBoard];
         [self presentViewController:pickerModal animated:YES completion:nil];
@@ -2711,7 +2720,7 @@ typedef enum : NSUInteger {
 
     NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
-        // Video captured with camera
+        // Video picked from library or captured with camera
 
         NSURL *videoURL = info[UIImagePickerControllerMediaURL];
         [self dismissViewControllerAnimated:YES
@@ -2749,8 +2758,60 @@ typedef enum : NSUInteger {
                                      }
                                  }];
     } else {
+        // Non-Video image picked from library
+#ifdef FEATURE_FLAG_ALBUM_SEND_ENABLED
         OWSFailDebug(
             @"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not supported. ");
+#endif
+
+        // To avoid re-encoding GIF and PNG's as JPEG we have to get the raw data of
+        // the selected item vs. using the UIImagePickerControllerOriginalImage
+        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
+        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ] options:nil] lastObject];
+        if (!asset) {
+            return failedToPickAttachment(nil);
+        }
+
+        // Images chosen from the "attach document" UI should be sent as originals;
+        // images chosen from the "attach media" UI should be resized to "medium" size;
+        TSImageQuality imageQuality = (self.isPickingMediaAsDocument ? TSImageQualityOriginal : TSImageQualityMedium);
+
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.synchronous = YES; // We're only fetching one asset.
+        options.networkAccessAllowed = YES; // iCloud OK
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat; // Don't need quick/dirty version
+        [[PHImageManager defaultManager]
+            requestImageDataForAsset:asset
+                             options:options
+                       resultHandler:^(NSData *_Nullable imageData,
+                           NSString *_Nullable dataUTI,
+                           UIImageOrientation orientation,
+                           NSDictionary *_Nullable assetInfo) {
+                           NSError *assetFetchingError = assetInfo[PHImageErrorKey];
+                           if (assetFetchingError || !imageData) {
+                               return failedToPickAttachment(assetFetchingError);
+                           }
+                           OWSAssertIsOnMainThread();
+
+                           DataSource *_Nullable dataSource =
+                               [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
+                           [dataSource setSourceFilename:filename];
+                           SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                                             dataUTI:dataUTI
+                                                                                        imageQuality:imageQuality];
+                           [self dismissViewControllerAnimated:YES
+                                                    completion:^{
+                                                        OWSAssertIsOnMainThread();
+                                                        if (!attachment || [attachment hasError]) {
+                                                            OWSLogWarn(@"Invalid attachment: %@.",
+                                                                attachment ? [attachment errorName] : @"Missing data");
+                                                            [self showErrorAlertForAttachment:attachment];
+                                                            failedToPickAttachment(nil);
+                                                        } else {
+                                                            [self tryToSendAttachmentIfApproved:attachment];
+                                                        }
+                                                    }];
+                       }];
     }
 }
 
