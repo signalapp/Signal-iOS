@@ -1156,7 +1156,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // to avoid unnecessary message sends for sync messages until we learn
         // of a linked device (e.g. through the device linking UI or by receiving
         // a sync message, etc.).
-        [OWSDeviceManager.sharedManager clearMayHaveLinkedDevicesIfNotSet];
+        [OWSDeviceManager.sharedManager clearMayHaveLinkedDevices];
     }
 
     dispatch_async([OWSDispatch sendingQueue], ^{
