@@ -819,8 +819,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }];
 }
 
-- (nullable NSArray<NSDictionary *> *)deviceMessagesForMessageSendSafe:(OWSMessageSend *)messageSend
-                                                                 error:(NSError **)errorHandle
+- (nullable NSArray<NSDictionary *> *)deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
+                                                             error:(NSError **)errorHandle
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(errorHandle);
@@ -830,7 +830,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
-        deviceMessages = [self throws_deviceMessagesForMessageSendUnsafe:messageSend];
+        deviceMessages = [self throws_deviceMessagesForMessageSend:messageSend];
     } @catch (NSException *exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
@@ -964,7 +964,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSError *deviceMessagesError;
     NSArray<NSDictionary *> *_Nullable deviceMessages =
-        [self deviceMessagesForMessageSendSafe:messageSend error:&deviceMessagesError];
+        [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
         return messageSend.failure(deviceMessagesError);
@@ -1398,7 +1398,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendMessageToRecipient:messageSend];
 }
 
-- (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSendUnsafe:(OWSMessageSend *)messageSend
+- (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend.message);
     OWSAssertDebug(messageSend.recipient);
@@ -1423,11 +1423,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
     OWSAssertDebug(deviceIds);
 
-    if (messageSend.isUDSend && messageSend.isLocalNumber) {
-        OWSLogVerbose(@"Adding device message for UD send to local device.");
-        OWSAssertDebug(![deviceIds containsObject:@(OWSDevicePrimaryDeviceId)]);
-
-        [deviceIds addObject:@(OWSDevicePrimaryDeviceId)];
+    if (messageSend.isLocalNumber) {
+        [deviceIds removeObject:@(OWSDevicePrimaryDeviceId)];
     }
 
     for (NSNumber *deviceId in deviceIds) {
