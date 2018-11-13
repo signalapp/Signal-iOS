@@ -13,6 +13,16 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
     var lifetimes: [Weak<AnyObject>] = []
     let serialQueue = DispatchQueue(label: "ProximityMonitoringManagerImpl")
 
+    public override init() {
+        super.init()
+
+        // TODO: change to `runNowOrWhenAppWillBecomeReady` when
+        // reverse integrating
+        AppReadiness.runNowOrWhenAppIsReady {
+            self.setup()
+        }
+    }
+
     // MARK: 
 
     var device: UIDevice {
@@ -39,20 +49,44 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
         }
     }
 
+    @objc
+    public func setup() {
+        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: .UIDeviceProximityStateDidChange, object: nil)
+    }
+
+    @objc
+    func proximitySensorStateDidChange(notification: Notification) {
+        Logger.debug("")
+        // This is crazy, but if we disable `device.isProximityMonitoringEnabled` while
+        // `device.proximityState` is true (while the device is held to the ear)
+        // then `device.proximityState` remains true, even after we bring the phone
+        // away from the ear and re-enable monitoring.
+        //
+        // To resolve this, we wait to disable proximity monitoring until `proximityState`
+        // is false.
+        if self.device.proximityState {
+            self.add(lifetime: self)
+        } else {
+            self.remove(lifetime: self)
+        }
+    }
+
     func reconcile() {
         if _isDebugAssertConfiguration() {
             assertOnQueue(serialQueue)
         }
         lifetimes = lifetimes.filter { $0.value != nil }
         if lifetimes.isEmpty {
-            Logger.debug("disabling proximity monitoring")
             DispatchQueue.main.async {
+                Logger.debug("disabling proximity monitoring")
                 self.device.isProximityMonitoringEnabled = false
             }
         } else {
-            Logger.debug("enabling proximity monitoring for lifetimes: \(lifetimes)")
+            let lifetimes = self.lifetimes
             DispatchQueue.main.async {
+                Logger.debug("willEnable proximity monitoring for lifetimes: \(lifetimes), proximityState: \(self.device.proximityState)")
                 self.device.isProximityMonitoringEnabled = true
+                Logger.debug("didEnable proximity monitoring for lifetimes: \(lifetimes), proximityState: \(self.device.proximityState)")
             }
         }
     }
