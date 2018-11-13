@@ -8,17 +8,41 @@ public enum GalleryDirection {
     case before, after, around
 }
 
+class MediaGalleryAlbum {
+    private(set) var items: [MediaGalleryItem]
+
+    init(items: [MediaGalleryItem]) {
+        self.items = items
+    }
+
+    func add(item: MediaGalleryItem) {
+        guard !items.contains(item) else {
+            return
+        }
+
+        items.append(item)
+        items.sort { (lhs, rhs) -> Bool in
+            return lhs.albumIndex < rhs.albumIndex
+        }
+    }
+}
+
 public class MediaGalleryItem: Equatable, Hashable {
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate
     let captionForDisplay: String?
+    let albumIndex: Int
+    var album: MediaGalleryAlbum?
+    let orderingKey: MediaGalleryItemOrderingKey
 
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
         self.message = message
         self.attachmentStream = attachmentStream
         self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
+        self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId!)
+        self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.timestampForSorting(), attachmentSortKey: albumIndex)
     }
 
     var isVideo: Bool {
@@ -31,6 +55,10 @@ public class MediaGalleryItem: Equatable, Hashable {
 
     var isImage: Bool {
         return attachmentStream.isImage
+    }
+
+    var imageSize: CGSize {
+        return attachmentStream.imageSize()
     }
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
@@ -48,6 +76,29 @@ public class MediaGalleryItem: Equatable, Hashable {
 
     public var hashValue: Int {
         return attachmentStream.uniqueId?.hashValue ?? attachmentStream.hashValue
+    }
+
+    // MARK: Sorting
+
+    struct MediaGalleryItemOrderingKey: Comparable {
+        let messageSortKey: UInt64
+        let attachmentSortKey: Int
+
+        // MARK: Comparable
+
+        static func < (lhs: MediaGalleryItem.MediaGalleryItemOrderingKey, rhs: MediaGalleryItem.MediaGalleryItemOrderingKey) -> Bool {
+            if lhs.messageSortKey < rhs.messageSortKey {
+                return true
+            }
+
+            if lhs.messageSortKey == rhs.messageSortKey {
+                if lhs.attachmentSortKey < rhs.attachmentSortKey {
+                    return true
+                }
+            }
+
+            return false
+        }
     }
 }
 
@@ -648,7 +699,27 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             return nil
         }
 
-        return MediaGalleryItem(message: message, attachmentStream: attachmentStream)
+        let galleryItem = MediaGalleryItem(message: message, attachmentStream: attachmentStream)
+        galleryItem.album = getAlbum(item: galleryItem)
+
+        return galleryItem
+    }
+
+    var galleryAlbums: [String: MediaGalleryAlbum] = [:]
+    func getAlbum(item: MediaGalleryItem) -> MediaGalleryAlbum? {
+        guard let albumMessageId = item.attachmentStream.albumMessageId else {
+            return nil
+        }
+
+        guard let existingAlbum = galleryAlbums[albumMessageId] else {
+            let newAlbum = MediaGalleryAlbum(items: [item])
+            galleryAlbums[albumMessageId] = newAlbum
+
+            return newAlbum
+        }
+
+        existingAlbum.add(item: item)
+        return existingAlbum
     }
 
     // Range instead of indexSet since it's contiguous?
@@ -760,13 +831,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         Bench(title: "sorting gallery items") {
             galleryItems.sort { lhs, rhs -> Bool in
-                return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
+                return lhs.orderingKey < rhs.orderingKey
             }
             sectionDates.sort()
 
             for (date, galleryItems) in sections {
                 sortedSections[date] = galleryItems.sorted { lhs, rhs -> Bool in
-                    return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
+                    return lhs.orderingKey < rhs.orderingKey
                 }
             }
         }
