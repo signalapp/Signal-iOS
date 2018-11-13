@@ -7,6 +7,12 @@ import Foundation
 @objc(OWSConversationMediaView)
 public class ConversationMediaView: UIView {
 
+    private enum MediaError {
+        case missing
+        case invalid
+        case failed
+    }
+
     // MARK: - Dependencies
 
     private var attachmentDownloads: OWSAttachmentDownloads {
@@ -54,6 +60,10 @@ public class ConversationMediaView: UIView {
             addDownloadProgressIfNecessary()
             return
         }
+        guard !isFailedDownload else {
+            configureForMissingOrInvalid(.failed)
+            return
+        }
         if attachmentStream.isAnimated {
             configureForAnimatedImage(attachmentStream: attachmentStream)
         } else if attachmentStream.isImage {
@@ -61,27 +71,29 @@ public class ConversationMediaView: UIView {
         } else if attachmentStream.isVideo {
             configureForVideo(attachmentStream: attachmentStream)
         } else {
-            // TODO: Handle this case.
             owsFailDebug("Attachment has unexpected type.")
-            configureForMissingOrInvalid()
+            configureForMissingOrInvalid(.invalid)
         }
     }
 
-    //
     private func addDownloadProgressIfNecessary() {
+        guard !isFailedDownload else {
+            configureForMissingOrInvalid(.failed)
+            return
+        }
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             owsFailDebug("Attachment has unexpected type.")
-            configureForMissingOrInvalid()
+            configureForMissingOrInvalid(.invalid)
             return
         }
         guard let attachmentId = attachmentPointer.uniqueId else {
             owsFailDebug("Attachment missing unique ID.")
-            configureForMissingOrInvalid()
+            configureForMissingOrInvalid(.invalid)
             return
         }
         guard nil != attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             // Not being downloaded.
-            configureForMissingOrInvalid()
+            configureForMissingOrInvalid(.missing)
             return
         }
 
@@ -100,7 +112,7 @@ public class ConversationMediaView: UIView {
         }
         guard let attachmentId = attachmentStream.uniqueId else {
             owsFailDebug("Attachment missing unique ID.")
-            configureForMissingOrInvalid()
+            configureForMissingOrInvalid(.invalid)
             return false
         }
         guard !attachmentStream.isUploaded else {
@@ -270,25 +282,28 @@ public class ConversationMediaView: UIView {
         return attachmentPointer.state == .failed
     }
 
-    private func configureForMissingOrInvalid() {
+    private func configureForMissingOrInvalid(_ error: MediaError) {
         backgroundColor = UIColor.ows_gray05
         let icon: UIImage
-        if isFailedDownload {
-            guard let asset = UIImage(named: "media_retry") else {
-                owsFailDebug("Missing image")
-                return
-            }
-            icon = asset
-        } else {
+        switch (error) {
+            case .failed:
+                guard let asset = UIImage(named: "media_retry") else {
+                    owsFailDebug("Missing image")
+                    return
+                }
+                icon = asset
+        case .invalid:
             guard let asset = UIImage(named: "media_invalid") else {
                 owsFailDebug("Missing image")
                 return
             }
             icon = asset
+        case .missing:
+            return
         }
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = Theme.primaryColor.withAlphaComponent(0.6)
-        self.addSubview(iconView)
+        addSubview(iconView)
         iconView.autoCenterInSuperview()
     }
 
