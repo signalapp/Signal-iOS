@@ -11,7 +11,6 @@ public protocol OWSProximityMonitoringManager: class {
 @objc
 public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoringManager {
     var lifetimes: [Weak<AnyObject>] = []
-    let serialQueue = DispatchQueue(label: "ProximityMonitoringManagerImpl")
 
     public override init() {
         super.init()
@@ -33,20 +32,24 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
 
     @objc
     public func add(lifetime: AnyObject) {
-        serialQueue.sync {
-            if !lifetimes.contains { $0.value === lifetime } {
-                lifetimes.append(Weak(value: lifetime))
-            }
-            reconcile()
+        objc_sync_enter(self)
+
+        if !lifetimes.contains { $0.value === lifetime } {
+            lifetimes.append(Weak(value: lifetime))
         }
+        reconcile()
+
+        objc_sync_exit(self)
     }
 
     @objc
     public func remove(lifetime: AnyObject) {
-        serialQueue.sync {
-            lifetimes = lifetimes.filter { $0.value !== lifetime }
-            reconcile()
-        }
+        objc_sync_enter(self)
+
+        lifetimes = lifetimes.filter { $0.value !== lifetime }
+        reconcile()
+
+        objc_sync_exit(self)
     }
 
     @objc
@@ -72,9 +75,6 @@ public class OWSProximityMonitoringManagerImpl: NSObject, OWSProximityMonitoring
     }
 
     func reconcile() {
-        if _isDebugAssertConfiguration() {
-            assertOnQueue(serialQueue)
-        }
         lifetimes = lifetimes.filter { $0.value != nil }
         if lifetimes.isEmpty {
             DispatchQueue.main.async {
