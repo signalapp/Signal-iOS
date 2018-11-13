@@ -189,7 +189,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     OWSAssertDebug(self.attachments.count > 0);
 
     if (self.attachments.count > 1) {
-        return nil;
+        return NO;
     }
     OWSAssertDebug(self.attachments.count == 1);
     SignalAttachment *attachment = self.attachments.firstObject;

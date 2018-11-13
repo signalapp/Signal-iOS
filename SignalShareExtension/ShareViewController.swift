@@ -653,6 +653,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         var visualMediaItemProviders = [NSItemProvider]()
+        var hasNonVisualMedia = false
         for attachment in attachments {
             guard let itemProvider = attachment as? NSItemProvider else {
                 owsFailDebug("Unexpected attachment type: \(String(describing: attachment))")
@@ -660,9 +661,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             if isVisualMediaItem(itemProvider: itemProvider) {
                 visualMediaItemProviders.append(itemProvider)
+            } else {
+                hasNonVisualMedia = true
             }
         }
-        if visualMediaItemProviders.count > 0 {
+        // Only allow multiple-attachment sends if all attachments
+        // are visual media.
+        if visualMediaItemProviders.count > 0 && !hasNonVisualMedia {
             return visualMediaItemProviders
         }
 
@@ -969,12 +974,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 loadPromises.append(loadPromise)
             }
             return when(fulfilled: loadPromises)
-            }.then { (signalAttachments) -> Promise<[SignalAttachment]> in
+            }.map { (signalAttachments) -> [SignalAttachment] in
                 guard signalAttachments.count > 0 else {
                     let error = ShareViewControllerError.assertionError(description: "no valid attachments")
-                    return Promise(error: error)
+                    throw error
                 }
-                return Promise.value(signalAttachments)
+                return signalAttachments
             }
         promise.retainUntilComplete()
         return promise
