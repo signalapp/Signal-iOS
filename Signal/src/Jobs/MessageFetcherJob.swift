@@ -198,9 +198,9 @@ private
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
         let request: TSRequest
-        if let serverGuid = envelope.serverGuid, envelope.hasServerTimestamp {
+        if let serverGuid = envelope.serverGuid, envelope.hasServerTimestamp, serverGuid.count > 0, envelope.serverTimestamp > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid, serverTimestamp: envelope.serverTimestamp)
-        } else if let source = envelope.source {
+        } else if let source = envelope.source, source.count > 0, envelope.timestamp > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
         } else {
             owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
