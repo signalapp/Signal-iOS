@@ -110,7 +110,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
     // TODO: Remove this logging when the call connection issues have been resolved.
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"UD request succeeded : %@", request);
+        OWSLogInfo(@"Non-UD request succeeded : %@", request);
 
         if (request.shouldHaveAuthorizationHeaders) {
             [TSAccountManager.sharedInstance setIsDeregistered:NO];
@@ -171,7 +171,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     uint64_t before = [NSDate ows_millisecondTimeStamp];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"Non-UD request succeeded : %@", request);
+        OWSLogInfo(@"UD request succeeded : %@", request);
 
         successBlock(task, responseObject);
 
