@@ -152,8 +152,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         _udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         // Disable default cookie handling for all requests.
         _udSessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
-        _udSessionManager.session.configuration.HTTPShouldSetCookies = NO;
-        _udSessionManager.session.configuration.HTTPShouldUsePipelining = YES;
+        // NOTE: We could enable HTTPShouldUsePipelining here.
     }
 
     return _udSessionManager;
