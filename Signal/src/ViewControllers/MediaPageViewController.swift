@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import PromiseKit
 
 // Objc wrapper for the MediaGalleryItem struct
 @objc
@@ -53,10 +54,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        self.updateTitle(item: item)
-        self.updateCaption(item: item)
-        self.setViewControllers([galleryPage], direction: direction, animated: isAnimated)
-        self.updateFooterBarButtonItems(isPlayingVideo: false)
+        updateTitle(item: item)
+        updateCaption(item: item)
+        setViewControllers([galleryPage], direction: direction, animated: isAnimated)
+        updateFooterBarButtonItems(isPlayingVideo: false)
+        updateMediaRail()
     }
 
     private let uiDatabaseConnection: YapDatabaseConnection
@@ -108,6 +110,26 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     var currentCaptionView: CaptionView!
     var pendingCaptionView: CaptionView!
 
+    // MARK: ImageRail
+
+    var galleryRailView: GalleryRailView!
+
+    private func makeClearToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+
+        toolbar.backgroundColor = UIColor.clear
+
+        // Making a toolbar transparent requires setting an empty uiimage
+        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+
+        // hide 1px top-border
+        toolbar.clipsToBounds = true
+
+        return toolbar
+    }
+
+    // MARK: 
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -119,8 +141,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.navigationItem.leftBarButtonItem = backButton
 
         self.navigationItem.titleView = portraitHeaderView
-
-        self.updateTitle()
 
         if showAllMediaButton {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: MediaStrings.allMedia, style: .plain, target: self, action: #selector(didPressAllMediaButton))
@@ -151,15 +171,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         // Views
 
-        let kFooterHeight: CGFloat = 44
-
         view.backgroundColor = Theme.backgroundColor
 
-        let footerBar = UIToolbar()
-        self.footerBar = footerBar
-
         let captionViewsContainer = UIView()
-
         captionViewsContainer.setContentHuggingHigh()
         captionViewsContainer.setCompressionResistanceHigh()
 
@@ -177,9 +191,24 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         pendingCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         pendingCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
 
+        let galleryRailView = GalleryRailView()
+        galleryRailView.delegate = self
+        galleryRailView.autoSetDimension(.height, toSize: 60)
+        self.galleryRailView = galleryRailView
+
+        let footerBar = self.makeClearToolbar()
+        self.footerBar = footerBar
+
         let bottomContainer = UIView()
         self.bottomContainer = bottomContainer
-        let bottomStack = UIStackView(arrangedSubviews: [captionViewsContainer, footerBar])
+
+        let toolbarStack = UIStackView(arrangedSubviews: [galleryRailView, footerBar])
+        toolbarStack.axis = .vertical
+        let toolbarBarBlurView = UIVisualEffectView(effect: Theme.barBlurEffect)
+        toolbarStack.insertSubview(toolbarBarBlurView, at: 0)
+        toolbarBarBlurView.autoPinEdgesToSuperviewEdges()
+
+        let bottomStack = UIStackView(arrangedSubviews: [captionViewsContainer, toolbarStack])
         bottomStack.axis = .vertical
         bottomContainer.addSubview(bottomStack)
         bottomStack.autoPinEdgesToSuperviewEdges()
@@ -187,12 +216,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
         self.videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(didPressPauseBarButton))
 
-        self.updateFooterBarButtonItems(isPlayingVideo: true)
         self.view.addSubview(bottomContainer)
         bottomContainer.autoPinWidthToSuperview()
         bottomContainer.autoPinEdge(toSuperviewEdge: .bottom)
         footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        footerBar.autoSetDimension(.height, toSize: kFooterHeight)
+        footerBar.autoSetDimension(.height, toSize: 44)
+
+        updateTitle()
+        updateMediaRail()
+        updateFooterBarButtonItems(isPlayingVideo: true)
 
         // Gestures
 
@@ -307,6 +339,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                                             action: #selector(didPressDelete)))
 
         self.footerBar.setItems(toolbarItems, animated: false)
+    }
+
+    func updateMediaRail() {
+        guard let currentItem = self.currentItem else {
+            owsFailDebug("currentItem was unexpectedly nil")
+            return
+        }
+
+        galleryRailView.configure(itemProvider: currentItem.album, focusedItem: currentItem)
     }
 
     // MARK: Actions
@@ -484,6 +525,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 }
 
                 updateTitle()
+                updateMediaRail()
                 previousPage.zoomOut(animated: false)
                 previousPage.stopAnyVideo()
                 updateFooterBarButtonItems(isPlayingVideo: false)
@@ -744,6 +786,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             let headerFrame: CGRect = CGRect(x: 0, y: 0, width: width, height: 44)
             portraitHeaderView.frame = headerFrame
         }
+    }
+}
+
+extension MediaPageViewController: GalleryRailViewDelegate {
+    func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem) {
+        guard let targetItem = imageRailItem as? MediaGalleryItem else {
+            owsFailDebug("unexpected imageRailItem: \(imageRailItem)")
+            return
+        }
+
+        let direction: NavigationDirection = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
+
+        self.setCurrentItem(targetItem, direction: direction, animated: true)
     }
 }
 
