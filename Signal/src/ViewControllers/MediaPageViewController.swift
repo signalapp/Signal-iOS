@@ -99,36 +99,17 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("deinit")
     }
 
+    // MARK: - Subview
+
+    // MARK: Bottom Bar
     var bottomContainer: UIView!
     var footerBar: UIToolbar!
-    var videoPlayBarButton: UIBarButtonItem!
-    var videoPauseBarButton: UIBarButtonItem!
+    let captionContainerView: CaptionContainerView = CaptionContainerView()
+    var galleryRailView: GalleryRailView = GalleryRailView()
+
     var pagerScrollView: UIScrollView!
 
-    // MARK: Caption
-
-    var currentCaptionView: CaptionView!
-    var pendingCaptionView: CaptionView!
-
-    // MARK: ImageRail
-
-    var galleryRailView: GalleryRailView!
-
-    private func makeClearToolbar() -> UIToolbar {
-        let toolbar = UIToolbar()
-
-        toolbar.backgroundColor = UIColor.clear
-
-        // Making a toolbar transparent requires setting an empty uiimage
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-
-        // hide 1px top-border
-        toolbar.clipsToBounds = true
-
-        return toolbar
-    }
-
-    // MARK: 
+    // MARK: UIViewController overrides
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -171,50 +152,26 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         // Views
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Theme.galleryBackgroundColor
 
-        let captionViewsContainer = UIView()
-        captionViewsContainer.setContentHuggingHigh()
-        captionViewsContainer.setCompressionResistanceHigh()
+        captionContainerView.delegate = self
+        updateCaptionContainerVisibility()
 
-        let currentCaptionView = CaptionView()
-        self.currentCaptionView = currentCaptionView
-        captionViewsContainer.addSubview(currentCaptionView)
-        currentCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        currentCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        currentCaptionView.text = currentItem.captionForDisplay
-
-        let pendingCaptionView = CaptionView()
-        self.pendingCaptionView = pendingCaptionView
-        pendingCaptionView.alpha = 0
-        captionViewsContainer.addSubview(pendingCaptionView)
-        pendingCaptionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        pendingCaptionView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-
-        let galleryRailView = GalleryRailView()
         galleryRailView.delegate = self
-        galleryRailView.autoSetDimension(.height, toSize: 60)
-        self.galleryRailView = galleryRailView
+        galleryRailView.autoSetDimension(.height, toSize: 72)
 
         let footerBar = self.makeClearToolbar()
         self.footerBar = footerBar
+        footerBar.tintColor = .white
 
         let bottomContainer = UIView()
         self.bottomContainer = bottomContainer
+        bottomContainer.backgroundColor = UIColor.ows_black.withAlphaComponent(0.4)
 
-        let toolbarStack = UIStackView(arrangedSubviews: [galleryRailView, footerBar])
-        toolbarStack.axis = .vertical
-        let toolbarBarBlurView = UIVisualEffectView(effect: Theme.barBlurEffect)
-        toolbarStack.insertSubview(toolbarBarBlurView, at: 0)
-        toolbarBarBlurView.autoPinEdgesToSuperviewEdges()
-
-        let bottomStack = UIStackView(arrangedSubviews: [captionViewsContainer, toolbarStack])
+        let bottomStack = UIStackView(arrangedSubviews: [captionContainerView, galleryRailView, footerBar])
         bottomStack.axis = .vertical
         bottomContainer.addSubview(bottomStack)
         bottomStack.autoPinEdgesToSuperviewEdges()
-
-        self.videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
-        self.videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(didPressPauseBarButton))
 
         self.view.addSubview(bottomContainer)
         bottomContainer.autoPinWidthToSuperview()
@@ -223,6 +180,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         footerBar.autoSetDimension(.height, toSize: 44)
 
         updateTitle()
+        updateCaption(item: currentItem)
         updateMediaRail()
         updateFooterBarButtonItems(isPlayingVideo: true)
 
@@ -231,6 +189,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        let isLandscape = size.width > size.height
+        self.navigationItem.titleView = isLandscape ? nil : self.portraitHeaderView
+    }
+
+    override func didReceiveMemoryWarning() {
+        Logger.info("")
+        super.didReceiveMemoryWarning()
+
+        self.cachedPages = [:]
     }
 
     // MARK: KVO
@@ -246,36 +217,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         guard width > 0 else {
             return
         }
-
         let ratioComplete = abs((newValue.x - width) / width)
-        updatePagerTransition(ratioComplete: ratioComplete)
-    }
-
-    func updatePagerTransition(ratioComplete: CGFloat) {
-        if let currentCaptionText = currentCaptionView.text, currentCaptionText.count > 0 {
-            currentCaptionView.alpha = 1 - ratioComplete
-        } else {
-            currentCaptionView.alpha = 0
-        }
-
-        if let pendingCaptionText = pendingCaptionView.text, pendingCaptionText.count > 0 {
-            pendingCaptionView.alpha = ratioComplete
-        } else {
-            pendingCaptionView.alpha = 0
-        }
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        let isLandscape = size.width > size.height
-        self.navigationItem.titleView = isLandscape ? nil : self.portraitHeaderView
-    }
-
-    override func didReceiveMemoryWarning() {
-        Logger.info("")
-        super.didReceiveMemoryWarning()
-
-        self.cachedPages = [:]
+        captionContainerView.updatePagerTransition(ratioComplete: ratioComplete)
     }
 
     // MARK: View Helpers
@@ -292,6 +235,20 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
     }
 
+    private func makeClearToolbar() -> UIToolbar {
+        let toolbar = UIToolbar()
+
+        toolbar.backgroundColor = UIColor.clear
+
+        // Making a toolbar transparent requires setting an empty uiimage
+        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
+
+        // hide 1px top-border
+        toolbar.clipsToBounds = true
+
+        return toolbar
+    }
+
     private var shouldHideToolbars: Bool = false {
         didSet {
             if (oldValue == shouldHideToolbars) {
@@ -303,16 +260,45 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             UIApplication.shared.setStatusBarHidden(shouldHideToolbars, with: .none)
             self.navigationController?.setNavigationBarHidden(shouldHideToolbars, animated: false)
 
-            // We don't animate the background color change because the old color shows through momentarily
-            // behind where the status bar "used to be".
-            self.view.backgroundColor = (shouldHideToolbars ? UIColor.black : Theme.backgroundColor)
-
             UIView.animate(withDuration: 0.1) {
                 self.currentViewController.setShouldHideToolbars(self.shouldHideToolbars)
                 self.bottomContainer.isHidden = self.shouldHideToolbars
             }
         }
     }
+
+    // MARK: Bar Buttons
+
+    let shareBarButton: UIBarButtonItem = {
+        let shareBarButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShare))
+        shareBarButton.tintColor = Theme.galleryIconColor
+        return shareBarButton
+    }()
+
+    let deleteBarButton: UIBarButtonItem = {
+        let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash,
+                                              target: self,
+                                              action: #selector(didPressDelete))
+        deleteBarButton.tintColor = Theme.galleryIconColor
+        return deleteBarButton
+    }()
+
+    func buildFlexibleSpace() -> UIBarButtonItem {
+        return UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+    }
+
+    var videoPlayBarButton: UIBarButtonItem = {
+        let videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
+        videoPlayBarButton.tintColor = Theme.galleryIconColor
+        return videoPlayBarButton
+    }()
+
+    let videoPauseBarButton: UIBarButtonItem = {
+        let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
+            #selector(didPressPauseBarButton))
+        videoPauseBarButton.tintColor = Theme.galleryIconColor
+        return videoPauseBarButton
+    }()
 
     private func updateFooterBarButtonItems(isPlayingVideo: Bool) {
         // TODO do we still need this? seems like a vestige
@@ -323,20 +309,18 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         var toolbarItems: [UIBarButtonItem] = [
-            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShare)),
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            shareBarButton,
+            buildFlexibleSpace()
         ]
 
         if (self.currentItem.isVideo) {
             toolbarItems += [
                 isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton,
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+                buildFlexibleSpace()
             ]
         }
 
-        toolbarItems.append(UIBarButtonItem(barButtonSystemItem: .trash,
-                                            target: self,
-                                            action: #selector(didPressDelete)))
+        toolbarItems.append(deleteBarButton)
 
         self.footerBar.setItems(toolbarItems, animated: false)
     }
@@ -482,16 +466,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             }
             self.pendingViewController = pendingViewController
 
-            CATransaction.begin()
-            CATransaction.disableActions()
             if let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay, pendingCaptionText.count > 0 {
-                self.pendingCaptionView.text = pendingCaptionText
+                self.captionContainerView.pendingText = pendingCaptionText
             } else {
-                self.pendingCaptionView.text = nil
+                self.captionContainerView.pendingText = nil
             }
-            self.pendingCaptionView.sizeToFit()
-            self.pendingCaptionView.superview?.layoutIfNeeded()
-            CATransaction.commit()
 
             // Ensure upcoming page respects current toolbar status
             pendingViewController.setShouldHideToolbars(self.shouldHideToolbars)
@@ -515,13 +494,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 // This can happen when trying to page past the last (or first) view controller
                 // In that case, we don't want to change the captionView.
                 if (previousPage != currentViewController) {
-                    updatePagerTransition(ratioComplete: 1)
-
-                    // promote "pending" to "current" caption view.
-                    let oldCaptionView = self.currentCaptionView
-                    self.currentCaptionView = self.pendingCaptionView
-                    self.pendingCaptionView = oldCaptionView
-                    self.pendingCaptionView.text = nil
+                    captionContainerView.completePagerTransition()
                 }
 
                 updateTitle()
@@ -529,6 +502,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 previousPage.zoomOut(animated: false)
                 previousPage.stopAnyVideo()
                 updateFooterBarButtonItems(isPlayingVideo: false)
+            } else {
+                captionContainerView.pendingText = nil
             }
         }
     }
@@ -703,7 +678,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var portraitHeaderNameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.navbarTitleColor
+        label.textColor = Theme.galleryIconColor
         label.font = UIFont.ows_regularFont(withSize: 17)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -714,7 +689,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var portraitHeaderDateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.navbarTitleColor
+        label.textColor = Theme.galleryIconColor
         label.font = UIFont.ows_regularFont(withSize: 12)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -756,7 +731,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     private func updateCaption(item: MediaGalleryItem) {
-        self.currentCaptionView.text = item.captionForDisplay
+        captionContainerView.currentText = item.captionForDisplay
     }
 
     private func updateTitle(item: MediaGalleryItem) {
@@ -802,103 +777,25 @@ extension MediaPageViewController: GalleryRailViewDelegate {
     }
 }
 
-class CaptionView: UIView {
+extension MediaPageViewController: CaptionContainerViewDelegate {
 
-    var text: String? {
-        get { return textView.text }
-        set { textView.text = newValue }
+    func captionContainerViewDidUpdateText(_ captionContainerView: CaptionContainerView) {
+        updateCaptionContainerVisibility()
     }
 
-    // MARK: Subviews
+    // MARK: Helpers
 
-    let backgroundGradientView = GradientView(from: .clear, to: .black)
-
-    let textView: CaptionTextView = {
-        let textView = CaptionTextView()
-
-        textView.font = UIFont.ows_dynamicTypeBody
-        textView.textColor = .white
-        textView.backgroundColor = .clear
-        textView.isEditable = false
-        textView.isSelectable = false
-
-        return textView
-    }()
-
-    let scrollFadeView = GradientView(from: .clear, to: .black)
-
-    // MARK: Initializers
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        addSubview(backgroundGradientView)
-        backgroundGradientView.autoPinEdgesToSuperviewEdges()
-
-        addSubview(textView)
-        textView.autoPinEdgesToSuperviewMargins()
-
-        addSubview(scrollFadeView)
-        scrollFadeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        scrollFadeView.autoSetDimension(.height, toSize: 20)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: UIView overrides
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        scrollFadeView.isHidden = !textView.doesContentNeedScroll
-    }
-
-    // MARK: -
-
-    class CaptionTextView: UITextView {
-
-        var kMaxHeight: CGFloat = ScaleFromIPhone5(200)
-
-        override var text: String! {
-            didSet {
-                invalidateIntrinsicContentSize()
-            }
+    func updateCaptionContainerVisibility() {
+        if let currentText = captionContainerView.currentText, currentText.count > 0 {
+            captionContainerView.isHidden = false
+            return
         }
 
-        override var font: UIFont? {
-            didSet {
-                invalidateIntrinsicContentSize()
-            }
+        if let pendingText = captionContainerView.pendingText, pendingText.count > 0 {
+            captionContainerView.isHidden = false
+            return
         }
 
-        var doesContentNeedScroll: Bool {
-            return self.bounds.height == kMaxHeight
-        }
-
-        override func layoutSubviews() {
-            super.layoutSubviews()
-
-            // Enable/disable scrolling depending on wether we've clipped
-            // content in `intrinsicContentSize`
-            if doesContentNeedScroll {
-                if !isScrollEnabled {
-                    isScrollEnabled = true
-                }
-            } else if isScrollEnabled {
-                isScrollEnabled = false
-            }
-        }
-
-        override var intrinsicContentSize: CGSize {
-            var size = super.intrinsicContentSize
-
-            if size.height == UIViewNoIntrinsicMetric {
-                size.height = layoutManager.usedRect(for: textContainer).height + textContainerInset.top + textContainerInset.bottom
-            }
-            size.height = min(kMaxHeight, size.height)
-
-            return size
-        }
+        captionContainerView.isHidden = true
     }
 }

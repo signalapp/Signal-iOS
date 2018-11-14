@@ -58,6 +58,12 @@ public class OWSNavigationBar: UINavigationBar {
     // MARK: Theme
 
     private func applyTheme() {
+        guard respectsTheme else {
+            self.blurEffectView?.removeFromSuperview()
+            self.setBackgroundImage(nil, for: .default)
+            return
+        }
+
         if UIAccessibilityIsReduceTransparencyEnabled() {
             self.blurEffectView?.removeFromSuperview()
             let color = Theme.navbarBackgroundColor
@@ -105,6 +111,13 @@ public class OWSNavigationBar: UINavigationBar {
     public func themeDidChange() {
         Logger.debug("")
         applyTheme()
+    }
+
+    @objc
+    public var respectsTheme: Bool = true {
+        didSet {
+            themeDidChange()
+        }
     }
 
     // MARK: Layout

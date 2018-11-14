@@ -57,7 +57,6 @@ class GalleryRailCellView: UIView {
 
         layoutMargins = .zero
         self.clipsToBounds = true
-        adjustAspectRatio(isSelected: isSelected)
         addSubview(imageView)
         imageView.autoPinEdgesToSuperviewMargins()
 
@@ -88,7 +87,7 @@ class GalleryRailCellView: UIView {
             guard self.item === item else { return }
 
             self.imageView.image = image
-            }.retainUntilComplete()
+        }.retainUntilComplete()
     }
 
     // MARK: Selected
@@ -97,34 +96,25 @@ class GalleryRailCellView: UIView {
 
     func setIsSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
-        adjustAspectRatio(isSelected: isSelected)
         if isSelected {
-            self.layoutMargins = UIEdgeInsets(top: 0, left: 3, bottom: 0, right: 3)
+            layoutMargins = UIEdgeInsets(top: 0, left: 6, bottom: 0, right: 6)
+            imageView.layer.borderColor = UIColor(rgbHex: 0x1f8fe8).cgColor
+            imageView.layer.borderWidth = 2
+            imageView.layer.cornerRadius = 2
         } else {
-            self.layoutMargins = .zero
+            layoutMargins = .zero
+            imageView.layer.borderWidth = 0
+            imageView.layer.cornerRadius = 0
         }
     }
 
     // MARK: Subview Helpers
 
-    var aspectRatioConstraint: NSLayoutConstraint?
-    func adjustAspectRatio(isSelected: Bool) {
-        if let oldConstraint = aspectRatioConstraint {
-            NSLayoutConstraint.deactivate([oldConstraint])
-        }
-
-        if isSelected, let itemAspectRatio = item?.aspectRatio {
-            aspectRatioConstraint = imageView.autoPin(toAspectRatio: itemAspectRatio)
-        } else {
-            // Portrait mode AR by default
-            let kDefaultAspectRatio: CGFloat = 9.0 / 16.0
-            aspectRatioConstraint = imageView.autoPin(toAspectRatio: kDefaultAspectRatio)
-        }
-    }
-
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.autoPinToSquareAspectRatio()
+        imageView.clipsToBounds = true
 
         return imageView
     }()
@@ -183,14 +173,20 @@ class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
 
         self.itemProvider = itemProvider
-        scrollView.subviews.forEach { $0.removeFromSuperview() }
 
         guard itemProvider.railItems.count > 1 else {
-            UIView.animate(withDuration: animationDuration) {
-                self.isHidden = true
-            }
+            let cellViews = scrollView.subviews
+
+            UIView.animate(withDuration: animationDuration,
+                           animations: {
+                            cellViews.forEach { $0.isHidden = true }
+                            self.isHidden = true
+            },
+                           completion: { _ in cellViews.forEach { $0.removeFromSuperview() } })
             return
         }
+
+        scrollView.subviews.forEach { $0.removeFromSuperview() }
 
         UIView.animate(withDuration: animationDuration) {
             self.isHidden = false
@@ -200,7 +196,7 @@ class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
-        stackView.spacing = 4
+        stackView.spacing = 2
 
         scrollView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()

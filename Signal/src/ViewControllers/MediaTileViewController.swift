@@ -66,7 +66,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
             return
         }
 
-        collectionView.backgroundColor = Theme.backgroundColor
+        collectionView.backgroundColor = Theme.galleryBackgroundColor
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
         collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)

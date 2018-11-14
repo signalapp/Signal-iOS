@@ -118,6 +118,16 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.hairlineColor;
 }
 
++ (UIColor *)galleryBackgroundColor
+{
+    return UIColor.ows_gray95Color;
+}
+
++ (UIColor *)galleryIconColor
+{
+    return UIColor.ows_gray05Color;
+}
+
 + (UIColor *)conversationButtonBackgroundColor
 {
     return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.35f alpha:1.f] : UIColor.ows_gray02Color);
