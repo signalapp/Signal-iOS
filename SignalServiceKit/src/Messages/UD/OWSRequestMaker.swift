@@ -24,10 +24,15 @@ public class RequestMakerResult: NSObject {
     public let wasSentByUD: Bool
 
     @objc
+    public let wasSentByWebsocket: Bool
+
+    @objc
     public init(responseObject: Any?,
-                wasSentByUD: Bool) {
+                wasSentByUD: Bool,
+                wasSentByWebsocket: Bool) {
         self.responseObject = responseObject
         self.wasSentByUD = wasSentByUD
+        self.wasSentByWebsocket = wasSentByWebsocket
     }
 }
 
@@ -115,7 +120,7 @@ public class RequestMaker: NSObject {
         let isUDRequest: Bool = udAccessForRequest != nil
         let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey)
         let webSocketType: OWSWebSocketType = (isUDRequest ? .UD : .default)
-        let canMakeWebsocketRequests = (socketManager.canMakeRequests(of: webSocketType) && !skipWebsocket)
+        let canMakeWebsocketRequests = (socketManager.canMakeRequests(of: webSocketType) && !skipWebsocket && !isUDRequest)
 
         if canMakeWebsocketRequests {
             return Promise { resolver in
@@ -130,7 +135,9 @@ public class RequestMaker: NSObject {
 
                     self.requestSucceeded(udAccess: udAccessForRequest)
 
-                    resolver.fulfill(RequestMakerResult(responseObject: responseObject, wasSentByUD: isUDRequest))
+                    resolver.fulfill(RequestMakerResult(responseObject: responseObject,
+                                                        wasSentByUD: isUDRequest,
+                                                        wasSentByWebsocket: true))
                 }) { (statusCode: Int, responseData: Data?, error: Error) in
                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
                 }
@@ -179,7 +186,9 @@ public class RequestMaker: NSObject {
                     self.requestSucceeded(udAccess: udAccessForRequest)
 
                     // Unwrap the network manager promise into a request maker promise.
-                    return RequestMakerResult(responseObject: networkManagerResult.responseObject, wasSentByUD: isUDRequest)
+                    return RequestMakerResult(responseObject: networkManagerResult.responseObject,
+                                              wasSentByUD: isUDRequest,
+                                              wasSentByWebsocket: false)
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
                     switch error {
                     case NetworkManagerError.taskError(let task, _):
