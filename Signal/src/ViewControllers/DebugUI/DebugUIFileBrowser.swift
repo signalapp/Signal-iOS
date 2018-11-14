@@ -15,7 +15,7 @@
     @objc init(fileURL: URL) {
         self.fileURL = fileURL
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.contents = buildContents()
     }

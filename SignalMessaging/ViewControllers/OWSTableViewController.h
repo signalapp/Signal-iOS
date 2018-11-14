@@ -133,6 +133,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 @property (nonatomic) UITableViewStyle tableViewStyle;
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 #pragma mark - Presentation
 
 - (void)presentFromViewController:(UIViewController *)fromViewController;
