@@ -168,6 +168,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    // Disable default cookie handling for all requests.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
 
     return sessionManager;
 }
@@ -186,6 +188,8 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
     [sessionManager.requestSerializer setValue:self.censorshipConfiguration.signalServiceReflectorHost forHTTPHeaderField:@"Host"];
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
+    // Disable default cookie handling for all requests.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
 
     return sessionManager;
 }

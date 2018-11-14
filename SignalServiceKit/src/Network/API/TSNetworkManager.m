@@ -28,6 +28,8 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 // This property should only be accessed on udSerialQueue.
 @property (atomic, readonly) AFHTTPSessionManager *udSessionManager;
 
+@property (atomic, readonly) dispatch_queue_t udSerialQueue;
+
 typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 @end
@@ -35,6 +37,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 @implementation TSNetworkManager
 
 @synthesize udSessionManager = _udSessionManager;
+@synthesize udSerialQueue = _udSerialQueue;
 
 #pragma mark Singleton implementation
 
@@ -52,6 +55,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         return self;
     }
 
+    _udSerialQueue = dispatch_queue_create("org.whispersystems.networkManager.udQueue", DISPATCH_QUEUE_SERIAL);
+
     OWSSingletonAssert();
 
     return self;
@@ -64,17 +69,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
             failure:(TSNetworkManagerFailure)failure
 {
     return [self makeRequest:request completionQueue:dispatch_get_main_queue() success:success failure:failure];
-}
-
-- (dispatch_queue_t)udSerialQueue
-{
-    static dispatch_queue_t _serialQueue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.networkManager.udQueue", DISPATCH_QUEUE_SERIAL);
-    });
-
-    return _serialQueue;
 }
 
 - (void)makeRequest:(TSRequest *)request
@@ -132,9 +126,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                                                                          password:request.authPassword];
     }
 
-    // Disable default cookie handling for all requests.
-    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
-
     // Honor the request's headers.
     for (NSString *headerField in request.allHTTPHeaderFields) {
         NSString *headerValue = request.allHTTPHeaderFields[headerField];
@@ -150,8 +141,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     if (!_udSessionManager) {
         _udSessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
         _udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        // Disable default cookie handling for all requests.
-        _udSessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
         // NOTE: We could enable HTTPShouldUsePipelining here.
     }
 
