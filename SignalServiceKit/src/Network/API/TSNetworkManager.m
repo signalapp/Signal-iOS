@@ -25,11 +25,16 @@ BOOL IsNSErrorNetworkFailure(NSError *_Nullable error)
 
 @interface TSNetworkManager ()
 
+// This property should only be accessed on udSerialQueue.
+@property (atomic, readonly) AFHTTPSessionManager *udSessionManager;
+
 typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
 @end
 
 @implementation TSNetworkManager
+
+@synthesize udSessionManager = _udSessionManager;
 
 #pragma mark Singleton implementation
 
@@ -61,6 +66,17 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     return [self makeRequest:request completionQueue:dispatch_get_main_queue() success:success failure:failure];
 }
 
+- (dispatch_queue_t)udSerialQueue
+{
+    static dispatch_queue_t _serialQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _serialQueue = dispatch_queue_create("org.whispersystems.networkManager.udQueue", DISPATCH_QUEUE_SERIAL);
+    });
+
+    return _serialQueue;
+}
+
 - (void)makeRequest:(TSRequest *)request
     completionQueue:(dispatch_queue_t)completionQueue
             success:(TSNetworkManagerSuccess)successBlock
@@ -70,9 +86,15 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self makeRequestSync:request completionQueue:completionQueue success:successBlock failure:failureBlock];
-    });
+    if (request.isUDRequest) {
+        dispatch_async(self.udSerialQueue, ^{
+            [self makeUDRequestSync:request success:successBlock failure:failureBlock];
+        });
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self makeRequestSync:request completionQueue:completionQueue success:successBlock failure:failureBlock];
+        });
+    }
 }
 
 - (void)makeRequestSync:(TSRequest *)request
@@ -84,11 +106,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    OWSLogInfo(@"Making request: %@", request);
+    OWSLogInfo(@"Making Non-UD request: %@", request);
 
     // TODO: Remove this logging when the call connection issues have been resolved.
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"request succeeded : %@", request);
+        OWSLogInfo(@"UD request succeeded : %@", request);
 
         if (request.shouldHaveAuthorizationHeaders) {
             [TSAccountManager.sharedInstance setIsDeregistered:NO];
@@ -110,16 +132,77 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
                                                                          password:request.authPassword];
     }
 
-    // Honor the request's preferences about default cookie handling.
-    //
-    // Default is YES.
-    sessionManager.requestSerializer.HTTPShouldHandleCookies = request.HTTPShouldHandleCookies;
+    // Disable default cookie handling for all requests.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
 
     // Honor the request's headers.
     for (NSString *headerField in request.allHTTPHeaderFields) {
         NSString *headerValue = request.allHTTPHeaderFields[headerField];
         [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
     }
+
+    [self performRequest:request sessionManager:sessionManager success:success failure:failure];
+}
+
+// This method should only be invoked on udSerialQueue.
+- (AFHTTPSessionManager *)udSessionManager
+{
+    if (!_udSessionManager) {
+        _udSessionManager = [OWSSignalService sharedInstance].signalServiceSessionManager;
+        _udSessionManager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        // Disable default cookie handling for all requests.
+        _udSessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
+        _udSessionManager.session.configuration.HTTPShouldSetCookies = NO;
+        _udSessionManager.session.configuration.HTTPShouldUsePipelining = YES;
+    }
+
+    return _udSessionManager;
+}
+
+- (void)makeUDRequestSync:(TSRequest *)request
+                  success:(TSNetworkManagerSuccess)successBlock
+                  failure:(TSNetworkManagerFailure)failureBlock
+{
+    OWSAssertDebug(request);
+    OWSAssert(!request.shouldHaveAuthorizationHeaders);
+    OWSAssertDebug(successBlock);
+    OWSAssertDebug(failureBlock);
+
+    OWSLogInfo(@"Making UD request: %@", request);
+    uint64_t before = [NSDate ows_millisecondTimeStamp];
+
+    TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
+        OWSLogInfo(@"Non-UD request succeeded : %@", request);
+
+        successBlock(task, responseObject);
+
+        [OutageDetection.sharedManager reportConnectionSuccess];
+    };
+    TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
+
+    AFHTTPSessionManager *sessionManager = self.udSessionManager;
+
+    // Honor the request's headers.
+    for (NSString *headerField in sessionManager.requestSerializer.HTTPRequestHeaders.allKeys.copy) {
+        [sessionManager.requestSerializer setValue:nil forHTTPHeaderField:headerField];
+    }
+    for (NSString *headerField in request.allHTTPHeaderFields) {
+        NSString *headerValue = request.allHTTPHeaderFields[headerField];
+        [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
+    }
+
+    [self performRequest:request sessionManager:sessionManager success:success failure:failure];
+}
+
+- (void)performRequest:(TSRequest *)request
+        sessionManager:(AFHTTPSessionManager *)sessionManager
+               success:(TSNetworkManagerSuccess)success
+               failure:(TSNetworkManagerFailure)failure
+{
+    OWSAssertDebug(request);
+    OWSAssertDebug(sessionManager);
+    OWSAssertDebug(success);
+    OWSAssertDebug(failure);
 
     if ([request.HTTPMethod isEqualToString:@"GET"]) {
         [sessionManager GET:request.URL.absoluteString
