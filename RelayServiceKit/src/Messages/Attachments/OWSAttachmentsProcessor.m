@@ -88,7 +88,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                            failure:(void (^)(NSError *error))failureHandler
 {
-    [[primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [[primaryStorage dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self fetchAttachmentsForMessage:message
                              transaction:transaction
                                  success:successHandler
@@ -259,7 +259,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     manager.completionQueue    = dispatch_get_main_queue();
 
     // We want to avoid large downloads from a compromised or buggy service.
-    const long kMaxDownloadSize = 150 * 1024 * 1024;
+    const long kMaxDownloadSize = LONG_MAX;
+//    const long kMaxDownloadSize = 150 * 1024 * 1024;
     // TODO stream this download rather than storing the entire blob.
     __block NSURLSessionDataTask *task = nil;
     __block BOOL hasCheckedContentLength = NO;

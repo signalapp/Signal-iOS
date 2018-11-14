@@ -614,7 +614,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
 
     func buildGalleryItem(message: TSMessage, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = message.attachment(with: transaction) as? TSAttachmentStream else {
-            owsFail("\(self.logTag) in \(#function) attachment was unexpectedly empty")
+            Logger.error("\(self.logTag) in \(#function) attachment was unexpectedly empty")
             return nil
         }
 

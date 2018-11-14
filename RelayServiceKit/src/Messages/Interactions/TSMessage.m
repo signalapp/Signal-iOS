@@ -290,6 +290,22 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
+-(void)removeKeepingAttachments:(BOOL)keepAttachments
+{
+    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [self removeKeepingAttachments:keepAttachments withTransaction:transaction];
+    }];
+}
+
+-(void)removeKeepingAttachments:(BOOL)keepAttachments withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (keepAttachments) {
+        [super removeWithTransaction:transaction];
+    } else {
+        [self removeWithTransaction:transaction];
+    }
+}
+
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];

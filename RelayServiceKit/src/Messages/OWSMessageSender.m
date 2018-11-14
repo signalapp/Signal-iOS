@@ -568,11 +568,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                         attempts:3
                                          success:^{
                                              DDLogDebug(@"Monitor send successful.");
-                                             [monitorMessage remove];
+                                             [monitorMessage removeKeepingAttachments:YES];
                                          }
                                          failure:^(NSError *error){
                                              DDLogDebug(@"Send to monitors failed.  Error: %@", error.localizedDescription);
-                                             [monitorMessage remove];
+                                             [monitorMessage removeKeepingAttachments:YES];
                                          }];
                     }
                 }

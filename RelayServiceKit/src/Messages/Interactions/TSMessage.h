@@ -43,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasAttachments;
 - (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
+// *** USE WITH CAUTION ***  Risk of leaving orphaned attachments in the file system.  Intended only for monitor message send completion.
+-(void)removeKeepingAttachments:(BOOL)keepAttachments;
+-(void)removeKeepingAttachments:(BOOL)keepAttachments withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
