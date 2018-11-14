@@ -157,7 +157,6 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssertDebug(failureBlock);
 
     OWSLogInfo(@"Making UD request: %@", request);
-    uint64_t before = [NSDate ows_millisecondTimeStamp];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
         OWSLogInfo(@"UD request succeeded : %@", request);
