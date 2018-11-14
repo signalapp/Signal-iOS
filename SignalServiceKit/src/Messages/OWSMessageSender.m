@@ -1102,8 +1102,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
-                    const BOOL wasSentByUD = result.wasSentByUD;
-                    [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:wasSentByUD];
+                    [self messageSendDidSucceed:messageSend
+                                 deviceMessages:deviceMessages
+                                    wasSentByUD:result.wasSentByUD
+                             wasSentByWebsocket:result.wasSentByWebsocket];
                 });
             })
             .catch(^(NSError *error) {
@@ -1139,13 +1141,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
                deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
-                  wasSentByUD:(BOOL)wasSentByUD {
+                  wasSentByUD:(BOOL)wasSentByUD
+           wasSentByWebsocket:(BOOL)wasSentByWebsocket
+{
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceMessages);
 
     SignalRecipient *recipient = messageSend.recipient;
 
-    OWSLogInfo(@"Message send succeeded (wasSentByUD: %d).", wasSentByUD);
+    OWSLogInfo(@"Message send succeeded; wasSentByUD: %d, wasSentByWebsocket: %d.", wasSentByUD, wasSentByWebsocket);
 
     if (messageSend.isLocalNumber && deviceMessages.count == 0) {
         OWSLogInfo(@"Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.");
