@@ -9,8 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSSocketManager ()
 
-@property (nonatomic) OWSWebSocket *websocketDefault;
-@property (nonatomic) OWSWebSocket *websocketUD;
+@property (nonatomic) OWSWebSocket *websocket;
 
 @end
 
@@ -28,8 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertIsOnMainThread();
 
-    _websocketDefault = [[OWSWebSocket alloc] initWithWebSocketType:OWSWebSocketTypeDefault];
-    _websocketUD = [[OWSWebSocket alloc] initWithWebSocketType:OWSWebSocketTypeUD];
+    _websocket = [[OWSWebSocket alloc] init];
 
     OWSSingletonAssert();
 
@@ -48,51 +46,31 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.socketManager;
 }
 
-- (OWSWebSocket *)webSocketOfType:(OWSWebSocketType)webSocketType
+- (BOOL)canMakeRequests
 {
-    switch (webSocketType) {
-        case OWSWebSocketTypeDefault:
-            return self.websocketDefault;
-        case OWSWebSocketTypeUD:
-            return self.websocketUD;
-    }
-}
-
-- (BOOL)canMakeRequestsOfType:(OWSWebSocketType)webSocketType
-{
-    return [self webSocketOfType:webSocketType].canMakeRequests;
+    return self.websocket.canMakeRequests;
 }
 
 - (void)makeRequest:(TSRequest *)request
-      webSocketType:(OWSWebSocketType)webSocketType
             success:(TSSocketMessageSuccess)success
             failure:(TSSocketMessageFailure)failure
 {
-    [[self webSocketOfType:webSocketType] makeRequest:request success:success failure:failure];
+    [self.websocket makeRequest:request success:success failure:failure];
 }
 
 - (void)requestSocketOpen
 {
-    [self.websocketDefault requestSocketOpen];
-    [self.websocketUD requestSocketOpen];
+    [self.websocket requestSocketOpen];
 }
 
 - (void)cycleSocket
 {
-    [self.websocketDefault cycleSocket];
-    [self.websocketUD cycleSocket];
+    [self.websocket cycleSocket];
 }
 
 - (OWSWebSocketState)highestSocketState
 {
-    if (self.websocketDefault.state == OWSWebSocketStateOpen || self.websocketUD.state == OWSWebSocketStateOpen) {
-        return OWSWebSocketStateOpen;
-    } else if (self.websocketDefault.state == OWSWebSocketStateConnecting
-        || self.websocketUD.state == OWSWebSocketStateConnecting) {
-        return OWSWebSocketStateConnecting;
-    } else {
-        return OWSWebSocketStateClosed;
-    }
+    return self.websocket.state;
 }
 
 @end

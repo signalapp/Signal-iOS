@@ -143,20 +143,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
 #pragma mark -
 
-NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
-{
-    switch (type) {
-        case OWSWebSocketTypeDefault:
-            return @"Default";
-        case OWSWebSocketTypeUD:
-            return @"UD";
-    }
-}
-
 // OWSWebSocket's properties should only be accessed from the main thread.
 @interface OWSWebSocket () <SRWebSocketDelegate>
-
-@property (nonatomic) OWSWebSocketType webSocketType;
 
 // This class has a few "tiers" of state.
 //
@@ -216,7 +204,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
 @implementation OWSWebSocket
 
-- (instancetype)initWithWebSocketType:(OWSWebSocketType)webSocketType
+- (instancetype)init
 {
     self = [super init];
 
@@ -226,7 +214,6 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
     OWSAssertIsOnMainThread();
 
-    _webSocketType = webSocketType;
     _state = OWSWebSocketStateClosed;
     _socketMessageMap = [NSMutableDictionary new];
 
@@ -573,12 +560,11 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
         [socketMessage didFailBeforeSending];
         return;
     }
-    OWSLogInfo(@"making request: %llu, %@: %@, jsonData.length: %zd, socketType: %@",
+    OWSLogInfo(@"making request: %llu, %@: %@, jsonData.length: %zd",
         socketMessage.requestId,
         request.HTTPMethod,
         requestPath,
-        jsonData.length,
-        NSStringFromOWSWebSocketType(self.webSocketType));
+        jsonData.length);
 
     const int64_t kSocketTimeoutSeconds = 10;
     __weak TSSocketMessage *weakSocketMessage = socketMessage;
@@ -650,7 +636,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
-            if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
+            if (responseStatus == 403) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
                 [self.tsAccountManager setIsDeregistered:YES];
@@ -718,7 +704,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
     if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
         NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
-        if (statusCode.unsignedIntegerValue == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
+        if (statusCode.unsignedIntegerValue == 403) {
             [self.tsAccountManager setIsDeregistered:YES];
         }
     }
@@ -910,16 +896,9 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 
 - (NSString *)webSocketAuthenticationString
 {
-    switch (self.webSocketType) {
-        case OWSWebSocketTypeUD:
-            // UD socket is unauthenticated.
-            return @"";
-        case OWSWebSocketTypeDefault:
-            return
-                [NSString stringWithFormat:@"?login=%@&password=%@",
-                          [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                          [TSAccountManager serverAuthToken]];
-    }
+    return [NSString stringWithFormat:@"?login=%@&password=%@",
+                     [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
+                     [TSAccountManager serverAuthToken]];
 }
 
 #pragma mark - Socket LifeCycle
@@ -1149,9 +1128,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 {
     OWSAssertIsOnMainThread();
 
-    if (self.webSocketType == OWSWebSocketTypeDefault) {
-        [self cycleSocket];
-    }
+    [self cycleSocket];
 }
 
 @end
