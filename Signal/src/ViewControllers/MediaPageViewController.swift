@@ -269,13 +269,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: Bar Buttons
 
-    let shareBarButton: UIBarButtonItem = {
+    lazy var shareBarButton: UIBarButtonItem = {
         let shareBarButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShare))
         shareBarButton.tintColor = Theme.darkThemePrimaryColor
         return shareBarButton
     }()
 
-    let deleteBarButton: UIBarButtonItem = {
+    lazy var deleteBarButton: UIBarButtonItem = {
         let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash,
                                               target: self,
                                               action: #selector(didPressDelete))
