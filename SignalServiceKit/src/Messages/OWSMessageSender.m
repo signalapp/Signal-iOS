@@ -1109,8 +1109,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [[requestMaker makeRequestObjc]
             .then(^(OWSRequestMakerResult *result) {
                 dispatch_async([OWSDispatch sendingQueue], ^{
-                    const BOOL wasSentByUD = result.wasSentByUD;
-                    [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:wasSentByUD];
+                    [self messageSendDidSucceed:messageSend
+                                 deviceMessages:deviceMessages
+                                    wasSentByUD:result.wasSentByUD
+                             wasSentByWebsocket:result.wasSentByWebsocket];
                 });
             })
             .catch(^(NSError *error) {
@@ -1146,7 +1148,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
                deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
-                  wasSentByUD:(BOOL)wasSentByUD {
+                  wasSentByUD:(BOOL)wasSentByUD
+           wasSentByWebsocket:(BOOL)wasSentByWebsocket
+{
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceMessages);
 
@@ -1164,7 +1168,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // to avoid unnecessary message sends for sync messages until we learn
         // of a linked device (e.g. through the device linking UI or by receiving
         // a sync message, etc.).
-        [OWSDeviceManager.sharedManager clearMayHaveLinkedDevicesIfNotSet];
+        [OWSDeviceManager.sharedManager clearMayHaveLinkedDevices];
     }
 
     dispatch_async([OWSDispatch sendingQueue], ^{

@@ -419,6 +419,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
+    //
+    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
     [request setHTTPShouldHandleCookies:NO];
 
     return request;
@@ -451,6 +453,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
+    //
+    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
     [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
     OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
@@ -489,6 +493,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Add UD auth header.
     [request setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
+
+    request.isUDRequest = YES;
 }
 
 @end

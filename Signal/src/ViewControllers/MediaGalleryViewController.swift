@@ -8,17 +8,41 @@ public enum GalleryDirection {
     case before, after, around
 }
 
+class MediaGalleryAlbum {
+    private(set) var items: [MediaGalleryItem]
+
+    init(items: [MediaGalleryItem]) {
+        self.items = items
+    }
+
+    func add(item: MediaGalleryItem) {
+        guard !items.contains(item) else {
+            return
+        }
+
+        items.append(item)
+        items.sort { (lhs, rhs) -> Bool in
+            return lhs.albumIndex < rhs.albumIndex
+        }
+    }
+}
+
 public class MediaGalleryItem: Equatable, Hashable {
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate
     let captionForDisplay: String?
+    let albumIndex: Int
+    var album: MediaGalleryAlbum?
+    let orderingKey: MediaGalleryItemOrderingKey
 
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
         self.message = message
         self.attachmentStream = attachmentStream
         self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
+        self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId!)
+        self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.timestampForSorting(), attachmentSortKey: albumIndex)
     }
 
     var isVideo: Bool {
@@ -31,6 +55,10 @@ public class MediaGalleryItem: Equatable, Hashable {
 
     var isImage: Bool {
         return attachmentStream.isImage
+    }
+
+    var imageSize: CGSize {
+        return attachmentStream.imageSize()
     }
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
@@ -48,6 +76,29 @@ public class MediaGalleryItem: Equatable, Hashable {
 
     public var hashValue: Int {
         return attachmentStream.uniqueId?.hashValue ?? attachmentStream.hashValue
+    }
+
+    // MARK: Sorting
+
+    struct MediaGalleryItemOrderingKey: Comparable {
+        let messageSortKey: UInt64
+        let attachmentSortKey: Int
+
+        // MARK: Comparable
+
+        static func < (lhs: MediaGalleryItem.MediaGalleryItemOrderingKey, rhs: MediaGalleryItem.MediaGalleryItemOrderingKey) -> Bool {
+            if lhs.messageSortKey < rhs.messageSortKey {
+                return true
+            }
+
+            if lhs.messageSortKey == rhs.messageSortKey {
+                if lhs.attachmentSortKey < rhs.attachmentSortKey {
+                    return true
+                }
+            }
+
+            return false
+        }
     }
 }
 
@@ -172,14 +223,6 @@ protocol MediaGalleryDataSourceDelegate: class {
 
 class MediaGalleryNavigationController: OWSNavigationController {
 
-    // MARK: View LifeCycle
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // If the user's device is already rotated, try to respect that by rotating to landscape now
-        UIViewController.attemptRotationToDeviceOrientation()
-    }
-
     var presentationView: UIImageView!
     var retainUntilDismissed: MediaGallery?
 
@@ -203,6 +246,10 @@ class MediaGalleryNavigationController: OWSNavigationController {
 
     // MARK: View Lifecycle
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -222,6 +269,23 @@ class MediaGalleryNavigationController: OWSNavigationController {
         presentationView.layer.minificationFilter = kCAFilterTrilinear
         presentationView.layer.magnificationFilter = kCAFilterTrilinear
         presentationView.contentMode = .scaleAspectFit
+
+        guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
+            owsFailDebug("navigationBar had unexpected class: \(self.navigationBar)")
+            return
+        }
+
+        navigationBar.respectsTheme = false
+        navigationBar.barStyle = .black
+        navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
+        navigationBar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
+        navigationBar.tintColor = Theme.darkThemePrimaryColor
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // If the user's device is already rotated, try to respect that by rotating to landscape now
+        UIViewController.attemptRotationToDeviceOrientation()
     }
 
     // MARK: Orientation
@@ -386,7 +450,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
                             // fade out content behind the pageViewController
                             // and behind the presentation view
-                            self.navigationController.view.backgroundColor = Theme.backgroundColor
+                            self.navigationController.view.backgroundColor = Theme.darkThemeBackgroundColor
             },
                            completion: { (_: Bool) in
                             // At this point our presentation view should be overlayed perfectly
@@ -487,9 +551,20 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
     }
 
-    public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
+    public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion completionParam: (() -> Void)?) {
+
+        guard let presentingViewController = self.navigationController.presentingViewController else {
+            owsFailDebug("presentingController was unexpectedly nil")
+            return
+        }
+
+        let completion = {
+            completionParam?()
+            UIApplication.shared.isStatusBarHidden = false
+            presentingViewController.setNeedsStatusBarAppearanceUpdate()
+        }
+
         navigationController.view.isUserInteractionEnabled = false
-        UIApplication.shared.isStatusBarHidden = false
 
         guard let detailView = mediaPageViewController.view else {
             owsFailDebug("detailView was unexpectedly nil")
@@ -532,12 +607,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                             } else {
                                 self.navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
                             }
-            },
-                           completion: { (_: Bool) in
-                            // In case user has hidden bars, which changes background to black.
-                            // We don't want to change this while detailView is visible, lest
-                            // we obscure out the presentationView
-                            detailView.backgroundColor = Theme.backgroundColor
             })
 
             // This intentionally overlaps the previous animation a bit
@@ -547,7 +616,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                            animations: {
                             guard let replacingView = self.replacingView else {
                                 owsFailDebug("replacingView was unexpectedly nil")
-                                self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+                                presentingViewController.dismiss(animated: false, completion: completion)
                                 return
                             }
                             // fade out content and toolbars
@@ -555,16 +624,16 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                             replacingView.alpha = 1.0
             },
                            completion: { (_: Bool) in
-                            self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+                            presentingViewController.dismiss(animated: false, completion: completion)
             })
         } else {
             guard let replacingView = self.replacingView else {
                 owsFailDebug("replacingView was unexpectedly nil")
-                navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+                presentingViewController.dismiss(animated: false, completion: completion)
                 return
             }
             replacingView.alpha = 1.0
-            navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+            presentingViewController.dismiss(animated: false, completion: completion)
         }
     }
 
@@ -648,7 +717,27 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             return nil
         }
 
-        return MediaGalleryItem(message: message, attachmentStream: attachmentStream)
+        let galleryItem = MediaGalleryItem(message: message, attachmentStream: attachmentStream)
+        galleryItem.album = getAlbum(item: galleryItem)
+
+        return galleryItem
+    }
+
+    var galleryAlbums: [String: MediaGalleryAlbum] = [:]
+    func getAlbum(item: MediaGalleryItem) -> MediaGalleryAlbum? {
+        guard let albumMessageId = item.attachmentStream.albumMessageId else {
+            return nil
+        }
+
+        guard let existingAlbum = galleryAlbums[albumMessageId] else {
+            let newAlbum = MediaGalleryAlbum(items: [item])
+            galleryAlbums[albumMessageId] = newAlbum
+
+            return newAlbum
+        }
+
+        existingAlbum.add(item: item)
+        return existingAlbum
     }
 
     // Range instead of indexSet since it's contiguous?
@@ -760,13 +849,13 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
         Bench(title: "sorting gallery items") {
             galleryItems.sort { lhs, rhs -> Bool in
-                return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
+                return lhs.orderingKey < rhs.orderingKey
             }
             sectionDates.sort()
 
             for (date, galleryItems) in sections {
                 sortedSections[date] = galleryItems.sorted { lhs, rhs -> Bool in
-                    return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
+                    return lhs.orderingKey < rhs.orderingKey
                 }
             }
         }
