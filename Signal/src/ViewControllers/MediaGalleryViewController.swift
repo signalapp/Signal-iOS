@@ -277,9 +277,9 @@ class MediaGalleryNavigationController: OWSNavigationController {
 
         navigationBar.respectsTheme = false
         navigationBar.barStyle = .black
-        navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.galleryIconColor]
-        navigationBar.barTintColor = Theme.galleryBackgroundColor.withAlphaComponent(0.6)
-        navigationBar.tintColor = Theme.galleryIconColor
+        navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
+        navigationBar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
+        navigationBar.tintColor = Theme.darkThemePrimaryColor
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -450,7 +450,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
                             // fade out content behind the pageViewController
                             // and behind the presentation view
-                            self.navigationController.view.backgroundColor = Theme.galleryBackgroundColor
+                            self.navigationController.view.backgroundColor = Theme.darkThemeBackgroundColor
             },
                            completion: { (_: Bool) in
                             // At this point our presentation view should be overlayed perfectly

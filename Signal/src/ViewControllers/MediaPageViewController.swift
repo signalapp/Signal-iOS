@@ -152,7 +152,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         // Views
 
-        view.backgroundColor = Theme.galleryBackgroundColor
+        view.backgroundColor = Theme.darkThemeBackgroundColor
 
         captionContainerView.delegate = self
         updateCaptionContainerVisibility()
@@ -271,7 +271,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     let shareBarButton: UIBarButtonItem = {
         let shareBarButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShare))
-        shareBarButton.tintColor = Theme.galleryIconColor
+        shareBarButton.tintColor = Theme.darkThemePrimaryColor
         return shareBarButton
     }()
 
@@ -279,7 +279,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash,
                                               target: self,
                                               action: #selector(didPressDelete))
-        deleteBarButton.tintColor = Theme.galleryIconColor
+        deleteBarButton.tintColor = Theme.darkThemePrimaryColor
         return deleteBarButton
     }()
 
@@ -289,14 +289,14 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     var videoPlayBarButton: UIBarButtonItem = {
         let videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
-        videoPlayBarButton.tintColor = Theme.galleryIconColor
+        videoPlayBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPlayBarButton
     }()
 
     let videoPauseBarButton: UIBarButtonItem = {
         let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
             #selector(didPressPauseBarButton))
-        videoPauseBarButton.tintColor = Theme.galleryIconColor
+        videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPauseBarButton
     }()
 
@@ -678,7 +678,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var portraitHeaderNameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.galleryIconColor
+        label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_regularFont(withSize: 17)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -689,7 +689,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var portraitHeaderDateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Theme.galleryIconColor
+        label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_regularFont(withSize: 12)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true

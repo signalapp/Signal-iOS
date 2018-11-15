@@ -47,7 +47,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)backgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_whiteColor);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
 }
 
 + (UIColor *)offBackgroundColor
@@ -58,7 +58,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)primaryColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray05Color : UIColor.ows_gray90Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemePrimaryColor : UIColor.ows_gray90Color);
 }
 
 + (UIColor *)secondaryColor
@@ -118,12 +118,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.hairlineColor;
 }
 
-+ (UIColor *)galleryBackgroundColor
++ (UIColor *)darkThemeBackgroundColor
 {
     return UIColor.ows_gray95Color;
 }
 
-+ (UIColor *)galleryIconColor
++ (UIColor *)darkThemePrimaryColor
 {
     return UIColor.ows_gray05Color;
 }
