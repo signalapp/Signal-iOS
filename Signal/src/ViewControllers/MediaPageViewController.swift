@@ -771,7 +771,7 @@ extension MediaPageViewController: GalleryRailViewDelegate {
             return
         }
 
-        let direction: NavigationDirection = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
+        let direction: UIPageViewControllerNavigationDirection = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)
     }
