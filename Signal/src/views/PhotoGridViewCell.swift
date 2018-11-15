@@ -29,6 +29,8 @@ public class PhotoGridViewCell: UICollectionViewCell {
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
     private static let selectedBadgeImage = #imageLiteral(resourceName: "selected_blue_circle")
 
+    public var loadingColor = Theme.offBackgroundColor
+
     override public var isSelected: Bool {
         didSet {
             self.selectedBadgeView.isHidden = !self.isSelected
@@ -99,7 +101,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
         get { return imageView.image }
         set {
             imageView.image = newValue
-            imageView.backgroundColor = newValue == nil ? Theme.offBackgroundColor : .clear
+            imageView.backgroundColor = newValue == nil ? loadingColor : .clear
         }
     }
 

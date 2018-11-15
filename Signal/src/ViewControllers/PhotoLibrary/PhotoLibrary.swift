@@ -150,11 +150,15 @@ class PhotoCollectionContents {
         switch asset.mediaType {
         case .image:
             return requestImageDataSource(for: asset).map { (dataSource: DataSource, dataUTI: String) in
-                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+                let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+                attachment.sourceId = asset.localIdentifier
+                return attachment
             }
         case .video:
             return requestVideoDataSource(for: asset).map { (dataSource: DataSource, dataUTI: String) in
-                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+                let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+                attachment.sourceId = asset.localIdentifier
+                return attachment
             }
         default:
             return Promise(error: PhotoLibraryError.unsupportedMediaType)

@@ -11,6 +11,8 @@ import PromiseKit
 public protocol AttachmentApprovalViewControllerDelegate: class {
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment])
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
+    @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment])
+    @objc optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment)
 }
 
 class AttachmentItemCollection {
@@ -92,15 +94,23 @@ class SignalAttachmentItem: Hashable {
 }
 
 @objc
+public enum AttachmentApprovalViewControllerMode: UInt {
+    case modal
+    case sharedNavigation
+}
+
+@objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, CaptioningToolbarDelegate {
 
-    // MARK: Properties
+    // MARK: - Properties
 
-    weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
+    private let mode: AttachmentApprovalViewControllerMode
+
+    public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
     private(set) var captioningToolbar: CaptioningToolbar!
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
@@ -110,8 +120,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     let kSpacingBetweenItems: CGFloat = 20
 
     @objc
-    required public init(attachments: [SignalAttachment]) {
+    required public init(mode: AttachmentApprovalViewControllerMode,
+                         attachments: [SignalAttachment]) {
         assert(attachments.count > 0)
+        self.mode = mode
         let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
         self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems)
         super.init(transitionStyle: .scroll,
@@ -123,7 +135,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
-        let vc = AttachmentApprovalViewController(attachments: attachments)
+        let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
 
@@ -136,7 +148,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return navController
     }
 
-    // MARK: View Lifecycle
+    // MARK: - View Lifecycle
 
     let galleryRailView = GalleryRailView()
     let railContainerView = UIView()
@@ -171,7 +183,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // Bottom Toolbar
 
-        let captioningToolbar = CaptioningToolbar()
+        let isAddMoreVisible = mode == .sharedNavigation
+        let captioningToolbar = CaptioningToolbar(isAddMoreVisible: isAddMoreVisible)
         captioningToolbar.captioningToolbarDelegate = self
         self.captioningToolbar = captioningToolbar
 
@@ -179,9 +192,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.navigationItem.title = nil
 
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
-        cancelButton.tintColor = .white
-        self.navigationItem.leftBarButtonItem = cancelButton
+        if mode != .sharedNavigation {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel,
+                                               target: self, action: #selector(cancelPressed))
+            cancelButton.tintColor = .white
+            self.navigationItem.leftBarButtonItem = cancelButton
+        }
 
         guard let firstItem = attachmentItems.first else {
             owsFailDebug("firstItem was unexpectedly nil")
@@ -189,6 +205,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
+
+        captioningToolbar.captionText = currentViewController.attachment.captionText
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -263,8 +281,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
 
             let button = OWSButton { [weak self] in
-                guard let self = self else { return }
-                self.remove(attachmentItem: attachmentItem)
+                guard let strongSelf = self else { return }
+                strongSelf.remove(attachmentItem: attachmentItem)
             }
             button.setImage(#imageLiteral(resourceName: "ic_small_x"), for: .normal)
 
@@ -300,21 +318,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         pagerScrollView.isScrollEnabled = attachmentItems.count > 1
     }
 
-    private func makeClearToolbar() -> UIToolbar {
-        let toolbar = UIToolbar()
-
-        toolbar.backgroundColor = UIColor.clear
-
-        // Making a toolbar transparent requires setting an empty uiimage
-        toolbar.setBackgroundImage(UIImage(), forToolbarPosition: .any, barMetrics: .default)
-
-        // hide 1px top-border
-        toolbar.clipsToBounds = true
-
-        return toolbar
-    }
-
-    // MARK: UIPageViewControllerDelegate
+    // MARK: - UIPageViewControllerDelegate
 
     public func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         Logger.debug("")
@@ -356,7 +360,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    // MARK: UIPageViewControllerDataSource
+    // MARK: - UIPageViewControllerDataSource
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let currentViewController = viewController as? AttachmentPrepViewController else {
@@ -493,7 +497,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
 
-    // MARK: CaptioningToolbarDelegate
+    // MARK: - CaptioningToolbarDelegate
 
     var currentPageController: AttachmentPrepViewController {
         return viewControllers!.first as! AttachmentPrepViewController
@@ -520,6 +524,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange textView: UITextView) {
         currentItem.attachment.captionText = textView.text
+
+        self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: currentItem.attachment)
+    }
+
+    func captioningToolbarDidAddMore(_ captioningToolbar: CaptioningToolbar) {
+        self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
     }
 }
 
@@ -558,7 +568,7 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
             return
         }
 
-        let direction: NavigationDirection = currentIndex < targetIndex ? .forward : .reverse
+        let direction: UIPageViewControllerNavigationDirection = currentIndex < targetIndex ? .forward : .reverse
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)
     }
@@ -573,7 +583,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         case fullsize, compact
     }
 
-    // MARK: Properties
+    // MARK: - Properties
 
     let attachmentItem: SignalAttachmentItem
     var attachment: SignalAttachment {
@@ -587,7 +597,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private(set) var contentContainer: UIView!
     private(set) var playVideoButton: UIView?
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
     init(attachmentItem: SignalAttachmentItem) {
         self.attachmentItem = attachmentItem
@@ -599,7 +609,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: View Lifecycle
+    // MARK: - View Lifecycle
 
     override public func loadView() {
         self.view = UIView()
@@ -713,7 +723,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         ensureAttachmentViewScale(animated: false)
     }
 
-    // MARK: 
+    // MARK: -
 
     @objc public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
         assert(self.videoPlayer != nil)
@@ -727,7 +737,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         self.playVideo()
     }
 
-    // MARK: Video
+    // MARK: - Video
 
     private func playVideo() {
         Logger.info("")
@@ -804,7 +814,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         }
     }
 
-    // MARK: Helpers
+    // MARK: - Helpers
 
     var isZoomable: Bool {
         return attachment.isImage || attachment.isVideo
@@ -939,11 +949,13 @@ protocol CaptioningToolbarDelegate: class {
     func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
     func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
     func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange: UITextView)
+    func captioningToolbarDidAddMore(_ captioningToolbar: CaptioningToolbar)
 }
 
 class CaptioningToolbar: UIView, UITextViewDelegate {
 
     weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
+    private let addMoreButton: UIButton
     private let sendButton: UIButton
     private let textView: UITextView
 
@@ -984,9 +996,10 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         }
     }
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
-    init() {
+    init(isAddMoreVisible: Bool) {
+        self.addMoreButton = UIButton(type: .custom)
         self.sendButton = UIButton(type: .system)
         self.textView =  MessageTextView()
         self.textViewHeight = kMinTextViewHeight
@@ -1011,6 +1024,9 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         textView.returnKeyType = .done
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
+
+        addMoreButton.setImage(UIImage(named: "album_add_more"), for: .normal)
+        addMoreButton.addTarget(self, action: #selector(didTapAddMore), for: .touchUpInside)
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
@@ -1039,6 +1055,9 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         contentView.addSubview(sendButton)
         contentView.addSubview(textView)
         contentView.addSubview(lengthLimitLabel)
+        if isAddMoreVisible {
+            contentView.addSubview(addMoreButton)
+        }
 
         addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
@@ -1060,9 +1079,17 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         // So it doesn't work as expected with RTL layouts when we explicitly want something
         // to be on the right side for both RTL and LTR layouts, like with the send button.
         // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
-        textView.autoPinEdge(toSuperviewMargin: .left)
         textView.autoPinEdge(toSuperviewMargin: .top)
         textView.autoPinEdge(toSuperviewMargin: .bottom)
+        if isAddMoreVisible {
+            addMoreButton.autoPinEdge(toSuperviewMargin: .left)
+            textView.autoPinEdge(.left, to: .right, of: addMoreButton, withOffset: kToolbarMargin)
+            addMoreButton.autoAlignAxis(.horizontal, toSameAxisOf: sendButton)
+            addMoreButton.setContentHuggingHigh()
+            addMoreButton.setCompressionResistanceHigh()
+        } else {
+            textView.autoPinEdge(toSuperviewMargin: .left)
+        }
 
         sendButton.autoPinEdge(.left, to: .right, of: textView, withOffset: kToolbarMargin)
         sendButton.autoPinEdge(.bottom, to: .bottom, of: textView, withOffset: -3)
@@ -1087,10 +1114,14 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         notImplemented()
     }
 
-    // MARK: 
+    // MARK: -
 
     @objc func didTapSend() {
         self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self)
+    }
+
+    @objc func didTapAddMore() {
+        self.captioningToolbarDelegate?.captioningToolbarDidAddMore(self)
     }
 
     // MARK: - UITextViewDelegate

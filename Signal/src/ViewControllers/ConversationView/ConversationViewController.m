@@ -2676,7 +2676,7 @@ typedef enum : NSUInteger {
 - (void)imagePicker:(OWSImagePickerGridController *)imagePicker
     didPickImageAttachments:(NSArray<SignalAttachment *> *)attachments
 {
-    [self tryToSendAttachmentsIfApproved:attachments];
+    [self tryToSendAttachmentsIfApproved:attachments skipApprovalDialog:YES];
 }
 
 /*

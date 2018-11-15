@@ -12,7 +12,7 @@ protocol ImagePickerControllerDelegate {
 }
 
 @objc(OWSImagePickerGridController)
-class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
+class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate, AttachmentApprovalViewControllerDelegate {
 
     @objc
     weak var delegate: ImagePickerControllerDelegate?
@@ -26,6 +26,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     private let titleLabel = UILabel()
 
+    private var selectedIds = Set<String>()
+
+    // This variable should only be accessed on the main thread.
+    private var assetIdToCommentMap = [String: String]()
+
     init() {
         collectionViewFlowLayout = type(of: self).buildLayout()
         photoCollection = library.defaultPhotoCollection()
@@ -38,7 +43,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: View Lifecycle
+    // MARK: - View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,17 +57,27 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                           target: self,
-                                                           action: #selector(didPressCancel))
+        view.backgroundColor = .ows_gray95
+
+        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
+            navBar.makeClear()
+        } else {
+            owsFailDebug("Invalid nav bar.")
+        }
+
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop,
+                                           target: self,
+                                           action: #selector(didPressCancel))
+        cancelButton.tintColor = .ows_gray05
+        navigationItem.leftBarButtonItem = cancelButton
 
         if #available(iOS 11, *) {
             titleLabel.text = photoCollection.localizedTitle()
-            titleLabel.textColor = Theme.primaryColor
+            titleLabel.textColor = .ows_gray05
             titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
             let titleIconView = UIImageView()
-            titleIconView.tintColor = Theme.primaryColor
+            titleIconView.tintColor = .ows_gray05
             titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
 
             let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
@@ -81,7 +96,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             updateSelectButton()
         }
 
-        collectionView.backgroundColor = Theme.backgroundColor
+        collectionView.backgroundColor = .ows_gray95
     }
 
     override func viewWillLayoutSubviews() {
@@ -96,16 +111,38 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let scale = UIScreen.main.scale
         let cellSize = collectionViewFlowLayout.itemSize
         photoMediaSize.thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
+
+        reloadDataAndRestoreSelection()
     }
 
-    // MARK: Actions
+    private func reloadDataAndRestoreSelection() {
+        guard let collectionView = collectionView else {
+            owsFailDebug("Missing collectionView.")
+            return
+        }
+
+        collectionView.reloadData()
+        collectionView.layoutIfNeeded()
+
+        let count = photoCollectionContents.count
+        for index in 0..<count {
+            let asset = photoCollectionContents.asset(at: index)
+            let assetId = asset.localIdentifier
+            if selectedIds.contains(assetId) {
+                collectionView.selectItem(at: IndexPath(row: index, section: 0),
+                                          animated: false, scrollPosition: [])
+            }
+        }
+    }
+
+    // MARK: - Actions
 
     @objc
     func didPressCancel(sender: UIBarButtonItem) {
         self.dismiss(animated: true)
     }
 
-    // MARK: Layout
+    // MARK: - Layout
 
     static let kInterItemSpacing: CGFloat = 2
     private class func buildLayout() -> UICollectionViewFlowLayout {
@@ -146,7 +183,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    // MARK: Batch Selection
+    // MARK: - Batch Selection
 
     lazy var doneButton: UIBarButtonItem = {
         return UIBarButtonItem(barButtonSystemItem: .done,
@@ -184,12 +221,39 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         let assets: [PHAsset] = indexPaths.compactMap { return photoCollectionContents.asset(at: $0.row) }
-        let promises = assets.map { return photoCollectionContents.outgoingAttachment(for: $0) }
-        when(fulfilled: promises).map { attachments in
-            self.dismiss(animated: true) {
-                self.delegate?.imagePicker(self, didPickImageAttachments: attachments)
+        complete(withAssets: assets)
+    }
+
+    func complete(withAssets assets: [PHAsset]) {
+        let attachmentPromises: [Promise<SignalAttachment>] = assets.map({
+            return photoCollectionContents.outgoingAttachment(for: $0)
+        })
+        when(fulfilled: attachmentPromises)
+            .map { attachments in
+            self.didComplete(withAttachments: attachments)
+            }.retainUntilComplete()
+    }
+
+    private func didComplete(withAttachments attachments: [SignalAttachment]) {
+        AssertIsOnMainThread()
+
+        // If we re-enter image picking, do so in batch mode.
+        isInBatchSelectMode = true
+
+        for attachment in attachments {
+            guard let assetId = attachment.sourceId else {
+                owsFailDebug("Attachment is missing asset id.")
+                continue
             }
-        }.retainUntilComplete()
+            // Link the attachment with its asset to ensure caption continuity.
+            attachment.sourceId = assetId
+            // Restore any existing caption for this attachment.
+            attachment.captionText = assetIdToCommentMap[assetId]
+        }
+
+        let vc = AttachmentApprovalViewController(mode: .sharedNavigation, attachments: attachments)
+        vc.approvalDelegate = self
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     func updateDoneButton() {
@@ -206,7 +270,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func updateSelectButton() {
-        navigationItem.rightBarButtonItem = isInBatchSelectMode ? doneButton : selectButton
+        let button = isInBatchSelectMode ? doneButton : selectButton
+        button.tintColor = .ows_gray05
+        navigationItem.rightBarButtonItem = button
     }
 
     @objc
@@ -234,13 +300,17 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
     }
 
-    // MARK: PhotoLibraryDelegate
+    // MARK: - PhotoLibraryDelegate
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
-        collectionView?.reloadData()
+        // We only want to let users select assets
+        // from a single collection.
+        selectedIds.removeAll()
+
+        reloadDataAndRestoreSelection()
     }
 
-    // MARK: PhotoCollectionPickerDelegate
+    // MARK: - PhotoCollectionPickerDelegate
 
     func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
         photoCollection = collection
@@ -252,7 +322,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             navigationItem.title = photoCollection.localizedTitle()
         }
 
-        collectionView?.reloadData()
+        reloadDataAndRestoreSelection()
     }
 
     // MARK: - Event Handlers
@@ -264,29 +334,32 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let view = PhotoCollectionPickerController(library: library,
                                                    previousPhotoCollection: photoCollection,
                                                    collectionDelegate: self)
-        let nav = UINavigationController(rootViewController: view)
+        let nav = OWSNavigationController(rootViewController: view)
         self.present(nav, animated: true, completion: nil)
     }
 
-    // MARK: UICollectionView
+    // MARK: - UICollectionView
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+
+        let asset = photoCollectionContents.asset(at: indexPath.item)
+        let assetId = asset.localIdentifier
+        selectedIds.insert(assetId)
+
         if isInBatchSelectMode {
             updateDoneButton()
         } else {
             let asset = photoCollectionContents.asset(at: indexPath.row)
-            firstly {
-                photoCollectionContents.outgoingAttachment(for: asset)
-            }.map { attachment in
-                self.dismiss(animated: true) {
-                    self.delegate?.imagePicker(self, didPickImageAttachments: [attachment])
-                }
-            }.retainUntilComplete()
+            complete(withAssets: [asset])
         }
     }
 
     public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         Logger.debug("")
+
+        let asset = photoCollectionContents.asset(at: indexPath.item)
+        let assetId = asset.localIdentifier
+        selectedIds.remove(assetId)
 
         if isInBatchSelectMode {
             updateDoneButton()
@@ -301,10 +374,44 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
             owsFail("cell was unexpectedly nil")
         }
-
+        cell.loadingColor = UIColor(white: 0.2, alpha: 1)
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
+
+        let assetId = assetItem.asset.localIdentifier
+        let isSelected = selectedIds.contains(assetId)
+        cell.isSelected = isSelected
+
         return cell
     }
 
+    // MARK: - AttachmentApprovalViewControllerDelegate
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment]) {
+        self.dismiss(animated: true) {
+            self.delegate?.imagePicker(self, didPickImageAttachments: attachments)
+        }
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment]) {
+        navigationController?.popToViewController(self, animated: true)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, addMoreToAttachments attachments: [SignalAttachment]) {
+        navigationController?.popToViewController(self, animated: true)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment) {
+        AssertIsOnMainThread()
+
+        guard let assetId = attachment.sourceId else {
+            owsFailDebug("Attachment missing source id.")
+            return
+        }
+        guard let captionText = attachment.captionText, captionText.count > 0 else {
+            assetIdToCommentMap.removeValue(forKey: assetId)
+            return
+        }
+        assetIdToCommentMap[assetId] = captionText
+    }
 }

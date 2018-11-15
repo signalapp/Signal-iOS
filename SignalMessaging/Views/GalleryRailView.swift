@@ -33,7 +33,7 @@ public class GalleryRailCellView: UIView {
         addGestureRecognizer(tapGesture)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -112,7 +112,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         scrollView.autoPinEdgesToSuperviewMargins()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

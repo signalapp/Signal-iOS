@@ -160,6 +160,10 @@ public class SignalAttachment: NSObject {
     @objc
     public let dataUTI: String
 
+    // Can be used by views to link this SignalAttachment with an arbitrary source.
+    @objc
+    public var sourceId: String?
+
     var error: SignalAttachmentError? {
         didSet {
             AssertIsOnMainThread()
