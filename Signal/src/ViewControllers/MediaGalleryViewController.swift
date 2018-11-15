@@ -223,14 +223,6 @@ protocol MediaGalleryDataSourceDelegate: class {
 
 class MediaGalleryNavigationController: OWSNavigationController {
 
-    // MARK: View LifeCycle
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // If the user's device is already rotated, try to respect that by rotating to landscape now
-        UIViewController.attemptRotationToDeviceOrientation()
-    }
-
     var presentationView: UIImageView!
     var retainUntilDismissed: MediaGallery?
 
@@ -254,6 +246,10 @@ class MediaGalleryNavigationController: OWSNavigationController {
 
     // MARK: View Lifecycle
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -273,6 +269,23 @@ class MediaGalleryNavigationController: OWSNavigationController {
         presentationView.layer.minificationFilter = kCAFilterTrilinear
         presentationView.layer.magnificationFilter = kCAFilterTrilinear
         presentationView.contentMode = .scaleAspectFit
+
+        guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
+            owsFailDebug("navigationBar had unexpected class: \(self.navigationBar)")
+            return
+        }
+
+        navigationBar.respectsTheme = false
+        navigationBar.barStyle = .black
+        navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
+        navigationBar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
+        navigationBar.tintColor = Theme.darkThemePrimaryColor
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // If the user's device is already rotated, try to respect that by rotating to landscape now
+        UIViewController.attemptRotationToDeviceOrientation()
     }
 
     // MARK: Orientation
@@ -437,7 +450,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
                             // fade out content behind the pageViewController
                             // and behind the presentation view
-                            self.navigationController.view.backgroundColor = Theme.backgroundColor
+                            self.navigationController.view.backgroundColor = Theme.darkThemeBackgroundColor
             },
                            completion: { (_: Bool) in
                             // At this point our presentation view should be overlayed perfectly
@@ -538,9 +551,20 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
     }
 
-    public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
+    public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion completionParam: (() -> Void)?) {
+
+        guard let presentingViewController = self.navigationController.presentingViewController else {
+            owsFailDebug("presentingController was unexpectedly nil")
+            return
+        }
+
+        let completion = {
+            completionParam?()
+            UIApplication.shared.isStatusBarHidden = false
+            presentingViewController.setNeedsStatusBarAppearanceUpdate()
+        }
+
         navigationController.view.isUserInteractionEnabled = false
-        UIApplication.shared.isStatusBarHidden = false
 
         guard let detailView = mediaPageViewController.view else {
             owsFailDebug("detailView was unexpectedly nil")
@@ -583,12 +607,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                             } else {
                                 self.navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
                             }
-            },
-                           completion: { (_: Bool) in
-                            // In case user has hidden bars, which changes background to black.
-                            // We don't want to change this while detailView is visible, lest
-                            // we obscure out the presentationView
-                            detailView.backgroundColor = Theme.backgroundColor
             })
 
             // This intentionally overlaps the previous animation a bit
@@ -598,7 +616,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                            animations: {
                             guard let replacingView = self.replacingView else {
                                 owsFailDebug("replacingView was unexpectedly nil")
-                                self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+                                presentingViewController.dismiss(animated: false, completion: completion)
                                 return
                             }
                             // fade out content and toolbars
@@ -606,16 +624,16 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
                             replacingView.alpha = 1.0
             },
                            completion: { (_: Bool) in
-                            self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+                            presentingViewController.dismiss(animated: false, completion: completion)
             })
         } else {
             guard let replacingView = self.replacingView else {
                 owsFailDebug("replacingView was unexpectedly nil")
-                navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+                presentingViewController.dismiss(animated: false, completion: completion)
                 return
             }
             replacingView.alpha = 1.0
-            navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
+            presentingViewController.dismiss(animated: false, completion: completion)
         }
     }
 

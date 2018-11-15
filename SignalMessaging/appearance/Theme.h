@@ -39,6 +39,9 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *cellSelectedColor;
 @property (class, readonly, nonatomic) UIColor *cellSeparatorColor;
 
+@property (class, readonly, nonatomic) UIColor *darkThemeBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *darkThemePrimaryColor;
+
 #pragma mark -
 
 @property (class, readonly, nonatomic) UIBarStyle barStyle;
