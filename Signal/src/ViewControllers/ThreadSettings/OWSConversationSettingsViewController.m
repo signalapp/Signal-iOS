@@ -347,30 +347,40 @@ const CGFloat kIconViewLength = 24;
     }
 
     if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:self.thread]) {
-        [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            return [weakSelf
-                labelCellWithName:(self.isGroupThread
-                                          ? NSLocalizedString(
-                                                @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                                                @"Indicates that user's profile has been shared with a group.")
-                                          : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                                                @"Indicates that user's profile has been shared with a user."))iconName
-                                 :@"table_ic_share_profile"];
-        }
-                                                       actionBlock:nil]];
+        [mainSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+
+                            return [strongSelf
+                                labelCellWithName:
+                                    (strongSelf.isGroupThread
+                                            ? NSLocalizedString(
+                                                  @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
+                                                  @"Indicates that user's profile has been shared with a group.")
+                                            : NSLocalizedString(
+                                                  @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
+                                                  @"Indicates that user's profile has been shared with a user."))
+                                         iconName:@"table_ic_share_profile"];
+                        }
+                                    actionBlock:nil]];
     } else {
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
-                            UITableViewCell *cell = [weakSelf
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+
+                            UITableViewCell *cell = [strongSelf
                                 disclosureCellWithName:
-                                    (self.isGroupThread
+                                    (strongSelf.isGroupThread
                                             ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
                                                   @"Action that shares user profile with a group.")
                                             : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
                                                   @"Action that shares user profile with a user."))
                                               iconName:@"table_ic_share_profile"];
-                            cell.userInteractionEnabled = !weakSelf.hasLeftGroup;
+                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
                             return cell;
                         }
@@ -408,7 +418,7 @@ const CGFloat kIconViewLength = 24;
 
                                  UIStackView *topRow =
                                      [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
-                                 topRow.spacing = self.iconSpacing;
+                                 topRow.spacing = strongSelf.iconSpacing;
                                  topRow.alignment = UIStackViewAlignmentCenter;
                                  [cell.contentView addSubview:topRow];
                                  [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
@@ -455,7 +465,7 @@ const CGFloat kIconViewLength = 24;
 
                             UIStackView *topRow =
                                 [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                            topRow.spacing = self.iconSpacing;
+                            topRow.spacing = strongSelf.iconSpacing;
                             topRow.alignment = UIStackViewAlignmentCenter;
                             [cell.contentView addSubview:topRow];
                             [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
@@ -485,13 +495,17 @@ const CGFloat kIconViewLength = 24;
     [mainSection
         addItem:[OWSTableItem
                     itemWithCustomCellBlock:^{
-                        ConversationColorName colorName = self.thread.conversationColorName;
+                        OWSConversationSettingsViewController *strongSelf = weakSelf;
+                        OWSCAssertDebug(strongSelf);
+
+                        ConversationColorName colorName = strongSelf.thread.conversationColorName;
                         UIColor *currentColor =
                             [OWSConversationColor conversationColorOrDefaultForColorName:colorName].themeColor;
                         NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
                             @"Label for table cell which leads to picking a new conversation color");
-                        return
-                            [weakSelf cellWithName:title iconName:@"ic_color_palette" disclosureIconColor:currentColor];
+                        return [strongSelf cellWithName:title
+                                               iconName:@"ic_color_palette"
+                                    disclosureIconColor:currentColor];
                     }
                     actionBlock:^{
                         [weakSelf showColorPicker];
@@ -578,12 +592,12 @@ const CGFloat kIconViewLength = 24;
 
                         UIStackView *contentRow =
                             [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                        contentRow.spacing = self.iconSpacing;
+                        contentRow.spacing = strongSelf.iconSpacing;
                         contentRow.alignment = UIStackViewAlignmentCenter;
                         [cell.contentView addSubview:contentRow];
                         [contentRow autoPinEdgesToSuperviewMargins];
 
-                        OWSSound sound = [OWSSounds notificationSoundForThread:self.thread];
+                        OWSSound sound = [OWSSounds notificationSoundForThread:strongSelf.thread];
                         cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
                         return cell;
                     }
@@ -646,7 +660,7 @@ const CGFloat kIconViewLength = 24;
 
                         UIStackView *contentRow =
                             [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
-                        contentRow.spacing = self.iconSpacing;
+                        contentRow.spacing = strongSelf.iconSpacing;
                         contentRow.alignment = UIStackViewAlignmentCenter;
                         [cell.contentView addSubview:contentRow];
                         [contentRow autoPinEdgesToSuperviewMargins];
@@ -681,7 +695,7 @@ const CGFloat kIconViewLength = 24;
                              }
 
                              NSString *cellTitle;
-                             if (self.thread.isGroupThread) {
+                             if (strongSelf.thread.isGroupThread) {
                                  cellTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP",
                                      @"table cell label in conversation settings");
                              } else {
@@ -694,7 +708,8 @@ const CGFloat kIconViewLength = 24;
                              cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
                              UISwitch *blockConversationSwitch = [UISwitch new];
-                             blockConversationSwitch.on = [strongSelf.blockingManager isThreadBlocked:self.thread];
+                             blockConversationSwitch.on =
+                                 [strongSelf.blockingManager isThreadBlocked:strongSelf.thread];
                              [blockConversationSwitch addTarget:strongSelf
                                                          action:@selector(blockConversationSwitchDidChange:)
                                                forControlEvents:UIControlEventValueChanged];
