@@ -37,22 +37,26 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let titleLabel = UILabel()
-        titleLabel.text = previousPhotoCollection.localizedTitle()
-        titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        if #available(iOS 11, *) {
+            let titleLabel = UILabel()
+            titleLabel.text = previousPhotoCollection.localizedTitle()
+            titleLabel.textColor = Theme.primaryColor
+            titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
-        let titleIconView = UIImageView()
-        titleIconView.tintColor = Theme.primaryColor
-        titleIconView.image = UIImage(named: "navbar_disclosure_up")?.withRenderingMode(.alwaysTemplate)
+            let titleIconView = UIImageView()
+            titleIconView.tintColor = Theme.primaryColor
+            titleIconView.image = UIImage(named: "navbar_disclosure_up")?.withRenderingMode(.alwaysTemplate)
 
-        let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
-        titleView.axis = .horizontal
-        titleView.alignment = .center
-        titleView.spacing = 5
-        titleView.isUserInteractionEnabled = true
-        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
-        navigationItem.titleView = titleView
+            let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
+            titleView.axis = .horizontal
+            titleView.alignment = .center
+            titleView.spacing = 5
+            titleView.isUserInteractionEnabled = true
+            titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
+            navigationItem.titleView = titleView
+        } else {
+            navigationItem.title = previousPhotoCollection.localizedTitle()
+        }
 
         library.add(delegate: self)
 

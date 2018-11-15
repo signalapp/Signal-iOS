@@ -56,21 +56,25 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                                                            target: self,
                                                            action: #selector(didPressCancel))
 
-        titleLabel.text = photoCollection.localizedTitle()
-        titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        if #available(iOS 11, *) {
+            titleLabel.text = photoCollection.localizedTitle()
+            titleLabel.textColor = Theme.primaryColor
+            titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
-        let titleIconView = UIImageView()
-        titleIconView.tintColor = Theme.primaryColor
-        titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
+            let titleIconView = UIImageView()
+            titleIconView.tintColor = Theme.primaryColor
+            titleIconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
 
-        let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
-        titleView.axis = .horizontal
-        titleView.alignment = .center
-        titleView.spacing = 5
-        titleView.isUserInteractionEnabled = true
-        titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
-        navigationItem.titleView = titleView
+            let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
+            titleView.axis = .horizontal
+            titleView.alignment = .center
+            titleView.spacing = 5
+            titleView.isUserInteractionEnabled = true
+            titleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
+            navigationItem.titleView = titleView
+        } else {
+            navigationItem.title = photoCollection.localizedTitle()
+        }
 
         let featureFlag_isMultiselectEnabled = true
         if featureFlag_isMultiselectEnabled {
@@ -242,7 +246,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoCollection = collection
         photoCollectionContents = photoCollection.contents()
 
-        titleLabel.text = photoCollection.localizedTitle()
+        if #available(iOS 11, *) {
+            titleLabel.text = photoCollection.localizedTitle()
+        } else {
+            navigationItem.title = photoCollection.localizedTitle()
+        }
 
         collectionView?.reloadData()
     }
