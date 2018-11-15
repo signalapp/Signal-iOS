@@ -3155,6 +3155,7 @@
 				7D2CD65D214C3C9C004E957A /* [CP] Embed Pods Frameworks */,
 				7D2CD65F214C3C9C004E957A /* Embed App Extensions */,
 				7D2CD661214C3C9C004E957A /* Embed Frameworks */,
+				7D293358219E038100D03807 /* Fabric Start */,
 			);
 			buildRules = (
 			);
@@ -3198,6 +3199,7 @@
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				453518771FC635DD00210559 /* Embed App Extensions */,
 				4535189F1FC63DBF00210559 /* Embed Frameworks */,
+				7D293357219E034500D03807 /* Fabric Start */,
 			);
 			buildRules = (
 			);
@@ -3772,6 +3774,37 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		7D293357219E034500D03807 /* Fabric Start */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"",
+				"${PROJECT_DIR}/Relay/Forsta-values.plist",
+			);
+			name = "Fabric Start";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "APIKey=`defaults read ${PROJECT_DIR}/Relay/Forsta-values FabricAPIKey`\nBuildSecret=`defaults read ${PROJECT_DIR}/Relay/Forsta-values FabricBuildSecret`\n\"${PODS_ROOT}/Fabric/run\" ${APIKey} ${BuildSecret}\n";
+		};
+		7D293358219E038100D03807 /* Fabric Start */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "Fabric Start";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "APIKey=`defaults read ${PROJECT_DIR}/Relay/Forsta-values FabricAPIKey`\nBuildSecret=`defaults read ${PROJECT_DIR}/Relay/Forsta-values FabricBuildSecret`\n\"${PODS_ROOT}/Fabric/run\" ${APIKey} ${BuildSecret}\n";
 		};
 		7D2CD537214C3C9C004E957A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

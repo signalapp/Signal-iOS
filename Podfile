@@ -29,8 +29,6 @@ def shared_pods
     pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
     pod 'YYImage', :inhibit_warnings => true
     pod 'GoogleWebRTC', '= 1.1.24907', :inhibit_warnings => true
-    pod 'Fabric', :inhibit_warnings => true
-    pod 'Crashlytics', :inhibit_warnings => true
     pod 'UIImageView+Extension',       '~> 0.2', :inhibit_warnings => true
     pod 'NSAttributedString-DDHTML',   git: 'git@github.com:ForstaLabs/NSAttributedString-DDHTML.git', branch: 'master', :inhibit_warnings => true
     pod 'ZXingObjC', '~> 3.5', :inhibit_warnings => true
@@ -41,6 +39,8 @@ target 'RelayDev' do
     pod 'ReCaptcha', '~> 1.2', :inhibit_warnings => true
     pod 'ATAppUpdater', :inhibit_warnings => true
     pod 'SSZipArchive', :inhibit_warnings => true
+    pod 'Fabric', :inhibit_warnings => true
+    pod 'Crashlytics', :inhibit_warnings => true
 end
 
 
@@ -49,7 +49,9 @@ target 'Relay' do
     pod 'ReCaptcha', '~> 1.2', :inhibit_warnings => true
     pod 'ATAppUpdater', :inhibit_warnings => true
     pod 'SSZipArchive', :inhibit_warnings => true
-    
+    pod 'Fabric', :inhibit_warnings => true
+    pod 'Crashlytics', :inhibit_warnings => true
+
     target 'RelayTests' do
         inherit! :search_paths
     end
