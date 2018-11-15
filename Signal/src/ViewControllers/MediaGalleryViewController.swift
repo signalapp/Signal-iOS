@@ -9,19 +9,32 @@ public enum GalleryDirection {
 }
 
 class MediaGalleryAlbum {
-    private(set) var items: [MediaGalleryItem]
+
+    private var originalItems: [MediaGalleryItem]
+    var items: [MediaGalleryItem] {
+        get {
+            guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+                owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
+                return originalItems
+            }
+
+            return originalItems.filter { !mediaGalleryDataSource.deletedGalleryItems.contains($0) }
+        }
+    }
+
+    weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
     init(items: [MediaGalleryItem]) {
-        self.items = items
+        self.originalItems = items
     }
 
     func add(item: MediaGalleryItem) {
-        guard !items.contains(item) else {
+        guard !originalItems.contains(item) else {
             return
         }
 
-        items.append(item)
-        items.sort { (lhs, rhs) -> Bool in
+        originalItems.append(item)
+        originalItems.sort { (lhs, rhs) -> Bool in
             return lhs.albumIndex < rhs.albumIndex
         }
     }
@@ -205,6 +218,9 @@ protocol MediaGalleryDataSource: class {
     var sections: [GalleryDate: [MediaGalleryItem]] { get }
     var sectionDates: [GalleryDate] { get }
 
+    var deletedAttachments: Set<TSAttachment> { get }
+    var deletedGalleryItems: Set<MediaGalleryItem> { get }
+
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)?)
 
     func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem?
@@ -300,6 +316,9 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
 
     @objc
     weak public var navigationController: MediaGalleryNavigationController!
+
+    var deletedAttachments: Set<TSAttachment> = Set()
+    var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
     private var pageViewController: MediaPageViewController?
 
@@ -732,7 +751,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         guard let existingAlbum = galleryAlbums[albumMessageId] else {
             let newAlbum = MediaGalleryAlbum(items: [item])
             galleryAlbums[albumMessageId] = newAlbum
-
+            newAlbum.mediaGalleryDataSource = self
             return newAlbum
         }
 
@@ -888,9 +907,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     func addDataSourceDelegate(_ dataSourceDelegate: MediaGalleryDataSourceDelegate) {
         dataSourceDelegates.append(Weak(value: dataSourceDelegate))
     }
-
-    var deletedAttachments: Set<TSAttachment> = Set()
-    var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
     func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
         AssertIsOnMainThread()
