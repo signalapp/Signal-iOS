@@ -241,12 +241,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         isInBatchSelectMode = true
 
         for attachment in attachments {
-            guard let assetId = attachment.sourceId else {
+            guard let assetId = attachment.assetId else {
                 owsFailDebug("Attachment is missing asset id.")
                 continue
             }
             // Link the attachment with its asset to ensure caption continuity.
-            attachment.sourceId = assetId
+            attachment.assetId = assetId
             // Restore any existing caption for this attachment.
             attachment.captionText = assetIdToCommentMap[assetId]
         }
@@ -349,7 +349,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         if isInBatchSelectMode {
             updateDoneButton()
         } else {
-            let asset = photoCollectionContents.asset(at: indexPath.row)
             complete(withAssets: [asset])
         }
     }
@@ -404,7 +403,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, changedCaptionOfAttachment attachment: SignalAttachment) {
         AssertIsOnMainThread()
 
-        guard let assetId = attachment.sourceId else {
+        guard let assetId = attachment.assetId else {
             owsFailDebug("Attachment missing source id.")
             return
         }

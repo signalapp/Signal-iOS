@@ -151,13 +151,13 @@ class PhotoCollectionContents {
         case .image:
             return requestImageDataSource(for: asset).map { (dataSource: DataSource, dataUTI: String) in
                 let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
-                attachment.sourceId = asset.localIdentifier
+                attachment.assetId = asset.localIdentifier
                 return attachment
             }
         case .video:
             return requestVideoDataSource(for: asset).map { (dataSource: DataSource, dataUTI: String) in
                 let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-                attachment.sourceId = asset.localIdentifier
+                attachment.assetId = asset.localIdentifier
                 return attachment
             }
         default:
