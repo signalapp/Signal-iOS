@@ -258,7 +258,8 @@ private class IntroductingTypingIndicatorsExperienceUpgradeViewController: Exper
         // Image
 
         let imageView: UIView
-        if let gifPath = Bundle.main.path(forResource: "typing-animation", ofType: "gif") {
+        let imageName = Theme.isDarkThemeEnabled ? "typing-animation-dark" : "typing-animation"
+        if let gifPath = Bundle.main.path(forResource: imageName, ofType: "gif") {
             let animatedImage = YYImage(contentsOfFile: gifPath)
             imageView = YYAnimatedImageView(image: animatedImage)
         } else {
@@ -506,14 +507,17 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
 
         // dismiss the modally presented view controller, then proceed.
         experienceUpgradesPageViewController.dismiss(animated: true) {
-            let fromViewController = UIApplication.shared.frontmostViewController
-            assert(fromViewController != nil)
+            DispatchQueue.main.async {
+                guard let fromViewController = UIApplication.shared.frontmostViewController else {
+                    owsFailDebug("fromViewController was unexpectedly nil")
+                    return
+                }
 
-            // Construct the "settings" view & push the "privacy settings" view.
-            let navigationController = AppSettingsViewController.inModalNavigationController()
-            navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
-
-            fromViewController?.present(navigationController, animated: true, completion: nil)
+                // Construct the "settings" view & push the "privacy settings" view.
+                let navigationController = AppSettingsViewController.inModalNavigationController()
+                navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
+                fromViewController.present(navigationController, animated: true, completion: nil)
+            }
         }
     }
 }
