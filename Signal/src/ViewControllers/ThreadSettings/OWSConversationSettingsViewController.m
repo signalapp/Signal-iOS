@@ -54,7 +54,7 @@ const CGFloat kIconViewLength = 24;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-@property (nullable, nonatomic) MediaGalleryNavigationController *mediaGalleryViewController;
+@property (nullable, nonatomic) MediaGallery *mediaGallery;
 @property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -1294,13 +1294,12 @@ const CGFloat kIconViewLength = 24;
                                                  uiDatabaseConnection:self.uiDatabaseConnection
                                                               options:MediaGalleryOptionSliderEnabled];
 
-    // although we don't present the mediaGalleryViewController directly, we need to maintain a strong
-    // reference to it until we're dismissed.
-    self.mediaGalleryViewController = mediaGallery.navigationController;
+    self.mediaGallery = mediaGallery;
 
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
     [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
 }
+
 #pragma mark - Notifications
 
 - (void)identityStateDidChange:(NSNotification *)notification
