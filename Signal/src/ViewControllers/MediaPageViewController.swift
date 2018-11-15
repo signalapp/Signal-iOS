@@ -331,7 +331,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        galleryRailView.configure(itemProvider: currentItem.album, focusedItem: currentItem)
+        galleryRailView.configureCellViews(itemProvider: currentItem.album, focusedItem: currentItem)
     }
 
     // MARK: Actions
@@ -761,6 +761,27 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             let headerFrame: CGRect = CGRect(x: 0, y: 0, width: width, height: 44)
             portraitHeaderView.frame = headerFrame
         }
+    }
+}
+
+extension MediaGalleryItem: GalleryRailItem {
+    public var aspectRatio: CGFloat {
+        return self.imageSize.aspectRatio
+    }
+
+    public func getRailImage() -> Promise<UIImage> {
+        let (guarantee, fulfill) = Guarantee<UIImage>.pending()
+        if let image = self.thumbnailImage(async: { fulfill($0) }) {
+            fulfill(image)
+        }
+
+        return Promise(guarantee)
+    }
+}
+
+extension MediaGalleryAlbum: GalleryRailItemProvider {
+    var railItems: [GalleryRailItem] {
+        return self.items
     }
 }
 

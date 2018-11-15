@@ -5,6 +5,7 @@
 import Foundation
 import AVFoundation
 import MediaPlayer
+import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: class {
@@ -12,8 +13,82 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didCancelAttachments attachments: [SignalAttachment])
 }
 
-struct SignalAttachmentItem: Hashable {
+class AttachmentItemCollection {
+    private (set) var attachmentItems: [SignalAttachmentItem]
+    init(attachmentItems: [SignalAttachmentItem]) {
+        self.attachmentItems = attachmentItems
+    }
+
+    func itemAfter(item: SignalAttachmentItem) -> SignalAttachmentItem? {
+        guard let currentIndex = attachmentItems.index(of: item) else {
+            owsFailDebug("currentIndex was unexpectedly nil")
+            return nil
+        }
+
+        let nextIndex = attachmentItems.index(after: currentIndex)
+
+        return attachmentItems[safe: nextIndex]
+    }
+
+    func itemBefore(item: SignalAttachmentItem) -> SignalAttachmentItem? {
+        guard let currentIndex = attachmentItems.index(of: item) else {
+            owsFailDebug("currentIndex was unexpectedly nil")
+            return nil
+        }
+
+        let prevIndex = attachmentItems.index(before: currentIndex)
+
+        return attachmentItems[safe: prevIndex]
+    }
+
+    func remove(item: SignalAttachmentItem) {
+        attachmentItems = attachmentItems.filter { $0 != item }
+    }
+}
+
+class SignalAttachmentItem: Hashable {
+
+    enum SignalAttachmentItemError: Error {
+        case noThumbnail
+    }
+
     let attachment: SignalAttachment
+
+    init(attachment: SignalAttachment) {
+        self.attachment = attachment
+    }
+
+    // MARK: 
+
+    var imageSize: CGSize = .zero
+
+    func getThumbnailImage() -> Promise<UIImage> {
+        return DispatchQueue.global().async(.promise) { () -> UIImage in
+            guard let image =  self.attachment.image() else {
+                throw SignalAttachmentItemError.noThumbnail
+            }
+            return image
+        }.tap { result in
+            switch result {
+            case .fulfilled(let image):
+                self.imageSize = image.size
+            default: break
+            }
+
+        }
+    }
+
+    // MARK: Hashable
+
+    public var hashValue: Int {
+        return attachment.hashValue
+    }
+
+    // MARK: Equatable
+
+    static func == (lhs: SignalAttachmentItem, rhs: SignalAttachmentItem) -> Bool {
+        return lhs.attachment == rhs.attachment
+    }
 }
 
 @objc
@@ -37,7 +112,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     required public init(attachments: [SignalAttachment]) {
         assert(attachments.count > 0)
-        self.attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
+        let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
+        self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems)
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
@@ -62,12 +138,36 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: View Lifecycle
 
+    let galleryRailView = GalleryRailView()
+    let railContainerView = UIView()
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
         self.view.backgroundColor = .black
 
         disablePagingIfNecessary()
+
+        railContainerView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        view.addSubview(railContainerView)
+        railContainerView.preservesSuperviewLayoutMargins = true
+        railContainerView.layoutMargins.bottom = 50
+        railContainerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+
+        let footerGradientView = GradientView(from: .clear, to: .black)
+        railContainerView.addSubview(footerGradientView)
+        footerGradientView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        footerGradientView.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
+
+        railContainerView.addSubview(galleryRailView)
+        galleryRailView.delegate = self
+        galleryRailView.scrollFocusMode = .keepWithinBounds
+
+        galleryRailView.autoPinEdge(toSuperviewEdge: .leading)
+        galleryRailView.autoPinEdge(toSuperviewEdge: .trailing)
+        galleryRailView.autoPinEdge(toSuperviewMargin: .top)
+        galleryRailView.autoPinEdge(toSuperviewMargin: .bottom)
+        galleryRailView.autoSetDimension(.height, toSize: 72)
 
         // Bottom Toolbar
 
@@ -123,6 +223,62 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     // MARK: - View Helpers
+
+    func remove(attachmentItem: SignalAttachmentItem) {
+        if attachmentItem == currentItem {
+            if let nextItem = attachmentItemCollection.itemAfter(item: attachmentItem) {
+                setCurrentItem(nextItem, direction: .forward, animated: true)
+            } else if let prevItem = attachmentItemCollection.itemBefore(item: attachmentItem) {
+                setCurrentItem(prevItem, direction: .reverse, animated: true)
+            } else {
+                owsFailDebug("removing last item shouldn't be possible because rail should not be visible")
+                return
+            }
+        }
+
+        guard let cell = galleryRailView.cellViews.first(where: { $0.item === attachmentItem }) else {
+            owsFailDebug("cell was unexpectedly nil")
+            return
+        }
+
+        UIView.animate(withDuration: 0.2,
+                       animations: {
+                        // shrink stack view item until it disappears
+                        cell.isHidden = true
+
+                        // simultaneously fade out
+                        cell.alpha = 0
+        },
+                       completion: { _ in
+                        self.attachmentItemCollection.remove(item: attachmentItem)
+                        self.updateMediaRail()
+        })
+    }
+
+    func addDeleteIcon(cellViews: [GalleryRailCellView]) {
+        for cellView in cellViews {
+            guard let attachmentItem = cellView.item as? SignalAttachmentItem else {
+                owsFailDebug("attachmentItem was unexpectedly nil")
+                return
+            }
+
+            let button = OWSButton { [weak self] in
+                guard let self = self else { return }
+                self.remove(attachmentItem: attachmentItem)
+            }
+            button.setImage(#imageLiteral(resourceName: "ic_small_x"), for: .normal)
+
+            let kInsetDistance: CGFloat = 5
+            button.imageEdgeInsets = UIEdgeInsets(top: kInsetDistance, left: kInsetDistance, bottom: kInsetDistance, right: kInsetDistance)
+
+            cellView.addSubview(button)
+
+            let kButtonWidth: CGFloat = 9 + kInsetDistance * 2
+            button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
+            button.autoPinEdge(toSuperviewMargin: .top)
+            button.autoPinEdge(toSuperviewMargin: .trailing)
+        }
+    }
 
     var pagerScrollView: UIScrollView?
     // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
@@ -195,6 +351,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 },
                                   completion: nil)
                 previousPage.zoomOut(animated: false)
+                updateMediaRail()
             }
         }
     }
@@ -274,10 +431,28 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         self.setViewControllers([page], direction: direction, animated: isAnimated, completion: nil)
-        // TODO update rail
+        updateMediaRail()
     }
 
-    let attachmentItems: [SignalAttachmentItem]
+    func updateMediaRail() {
+        guard let currentItem = self.currentItem else {
+            owsFailDebug("currentItem was unexpectedly nil")
+            return
+        }
+
+        galleryRailView.configureCellViews(itemProvider: attachmentItemCollection, focusedItem: currentItem)
+        addDeleteIcon(cellViews: galleryRailView.cellViews)
+
+        railContainerView.isHidden = attachmentItemCollection.attachmentItems.count < 2
+        captioningToolbar.alwaysShowGradient = railContainerView.isHidden
+    }
+
+    let attachmentItemCollection: AttachmentItemCollection
+
+    var attachmentItems: [SignalAttachmentItem] {
+        return attachmentItemCollection.attachmentItems
+    }
+
     var attachments: [SignalAttachment] {
         return attachmentItems.map { $0.attachment }
     }
@@ -347,6 +522,49 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         currentItem.attachment.captionText = textView.text
     }
 }
+
+// MARK: GalleryRail
+
+extension SignalAttachmentItem: GalleryRailItem {
+    var aspectRatio: CGFloat {
+        return self.imageSize.aspectRatio
+    }
+
+    func getRailImage() -> Promise<UIImage> {
+        return self.getThumbnailImage()
+    }
+}
+
+extension AttachmentItemCollection: GalleryRailItemProvider {
+    var railItems: [GalleryRailItem] {
+        return self.attachmentItems
+    }
+}
+
+extension AttachmentApprovalViewController: GalleryRailViewDelegate {
+    public func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem) {
+        guard let targetItem = imageRailItem as? SignalAttachmentItem else {
+            owsFailDebug("unexpected imageRailItem: \(imageRailItem)")
+            return
+        }
+
+        guard let currentIndex = attachmentItems.index(of: currentItem) else {
+            owsFailDebug("currentIndex was unexpectedly nil")
+            return
+        }
+
+        guard let targetIndex = attachmentItems.index(of: targetItem) else {
+            owsFailDebug("targetIndex was unexpectedly nil")
+            return
+        }
+
+        let direction: NavigationDirection = currentIndex < targetIndex ? .forward : .reverse
+
+        self.setCurrentItem(targetItem, direction: direction, animated: true)
+    }
+}
+
+// MARK: - Individual Page
 
 public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
     // We sometimes shrink the attachment view so that it remains somewhat visible
@@ -734,8 +952,8 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         set { self.textView.text = newValue }
     }
 
-    private let bottomGradient: GradientView
-    private let lengthLimitLabel: UILabel
+    private let bottomGradient: GradientView = GradientView(from: .clear, to: .black)
+    private let lengthLimitLabel: UILabel = UILabel()
 
     // Layout Constants
 
@@ -770,10 +988,8 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
     init() {
         self.sendButton = UIButton(type: .system)
-        self.bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
         self.textView =  MessageTextView()
         self.textViewHeight = kMinTextViewHeight
-        self.lengthLimitLabel = UILabel()
 
         super.init(frame: CGRect.zero)
 
@@ -785,15 +1001,13 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
         textView.delegate = self
         textView.keyboardAppearance = Theme.keyboardAppearance
-        textView.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray90 : UIColor.ows_gray02)
-        textView.layer.borderColor = (Theme.isDarkThemeEnabled
-            ? Theme.primaryColor.withAlphaComponent(0.06).cgColor
-            : Theme.primaryColor.withAlphaComponent(0.12).cgColor)
+        textView.backgroundColor = Theme.darkThemeBackgroundColor
+        textView.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
         textView.layer.borderWidth = 0.5
         textView.layer.cornerRadius = kMinTextViewHeight / 2
 
         textView.font = UIFont.ows_dynamicTypeBody
-        textView.textColor = Theme.primaryColor
+        textView.textColor = Theme.darkThemePrimaryColor
         textView.returnKeyType = .done
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
@@ -804,17 +1018,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
-        sendButton.tintColor = UIColor.white
-        sendButton.backgroundColor = UIColor.ows_systemPrimaryButton
-        sendButton.layer.cornerRadius = 4
-
-        // Send Button Shadow - without this the send button bottom doesn't feel aligned with the toolbar.
-        let kSendButtonShadowOffset: CGFloat = 1
-        sendButton.layer.shadowColor = UIColor.darkGray.cgColor
-        sendButton.layer.shadowOffset = CGSize(width: 0, height: kSendButtonShadowOffset)
-        sendButton.layer.shadowOpacity = 0.8
-        sendButton.layer.shadowRadius = 0.0
-        sendButton.layer.masksToBounds = false
+        sendButton.tintColor = Theme.galleryHighlightColor
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
@@ -831,12 +1035,13 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         self.lengthLimitLabel.isHidden = true
 
         let contentView = UIView()
-        addSubview(contentView)
-        contentView.autoPinEdgesToSuperviewEdges()
         contentView.addSubview(bottomGradient)
         contentView.addSubview(sendButton)
         contentView.addSubview(textView)
         contentView.addSubview(lengthLimitLabel)
+
+        addSubview(contentView)
+        contentView.autoPinEdgesToSuperviewEdges()
 
         // Layout
         let kToolbarMargin: CGFloat = 8
@@ -860,9 +1065,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         textView.autoPinEdge(toSuperviewMargin: .bottom)
 
         sendButton.autoPinEdge(.left, to: .right, of: textView, withOffset: kToolbarMargin)
-
-        // Because the textview has a border, the sendButton feels unaligned without this shadow and offset
-        sendButton.autoPinEdge(.bottom, to: .bottom, of: textView, withOffset: -kSendButtonShadowOffset)
+        sendButton.autoPinEdge(.bottom, to: .bottom, of: textView, withOffset: -3)
 
         sendButton.autoPinEdge(toSuperviewMargin: .right)
         sendButton.setContentHuggingHigh()
@@ -874,6 +1077,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         lengthLimitLabel.setContentHuggingHigh()
         lengthLimitLabel.setCompressionResistanceHigh()
 
+        bottomGradient.isHidden = true
         let bottomGradientHeight = ScaleFromIPhone5(100)
         bottomGradient.autoSetDimension(.height, toSize: bottomGradientHeight)
         bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
@@ -931,12 +1135,30 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         }
     }
 
+    var alwaysShowGradient: Bool = false {
+        didSet {
+            if alwaysShowGradient {
+                bottomGradient.isHidden = false
+            }
+        }
+    }
+
     public func textViewDidBeginEditing(_ textView: UITextView) {
         self.captioningToolbarDelegate?.captioningToolbarDidBeginEditing(self)
+        if !alwaysShowGradient {
+            UIView.animate(withDuration: 0.2) {
+                self.bottomGradient.isHidden = false
+            }
+        }
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
         self.captioningToolbarDelegate?.captioningToolbarDidEndEditing(self)
+        if !alwaysShowGradient {
+            UIView.animate(withDuration: 0.2) {
+                self.bottomGradient.isHidden = true
+            }
+        }
     }
 
     // MARK: - Helpers

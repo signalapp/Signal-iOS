@@ -4,51 +4,20 @@
 
 import PromiseKit
 
-protocol GalleryRailItemProvider: class {
+public protocol GalleryRailItemProvider: class {
     var railItems: [GalleryRailItem] { get }
 }
 
-protocol GalleryRailItem: class {
-    func getRailImage() -> Guarantee<UIImage>
+public protocol GalleryRailItem: class {
+    func getRailImage() -> Promise<UIImage>
     var aspectRatio: CGFloat { get }
-}
-
-extension CGSize {
-    var aspectRatio: CGFloat {
-        guard self.height > 0 else {
-            return 0
-        }
-
-        return self.width / self.height
-    }
-}
-
-extension MediaGalleryItem: GalleryRailItem {
-    var aspectRatio: CGFloat {
-        return self.imageSize.aspectRatio
-    }
-
-    func getRailImage() -> Guarantee<UIImage> {
-        let (guarantee, fulfill) = Guarantee<UIImage>.pending()
-        if let image = self.thumbnailImage(async: { fulfill($0) }) {
-            fulfill(image)
-        }
-
-        return guarantee
-    }
-}
-
-extension MediaGalleryAlbum: GalleryRailItemProvider {
-    var railItems: [GalleryRailItem] {
-        return self.items
-    }
 }
 
 protocol GalleryRailCellViewDelegate: class {
     func didTapGalleryRailCellView(_ galleryRailCellView: GalleryRailCellView)
 }
 
-class GalleryRailCellView: UIView {
+public class GalleryRailCellView: UIView {
 
     weak var delegate: GalleryRailCellViewDelegate?
 
@@ -98,7 +67,7 @@ class GalleryRailCellView: UIView {
         self.isSelected = isSelected
         if isSelected {
             layoutMargins = UIEdgeInsets(top: 0, left: 6, bottom: 0, right: 6)
-            imageView.layer.borderColor = UIColor(rgbHex: 0x1f8fe8).cgColor
+            imageView.layer.borderColor = Theme.galleryHighlightColor.cgColor
             imageView.layer.borderWidth = 2
             imageView.layer.cornerRadius = 2
         } else {
@@ -120,13 +89,19 @@ class GalleryRailCellView: UIView {
     }()
 }
 
-protocol GalleryRailViewDelegate: class {
+public protocol GalleryRailViewDelegate: class {
     func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem)
 }
 
-class GalleryRailView: UIView, GalleryRailCellViewDelegate {
+public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
-    weak var delegate: GalleryRailViewDelegate?
+    public weak var delegate: GalleryRailViewDelegate?
+
+    public var cellViews: [GalleryRailCellView] = []
+
+    var cellViewItems: [GalleryRailItem] {
+        get { return cellViews.compactMap { $0.item } }
+    }
 
     // MARK: Initializers
 
@@ -143,13 +118,14 @@ class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     // MARK: Public
 
-    public func configure(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?) {
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
             UIView.animate(withDuration: animationDuration) {
                 self.isHidden = true
             }
+            self.cellViews = []
             return
         }
 
@@ -183,6 +159,7 @@ class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                             self.isHidden = true
             },
                            completion: { _ in cellViews.forEach { $0.removeFromSuperview() } })
+            self.cellViews = []
             return
         }
 
@@ -234,10 +211,10 @@ class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
     }
 
-    var cellViews: [GalleryRailCellView] = []
-    var cellViewItems: [GalleryRailItem] {
-        get { return cellViews.compactMap { $0.item } }
+    enum ScrollFocusMode {
+        case keepCentered, keepWithinBounds
     }
+    var scrollFocusMode: ScrollFocusMode = .keepCentered
     func updateFocusedItem(_ focusedItem: GalleryRailItem?) {
         var selectedCellView: GalleryRailCellView?
         cellViews.forEach { cellView in
@@ -251,20 +228,42 @@ class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
 
         self.layoutIfNeeded()
-        guard let selectedCell = selectedCellView else {
-            owsFailDebug("selectedCell was unexpectedly nil")
-            return
+        switch scrollFocusMode {
+        case .keepCentered:
+            guard let selectedCell = selectedCellView else {
+                owsFailDebug("selectedCell was unexpectedly nil")
+                return
+            }
+
+            let cellViewCenter = selectedCell.superview!.convert(selectedCell.center, to: scrollView)
+            let additionalInset = scrollView.center.x - cellViewCenter.x
+
+            var inset = scrollView.contentInset
+            inset.left = additionalInset
+            scrollView.contentInset = inset
+
+            var offset = scrollView.contentOffset
+            offset.x = -additionalInset
+            scrollView.contentOffset = offset
+        case .keepWithinBounds:
+            guard let selectedCell = selectedCellView else {
+                owsFailDebug("selectedCell was unexpectedly nil")
+                return
+            }
+
+            let cellFrame = selectedCell.superview!.convert(selectedCell.frame, to: scrollView)
+
+            scrollView.scrollRectToVisible(cellFrame, animated: true)
+        }
+    }
+}
+
+public extension CGSize {
+    var aspectRatio: CGFloat {
+        guard self.height > 0 else {
+            return 0
         }
 
-        let cellViewCenter = selectedCell.superview!.convert(selectedCell.center, to: scrollView)
-        let additionalInset = scrollView.center.x - cellViewCenter.x
-
-        var inset = scrollView.contentInset
-        inset.left = additionalInset
-        scrollView.contentInset = inset
-
-        var offset = scrollView.contentOffset
-        offset.x = -additionalInset
-        scrollView.contentOffset = offset
+        return self.width / self.height
     }
 }
