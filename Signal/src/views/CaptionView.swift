@@ -159,13 +159,7 @@ private class CaptionView: UIView {
 
             // Enable/disable scrolling depending on wether we've clipped
             // content in `intrinsicContentSize`
-            if doesContentNeedScroll {
-                if !isScrollEnabled {
-                    isScrollEnabled = true
-                }
-            } else if isScrollEnabled {
-                isScrollEnabled = false
-            }
+            isScrollEnabled = doesContentNeedScroll
         }
 
         override var intrinsicContentSize: CGSize {
