@@ -139,6 +139,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 - (void)presentFromViewController:(UIViewController *)fromViewController;
 
+- (void)applyTheme;
+
 @end
 
 NS_ASSUME_NONNULL_END

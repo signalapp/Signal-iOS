@@ -19,7 +19,7 @@ public class OWSButton: UIButton {
         self.addTarget(self, action: #selector(didTap), for: .touchUpInside)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

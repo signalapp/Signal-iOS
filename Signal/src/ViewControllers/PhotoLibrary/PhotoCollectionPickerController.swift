@@ -37,14 +37,22 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .ows_gray95
+
+        if let navBar = self.navigationController?.navigationBar as? OWSNavigationBar {
+            navBar.makeClear()
+        } else {
+            owsFailDebug("Invalid nav bar.")
+        }
+
         if #available(iOS 11, *) {
             let titleLabel = UILabel()
             titleLabel.text = previousPhotoCollection.localizedTitle()
-            titleLabel.textColor = Theme.primaryColor
+            titleLabel.textColor = .ows_gray05
             titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
             let titleIconView = UIImageView()
-            titleIconView.tintColor = Theme.primaryColor
+            titleIconView.tintColor = .ows_gray05
             titleIconView.image = UIImage(named: "navbar_disclosure_up")?.withRenderingMode(.alwaysTemplate)
 
             let titleView = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
@@ -60,9 +68,11 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
         library.add(delegate: self)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                           target: self,
-                                                           action: #selector(didPressCancel))
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop,
+                                           target: self,
+                                           action: #selector(didPressCancel))
+        cancelButton.tintColor = .ows_gray05
+        navigationItem.leftBarButtonItem = cancelButton
 
         updateContents()
     }
@@ -74,6 +84,10 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         for collection in photoCollections {
             section.add(OWSTableItem.init(customCellBlock: { () -> UITableViewCell in
                 let cell = OWSTableItem.newCell()
+
+                cell.backgroundColor = .ows_gray95
+                cell.contentView.backgroundColor = .ows_gray95
+                cell.selectedBackgroundView?.backgroundColor = UIColor(white: 0.2, alpha: 1)
 
                 let imageView = UIImageView()
                 let kImageSize = 50
@@ -97,7 +111,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
                 let titleLabel = UILabel()
                 titleLabel.text = collection.localizedTitle()
                 titleLabel.font = UIFont.ows_dynamicTypeBody
-                titleLabel.textColor = Theme.primaryColor
+                titleLabel.textColor = .ows_gray05
 
                 let stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
                 stackView.axis = .horizontal
@@ -118,6 +132,12 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let contents = OWSTableContents()
         contents.addSection(section)
         self.contents = contents
+    }
+
+    @objc
+    public override func applyTheme() {
+        view.backgroundColor = .ows_gray95
+        tableView.backgroundColor = .ows_gray95
     }
 
     // MARK: Actions
