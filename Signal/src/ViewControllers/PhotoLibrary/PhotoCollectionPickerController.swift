@@ -15,14 +15,14 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
     private weak var collectionDelegate: PhotoCollectionPickerDelegate?
 
     private let library: PhotoLibrary
-    private let lastPhotoCollection: PhotoCollection
-    private var photoCollections: PhotoCollections
+    private let previousPhotoCollection: PhotoCollection
+    private var photoCollections: [PhotoCollection]
 
     required init(library: PhotoLibrary,
-                  lastPhotoCollection: PhotoCollection,
+                  previousPhotoCollection: PhotoCollection,
                   collectionDelegate: PhotoCollectionPickerDelegate) {
         self.library = library
-        self.lastPhotoCollection = lastPhotoCollection
+        self.previousPhotoCollection = previousPhotoCollection
         self.photoCollections = library.allPhotoCollections()
         self.collectionDelegate = collectionDelegate
         super.init()
@@ -38,7 +38,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         super.viewDidLoad()
 
         let titleLabel = UILabel()
-        titleLabel.text = lastPhotoCollection.localizedTitle()
+        titleLabel.text = previousPhotoCollection.localizedTitle()
         titleLabel.textColor = Theme.primaryColor
         titleLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
 
@@ -67,9 +67,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         photoCollections = library.allPhotoCollections()
 
         let section = OWSTableSection()
-        let count = photoCollections.count
-        for index in 0..<count {
-            let collection = photoCollections.collection(at: index)
+        for collection in photoCollections {
             section.add(OWSTableItem.init(customCellBlock: { () -> UITableViewCell in
                 let cell = OWSTableItem.newCell()
 
@@ -94,7 +92,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
 
                 let titleLabel = UILabel()
                 titleLabel.text = collection.localizedTitle()
-                titleLabel.font = UIFont.ows_regularFont(withSize: 18)
+                titleLabel.font = UIFont.ows_dynamicTypeBody
                 titleLabel.textColor = Theme.primaryColor
 
                 let stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])

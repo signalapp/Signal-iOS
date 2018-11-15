@@ -186,33 +186,12 @@ class PhotoCollection {
     }
 }
 
-class PhotoCollections {
-    let collections: [PhotoCollection]
-
-    init(collections: [PhotoCollection]) {
-        self.collections = collections
-    }
-
-    var count: Int {
-        return collections.count
-    }
-
-    func collection(at index: Int) -> PhotoCollection {
-        return collections[index]
-    }
-}
-
 class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
-    final class WeakDelegate {
-        weak var delegate: PhotoLibraryDelegate?
-        init(_ value: PhotoLibraryDelegate) {
-            delegate = value
-        }
-    }
+    typealias WeakDelegate = Weak<PhotoLibraryDelegate>
     var delegates = [WeakDelegate]()
 
     public func add(delegate: PhotoLibraryDelegate) {
-        delegates.append(WeakDelegate(delegate))
+        delegates.append(WeakDelegate(value: delegate))
     }
 
     var assetCollection: PHAssetCollection!
@@ -220,7 +199,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
     func photoLibraryDidChange(_ changeInstance: PHChange) {
         DispatchQueue.main.async {
             for weakDelegate in self.delegates {
-                weakDelegate.delegate?.photoLibraryDidChange(self)
+                weakDelegate.value?.photoLibraryDidChange(self)
             }
         }
     }
@@ -235,13 +214,13 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
     }
 
     func defaultPhotoCollection() -> PhotoCollection {
-        guard let photoCollection = allPhotoCollections().collections.first else {
+        guard let photoCollection = allPhotoCollections().first else {
             owsFail("Could not locate Camera Roll.")
         }
         return photoCollection
     }
 
-    func allPhotoCollections() -> PhotoCollections {
+    func allPhotoCollections() -> [PhotoCollection] {
         var collections = [PhotoCollection]()
         var collectionIds = Set<String>()
 
@@ -283,6 +262,6 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         // Smart albums.
         processPHAssetCollections(PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: fetchOptions))
 
-        return PhotoCollections(collections: collections)
+        return collections
     }
 }

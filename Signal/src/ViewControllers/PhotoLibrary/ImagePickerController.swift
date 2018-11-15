@@ -254,7 +254,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         let view = PhotoCollectionPickerController(library: library,
-                                                   lastPhotoCollection: photoCollection,
+                                                   previousPhotoCollection: photoCollection,
                                                    collectionDelegate: self)
         let nav = UINavigationController(rootViewController: view)
         self.present(nav, animated: true, completion: nil)
