@@ -26,7 +26,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
 
-    let shareViewNavigationController: OWSNavigationController = OWSNavigationController()
+    private var shareViewNavigationController: OWSNavigationController?
 
     override open func loadView() {
         super.loadView()
@@ -70,6 +70,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
+        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
+        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
+            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
+            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+            },
+            migrationCompletion: { [weak self] in
+                                    AssertIsOnMainThread()
+
+                                    guard let strongSelf = self else { return }
+
+                                    // performUpdateCheck must be invoked after Environment has been initialized because
+                                    // upgrade process may depend on Environment.
+                                    strongSelf.versionMigrationsDidComplete()
+        })
+
+        let shareViewNavigationController = OWSNavigationController()
+        self.shareViewNavigationController = shareViewNavigationController
+
         let loadViewController = SAELoadViewController(delegate: self)
         self.loadViewController = loadViewController
 
@@ -85,22 +103,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             Logger.debug("setup is slow - showing loading screen")
             strongSelf.showPrimaryViewController(loadViewController)
-        }.retainUntilComplete()
-
-        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
-            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
-            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
-            },
-            migrationCompletion: { [weak self] in
-                                    AssertIsOnMainThread()
-
-                                    guard let strongSelf = self else { return }
-
-                                    // performUpdateCheck must be invoked after Environment has been initialized because
-                                    // upgrade process may depend on Environment.
-                                    strongSelf.versionMigrationsDidComplete()
-        })
+            }.retainUntilComplete()
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -452,6 +455,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // If user is registered, do nothing.
             return
         }
+        guard let shareViewNavigationController = shareViewNavigationController else {
+            owsFailDebug("Missing shareViewNavigationController")
+            return
+        }
         guard let firstViewController = shareViewNavigationController.viewControllers.first else {
             // If no view has been presented yet, do nothing.
             return
@@ -513,6 +520,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func showPrimaryViewController(_ viewController: UIViewController) {
         AssertIsOnMainThread()
 
+        guard let shareViewNavigationController = shareViewNavigationController else {
+            owsFailDebug("Missing shareViewNavigationController")
+            return
+        }
         shareViewNavigationController.setViewControllers([viewController], animated: false)
         if self.presentedViewController == nil {
             Logger.debug("presenting modally: \(viewController)")
