@@ -157,11 +157,9 @@ public class OWSNavigationBar: UINavigationBar {
     }
 
     public override func layoutSubviews() {
-        if CurrentAppContext().isMainApp {
-            guard OWSWindowManager.shared().hasCall() else {
-                super.layoutSubviews()
-                return
-            }
+        guard OWSWindowManager.shared().hasCall() else {
+            super.layoutSubviews()
+            return
         }
 
         guard #available(iOS 11, *) else {

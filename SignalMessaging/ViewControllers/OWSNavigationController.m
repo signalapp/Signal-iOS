@@ -150,9 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    if (!CurrentAppContext().isMainApp) {
-        return super.preferredStatusBarStyle;
-    } else if (OWSWindowManager.sharedManager.hasCall) {
+    if (OWSWindowManager.sharedManager.hasCall) {
         // Status bar is overlaying the green "call banner"
         return UIStatusBarStyleLightContent;
     } else {
@@ -172,9 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     [UIView setAnimationsEnabled:NO];
 
     if (@available(iOS 11.0, *)) {
-        if (!CurrentAppContext().isMainApp) {
-            self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-        } else if (OWSWindowManager.sharedManager.hasCall) {
+        if (OWSWindowManager.sharedManager.hasCall) {
             self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
         } else {
             self.additionalSafeAreaInsets = UIEdgeInsetsZero;
