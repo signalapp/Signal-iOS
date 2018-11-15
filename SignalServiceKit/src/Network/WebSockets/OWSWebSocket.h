@@ -8,11 +8,6 @@ static void *OWSWebSocketStateObservationContext = &OWSWebSocketStateObservation
 
 extern NSString *const kNSNotification_OWSWebSocketStateDidChange;
 
-typedef NS_ENUM(NSUInteger, OWSWebSocketType) {
-    OWSWebSocketTypeDefault,
-    OWSWebSocketTypeUD,
-};
-
 typedef NS_ENUM(NSUInteger, OWSWebSocketState) {
     OWSWebSocketStateClosed,
     OWSWebSocketStateConnecting,
@@ -29,8 +24,7 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable r
 
 @property (nonatomic, readonly) OWSWebSocketState state;
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithWebSocketType:(OWSWebSocketType)webSocketType NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // If the app is in the foreground, we'll try to open the socket unless it's already
 // open or connecting.

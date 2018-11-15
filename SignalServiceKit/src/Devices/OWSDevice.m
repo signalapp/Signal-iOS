@@ -62,17 +62,14 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 // to avoid unnecessary message sends for sync messages until we learn
 // of a linked device (e.g. through the device linking UI or by receiving
 // a sync message, etc.).
-- (void)clearMayHaveLinkedDevicesIfNotSet
+- (void)clearMayHaveLinkedDevices
 {
     // Note that we write async to avoid opening transactions within transactions.
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            if (![transaction objectForKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                              inCollection:kOWSPrimaryStorage_OWSDeviceCollection]) {
-                [transaction setObject:@(NO)
-                                forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                          inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
-            }
+            [transaction setObject:@(NO)
+                            forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                      inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
         }];
 }
 

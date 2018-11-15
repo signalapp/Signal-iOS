@@ -39,10 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Message Sending
 
-- (BOOL)canMakeRequestsOfType:(OWSWebSocketType)webSocketType;
+- (BOOL)canMakeRequests;
 
 - (void)makeRequest:(TSRequest *)request
-      webSocketType:(OWSWebSocketType)webSocketType
             success:(TSSocketMessageSuccess)success
             failure:(TSSocketMessageFailure)failure;
 

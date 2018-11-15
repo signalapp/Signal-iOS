@@ -137,6 +137,11 @@ NS_ASSUME_NONNULL_BEGIN
                                          [Environment.shared.contactsManager requestSystemContactsOnce];
                                      }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Cycle websockets"
+                                     actionBlock:^() {
+                                         [SSKEnvironment.shared.socketManager cycleSocket];
+                                     }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
