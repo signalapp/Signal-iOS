@@ -39,7 +39,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
-@interface AppDelegate ()
+@interface AppDelegate () <CrashlyticsDelegate>
 
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -96,8 +96,16 @@ static NSTimeInterval launchStartedAt;
     }
     
     // Initialize crash reporting
-    [Crashlytics startWithAPIKey:[self fabricAPIKey]];
-    [Fabric with:@[ [Crashlytics class] ]];
+    Crashlytics *crashlytics = [Crashlytics startWithAPIKey:[self fabricAPIKey] delegate:self];
+    Fabric *fabric = [Fabric with:@[ [Crashlytics class] ]];
+    if (crashlytics == nil) {
+        DDLogDebug(@"Unable to start Crashlytics.");
+    }
+    if (fabric == nil) {
+        DDLogDebug(@"Unable to start Fabric.");
+    }
+    
+//    [Crashlytics.sharedInstance crash];
 
     DDLogWarn(@"%@ application: didFinishLaunchingWithOptions.", self.logTag);
 
@@ -1162,6 +1170,12 @@ static NSTimeInterval launchStartedAt;
 }
 
 #pragma mark - Crashlytics
+- (BOOL)crashlyticsCanUseBackgroundSessions:(Crashlytics *)crashlytics
+{
+    return YES;
+}
+
+
 -(NSString *)fabricAPIKey
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"Forsta-values" ofType:@"plist"];
