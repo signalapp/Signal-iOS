@@ -770,8 +770,9 @@ extension MediaPageViewController: GalleryRailViewDelegate {
             owsFailDebug("unexpected imageRailItem: \(imageRailItem)")
             return
         }
-
-        let direction: NavigationDirection = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
+ 
+        let direction: UIPageViewControllerNavigationDirection
+        direction = currentItem.albumIndex < targetItem.albumIndex ? .forward : .reverse
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)
     }
