@@ -432,6 +432,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
     NSString *localRecipientId = self.tsAccountManager.localNumber;
     uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
+    __block SSKProtoEnvelope *_Nullable newEnvelope = nil;
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         @try {
@@ -494,7 +495,13 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
             [envelopeBuilder setSource:source];
             [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
-            NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&error];
+            newEnvelope = [envelopeBuilder buildAndReturnError:&error];
+            if (error || !newEnvelope) {
+                OWSFailDebug(@"Could not update UD envelope: %@", error);
+                error = EnsureDecryptError(error, @"Could not update UD envelope");
+                return failureBlock(error);
+            }
+            NSData *_Nullable newEnvelopeData = [newEnvelope serializedDataAndReturnError:&error];
             if (error || !newEnvelopeData) {
                 OWSFailDebug(@"Could not update UD envelope data: %@", error);
                 error = EnsureDecryptError(error, @"Could not update UD envelope data");
@@ -509,7 +516,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             successBlock(result, transaction);
         } @catch (NSException *exception) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self processException:exception envelope:envelope];
+                SSKProtoEnvelope *envelopeForException = (newEnvelope ?: envelope);
+                [self processException:exception envelope:envelopeForException];
                 NSString *errorDescription =
                     [NSString stringWithFormat:@"Exception while decrypting ud message: %@", exception.description];
                 OWSLogError(@"%@", errorDescription);
@@ -527,44 +535,48 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSErrorMessage *errorMessage;
+        @try {
+            TSErrorMessage *errorMessage;
 
-        if ([exception.name isEqualToString:NoSessionException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
-            errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
-        } else if ([exception.name isEqualToString:InvalidKeyException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
-            errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
-        } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
-            errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
-        } else if ([exception.name isEqualToString:DuplicateMessageException]) {
-            // Duplicate messages are silently discarded.
-            return;
-        } else if ([exception.name isEqualToString:InvalidVersionException]) {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
-            errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
-        } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-            // Should no longer get here, since we now record the new identity for incoming messages.
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
-            OWSFailDebug(@"Failed to trust identity on incoming message from: %@", envelopeAddress(envelope));
-            return;
-        } else {
-            OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
-            if (envelope.source.length > 0) {
-                errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
-            } else {
-                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+            if (envelope.source.length < 1) {
+                errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                     transaction:transaction];
                 return;
+            } else if ([exception.name isEqualToString:NoSessionException]) {
+                OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
+                errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
+            } else if ([exception.name isEqualToString:InvalidKeyException]) {
+                OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKey], envelope);
+                errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
+            } else if ([exception.name isEqualToString:InvalidKeyIdException]) {
+                OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidKeyId], envelope);
+                errorMessage = [TSErrorMessage invalidKeyExceptionWithEnvelope:envelope withTransaction:transaction];
+            } else if ([exception.name isEqualToString:DuplicateMessageException]) {
+                // Duplicate messages are silently discarded.
+                return;
+            } else if ([exception.name isEqualToString:InvalidVersionException]) {
+                OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorInvalidMessageVersion], envelope);
+                errorMessage = [TSErrorMessage invalidVersionWithEnvelope:envelope withTransaction:transaction];
+            } else if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
+                // Should no longer get here, since we now record the new identity for incoming messages.
+                OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorUntrustedIdentityKeyException], envelope);
+                OWSFailDebug(@"Failed to trust identity on incoming message from: %@", envelopeAddress(envelope));
+                return;
+            } else {
+                OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
+                errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
             }
-        }
 
-        OWSAssertDebug(errorMessage);
-        if (errorMessage != nil) {
-            [errorMessage saveWithTransaction:transaction];
-            [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
+            OWSAssertDebug(errorMessage);
+            if (errorMessage != nil) {
+                [errorMessage saveWithTransaction:transaction];
+                [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
+            }
+        } @catch (NSException *exception) {
+            NSString *errorDescription =
+                [NSString stringWithFormat:@"Exception while decrypting ud message: %@", exception.description];
+            OWSFailDebug(@"%@", errorDescription);
         }
     }];
 }

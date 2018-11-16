@@ -13,6 +13,7 @@
 #import "TSRequest.h"
 #import <AFNetworking/AFNetworking.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NSErrorDomain const TSNetworkManagerErrorDomain = @"SignalServiceKit.TSNetworkManager";
@@ -157,9 +158,15 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssertDebug(failureBlock);
 
     OWSLogInfo(@"Making UD request: %@", request);
+    uint64_t before = [NSDate ows_millisecondTimeStamp];
 
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
-        OWSLogInfo(@"UD request succeeded : %@", request);
+        //        OWSLogInfo(@"UD request succeeded : %@", request);
+        uint64_t after = [NSDate ows_millisecondTimeStamp];
+        // 33
+        OWSLogInfo(@"---- UD request succeeded : %llu", after - before);
+        //        NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
+        //        OWSLogInfo(@"UD response.allHeaderFields : %@", response.allHeaderFields);
 
         successBlock(task, responseObject);
 
@@ -177,6 +184,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         NSString *headerValue = request.allHTTPHeaderFields[headerField];
         [sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
     }
+    //    [sessionManager.requestSerializer setValue:@"keep-alive" forHTTPHeaderField:@"Connection"];
+    //    [sessionManager.requestSerializer setValue:@"keep-alive" forHTTPHeaderField:@"Proxy-Connection"];
 
     [self performRequest:request sessionManager:sessionManager success:success failure:failure];
 }
