@@ -18,7 +18,6 @@ def shared_pods
   # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
-  # TODO: Use public repo.
   pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
