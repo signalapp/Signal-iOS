@@ -78,7 +78,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "အမည်ထည့်ပါ ";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Not Now";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "မအားသေးပါ";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ဗားရှင်း %@ကို  App Store တွင်ရရှိနိုင်ပါသည်။ ";
@@ -234,7 +234,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave the \"%@\" Group?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Block %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ကိုဘလော့ မလား?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blocked Groups";
@@ -273,7 +273,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "သတိ!";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ has been unblocked.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ကို ဘလော့ဖြည်လိုက်ပြီ ";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
@@ -285,7 +285,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ကိုဘလော့ မလား?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "ဘလော့လုပ်ထားသော လူများအနေဖြင့် သင့်အားစာပို့​ခြင်း၊ ဖုန်းခေါ်ခြင်းများ ​ပြုလုပ်၍မရပါ။";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "ဆက်လက်၍";
@@ -534,7 +534,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block This User";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ဤသူကို ဘလော့မည် ";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "ဆက်သွယ်သူအချက်အလက် ";
@@ -790,7 +790,7 @@
 "EMPTY_INBOX_NEW_USER_TEXT" = "Tap on the compose button";
 
 /* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Start your first Signal conversation!";
+"EMPTY_INBOX_NEW_USER_TITLE" = "သင်၏ပထမဆုံး Signal စကားဝိုင်းကို စတင်လိုက်ပါ!";
 
 /* Body text an existing user sees when viewing an empty inbox */
 "EMPTY_INBOX_TEXT" = "None. Zip. Zilch. Nada.";
@@ -832,7 +832,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "မှတ်ပုံတင်ခြင်း lock";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy";
+"END_CALL_RESPONDER_IS_BUSY" = "မအားပါ";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ခေါ်ဆိုမှု မအောင်မြင်ပါ ";
@@ -907,7 +907,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "အကျိုးအကြောင်းမသိသည့် ပြဿနာ ဖြစ်လာသည်။";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "လုံခြုံရေးနံပါတ် ပြောင်းသွားသည်။";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "မှတ်ပုံတင်ထားခြင်းမရှိသော အသုံးပြုသူ %@";
@@ -1021,7 +1021,7 @@
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "မှတ်တမ်းပြုပြီး စကားဝိုင်းများ";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Blocked";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "ဘလော့လုပ်သည်";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ရှာရန်";
@@ -1066,7 +1066,7 @@
 "INCOMING_DECLINED_CALL" = "ဖုန်းကိုလက်ခံမှုမပြုလုပ်ပါ";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
+"INCOMING_INCOMPLETE_CALL" = "အဝင်ဖုန်းလာသည်";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "၎င်းတို့၏ လုံခြုံရေးနံပါတ် ပြောင်းလဲသွားသောကြောင့် အဝင်ခေါ်ဆိုမှုလွဲသွားသည်";
@@ -1264,7 +1264,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "မဖတ်ဘဲ ကျော်သွားသော";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "ပေးပို့ချက် မအောင်မြင်ပါ";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Sending…";
@@ -1374,7 +1374,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ဖုန်းနံပါတ်ဖြင့် ရှာပါ";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
-"NEW_GROUP_ADD_NON_CONTACT" = "Add by Phone Number";
+"NEW_GROUP_ADD_NON_CONTACT" = "ဖုန်းနံပါတ်ထည့်သည် ";
 
 /* Action Sheet title prompting the user for a group avatar */
 "NEW_GROUP_ADD_PHOTO_ACTION" = "အဖွဲ့ပုံ ထားပါ";
@@ -1458,10 +1458,10 @@
 "OUTGOING_CALL" = "ဖုန်းခေါ်ဆိုမှု";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "ဖုန်းခေါ်ဆိုမှု";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "ဖုန်းခေါ်မှုကို ဖြေဆိုခြင်းမရှိ";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -1677,7 +1677,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "ကြိုးစားသည့်အကြိမ် စိပ်နေသည်။ ပြန်မကြိုးစားခင် တစ်မိနစ်လောက်စောင့်ပါ။";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_ERROR" = "ကြိုးစားသည့်အကြိမ် စိပ်နေသည်။ ပြန်မကြိုးစားခင် တစ်မိနစ်လောက်စောင့်ပါ။";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "push notifications အတွက် ပြန်စာရင်းလုပ်တာ မအောင်မြင်ပါ။";
@@ -2103,7 +2103,7 @@
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
 
 /* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Learn More";
+"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "ပိုသိရန်";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
@@ -2163,7 +2163,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal တွင် ဝေမျှမည်";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "လုံခြုံရေးနံပါတ်ကို ပြပါ";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "စကားဝိုင်းကို ပြပါ";
@@ -2181,7 +2181,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "လုံခြုံရေးနံပါတ်တွေ ကိုက်ညီပါတယ်!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "လုံခြုံရေးနံပါတ်ကို အတည်ပြုပါ";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ နေ့";
