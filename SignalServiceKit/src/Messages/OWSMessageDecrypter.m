@@ -525,9 +525,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSLogError(
         @"Got exception: %@ of type: %@ with reason: %@", exception.description, exception.name, exception.reason);
 
-
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
+
+        if (envelope.source.length == 0) {
+            TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+            [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                transaction:transaction];
+            return;
+        }
 
         if ([exception.name isEqualToString:NoSessionException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
@@ -551,14 +557,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return;
         } else {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorCorruptMessage], envelope);
-            if (envelope.source.length > 0) {
-                errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
-            } else {
-                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
-                return;
-            }
+            errorMessage = [TSErrorMessage corruptedMessageWithEnvelope:envelope withTransaction:transaction];
         }
 
         OWSAssertDebug(errorMessage);
