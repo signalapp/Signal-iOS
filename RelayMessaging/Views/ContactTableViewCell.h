@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)reuseIdentifier;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(FLContactsManager *)contactsManager;
-
+- (void)configureWithTagId:(NSString *)tagId contactsManager:(FLContactsManager *)contactsManager;
 - (void)configureWithThread:(TSThread *)thread contactsManager:(FLContactsManager *)contactsManager;
 
 // This method should be called _before_ the configure... methods.

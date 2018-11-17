@@ -158,28 +158,31 @@ public class ConversationSearcher: NSObject {
         guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
             return threads
         }
-
+        
         return threads.filter { thread in
-//            switch thread {
-//            case let groupThread as TSGroupThread:
-                return self.groupThreadSearcher.matches(item: thread, query: searchText)
-//            case let contactThread as TSThread:
-//                return self.contactThreadSearcher.matches(item: contactThread, query: searchText)
-//            default:
-//                owsFail("Unexpected thread type: \(thread)")
-//                return false
-//            }
+            return self.threadSearcher.matches(item: thread, query: searchText)
         }
     }
 
-    @objc(filterGroupThreads:withSearchText:)
-    public func filterGroupThreads(_ groupThreads: [ TSThread ], searchText: String) -> [ TSThread ] {
-        guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
-            return groupThreads
-        }
+//    @objc(filterGroupThreads:withSearchText:)
+//    public func filterGroupThreads(_ groupThreads: [ TSThread ], searchText: String) -> [ TSThread ] {
+//        guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
+//            return groupThreads
+//        }
+//
+//        return groupThreads.filter { groupThread in
+//            return self.groupThreadSearcher.matches(item: groupThread, query: searchText)
+//        }
+//    }
 
-        return groupThreads.filter { groupThread in
-            return self.groupThreadSearcher.matches(item: groupThread, query: searchText)
+    @objc(filterRelayTags:withSearchText:)
+    public func filterRelayTags(_ relayTags: [FLTag], searchText: String) -> [FLTag] {
+        guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
+            return relayTags
+        }
+        
+        return relayTags.filter { relayTag in
+            self.relayTagSearcher.matches(item: relayTag, query: searchText)
         }
     }
 
@@ -196,19 +199,19 @@ public class ConversationSearcher: NSObject {
 
     // MARK: Searchers
 
-    private lazy var groupThreadSearcher: Searcher<TSThread> = Searcher { (groupThread: TSThread) in
-        let groupName = groupThread.title
-        let memberStrings = groupThread.participantIds.map { recipientId in
+    private lazy var threadSearcher: Searcher<TSThread> = Searcher { (thread: TSThread) in
+        let threadName = thread.title
+        let memberStrings = thread.participantIds.map { recipientId in
             self.indexingString(recipientId: recipientId)
             }.joined(separator: " ")
 
-        return "\(memberStrings) \(groupName ?? "")"
+        return "\(memberStrings) \(threadName ?? "")"
     }
 
-//    private lazy var contactThreadSearcher: Searcher<TSThread> = Searcher { (contactThread: TSThread) in
-//        let recipientId = contactThread.contactIdentifier()
-//        return self.indexingString(recipientId: recipientId)
-//    }
+    private lazy var relayTagSearcher: Searcher<FLTag> = Searcher { (relayTag: FLTag) in
+        let tagId = relayTag.uniqueId
+        return self.indexingString(tagId: tagId)
+    }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
         let recipientId = signalAccount.recipientId
@@ -219,6 +222,14 @@ public class ConversationSearcher: NSObject {
         return Environment.current()!.contactsManager
     }
 
+    private func indexingString(tagId: String) -> String {
+        let aTag = contactsManager.tag(withId: tagId)
+        let tagDescription = aTag?.tagDescription
+        let tagSlug = aTag?.slug
+        
+        return "\(tagId) \(tagDescription ?? "") \(tagSlug ?? "")"
+    }
+    
     private func indexingString(recipientId: String) -> String {
         let recipientName = contactsManager.displayName(forRecipientId: recipientId)
         let tagName = contactsManager.recipient(withId: recipientId)?.flTag?.slug

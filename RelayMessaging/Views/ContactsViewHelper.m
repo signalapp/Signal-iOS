@@ -8,12 +8,8 @@
 #import "UIUtil.h"
 #import <RelayMessaging/OWSProfileManager.h>
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayServiceKit/AppContext.h>
-#import <RelayServiceKit/Contact.h>
-#import <RelayServiceKit/OWSBlockingManager.h>
-#import <RelayServiceKit/PhoneNumber.h>
-#import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSAccountManager.h>
+
+@import RelayServiceKit;
 
 @import ContactsUI;
 
@@ -22,10 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ContactsViewHelper ()
 
 // This property is a cached value that is lazy-populated.
-@property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
+//@property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
 
-@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
-@property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
+//@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+//@property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
+
+@property (nonatomic) NSArray<RelayRecipient *> *relayRecipients;
+@property (nonatomic) NSArray<FLTag *> *relayTags;
+@property (nonatomic) NSDictionary<NSString *, FLTag *> *relayTagMap;
 
 @property (nonatomic) NSArray<NSString *> *blockedPhoneNumbers;
 
@@ -195,7 +195,12 @@ NS_ASSUME_NONNULL_BEGIN
         }]];
 }
 
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
+- (NSArray<FLTag *> *)relayTagsMatchingSearchString:(NSString *)searchText
+{
+    return [self.conversationSearcher filterRelayTags:self.relayTags withSearchText:searchText];
+}
+
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText __deprecated
 {
     return [self.conversationSearcher filterSignalAccounts:self.signalAccounts withSearchText:searchText];
 }
