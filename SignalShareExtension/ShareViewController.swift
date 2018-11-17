@@ -70,6 +70,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return
         }
 
+        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
+        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
+            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
+            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+            },
+            migrationCompletion: { [weak self] in
+                                    AssertIsOnMainThread()
+
+                                    guard let strongSelf = self else { return }
+
+                                    // performUpdateCheck must be invoked after Environment has been initialized because
+                                    // upgrade process may depend on Environment.
+                                    strongSelf.versionMigrationsDidComplete()
+        })
+
         let shareViewNavigationController = OWSNavigationController()
         self.shareViewNavigationController = shareViewNavigationController
 
@@ -88,22 +103,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             Logger.debug("setup is slow - showing loading screen")
             strongSelf.showPrimaryViewController(loadViewController)
-        }.retainUntilComplete()
-
-        // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
-            SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
-            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
-            },
-            migrationCompletion: { [weak self] in
-                                    AssertIsOnMainThread()
-
-                                    guard let strongSelf = self else { return }
-
-                                    // performUpdateCheck must be invoked after Environment has been initialized because
-                                    // upgrade process may depend on Environment.
-                                    strongSelf.versionMigrationsDidComplete()
-        })
+            }.retainUntilComplete()
 
         // We don't need to use "screen protection" in the SAE.
 

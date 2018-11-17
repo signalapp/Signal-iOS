@@ -1008,12 +1008,6 @@
 /* Button label for the 'show contact info' button */
 "GROUP_MEMBERS_VIEW_CONTACT_INFO" = "聯絡人資訊";
 
-/* Modal text when removing a group */
-"GROUP_REMOVING" = "離開群組%@";
-
-/* Title of alert indicating that group deletion failed. */
-"GROUP_REMOVING_FAILED" = "無法離開群組";
-
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "稱謂已改為‘%@’";
 
@@ -1057,7 +1051,7 @@
 "IN_CALL_TERMINATED" = "結束通話。";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "這些對話已經歸檔，並只有在收到新訊息時才會顯示在收件箱中。";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "這些對話已經封存，並只有在收到新訊息時才會顯示在收件箱中。";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "你可以在 iOS設定中允許取用聯絡資訊，以在你的 Signal 對話清單中見到聯絡人名稱。";
@@ -1166,6 +1160,12 @@
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "刪除訊息";
+
+/* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@在 %@";
+
+/* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "你";
@@ -1504,6 +1504,9 @@
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "工作傳真";
+
+/* navbar title when viewing the default photo album, which includes all photos */
+"PHOTO_PICKER_DEFAULT_ALBUM" = "所有照片";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒體";
@@ -2093,6 +2096,12 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "註冊鎖定";
 
+/* Label for the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS" = "輸入指標";
+
+/* An explanation of the 'typing indicators' setting. */
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "查看並分享正在輸入的訊息。這個設定是選擇性及適用於所有對話。";
+
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "了解更多";
 
@@ -2302,6 +2311,15 @@
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "啟用已讀回執功能";
+
+/* button label shown one time, after upgrade */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATOR_PRIVACY_SETTINGS" = "在你的隱私權設定中啟動輸入指標。";
+
+/* Body text for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "現在你可以選擇性的查看並分享正在輸入的訊息。";
+
+/* Header for upgrading users */
+"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "介紹輸入指標";
 
 /* Description of video calling to upgrading (existing) users */
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal 已支援安全的視訊通話。正常的開始通話，接通後點擊攝影機圖示按鈕，雙方即可看到對方。";

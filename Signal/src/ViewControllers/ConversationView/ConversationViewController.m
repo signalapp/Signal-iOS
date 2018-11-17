@@ -3746,7 +3746,11 @@ typedef enum : NSUInteger {
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self updateLastVisibleTimestamp];
-    [self autoLoadMoreIfNecessary];
+
+    __weak ConversationViewController *weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf autoLoadMoreIfNecessary];
+    });
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
