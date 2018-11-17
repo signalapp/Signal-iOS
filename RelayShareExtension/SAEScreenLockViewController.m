@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor FL_mediumBlue2];
+    self.view.backgroundColor = [UIColor blackColor];
 
     self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
 

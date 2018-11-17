@@ -15,11 +15,9 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <RelayMessaging/RelayMessaging-Swift.h>
-#import <RelayServiceKit/PhoneNumber.h>
-#import <RelayServiceKit/SignalAccount.h>
-#import <RelayServiceKit/TSAccountManager.h>
-#import <RelayServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
+
+@import RelayServiceKit;
+@import YapDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -166,20 +164,20 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelper *helper = self.contactsViewHelper;
     OWSTableContents *contents = [OWSTableContents new];
 
-    OWSTableSection *findByPhoneSection = [OWSTableSection new];
-    [findByPhoneSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
-                                                         @"A label the cell that lets you add a new member to a group.")
-                                     customRowHeight:UITableViewAutomaticDimension
-                                         actionBlock:^{
-                                             NewNonContactConversationViewController *viewController =
-                                                 [NewNonContactConversationViewController new];
-                                             viewController.nonContactConversationDelegate = weakSelf;
-                                             viewController.isPresentedInNavigationController = YES;
-                                             [weakSelf.navigationController pushViewController:viewController
-                                                                                      animated:YES];
-                                         }]];
-    [contents addSection:findByPhoneSection];
+//    OWSTableSection *findByPhoneSection = [OWSTableSection new];
+//    [findByPhoneSection
+//        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+//                                                         @"A label the cell that lets you add a new member to a group.")
+//                                     customRowHeight:UITableViewAutomaticDimension
+//                                         actionBlock:^{
+//                                             NewNonContactConversationViewController *viewController =
+//                                                 [NewNonContactConversationViewController new];
+//                                             viewController.nonContactConversationDelegate = weakSelf;
+//                                             viewController.isPresentedInNavigationController = YES;
+//                                             [weakSelf.navigationController pushViewController:viewController
+//                                                                                      animated:YES];
+//                                         }]];
+//    [contents addSection:findByPhoneSection];
 
     // Existing threads are listed first, ordered by most recently active
     OWSTableSection *recentChatsSection = [OWSTableSection new];
@@ -196,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
                             // instead of HomeViewCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                            // Blocking not yet implemented in Forst world
+                            // Blocking not yet implemented in Forsta world
 //                            BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
 //                            if (isBlocked) {
 //                                cell.accessoryMessage = NSLocalizedString(
@@ -267,8 +265,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *otherContactsSection = [OWSTableSection new];
     otherContactsSection.headerTitle = NSLocalizedString(
         @"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE", @"Table section header for conversations you haven't recently used.");
-    NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
-    for (SignalAccount *signalAccount in filteredSignalAccounts) {
+    NSArray<FLTag *> *filteredRelayTags = [self filteredRelayTagsWithSearchText];
+    for (FLTag *relayTag in filteredRelayTags) {
         [otherContactsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -276,18 +274,18 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSCAssert(strongSelf);
 
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
-                            if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                            }
-                            [cell configureWithRecipientId:signalAccount.recipientId
+//                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+//                            if (isBlocked) {
+//                                cell.accessoryMessage = NSLocalizedString(
+//                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+//                            }
+                            [cell configureWithTagId:relayTag.uniqueId
                                            contactsManager:helper.contactsManager];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
-                            [weakSelf signalAccountWasSelected:signalAccount];
+                            [weakSelf relayTagWasSelected:relayTag];
                         }]];
     }
 
@@ -307,7 +305,42 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.contents = contents;
 }
 
-- (void)signalAccountWasSelected:(SignalAccount *)signalAccount
+-(void)relayTagWasSelected:(FLTag *)relayTag
+{
+    OWSAssert(relayTag);
+    OWSAssert(self.selectThreadViewDelegate);
+    
+    
+    // TODO: Implement blocking
+//    ContactsViewHelper *helper = self.contactsViewHelper;
+//    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
+//        && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
+//
+//        __weak SelectThreadViewController *weakSelf = self;
+//        [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
+//                                           fromViewController:self
+//                                              blockingManager:helper.blockingManager
+//                                              contactsManager:helper.contactsManager
+//                                              completionBlock:^(BOOL isBlocked) {
+//                                                  if (!isBlocked) {
+//                                                      [weakSelf signalAccountWasSelected:signalAccount];
+//                                                  }
+//                                              }];
+//        return;
+//    }
+    
+    __block TSThread *thread = nil;
+    __block NSCountedSet<NSString *> *participants = [relayTag recipientIds];
+    [participants addObject:[TSAccountManager localUID]];
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [TSThread getOrCreateThreadWithParticipants:[participants allObjects] transaction:transaction];
+    }];
+    OWSAssert(thread);
+    
+    [self.selectThreadViewDelegate threadWasSelected:thread];
+}
+
+- (void)signalAccountWasSelected:(SignalAccount *)signalAccount __deprecated
 {
     OWSAssert(signalAccount);
     OWSAssert(self.selectThreadViewDelegate);
@@ -348,7 +381,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.conversationSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
 }
 
-- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText
+- (NSArray<FLTag *> *)filteredRelayTagsWithSearchText
+{
+    NSString *searchString = self.searchBar.text;
+    
+    NSArray<FLTag *>*matchingTags = [self.contactsViewHelper relayTagsMatchingSearchString:searchString];
+    
+    return matchingTags;
+}
+
+- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText __deprecated
 {
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.

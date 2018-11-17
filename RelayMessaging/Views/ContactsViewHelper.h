@@ -4,9 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class Contact;
+//@class Contact;
 @class ContactsViewHelper;
 @class SignalAccount;
+@class RelayRecipient;
+@class FLTag;
 
 @protocol CNContactViewControllerDelegate;
 
@@ -28,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@class CNContact;
+//@class CNContact;
 @class OWSBlockingManager;
 @class FLContactsManager;
 
@@ -39,8 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) FLContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
-@property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
-@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
+@property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap __deprecated;
+@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts __deprecated;
+
+@property (nonatomic, readonly) NSArray<RelayRecipient *> *relayRecipients;
+@property (nonatomic, readonly) NSArray<FLTag *> *relayTags;
+@property (nonatomic, readonly) NSDictionary<NSString *, FLTag *> *relayTagMap;
 
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
 @property (nonatomic, readonly) BOOL hasUpdatedContactsAtLeastOnce;
@@ -65,19 +71,20 @@ NS_ASSUME_NONNULL_BEGIN
 // NOTE: This method uses a transaction.
 - (NSString *)localUID;
 
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
+- (NSArray<FLTag *> *)relayTagsMatchingSearchString:(NSString *)searchText;
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText __deprecated;
 
-- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
+//- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
 
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately;
 
 // This method can be used to edit existing contacts.
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
-                            addToExistingCnContact:(CNContact *_Nullable)cnContact;
+//- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
+//                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+//                                   editImmediately:(BOOL)shouldEditImmediately
+//                            addToExistingCnContact:(CNContact *_Nullable)cnContact;
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 

@@ -1848,7 +1848,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Other Contacts";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Chats";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Conversations";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Send Again";

@@ -38,7 +38,7 @@ class SAEFailedViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(cancelPressed))
-        self.navigationItem.title = "Relay"
+        self.navigationItem.title = "Forsta Messenger"
 
         self.view.backgroundColor = UIColor.black
 
@@ -52,6 +52,7 @@ class SAEFailedViewController: UIViewController {
 //        logoImageView.autoSetDimension(.height, toSize: logoSize)
         logoImageView.contentMode = .scaleAspectFill
         logoImageView.autoPinEdgesToSuperviewEdges()
+        self.view.sendSubview(toBack: logoImageView)
 
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
@@ -63,7 +64,7 @@ class SAEFailedViewController: UIViewController {
         self.view.addSubview(titleLabel)
         titleLabel.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
         titleLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
-        titleLabel.autoPinEdge(.top, to: .bottom, of: logoImageView, withOffset: 25)
+        titleLabel.autoPinEdge(.top, to: .bottom, of: self.view, withOffset: -175)
 
         let messageLabel = UILabel()
         messageLabel.textColor = UIColor.white

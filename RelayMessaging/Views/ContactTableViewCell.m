@@ -53,6 +53,15 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.userInteractionEnabled = NO;
 }
 
+- (void)configureWithTagId:(NSString *)tagId contactsManager:(FLContactsManager *)contactsManager
+{
+    [OWSTableItem configureCell:self];
+    
+    [self.cellView configureWithTagId:tagId contactsManager:contactsManager];
+    
+    // Force layout, since imageView isn't being initally rendered on App Store optimized build.
+    [self layoutSubviews];}
+
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(FLContactsManager *)contactsManager
 {
     [OWSTableItem configureCell:self];

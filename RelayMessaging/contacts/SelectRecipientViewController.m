@@ -501,8 +501,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (![self.delegate shouldHideContacts]) {
         OWSTableSection *contactsSection = [OWSTableSection new];
         contactsSection.headerTitle = [self.delegate contactsSectionTitle];
-        NSArray<SignalAccount *> *signalAccounts = helper.signalAccounts;
-        if (signalAccounts.count == 0) {
+        NSArray<FLTag *> *relayTags = helper.relayTags;
+        if (relayTags.count == 0) {
             // No Contacts
 
             [contactsSection
@@ -512,7 +512,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         } else {
             // Contacts
 
-            for (SignalAccount *signalAccount in signalAccounts) {
+            for (FLTag *relayTag in relayTags) {
                 [contactsSection
                     addItem:[OWSTableItem
                                 itemWithCustomCellBlock:^{
@@ -520,29 +520,31 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                     OWSCAssert(strongSelf);
 
                                     ContactTableViewCell *cell = [ContactTableViewCell new];
-                                    BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
-                                    if (isBlocked) {
-                                        cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
-                                            @"An indicator that a contact has been blocked.");
-                                    } else {
-                                        cell.accessoryMessage =
-                                            [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
-                                    }
-                                    [cell configureWithRecipientId:signalAccount.recipientId
-                                                   contactsManager:helper.contactsManager];
+//                                    BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+//                                    if (isBlocked) {
+//                                        cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
+//                                            @"An indicator that a contact has been blocked.");
+//                                    } else {
+                                    // TODO: Implement this!
+//                                        cell.accessoryMessage =
+//                                            [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
+//                                    }
+//                                    [cell configureWithTagId:relayTag.uniqueId
+//                                                   contactsManager:helper.contactsManager];
 
-                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
-                                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                    }
+                                    // Implement this!
+//                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+//                                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+//                                    }
 
                                     return cell;
                                 }
                                 customRowHeight:UITableViewAutomaticDimension
                                 actionBlock:^{
-                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
-                                        return;
-                                    }
-                                    [weakSelf.delegate signalAccountWasSelected:signalAccount];
+//                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+//                                        return;
+//                                    }
+//                                    [weakSelf.delegate signalAccountWasSelected:signalAccount];
                                 }]];
             }
         }

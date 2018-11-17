@@ -59,7 +59,7 @@ class SAELoadViewController: UIViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
                                                                 action: #selector(cancelPressed))
-        self.navigationItem.title = "Signal"
+        self.navigationItem.title = "Forsta Messenger"
 
         self.view.backgroundColor = UIColor.black
 

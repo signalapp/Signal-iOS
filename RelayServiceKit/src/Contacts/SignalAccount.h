@@ -27,17 +27,17 @@ NS_ASSUME_NONNULL_BEGIN
 // non-contact account.
 @property (nonatomic, nullable) Contact *contact;
 
-@property (nonatomic) BOOL hasMultipleAccountContact;
+@property (nonatomic) BOOL hasMultipleAccountContact __deprecated;
 
 // For contacts with more than one signal account,
 // this is a label for the account.
-@property (nonatomic) NSString *multipleAccountLabelText;
+@property (nonatomic) NSString *multipleAccountLabelText __deprecated;
 
 - (nullable NSString *)contactFullName;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
+- (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient __deprecated;
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId;
 
