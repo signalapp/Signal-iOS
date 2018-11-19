@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    if (_authorId == nil) {
+        OWSAssertDebug([self.uniqueThreadId hasPrefix:TSContactThreadPrefix]);
+        _authorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+    }
+
     return self;
 }
 
@@ -88,10 +93,9 @@ NS_ASSUME_NONNULL_BEGIN
                                  if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-                                     NSString *messageAuthorId = message.messageAuthorId;
-                                     OWSAssertDebug(messageAuthorId.length > 0);
+                                     OWSAssertDebug(message.authorId > 0);
 
-                                     if ([messageAuthorId isEqualToString:authorId]) {
+                                     if ([message.authorId isEqualToString:authorId]) {
                                          foundMessage = message;
                                      }
                                  }
@@ -101,22 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
     return foundMessage;
 }
 
-// TODO get rid of this method and instead populate authorId in initWithCoder:
-- (NSString *)messageAuthorId
-{
-    // authorId isn't set on all legacy messages, so we take
-    // extra measures to ensure we obtain a valid value.
-    NSString *messageAuthorId;
-    if (self.authorId) {
-        // Group Thread
-        messageAuthorId = self.authorId;
-    } else {
-        // Contact Thread
-        messageAuthorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
-    }
-    OWSAssertDebug(messageAuthorId.length > 0);
-    return messageAuthorId;
-}
 
 - (OWSInteractionType)interactionType
 {

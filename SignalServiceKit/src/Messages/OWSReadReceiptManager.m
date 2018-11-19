@@ -268,7 +268,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             NSString *threadUniqueId = message.uniqueThreadId;
             OWSAssertDebug(threadUniqueId.length > 0);
 
-            NSString *messageAuthorId = message.messageAuthorId;
+            NSString *messageAuthorId = message.authorId;
             OWSAssertDebug(messageAuthorId.length > 0);
 
             OWSLinkedDeviceReadReceipt *newReadReceipt =
@@ -286,7 +286,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
-            if ([message.messageAuthorId isEqualToString:[TSAccountManager localNumber]]) {
+            if ([message.authorId isEqualToString:[TSAccountManager localNumber]]) {
                 OWSLogVerbose(@"Ignoring read receipt for self-sender.");
                 return;
             }
@@ -379,7 +379,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(message);
     OWSAssertDebug(transaction);
 
-    NSString *senderId = message.messageAuthorId;
+    NSString *senderId = message.authorId;
     uint64_t timestamp = message.timestamp;
     if (senderId.length < 1 || timestamp < 1) {
         OWSFailDebug(@"Invalid incoming message: %@ %llu", senderId, timestamp);

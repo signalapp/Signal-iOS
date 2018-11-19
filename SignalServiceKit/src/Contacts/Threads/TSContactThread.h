@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const TSContactThreadPrefix;
+
 @interface TSContactThread : TSThread
 
 @property (nonatomic) BOOL hasDismissedOffers;

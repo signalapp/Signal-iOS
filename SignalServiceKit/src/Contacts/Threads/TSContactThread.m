@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define TSContactThreadPrefix @"c"
+NSString *const TSContactThreadPrefix = @"c";
 
 @implementation TSContactThread
 
