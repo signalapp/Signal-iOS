@@ -108,8 +108,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
-    private(set) var captioningToolbar: CaptioningToolbar!
-
     // MARK: - Initializers
 
     @available(*, unavailable, message:"use attachment: constructor instead.")
@@ -148,10 +146,24 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return navController
     }
 
-    // MARK: - View Lifecycle
+    // MARK: - Subviews
 
-    let galleryRailView = GalleryRailView()
-    let railContainerView = UIView()
+    var galleryRailView: GalleryRailView {
+        return bottomToolView.galleryRailView
+    }
+
+    var captioningToolbar: CaptioningToolbar {
+        return bottomToolView.captioningToolbar
+    }
+
+    lazy var bottomToolView: BottomToolView = {
+        let isAddMoreVisible = mode == .sharedNavigation
+        let bottomToolView = BottomToolView(isAddMoreVisible: isAddMoreVisible)
+
+        return bottomToolView
+    }()
+
+    // MARK: - View Lifecycle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -160,33 +172,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         disablePagingIfNecessary()
 
-        railContainerView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
-        view.addSubview(railContainerView)
-        railContainerView.preservesSuperviewLayoutMargins = true
-        railContainerView.layoutMargins.bottom = 50
-        railContainerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-
-        let footerGradientView = GradientView(from: .clear, to: .black)
-        railContainerView.addSubview(footerGradientView)
-        footerGradientView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        footerGradientView.autoSetDimension(.height, toSize: ScaleFromIPhone5(100))
-
-        railContainerView.addSubview(galleryRailView)
-        galleryRailView.delegate = self
-        galleryRailView.scrollFocusMode = .keepWithinBounds
-
-        galleryRailView.autoPinEdge(toSuperviewEdge: .leading)
-        galleryRailView.autoPinEdge(toSuperviewEdge: .trailing)
-        galleryRailView.autoPinEdge(toSuperviewMargin: .top)
-        galleryRailView.autoPinEdge(toSuperviewMargin: .bottom)
-        galleryRailView.autoSetDimension(.height, toSize: 72)
-
         // Bottom Toolbar
-
-        let isAddMoreVisible = mode == .sharedNavigation
-        let captioningToolbar = CaptioningToolbar(isAddMoreVisible: isAddMoreVisible)
+        galleryRailView.delegate = self
         captioningToolbar.captioningToolbarDelegate = self
-        self.captioningToolbar = captioningToolbar
 
         // Navigation
 
@@ -232,8 +220,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     override public var inputAccessoryView: UIView? {
-        self.captioningToolbar.layoutIfNeeded()
-        return self.captioningToolbar
+        bottomToolView.layoutIfNeeded()
+        return bottomToolView
     }
 
     override public var canBecomeFirstResponder: Bool {
@@ -447,8 +435,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         galleryRailView.configureCellViews(itemProvider: attachmentItemCollection, focusedItem: currentItem)
         addDeleteIcon(cellViews: galleryRailView.cellViews)
 
-        railContainerView.isHidden = attachmentItemCollection.attachmentItems.count < 2
-        captioningToolbar.alwaysShowGradient = railContainerView.isHidden
+        galleryRailView.isHidden = attachmentItemCollection.attachmentItems.count < 2
     }
 
     let attachmentItemCollection: AttachmentItemCollection
@@ -944,6 +931,54 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
     }
 }
 
+class BottomToolView: UIView {
+    let captioningToolbar: CaptioningToolbar
+    let galleryRailView: GalleryRailView
+
+    let kGalleryRailViewHeight: CGFloat = 72
+
+    required init(isAddMoreVisible: Bool) {
+        captioningToolbar = CaptioningToolbar(isAddMoreVisible: isAddMoreVisible)
+
+        galleryRailView = GalleryRailView()
+        galleryRailView.scrollFocusMode = .keepWithinBounds
+        galleryRailView.autoSetDimension(.height, toSize: kGalleryRailViewHeight)
+
+        super.init(frame: .zero)
+
+        // Specifying autorsizing mask and an intrinsic content size allows proper
+        // sizing when used as an input accessory view.
+        self.autoresizingMask = .flexibleHeight
+        self.translatesAutoresizingMaskIntoConstraints = false
+
+        backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        preservesSuperviewLayoutMargins = true
+
+        let stackView = UIStackView(arrangedSubviews: [self.galleryRailView, self.captioningToolbar])
+        stackView.axis = .vertical
+
+        addSubview(stackView)
+        stackView.autoPinEdge(toSuperviewEdge: .leading)
+        stackView.autoPinEdge(toSuperviewEdge: .trailing)
+        stackView.autoPinEdge(toSuperviewEdge: .top)
+        stackView.autoPinEdge(toSuperviewMargin: .bottom)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: 
+
+    override var intrinsicContentSize: CGSize {
+        get {
+            // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
+            // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
+            return CGSize.zero
+        }
+    }
+}
+
 protocol CaptioningToolbarDelegate: class {
     func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar)
     func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
@@ -964,7 +999,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         set { self.textView.text = newValue }
     }
 
-    private let bottomGradient: GradientView = GradientView(from: .clear, to: .black)
     private let lengthLimitLabel: UILabel = UILabel()
 
     // Layout Constants
@@ -1051,7 +1085,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         self.lengthLimitLabel.isHidden = true
 
         let contentView = UIView()
-        contentView.addSubview(bottomGradient)
         contentView.addSubview(sendButton)
         contentView.addSubview(textView)
         contentView.addSubview(lengthLimitLabel)
@@ -1103,11 +1136,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textView, withOffset: -6)
         lengthLimitLabel.setContentHuggingHigh()
         lengthLimitLabel.setCompressionResistanceHigh()
-
-        bottomGradient.isHidden = true
-        let bottomGradientHeight = ScaleFromIPhone5(100)
-        bottomGradient.autoSetDimension(.height, toSize: bottomGradientHeight)
-        bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -1166,30 +1194,12 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         }
     }
 
-    var alwaysShowGradient: Bool = false {
-        didSet {
-            if alwaysShowGradient {
-                bottomGradient.isHidden = false
-            }
-        }
-    }
-
     public func textViewDidBeginEditing(_ textView: UITextView) {
         self.captioningToolbarDelegate?.captioningToolbarDidBeginEditing(self)
-        if !alwaysShowGradient {
-            UIView.animate(withDuration: 0.2) {
-                self.bottomGradient.isHidden = false
-            }
-        }
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
         self.captioningToolbarDelegate?.captioningToolbarDidEndEditing(self)
-        if !alwaysShowGradient {
-            UIView.animate(withDuration: 0.2) {
-                self.bottomGradient.isHidden = true
-            }
-        }
     }
 
     // MARK: - Helpers
