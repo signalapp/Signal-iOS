@@ -3,9 +3,11 @@
 //
 
 #import "SignalApp.h"
+#import "AppDelegate.h"
 #import "ConversationViewController.h"
 #import "HomeViewController.h"
 #import "Signal-Swift.h"
+#import "SignalsNavigationController.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
@@ -154,6 +156,16 @@ NS_ASSUME_NONNULL_BEGIN
     // set the app badge number to zero after setting it to a non-zero value.
     [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+}
+
+- (void)showHomeView
+{
+    HomeViewController *homeView = [HomeViewController new];
+    SignalsNavigationController *navigationController =
+        [[SignalsNavigationController alloc] initWithRootViewController:homeView];
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = navigationController;
+    OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
 }
 
 @end

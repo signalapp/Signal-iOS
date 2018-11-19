@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearAllNotifications;
 
+- (void)showHomeView;
+
 @end
 
 NS_ASSUME_NONNULL_END
