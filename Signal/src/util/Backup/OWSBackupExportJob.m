@@ -439,19 +439,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"");
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            OWSBackupExportJob *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-            if (strongSelf.isComplete) {
-                return;
-            }
-            strongSelf.lastValidRecordNames = [NSSet setWithArray:recordNames];
-            completion(YES);
-        });
-    }
+    [OWSBackupAPI
+        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                OWSBackupExportJob *strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+                if (strongSelf.isComplete) {
+                    return;
+                }
+                strongSelf.lastValidRecordNames = [NSSet setWithArray:recordNames];
+                completion(YES);
+            });
+        }
         failure:^(NSError *error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completion(NO);
@@ -490,29 +491,28 @@ NS_ASSUME_NONNULL_BEGIN
         EntityFilter _Nullable filter,
         SignalIOSProtoBackupSnapshotBackupEntityType entityType) {
         __block NSUInteger count = 0;
-        [transaction
-            enumerateKeysAndObjectsInCollection:collection
-                                     usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                         if (self.isComplete) {
-                                             *stop = YES;
-                                             return;
-                                         }
-                                         if (filter && !filter(object)) {
-                                             return;
-                                         }
-                                         if (![object isKindOfClass:expectedClass]) {
-                                             OWSFailDebug(@"unexpected class: %@", [object class]);
-                                             return;
-                                         }
-                                         TSYapDatabaseObject *entity = object;
-                                         count++;
+        [transaction enumerateKeysAndObjectsInCollection:collection
+                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                                  if (self.isComplete) {
+                                                      *stop = YES;
+                                                      return;
+                                                  }
+                                                  if (filter && !filter(object)) {
+                                                      return;
+                                                  }
+                                                  if (![object isKindOfClass:expectedClass]) {
+                                                      OWSFailDebug(@"unexpected class: %@", [object class]);
+                                                      return;
+                                                  }
+                                                  TSYapDatabaseObject *entity = object;
+                                                  count++;
 
-                                         if (![exportStream writeObject:entity entityType:entityType]) {
-                                             *stop = YES;
-                                             aborted = YES;
-                                             return;
-                                         }
-                                     }];
+                                                  if (![exportStream writeObject:entity entityType:entityType]) {
+                                                      *stop = YES;
+                                                      aborted = YES;
+                                                      return;
+                                                  }
+                                              }];
         return count;
     };
 
@@ -1022,23 +1022,24 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
-        // Ensure that we continue to work off the main thread.
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
-            [obsoleteRecordNames addObjectsFromArray:recordNames];
-            [obsoleteRecordNames minusSet:activeRecordNames];
+    [OWSBackupAPI
+        fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
+                [obsoleteRecordNames addObjectsFromArray:recordNames];
+                [obsoleteRecordNames minusSet:activeRecordNames];
 
-            OWSLogVerbose(@"recordNames: %zd - activeRecordNames: %zd = obsoleteRecordNames: %zd",
-                recordNames.count,
-                activeRecordNames.count,
-                obsoleteRecordNames.count);
+                OWSLogVerbose(@"recordNames: %zd - activeRecordNames: %zd = obsoleteRecordNames: %zd",
+                    recordNames.count,
+                    activeRecordNames.count,
+                    obsoleteRecordNames.count);
 
-            [weakSelf deleteRecordsFromCloud:[obsoleteRecordNames.allObjects mutableCopy]
-                                deletedCount:0
-                                  completion:completion];
-        });
-    }
+                [weakSelf deleteRecordsFromCloud:[obsoleteRecordNames.allObjects mutableCopy]
+                                    deletedCount:0
+                                      completion:completion];
+            });
+        }
         failure:^(NSError *error) {
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

@@ -55,6 +55,9 @@ import SignalMessaging
     @objc
     public var sessionResetJobQueue: SessionResetJobQueue
 
+    @objc
+    public var backup: OWSBackup
+
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()
         self.callService = CallService()
@@ -66,6 +69,8 @@ import SignalMessaging
         self.pushRegistrationManager = PushRegistrationManager()
         self.pushManager = PushManager()
         self.sessionResetJobQueue = SessionResetJobQueue()
+        assert(SSKEnvironment.shared.primaryStorage != nil)
+        self.backup = OWSBackup(primaryStorage: SSKEnvironment.shared.primaryStorage)
 
         super.init()
 
