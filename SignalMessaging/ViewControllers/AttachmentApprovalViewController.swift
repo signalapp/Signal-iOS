@@ -100,7 +100,7 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 }
 
 @objc
-public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, CaptioningToolbarDelegate {
+public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaMessageTextToolbarDelegate {
 
     // MARK: - Properties
 
@@ -152,8 +152,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView.galleryRailView
     }
 
-    var captioningToolbar: CaptioningToolbar {
-        return bottomToolView.captioningToolbar
+    var mediaMessageTextToolbar: MediaMessageTextToolbar {
+        return bottomToolView.mediaMessageTextToolbar
     }
 
     lazy var bottomToolView: BottomToolView = {
@@ -174,7 +174,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         // Bottom Toolbar
         galleryRailView.delegate = self
-        captioningToolbar.captioningToolbarDelegate = self
+        mediaMessageTextToolbar.mediaMessageTextToolbarDelegate = self
 
         // Navigation
 
@@ -194,7 +194,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
 
-        captioningToolbar.captionText = currentViewController.attachment.captionText
+        mediaMessageTextToolbar.messageText = currentViewController.attachment.captionText
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -335,11 +335,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
 
             if transitionCompleted {
-                UIView.transition(with: self.captioningToolbar,
+                UIView.transition(with: self.mediaMessageTextToolbar,
                                   duration: 0.1,
                                   options: .transitionCrossDissolve,
                                   animations: {
-                                    self.captioningToolbar.captionText = self.currentViewController.attachment.captionText
+                                    self.mediaMessageTextToolbar.messageText = self.currentViewController.attachment.captionText
                 },
                                   completion: nil)
                 previousPage.zoomOut(animated: false)
@@ -484,38 +484,38 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.approvalDelegate?.attachmentApproval(self, didCancelAttachments: attachments)
     }
 
-    // MARK: - CaptioningToolbarDelegate
+    // MARK: - MediaMessageTextToolbarDelegate
 
     var currentPageController: AttachmentPrepViewController {
         return viewControllers!.first as! AttachmentPrepViewController
     }
 
-    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         currentPageController.setAttachmentViewScale(.compact, animated: true)
     }
 
-    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         currentPageController.setAttachmentViewScale(.fullsize, animated: true)
     }
 
-    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
         currentViewController.shouldAllowAttachmentViewResizing = false
-        captioningToolbar.isUserInteractionEnabled = false
-        captioningToolbar.isHidden = true
+        mediaMessageTextToolbar.isUserInteractionEnabled = false
+        mediaMessageTextToolbar.isHidden = true
 
         approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments)
     }
 
-    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange textView: UITextView) {
+    func mediaMessageTextToolbar(_ mediaMessageTextToolbar: MediaMessageTextToolbar, textViewDidChange textView: UITextView) {
         currentItem.attachment.captionText = textView.text
 
         self.approvalDelegate?.attachmentApproval?(self, changedCaptionOfAttachment: currentItem.attachment)
     }
 
-    func captioningToolbarDidAddMore(_ captioningToolbar: CaptioningToolbar) {
+    func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar) {
         self.approvalDelegate?.attachmentApproval?(self, addMoreToAttachments: attachments)
     }
 }
@@ -932,13 +932,13 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 }
 
 class BottomToolView: UIView {
-    let captioningToolbar: CaptioningToolbar
+    let mediaMessageTextToolbar: MediaMessageTextToolbar
     let galleryRailView: GalleryRailView
 
     let kGalleryRailViewHeight: CGFloat = 72
 
     required init(isAddMoreVisible: Bool) {
-        captioningToolbar = CaptioningToolbar(isAddMoreVisible: isAddMoreVisible)
+        mediaMessageTextToolbar = MediaMessageTextToolbar(isAddMoreVisible: isAddMoreVisible)
 
         galleryRailView = GalleryRailView()
         galleryRailView.scrollFocusMode = .keepWithinBounds
@@ -954,7 +954,7 @@ class BottomToolView: UIView {
         backgroundColor = UIColor.black.withAlphaComponent(0.6)
         preservesSuperviewLayoutMargins = true
 
-        let stackView = UIStackView(arrangedSubviews: [self.galleryRailView, self.captioningToolbar])
+        let stackView = UIStackView(arrangedSubviews: [self.galleryRailView, self.mediaMessageTextToolbar])
         stackView.axis = .vertical
 
         addSubview(stackView)
@@ -979,22 +979,22 @@ class BottomToolView: UIView {
     }
 }
 
-protocol CaptioningToolbarDelegate: class {
-    func captioningToolbarDidTapSend(_ captioningToolbar: CaptioningToolbar)
-    func captioningToolbarDidBeginEditing(_ captioningToolbar: CaptioningToolbar)
-    func captioningToolbarDidEndEditing(_ captioningToolbar: CaptioningToolbar)
-    func captioningToolbar(_ captioningToolbar: CaptioningToolbar, textViewDidChange: UITextView)
-    func captioningToolbarDidAddMore(_ captioningToolbar: CaptioningToolbar)
+protocol MediaMessageTextToolbarDelegate: class {
+    func mediaMessageTextToolbarDidTapSend(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+    func mediaMessageTextToolbarDidBeginEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+    func mediaMessageTextToolbarDidEndEditing(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
+    func mediaMessageTextToolbar(_ mediaMessageTextToolbar: MediaMessageTextToolbar, textViewDidChange: UITextView)
+    func mediaMessageTextToolbarDidAddMore(_ mediaMessageTextToolbar: MediaMessageTextToolbar)
 }
 
-class CaptioningToolbar: UIView, UITextViewDelegate {
+class MediaMessageTextToolbar: UIView, UITextViewDelegate {
 
-    weak var captioningToolbarDelegate: CaptioningToolbarDelegate?
+    weak var mediaMessageTextToolbarDelegate: MediaMessageTextToolbarDelegate?
     private let addMoreButton: UIButton
     private let sendButton: UIButton
     private let textView: UITextView
 
-    var captionText: String? {
+    var messageText: String? {
         get { return self.textView.text }
         set { self.textView.text = newValue }
     }
@@ -1145,18 +1145,18 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     // MARK: -
 
     @objc func didTapSend() {
-        self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self)
+        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidTapSend(self)
     }
 
     @objc func didTapAddMore() {
-        self.captioningToolbarDelegate?.captioningToolbarDidAddMore(self)
+        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidAddMore(self)
     }
 
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
         updateHeight(textView: textView)
-        self.captioningToolbarDelegate?.captioningToolbar(self, textViewDidChange: textView)
+        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbar(self, textViewDidChange: textView)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -1195,11 +1195,11 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     }
 
     public func textViewDidBeginEditing(_ textView: UITextView) {
-        self.captioningToolbarDelegate?.captioningToolbarDidBeginEditing(self)
+        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidBeginEditing(self)
     }
 
     public func textViewDidEndEditing(_ textView: UITextView) {
-        self.captioningToolbarDelegate?.captioningToolbarDidEndEditing(self)
+        self.mediaMessageTextToolbarDelegate?.mediaMessageTextToolbarDidEndEditing(self)
     }
 
     // MARK: - Helpers
